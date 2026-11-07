@@ -11,7 +11,7 @@ Every frame is drawn from code and every sound is synthesized, so a video can be
 | [`payday-slam/`](payday-slam/) | **Payday Slam**: who gets paid? Employee, Freelancer, Founder… and the vibe coder who pays to work | 17 s | ✅ Source + render |
 | `the-list/` | **The List**: the same joke on one screen, with recorded voices | 17 s | ⏳ Not added yet |
 | `uptime-inc/` | **Uptime Inc.**: AI office sitcom with MAX, RUSH and PAM (*Prompt Telephone* v04.1, 6 shots) | 15 s | ⏳ Not added yet |
-| `choose-career/` | **Choose Your Career**: sound effects added to the four-panel pay GIF | ~4 panels | ⏳ Not added yet |
+| [`choose-career/`](choose-career/) | **Choose Your Career**: sound effects added to the four-panel pay GIF, plus a 9:16 cut | 10 s | ✅ Source + render |
 | [`chat-gifs/`](chat-gifs/) | **Emma Blocked** and **Babe / Voice Agent**: chat GIFs re-timed, reframed to 9:16 and given synthesized sound | 13–15 s | ✅ Source + render |
 
 The full history of the work, including concepts not yet built, is in [`docs/sessions.md`](docs/sessions.md).
