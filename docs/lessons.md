@@ -48,3 +48,14 @@ What worked and what failed while turning the "Wait, you guys are getting paid?"
 - **Repetition can be funnier than clarity:** −$200 shown four times beat "−$200/month".
 - **Fill an empty opening with the character.** Starting the coder huge and shrinking him as each row arrives fixed both the weak first frame and the empty middle of the screen (the author's idea).
 - **Recorded voices beat synthesized ones for the punchline,** and their real lengths set the timing.
+
+# Lessons from Payday Slot Machine
+
+What came out of making and reviewing *Payday Slot Machine* (3–4 Nov 2026, added 7 Nov).
+
+- **Ask for concepts, get concepts.** Five ranked ideas with hook, joke and payoff made choosing quick; the slot machine won because the meme was already a four-beat reveal.
+- **Protect the reveal.** A slowing reel showed "$600k" 0.2 s before the jackpot. Check the frames just before each payoff, not only the payoff itself.
+- **Measure the file you deliver.** Loudness was first reported from before a final level change; the delivered file was quieter. Repeat checks after every rebuild.
+- **Leave headroom before AAC.** A −1 dBFS peak rose to about 0 dBFS after encoding; limit first, then normalize.
+- **Pin the encoder for reproducible builds.** With automatic x264 threads, two builds differed in three frames; a fixed `-threads` value made rebuilds byte-identical.
+- **Font files differ between copies.** The repo's Anton is a different build from the one first used; fitting text to the frame width keeps any build on screen.
