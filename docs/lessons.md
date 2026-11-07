@@ -86,3 +86,35 @@ What came out of *Saved Locally*, *Where Files Live* and *Prompt Telephone* (6�
 - Chain a speaker's TTS clips with a small gap; overlapping clips from one voice sound broken.
 - `loudnorm` left these mixes around −18 LUFS. A compressor, fixed gain and a limiter set below the target reached −14.5 LUFS with a −1.5 dBFS peak.
 - Faces must never sit behind monitors or props; check every reacting face in the contact sheet.
+
+# Lessons from "Saved to Cloud" (S1v2 → S1v3.5)
+
+Seven versions in one session, plus one outside review (6.8/10 for S1v3). Files: `uptimez_S131_*` (A/B test), `S133`–`S135` (cold open, name tags, doodle payoff).
+
+## Comedy
+
+- **A picture beats a sentence for the payoff.** "CAN MY BOSS SEE THIS?" made viewers read; PAM's horned doodle of DON reads in under a second, with sound off, in any language. Put it beside his gilded portrait and the contrast is the punchline.
+- **A repeated line needs new meaning.** DON repeating "Nice. Shared." only works once the page is about him.
+- **Never make a button do the opposite.** SAVE that leaks (S1v2) and DELETE that saves (S1v3) both confused people; the outside review caught the second one, after I had criticised the first.
+- **Cut a character whose line adds nothing.** MAX's "Where's the file?" was already shown by the flying file.
+- **Extend only with beats that earn a laugh.** 15 s → 25 s worked by adding a mid-film gag (the cloud hiccups a file, PAM shoves it back), not by slowing shots.
+
+## Openings and intros
+
+- **Cold open on the climax, then rewind.** Frame 0 is the ACHOO; the page slaps the lens; "15 SECONDS EARLIER…". The page in the first second doubles as the planted detail.
+- **Introduce the cast with freeze-frame tags, not speeches.** Spoken "Hi, I'm Don…" costs 2 s each before anything happens. A 1.0 s freeze with a comic bubble (name + three emoji) is a joke in itself.
+- **Tags in the film's own style.** Navy corporate lower-thirds looked pasted on; white comic bubbles with a tail to the character fit.
+
+## Process
+
+- **Over-specifying again.** S1v3 specced blinks, a cat, BPM and file labels before the joke was proven; the review was right to cut them. Same lesson as the robot-office episodes.
+- **One test variable at a time.** The A/B renders differed only in the page.
+- **A comic pause is not dead air.** Keep "no gap over 0.5 s" for the mix, but hold 0.6–0.8 s before the punchline.
+
+## Technical
+
+- `engine_v.py` renders any length (`DURATION` in the module) and exposes the unquantised time for smooth camera moves.
+- A **time map** wrapper (`s133.py`) adds a cold open, a rewind and freeze frames around an existing film without touching it; `sound_s133.py` splices the old mix with the same map. Re-measure loudness after splicing: it came out at −18 LUFS until the gain was raised.
+- Pose tweening: register tweened arm angles in the kit's pose table at runtime (`anim.py`), so the kit draws in-between poses unchanged.
+- Colour emoji in cairo: draw them with PIL (`NotoColorEmoji`, size 109, `embedded_color=True`), convert to premultiplied BGRA and paint as a surface.
+- A doodle style (wobbly blue pen, Permanent Marker labels) separates "drawn by a character" from the paper-cutout world.
