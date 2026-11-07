@@ -1,4 +1,5 @@
 # build leftovers
+build/
 scenes/
 check/
 *.tmp.mp4
