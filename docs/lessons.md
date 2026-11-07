@@ -59,3 +59,30 @@ What came out of making and reviewing *Payday Slot Machine* (3–4 Nov 2026, add
 - **Leave headroom before AAC.** A −1 dBFS peak rose to about 0 dBFS after encoding; limit first, then normalize.
 - **Pin the encoder for reproducible builds.** With automatic x264 threads, two builds differed in three frames; a fixed `-threads` value made rebuilds byte-identical.
 - **Font files differ between copies.** The repo's Anton is a different build from the one first used; fitting text to the frame width keeps any build on screen.
+
+# Lessons from UptimeZ Inc.
+
+What came out of *Saved Locally*, *Where Files Live* and *Prompt Telephone* (6–7 Nov 2026), after four tester reviews.
+
+## Comedy
+
+- **Recognition isn't laughter.** "So true" reactions meant the idea was relatable but not funny. The fix was people being ridiculous about AI, not AI being clever.
+- **Don't invent a stand-in.** Testers didn't know what "SAVI" was; real, familiar things (Downloads, the cloud, a LinkedIn-style post) need no explaining.
+- **Take jargon literally.** "Make it bold" → a post about a bald head works because every viewer knows both words.
+- **Show the cause before the effect.** Each person's mistake must be visible as it happens, and each must be worse than the last.
+- **Turn the punchline on the smug one.** DON's "Finally. A post about me." beat any ending where the AI or the junior loses.
+- **The brand is the straight man.** A polished, earnest company page makes the chaos inside it funnier; it never jokes itself.
+
+## Testing
+
+- Don't test a visual gag with audio only, and don't loop a clip three times before asking for the first reaction.
+- Five viewers against five can't prove a winner; use tests to find what confuses people.
+- Measure confusion (where people got lost), not the number of gags.
+
+## Technical
+
+- Wrap earlier modules at runtime (`pt43` patches the kit's face drawing for lip-sync) instead of editing them, then check old cuts still match by checksum.
+- Drive lip-sync and word cues from the measured voice timings (`pt43_sync.json`), not from hand-typed times.
+- Chain a speaker's TTS clips with a small gap; overlapping clips from one voice sound broken.
+- `loudnorm` left these mixes around −18 LUFS. A compressor, fixed gain and a limiter set below the target reached −14.5 LUFS with a −1.5 dBFS peak.
+- Faces must never sit behind monitors or props; check every reacting face in the contact sheet.

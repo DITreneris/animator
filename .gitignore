@@ -14,3 +14,7 @@ node_modules/
 Thumbs.db
 desktop.ini
 .vscode/
+# uptimez build leftovers
+uptimez/src/models/
+uptimez/src/*_mix.wav
+uptimez/src/*_sync.json
