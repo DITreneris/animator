@@ -4,7 +4,7 @@ What has been made so far, chat by chat, and what is in this repo. Dates are 202
 
 | Dates | Session | Output | In repo |
 |---|---|---|---|
-| 3 Nov | **Video skill research** | Studied `claude-video-effects`; updated the `video-creator` skill (reveal timing, BT.709 colour, audio headroom, honest checks) | — (skill, not code) |
+| 3–4 Nov | **Video skill research → Payday Slot Machine** | Studied `claude-video-effects`; wrote the `video-creator` skill; five concepts for the "Choose your career" meme; *Payday Slot Machine* (19 s, slot reels per career, synthesized SFX); skill revised after review (reveal timing, BT.709 colour, audio headroom, honest checks) | Payday Slot Machine ✅ (added 7 Nov) · skill — not code |
 | 3–6 Nov | **Payday Slam → The List** | *Payday Slam* (17 s, meme table animated, synthesized music and SFX). Reworked as *The List*: one screen, doodle faces, your recorded voice lines, jaw-drop punchline "Wait, you guys are getting paid?" | Payday Slam ✅ · The List ✅ |
 | 3–6 Nov | **"Says Here You Were Our Boss"** | Five concepts, winner combines the interview cold open with a loop ending and a hidden detail; lessons saved to the `viral-loop-animation` skill | ⏳ |
 | 5 Nov | **Choose Your Career SFX** | `choose_career_reveal_sfx.mp4`: stamps, coin pings, jackpot, error buzzes and deflate cued to each panel; −14.4 LUFS. 9:16 cut (meme raised 100 px) added with the repo upload | ✅ |

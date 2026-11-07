@@ -1,0 +1,19 @@
+{
+  "format": {"width": 1080, "height": 1920, "fps": 30, "duration": 19.0},
+  "scenes": [
+    {"id": "hook", "start": 0.0, "end": 1.25},
+    {"id": "employee", "start": 1.25, "end": 4.3},
+    {"id": "freelancer", "start": 4.3, "end": 7.4},
+    {"id": "founder", "start": 7.4, "end": 12.2},
+    {"id": "vibecoder", "start": 12.2, "end": 16.2},
+    {"id": "endline", "start": 16.2, "end": 19.0}
+  ],
+  "careers": [
+    {"name": "EMPLOYEE", "kind": "employee", "caption": "same. every. month.", "values": ["$3k", "$3k", "$3k", "$3k"], "stops": [2.3, 2.7, 3.1, 3.5], "start": 1.25, "tint": "#DEDEDE", "ink": "#111111"},
+    {"name": "FREELANCER", "kind": "freelancer", "caption": "invoice is \"in process\"", "values": ["$900", "$1.5k", "$500", "$2k"], "stops": [5.1, 5.35, 6.2, 6.55], "start": 4.3, "tint": "#CFE6FF", "ink": "#111111"},
+    {"name": "FOUNDER", "kind": "founder", "caption": "trust the vision", "values": ["$0", "$0", "$0", "$600k"], "stops": [8.1, 8.6, 9.1, 10.9], "start": 7.4, "tint": "#FFE27A", "ink": "#111111"},
+    {"name": "VIBE CODER", "kind": "coder", "caption": "this is the one", "values": ["-$200", "-$200", "-$200", "-$200"], "stops": [13.0, 13.5, 14.0, 14.5], "start": 12.2, "tint": "#FFD3E2", "ink": "#D0101C"}
+  ],
+  "months": ["JAN", "FEB", "MAR", "APR"],
+  "endline": ["ONE PROMPT", "AWAY FROM", "REVENUE."]
+}
