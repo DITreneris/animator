@@ -10,7 +10,11 @@ Every frame is drawn from code and every sound is synthesized, so a video can be
 |---|---|---|---|
 | [`payday-slam/`](payday-slam/) | **Payday Slam**: who gets paid? Employee, Freelancer, Founder… and the vibe coder who pays to work | 17 s | ✅ Source + render |
 | `the-list/` | **The List**: the same joke on one screen, with recorded voices | 17 s | ⏳ Not added yet |
-| `uptime-inc/` | **Uptime Inc.**: AI office sitcom with MAX, RUSH and PAM (*Prompt Telephone*) | 15 s | ⏳ Not added yet |
+| `uptime-inc/` | **Uptime Inc.**: AI office sitcom with MAX, RUSH and PAM (*Prompt Telephone* v04.1, 6 shots) | 15 s | ⏳ Not added yet |
+| `choose-career/` | **Choose Your Career**: sound effects added to the four-panel pay GIF | ~4 panels | ⏳ Not added yet |
+| `chat-gifs/` | Chat GIFs re-timed to 13–15 s, reframed to 9:16 and given sound | 13–15 s | ⏳ Not added yet |
+
+The full history of the work, including concepts not yet built, is in [`docs/sessions.md`](docs/sessions.md).
 
 ## Quick start
 
