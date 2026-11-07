@@ -1,3 +1,5 @@
 pillow>=10
 numpy>=1.26
 scipy>=1.11
+pycairo>=1.25   # cairo-drawn episodes
+# optional, only to regenerate voice lines: kokoro-onnx, soundfile
