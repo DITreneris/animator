@@ -34,3 +34,17 @@ What worked and what failed while making *Says Here You Were Our Boss*, *He Alwa
 - A navy hoodie disappears on dark backgrounds; lighten the background.
 - Long digital silence sounds like a fault; add faint room tone.
 - Set the limiter below the target peak (AAC overshoots), then re-measure the final file.
+
+# Lessons from Payday Slam → The List
+
+What worked and what failed while turning the "Wait, you guys are getting paid?" meme into *The List* (3–6 Nov 2026).
+
+- **Copying the meme's table isn't a video.** *Payday Slam* was clear but had 16 numbers and no funny action; the reviewer's verdict was "too many numbers, no funny animation".
+- **More shots lost the story.** Separate close-ups per character made each gag funnier, but without a shared setting or labels, viewers couldn't follow who was who or why the coder paid.
+- **Go back to what worked and add only the best gags.** The fix was the original meme's one-screen comparison plus one gag and one number per row.
+- **Test the joke with one still before animating.** A single image of the finished list confirmed the story was clear in seconds, before any animation time was spent.
+- **Approve in stages:** style still → punchline clip with voice → storyboard → still → animated draft. The punchline clip is the stage that decides the rest.
+- **Keep the caption identical to the voice line.** A reviewer suggested a shorter caption, but it would no longer match the recorded line.
+- **Repetition can be funnier than clarity:** −$200 shown four times beat "−$200/month".
+- **Fill an empty opening with the character.** Starting the coder huge and shrinking him as each row arrives fixed both the weak first frame and the empty middle of the screen (the author's idea).
+- **Recorded voices beat synthesized ones for the punchline,** and their real lengths set the timing.
