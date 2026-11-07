@@ -1,0 +1,14 @@
+{"fps":30,"size":[1080,1920],"bpm":120,"frames":510,
+"rows":[
+ {"label":"Employee","color":"#2BFF88","values":["$3k","$3k","$3k","$3k"],"label_f":60,"f":[68,75,83,90]},
+ {"label":"Freelancer","color":"#4FC3FF","values":["$900","$1.5k","$500","$2k"],"label_f":105,"f":[113,122,128,139]},
+ {"label":"Founder","color":"#FFD400","values":["$0","$0","$0","$600k"],"label_f":150,"f":[165,180,195,225]},
+ {"label":"Vibe coder","color":"#FF2D46","values":["-$200","-$200","-$200","-$200"],"label_f":285,"f":[300,315,330,345]}],
+"scenes":[
+ {"name":"hook","start":0,"end":60,"words":"WHO GETS PAID?","audio":"groove, hits on each word"},
+ {"name":"employee_freelancer","start":60,"end":150,"audio":"groove, cash register / coin plinks"},
+ {"name":"founder_build","start":150,"end":225,"audio":"groove drops out, dull thuds, riser"},
+ {"name":"founder_payoff","start":225,"end":270,"audio":"impact, jackpot, full groove"},
+ {"name":"vibe_coder","start":270,"end":360,"audio":"record scratch, silence, sad trombone"},
+ {"name":"punchline","start":360,"end":450,"words":"WAIT, YOU GUYS ARE GETTING PAID?","caption_f":[378,390,405],"audio":"crickets, groove returns on PAID?"},
+ {"name":"stinger","start":450,"end":510,"words":"TOTAL -$800 / TAG A VIBE CODER","audio":"groove"}]}
