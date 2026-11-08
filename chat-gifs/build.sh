@@ -24,3 +24,4 @@ render() { # name crop pad_colour limiter_ceiling
 # crop = w:h:x:y in source pixels: drop side margins (and the Messenger GIF's black bars)
 render emma_blocked     696:1000:12:0  0xfcfcfc 0.2
 render babe_voice_agent 692:788:14:32  0x060504 0.3
+render claude_backups   700:886:10:6   0xfaf8f4 0.3
