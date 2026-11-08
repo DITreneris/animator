@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Rebuilds UptimeZ Inc. episodes (540x960 animatics, 30 fps, 15 s) from src/.
-# Usage: ./build.sh pt43            one episode
+# Usage: ./build.sh pt43            one episode (15 s keys below)
+#        ./build.sh s131a | s131b    Saved to Cloud A/B test (15 s, 540x960)
+#        ./build.sh s136 | s136n     Saved to Cloud release, 1080x1920 (with / without the sniff tag)
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -12,7 +14,7 @@ HERE=$(pwd)
 export KOKORO_DIR=${KOKORO_DIR:-$HERE/src/models}
 
 # fonts used by the kit (installed per-user if missing)
-for f in LilitaOne-Regular.ttf Inter-400.ttf Inter-700.ttf Inter-800.ttf; do
+for f in LilitaOne-Regular.ttf Inter-400.ttf Inter-700.ttf Inter-800.ttf PermanentMarker-Regular.ttf; do
   if [ -f "$ROOT/fonts/$f" ] && ! fc-list | grep -qi "${f%%[-.]*}"; then
     mkdir -p ~/.fonts && cp "$ROOT/fonts/$f" ~/.fonts/ && fc-cache -f >/dev/null
   fi
@@ -34,6 +36,8 @@ ptb|sound_pt.py|pta|prompt-telephone|uptime_PT_B_bald.mp4|OLD
 pt4|sound_pt4.py|pt4|prompt-telephone|uptime_PT_v04_1.mp4|OLD
 pt42|sound_pt42.py|pt42|prompt-telephone|uptimez_PT_v04_2.mp4|OLD
 pt43|sound_pt43.py|pt43|prompt-telephone|uptimez_PT_v04_3.mp4|43
+s131a|sound_s131.py|s131|saved-to-cloud|uptimez_S131_saved_to_cloud_a.mp4|43
+s131b|sound_s131.py|s131|saved-to-cloud|uptimez_S131_saved_to_cloud_b.mp4|43
 "
 
 build_one() {
@@ -51,7 +55,23 @@ build_one() {
   echo "Wrote $outdir/$out"
 }
 
+# Saved to Cloud release: S1v3.2 audio -> spliced, rebalanced mix; drawn at 2x (needs Noto Color Emoji)
+build_release() {
+  local m=$1 out; out=${OUT_DIR:-$HERE/saved-to-cloud}; mkdir -p "$out"
+  local name=uptimez_S136_saved_to_cloud_$([ "$m" = s136n ] && echo notag || echo tag)_1080.mp4
+  ( cd src
+    python3 sound_s131.py s131 && python3 sound_s132.py s132 && python3 sound_s136.py "$m"
+    python3 engine_hd.py "$m" | ffmpeg -y -v error \
+      -f rawvideo -pix_fmt bgra -s 1080x1920 -r 30 -i - -i "${m}_mix.wav" \
+      -af "acompressor=threshold=-24dB:ratio=4:attack=4:release=80:makeup=2,volume=18.5dB,alimiter=limit=0.55:attack=1:release=50:level=false" \
+      -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k \
+      -shortest -movflags +faststart "$out/$name.tmp.mp4"
+    mv "$out/$name.tmp.mp4" "$out/$name" )
+  echo "Wrote $out/$name"
+}
+
 case "${1:-}" in
+  s136|s136n) build_release "$1" ;;
   all)    for k in $(echo "$EPISODES" | cut -d'|' -f1); do build_one "$k"; done ;;
   sheets) ( cd src && python3 brand.py && python3 charsheets.py ) ;;
   "")     sed -n 2,6p "$0" ;;

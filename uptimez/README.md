@@ -4,7 +4,7 @@
 
 An AI office sitcom: short vertical cartoons about ridiculous people using AI, posted as if from the corporate account of a polished SaaS company. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
 
-All videos here are **540×960 animatics** (30 fps, 15 s, 450 frames): rough cuts for audience tests, not final 1080×1920 releases.
+Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exception is the *Saved to Cloud* release, rendered at 1080×1920.
 
 ## Cast
 
@@ -41,6 +41,19 @@ DON says "Make it bold!", each layer of the company passes it on, and the AI end
 
 Scenario notes: `scenario_v01.md`, `scenario_v03.md`, `scenario_v04_1.md`, `scenario_v04_2.md` (v04.3 is v04.2 plus the polish pass above). Contact sheets: `panels_*.png`.
 
+### Saved to Cloud — [`saved-to-cloud/`](saved-to-cloud/)
+
+PAM backs up everything to the cloud outside the window until it sneezes the office's files everywhere. "Nice. Shared." Then her private doodle of DON (horns, tail, pitchfork) lands on his desk, and he says it back.
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_S136_saved_to_cloud_tag_1080.mp4` | **S1v3.6 release** | **1080×1920**, 25.7 s, −15.3 LUFS. Cold open on the ACHOO, rewind, emoji name tags, three laughs; the last sniff loops into the opening |
+| `uptimez_S136_saved_to_cloud_notag_1080.mp4` | S1v3.6 | Same, ending on DON (24.7 s) |
+| `uptimez_S135_saved_to_cloud_tag.mp4` | S1v3.5 | 540×960 animatic, first cut with the doodle payoff |
+| `uptimez_S131_saved_to_cloud_a.mp4`, `_b.mp4` | S1v3.1 A/B | 15 s test: three search lines vs "CAN MY BOSS SEE THIS?" |
+
+How the versions build on each other (each wraps the last at runtime, none edits it): `s131` A/B → `s132` 21.5 s extension with `anim.py` (pose tweening, walk, squash and stretch, camera) and `engine_v.py` (any length) → `s133` cold open + rewind + freeze frames via a time map → `s134` emoji name tags → `s135` doodle payoff → `s136` final polish, rendered at 2× by `engine_hd.py`. The emoji tags need the Noto Color Emoji font (`/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf`).
+
 ### Where Files Live — [`storyboards/`](storyboards/)
 
 Nobody understands what's cloud, local, disk or phone. Storyboard animatics with ending variants.
@@ -63,7 +76,8 @@ The retired first concept, *Saved Locally* (SAVI), v1–v3. Kept as made; see it
 pip install pycairo numpy soundfile kokoro-onnx
 # Kokoro model: kokoro-v1.0.int8.onnx + voices-v1.0.bin from the
 # thewh1teagle/kokoro-onnx GitHub release, in src/models/ or $KOKORO_DIR
-./uptimez/build.sh pt43      # one episode (keys: s3 s1 s3b s3c s1v2 pta ptb pt4 pt42 pt43)
+./uptimez/build.sh pt43      # one episode (keys: s3 s1 s3b s3c s1v2 pta ptb pt4 pt42 pt43 s131a s131b)
+./uptimez/build.sh s136      # Saved to Cloud release at 1080x1920 (s136n = without the tag)
 ./uptimez/build.sh all       # every episode
 ./uptimez/build.sh sheets    # logo files + character sheets
 ```
