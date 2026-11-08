@@ -85,3 +85,12 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - Sharp click clusters made AAC overshoot the limiter on one channel; low-pass the clicks.
 - Scale-in animations that start at frame 0 are invisible on frame 0; start them a few frames earlier.
 - Variants (ending B, polish pass) behind environment switches with new file names, verified by checksums and by comparing frame hashes against a saved copy of the old module.
+
+## Delivery: the no-tag pass (8 Nov)
+
+- **Don't burn the brand chip over the payoff.** On *Who's a Good Boy?* it covered the last 2 s (robot, ball, dog), so trimming it off would also cut the ending. Keep tags behind a switch and render a no-tag version.
+- **Keep text off the frame edge.** TODAY ended at x 1079 of 1080 and read "TODA" in a full-width crop; it now ends at x 1045.
+- **A loop's last frame isn't the punch line.** For deliveries that don't loop, hold the payoff to the end with the punch line on screen.
+- **ffmpeg concat paths are relative to the list file.** A list pointing at the old build folder silently rebuilt the old video; check the changed area in the output.
+- **Test a detector on a known positive** before trusting a "0 found".
+- **Rebuild from a clean repo copy** and compare decoded video and audio with the delivered files; all six videos matched exactly.
