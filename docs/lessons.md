@@ -218,3 +218,11 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Push-ins must wait for entrances.** Zooming while a character runs in from the edge crops him; start the push once he's fully inside the zoomed frame.
 - **Small props need a silhouette.** The lying dog read as a scribble; an outline, a lighter muzzle, an ear, an eye and a red collar fixed it. Check that a moved prop doesn't land under someone's feet.
 - **A pat is a hand resting on top of the head,** not a disc covering the hair.
+
+## Second review: Just for Now v3.2, Learn to Code v4 hold (9 Nov)
+
+- **Similar colour plus similar pattern reads as "the same object".** A navy block with a window grid under the OFFICE block read as a second HEADQUARTERS. Give every block in a stack its own colour and texture.
+- **An arm must come from a body the viewer can see.** Once a push-in cropped the boss's body, his arm became a white bar across the trophy. Start arms at the near shoulder, pass them behind held props and end them in a gripping hand.
+- **Brand tags belong in the title bar,** not over the picture: a chip under the bar sat on the little office in the pushed ending.
+- **A polish pass must not make any beat worse than the shipped cut.** Compare the new version beat by beat with the master: Learn to Code v4's cut-in put the HIRED stamp on his face and swept the robot's arm across HEAD OF HIRING, so the whole cut was held although everything else improved.
+- **Stamps and props placed in screen space must be checked in every framing,** especially close-ups, where faces move to new places.

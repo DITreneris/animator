@@ -11,6 +11,10 @@ Built from six "Me and my AI agent" memes, turned into one story with the series
 
 Earlier versions (rough, v2, v3–v3.2) were reviewed in the session but aren't in the repo; v3.3 contains all of their changes.
 
+## Review status (9 Nov)
+
+The shipped film is **v3.3**. v3.4 was held: the 2024 pat arm read as a detached navy bar, the payoff push-in cropped him as he ran back in, the lying dog read as a scribble, and the robot's hand sat on his hair. v3.5 fixes all four and is waiting for review.
+
 ## Story
 
 | Year | Beat | Line |
