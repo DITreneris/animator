@@ -11,7 +11,7 @@ Every frame is drawn from code and every sound is synthesized, so a video can be
 | [`payday-slam/`](payday-slam/) | **Payday Slam**: who gets paid? Employee, Freelancer, Founder… and the vibe coder who pays to work | 17 s | ✅ Source + render |
 | [`payday-slot-machine/`](payday-slot-machine/) | **Payday Slot Machine**: each career's slot machine spins out its monthly pay, ending on "One prompt away from revenue." | 19 s | ✅ Source + render |
 | [`the-list/`](the-list/) | **The List**: the same joke on one screen, doodle style, with recorded voices | 17 s | ✅ Source + render |
-| `uptime-inc/` | **Uptime Inc.**: AI office sitcom with MAX, RUSH and PAM (*Prompt Telephone* v04.1, 6 shots) | 15 s | ⏳ Not added yet |
+| [`uptimez/`](uptimez/) | **UptimeZ Inc.** (formerly Uptime Inc.): AI office sitcom with DON, PAM, RUSH and MAX. *Prompt Telephone* v03–v04.3, *Where Files Live* storyboards, retired *Saved Locally*, logo files and character sheets (540×960 animatics) | 15 s | ✅ Source + render |
 | [`choose-career/`](choose-career/) | **Choose Your Career**: sound effects added to the four-panel pay GIF, plus a 9:16 cut | 10 s | ✅ Source + render |
 | [`says-here-boss/`](says-here-boss/) | **Says Here You Were Our Boss**: 2024 prompt engineer → 2027 interviewed by his own agents (v1, v2 with voices) | 15–17 s | ✅ Source + render |
 | [`thank-you/`](thank-you/) | **He Always Said Thank You**: the robots spare him… except for the toaster | 14.5 s | ✅ Source + render |
@@ -44,6 +44,8 @@ python3 payday-slam/render.py check 0 228 420   # writes payday-slam/check/f000.
 
 ## Cairo-drawn episodes
 
+`uptimez/` uses its own paper-cutout kit and a single `build.sh` for all its episodes; see [`uptimez/README.md`](uptimez/README.md).
+
 `says-here-boss/`, `thank-you/`, `make-it-better/` and `just-for-now/` share one cartoon style (the hoodie guy, white robots, the rewind effect) drawn with pycairo instead of Pillow. Each version folder has:
 
 - `v.py`: the character and prop library as it stood for that version
@@ -66,5 +68,6 @@ python3 payday-slam/render.py check 0 228 420   # writes payday-slam/check/f000.
 
 - `fonts/PermanentMarker-Regular.ttf` is the Permanent Marker typeface, © 2010 Font Diner, Inc., under the Apache License 2.0 (`fonts/PermanentMarker-LICENSE.txt`). Used by *The List*.
 - `fonts/Anton-Regular.ttf` is the Anton typeface, © The Anton Project Authors, under the SIL Open Font License 1.1 (`fonts/Anton-OFL.txt`).
+- `fonts/Inter-400.ttf`, `Inter-700.ttf`, `Inter-800.ttf` are the Inter typeface, © The Inter Project Authors, under the SIL Open Font License 1.1 (`fonts/Inter-OFL.txt`). Used by *UptimeZ Inc.* post cards and character sheets.
 - `fonts/ArchivoBlack-Regular.ttf` is the Archivo Black typeface, © 2017 The Archivo Black Project Authors, under the SIL Open Font License 1.1 (`fonts/ArchivoBlack-OFL.txt`). Used by *Payday Slot Machine*.
 - No license has been chosen yet for the code and videos, so all rights are reserved by default.
