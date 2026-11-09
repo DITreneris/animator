@@ -8,7 +8,7 @@ def install():
     def topbar(c,f):
         _tb(c,f)
         if f<60 or 285<=f<315:
-            txt(c,'TODAY',985,titles.BAR_Y+titles.BAR_H/2,40,RED,lw=0) if os.environ.get('NOTAG')=='1' else txt(c,'TODAY',1012,titles.BAR_Y+titles.BAR_H/2,44,RED,lw=0)   # NOTAG: Y clear of the right edge
+            txt(c,'TODAY',985,titles.BAR_Y+titles.BAR_H/2,40,RED,lw=0) if (os.environ.get('NOTAG')=='1' or os.environ.get('V34')=='1') else txt(c,'TODAY',1012,titles.BAR_Y+titles.BAR_H/2,44,RED,lw=0)   # NOTAG: Y clear of the right edge
     v9.topbar=topbar
     _dog,_nb,_ball,_rarm=v9.dog,v9.neighbor,v9.ball,v9.rarm
     def dog(c,x,gy,s,*a,**k):

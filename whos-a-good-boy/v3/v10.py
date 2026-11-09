@@ -9,6 +9,8 @@ import qafix;qafix.install()
 if os.environ.get('NOTAG')=='1':
     import v8
     v9.badge=v.badge=v8.badge=titles.badge=lambda c:None
+import polish34;polish34.install()
+PRE=('v34' if os.environ.get('V34')=='1' else '')+('n' if os.environ.get('NOTAG')=='1' else '')   # render file prefix   # V34=1: v3.4 polish (picture only)
 def draw(f):
     chars.CURF=f;return v9.draw(f)
 def sheet():
@@ -50,6 +52,6 @@ if __name__=='__main__':
     else:
         for n,a,b,fn in v9.SC:
             if len(sys.argv)>2 and n not in sys.argv[2:]:continue
-            p=subprocess.Popen(f'ffmpeg -y -v error -f rawvideo -pix_fmt bgra -s {W}x{H} -r 30 -i - -vf format=yuv420p -c:v libx264 -crf 12 -preset veryfast -g 30 -pix_fmt yuv420p -color_primaries bt709 -color_trc bt709 -colorspace bt709 -video_track_timescale 15360 tmp_{n}.mp4'.split(),stdin=subprocess.PIPE)
+            p=subprocess.Popen(f'ffmpeg -y -v error -f rawvideo -pix_fmt bgra -s {W}x{H} -r 30 -i - -vf format=yuv420p -c:v libx264 -crf 12 -preset veryfast -g 30 -pix_fmt yuv420p -color_primaries bt709 -color_trc bt709 -colorspace bt709 -video_track_timescale 15360 tmp_{PRE}{n}.mp4'.split(),stdin=subprocess.PIPE)
             for f in range(a,b):p.stdin.write(bytes(draw(f).get_data()))
-            p.stdin.close();assert p.wait()==0;os.rename(f'tmp_{n}.mp4',f'{n}.mp4');print(n,flush=True)
+            p.stdin.close();assert p.wait()==0;os.rename(f'tmp_{PRE}{n}.mp4',f'{PRE}{n}.mp4');print(PRE+n,flush=True)

@@ -12,6 +12,7 @@ What has been made so far, chat by chat, and what is in this repo. Dates are 202
 | 6 Nov | **Futuristic concepts → Uptime Inc.** | Concepts *Elevator 2077: "Saved Locally"*, *The Infinite Archive*, *Sandbox Moon*. Then *Uptime Inc. — Prompt Telephone* v04.1 (15 s test, 540×960, DON / PAM / RUSH, "Bald." vs "Bold?") | ⏳ |
 | 3–6 Nov | **Robot office episodes** (one long chat) | *Says Here You Were Our Boss* v1 + v2 (voices, sunglasses payoff); *He Always Said Thank You*; *Make It Better* v1 + v2; *Just For Now* test clips, rough and v2 after two tester reviews. Lessons in [`lessons.md`](lessons.md) | ✅ |
 | 6–7 Nov | **Who's a Good Boy?** (robot office chat, continued) | Six "Me and my AI agent" memes into one 24 s story; tester review; rough, v2, v3 with a character polish layer (expressions, screen faces, talking mouths), readable title bar, 2026 TODAY opening, QA fixes (v3.3); 8 Nov no-tag version | ✅ |
+| 8–9 Nov | **Learn to Code v4, Who's a Good Boy v3.4** (same chat) | Learn to Code: JOBS logo twist (his robot built the site that rejects him), motion pass, interview cut-in. Who's a Good Boy: push-ins on the opening, office and payoff, readable APPROVE button, grab close-up and flash, punch line back on the final image. Both: no-tag versions, cover frames | ✅ |
 | 7–8 Nov | **Learn to Code** (same chat) | Concept doc from Reddit research, revised after a tester review; 25 s with endings A and B for an A/B test; B v2 fixes B's setup line; B v3 polish (push-ins, bubbles, cable coil); 8 Nov no-tag version ending on the punch line. Lessons in [`lessons.md`](lessons.md) | ✅ |
 | 7 Nov | **The List added** | `the-list/`: source, six trimmed voice lines, Permanent Marker font, history stills; rebuild matches the released video exactly | ✅ |
 | 4–7 Nov | **Repo setup** | This repo: structure, build docs, Anton font + OFL, first push | ✅ |
@@ -20,7 +21,7 @@ What has been made so far, chat by chat, and what is in this repo. Dates are 202
 
 - **Just For Now**: viewer test of v2 (two laughs? tape rule clear?), then better faces and motion
 - **Make It Better / Says Here**: swap in real recorded voice lines
-- **Learn to Code**: viewer A/B test of ending A vs B v3 (3 of 5 non-tech viewers laugh at the ending), then real voices for her three lines and his four
+- **Learn to Code**: viewer A/B test of ending A vs B v4 (3 of 5 non-tech viewers laugh at the ending), then real voices for her three lines and his four
 - **Who's a Good Boy?**: viewer test, then the motion pass
 
 - **Who Gets…? series**, same format as *The List*: *Who Gets Sleep?*, *Who Gets Weekends?*, *Who Gets Customers?*

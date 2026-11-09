@@ -94,3 +94,15 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **ffmpeg concat paths are relative to the list file.** A list pointing at the old build folder silently rebuilt the old video; check the changed area in the output.
 - **Test a detector on a known positive** before trusting a "0 found".
 - **Rebuild from a clean repo copy** and compare decoded video and audio with the delivered files; all six videos matched exactly.
+
+## Polish passes: Learn to Code v4 and Who's a Good Boy v3.4 (8–9 Nov)
+
+- **A rewatch twist beats a rewatch detail.** Making the job site's logo his own robot's face changes what the opening means on a second watch; the earlier plants (a sign, a pigeon) only reward noticing.
+- **Check invented brand names before using them.** "JobBot" and "HireBeep" are real companies. A series character's face plus a plain word (JOBS) can't belong to anyone.
+- **Plants must be readable the first time.** The 2024 APPROVE button was about 90 px with an unreadable label, so the robot taking it over in 2026 lost its callback; 1.45× and a close-up on the first press fixed it.
+- **Hard cut-ins feel faster than glides** for a single beat ("You're hired!"); keep glides for reaction faces and reveals.
+- **When a push-in moves props under the subtitles, move the subtitles,** per scene: the office subtitles had to go from under the desk to the wall once the button got bigger on screen.
+- **A layered film can take a camera layer without touching its scenes:** wrap each scene function in a camera move and draw subtitles and the chip in screen space.
+- **Small contact-sheet tiles hide a 1.3× push-in.** Compare the same moment side by side at a readable size before concluding something is missing.
+- **A comparison where both sides error "matches".** Check the outputs aren't empty, and include a positive control that must differ.
+- **Run rebuild checks one at a time.** Two builds encoding in parallel made x264 differ on 1–4 frames (404 edge pixels, at most 15 levels); rendered alone, the same scene matched the delivered file bit for bit.

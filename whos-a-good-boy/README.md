@@ -6,6 +6,7 @@ Built from six "Me and my AI agent" memes, turned into one story with the series
 |---|---|---|
 | [`v3/`](v3/) | `whos_a_good_boy_v3_3.mp4` | Final: character polish layer (expressions, robot screen faces, blinks, talking mouths, shadows), a readable title bar, the 2026 TODAY opening, QA fixes for TikTok's caption and button areas |
 | [`v3/`](v3/) | `whos_a_good_boy_v3_3_notag.mp4` | Same film with no burned-in promptanatomy.app chip (the payoff stays uncovered) and TODAY moved clear of the right edge |
+| [`v3/`](v3/) | `whos_a_good_boy_v3_4.mp4` / `_notag.mp4` | Picture polish (`V34=1`): camera push-ins on the opening, the office and the payoff; a bigger, readable APPROVE button in 2024 with a close-up on his first press; a close-up and white flash when the robot grabs the button; "WHO'S A GOOD BOY?" back on screen over the final image. Same timing and audio |
 
 Earlier versions (rough, v2, v3–v3.2) were reviewed in the session but aren't in the repo; v3.3 contains all of their changes.
 
@@ -27,6 +28,7 @@ The scenes are in `v9.py` (with shared drawing in `v.py`, `v6.py`, `v8.py`). Lat
 - `titles.py`: title bar and subtitle style
 - `today.py`: the 2026 TODAY opening and the 2026 → 2025 → 2024 rewind
 - `qafix.py`: per-scene subtitle positions and layout fixes clear of the app's controls
+- `polish34.py`: the v3.4 layer (`V34=1`): wraps each scene in a camera move and keeps subtitles and the chip in screen space
 - `v10.py`: applies the layers and renders. `NOTAG=1` removes the chip and moves TODAY inside the frame.
 
 `fin14.wav` is the mastered soundtrack (−14 LUFS, stereo) used by both videos; `audio.py` rebuilds the raw mix.

@@ -6,7 +6,8 @@ from v import *
 chars.install()
 ENDING=os.environ.get('ENDING','A')
 POL=os.environ.get('POLISH')=='1'
-NOTAG=os.environ.get('NOTAG')=='1'   # no burned-in chip, TODAY clear of the edge, ends on the board meeting
+NOTAG=os.environ.get('NOTAG')=='1'
+V4=os.environ.get('V4')=='1'   # v4: robot-face JOBS logo twist, motion pass, interview cut-in   # no burned-in chip, TODAY clear of the edge, ends on the board meeting
 def push(c,f,keys):
     """Camera push-in. keys: (frame, k, fx, fy, tx, ty): world point (fx,fy) shown at (tx,ty), scaled k. Smooth between keys."""
     if f<=keys[0][0]:p=keys[0][1:]
@@ -66,7 +67,7 @@ def topbar(c,f,years,today):
     k=abs(math.cos(min(1,d/6)*math.pi)) if d<6 and cur[0]>0 else 1
     c.save();c.translate(760,cy);c.scale(1,max(.06,k))
     rr(c,-150,-52,300,104,26);c.set_source_rgb(*YEL);c.fill();txt(c,cur[1],0,0,90,INK,lw=0);c.restore()
-    if today:txt(c,'TODAY',985,cy,40,RED,lw=0) if NOTAG else txt(c,'TODAY',1012,cy,44,RED,lw=0)
+    if today:txt(c,'TODAY',985,cy,40,RED,lw=0) if (NOTAG or V4) else txt(c,'TODAY',1012,cy,44,RED,lw=0)
 YEARS=[(0,'2026'),(105,'2024'),(210,'2025'),(420,'2026'),(540,'2026')]
 @screen
 def sub(c,f,a,b,t,y,size=84):
@@ -92,7 +93,34 @@ def stamp(c,x,y,lines,k,rot=-.12,col=RED,size=110):
     for i,l in enumerate(lines):txt(c,l,0,-(len(lines)-1)*size*.525+i*size*1.05,size,col,lw=0)
     c.restore()
 def slam(r):   # stamp scale: big -> 1
+    if V4 and r>=5:return 1-.09*math.sin(cl((r-5)/4)*math.pi)   # v4: small bounce as it settles
     return 0 if r<0 else lerp(2.6,1,cl(r/5))
+def flash(c,f,t0):
+    """v4: one-frame white impact flash when a stamp lands (slam reaches 1 at t0+5)."""
+    if V4 and f==t0+5:
+        c.save();c.identity_matrix();c.rectangle(0,0,W,H);c.set_source_rgba(1,1,1,.55);c.fill();c.restore()
+def ease_ob(t):
+    """Ease with a small wind-up at the start and an overshoot at the end (easeInOutBack, softened)."""
+    t=cl(t);c2=1.2*1.525
+    return (2*t)**2*((c2+1)*2*t-c2)/2 if t<.5 else ((2*t-2)**2*((c2+1)*(2*t-2)+c2)+2)/2
+def tween(f,keys):
+    """keys: (frame, [points]); move between keyed poses with ease_ob."""
+    if f<=keys[0][0]:return keys[0][1]
+    for (a,pa),(b,pb) in zip(keys,keys[1:]):
+        if a<=f<b:
+            t=ease_ob((f-a)/(b-a));return [(lerp(p[0],q[0],t),lerp(p[1],q[1],t)) for p,q in zip(pa,pb)]
+    return keys[-1][1]
+def logo(c,x,y,s,word=True):
+    """v4: the JOBS logo - our robot's face. His robot built the site that rejects him."""
+    c.save();c.translate(x,y);c.scale(s,s)
+    c.move_to(0,-62);c.line_to(0,-88);c.set_source_rgb(*INK);c.set_line_width(8);c.stroke();ell(c,0,-92,12,12);fs(c,YEL,5)
+    rr(c,-70,-62,140,118,40);fs(c,WHITE,8)
+    rr(c,-52,-44,104,76,26);fs(c,hx('11151f'),5)
+    for q in(-1,1):ell(c,q*22,-8,12,16);c.set_source_rgb(*hx('5ff2ff'));c.fill()
+    c.move_to(-14,16);c.curve_to(-6,24,6,24,14,16);c.set_source_rgb(*hx('5ff2ff'));c.set_line_width(6);c.stroke()
+    if word:txt(c,'JOBS',150,0,92,INK,lw=0,align='l') if False else txt(c,'JOBS',200,-2,96,BLUE,lw=12)
+    c.restore()
+
 # ---------- characters ----------
 GSKIN=hx('f3c4a2');HHAIR=hx('7a2e1c');GLASS=hx('e0245e');TEAL=hx('1f8a8a')
 def hart_head(c,x,y,s,f,blink_seed=3):
@@ -138,8 +166,8 @@ def hrobot(c,x,y,s,emote=None,seed=5):
 def guyhead(c,x,y,s,age=.15,tongue=False):
     v8.guyhead(c,x,y,s,'calm',age)
     if tongue:ell(c,x+22*s,y+80*s,12*s,10*s);fs(c,hx('ff7a8c'),max(3,5*s))
-def pigeon(c,x,y,s,flap=0,peck=0,flip=1):
-    c.save();c.translate(x,y);c.scale(s*flip,s)
+def pigeon(c,x,y,s,flap=0,peck=0,flip=1,sq=0):
+    c.save();c.translate(x,y+70*s);c.scale(1+sq*.7,1-sq);c.translate(0,-70*s);c.scale(s*flip,s)
     for q in(-1,1):limb(c,[(q*12,40),(q*14,70)],7,hx('e88a8a'))
     ell(c,0,10,58,40);fs(c,hx('9aa2b1'),7)
     a=math.sin(flap)*1.1 if flap else 0
@@ -277,7 +305,8 @@ def boardroom(c,f):
     # top of the walkway, world y 690. Two robots, banner, CEO mugs, a pigeon nest on our robot.
     for px in(70,560):c.rectangle(px-6,330,12,360);fs(c,hx('6b4022'),5)
     c.save();c.translate(315,380);c.rotate(math.sin(f*.1)*.01)
-    rr(c,-240,-50,480,100,10);fs(c,hx('ffd84a'),7);txt(c,'BOARD MEETING',0,0,58,INK,lw=0);c.restore()
+    if V4:rr(c,-275,-50,550,100,10);fs(c,hx('ffd84a'),7);logo(c,-232,10,.4,word=False);txt(c,'BOARD MEETING',42,0,56,INK,lw=0);c.restore()
+    else:rr(c,-240,-50,480,100,10);fs(c,hx('ffd84a'),7);txt(c,'BOARD MEETING',0,0,58,INK,lw=0);c.restore()
     robot(c,170,520,.62,emote=bot_emote(f),seed=2)
     hrobot(c,460,520,.62,emote='happy' if f>=676 else 'love')
     # nest + pigeon on our robot's head
@@ -308,8 +337,9 @@ def app_popup(f,num=847,a=0,submit=6,reject=9):
     def p(c):
         k=max(.02,back((f-a)/5)) if f>=a else 0
         if k<=0:return
-        window(c,540,700,760,330,k,'apply.jobs')
+        window(c,540,700,760,330,k,'' if V4 else 'apply.jobs')
         c.save();c.translate(540,700);c.scale(k,k)
+        if V4:logo(c,-62,-128,.44,word=False);txt(c,'JOBS',-14,-136,46,BLUE,lw=0,align='l')
         txt(c,f'APPLICATION #{num}',0,-50,64,INK,lw=0)
         pr=submit<=f<submit+3
         rr(c,-140,30+pr*4,280,80,40);fs(c,GREEN,7);txt(c,'SUBMIT',0,70+pr*4,46,WHITE,lw=0)
@@ -326,8 +356,10 @@ def hookview(c,f,r):
     if r>=18:
         k=oe((r-18)/12);px=lerp(1150,330,k);py=lerp(500,1345,k)-math.sin(k*math.pi)*120
         pig=(px,py,.6,r*.9 if k<1 else 0,(math.sin(r*.4)>.6)*.4 if k>=1 else 0,1)
+        if V4 and 30<=r<40:   # touch-down: squash, small hop, wings settle
+            d=r-30;pig=(px,py-abs(math.sin(d/10*math.pi))*22*(d>=3),.6,r*1.6 if d<5 else 0,0,1,.22*math.exp(-d*.6)*(d<3))
     bridge_world(c,f,0,popup=app_popup(r,a=-8),pigeon_on=pig)
-    rain(c,f)
+    rain(c,f);flash(c,f,9)
 def A(c,f):
     if POL:c.save();push(c,f,[(40,1,540,960,540,960),(50,1.4,300,1180,420,1250)])
     hookview(c,f,f)
@@ -375,13 +407,16 @@ def C(c,f):
     n=min(len(HELLO),int(r/4.2))
     txt(c,HELLO[:n]+('|' if (f//8)%2 else ''),80,580,50,hx('8ff7ff'),lw=0,align='l')
     # robot's screen: code blur -> app done
-    window(c,760,820,480,250,1,'robot_app',dark=r<63)
+    window(c,760,820,480,250,1,'jobs_app' if V4 else 'robot_app',dark=r<63)
     if r<63:
         for i in range(6):
             w=(noise(i+f,9)*.5+.5)*300+60;c.rectangle(560,760+i*28,w,12);c.set_source_rgba(*((.56,.97,1) if i%2 else (.5,1,.45)),.8);c.fill()
     else:
         k=max(.02,back((r-63)/5))
-        c.save();c.translate(760,850);c.scale(k,k);txt(c,'APP DONE!',0,-10,70,GREEN,lw=10);txt(c,'100%',0,60,40,INK,lw=0);c.restore()
+        if V4:
+            c.save();c.translate(760,845);c.scale(k,k);logo(c,-120,0,.75);txt(c,'LAUNCHED!',0,82,40,GREEN,lw=0);c.restore()
+        else:
+            c.save();c.translate(760,850);c.scale(k,k);txt(c,'APP DONE!',0,-10,70,GREEN,lw=10);txt(c,'100%',0,60,40,INK,lw=0);c.restore()
         for b,(bx,by,col) in enumerate(((600,700,YEL),(930,690,hx('ff5c8a')),(1000,900,BLUE))):
             d=r-63-b*4
             if 0<=d<26:
@@ -397,7 +432,9 @@ def office_bg(c,scroll=0):
     c.rectangle(0,1496,W,10);c.set_source_rgb(*INK);c.fill()
 def D(c,f):
     r=f-210
-    if POL:push(c,f,[(334,1,540,960,540,960),(342,1.6,190,1214,360,1150),(360,1.6,190,1214,360,1150),(370,1.2,380,1250,540,1200)])
+    if V4 and 294<=f<330:push(c,f,[(0,1.45,560,1200,540,1060)])        # hard cut-in: the handshake
+    elif V4:push(c,f,[(214,1,540,960,540,960),(250,1.12,330,1250,400,1240),(256,1,540,960,540,960),(334,1,540,960,540,960),(342,1.6,190,1214,360,1150),(360,1.6,190,1214,360,1150),(370,1.2,380,1250,540,1200)])
+    elif POL:push(c,f,[(334,1,540,960,540,960),(342,1.6,190,1214,360,1150),(360,1.6,190,1214,360,1150),(370,1.2,380,1250,540,1200)])
     office_bg(c)
     # Ms. Hart behind the desk, her robot on the desk
     hart_body(c,660,1170,1.0)
@@ -405,7 +442,11 @@ def D(c,f):
     hrobot(c,900,1218,.55,emote='love' if 252<=f<294 else ('happy' if 294<=f<420 else None))
     # her arm: handshake (f 290-330), then hands the charger (f 362-386)
     hand=None
-    if 286<=f<334:k=oe((f-286)/8);hand=(lerp(720,545,k),lerp(1250,1400,k)+math.sin(f*.9)*8*(f>=294))
+    if V4 and 284<=f<334:   # reach with wind-up + overshoot, shake dies down, then let go
+        k=ease_ob((f-284)/10)*(1-oe((f-326)/8));hand=(lerp(720,545,k),lerp(1250,1400,k)+math.sin(f*.9)*12*math.exp(-max(0,f-294)/12)*(f>=294))
+    elif V4 and 358<=f<392:   # charger handover on an arc
+        k=ease_ob((f-358)/12)*(1-oe((f-384)/8));hand=(lerp(720,370,k),lerp(1250,1240,k)-math.sin(cl((f-358)/12)*math.pi)*110)
+    elif 286<=f<334:k=oe((f-286)/8);hand=(lerp(720,545,k),lerp(1250,1400,k)+math.sin(f*.9)*8*(f>=294))
     elif 360<=f<392:k=oe((f-360)/10)*(1-oe((f-384)/8));hand=(lerp(720,370,k),lerp(1250,1240,k))
     v9.desk(c,1330)
     # nameplate
@@ -414,18 +455,27 @@ def D(c,f):
     gy=1700
     hy=v9.guyfull(c,190,gy,.9,'calm',.1,arms=None)
     hold=f>=376
+    if V4:   # right arm moves between poses with a wind-up and overshoot instead of popping
+        sh=(270,hy+170)
+        R=[(280,hy+235),(290,hy+300),(292,hy+316)];P1=[(330,hy+150),(380,hy+150),(392,hy+150)]
+        P2=[(250,hy+250),(215,hy+200),(205,hy+190)];P3=[(300,hy+260),(330,hy+260),(340,hy+262)]
+        el,en,hd=tween(f,[(230,R),(236,P1),(262,P1),(268,R),(332,R),(338,P2),(356,P2),(362,R),(370,R),(377,P3)])
+        limb(c,[sh,el,en],38,NAVY);ell(c,hd[0],hd[1],22,22);fs(c,SKIN,6)
+        limb(c,[(110,hy+170),(90,hy+300)],38,NAVY);ell(c,88,hy+316,22,22);fs(c,SKIN,6)
     for q in(-1,1):
+        if V4:break
         if q==1 and (236<=f<262):limb(c,[(190+80,hy+170),(330,hy+150),(380,hy+150)],38,NAVY);ell(c,392,hy+150,22,22);fs(c,SKIN,6)   # points at robot
         elif q==1 and (336<=f<356):limb(c,[(190+80,hy+170),(250,hy+250),(215,hy+200)],38,NAVY);ell(c,205,hy+190,22,22);fs(c,SKIN,6)   # points at himself
         elif q==1 and hold:limb(c,[(190+80,hy+170),(300,hy+260),(330,hy+260)],38,NAVY);ell(c,340,hy+262,22,22);fs(c,SKIN,6)
         else:limb(c,[(190+q*80,hy+170),(190+q*100,hy+300)],38,NAVY);ell(c,190+q*102,hy+316,22,22);fs(c,SKIN,6)
     ry=v9.bot(c,440,gy,.78,walk=0,bob=abs(math.sin(r*.6))*8 if 252<=f<294 else 0)
-    if 286<=f<334:
+    if (284 if V4 else 286)<=f<334 and hand:
         limb(c,[(720,1250),(640,1330),hand],32,TEAL);ell(c,hand[0],hand[1],24,22);fs(c,GSKIN,6)
         v9.rarm(c,[(440+50,ry+100),(520,ry+40),(hand[0]-8,hand[1]+14)],24)
     # charger: in her hand, then in his, cord to the robot
-    if 360<=f<392 and hand and f<376:charger(c,hand[0],hand[1]-10,1.5 if POL else .9,-.3)
-    if hand and 360<=f<392:limb(c,[(720,1250),hand],32,TEAL);ell(c,hand[0],hand[1],22,22);fs(c,GSKIN,6)
+    if 358<=f<392 and hand and f<376 and V4:charger(c,hand[0],hand[1]-10,1.5,lerp(-.7,0,cl((f-358)/14)))
+    elif 360<=f<392 and hand and f<376:charger(c,hand[0],hand[1]-10,1.5 if POL else .9,-.3)
+    if hand and (358 if V4 else 360)<=f<392:limb(c,[(720,1250),hand],32,TEAL);ell(c,hand[0],hand[1],22,22);fs(c,GSKIN,6)
     if hold:
         cord(c,(340,hy+290),(440-60,ry+60),90);charger(c,340,hy+262,1.35 if POL else .9,0)
     # robots beeping at each other
@@ -437,7 +487,8 @@ def D(c,f):
         for i in range(3):
             d=(r-42-i*6)%18
             v9.holo(c,lerp(470,860,d/18),lerp(1300,1120,d/18)-math.sin(d/18*math.pi)*120,['01','<3','10'][i],.55)
-    if 294<=f<330:stamp(c,420,800,['HIRED'],slam(f-298)*.9,-.08,GREEN,110)
+    if 294<=f<330 and V4:screen(stamp)(c,300,980,['HIRED'],slam(f-298)*.9,-.08,GREEN,110);flash(c,f,298)
+    elif 294<=f<330:stamp(c,420,800,['HIRED'],slam(f-298)*.9,-.08,GREEN,110)
     sub(c,f,F(7.3),F(8.6),'MY AI WILL ANSWER.',580)
     sub(c,f,F(9.8),F(11.0),"YOU'RE HIRED!",580)
     sub(c,f,F(11.2),F(12.2),'AND ME?',580)
@@ -459,7 +510,13 @@ def E(c,f):
     txt(c,'WIRELESS',px+157,1150,40,INK,lw=10,st=WHITE)
     # robot walks onto the pad
     k=oe(r/42);rx=lerp(460,px,k)
-    ry=v9.bot(c,rx,1500 if r<42 else 1500-abs(math.sin(r*.3))*0,.8,walk=r*.5 if r<42 else None)
+    if V4:
+        hop=math.sin(cl((r-34)/8)*math.pi)*40 if 34<=r<42 else 0
+        sq=.12*math.sin(cl((r-42)/5)*math.pi) if 42<=r<47 else 0
+        c.save();c.translate(rx,1500);c.scale(1+sq*.7,1-sq);c.translate(-rx,-1500)
+        ry=v9.bot(c,rx,1500,.8,walk=r*.5 if r<34 else None,bob=hop)
+        c.restore()
+    else:ry=v9.bot(c,rx,1500 if r<42 else 1500-abs(math.sin(r*.3))*0,.8,walk=r*.5 if r<42 else None)
     # the guy trails behind with the cable
     gx=lerp(120,330,k)
     hy=v9.guyfull(c,gx,1610,.85,'calm',.2,arms=None,run=r*.5 if r<42 else None)
@@ -485,7 +542,7 @@ def E(c,f):
     ell(c,hand[0],hand[1],21,21);fs(c,SKIN,6)
     if on and r<70:txt(c,'bloop',rx+150,ry-190,52,BLUE,lw=9,scale=back((r-42)/5))
     if f>=486:shake(c,f,486,26,10)
-    stamp(c,540,760,['POSITION','ELIMINATED'],slam(f-486),-.1,RED,104)
+    stamp(c,540,760,['POSITION','ELIMINATED'],slam(f-486),-.1,RED,104);flash(c,f,486)
 def Fz(c,f):
     r=f-540
     # camera: hold at the camp, tilt up at f676-694, hold, tilt down 728-750
@@ -539,6 +596,7 @@ if __name__=='__main__':
             out=f'{ENDING}_{n}.mp4' if n=='f' else f'{n}.mp4'
             if POL:out='p'+out
             if NOTAG:out='n'+out
+            if V4:out='v4'+out
             p=subprocess.Popen(f'ffmpeg -y -v error -f rawvideo -pix_fmt bgra -s {W}x{H} -r 30 -i - -vf format=yuv420p -c:v libx264 -crf 14 -preset veryfast -g 30 -pix_fmt yuv420p -color_primaries bt709 -color_trc bt709 -colorspace bt709 -video_track_timescale 15360 tmp_{out}'.split(),stdin=subprocess.PIPE)
             for f in range(a,b):p.stdin.write(bytes(draw(f).get_data()))
             p.stdin.close();assert p.wait()==0;os.rename(f'tmp_{out}',out);print(out,flush=True)
