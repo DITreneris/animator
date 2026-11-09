@@ -19,7 +19,7 @@ Every frame is drawn from code and every sound is synthesized, so a video can be
 | [`just-for-now/`](just-for-now/) | **Just For Now**: a taped temporary fix holds up the whole company (test clips, rough, v2) | 7–28.5 s | ✅ Source + render |
 | [`whos-a-good-boy/`](whos-a-good-boy/) | **Who's a Good Boy?**: in 2024 he praises his robot like a puppy; by 2027 the robot says it to him (with and without the brand chip) | 24 s | ✅ Source + render |
 | [`learn-to-code/`](learn-to-code/) | **Learn to Code**: his robot gets the job, the robots promote each other, he ends up under Tower Bridge (endings A and B, polish, no-tag) | 25 s | ✅ Source + render |
-| [`chat-gifs/`](chat-gifs/) | **Emma Blocked** and **Babe / Voice Agent**: chat GIFs re-timed, reframed to 9:16 and given synthesized sound | 13–15 s | ✅ Source + render |
+| [`chat-gifs/`](chat-gifs/) | **Emma Blocked**, **Babe / Voice Agent** and **Claude / Backups**: chat GIFs re-timed, reframed to 9:16 and given synthesized sound | 12–15 s | ✅ Source + render |
 
 The full history of the work, including concepts not yet built, is in [`docs/sessions.md`](docs/sessions.md).
 
