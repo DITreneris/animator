@@ -4,7 +4,7 @@
 
 An AI office sitcom: short vertical cartoons about ridiculous people using AI, posted as if from the corporate account of a polished SaaS company. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
 
-Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exception is the *Saved to Cloud* release, rendered at 1080×1920.
+Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud* and *Downloads Expedition* releases, rendered at 1080×1920.
 
 ## Cast
 
@@ -54,6 +54,18 @@ PAM backs up everything to the cloud outside the window until it sneezes the off
 
 How the versions build on each other (each wraps the last at runtime, none edits it): `s131` A/B → `s132` 21.5 s extension with `anim.py` (pose tweening, walk, squash and stretch, camera) and `engine_v.py` (any length) → `s133` cold open + rewind + freeze frames via a time map → `s134` emoji name tags → `s135` doodle payoff → `s136` final polish, rendered at 2× by `engine_hd.py`. The emoji tags need the Noto Color Emoji font (`/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf`).
 
+### Downloads Expedition — [`downloads-expedition/`](downloads-expedition/)
+
+RUSH asks "Where's the final?"; PAM points at DOWNLOADS without looking up. Behind the door is a cave. RUSH abseils past KEVIN (an intern skeleton still holding FINAL (3)), pulls FINAL (27) from the bottom of the pile, and is blasted back out by the avalanche, bearded. "Got it!" Then PAM saves FINAL (28), which lands on his hard hat. MAX: "Got the original?" RUSH: "Downloads." and hands him the helmet. The tower shakes; a window spits out a page that loops into frame 0.
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_DLX5_expedition_b_1080.mp4` | **v5 release (ending B)** | **1080×1920**, 22.4 s, −15.5 LUFS, −2.2 dBFS peak |
+| `uptimez_DLX5_expedition_b.mp4` | v5 | 540×960 preview of the same cut |
+| `DLX5_stills_phone.png`, `DLX_character_sheet.png` | | 18 stills at phone size; RUSH (office / expedition / after), KEVIN |
+
+Built by `dlx.py` (one module, `ENDING = "A" | "B"`; `dlx_a.py` / `dlx_b.py` apply a 0.6 s trim as a time map) with props from `dlx_kit.py`, a voice-first mix from `sound_dlx.py`, and automatic layout checks in `qa_dlx.py` (faces and eyes never crossed by props, labels or other faces; bubble tails at their speaker; text size and app-button zones). `./build.sh dlx` runs all three.
+
 ### Where Files Live — [`storyboards/`](storyboards/)
 
 Nobody understands what's cloud, local, disk or phone. Storyboard animatics with ending variants.
@@ -78,6 +90,7 @@ pip install pycairo numpy soundfile kokoro-onnx
 # thewh1teagle/kokoro-onnx GitHub release, in src/models/ or $KOKORO_DIR
 ./uptimez/build.sh pt43      # one episode (keys: s3 s1 s3b s3c s1v2 pta ptb pt4 pt42 pt43 s131a s131b)
 ./uptimez/build.sh s136      # Saved to Cloud release at 1080x1920 (s136n = without the tag)
+./uptimez/build.sh dlx       # Downloads Expedition release at 1080x1920 (dlx_a = ending A)
 ./uptimez/build.sh all       # every episode
 ./uptimez/build.sh sheets    # logo files + character sheets
 ```

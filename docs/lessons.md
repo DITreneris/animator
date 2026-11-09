@@ -118,3 +118,26 @@ Seven versions in one session, plus one outside review (6.8/10 for S1v3). Files:
 - Pose tweening: register tweened arm angles in the kit's pose table at runtime (`anim.py`), so the kit draws in-between poses unchanged.
 - Colour emoji in cairo: draw them with PIL (`NotoColorEmoji`, size 109, `embedded_color=True`), convert to premultiplied BGRA and paint as a surface.
 - A doodle style (wobbly blue pen, Permanent Marker labels) separates "drawn by a character" from the paper-cutout world.
+
+# Lessons from "Downloads Expedition" (v1 → v5)
+
+Five versions and four outside reviews. The fourth review put v4 on HOLD: the joke read, the drawings didn't.
+
+## Drawing
+
+- **Parent every prop to a body.** Hats, lamps, badges and held files were separate stickers placed in canvas coordinates, so they drifted off heads and hands between shots. In v5 each is drawn inside the body's transform (`rush()` returns the lamp position; files follow `p["hands"]`; badges are redrawn last in the same transform).
+- **Fix draw order, not just positions.** A file drawn before the hand that holds it reads "TNAL (27)"; a desk drawn after a face cuts the eyes. Decide per shot what is in front, and check it.
+- **A light beam has one source.** Cut the beam out of a darkness layer with its tip on the lamp; a triangle placed in the frame never lines up.
+- **Don't hold the camera on the weakest drawing.** The 4 s face close-up was the worst composite in the film. A wide shot with clear staging (MAX enters on the door side, never crossing PAM) told the same beat better.
+- **Fewer, bigger things.** Six sheets that leave the frame read as an avalanche; thirty became grey discs. Impact lines read better than dust.
+- **A door is open or closed.** Animate it in 0.1–0.15 s; a half-open door looks like a broken slab.
+
+## Checks
+
+- **Register props, not only text.** v4's checks covered labels and faces but missed desks, hat brims and sheets crossing eyes. `qa_dlx.py` now registers an eye band for every face and a box for every prop drawn after it, and checks that each bubble tail ends at its speaker's head.
+- **Run A/B identity checks in separate processes.** Both wrappers set the same module global, so a single process rendered B twice.
+- **Look at the 1080 frame too.** PAM's badge sat half under the desk; only the full-resolution still showed it.
+
+## Process
+
+- **Make each episode stand alone.** `dlx.py` imported the emoji drawer from `s134.py`, which pulled in the whole Saved to Cloud chain and its sync files; a standalone `emoji.py` fixed the clean build.
