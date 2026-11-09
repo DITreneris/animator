@@ -154,6 +154,26 @@ Five versions and four outside reviews. The fourth review put v4 on HOLD: the jo
 - **Draw the cover with the film's own kit,** so the characters match, and keep the title and every face inside the centre 1080×1440 that profile grids crop to. Put the title above the set so the signs that set up the joke (DOWNLOADS, the plaque) stay visible; check it at grid size.
 - **Rebuild from the repo before calling it shipped.** The workspace render can hide missing files or sync data; comparing the repo build with the delivered video (PSNR inf / identical streams) caught an import chain that needed another episode's data.
 
+## v7 final
+
+- **A bubble tail points at the speaker,** and should end beside the face, not on the hair; a long tail across a doorway reads as the door talking. Put the bubble next to the speaker's head with a short tail, and turn off name tags before the first line so tails never cross them.
+- **Faded smear copies read as a second character** in a still or a pause. Use speed lines and a stretch along the motion instead.
+- **A character's own arm is a prop too.** A straight arm from shoulder to hat crossed his face; bend it at an elbow outside the face, and register each arm segment for the eye check.
+- **Brand cards behind a switch** (`TAG=1`): deliver a clean final and a tagged one, and keep effect words (RUMBLE) off the brand's building.
+- **Escalate the loop object:** the tower spits out FINAL (29), not a blank sheet, so the last image extends the count instead of ending on nothing.
+
+## v8
+
+- **A tail that ends near the hair reads as pointing at the hair.** Put the speaker's bubble beside the face at mouth height with a short horizontal tail; move the character if that's what makes room.
+- **A squashed character's shoulders sit at chin height,** so any arm reaching up crosses the face. Draw the reaching arm behind the body and only the hand in front.
+- **Tag the colour space** (`scale=out_color_matrix=bt709`, `-colorspace/-color_primaries/-color_trc bt709`); platforms guess otherwise.
+
+## v9–v10
+
+- **Whose mouth is open decides who speaks,** for the viewer. A tail on the open mouth reads; a tail on hair or on top of a head reads as pointing at the hair. When the speaker changes, change the voice and the lip-sync with it, and close the listener's mouth (a static "panic" O-mouth reads as talking).
+- **Side tails beat long tails:** a bubble level with the mouth and a tail of 10–20 px is unmistakable; a bubble above a head with a downward tail gets read as pointing at whatever is behind it.
+- **Check the exact flagged frame at full size before arguing.** Twice a reviewer flagged a tail I thought was right; each time the full-size crop showed something real (tail on the hair, tail above the head). When the person then chose a different reading of who speaks, the fix had to go through voice, lip-sync and the listener's face, not just the tail.
+
 # Lessons from Learn to Code
 
 What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us (7–8 Nov 2026).
