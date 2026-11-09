@@ -148,3 +148,8 @@ Five versions and four outside reviews. The fourth review put v4 on HOLD: the jo
 - **A listener needs a reaction.** MAX standing still after "Downloads." killed the joke; eyes to the door, a gulp and eyes back cost no screen time.
 - **Show the hand that does the action.** The helmet sliding out by itself read as a glitch; a hand on the brim and two yanks read as a tug.
 - **Smear with ghosts, not tilt.** Two faded copies along the path and a stretch along the motion sold the blast better than rotating the cutout.
+
+## Thumbnail and delivery
+
+- **Draw the cover with the film's own kit,** so the characters match, and keep the title and every face inside the centre 1080×1440 that profile grids crop to. Put the title above the set so the signs that set up the joke (DOWNLOADS, the plaque) stay visible; check it at grid size.
+- **Rebuild from the repo before calling it shipped.** The workspace render can hide missing files or sync data; comparing the repo build with the delivered video (PSNR inf / identical streams) caught an import chain that needed another episode's data.
