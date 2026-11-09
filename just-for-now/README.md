@@ -7,6 +7,7 @@ Based on the "Temporary fix. Permanent problem." poster. A taped-up "temporary" 
 | [`test/`](test/) | `just_for_now_test_back.mp4`, `just_for_now_test_passed.mp4` | 6.9 s each | Rough test of the reveal + collapse only, identical pictures, two Tester lines to A/B |
 | [`rough/`](rough/) | `just_for_now_rough.mp4` | 24.5 s | Whole story, rough: the tester's 23–25 s structure |
 | [`v2/`](v2/) | `just_for_now_v2.mp4` | 28.5 s | Polish: dynamic opening and a bigger twist |
+| [`v3/`](v3/) | `just_for_now_v3.mp4`, `just_for_now_v3_notag.mp4` | 25.3 s | Series pass: title bar, character polish, the Day 1 smiley as a readable plant, push-ins, trimmed, stereo master; no-tag version ends on the boss |
 
 ## v2 beats
 
@@ -22,6 +23,16 @@ Based on the "Temporary fix. Permanent problem." poster. A taped-up "temporary" 
 | 21–24 s | "So… should we fix it?" "FRIDAY." |
 | 24–28.5 s | Pull back: the whole world sits on a giant taped pillar. The giant boss robot: "WHO MADE THIS GARBAGE?!", sees its own smiley (with gold sunglasses) and covers it with a giant trophy. A big Tester reaches for the tape → loop |
 
+## v3 changes
+
+- **Series title bar** "ME + MY AI" with a DAY pill (DAY 900 → DAY 1 → DAY 14 → DAY 60 → DAY 200 → DAY 500 → DAY 900) and TODAY on day 900, replacing the old captions in TikTok's top area. Bubbles and banners moved below it.
+- **Character polish layer** (`jchars.py`, adapted from the series): expressions per beat, blinks, talking mouths on his lines, robot screen faces.
+- **The Day 1 smiley is a readable plant:** drawn larger, with a 1.6× close-up as he draws it; his hand moves away so it shows. Both later jokes (hiding it, the boss's sunglasses smiley) pay it off.
+- **Push-ins** on the creak, on "Who made this garbage?!" and on the giant smiley with sunglasses before the boss covers it.
+- **28.5 s → 25.3 s:** calendars 4 s → 2.5 s, trophy 3 s → 2 s, pull-back 4.5 s → 3.8 s. The audio is the v2 mix re-placed on the new timeline (`MAP` in `audio.py`), mastered to stereo −14 LUFS.
+- The tester robot moved out of the right-hand button area; the close-up of him hiding the smiley sits clear of the title bar.
+- `just_for_now_v3_notag.mp4`: no chip; instead of looping it ends on the boss's trophy over his own smiley with "WHO MADE THIS GARBAGE?!" back on screen.
+
 ## How the story got here
 
 1. **Concept 1** (15 s): Tester touches a box, "Test passed.", collapse. Verdict from review: relatable, but the collapse is predictable.
@@ -36,6 +47,7 @@ Based on the "Temporary fix. Permanent problem." poster. A taped-up "temporary" 
 ./test/build.sh
 ./rough/build.sh
 ./v2/build.sh
+./v3/build.sh
 ```
 
 `rough/` and `v2/` import `v6.py`, a copy of the test scene module, for the Tester, tower pieces and speech bubbles.

@@ -106,3 +106,11 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Small contact-sheet tiles hide a 1.3× push-in.** Compare the same moment side by side at a readable size before concluding something is missing.
 - **A comparison where both sides error "matches".** Check the outputs aren't empty, and include a positive control that must differ.
 - **Run rebuild checks one at a time.** Two builds encoding in parallel made x264 differ on 1–4 frames (404 edge pixels, at most 15 levels); rendered alone, the same scene matched the delivered file bit for bit.
+
+## Series pass: Just for Now v3 (9 Nov)
+
+- **Bring older films up to the series standard in one pass:** title bar, polish layer, push-ins, no-tag version, stereo −14 LUFS. Old captions in TikTok's top area had to go anyway.
+- **Moving a title bar in moves everything near the top:** bubbles, banners, calendars and a close-up's head all needed new heights.
+- **Trimming without redrawing:** shorten scenes by changing their internal timings or by remapping old frames, and re-place every sound with the same old→new time map. Keep music on a regular beat grid and map only section edges.
+- **The plant decides the twist.** The smiley drawn on Day 1 was about 40 px; both later jokes depend on it, so it got a close-up and his hand had to move out of the way.
+- **Validate detectors, again:** a pixel-pattern chip detector "found" the chip in the no-tag file (dark bubble outlines). Differencing the two versions frame by frame was exact: identical up to 23.7 s, then only the chip's rectangle.
