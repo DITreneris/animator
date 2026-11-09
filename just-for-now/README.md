@@ -7,6 +7,8 @@ Based on the "Temporary fix. Permanent problem." poster. A taped-up "temporary" 
 | [`test/`](test/) | `just_for_now_test_back.mp4`, `just_for_now_test_passed.mp4` | 6.9 s each | Rough test of the reveal + collapse only, identical pictures, two Tester lines to A/B |
 | [`rough/`](rough/) | `just_for_now_rough.mp4` | 24.5 s | Whole story, rough: the tester's 23–25 s structure |
 | [`v2/`](v2/) | `just_for_now_v2.mp4` | 28.5 s | Polish: dynamic opening and a bigger twist |
+| [`v3.2/`](v3.2/) | `just_for_now_v3_2.mp4`, `just_for_now_v3_2_notag.mp4` | 25.3 s | Second review fixes: PAYROLL no longer looks like a second HEADQUARTERS, the boss holds the trophy instead of a white bar crossing it, the tag sits in the title bar |
+| [`v3.1/`](v3.1/) | `just_for_now_v3_1.mp4`, `just_for_now_v3_1_notag.mp4` | 25.3 s | Review fixes: no blank frame in the collapse, continuous collapse cut, hair clear of the title bar |
 | [`v3/`](v3/) | `just_for_now_v3.mp4`, `just_for_now_v3_notag.mp4` | 25.3 s | Series pass: title bar, character polish, the Day 1 smiley as a readable plant, push-ins, trimmed, stereo master; no-tag version ends on the boss |
 
 ## v2 beats
@@ -22,6 +24,24 @@ Based on the "Temporary fix. Permanent problem." poster. A taped-up "temporary" 
 | 17–21 s | The Tester peels the tape. Collapse. "Should I put it back?" POP: everything is back |
 | 21–24 s | "So… should we fix it?" "FRIDAY." |
 | 24–28.5 s | Pull back: the whole world sits on a giant taped pillar. The giant boss robot: "WHO MADE THIS GARBAGE?!", sees its own smiley (with gold sunglasses) and covers it with a giant trophy. A big Tester reaches for the tape → loop |
+
+## Review status (9 Nov)
+
+The shipped master is still **v2** (`just_for_now_v2.mp4`, 28.5 s). v3.1 was held for two defects, fixed in v3.2, which is waiting for review.
+
+## v3.2 changes (after the second review)
+
+- **"Second HEADQUARTERS" at 15.7 s:** nothing was duplicated; PAYROLL was drawn in the same navy with the same window grid as HEADQUARTERS, so it read as a smaller HQ under the OFFICE block. It's now a green cash bundle with a band and $ marks (`v6.py`).
+- **White bar across the trophy (24.6 s and the last frame):** the boss's arm ran from his far side across his body and the trophy; with the push-in cropping his body it read as a loose bar. Now it comes from his near shoulder, his hand grips the trophy's handle, and he lowers it over his smiley from that side.
+- **Tagged version:** the promptanatomy.app tag sits inside the title bar for the ending (in place of the DAY pill) instead of over the little office. Up to the loop ending, the tagged and no-tag files differ only inside the title bar.
+- Same timing, audio and container as v3.1.
+- Clean rebuild from the repo: audio is identical; the picture differs only on frames 40–69 (minimum PSNR 87 dB, invisible) because the reviewed files were encoded while another build was running. The committed files are the reviewed ones.
+
+## v3.1 changes (after review)
+
+- **No blank field in the collapse (16.8–17.1 s in v3):** the dust never covers more than 60%, and the rubble shot dissolves in under it. Checked on every frame: v3 had 13 near-flat frames, v3.1 has none.
+- **Continuous collapse cut (16.0 s):** the falling pieces now start exactly where the standing stack is (same top, same top-block size), and the trophy gets knocked over and stays in the rubble instead of vanishing.
+- **Hide-the-smiley close-up (11.7–14.5 s):** moved down so his hair stays at least 24 px below the DAY 900 bar (measured on rendered frames).
 
 ## v3 changes
 
@@ -48,6 +68,8 @@ Based on the "Temporary fix. Permanent problem." poster. A taped-up "temporary" 
 ./rough/build.sh
 ./v2/build.sh
 ./v3/build.sh
+./v3.1/build.sh
+./v3.2/build.sh
 ```
 
 `rough/` and `v2/` import `v6.py`, a copy of the test scene module, for the Tester, tower pieces and speech bubbles.

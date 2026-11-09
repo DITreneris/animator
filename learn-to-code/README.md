@@ -10,6 +10,10 @@ He learned to code. His robot got the job, then the robots promoted each other. 
 | `learn_to_code_B_v3_notag.mp4` | as B v2 | No burned-in chip, TODAY clear of the right edge, and it ends on the board meeting with the punch line on screen instead of looping |
 | `learn_to_code_B_v4.mp4` / `_notag.mp4` | as B v2 | Rewatch twist: the job site that rejects him has his own robot's face as its logo (JOBS), the app his robot launched in 2024. Motion pass (wind-up and overshoot, the robot hops onto the pad, the pigeon lands, a white flash on each stamp), a hard cut-in on "You're hired!" |
 
+## Review status (9 Nov)
+
+The shipped film (`still-talking-en-9x16-vo.mp4`) is still the **v3** cut. B v4 no-tag passed the container and no-tag checks (no chip, TODAY inside the header, ends on the board), but was **held**: v4's hard cut-in at "You're hired!" made that beat worse than v3. From 9.5 to 11 s the robot's arm crosses HEAD OF HIRING, and at 10 s the HIRED stamp covers his face. A fix (v3's wide framing for that beat, the nameplate drawn in front of the arm, the stamp on the wall) has not been built yet.
+
 ## Story
 
 | Time | Year | Beat |

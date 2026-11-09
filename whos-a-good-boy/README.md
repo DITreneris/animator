@@ -6,9 +6,14 @@ Built from six "Me and my AI agent" memes, turned into one story with the series
 |---|---|---|
 | [`v3/`](v3/) | `whos_a_good_boy_v3_3.mp4` | Final: character polish layer (expressions, robot screen faces, blinks, talking mouths, shadows), a readable title bar, the 2026 TODAY opening, QA fixes for TikTok's caption and button areas |
 | [`v3/`](v3/) | `whos_a_good_boy_v3_3_notag.mp4` | Same film with no burned-in promptanatomy.app chip (the payoff stays uncovered) and TODAY moved clear of the right edge |
+| [`v3/`](v3/) | `whos_a_good_boy_v3_5.mp4` / `_notag.mp4` | Review fixes (`V35=1`): a skin-coloured hand on the 2024 pat (was a navy disc), the payoff push-in starts only once he has run back into frame, a clearer lying dog in front of him, the robot's hand resting on his hair. Same timing and audio |
 | [`v3/`](v3/) | `whos_a_good_boy_v3_4.mp4` / `_notag.mp4` | Picture polish (`V34=1`): camera push-ins on the opening, the office and the payoff; a bigger, readable APPROVE button in 2024 with a close-up on his first press; a close-up and white flash when the robot grabs the button; "WHO'S A GOOD BOY?" back on screen over the final image. Same timing and audio |
 
 Earlier versions (rough, v2, v3–v3.2) were reviewed in the session but aren't in the repo; v3.3 contains all of their changes.
+
+## Review status (9 Nov)
+
+The shipped film is **v3.3**. v3.4 was held: the 2024 pat arm read as a detached navy bar, the payoff push-in cropped him as he ran back in, the lying dog read as a scribble, and the robot's hand sat on his hair. v3.5 fixes all four and is waiting for review.
 
 ## Story
 
