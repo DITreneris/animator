@@ -1,4 +1,5 @@
-"""UptimeZ Inc. - Downloads Expedition v08 (v7 kept as dlx_v7.py; v6..v1 likewise).
+"""UptimeZ Inc. - Downloads Expedition v09 (v8 kept as dlx_v8.py; v7..v1 likewise).
+v09: MAX's tail ends beside his mouth, not on his hair; no RUMBLE word on the exterior (shake and sound carry it).
 v08: RUSH's first line in a bubble beside his mouth (he stops at x 330), his arm reaches behind his head on the
 handover so only the hand shows on the brim.
 v07: bubble tails at the speaker's mouth side / head, the blast starts below the DOWNLOADS sign with no
@@ -729,7 +730,7 @@ def b6_save(k, t, tl):
         pm = person(k, "MAX", mx, MF + bob, MS, pose=pose, face="neutral", look=look, seed=33)
         c.restore()
         hx, hy = pm["head"]
-        speech(k, t, "Got the\noriginal?", 112, 585, (hx + 6, hy - 60), T_MAX_LINE, 19.0, speaker=(hx, hy, MS), size=32)
+        speech(k, t, "Got the\noriginal?", 112, 585, (hx + 62, hy + 28), T_MAX_LINE, 19.0, speaker=(hx, hy, MS), size=32)
     if ENDING == "B":
         speech(k, t, "Downloads.", RX, 760, (RX, head[1] + 40), T_B_LINE, 19.9, speaker=(*head, RS), size=38)
 
@@ -844,9 +845,6 @@ def b9_exterior(k, t, tl):
         px, py = lerp(wx, 430, u), lerp(wy, 640, u) - math.sin(u * math.pi) * 120
         w_, h_ = lerp(20, 150, u), lerp(25, 110, u)
         big_file(k, px, py, w_, h_, "FINAL (29)", u * 0.4 - 0.2, 1299, max(2, lerp(3, 26, u)), register=u > 0.95)
-    if 22.3 <= t < 22.65:                            # in the sky above the roof, not on the facade
-        sfx(k, "RUMBLE", 270, 128, 50, rot=0.05)
-        qa("label", (160, 103, 380, 153), 50)
 
 
 PANELS = [(0.0, 3.0, b1_question), (3.0, 5.0, b2_gear), (5.0, 8.0, b3_kevin), (8.0, 10.5, b4_pull),

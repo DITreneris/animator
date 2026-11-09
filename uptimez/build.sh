@@ -3,7 +3,7 @@
 # Usage: ./build.sh pt43            one episode (15 s keys below)
 #        ./build.sh s131a | s131b    Saved to Cloud A/B test (15 s, 540x960)
 #        ./build.sh s136 | s136n     Saved to Cloud release, 1080x1920 (with / without the sniff tag)
-#        ./build.sh dlx | dlx_tag    Downloads Expedition v8, 1080x1920, BT.709 (clean / with the promptanatomy.app card)
+#        ./build.sh dlx | dlx_tag    Downloads Expedition v9, 1080x1920, BT.709 (clean / with the promptanatomy.app card)
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -74,7 +74,7 @@ build_release() {
 # Downloads Expedition: voice-first mix (sound_dlx.py), automatic layout checks, drawn at 2x
 build_dlx() {
   local end=$1 out; out=${OUT_DIR:-$HERE/downloads-expedition}; mkdir -p "$out"
-  local name=uptimez_DLX8_expedition${2:+_tag}_1080.mp4
+  local name=uptimez_DLX9_expedition${2:+_tag}_1080.mp4
   ( cd src
     python3 sound_dlx.py "$end"
     python3 qa_dlx.py "dlx_${end,,}"
