@@ -10,7 +10,7 @@ if os.environ.get('NOTAG')=='1':
     import v8
     v9.badge=v.badge=v8.badge=titles.badge=lambda c:None
 import polish34;polish34.install()
-PRE=('v34' if os.environ.get('V34')=='1' else '')+('n' if os.environ.get('NOTAG')=='1' else '')   # render file prefix   # V34=1: v3.4 polish (picture only)
+PRE=('v35' if os.environ.get('V35')=='1' else 'v34' if os.environ.get('V34')=='1' else '')+('n' if os.environ.get('NOTAG')=='1' else '')   # render file prefix   # V34=1: v3.4 polish (picture only)
 def draw(f):
     chars.CURF=f;return v9.draw(f)
 def sheet():

@@ -208,3 +208,13 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Trimming without redrawing:** shorten scenes by changing their internal timings or by remapping old frames, and re-place every sound with the same old→new time map. Keep music on a regular beat grid and map only section edges.
 - **The plant decides the twist.** The smiley drawn on Day 1 was about 40 px; both later jokes depend on it, so it got a close-up and his hand had to move out of the way.
 - **Validate detectors, again:** a pixel-pattern chip detector "found" the chip in the no-tag file (dark bubble outlines). Differencing the two versions frame by frame was exact: identical up to 23.7 s, then only the chip's rectangle.
+
+## Review fixes: Just for Now v3.1, Who's a Good Boy v3.5 (9 Nov)
+
+- **Inherited faults still count.** The blank dust frames and the navy "hand" were in the earlier cuts too; a new version is judged as a whole, so check old shots as hard as new ones.
+- **Never fade to a flat colour mid-story.** A whiteout reads as an empty field. Cap overlays (dust at 60%) and dissolve the next shot in underneath; flag any frame whose picture is nearly one flat colour.
+- **Cuts must match what was on screen.** The falling pieces started 17 px lower and with a bigger top block than the standing stack, and the trophy vanished; that read as a second building appearing.
+- **Measure clearances on rendered frames, not by eye.** The first 120 px shift still left hair touching the bar; measuring found 362 → 384. The first measurement also caught the bar's own grey text edges, so limit the search to the area that matters.
+- **Push-ins must wait for entrances.** Zooming while a character runs in from the edge crops him; start the push once he's fully inside the zoomed frame.
+- **Small props need a silhouette.** The lying dog read as a scribble; an outline, a lighter muzzle, an ear, an eye and a red collar fixed it. Check that a moved prop doesn't land under someone's feet.
+- **A pat is a hand resting on top of the head,** not a disc covering the hair.

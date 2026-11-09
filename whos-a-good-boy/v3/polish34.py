@@ -5,6 +5,8 @@ import os,math
 import v9,titles,chars
 from v import *
 V34=os.environ.get('V34')=='1'
+V35=os.environ.get('V35')=='1'   # v3.5 fixes on top of v3.4 (implies V34): skin hand on the 2024 pat, later payoff push, clearer dog, pat rests on the hair
+if V35:V34=True
 def ease_ob(t):
     """Small wind-up at the start, overshoot at the end (softened easeInOutBack)."""
     t=cl(t);c2=1.2*1.525
@@ -28,6 +30,8 @@ CAM={
       (482,1.5,640,1330,540,1250),(500,1.5,640,1330,540,1250),(510,)+WIDE],   # the robot grabs the button
  'G':[(652,)+WIDE,(664,1.3,650,1100,600,1180)],                               # payoff: pats, ball in his mouth
 }
+if V35:CAM['G']=[(668,)+WIDE,(680,1.3,650,1100,600,1180)]   # v3.5: push only once he has run fully back into frame
+CAPTION_AT=684 if V35 else 676
 FLASH={155:.35,485:.55}   # first press (2024), the robot's grab (2026)
 def screen(fn):
     def g(c,*a,**k):
@@ -44,7 +48,9 @@ def C34(c,f):
     v9.torso(c,gx,gy+150*1.25,1.5)
     if pat:
         p=abs(math.sin(r*.45))*16
-        v9.rarm(c,[(gx+112,gy+215),(gx+250,gy+110),(760,ry-70+p)],52,NAVY)
+        if V35:   # v3.5: sleeve, then a skin-coloured hand on the robot's head (was a navy disc)
+            limb(c,[(gx+112,gy+215),(gx+250,gy+110),(760,ry-62+p)],52,NAVY);ell(c,760,ry-70+p,32,30);fs(c,SKIN,7)
+        else:v9.rarm(c,[(gx+112,gy+215),(gx+250,gy+110),(760,ry-70+p)],52,NAVY)
     elif r<72 or r>=92:
         v9.rarm(c,[(gx+112,gy+215),(gx+190,gy+330),(gx+150,gy+380)],52,NAVY)
     else:
@@ -58,8 +64,33 @@ def C34(c,f):
         for i in range(3):
             a=r*.3+i*2;ell(c,760+math.cos(a)*120,ry-20+math.sin(a)*60,8,8);c.set_source_rgb(*YEL);c.fill()
     v9.sub(c,f,81,122,"WHO'S A GOOD BOY?")
+def dog_lie35(c,x,gy,s):
+    """v3.5: a lying dog that reads at phone size: outline, lighter muzzle, floppy ear, eye, red collar, tail."""
+    BROWN,DARK=v9.BROWN,v9.DARK
+    c.move_to(x+80*s,gy-22*s);c.curve_to(x+120*s,gy-26*s,x+140*s,gy-50*s,x+128*s,gy-62*s);c.set_source_rgb(*INK);c.set_line_width(18*s);c.stroke_preserve();c.set_source_rgb(*BROWN);c.set_line_width(10*s);c.stroke()
+    ell(c,x+22*s,gy-30*s,78*s,32*s);fs(c,BROWN,7)
+    ell(c,x+30*s,gy-16*s,52*s,12*s);c.set_source_rgba(1,.9,.75,.55);c.fill()
+    for q in(0,1):ell(c,x-60*s+q*28*s,gy-8*s,26*s,12*s);fs(c,BROWN,5)
+    hx_,hy=x-48*s,gy-52*s
+    ell(c,hx_,hy,42*s,36*s);fs(c,BROWN,7)
+    ell(c,hx_-36*s,hy+12*s,24*s,17*s);fs(c,hx('d9a066'),5);ell(c,hx_-56*s,hy+6*s,8*s,7*s);c.set_source_rgb(*INK);c.fill()
+    c.save();c.translate(hx_+18*s,hy+6*s);c.rotate(.35);ell(c,0,0,15*s,32*s);fs(c,DARK,5);c.restore()
+    c.arc(hx_-14*s,hy-8*s,8*s,math.pi*.15,math.pi*.85);c.set_source_rgb(*INK);c.set_line_width(5*s);c.stroke()   # happy closed eye
+    c.save();c.translate(hx_+26*s,hy+26*s);c.rotate(-.9);rr(c,-26*s,-7*s,52*s,14*s,6*s);fs(c,RED,4);c.restore()   # collar
+    return (hx_+30*s,hy+30*s)
 def install():
     if not V34:return
+    if V35:
+        _dog,_rarm=v9.dog,v9.rarm
+        def dog(c,x,gy,s,pose='sit',*a,**k):
+            if 540<=chars.CURF<720 and pose=='lie':   # payoff: bigger, clearer, out of the button area
+                X,GY=620,gy+30;chars.shadow(c,X+10,GY,120);return dog_lie35(c,X,GY,s*1.25)   # in front of him, not under his feet
+            return _dog(c,x,gy,s,pose,*a,**k)
+        def rarm(c,pts,w,*a):
+            if 540<=chars.CURF<720 and pts and abs(pts[-1][0]-770)<1 and w==56:   # the robot's pat rests on top of his hair
+                pts=list(pts[:-1])+[(770,pts[-1][1]-50)]
+            return _rarm(c,pts,w,*a)
+        v9.dog,v9.rarm=dog,rarm
     _qsub=v9.sub
     def sub(c,f,a,b,t,*x,**k):
         if f<60:   # opening: lifted clear of his face in the push-in
@@ -75,6 +106,6 @@ def install():
             if n in CAM:push(c,f,CAM[n])
             fn(c,f);c.restore()
             if f in FLASH:c.rectangle(0,0,W,H);c.set_source_rgba(1,1,1,FLASH[f]);c.fill()
-            if n=='G' and f>=676:   # the punch line back on the final image
-                y0=titles.SUB_Y;titles.SUB_Y=860;titles.sub(c,f,676,720,"WHO'S A GOOD BOY?");titles.SUB_Y=y0
+            if n=='G' and f>=CAPTION_AT:   # the punch line back on the final image
+                y0=titles.SUB_Y;titles.SUB_Y=860;titles.sub(c,f,CAPTION_AT,720,"WHO'S A GOOD BOY?");titles.SUB_Y=y0
         v9.SC[i]=(n,a,b,wrapped)
