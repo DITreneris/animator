@@ -60,7 +60,9 @@ RUSH asks "Where's the final?"; PAM points at DOWNLOADS without looking up. Behi
 
 | File | Version | Notes |
 |---|---|---|
-| `uptimez_DLX7_expedition_final_1080.mp4` | **v7 final** | **1080×1920**, 21.8 s, −15.4 LUFS, −2.2 dBFS peak, no branding. Over v6: bubble tails at their speakers (RUSH's at his cheek, MAX's short tail from just above his head), the blast starts below the DOWNLOADS sign with no ghost copies, RUSH's arm bends around his face on the handover, RUMBLE in the sky, the tower spits out FINAL (29) |
+| `uptimez_DLX8_expedition_1080.mp4` | **v8 (current)** | **1080×1920**, 21.8 s, −15.4 LUFS, −2.2 dBFS peak, tagged BT.709, no branding. Over v7: RUSH's first line in a bubble beside his mouth, his arm reaches behind his head on the handover so only the hand shows on the brim |
+| `uptimez_DLX8_expedition.mp4`, `DLX8_stills_phone.png` | v8 | 540×960 preview, 22 stills (cover unchanged: `uptimez_DLX7_thumbnail.png`) |
+| `uptimez_DLX7_expedition_final_1080.mp4` | v7 | 1080×1920, 21.8 s, −15.4 LUFS, −2.2 dBFS peak, no branding. Over v6: bubble tails at their speakers (RUSH's at his cheek, MAX's short tail from just above his head), the blast starts below the DOWNLOADS sign with no ghost copies, RUSH's arm bends around his face on the handover, RUMBLE in the sky, the tower spits out FINAL (29) |
 | `uptimez_DLX7_expedition_final_tag_1080.mp4` | v7 final, tagged | Same, plus a "Name the exact file. / promptanatomy.app" card over the building in the last 0.6 s (`TAG=1`) |
 | `uptimez_DLX7_expedition_final.mp4`, `uptimez_DLX7_thumbnail.png`, `DLX7_stills_phone.png` | v7 | 540×960 preview, cover, 22 stills |
 | `uptimez_DLX6_expedition_b_1080.mp4` | v6 (ending B) | 1080×1920, 21.8 s, −15.4 LUFS, −2.2 dBFS peak. Over v5: 0.6 s less wide hold before MAX, MAX reacts to "Downloads." (looks at the door, gulps), shorter beard, RUSH visibly tugs the hard hat out, smear frames on the blast, the pile sheds sheets before the RUMBLE |

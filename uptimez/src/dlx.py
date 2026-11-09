@@ -1,4 +1,6 @@
-"""UptimeZ Inc. - Downloads Expedition v07 final (v6 kept as dlx_v6.py; v5..v1 likewise).
+"""UptimeZ Inc. - Downloads Expedition v08 (v7 kept as dlx_v7.py; v6..v1 likewise).
+v08: RUSH's first line in a bubble beside his mouth (he stops at x 330), his arm reaches behind his head on the
+handover so only the hand shows on the brim.
 v07: bubble tails at the speaker's mouth side / head, the blast starts below the DOWNLOADS sign with no
 ghost copies, RUSH's arm bends around his face, RUMBLE in the sky, the tower spits out FINAL (29),
 the promptanatomy.app card only with TAG=1.
@@ -461,7 +463,7 @@ def b1_question(k, t, tl):
     point = anim.keyed(t, [(0, "type"), (1.55, POINT)], dur=0.2)
     office(k, door_open=snap_open(t, 2.2), pam_pose=point)
     sprint = clamp(t / 0.45)
-    x = lerp(640, 270, ease(sprint))
+    x = lerp(640, 330, ease(sprint))                 # v08: stops further right, room for his bubble
     if sprint < 1:
         pose, bob = anim.walk(t, speed=7, swing=40)
         speed_lines(k, x, 760)
@@ -482,7 +484,8 @@ def b1_question(k, t, tl):
     hx, hy = p["head"]
     tag(k, t, 0, (hx - 20, hy - 70, min(max(120, hx - 70), 300), hy - 170))
     tag(k, t, 1, (PAM_X - 15, 505, 300, 445))
-    speech(k, t, "Where's the final?", 270, 420, (hx + 58, hy + 8), T_RUSH_LINE, 1.6, speaker=(hx, hy, 1.0))
+    speech(k, t, "Where's\nthe final?", 127, hy + 28, (hx - 54, hy + 28), T_RUSH_LINE, 1.6, speaker=(hx, hy, 1.0),
+           size=36)                                    # v08: beside his mouth, short tail
 
 
 def b2_gear(k, t, tl):
@@ -751,29 +754,30 @@ def b7_handover(k, t, tl):
     def flying_hat():                                # slides out sideways (brim stays above his eyes), then hops onto MAX
         dk.helmet(k, *hat_xy(), lerp(RS, MS, u), lamp=0)
 
+    sxq = 1 + (1 - SQ) * 0.45
+    shx, shy = RX + 40 * RS * sxq, RF - 196 * RS * SQ
+    gx = RX + 70 * RS * sxq                          # the brim's right end
+    gy = RF - (254 + 26) * RS * SQ + (40 * ease(clamp((t - 20.2) / 0.1)) if out else 0)
+    r = ease(clamp((t - 19.95) / 0.06))
+    reach = 19.95 <= t < 20.3
     c.save(); c.translate(jig, 0)                    # the two yanks jiggle him and the sheet
-    head, top = squashed_rush(k, t, SQ, 0.35, gaze=(-0.8, 0.1), face="hollow" if t < 20.2 else "shock",
-                              helmet_on=not out)
-    if out and not caught and u < 0.5:              # still under the sheet: drawn behind it
-        flying_hat()
-    lid(k, lerp(hat_top, top, drop) if out else top)
-    c.restore()
-    if 19.95 <= t < 20.3:                            # his hand on the brim; the arm bends around his face (v07)
-        sxq = 1 + (1 - SQ) * 0.45
-        shx, shy = RX + 40 * RS * sxq, RF - 196 * RS * SQ
-        ex, ey = RX + 125, RF - 210                  # elbow out to the right, clear of his face
-        gx = RX + 70 * RS * sxq + jig                # the brim's right end; after the pop the hand stays and drops
-        gy = RF - (254 + 26) * RS * SQ + (40 * ease(clamp((t - 20.2) / 0.1)) if out else 0)
-        r = ease(clamp((t - 19.95) / 0.06))
-        ex, ey = lerp(shx, ex, r), lerp(shy, ey, r)
+    if reach:                                        # v08: the arm goes up behind his head, so his face hides it
+        ex, ey = lerp(shx, RX + 95, r), lerp(shy, RF - 250, r)
         hx_, hy_ = lerp(shx, gx, r), lerp(shy, gy, r)
         for (ax, ay, bx, by) in ((shx, shy, ex, ey), (ex, ey, hx_, hy_)):
             ang = math.atan2(by - ay, bx - ax)
             nx, ny = -math.sin(ang) * 8.5, math.cos(ang) * 8.5
             cut(k, [(ax + nx, ay + ny), (bx + nx, by + ny), (bx - nx, by - ny), (ax - nx, ay - ny)],
                 (0.93, 0.93, 0.95), shadow=False, lw=2)
-            qa("cover", (min(ax, bx) - 9, min(ay, by) - 9, max(ax, bx) + 9, max(ay, by) + 9))
-        ellipse(k, hx_, hy_, 11, 11, kit.PEOPLE["RUSH"]["skin"], 822, shadow=False, lw=2)
+    head, top = squashed_rush(k, t, SQ, 0.35, gaze=(-0.8, 0.1), face="hollow" if t < 20.2 else "shock",
+                              helmet_on=not out)
+    if out and not caught and u < 0.5:              # still under the sheet: drawn behind it
+        flying_hat()
+    lid(k, lerp(hat_top, top, drop) if out else top)
+    if reach:                                        # only the hand shows, gripping the brim
+        ellipse(k, lerp(shx, gx, r), lerp(shy, gy, r), 11, 11, kit.PEOPLE["RUSH"]["skin"], 822, shadow=False, lw=2)
+        qa("cover", (gx - 12, gy - 12, gx + 12, gy + 12))
+    c.restore()
     sq = 1.0
     if caught and t < 20.65:
         sq = 0.9

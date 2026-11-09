@@ -161,3 +161,9 @@ Five versions and four outside reviews. The fourth review put v4 on HOLD: the jo
 - **A character's own arm is a prop too.** A straight arm from shoulder to hat crossed his face; bend it at an elbow outside the face, and register each arm segment for the eye check.
 - **Brand cards behind a switch** (`TAG=1`): deliver a clean final and a tagged one, and keep effect words (RUMBLE) off the brand's building.
 - **Escalate the loop object:** the tower spits out FINAL (29), not a blank sheet, so the last image extends the count instead of ending on nothing.
+
+## v8
+
+- **A tail that ends near the hair reads as pointing at the hair.** Put the speaker's bubble beside the face at mouth height with a short horizontal tail; move the character if that's what makes room.
+- **A squashed character's shoulders sit at chin height,** so any arm reaching up crosses the face. Draw the reaching arm behind the body and only the hand in front.
+- **Tag the colour space** (`scale=out_color_matrix=bt709`, `-colorspace/-color_primaries/-color_trc bt709`); platforms guess otherwise.
