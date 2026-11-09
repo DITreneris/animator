@@ -225,10 +225,10 @@ FX = [  # (signal, time, dB relative to speech RMS)
     (creak(0.2), 2.2, -10), (echo(drip()), 2.9, -8),
     (clunk(), 3.1, -2), (whizz(0.6), 3.5, -8), (whizz(0.25), 3.9, -8), (echo(drip()), 4.6, -12),
     (whizz(0.6), 5.0, -12), (sting(), 5.6, -4), (pop(), 5.85, -14), (snap(), 7.05, -8), (drip(), 8.3, -10),
-    (whizz(0.2), 9.0, -6), (rumble(1.0), 9.8, 0), (paper_roar(1.4), 10.45, 0), (thud(70, 0.4), 10.98, 0),
+    (whizz(0.2), 9.0, -6), (whizz(0.2), 9.6, -16), (whizz(0.2), 9.8, -16), (rumble(1.0), 9.8, 0), (paper_roar(1.4), 10.45, 0), (thud(70, 0.4), 10.98, 0),
     (tada(), 12.5, -4), (click(), 14.2, -2), (whistle(0.35), 14.6, -6), (thud(45, 0.7), 14.95, +3),
     (paper_roar(0.6, 60), 15.0, -10), (whizz(0.3), 15.0, -14), (steps(5, 0.14), 16.2, -12), (click(), 16.6, -8), (click(), 19.05, -14),
-    (whizz(0.3), 19.9, -12), (clunk(), 20.55, -10), (steps(4, 0.17), 20.8, -12), (creak(0.15), 21.55, -10), (thud(55, 0.6), 21.7, -2),
+    (drip(), 19.45, -12), (click(), 20.0, -16), (click(), 20.1, -16), (pop(), 20.2, -8), (whizz(0.3), 19.9, -12), (clunk(), 20.55, -10), (steps(4, 0.17), 20.8, -12), (creak(0.15), 21.55, -10), (thud(55, 0.6), 21.7, -2),
     # v4: footsteps on the sprint, rope creak, bones, impact whomps, kinetic pops, the tower
     (steps(4, 0.1), 0.0, -8), (creak(0.9), 4.0, -16), (bones(), 5.6, -6), (whomp(), 5.6, -4), (pop(), 8.6, -12),
     (pop(), 13.55, -12), (whomp(), 14.95, -2), (whizz(0.35), 21.9, -6), (chime(), 22.0, -8),
@@ -247,12 +247,14 @@ duck = 1 - 0.5 * np.clip(venv / (venv.max() + 1e-9) * 4, 0, 1)
 mix = voice + fx + (bed + cave) * duck + room
 mix = mix / np.abs(mix).max() * 0.89
 tag = ENDING.lower()
-# the 0.6 s trim at the start of the pile beat (same as dlx.TRIM_AT / dlx.TRIM); sync json stays in film time
-TRIM_AT, TRIM = 8.0, 0.6
-a, b = int(TRIM_AT * SR), int((TRIM_AT + TRIM) * SR)
+# film-time cuts (same as dlx.CUTS): 0.6 s at the pile start, 0.6 s of the wide hold; sync json stays in film time
+CUTS = [(8.0, 0.6), (15.5, 0.6)]
 xf = int(0.02 * SR)
-cut_mix = np.concatenate([mix[:a], mix[b:]])
-cut_mix[a - xf:a + xf] *= np.concatenate([np.linspace(1, 0.6, xf), np.linspace(0.6, 1, xf)])
+cut_mix = mix
+for at, d in reversed(CUTS):                         # from the end, so earlier sample positions stay valid
+    a, b = int(at * SR), int((at + d) * SR)
+    cut_mix = np.concatenate([cut_mix[:a], cut_mix[b:]])
+    cut_mix[a - xf:a + xf] *= np.concatenate([np.linspace(1, 0.6, xf), np.linspace(0.6, 1, xf)])
 sf.write(f"dlx_{tag}_mix.wav", cut_mix.astype(np.float32), SR, subtype="FLOAT")
 json.dump({"timeline": timeline, "env": {k: [round(float(x), 3) for x in v] for k, v in env.items()}},
           open(f"dlx_{tag}_sync.json", "w"))

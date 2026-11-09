@@ -74,7 +74,7 @@ build_release() {
 # Downloads Expedition: voice-first mix (sound_dlx.py), automatic layout checks, drawn at 2x
 build_dlx() {
   local end=$1 out; out=${OUT_DIR:-$HERE/downloads-expedition}; mkdir -p "$out"
-  local name=uptimez_DLX5_expedition_${end,,}_1080.mp4
+  local name=uptimez_DLX6_expedition_${end,,}_1080.mp4
   ( cd src
     python3 sound_dlx.py "$end"
     python3 qa_dlx.py "dlx_${end,,}"

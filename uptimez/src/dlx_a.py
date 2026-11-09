@@ -1,19 +1,29 @@
 """Downloads Expedition, ending A. See dlx.py.
-Applies the 0.6 s trim at the start of the pile beat as a time map (new time -> film time) and forwards the
-engine's unquantised time to dlx."""
+Applies the cuts in dlx.CUTS (film time, seconds) as a time map (new time -> film time) and forwards the
+engine's unquantised time to dlx. v06: two cuts, 0.6 s at the start of the pile beat and 0.6 s of the wide
+hold before MAX walks in."""
 import dlx
 
 dlx.ENDING = "A"
-DURATION = dlx.DURATION - dlx.TRIM
+DURATION = dlx.DURATION - sum(d for _, d in dlx.CUTS)
 RAW_T = 0.0
 
 
 def old(t):
-    return t if t < dlx.TRIM_AT else t + dlx.TRIM
+    for at, d in dlx.CUTS:
+        if t >= at:
+            t += d
+    return t
 
 
 def new(x):
-    return x if x <= dlx.TRIM_AT else max(dlx.TRIM_AT, x - dlx.TRIM)
+    out = x
+    for at, d in dlx.CUTS:
+        if x >= at + d:
+            out -= d
+        elif x > at:
+            out -= x - at
+    return out
 
 
 def _wrap(fn, a_old):

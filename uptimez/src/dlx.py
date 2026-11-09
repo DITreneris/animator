@@ -1,4 +1,6 @@
-"""UptimeZ Inc. - Downloads Expedition, rough animatic v5 (v4 kept as dlx_v4.py; v3, v2, v1 likewise).
+"""UptimeZ Inc. - Downloads Expedition v06 (v5 kept as dlx_v5.py; v4..v1 likewise).
+v06: 0.6 s less wide hold before MAX, MAX reacts to "Downloads.", shorter beard, a visible helmet tug,
+smear frames on the blast, a pile that sheds sheets before the RUMBLE.
 v5 (director pass after the fourth review): props are parented to bodies and drawn in a fixed order.
 - The hard hat sits on the head (brim above the eyes) and the lamp beam starts at the lamp: one beam, cut
   out of a darkness layer.
@@ -42,7 +44,7 @@ SQ = 0.72                        # how far FINAL (28) squashes RUSH
 
 # timing (s, film time before the 0.6 s trim in beat 4); voices: RUSH 0.6, MAX 17.85, B: RUSH 19.05
 T_RUSH_LINE, T_MAX_LINE, T_B_LINE = 0.6, 17.85, 19.05
-TRIM_AT, TRIM = 8.0, 0.6       # cut from the start of the pile beat (dlx_a / dlx_b apply it)
+CUTS = [(8.0, 0.6), (15.5, 0.6)]   # film-time cuts (dlx_a / dlx_b and sound_dlx apply them): pile start, wide hold
 POINT = anim.key((-140, -20, 8, 0))       # PAM: short point up toward the door
 LEFT_UP = anim.key((-168, 0, 8, 0))       # RUSH: left arm up (trophy, helmet)
 TAGS = [  # name, emoji, start, end, character key
@@ -544,7 +546,7 @@ def b4_pull(k, t, tl):
     STATE["t"] = t
     c = k.c
     rect(k, -20, -20, W + 40, H + 40, (0.12, 0.11, 0.11), 750, shadow=False, outline=False)
-    wob = math.sin(t * 30) * 4 * clamp((t - 9.75) / 0.2)
+    wob = math.sin(t * 30) * lerp(4, 8, clamp((t - 9.6) / 0.4)) * clamp((t - 9.6) / 0.2)
     r = random.Random(7)
     lean = -0.035 * ease(clamp((t - 9.55) / 0.25))   # anticipation: the pile leans before it goes
     sag = ease(clamp((t - 9.05) / 0.5))              # the gap left by FINAL (27) makes the top slide
@@ -572,6 +574,12 @@ def b4_pull(k, t, tl):
     else:                                            # parented to his hand
         hx, hy = p["hands"][1]
         big_file(k, hx + 58, hy - 30, 130, 90, "FINAL (27)", 0.05, 760, 24)
+    for j in range(6):                               # v06: the top sheds sheets before it goes (under the word)
+        u = (t - 9.6 - j * 0.1) / 0.7
+        if 0 < u < 1:
+            side = -1 if j % 2 else 1
+            file_sheet(k, 330 + side * (40 + 260 * u), 60 + j * 24 + 900 * u * u, 80, 56, "", 1500 + j,
+                       rot=side * (0.3 + 4 * u))
     if t >= 9.8:
         sfx(k, "RUMBLE", 300, 300, 76, rot=-0.08)
         qa("label", (130, 260, 470, 340), 76)
@@ -595,11 +603,33 @@ def b5_beard(k, t, tl):
         flutter_pages(k, t, 11.2)
     if d < 0.5:                                      # RUSH shoots out of the door, slightly tumbling, smeared
         u = d / 0.5
-        c.save(); c.translate(lerp(ox, RX, ease(u)), lerp(oy + 60, 960, ease(u))); c.rotate(-0.35 * (1 - u))
-        anim.squash(c, 0, 0, 0.9, 1.15)
-        rush(k, 0, 0, lerp(0.9, 1.25, u), "expedition", pose="shock", face="shock", register=False)
-        c.restore()
-        speed_lines(k, ox - 180, oy + 60, n=6, length=90, alpha=0.5)
+        ang = math.atan2(960 - (oy + 60), RX - ox)
+
+        def flyer(uu, alpha):
+            if uu < 0:
+                return
+            px, py = lerp(ox, RX, ease(uu)), lerp(oy + 60, 960, ease(uu))
+            if alpha < 1:
+                c.push_group()
+            c.save(); c.translate(px, py)
+            c.rotate(ang); c.scale(1.22, 0.86); c.rotate(-ang)              # stretched along the flight
+            c.rotate(-0.2 * (1 - uu))
+            rush(k, 0, 0, lerp(0.9, 1.25, uu), "expedition", pose="shock", face="shock", register=False)
+            c.restore()
+            if alpha < 1:
+                c.pop_group_to_source(); c.paint_with_alpha(alpha)
+
+        flyer(u - 0.32, 0.18)                        # smear ghosts behind him
+        flyer(u - 0.16, 0.35)
+        c.set_source_rgba(0.2, 0.2, 0.22, 0.55); c.set_line_width(3)
+        px, py = lerp(ox, RX, ease(u)), lerp(oy + 60, 960, ease(u))
+        for i in range(6):                           # speed lines trailing along the path, at body height
+            off = (i - 2.5) * 22
+            nx, ny = -math.sin(ang) * off, math.cos(ang) * off
+            L0, L1 = 90, 160 + 20 * (i % 3)
+            c.move_to(px + nx - math.cos(ang) * L0, py - 150 + ny - math.sin(ang) * L0)
+            c.line_to(px + nx - math.cos(ang) * L1, py - 150 + ny - math.sin(ang) * L1); c.stroke()
+        flyer(u, 1.0)
         return
     land = 1 - 0.15 * math.exp(-(d - 0.5) * 12)
     raise_ = t >= 12.5
@@ -684,7 +714,11 @@ def b6_save(k, t, tl):
     if walk > 0:                                     # MAX walks in from the left, beside the door
         pose, bob = anim.walk(t, speed=3, swing=22) if walk < 1 else ("stand", 0)
         mx = lerp(-90, MX, walk)
-        pm = person(k, "MAX", mx, MF + bob, MS, pose=pose, face="neutral", look=(0.8, 0.2), seed=33)
+        look = (-1.0, -0.4) if 19.15 <= t < 19.7 else (0.8, 0.2)          # v06: eyes to the door, then back
+        gx, gy = anim.gulp(t, [19.45], amt=0.1)
+        c.save(); anim.squash(c, mx, MF, gx, gy)
+        pm = person(k, "MAX", mx, MF + bob, MS, pose=pose, face="neutral", look=look, seed=33)
+        c.restore()
         hx, hy = pm["head"]
         speech(k, t, "Got the\noriginal?", 128, 422, (hx + 8, hy - 62), T_MAX_LINE, 19.0, speaker=(hx, hy, MS), size=36)
     if ENDING == "B":
@@ -692,28 +726,47 @@ def b6_save(k, t, tl):
 
 
 def b7_handover(k, t, tl):
-    """RUSH slides the hard hat out from under FINAL (28) (the sheet drops onto his hair) and it lands on MAX."""
+    """RUSH grips the brim, tugs twice, and pops the hard hat out from under FINAL (28) (the sheet drops onto his
+    hair); it hops onto MAX."""
     STATE["t"] = t
     c = k.c
     out = t >= 20.2
-    reach = 19.95 <= t < 20.45
     office(k, door_open=1.0, hook=(False, False), pam=True)
-    head, top = squashed_rush(k, t, SQ, 0.35, gaze=(-0.8, 0.1), face="hollow", helmet_on=not out,
-                              pose=LEFT_UP if reach else "stand")
+    jig = 4 * math.sin((t - 20.0) * 2 * math.pi / 0.1) if 20.0 <= t < 20.2 else 0.0
     drop = ease(clamp((t - 20.2) / 0.1))
     hat_top = RF - (254 + 78) * RS * SQ
     caught = t >= 20.55
     u = ease(clamp((t - 20.2) / 0.35))
 
-    def flying_hat():                                # slides out sideways (brim stays above his eyes), then hops onto MAX
-        hx = lerp(head[0], MX, u)
+    def hat_xy():
         v = clamp((u - 0.4) / 0.6)
-        hy = lerp(head[1], MF - 266 * MS, v) - math.sin(v * math.pi) * 50
-        dk.helmet(k, hx, hy, lerp(RS, MS, u), lamp=0)
+        return lerp(head[0], MX, u), lerp(head[1], MF - 266 * MS, v) - math.sin(v * math.pi) * 50
 
+    def flying_hat():                                # slides out sideways (brim stays above his eyes), then hops onto MAX
+        dk.helmet(k, *hat_xy(), lerp(RS, MS, u), lamp=0)
+
+    c.save(); c.translate(jig, 0)                    # the two yanks jiggle him and the sheet
+    head, top = squashed_rush(k, t, SQ, 0.35, gaze=(-0.8, 0.1), face="hollow" if t < 20.2 else "shock",
+                              helmet_on=not out)
     if out and not caught and u < 0.5:              # still under the sheet: drawn behind it
         flying_hat()
     lid(k, lerp(hat_top, top, drop) if out else top)
+    c.restore()
+    if 19.95 <= t < 20.28:                           # v06: his hand on the brim, drawn over the sheet's edge
+        sxq = 1 + (1 - SQ) * 0.45
+        shx, shy = RX + 40 * RS * sxq, RF - 196 * RS * SQ
+        if out:
+            gx = hat_xy()[0] + 70 * RS * sxq
+        else:
+            gx = RX + 70 * RS * sxq + jig
+        gy = RF - (254 + 26) * RS * SQ
+        r = ease(clamp((t - 19.95) / 0.06))
+        hx_, hy_ = lerp(shx, gx, r), lerp(shy, gy, r)
+        ang = math.atan2(hy_ - shy, hx_ - shx)
+        nx, ny = -math.sin(ang) * 8.5, math.cos(ang) * 8.5
+        cut(k, [(shx + nx, shy + ny), (hx_ + nx, hy_ + ny), (hx_ - nx, hy_ - ny), (shx - nx, shy - ny)],
+            (0.93, 0.93, 0.95), shadow=False, lw=2)
+        ellipse(k, hx_, hy_, 11, 11, kit.PEOPLE["RUSH"]["skin"], 822, shadow=False, lw=2)
     sq = 1.0
     if caught and t < 20.65:
         sq = 0.9

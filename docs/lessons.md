@@ -141,3 +141,10 @@ Five versions and four outside reviews. The fourth review put v4 on HOLD: the jo
 ## Process
 
 - **Make each episode stand alone.** `dlx.py` imported the emoji drawer from `s134.py`, which pulled in the whole Saved to Cloud chain and its sync files; a standalone `emoji.py` fixed the clean build.
+
+## v6 polish pass
+
+- **Cut dead holds with the time map, not by re-timing beats.** A second entry in `dlx.CUTS` removed 0.6 s of a hold where only a lamp flickered; picture, mix and lip-sync stayed in sync because all three read the same cut list.
+- **A listener needs a reaction.** MAX standing still after "Downloads." killed the joke; eyes to the door, a gulp and eyes back cost no screen time.
+- **Show the hand that does the action.** The helmet sliding out by itself read as a glitch; a hand on the brim and two yanks read as a tug.
+- **Smear with ghosts, not tilt.** Two faded copies along the path and a stretch along the motion sold the blast better than rotating the cutout.

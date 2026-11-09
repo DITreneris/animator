@@ -109,7 +109,7 @@ def rush(k, x, feet, s=1.0, look="office", pose="stand", face="neutral", seed=31
         if helmet_on:
             p["lamp"] = helmet(k, hx, hy, s, lamp)
     if look == "after":
-        beard(k, hx, hy, s, 1.0)
+        beard(k, hx, hy, s, 0.4)                      # v06: mid-chest, so badge, rope and arms read
         rect(k, x - 62 * s, feet - 196 * s, 22 * s, 16 * s, (0.85, 0.85, 0.88), 614, shadow=False)   # torn sleeve flap
     return p
 
