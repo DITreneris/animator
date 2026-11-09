@@ -17,7 +17,7 @@ rng = np.random.default_rng(41)
 _KD = os.environ.get("KOKORO_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "models"))
 K = Kokoro(os.path.join(_KD, "kokoro-v1.0.int8.onnx"), os.path.join(_KD, "voices-v1.0.bin"))
 
-LINES = [("RUSH", "Where's the final?", 0.6, "am_adam", 1.15),
+LINES = [("PAM", "Where's the final?", 0.6, "bf_emma", 1.1),      # v10: PAM asks (deadpan, still typing)
          ("RUSH", "Hellooo?", 4.1, "am_adam", 0.95),
          ("RUSH", "Got it!", 12.7, "am_adam", 1.15),
          ("MAX", "Got the original?", 17.85, "am_michael", 1.0)]
@@ -197,7 +197,7 @@ def drone(t0, t1):
 
 # --- voices first: these set the reference level
 voice = np.zeros(L)
-timeline, env = [], {"RUSH": np.zeros(NF), "MAX": np.zeros(NF)}
+timeline, env = [], {"RUSH": np.zeros(NF), "MAX": np.zeros(NF), "PAM": np.zeros(NF)}
 for who, txt, t0, v, sp in LINES:
     a = say(txt, v, sp)
     if who == "MAX":

@@ -1,4 +1,6 @@
-"""UptimeZ Inc. - Downloads Expedition v09 (v8 kept as dlx_v8.py; v7..v1 likewise).
+"""UptimeZ Inc. - Downloads Expedition v10 (v9 kept as dlx_v9.py; v8..v1 likewise).
+v10: PAM asks "Where's the final?" (her voice, her mouth, tail beside her mouth) while typing, then points;
+RUSH listens with his mouth shut. MAX's "Got the original?" sits beside his mouth with a short side tail.
 v09: MAX's tail ends beside his mouth, not on his hair; no RUMBLE word on the exterior (shake and sound carry it).
 v08: RUSH's first line in a bubble beside his mouth (he stops at x 330), his arm reaches behind his head on the
 handover so only the hand shows on the brim.
@@ -464,7 +466,7 @@ def b1_question(k, t, tl):
     point = anim.keyed(t, [(0, "type"), (1.55, POINT)], dur=0.2)
     office(k, door_open=snap_open(t, 2.2), pam_pose=point)
     sprint = clamp(t / 0.45)
-    x = lerp(640, 330, ease(sprint))                 # v08: stops further right, room for his bubble
+    x = lerp(640, 270, ease(sprint))
     if sprint < 1:
         pose, bob = anim.walk(t, speed=7, swing=40)
         speed_lines(k, x, 760)
@@ -479,14 +481,15 @@ def b1_question(k, t, tl):
     else:                                            # panic jitter until the door opens
         jr = random.Random(int(t * 12))
         x += jr.uniform(-3, 3) if t < 2.2 else 0
-    p = rush(k, x, 960 + bob, 1.0, "office", pose=pose, face="panic" if t < 2.7 else "shock", register=sprint >= 1)
+    face = "confused" if T_RUSH_LINE <= t < 1.7 else ("panic" if t < 2.7 else "shock")   # v10: listening, mouth shut
+    p = rush(k, x, 960 + bob, 1.0, "office", pose=pose, face=face, register=sprint >= 1)
     if sprint < 1:
         c.restore()
     hx, hy = p["head"]
     tag(k, t, 0, (hx - 20, hy - 70, min(max(120, hx - 70), 300), hy - 170))
     tag(k, t, 1, (PAM_X - 15, 505, 300, 445))
-    speech(k, t, "Where's\nthe final?", 127, hy + 28, (hx - 54, hy + 28), T_RUSH_LINE, 1.6, speaker=(hx, hy, 1.0),
-           size=36)                                    # v08: beside his mouth, short tail
+    speech(k, t, "Where's\nthe final?", 290, 570, (PAM_X - 56, 588), T_RUSH_LINE, 1.65, speaker=(PAM_X, 560, 1.0),
+           size=36)                                    # v10: PAM's line, tail beside her mouth
 
 
 def b2_gear(k, t, tl):
@@ -730,7 +733,8 @@ def b6_save(k, t, tl):
         pm = person(k, "MAX", mx, MF + bob, MS, pose=pose, face="neutral", look=look, seed=33)
         c.restore()
         hx, hy = pm["head"]
-        speech(k, t, "Got the\noriginal?", 112, 585, (hx + 62, hy + 28), T_MAX_LINE, 19.0, speaker=(hx, hy, MS), size=32)
+        speech(k, t, "Got the original?", 300, hy + 45, (hx + 60, hy + 28), T_MAX_LINE, 19.0, speaker=(hx, hy, MS),
+               size=30)                                # v10: beside his mouth, short side tail
     if ENDING == "B":
         speech(k, t, "Downloads.", RX, 760, (RX, head[1] + 40), T_B_LINE, 19.9, speaker=(*head, RS), size=38)
 

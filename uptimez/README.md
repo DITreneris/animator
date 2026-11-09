@@ -56,11 +56,13 @@ How the versions build on each other (each wraps the last at runtime, none edits
 
 ### Downloads Expedition — [`downloads-expedition/`](downloads-expedition/)
 
-RUSH asks "Where's the final?"; PAM points at DOWNLOADS without looking up. Behind the door is a cave. RUSH abseils past KEVIN (an intern skeleton still holding FINAL (3)), pulls FINAL (27) from the bottom of the pile, and is blasted back out by the avalanche, bearded. "Got it!" Then PAM saves FINAL (28), which lands on his hard hat. MAX: "Got the original?" RUSH: "Downloads." and hands him the helmet. The tower shakes; a window spits out a page that loops into frame 0.
+PAM asks "Where's the final?" without looking up from her keyboard, and points at DOWNLOADS. Behind the door is a cave. RUSH abseils past KEVIN (an intern skeleton still holding FINAL (3)), pulls FINAL (27) from the bottom of the pile, and is blasted back out by the avalanche, bearded. "Got it!" Then PAM saves FINAL (28), which lands on his hard hat. MAX: "Got the original?" RUSH: "Downloads." and hands him the helmet. The tower shakes; a window spits out a page that loops into frame 0.
 
 | File | Version | Notes |
 |---|---|---|
-| `uptimez_DLX9_expedition_1080.mp4` | **v9 (current)** | **1080×1920**, 21.8 s, BT.709, no branding. Over v8: MAX's tail ends beside his mouth, no RUMBLE word on the exterior |
+| `uptimez_DLX10_expedition_1080.mp4` | **v10 (current)** | **1080×1920**, 21.8 s, BT.709, no branding. Over v9: PAM asks "Where's the final?" (her voice, her mouth, tail beside it) while RUSH listens with his mouth shut; MAX's "Got the original?" sits beside his mouth with a short side tail |
+| `uptimez_DLX10_expedition.mp4`, `DLX10_stills_phone.png` | v10 | 540×960 preview, 22 stills |
+| `uptimez_DLX9_expedition_1080.mp4` | v9 | 1080×1920, 21.8 s, BT.709, no branding. Over v8: MAX's tail ends beside his mouth, no RUMBLE word on the exterior |
 | `uptimez_DLX9_expedition.mp4`, `DLX9_stills_phone.png` | v9 | 540×960 preview, 22 stills |
 | `uptimez_DLX8_expedition_1080.mp4` | v8 | 1080×1920, 21.8 s, −15.4 LUFS, −2.2 dBFS peak, tagged BT.709, no branding. Over v7: RUSH's first line in a bubble beside his mouth, his arm reaches behind his head on the handover so only the hand shows on the brim |
 | `uptimez_DLX8_expedition.mp4`, `DLX8_stills_phone.png` | v8 | 540×960 preview, 22 stills (cover unchanged: `uptimez_DLX7_thumbnail.png`) |

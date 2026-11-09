@@ -167,3 +167,8 @@ Five versions and four outside reviews. The fourth review put v4 on HOLD: the jo
 - **A tail that ends near the hair reads as pointing at the hair.** Put the speaker's bubble beside the face at mouth height with a short horizontal tail; move the character if that's what makes room.
 - **A squashed character's shoulders sit at chin height,** so any arm reaching up crosses the face. Draw the reaching arm behind the body and only the hand in front.
 - **Tag the colour space** (`scale=out_color_matrix=bt709`, `-colorspace/-color_primaries/-color_trc bt709`); platforms guess otherwise.
+
+## v9–v10
+
+- **Whose mouth is open decides who speaks,** for the viewer. A tail on the open mouth reads; a tail on hair or on top of a head reads as pointing at the hair. When the speaker changes, change the voice and the lip-sync with it, and close the listener's mouth (a static "panic" O-mouth reads as talking).
+- **Side tails beat long tails:** a bubble level with the mouth and a tail of 10–20 px is unmistakable; a bubble above a head with a downward tail gets read as pointing at whatever is behind it.
