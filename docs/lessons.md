@@ -172,3 +172,4 @@ Five versions and four outside reviews. The fourth review put v4 on HOLD: the jo
 
 - **Whose mouth is open decides who speaks,** for the viewer. A tail on the open mouth reads; a tail on hair or on top of a head reads as pointing at the hair. When the speaker changes, change the voice and the lip-sync with it, and close the listener's mouth (a static "panic" O-mouth reads as talking).
 - **Side tails beat long tails:** a bubble level with the mouth and a tail of 10–20 px is unmistakable; a bubble above a head with a downward tail gets read as pointing at whatever is behind it.
+- **Check the exact flagged frame at full size before arguing.** Twice a reviewer flagged a tail I thought was right; each time the full-size crop showed something real (tail on the hair, tail above the head). When the person then chose a different reading of who speaks, the fix had to go through voice, lip-sync and the listener's face, not just the tail.
