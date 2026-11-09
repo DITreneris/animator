@@ -13,13 +13,19 @@ What has been made so far, chat by chat, and what is in this repo. Dates are 202
 | 7–8 Nov | **UptimeZ: Saved to Cloud** | S1v2 frames reviewed → S1v3 concept (Claude Docs) → outside review → S1v3.1 A/B → B extended to 21.5 s with an animation pass → cold open + rewind + emoji name tags → doodle payoff → S1v3.6 polish and remix, first 1080×1920 release | ✅ `uptimez/saved-to-cloud/` |
 | 8–9 Nov | **UptimeZ: Downloads Expedition** | Concept doc (Claude Docs) → three outside reviews → v1 A/B → v2–v4 (emoji tags, salute, exterior tower ending, impact frames) → fourth review put v4 on HOLD (props crossing faces, floating hat, stray beam) → v5 rebuilt with props parented to bodies and automatic eye/prop/bubble-tail checks, 1080×1920 release and cover thumbnail → v6 polish (tighter hold, MAX reaction, helmet tug, smear, shorter beard) | ✅ `uptimez/downloads-expedition/` |
 | 3–6 Nov | **Robot office episodes** (one long chat) | *Says Here You Were Our Boss* v1 + v2 (voices, sunglasses payoff); *He Always Said Thank You*; *Make It Better* v1 + v2; *Just For Now* test clips, rough and v2 after two tester reviews. Lessons in [`lessons.md`](lessons.md) | ✅ |
+| 6–7 Nov | **Who's a Good Boy?** (robot office chat, continued) | Six "Me and my AI agent" memes into one 24 s story; tester review; rough, v2, v3 with a character polish layer (expressions, screen faces, talking mouths), readable title bar, 2026 TODAY opening, QA fixes (v3.3); 8 Nov no-tag version | ✅ |
+| 7–8 Nov | **Learn to Code** (same chat) | Concept doc from Reddit research, revised after a tester review; 25 s with endings A and B for an A/B test; B v2 fixes B's setup line; B v3 polish (push-ins, bubbles, cable coil); 8 Nov no-tag version ending on the punch line. Lessons in [`lessons.md`](lessons.md) | ✅ |
+| 8–9 Nov | **Learn to Code v4, Who's a Good Boy v3.4** (same chat) | Learn to Code: JOBS logo twist (his robot built the site that rejects him), motion pass, interview cut-in. Who's a Good Boy: push-ins on the opening, office and payoff, readable APPROVE button, grab close-up and flash, punch line back on the final image. Both: no-tag versions, cover frames | ✅ |
+| 9 Nov | **Just for Now v3** (same chat) | Series pass on the 6 Nov film: title bar with DAY pill, character polish, readable Day 1 smiley plant, push-ins, 28.5 → 25.3 s with the audio re-placed, stereo −14 LUFS; no-tag version ending on the boss | ✅ |
 | 7 Nov | **The List added** | `the-list/`: source, six trimmed voice lines, Permanent Marker font, history stills; rebuild matches the released video exactly | ✅ |
 | 4–7 Nov | **Repo setup** | This repo: structure, build docs, Anton font + OFL, first push | ✅ |
 
 ## Next ideas
 
-- **Just For Now**: viewer test of v2 (two laughs? tape rule clear?), then better faces and motion
+- **Just For Now**: viewer test of v3 (two laughs? tape rule clear? is the Day 1 smiley noticed?)
 - **Make It Better / Says Here**: swap in real recorded voice lines
+- **Learn to Code**: viewer A/B test of ending A vs B v4 (3 of 5 non-tech viewers laugh at the ending), then real voices for her three lines and his four
+- **Who's a Good Boy?**: viewer test, then the motion pass
 
 - **Who Gets…? series**, same format as *The List*: *Who Gets Sleep?*, *Who Gets Weekends?*, *Who Gets Customers?*
 - **Vibe Coder Learns**: *Backups*, *Security*, *The Bill*
