@@ -16,9 +16,9 @@ Every frame is drawn from code and every sound is synthesized, so a video can be
 | [`says-here-boss/`](says-here-boss/) | **Says Here You Were Our Boss**: 2024 prompt engineer → 2027 interviewed by his own agents (v1, v2 with voices) | 15–17 s | ✅ Source + render |
 | [`thank-you/`](thank-you/) | **He Always Said Thank You**: the robots spare him… except for the toaster | 14.5 s | ✅ Source + render |
 | [`make-it-better/`](make-it-better/) | **Make It Better**: the AI went on strike after version 47 (v1, v2 clearer opening) | 15 s | ✅ Source + render |
-| [`just-for-now/`](just-for-now/) | **Just For Now**: a taped temporary fix holds up the whole company (test clips, rough, v2) | 7–28.5 s | ✅ Source + render |
-| [`whos-a-good-boy/`](whos-a-good-boy/) | **Who's a Good Boy?**: in 2024 he praises his robot like a puppy; by 2027 the robot says it to him (with and without the brand chip) | 24 s | ✅ Source + render |
-| [`learn-to-code/`](learn-to-code/) | **Learn to Code**: his robot gets the job, the robots promote each other, he ends up under Tower Bridge (endings A and B, polish, no-tag) | 25 s | ✅ Source + render |
+| [`just-for-now/`](just-for-now/) | **Just For Now**: a taped temporary fix holds up the whole company (test clips, rough, v2 shipped, v3–v3.2 series pass and review fixes) | 7–28.5 s | ✅ Source + render |
+| [`whos-a-good-boy/`](whos-a-good-boy/) | **Who's a Good Boy?**: in 2024 he praises his robot like a puppy; by 2027 the robot says it to him (v3.3 shipped, v3.4–v3.5 push-ins and review fixes; with and without the brand chip) | 24 s | ✅ Source + render |
+| [`learn-to-code/`](learn-to-code/) | **Learn to Code**: his robot gets the job, the robots promote each other, he ends up under Tower Bridge (endings A and B, B v3 shipped, B v4 held; no-tag versions) | 25 s | ✅ Source + render |
 | [`chat-gifs/`](chat-gifs/) | **Emma Blocked**, **Babe / Voice Agent** and **Claude / Backups**: chat GIFs re-timed, reframed to 9:16 and given synthesized sound | 12–15 s | ✅ Source + render |
 
 The full history of the work, including concepts not yet built, is in [`docs/sessions.md`](docs/sessions.md).

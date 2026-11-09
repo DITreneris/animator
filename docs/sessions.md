@@ -17,9 +17,9 @@ What has been made so far, chat by chat, and what is in this repo. Dates are 202
 | 6–7 Nov | **Who's a Good Boy?** (robot office chat, continued) | Six "Me and my AI agent" memes into one 24 s story; tester review; rough, v2, v3 with a character polish layer (expressions, screen faces, talking mouths), readable title bar, 2026 TODAY opening, QA fixes (v3.3); 8 Nov no-tag version | ✅ |
 | 7–8 Nov | **Learn to Code** (same chat) | Concept doc from Reddit research, revised after a tester review; 25 s with endings A and B for an A/B test; B v2 fixes B's setup line; B v3 polish (push-ins, bubbles, cable coil); 8 Nov no-tag version ending on the punch line. Lessons in [`lessons.md`](lessons.md) | ✅ |
 | 8–9 Nov | **Learn to Code v4, Who's a Good Boy v3.4** (same chat) | Learn to Code: JOBS logo twist (his robot built the site that rejects him), motion pass, interview cut-in. Who's a Good Boy: push-ins on the opening, office and payoff, readable APPROVE button, grab close-up and flash, punch line back on the final image. Both: no-tag versions, cover frames | ✅ |
-| 9 Nov | **Just for Now v3.2, Learn to Code v4 review** (same chat) | Second review of Just for Now v3.1: PAYROLL restyled (it read as a second HEADQUARTERS), the boss's arm holds the trophy instead of crossing it, the tag moved into the title bar. Learn to Code B v4 no-tag held for a hire-beat regression (not rebuilt yet) | ✅ |
-| 9 Nov | **Review fixes: Just for Now v3.1, Who's a Good Boy v3.5** (same chat) | Outside review of v3 and v3.4: blank collapse frames, collapse cut jump, hair in the title bar; detached-looking pat arm, cropped entrance, scribble dog, hand over the hair. All fixed, same timing and audio | ✅ |
 | 9 Nov | **Just for Now v3** (same chat) | Series pass on the 6 Nov film: title bar with DAY pill, character polish, readable Day 1 smiley plant, push-ins, 28.5 → 25.3 s with the audio re-placed, stereo −14 LUFS; no-tag version ending on the boss | ✅ |
+| 9 Nov | **Review fixes: Just for Now v3.1, Who's a Good Boy v3.5** (same chat) | Outside review of v3 and v3.4: blank collapse frames, collapse cut jump, hair in the title bar; detached-looking pat arm, cropped entrance, scribble dog, hand over the hair. All fixed, same timing and audio | ✅ |
+| 9 Nov | **Just for Now v3.2, Learn to Code v4 review** (same chat) | Second review of Just for Now v3.1: PAYROLL restyled (it read as a second HEADQUARTERS), the boss's arm holds the trophy instead of crossing it, the tag moved into the title bar. Learn to Code B v4 no-tag held for a hire-beat regression (not rebuilt yet) | ✅ |
 | 7 Nov | **The List added** | `the-list/`: source, six trimmed voice lines, Permanent Marker font, history stills; rebuild matches the released video exactly | ✅ |
 | 4–7 Nov | **Repo setup** | This repo: structure, build docs, Anton font + OFL, first push | ✅ |
 
@@ -27,9 +27,8 @@ What has been made so far, chat by chat, and what is in this repo. Dates are 202
 
 - **Just For Now**: review of v3.2, then a viewer test (two laughs? tape rule clear? is the Day 1 smiley noticed?)
 - **Make It Better / Says Here**: swap in real recorded voice lines
-- **Learn to Code**: fix the B v4 hire beat (v3 framing, nameplate in front of the arm, HIRED stamp on the wall), then the A/B test of ending A vs B v4
-- **Who's a Good Boy?**: review of v3.5 (3 of 5 non-tech viewers laugh at the ending), then real voices for her three lines and his four
-- **Who's a Good Boy?**: viewer test, then the motion pass
+- **Learn to Code**: fix the B v4 hire beat (v3 framing, nameplate in front of the arm, HIRED stamp on the wall), then the viewer A/B test of ending A vs B (3 of 5 non-tech viewers laugh at the ending), then real voices for her three lines and his four
+- **Who's a Good Boy?**: review of v3.5, then a viewer test
 
 - **Who Gets…? series**, same format as *The List*: *Who Gets Sleep?*, *Who Gets Weekends?*, *Who Gets Customers?*
 - **Vibe Coder Learns**: *Backups*, *Security*, *The Bill*
