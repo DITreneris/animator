@@ -60,14 +60,17 @@ RUSH asks "Where's the final?"; PAM points at DOWNLOADS without looking up. Behi
 
 | File | Version | Notes |
 |---|---|---|
-| `uptimez_DLX6_expedition_b_1080.mp4` | **v6 release (ending B)** | **1080×1920**, 21.8 s, −15.4 LUFS, −2.2 dBFS peak. Over v5: 0.6 s less wide hold before MAX, MAX reacts to "Downloads." (looks at the door, gulps), shorter beard, RUSH visibly tugs the hard hat out, smear frames on the blast, the pile sheds sheets before the RUMBLE |
+| `uptimez_DLX7_expedition_final_1080.mp4` | **v7 final** | **1080×1920**, 21.8 s, −15.4 LUFS, −2.2 dBFS peak, no branding. Over v6: bubble tails at their speakers (RUSH's at his cheek, MAX's short tail from just above his head), the blast starts below the DOWNLOADS sign with no ghost copies, RUSH's arm bends around his face on the handover, RUMBLE in the sky, the tower spits out FINAL (29) |
+| `uptimez_DLX7_expedition_final_tag_1080.mp4` | v7 final, tagged | Same, plus a "Name the exact file. / promptanatomy.app" card over the building in the last 0.6 s (`TAG=1`) |
+| `uptimez_DLX7_expedition_final.mp4`, `uptimez_DLX7_thumbnail.png`, `DLX7_stills_phone.png` | v7 | 540×960 preview, cover, 22 stills |
+| `uptimez_DLX6_expedition_b_1080.mp4` | v6 (ending B) | 1080×1920, 21.8 s, −15.4 LUFS, −2.2 dBFS peak. Over v5: 0.6 s less wide hold before MAX, MAX reacts to "Downloads." (looks at the door, gulps), shorter beard, RUSH visibly tugs the hard hat out, smear frames on the blast, the pile sheds sheets before the RUMBLE |
 | `uptimez_DLX6_expedition_b.mp4`, `uptimez_DLX6_thumbnail.png`, `DLX6_stills_phone.png` | v6 | 540×960 preview, cover, 22 stills |
 | `uptimez_DLX5_expedition_b_1080.mp4` | v5 (ending B) | 1080×1920, 22.4 s, −15.5 LUFS, −2.2 dBFS peak |
 | `uptimez_DLX5_expedition_b.mp4` | v5 | 540×960 preview of the same cut |
 | `uptimez_DLX5_thumbnail.png` | v5 | 1080×1920 cover; title and faces inside the centre 1080×1440 that profile grids crop to (`src/thumb_dlx.py`) |
 | `DLX5_stills_phone.png`, `DLX_character_sheet.png` | | 18 stills at phone size; RUSH (office / expedition / after), KEVIN |
 
-Built by `dlx.py` (one module, `ENDING = "A" | "B"`; `dlx_a.py` / `dlx_b.py` apply a 0.6 s trim as a time map) with props from `dlx_kit.py`, a voice-first mix from `sound_dlx.py`, and automatic layout checks in `qa_dlx.py` (faces and eyes never crossed by props, labels or other faces; bubble tails at their speaker; text size and app-button zones). `./build.sh dlx` runs all three.
+Built by `dlx.py` (one module, `ENDING = "A" | "B"`; `dlx_a.py` / `dlx_b.py` apply a 0.6 s trim as a time map) with props from `dlx_kit.py`, a voice-first mix from `sound_dlx.py`, and automatic layout checks in `qa_dlx.py` (faces and eyes never crossed by props, labels or other faces; bubble tails at their speaker; text size and app-button zones). `./build.sh dlx` runs all three (`dlx_tag` for the tagged cut).
 
 ### Where Files Live — [`storyboards/`](storyboards/)
 
@@ -93,7 +96,7 @@ pip install pycairo numpy soundfile kokoro-onnx
 # thewh1teagle/kokoro-onnx GitHub release, in src/models/ or $KOKORO_DIR
 ./uptimez/build.sh pt43      # one episode (keys: s3 s1 s3b s3c s1v2 pta ptb pt4 pt42 pt43 s131a s131b)
 ./uptimez/build.sh s136      # Saved to Cloud release at 1080x1920 (s136n = without the tag)
-./uptimez/build.sh dlx       # Downloads Expedition release at 1080x1920 (dlx_a = ending A)
+./uptimez/build.sh dlx       # Downloads Expedition final at 1080x1920 (dlx_tag = with the promptanatomy.app card)
 ./uptimez/build.sh all       # every episode
 ./uptimez/build.sh sheets    # logo files + character sheets
 ```

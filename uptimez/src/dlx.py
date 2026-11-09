@@ -1,4 +1,7 @@
-"""UptimeZ Inc. - Downloads Expedition v06 (v5 kept as dlx_v5.py; v4..v1 likewise).
+"""UptimeZ Inc. - Downloads Expedition v07 final (v6 kept as dlx_v6.py; v5..v1 likewise).
+v07: bubble tails at the speaker's mouth side / head, the blast starts below the DOWNLOADS sign with no
+ghost copies, RUSH's arm bends around his face, RUMBLE in the sky, the tower spits out FINAL (29),
+the promptanatomy.app card only with TAG=1.
 v06: 0.6 s less wide hold before MAX, MAX reacts to "Downloads.", shorter beard, a visible helmet tug,
 smear frames on the blast, a pile that sheds sheets before the RUMBLE.
 v5 (director pass after the fourth review): props are parented to bodies and drawn in a fixed order.
@@ -23,6 +26,7 @@ import pt42
 import anim
 import brand
 import dlx_kit as dk
+TAG = os.environ.get("TAG", "0") == "1"      # v07: promptanatomy.app card on the building (off = clean version)
 from kit import W, H, INK, rect, ellipse, text, file_sheet, monitor, sfx, ease, clamp, lerp, cut, rough_rect_pts
 
 ENDING = "A"
@@ -48,7 +52,7 @@ CUTS = [(8.0, 0.6), (15.5, 0.6)]   # film-time cuts (dlx_a / dlx_b and sound_dlx
 POINT = anim.key((-140, -20, 8, 0))       # PAM: short point up toward the door
 LEFT_UP = anim.key((-168, 0, 8, 0))       # RUSH: left arm up (trophy, helmet)
 TAGS = [  # name, emoji, start, end, character key
-    ("RUSH", ["\U0001F3C3", "\U0001F4A6", "\U0001F4C2"], 0.12, 0.95, "rush1"),
+    ("RUSH", ["\U0001F3C3", "\U0001F4A6", "\U0001F4C2"], 0.12, 0.6, "rush1"),   # v07: off before his line, so its tail never crosses the tag
     ("PAM", ["\U0001F4BE", "\U0001F4BE", "\U0001F607"], 1.6, 2.45, "pam"),
     ("KEVIN", ["\U0001F480", "\U0001F4C1", "⏳"], 5.85, 6.75, "kevin"),
 ]
@@ -143,7 +147,8 @@ def big_file(k, x, y, w, h, s, rot, seed, size, register=True, pop_t=None):
     file_sheet(k, 0, 0, w, h, "", seed)
     text(k, s, 0, 0, size, INK)
     c.restore()
-    tw = size * 0.55 * len(s)
+    c.select_font_face(kit.FONT); c.set_font_size(size)
+    tw = c.text_extents(s).x_advance                 # v07: measured, not estimated
     if register:
         qa("label", (x - tw / 2, y - size / 2, x + tw / 2, y + size / 2), size)
 
@@ -477,7 +482,7 @@ def b1_question(k, t, tl):
     hx, hy = p["head"]
     tag(k, t, 0, (hx - 20, hy - 70, min(max(120, hx - 70), 300), hy - 170))
     tag(k, t, 1, (PAM_X - 15, 505, 300, 445))
-    speech(k, t, "Where's the final?", 270, 420, (hx + 10, hy - 64), T_RUSH_LINE, 1.6, speaker=(hx, hy, 1.0))
+    speech(k, t, "Where's the final?", 270, 420, (hx + 58, hy + 8), T_RUSH_LINE, 1.6, speaker=(hx, hy, 1.0))
 
 
 def b2_gear(k, t, tl):
@@ -603,12 +608,13 @@ def b5_beard(k, t, tl):
         flutter_pages(k, t, 11.2)
     if d < 0.5:                                      # RUSH shoots out of the door, slightly tumbling, smeared
         u = d / 0.5
-        ang = math.atan2(960 - (oy + 60), RX - ox)
+        oy0 = oy + 150                               # v07: starts below the DOWNLOADS sign
+        ang = math.atan2(960 - oy0, RX - ox)
 
         def flyer(uu, alpha):
             if uu < 0:
                 return
-            px, py = lerp(ox, RX, ease(uu)), lerp(oy + 60, 960, ease(uu))
+            px, py = lerp(ox, RX, ease(uu)), lerp(oy0, 960, ease(uu))
             if alpha < 1:
                 c.push_group()
             c.save(); c.translate(px, py)
@@ -619,10 +625,8 @@ def b5_beard(k, t, tl):
             if alpha < 1:
                 c.pop_group_to_source(); c.paint_with_alpha(alpha)
 
-        flyer(u - 0.32, 0.18)                        # smear ghosts behind him
-        flyer(u - 0.16, 0.35)
         c.set_source_rgba(0.2, 0.2, 0.22, 0.55); c.set_line_width(3)
-        px, py = lerp(ox, RX, ease(u)), lerp(oy + 60, 960, ease(u))
+        px, py = lerp(ox, RX, ease(u)), lerp(oy0, 960, ease(u))
         for i in range(6):                           # speed lines trailing along the path, at body height
             off = (i - 2.5) * 22
             nx, ny = -math.sin(ang) * off, math.cos(ang) * off
@@ -630,6 +634,8 @@ def b5_beard(k, t, tl):
             c.move_to(px + nx - math.cos(ang) * L0, py - 150 + ny - math.sin(ang) * L0)
             c.line_to(px + nx - math.cos(ang) * L1, py - 150 + ny - math.sin(ang) * L1); c.stroke()
         flyer(u, 1.0)
+        sc = lerp(0.9, 1.25, u)                      # his head and hat, so QA sees what he flies across
+        qa("cover", (px - 75 * sc, py - 330 * sc, px + 75 * sc, py - 200 * sc))
         return
     land = 1 - 0.15 * math.exp(-(d - 0.5) * 12)
     raise_ = t >= 12.5
@@ -720,7 +726,7 @@ def b6_save(k, t, tl):
         pm = person(k, "MAX", mx, MF + bob, MS, pose=pose, face="neutral", look=look, seed=33)
         c.restore()
         hx, hy = pm["head"]
-        speech(k, t, "Got the\noriginal?", 128, 422, (hx + 8, hy - 62), T_MAX_LINE, 19.0, speaker=(hx, hy, MS), size=36)
+        speech(k, t, "Got the\noriginal?", 112, 585, (hx + 6, hy - 60), T_MAX_LINE, 19.0, speaker=(hx, hy, MS), size=32)
     if ENDING == "B":
         speech(k, t, "Downloads.", RX, 760, (RX, head[1] + 40), T_B_LINE, 19.9, speaker=(*head, RS), size=38)
 
@@ -752,20 +758,21 @@ def b7_handover(k, t, tl):
         flying_hat()
     lid(k, lerp(hat_top, top, drop) if out else top)
     c.restore()
-    if 19.95 <= t < 20.28:                           # v06: his hand on the brim, drawn over the sheet's edge
+    if 19.95 <= t < 20.3:                            # his hand on the brim; the arm bends around his face (v07)
         sxq = 1 + (1 - SQ) * 0.45
         shx, shy = RX + 40 * RS * sxq, RF - 196 * RS * SQ
-        if out:
-            gx = hat_xy()[0] + 70 * RS * sxq
-        else:
-            gx = RX + 70 * RS * sxq + jig
-        gy = RF - (254 + 26) * RS * SQ
+        ex, ey = RX + 125, RF - 210                  # elbow out to the right, clear of his face
+        gx = RX + 70 * RS * sxq + jig                # the brim's right end; after the pop the hand stays and drops
+        gy = RF - (254 + 26) * RS * SQ + (40 * ease(clamp((t - 20.2) / 0.1)) if out else 0)
         r = ease(clamp((t - 19.95) / 0.06))
+        ex, ey = lerp(shx, ex, r), lerp(shy, ey, r)
         hx_, hy_ = lerp(shx, gx, r), lerp(shy, gy, r)
-        ang = math.atan2(hy_ - shy, hx_ - shx)
-        nx, ny = -math.sin(ang) * 8.5, math.cos(ang) * 8.5
-        cut(k, [(shx + nx, shy + ny), (hx_ + nx, hy_ + ny), (hx_ - nx, hy_ - ny), (shx - nx, shy - ny)],
-            (0.93, 0.93, 0.95), shadow=False, lw=2)
+        for (ax, ay, bx, by) in ((shx, shy, ex, ey), (ex, ey, hx_, hy_)):
+            ang = math.atan2(by - ay, bx - ax)
+            nx, ny = -math.sin(ang) * 8.5, math.cos(ang) * 8.5
+            cut(k, [(ax + nx, ay + ny), (bx + nx, by + ny), (bx - nx, by - ny), (ax - nx, ay - ny)],
+                (0.93, 0.93, 0.95), shadow=False, lw=2)
+            qa("cover", (min(ax, bx) - 9, min(ay, by) - 9, max(ax, bx) + 9, max(ay, by) + 9))
         ellipse(k, hx_, hy_, 11, 11, kit.PEOPLE["RUSH"]["skin"], 822, shadow=False, lw=2)
     sq = 1.0
     if caught and t < 20.65:
@@ -818,19 +825,24 @@ def b9_exterior(k, t, tl):
     c.restore()
     if z > 1.0:
         QA.clear()
-    else:                                            # credit chip, low on the building
-        rect(k, 160, 772, 220, 34, (1, 1, 1), 1297, lw=2)
-        c.select_font_face("Inter", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(20)
-        e = c.text_extents("promptanatomy.app")
-        c.move_to(270 - e.width / 2 - e.x_bearing, 796); c.set_source_rgb(*brand.NAVY); c.show_text("promptanatomy.app")
-        qa("label", (160, 772, 380, 806), 20)
-    if t >= 22.5:                                    # the page flies at the camera, like the pages at frame 0
+    elif TAG and t >= 22.2:                          # promptanatomy.app card, only in the TAG=1 version
+        a = ease(clamp((t - 22.2) / 0.15))
+        c.save(); c.translate(270, 778); c.scale(max(0.02, a), max(0.02, a)); c.translate(-270, -778)
+        rect(k, 125, 744, 290, 68, (1, 1, 1), 1297, lw=2)
+        c.select_font_face("Inter", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        for txt, yy, sz, col in (("Name the exact file.", 773, 22, INK), ("promptanatomy.app", 801, 20, brand.NAVY)):
+            c.set_font_size(sz); e = c.text_extents(txt)
+            c.move_to(270 - e.width / 2 - e.x_bearing, yy); c.set_source_rgb(*col); c.show_text(txt)
+        c.restore()
+        qa("label", (125, 744, 415, 812), 20)
+    if t >= 22.5:                                    # FINAL (29) flies at the camera, like the pages at frame 0
         u = ease(clamp((t - 22.5) / 0.5))
         px, py = lerp(wx, 430, u), lerp(wy, 640, u) - math.sin(u * math.pi) * 120
-        file_sheet(k, px, py, lerp(20, 140, u), lerp(25, 170, u), "", 1299, rot=u * 5)
-    if 22.3 <= t < 22.65:
-        sfx(k, "RUMBLE", 270, 560, 60, rot=0.05)
-        qa("label", (130, 525, 410, 595), 60)
+        w_, h_ = lerp(20, 150, u), lerp(25, 110, u)
+        big_file(k, px, py, w_, h_, "FINAL (29)", u * 0.4 - 0.2, 1299, max(2, lerp(3, 26, u)), register=u > 0.95)
+    if 22.3 <= t < 22.65:                            # in the sky above the roof, not on the facade
+        sfx(k, "RUMBLE", 270, 128, 50, rot=0.05)
+        qa("label", (160, 103, 380, 153), 50)
 
 
 PANELS = [(0.0, 3.0, b1_question), (3.0, 5.0, b2_gear), (5.0, 8.0, b3_kevin), (8.0, 10.5, b4_pull),

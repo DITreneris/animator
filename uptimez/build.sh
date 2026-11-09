@@ -3,7 +3,7 @@
 # Usage: ./build.sh pt43            one episode (15 s keys below)
 #        ./build.sh s131a | s131b    Saved to Cloud A/B test (15 s, 540x960)
 #        ./build.sh s136 | s136n     Saved to Cloud release, 1080x1920 (with / without the sniff tag)
-#        ./build.sh dlx | dlx_a      Downloads Expedition release (ending B) / ending A, 1080x1920
+#        ./build.sh dlx | dlx_tag    Downloads Expedition final, 1080x1920 (clean / with the promptanatomy.app card)
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -74,11 +74,11 @@ build_release() {
 # Downloads Expedition: voice-first mix (sound_dlx.py), automatic layout checks, drawn at 2x
 build_dlx() {
   local end=$1 out; out=${OUT_DIR:-$HERE/downloads-expedition}; mkdir -p "$out"
-  local name=uptimez_DLX6_expedition_${end,,}_1080.mp4
+  local name=uptimez_DLX7_expedition_final${2:+_tag}_1080.mp4
   ( cd src
     python3 sound_dlx.py "$end"
     python3 qa_dlx.py "dlx_${end,,}"
-    python3 engine_hd.py "dlx_${end,,}" | ffmpeg -y -v error \
+    TAG=${2:+1} python3 engine_hd.py "dlx_${end,,}" | ffmpeg -y -v error \
       -f rawvideo -pix_fmt bgra -s 1080x1920 -r 30 -i - -i "dlx_${end,,}_mix.wav" \
       -af "acompressor=threshold=-24dB:ratio=3:attack=4:release=80:makeup=1,volume=17dB,alimiter=limit=0.6:attack=1:release=50:level=false" \
       -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 48000 \
@@ -88,8 +88,8 @@ build_dlx() {
 }
 
 case "${1:-}" in
-  dlx)    build_dlx B ;;
-  dlx_a)  build_dlx A ;;
+  dlx)     build_dlx B ;;
+  dlx_tag) build_dlx B tag ;;
   s136|s136n) build_release "$1" ;;
   all)    for k in $(echo "$EPISODES" | cut -d'|' -f1); do build_one "$k"; done ;;
   sheets) ( cd src && python3 brand.py && python3 charsheets.py ) ;;

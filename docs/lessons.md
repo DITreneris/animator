@@ -153,3 +153,11 @@ Five versions and four outside reviews. The fourth review put v4 on HOLD: the jo
 
 - **Draw the cover with the film's own kit,** so the characters match, and keep the title and every face inside the centre 1080×1440 that profile grids crop to. Put the title above the set so the signs that set up the joke (DOWNLOADS, the plaque) stay visible; check it at grid size.
 - **Rebuild from the repo before calling it shipped.** The workspace render can hide missing files or sync data; comparing the repo build with the delivered video (PSNR inf / identical streams) caught an import chain that needed another episode's data.
+
+## v7 final
+
+- **A bubble tail points at the speaker,** and should end beside the face, not on the hair; a long tail across a doorway reads as the door talking. Put the bubble next to the speaker's head with a short tail, and turn off name tags before the first line so tails never cross them.
+- **Faded smear copies read as a second character** in a still or a pause. Use speed lines and a stretch along the motion instead.
+- **A character's own arm is a prop too.** A straight arm from shoulder to hat crossed his face; bend it at an elbow outside the face, and register each arm segment for the eye check.
+- **Brand cards behind a switch** (`TAG=1`): deliver a clean final and a tagged one, and keep effect words (RUMBLE) off the brand's building.
+- **Escalate the loop object:** the tower spits out FINAL (29), not a blank sheet, so the last image extends the count instead of ending on nothing.
