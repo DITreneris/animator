@@ -62,6 +62,7 @@ RUSH asks "Where's the final?"; PAM points at DOWNLOADS without looking up. Behi
 |---|---|---|
 | `uptimez_DLX5_expedition_b_1080.mp4` | **v5 release (ending B)** | **1080×1920**, 22.4 s, −15.5 LUFS, −2.2 dBFS peak |
 | `uptimez_DLX5_expedition_b.mp4` | v5 | 540×960 preview of the same cut |
+| `uptimez_DLX5_thumbnail.png` | v5 | 1080×1920 cover; title and faces inside the centre 1080×1440 that profile grids crop to (`src/thumb_dlx.py`) |
 | `DLX5_stills_phone.png`, `DLX_character_sheet.png` | | 18 stills at phone size; RUSH (office / expedition / after), KEVIN |
 
 Built by `dlx.py` (one module, `ENDING = "A" | "B"`; `dlx_a.py` / `dlx_b.py` apply a 0.6 s trim as a time map) with props from `dlx_kit.py`, a voice-first mix from `sound_dlx.py`, and automatic layout checks in `qa_dlx.py` (faces and eyes never crossed by props, labels or other faces; bubble tails at their speaker; text size and app-button zones). `./build.sh dlx` runs all three.
