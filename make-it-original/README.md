@@ -1,6 +1,6 @@
 # Make It Original (Hoodyz ep. 4)
 
-In 1986 his drummer rejects Hoodyz's garage riff: "Play something we know." In 2016 his upload gets 3 views, while his cat walking across the strings plays the same riff and gets 10M. In 2026 he asks his AI for something completely original, rejects it with the drummer's exact line and gesture, and smugly approves the viral cat version: "Now THAT'S original!"
+In 1986 his drummer rejects Hoodyz's garage riff: "Play something we know." In 2016 his upload gets 3 views, while his cat plays the same riff with one lazy paw and gets 10M. In 2026 he asks his AI for something completely original, rejects it with the drummer's exact line and gesture, and smugly approves the viral cat version: "Now THAT'S original!"
 
 Concept, locked decisions and the viewer test: the "Hoodyz Ep. 4 — Make It Original (concept)" doc in Claude Docs.
 
