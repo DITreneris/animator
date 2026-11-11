@@ -12,15 +12,15 @@ from timeline import RIFF, AI_TUNE, ONSETS, AI_ONSETS, S16, FPS
 # ---------------- timeline (seconds) ----------------
 R86 = 0.067
 E = dict(drum=1.95, wave86=1.9, frag=4.4, views3=5.0, land=5.35, cat16=5.8, views10=7.75,
-         ask=9.3, ai=11.55, recoil=12.6, know=13.35, wave26=13.3, glance=14.5, cat26=15.0, orig=16.3, sideeye=18.25)
+         ask=9.3, ai=11.55, recoil=12.6, know=13.35, wave26=13.3, glance=14.5, cat26=15.0, orig=16.3, catlook=17.95)
 END = E['cat26'] + 2 * 2.0 - R86
 NF = int(round(END * FPS))
 SHOTS = [(1, 0.0, 0.8), (2, 0.8, 1.9), (3, 1.9, 3.4), (4, 3.4, 3.9), ('ff1', 3.9, 4.3),
          (5, 4.3, 5.3), (6, 5.3, 5.7), (7, 5.7, 7.6), (8, 7.6, 8.3), ('ff2', 8.3, 8.7),
          (9, 8.7, 9.2), (10, 9.2, 11.0), (11, 11.0, 11.5), (12, 11.5, 13.3), (13, 13.3, 14.5),
          (14, 14.5, 15.0), (15, 15.0, 16.0), (16, 16.0, 17.3), (17, 17.3, END)]
-KEY_T = {1: .5, 2: 1.45, 3: 2.75, 4: 3.8, 5: 5.15, 6: 5.55, 7: 6.6, 8: 8.0, 9: 9.0, 10: 9.9, 11: 11.3,
-         12: 12.9, 13: 13.95, 14: 14.85, 15: 15.6, 16: 16.6, 17: 18.5}
+KEY_T = {1: .5, 2: 1.55, 3: 2.75, 4: 3.8, 5: 5.15, 6: 5.55, 7: 6.6, 8: 8.0, 9: 9.0, 10: 9.9, 11: 11.4,
+         12: 12.95, 13: 13.95, 14: 14.85, 15: 15.6, 16: 16.45, 17: 18.6}
 CHARS = True     # False: draw sets only (used for the silhouette check)
 
 # ---------------- lip flap ----------------
@@ -256,7 +256,9 @@ def s7(c, t, f):   # low close-up on the paws; the camera pans with the cat
     if CHARS: cat(c, 640, 1250, 1.6, 'walk', phase=t * 3, paw_down=(on[0] % 4) if on else None, f=f)
     for i in on:
         ell(c, 560, 1262, 90, 18); c.set_source_rgba(*YEL, .85); c.fill()
-    motif(c, t, E['cat16'], 300, 900, 1.4, paws=True)
+    for i, ((m, _), on) in enumerate(zip(RIFF, ONSETS)):      # same screen positions as his fragment in shot 5
+        dt = t - (E['cat16'] + on)
+        if 0 <= dt < 1.6: note_glyph(c, 520 + i * 70, 760 - (m - 60) * 18 - dt * 40, 1.0, YEL, True, cl(dt / .08) * cl((1.6 - dt) / .4))
     if t >= 7.35: views_badge(c, 640, 640, '10M', (t - 7.35) / .25, col=YEL, size=110)
 
 def s8(c, t, f):   # MCU 2016: deadpan; the cat's 10M on his phone
@@ -265,11 +267,11 @@ def s8(c, t, f):   # MCU 2016: deadpan; the cat's 10M on his phone
     c.restore()
     views_badge(c, 540, 1460, 'CAT: 10M', 1, col=YEL, size=84)
 
-def world26(c, t, f, content='off', hpose='rest', hexpr='calm', hlean=0, hrot=0, wave_k=0, remote=None, emote=None, eye=(0, 0), roll=0, present=0, him=True):
+def world26(c, t, f, content='off', hpose='rest', hexpr='calm', hlean=0, hrot=0, wave_k=0, remote=None, emote=None, eye=(0, 0), roll=0, present=0, him=True, hgaze=0, hdx=0):
     office26(c, t); desk26(c, t, f, content); oldcat(c, f)
     if CHARS:
         robot_body(c, *ROBOT, emote, eye, f, roll, present)
-        if him: hoodyz(c, HX, HGY, HS, 2026, hexpr, hpose, f, lean=hlean, head_rot=hrot, op=lip('hoodyz', f), wave_k=wave_k)
+        if him: hoodyz(c, HX, HGY, HS, 2026, hexpr, hpose, f, lean=hlean, head_rot=hrot, op=lip('hoodyz', f), wave_k=wave_k, gaze=hgaze, head_dx=hdx)
     cassette(c, 160, 1490, .3, dust=1)
 
 def s9(c, t, f):
@@ -277,26 +279,26 @@ def s9(c, t, f):
 
 def s10(c, t, f):  # medium: he leans in, finger raised
     k = lerp(1.45, 1.6, ss((t - 9.2) / 1.8)); cam(c, k, 470, 1080, 520, 1000)
-    lean = .1 * ss((t - 9.25) / .35)
-    world26(c, t, f, hpose='point', hexpr='eager', hlean=lean, eye=(-14, 0))
+    lean = .2 * ss((t - 9.25) / .35)
+    world26(c, t, f, hpose='point', hexpr='eager', hlean=lean, eye=(-14, 0), hgaze=14, hdx=30 * lean / .2)
 
 def s11(c, t, f):  # CU robot: shoulder roll, loading
     cam(c, 2.6, ROBOT[0] + 10, ROBOT[1] + 30, 540, 980)
-    world26(c, t, f, emote='loading', roll=cl((t - 11.0) / .45), him=False)
+    world26(c, t, f, emote='loading' if t < 11.33 else 'ready', roll=cl((t - 11.0) / .45), him=False)
 
 def s12(c, t, f):  # over the monitor: the AI's art; his nod turns into a recoil
     office26(c, t)
     rec = ss((t - E['recoil']) / .18)
     if CHARS:
         nod = .05 * math.sin((t - E['ai']) * 4 * math.pi) * (1 - rec) if t < E['recoil'] else 0
-        hoodyz(c, 380, 700 + 602 * 1.25, 1.25, 2026, 'polite' if rec < .5 else 'yuck', 'recoil' if rec > .3 else 'rest', f,
-               lean=-.12 * rec, head_rot=nod - .1 * rec, legs_on=False)
+        hoodyz(c, 380, 700 + 602 * 1.25, 1.25, 2026, 'polite' if rec < .5 else 'aghast', 'recoil' if rec > .3 else 'rest', f,
+               lean=-.2 * rec, head_rot=nod - .16 * rec, legs_on=False, head_dx=-40 * rec)
     monitor(c, 470, 1080, 440, 320, 'ai', t, f)
     rr(c, 640, 1416, 100, 120, 10); fs(c, hx('1b2030'))
     for i, ((m, _), on) in enumerate(zip(AI_TUNE, AI_ONSETS)):
         dt = t - (E['ai'] + on)
         if 0 <= dt < 2.0:
-            a = cl(dt / .08) * cl((2.0 - dt) / .5); x = 520 + i * 70; y = 1000 - (m - 72) * 18 - dt * 40
+            a = cl(dt / .08) * cl((2.0 - dt) / .5); x = 600 + i * 64; y = 1000 - (m - 72) * 18 - dt * 40
             c.save(); c.translate(x, y); c.rotate(math.pi / 4); rr(c, -18, -18, 36, 36, 8)
             c.set_source_rgba(*BLUE, a); c.fill_preserve(); c.set_source_rgba(*INK, a); c.set_line_width(5); c.stroke(); c.restore()
 
@@ -317,7 +319,7 @@ def s16(c, t, f):  # matched performance: air guitar in the 1986 pose and rhythm
     last = E['cat26'] + ONSETS[-1]
     pose = 'air' if t >= last else 'airstrum'
     sway = .03 * math.sin((t - E['cat26']) / S16 * math.pi / 2)
-    portrait(c, t, f, 2026, pose, 'smug' if t >= last else 'rocking', strum_at(t, E['cat26']), rot=-.1 if t >= last else 0, sway=sway,
+    portrait(c, t, f, 2026, pose, 'rocking', strum_at(t, E['cat26']), rot=-.1 if t >= last else 0, sway=sway,
              lean=-.05 if t >= last else 0)
     motif(c, t, E['cat26'], 640, 760, 1.2, paws=True)
 
@@ -325,7 +327,7 @@ def s17(c, t, f):  # two-shot hold: smug air guitar; the robot looks at him, the
     k = lerp(1.25, 1.35, (t - 17.3) / (END - 17.3)); cam(c, k, 520, 1100, 540, 1010)
     bob = .06 * math.sin((t - 17.0) / .5 * math.pi * 2)
     world26(c, t, f, content='cat', hpose='air', hexpr='smug', hlean=-.05, hrot=-.08 + bob,
-            emote='sideeye' if t >= E['sideeye'] else None, eye=(-22, 0))
+            emote='side' if t >= E['catlook'] else None, eye=(-22, 0))
     motif(c, t, E['cat26'] + 2.0, 620, 760, 1.0, paws=True)
 
 FN = {1: s1, 2: s2, 3: s3, 4: s4, 5: s5, 6: s6, 7: s7, 8: s8, 9: s9, 10: s10, 11: s11, 12: s12, 13: s13, 14: s14, 15: s15, 16: s16, 17: s17}
