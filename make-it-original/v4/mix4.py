@@ -5,7 +5,7 @@ import sys, os, numpy as np, soundfile as sf
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..'))
 import sound as S
 from timeline import RIFF, AI_TUNE, AI_CHORD, ONSETS
-from film import G, END, R86, NF
+from film import G, END, R86, NF, VO
 SR = S.SR; N = NF * SR // 30; TOT = N + 3 * SR      # exactly the video's length
 rng = np.random.default_rng(7); t_ = np.arange(TOT) / SR
 def at(sig, t, buf=None, g=1.0):
@@ -19,7 +19,7 @@ def window(a, b, fi=.005, fo=.005):
     w = np.zeros(TOT); i, j = int(a * SR), min(TOT, int(b * SR)); w[i:j] = 1
     n = max(1, int(fi * SR)); w[i:i + n] = np.linspace(0, 1, n)
     n = max(1, int(fo * SR)); w[j - n:j] *= np.linspace(1, 0, n); return w
-def vo(n): x, sr = sf.read(os.path.join(HERE, '..', 'vo', n + '.wav')); return S.norm(x, .9)
+def vo(n): x, sr = sf.read(os.path.join(HERE, '..', VO, n + '.wav')); return S.norm(x, .9)
 
 take, _ = S.guitar_phrase(RIFF, detune_cents=18, seed=11); take = S.norm(take, .8)          # his 1986 take
 frag, _ = S.guitar_phrase(RIFF[:3], detune_cents=8, seed=21); frag = S.norm(frag, .6)
@@ -48,7 +48,7 @@ mix = big * .7 * (st1 + st2) + crowd * .8 * (st1 + st2 * .8) + crowd * 1.0 * stc
 mix += thin * window(G['wave86'], 3.7, .004, .1)
 bigmeow = at(meow, G['catstad'] + .28); mix += (bigmeow + conv(bigmeow, ir) * 1.2) * 1.1
 mix += speaker * (window(G['demo'], G['bloom'], .01, .05) + window(G['back'], END + 3, .004, .01))
-mix *= 1 - .55 * window(G['orig'] - .05, G['orig'] + 1.2, .05, .2)
+mix *= 1 - .72 * window(G['orig'] - .05, G['orig'] + 1.05, .05, .2)      # the stadium ducks well under the punchline
 
 hum = (np.sin(2 * np.pi * 60 * t_) * .006 + np.sin(2 * np.pi * 120 * t_) * .004) * window(G['wave86'], 3.7, .01, .1)
 street = S.onepole_lp(rng.normal(0, 1, TOT), 500) * .012 * (window(4.1, 8.0, .1, .01) + window(9.0, 9.5, .01, .05))
@@ -72,7 +72,7 @@ mix = at(servo(), G['glance'] + .08, mix); mix = at(servo(.25, .14), G['turn'], 
 ai, _ = S.tune(AI_TUNE, AI_CHORD, 'epiano'); ai = S.norm(ai, .55)
 mix += at(ai, G['ai'] - .02) * window(G['ai'] - .03, G['wave26'] + .05, .005, .04)
 mix = at(S.norm(S.swipe(.2), .25), G['recoil'], mix)
-for n, t in (('drum', G['drum']), ('ask', G['ask']), ('know', G['know']), ('orig', G['orig'])): mix = at(vo(n), t, mix, 1.75)
+for n, t, g in (('drum', G['drum'], 1.75), ('ask', G['ask'], 1.75), ('know', G['know'], 1.75), ('orig', G['orig'], 2.1)): mix = at(vo(n), t, mix, g)
 mix += S.onepole_lp(rng.normal(0, 1, TOT), 400) * .003
 sf.write('mix.wav', mix[:N].astype(np.float32), SR)     # clean downbeat cut at the loop point
 print('mix', round(N / SR, 2), 's')

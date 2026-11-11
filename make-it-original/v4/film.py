@@ -16,6 +16,8 @@ G = dict(wave86=1.6, drum=1.65, ff1=3.7, frag=4.2, views3=4.75, land=5.1, cat16=
          ask=A.E['ask'] + D, ai=A.E['ai'] + D, recoil=A.E['recoil'] + D, wave26=A.E['wave26'] + D, know=A.E['know'] + D,
          glance=A.E['glance'] + D, demo=A.E['demo'] + D, bloom=A.E['bloom'] + D, orig=A.E['orig'] + D, back=A.E['back'] + D,
          turn=18.75, yawn=19.3)
+G['orig'] = 17.15                         # the recorded line is longer than the scratch one: start it a little earlier
+VO = 'vo_rec'                             # Tomas's recorded lines (the scratch voices stay in ../vo)
 END = G['demo'] + 4.0 - R86
 NF = int(round(END * FPS))
 SHOTS = [(1, 0.0, 0.8), (2, 0.8, 1.6), (3, 1.6, 3.1), (4, 3.1, 3.7), ('ff1', 3.7, 4.1),
@@ -33,7 +35,7 @@ NAMES = {1: 'stadium (his fantasy)', 2: 'stadium, close', 3: 'garage: the drumme
 def _env():
     env = {k: np.zeros(NF + 60) for k in ('drum', 'hoodyz')}
     for n, t, who in (('drum', G['drum'], 'drum'), ('ask', G['ask'], 'hoodyz'), ('know', G['know'], 'hoodyz'), ('orig', G['orig'], 'hoodyz')):
-        x, sr = sf.read(os.path.join(HERE, '..', 'vo', n + '.wav')); hop = sr // FPS
+        x, sr = sf.read(os.path.join(HERE, '..', VO, n + '.wav')); hop = sr // FPS
         r = np.array([np.sqrt((x[i * hop:(i + 1) * hop] ** 2).mean()) for i in range(len(x) // hop)]); r /= r.max() + 1e-9
         f0 = int(round(t * FPS))
         for i, v in enumerate(r): env[who][f0 + i] = max(env[who][f0 + i], v)
