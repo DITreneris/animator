@@ -169,3 +169,68 @@ def views_badge(c, x, y, text, k=1, col=WHITE, size=72):
 
 def back(t):
     t = cl(t); k = 2.2; return 1 + (k + 1) * (t - 1) ** 3 + k * (t - 1) ** 2
+
+# ---------- the fantasy stadium (shots 1, 2 and 16) ----------
+def stadium(c, t, wide=True, k=1.0):
+    """Generic stadium rock fantasy: beams, haze, a crowd of phone lights, a dreamy vignette.
+    No real band's look or logo. k fades the whole layer in (shot 16 blooms into it)."""
+    c.push_group()
+    g = cairo.LinearGradient(0, 0, 0, H); g.add_color_stop_rgb(0, *hx('120a2e')); g.add_color_stop_rgb(.6, *hx('2a0f4a')); g.add_color_stop_rgb(1, *hx('0b0820'))
+    c.set_source(g); c.paint()
+    glow = cairo.RadialGradient(540, 900, 40, 540, 900, 760); glow.add_color_stop_rgba(0, 1, .55, .9, .55); glow.add_color_stop_rgba(1, 1, .55, .9, 0)
+    c.set_source(glow); c.paint()
+    cols = [(1, .3, .6), (.3, .7, 1), (1, .85, .3), (.6, .4, 1), (.3, 1, .8)]
+    ty = 400
+    for i in range(7):   # beams sweeping from the truss
+        x = 120 + i * 140; a = math.sin(t * 1.6 + i * 1.3) * .35 + (i - 3) * .06
+        c.save(); c.translate(x, ty); c.rotate(a)
+        c.move_to(-14, 0); c.line_to(14, 0); c.line_to(240, 1700); c.line_to(-240, 1700); c.close_path()
+        bg = cairo.LinearGradient(0, 0, 0, 1700); r, g_, b = cols[i % 5]
+        bg.add_color_stop_rgba(0, r, g_, b, .45); bg.add_color_stop_rgba(1, r, g_, b, 0); c.set_source(bg); c.fill(); c.restore()
+    c.rectangle(-20, ty - 26, W + 40, 34); c.set_source_rgb(*hx('3a3a4a')); c.fill()          # truss
+    for i in range(7): ell(c, 120 + i * 140, ty + 6, 20, 16); c.set_source_rgb(1, .95, .8); c.fill()
+    if wide:
+        c.rectangle(0, 1450, W, 110); c.set_source_rgb(*hx('1a1426')); c.fill()                # stage
+        c.rectangle(0, 1450, W, 8); c.set_source_rgb(1, .6, .9); c.fill()
+    for i in range(5):   # haze
+        hz = cairo.RadialGradient(200 + i * 200, 1500, 20, 200 + i * 200, 1500, 320)
+        hz.add_color_stop_rgba(0, 1, 1, 1, .12); hz.add_color_stop_rgba(1, 1, 1, 1, 0); c.set_source(hz); c.paint()
+    c.pop_group_to_source(); c.paint_with_alpha(k)
+
+def crowd(c, t, y0=1600, k=1.0, rows=2):
+    """Foreground crowd: head and raised-arm silhouettes with twinkling phone lights."""
+    c.push_group()
+    for r_ in range(rows):
+        yy = y0 + r_ * 120
+        for i in range(12):
+            x = (i * 97 + r_ * 48) % (W + 60) - 30; bob = math.sin(t * 8 + i * 1.7) * 10
+            ell(c, x, yy + bob, 46, 52); c.set_source_rgb(*hx('07050f')); c.fill()
+            c.rectangle(x - 46, yy + 40 + bob, 92, 400); c.fill()
+            if (i + r_) % 3 == 0:
+                c.move_to(x + 30, yy + 20 + bob); c.line_to(x + 50, yy - 110 + bob); c.set_line_width(24); c.stroke()
+                tw = .6 + .4 * math.sin(t * 6 + i * 2)
+                rr(c, x + 38, yy - 150 + bob, 26, 40, 5); c.set_source_rgba(1, 1, .85, tw); c.fill(); c.set_source_rgb(*hx('07050f'))
+    c.pop_group_to_source(); c.paint_with_alpha(k)
+
+def dream_edge(c, k=1.0):
+    v = cairo.RadialGradient(540, 960, 420, 540, 960, 1150)
+    v.add_color_stop_rgba(0, 0, 0, 0, 0); v.add_color_stop_rgba(1, .9, .7, 1, .35 * k); c.set_source(v); c.paint()
+
+# ---------- the lazy cat (shot 7) ----------
+def lazy_cat(c, x, gy, s, paw=0.0, yawn=0.0, f=0, look=-1):
+    """Lying on the couch, chin up, one front paw dropping onto the strings. paw: 1 = pressed down.
+    yawn 0..1 opens a big yawn with closed eyes. Returns the paw tip (canvas coords)."""
+    c.save(); c.translate(x, gy); c.scale(s * look, s)
+    c.move_to(-110, -40); c.curve_to(-180, -20, -190, 40, -120, 30)                            # tail curled behind
+    c.set_source_rgb(*INK); c.set_line_width(28); c.stroke_preserve(); c.set_source_rgb(*TABBY); c.set_line_width(16); c.stroke()
+    ell(c, 0, -46, 125, 52); fs(c, TABBY)
+    for i in range(4): c.arc(-70 + i * 38, -70, 24, math.pi * 1.2, math.pi * 1.8); c.set_source_rgb(*TABBY_D); c.set_line_width(8); c.stroke()
+    ell(c, 70, -8, 30, 12); fs(c, TABBY, 5)                                                     # tucked paw
+    tip = (175, lerp(-60, 18, paw))                                                             # the lazy paw: presses into the strings
+    limb(c, [(80, -40), (130, -50 + 10 * paw), tip], 22, TABBY); ell(c, tip[0], tip[1], 17, 11); fs(c, TABBY, 5)
+    kit._cat_head(c, 112, -96, 1.0, False, 'sleep' if yawn > .25 else 'open', f)
+    if yawn > 0:
+        ell(c, 126, -72, 15 * yawn + 2, 22 * yawn + 2); fs(c, hx('7a2230'), 5)
+        ell(c, 126, -66, 8 * yawn, 8 * yawn); c.set_source_rgb(*hx('ff8fa6')); c.fill()
+    c.restore()
+    return (x + look * tip[0] * s, gy + tip[1] * s)

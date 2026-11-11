@@ -19,8 +19,8 @@ SHOTS = [(1, 0.0, 0.8), (2, 0.8, 1.9), (3, 1.9, 3.4), (4, 3.4, 3.9), ('ff1', 3.9
          (5, 4.3, 5.3), (6, 5.3, 5.7), (7, 5.7, 7.6), (8, 7.6, 8.3), ('ff2', 8.3, 8.7),
          (9, 8.7, 9.2), (10, 9.2, 11.0), (11, 11.0, 11.5), (12, 11.5, 13.3), (13, 13.3, 14.5),
          (14, 14.5, 15.0), (15, 15.0, 16.0), (16, 16.0, 17.3), (17, 17.3, END)]
-KEY_T = {1: .5, 2: 1.55, 3: 2.75, 4: 3.8, 5: 5.15, 6: 5.55, 7: 6.6, 8: 8.0, 9: 9.0, 10: 9.9, 11: 11.4,
-         12: 12.95, 13: 13.95, 14: 14.85, 15: 15.6, 16: 16.45, 17: 18.6}
+KEY_T = {1: .5, 2: 1.5, 3: 2.75, 4: 3.8, 5: 5.15, 6: 5.55, 7: 6.55, 8: 8.0, 9: 9.0, 10: 9.9, 11: 11.4,
+         12: 12.95, 13: 13.95, 14: 14.85, 15: 15.6, 16: 16.25, 17: 18.6}
 CHARS = True     # False: draw sets only (used for the silhouette check)
 
 # ---------------- lip flap ----------------
@@ -152,12 +152,11 @@ def bar_and_subs(c, t, year):
     sub(c, t, E['orig'], END, "NOW THAT'S ORIGINAL!")
 
 # ---------------- the shots ----------------
-def s1(c, t, f):   # wide 1986, slow push-in
-    k = lerp(1.0, 1.05, t / .8); cam(c, k, 540, 1060, 540, 1060); garage(c, t)
-    if CHARS:
-        drummer_world(c, t, f)
-        hoodyz(c, HX, HGY, HS, 1986, 'rocking', 'play', f, strum=strum_at(t, R86))
-    motif(c, t, R86, 470, 760)
+def s1(c, t, f):   # frame 0: the stadium fantasy, wide, slow push-in
+    k = lerp(1.0, 1.05, t / .8); cam(c, k, 540, 1060, 540, 1060)
+    stadium(c, t, wide=True)
+    if CHARS: hoodyz(c, 540, 1460, 1.0, 1986, 'rocking', 'play', f, strum=strum_at(t, R86))
+    crowd(c, t, 1600); motif(c, t, R86, 620, 820); dream_edge(c)
 
 def portrait(c, t, f, era, pose, expr, strum=0, rot=0, sway=0, lean=0):
     """Matched performance framing (shots 2 and 16): same position, size and sway in both eras."""
@@ -165,12 +164,12 @@ def portrait(c, t, f, era, pose, expr, strum=0, rot=0, sway=0, lean=0):
     if CHARS: hoodyz(c, 540, 1800, 1.7, era, expr, pose, f, strum=strum, head_rot=rot, lean=lean, op=lip('hoodyz', f))
 
 def s2(c, t, f):   # MCU 1986: lost in it, strum hand goes up on the last note
-    bg_garage_close(c)
+    stadium(c, t, wide=False)
     last = R86 + ONSETS[-1]
     pose = 'proud' if t >= last else 'play'
     sway = .03 * math.sin((t - R86) / S16 * math.pi / 2)
     portrait(c, t, f, 1986, pose, 'rocking', strum_at(t, R86), rot=-.1 if t >= last else 0, sway=sway, lean=-.05 if t >= last else 0)
-    motif(c, t, R86, 640, 760, 1.2)
+    crowd(c, t, 1640); motif(c, t, R86, 640, 760, 1.2); dream_edge(c)
 
 def gesture_frame(c, t, f, who, t0, era_bg):
     """Matched gesture framing (shots 3 and 13): the gesturer at the same screen spot, size and arm path."""
@@ -247,19 +246,22 @@ def s6(c, t, f):   # insert: the guitar lands on the couch
             a = math.pi + i * math.pi / 4; c.move_to(380 + math.cos(a) * 200, 1300 + math.sin(a) * 90); c.line_to(380 + math.cos(a) * 280, 1300 + math.sin(a) * 130)
             c.set_source_rgb(*INK); c.set_line_width(8); c.stroke()
 
-def s7(c, t, f):   # low close-up on the paws; the camera pans with the cat
-    c.set_source_rgb(*hx('ebdfc9')); c.paint(); rr(c, -60, 1180, 1200, 760, 60); fs(c, hx('4f8f7c'))
-    tc = t - E['cat16']
-    gx = 150 + max(0, tc + .15) * 230                                       # the guitar slides right = camera follows the cat left
-    guitar(c, gx, 1280, 2.0, rot=0)
-    on = [i for i, o in enumerate(ONSETS) if 0 <= tc - o < .1]
-    if CHARS: cat(c, 640, 1250, 1.6, 'walk', phase=t * 3, paw_down=(on[0] % 4) if on else None, f=f)
-    for i in on:
-        ell(c, 560, 1262, 90, 18); c.set_source_rgba(*YEL, .85); c.fill()
+def s7(c, t, f):   # the lazy cat: lying on the couch, one paw per note, then a yawn
+    c.set_source_rgb(*hx('ebdfc9')); c.paint(); rr(c, -60, 1000, 1200, 300, 60); fs(c, hx('3f7a6a')); rr(c, -60, 1180, 1200, 760, 60); fs(c, hx('4f8f7c'))
+    guitar(c, 300, 1330, 2.0, rot=0)
+    tc = t - E['cat16']; paw = 0
+    for o in ONSETS:
+        d = tc - o
+        if -.08 <= d < 0: paw = max(paw, 1 + d / .08)
+        elif 0 <= d < .15: paw = max(paw, 1 - d / .15 * .7)
+    yawn = math.sin(math.pi * cl((t - 7.25) / .45)) if t > 7.25 else 0
+    if CHARS:
+        tip = lazy_cat(c, 760, 1300, 2.0, paw, yawn, f)
+        if any(0 <= tc - o < .08 for o in ONSETS): ell(c, tip[0], 1330, 80, 18); c.set_source_rgba(*YEL, .85); c.fill()
     for i, ((m, _), on) in enumerate(zip(RIFF, ONSETS)):      # same screen positions as his fragment in shot 5
         dt = t - (E['cat16'] + on)
         if 0 <= dt < 1.6: note_glyph(c, 520 + i * 70, 760 - (m - 60) * 18 - dt * 40, 1.0, YEL, True, cl(dt / .08) * cl((1.6 - dt) / .4))
-    if t >= 7.35: views_badge(c, 640, 640, '10M', (t - 7.35) / .25, col=YEL, size=110)
+    if t >= 7.35: views_badge(c, 540, 600, '10M', (t - 7.35) / .25, col=YEL, size=110)
 
 def s8(c, t, f):   # MCU 2016: deadpan; the cat's 10M on his phone
     room16(c, t); c.save(); cam(c, lerp(1.7, 1.8, (t - 7.6) / .7), HX, 1040, 540, 900)
@@ -316,12 +318,13 @@ def s15(c, t, f):  # insert: the monitor plays the 2016 cat video; the riff star
 
 def s16(c, t, f):  # matched performance: air guitar in the 1986 pose and rhythm
     bg_office_close(c)
+    bloom = ss((t - 16.0) / .25); stadium(c, t, wide=False, k=bloom)       # the fantasy blooms back around him
     last = E['cat26'] + ONSETS[-1]
     pose = 'air' if t >= last else 'airstrum'
     sway = .03 * math.sin((t - E['cat26']) / S16 * math.pi / 2)
     portrait(c, t, f, 2026, pose, 'rocking', strum_at(t, E['cat26']), rot=-.1 if t >= last else 0, sway=sway,
              lean=-.05 if t >= last else 0)
-    motif(c, t, E['cat26'], 640, 760, 1.2, paws=True)
+    crowd(c, t, 1640, k=bloom); motif(c, t, E['cat26'], 640, 760, 1.2, paws=True); dream_edge(c, bloom)
 
 def s17(c, t, f):  # two-shot hold: smug air guitar; the robot looks at him, then at us
     k = lerp(1.25, 1.35, (t - 17.3) / (END - 17.3)); cam(c, k, 520, 1100, 540, 1010)
@@ -348,9 +351,9 @@ def draw(f, chars=True):
     bar_and_subs(c, t, year)
     return s
 
-def shot_name(n): return {1: 'wide 1986', 2: 'MCU, lost in it', 3: 'matched gesture: drummer', 4: 'CU, frozen, deflates', 5: '2016: 3 VIEWS',
-    6: 'guitar lands', 7: 'paws play it', 8: 'deadpan, 10M', 9: 'wide 2026', 10: 'lean-in', 11: 'robot loading', 12: 'recoil',
-    13: 'matched gesture: Hoodyz', 14: 'robot glance', 15: 'cat video', 16: 'matched performance', 17: 'smug hold'}[n]
+def shot_name(n): return {1: 'stadium (fantasy)', 2: 'MCU, stadium', 3: 'matched gesture: drummer', 4: 'CU, frozen, deflates', 5: '2016: 3 VIEWS',
+    6: 'guitar lands', 7: 'lazy paw', 8: 'deadpan, 10M', 9: 'wide 2026', 10: 'lean-in', 11: 'robot loading', 12: 'recoil',
+    13: 'matched gesture: Hoodyz', 14: 'robot glance', 15: 'cat video', 16: 'stadium returns', 17: 'smug hold'}[n]
 
 def keys():
     from PIL import Image, ImageDraw, ImageChops
