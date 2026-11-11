@@ -19,6 +19,7 @@ Every frame is drawn from code and every sound is synthesized, so a video can be
 | [`just-for-now/`](just-for-now/) | **Just For Now**: a taped temporary fix holds up the whole company (test clips, rough, v2 shipped, v3–v3.2 series pass and review fixes) | 7–28.5 s | ✅ Source + render |
 | [`whos-a-good-boy/`](whos-a-good-boy/) | **Who's a Good Boy?**: in 2024 he praises his robot like a puppy; by 2027 the robot says it to him (v3.3 shipped, v3.4–v3.5 push-ins and review fixes; with and without the brand chip) | 24 s | ✅ Source + render |
 | [`learn-to-code/`](learn-to-code/) | **Learn to Code**: his robot gets the job, the robots promote each other, he ends up under Tower Bridge (endings A and B, B v3 shipped, B v4 held; no-tag versions) | 25 s | ✅ Source + render |
+| [`make-it-original/`](make-it-original/) | **Make It Original** (Hoodyz ep. 4): his drummer rejects his riff in 1986, his cat makes it famous in 2016, in 2026 he rejects his AI's original tune and approves the cat version (rough, audio auditions, character sheets) | 19.5 s | 🧪 Rough |
 | [`chat-gifs/`](chat-gifs/) | **Emma Blocked**, **Babe / Voice Agent** and **Claude / Backups**: chat GIFs re-timed, reframed to 9:16 and given synthesized sound | 12–15 s | ✅ Source + render |
 
 The full history of the work, including concepts not yet built, is in [`docs/sessions.md`](docs/sessions.md).

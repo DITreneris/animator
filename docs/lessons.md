@@ -246,3 +246,13 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Brand tags belong in the title bar,** not over the picture: a chip under the bar sat on the little office in the pushed ending.
 - **A polish pass must not make any beat worse than the shipped cut.** Compare the new version beat by beat with the master: Learn to Code v4's cut-in put the HIRED stamp on his face and swept the robot's arm across HEAD OF HIRING, so the whole cut was held although everything else improved.
 - **Stamps and props placed in screen space must be checked in every framing,** especially close-ups, where faces move to new places.
+
+## Make It Original: auditions, sheet, rough (11 Nov)
+
+- **Screen every melody, not only the hero riff.** The AI's first tune shared three intervals with Smoke on the Water; the interval screen caught it before anyone heard it. It's a quick aid, not a guarantee.
+- **Measure synthesized notes against the written ones.** A single-note lead whose notes ring into each other turns into wrong low tones through distortion (up to an octave and a half off). Stop each note when the next starts, then check pitch per note.
+- **Kokoro ignores capitals for stress.** "Now THAT'S original" came out flat; writing the phonemes with a stress mark (`ðˈˈæts`) and `is_phonemes=True` put the loudest point on THAT'S.
+- **A gesture that carries the callback needs its own test.** The first wave-off read as "hi". Drawing three silhouettes side by side picked the one that reads as "go away" (a backhand brush outward).
+- **Keep the gesture inside the frame and away from the buttons.** A world zoom pushed the flick off the left edge; the cat first played under TikTok's right-hand buttons. Check the key action, not just text, against the safe zones.
+- **Make a looping riff fill whole bars.** With the riff on a 2 s bar, the robot plays it twice and the film cuts where a third pass would start, which lands on frame 0's riff.
+- **Copy helpers into the new episode's own kit.** The series modules load their own voice files on import; a self-contained `kit.py` rebuilt cleanly from the repo.
