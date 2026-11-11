@@ -6,7 +6,22 @@ Concept, locked decisions and the viewer test: the "Hoodyz Ep. 4 — Make It Ori
 
 ## Status (11 Nov)
 
-**Rough, waiting for the viewer test.** Production (camera, full animation, final voices) starts only once the rough passes the test in the concept doc.
+**Master: `v4/make_it_original_v4.mp4`** (19.9 s, 1080×1920, 30 fps, loops, scratch voices). Waiting for your sign-off, the muted viewer test and your recorded voices.
+
+The story as built: his stadium is a fantasy; the drummer's "Play something we know." cuts to the real garage. In 2016 his post gets 3 views, his cat plays the riff with one lazy paw and gets 10M, and he pictures the cat on his own stage. In 2026 he asks his AI for something completely original, rejects it with the drummer's exact gesture and line, the robot glances at the old cat and plays the cat video, his stadium blooms back ("Now THAT'S original!"), the robot turns to us and the old cat yawns.
+
+| Folder | What it is |
+|---|---|
+| [`v4/`](v4/) | **The master** (19 shots): `make_it_original_v4.mp4`, `make_it_original_cover.png`, key poses and matched-pair overlays in `keys/`. `./v4/build.sh` rebuilds it |
+| [`v3/`](v3/) | Version A, no cat (13 shots, 14.1 s), as a half-resolution timing cut. v4 reuses its shot code for 1986 and 2026 |
+| [`v2/`](v2/) | Key poses of the first 17-shot storyboard (history) |
+| this folder | The first rough, audio auditions, character sheets, and the shared kit (`kit.py`, `sound.py`, `timeline.py`, `vo/`) |
+
+**Checks on the master:** 598 frames; -14.5 LUFS, peak -3.0 dBFS; no flat frames; captions and key actions clear of TikTok's buttons; both matched pairs (the gesture, the stadium pose) overlay exactly; a clean rebuild from a copy matches the film, cover and key sheet exactly. A separate agent watched it muted and retold the story correctly ("he became the drummer who crushed him"); the defects it found in the recoil shot, the robot's glance and the cat-video insert were fixed. Not checked, needs people: whether it's funny, the sound of the stadium-to-garage cut, the voices.
+
+**Your lines to record** (drop-in replacements for `vo/*.wav`): "Play something we know." (drummer, flat); "Make something completely original."; "Play something we know." (Hoodyz, the drummer's delivery); "Now THAT'S original!"
+
+### Earlier files
 
 | File | What it is |
 |---|---|

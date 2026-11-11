@@ -256,3 +256,17 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Keep the gesture inside the frame and away from the buttons.** A world zoom pushed the flick off the left edge; the cat first played under TikTok's right-hand buttons. Check the key action, not just text, against the safe zones.
 - **Make a looping riff fill whole bars.** With the riff on a 2 s bar, the robot plays it twice and the film cuts where a third pass would start, which lands on frame 0's riff.
 - **Copy helpers into the new episode's own kit.** The series modules load their own voice files on import; a self-contained `kit.py` rebuilt cleanly from the repo.
+
+## Make It Original: from rough to master (11 Nov)
+
+- **A rough that explains the joke isn't a rough that performs it.** The slideshow passed every layout check and still failed on mute: one framing per era, half-bodies, decorative motion. Test the acting, not only the layout: tell the story from body positions alone.
+- **Build matched shots from one function.** The 1986 rejection and the 2026 rejection, and the two stadium poses, share the same framing code and arm path, so a 50% overlay of the pair shows one figure. Prove each callback with an overlay.
+- **Lock what the joke is before adding gags.** The cat was funny and still gave the ending two meanings. It came back only once the ending played them in order: his joy, then the cat on the monitor, then the robot's look.
+- **Let a running image carry the structure.** The stadium appears three times (his fantasy, the cat on his stage, his fantasy again) and gives a hook at frame 0, a reveal and a payoff.
+- **Sound can tell the joke too.** The speaker plays the cat's version, his fantasy turns it into his own guitar, the snap back returns the cat's. Cut arena reverb and crowd dead on the cut to reality.
+- **Measure voices against the music around them.** The first mix had the lines 6-8 dB under the riff; raise the lines and check per-section levels, not just the overall loudness.
+- **Check the key action against the frame edge after every camera change.** A zoom pushed his face off the left edge and exposed the set's right edge as a black strip.
+- **A reported defect you can't reproduce still needs an answer.** "Stepped" floor edges did not exist in the frames; they were compression in the half-size preview. Say so, measure the edge on the final encode, and never send a low-quality preview for a finish review.
+- **Use a fresh-eyes agent on muted frames before delivery.** It retold the story, confirmed both callbacks and found a cropped face, a too-subtle glance and dead space that the maker's eye had stopped seeing.
+- **Reuse a finished cut by time-shifting it.** v4 imports version A's shot functions and calls the 2026 ones with `t - D`, so the two cuts can't drift apart and version A stays byte-identical.
+- **Make the audio exactly the video's length** (`frames * 48000 / 30` samples), or `-shortest` drops the last frame.

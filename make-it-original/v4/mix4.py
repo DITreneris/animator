@@ -5,8 +5,8 @@ import sys, os, numpy as np, soundfile as sf
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..'))
 import sound as S
 from timeline import RIFF, AI_TUNE, AI_CHORD, ONSETS
-from film import G, END, R86
-SR = S.SR; N = int(round(END * SR)); TOT = N + 3 * SR
+from film import G, END, R86, NF
+SR = S.SR; N = NF * SR // 30; TOT = N + 3 * SR      # exactly the video's length
 rng = np.random.default_rng(7); t_ = np.arange(TOT) / SR
 def at(sig, t, buf=None, g=1.0):
     buf = np.zeros(TOT) if buf is None else buf
