@@ -8,7 +8,7 @@ Concept, locked decisions and the viewer test: the "Hoodyz Ep. 4 — Make It Ori
 
 **Master: `v4/make_it_original_v4.mp4`** (19.9 s, 1080×1920, 30 fps, loops, **Tomas's recorded voices**). Waiting for your sign-off and the muted viewer test.
 
-Voices: the four recorded lines are in `vo_rec/` (trimmed, lightly denoised; the drummer's line is pitched down 2.5 semitones so he sounds like a different person). The scratch voices stay in `vo/` for the rough and version A.
+Voices: the four recorded lines are in `vo_rec/` (trimmed, gently denoised, with a presence boost at 3.2 kHz and 6 kHz and light compression so they cut through the music; the drummer's line is pitched down 2.5 semitones before the boost, so he sounds like a different person without going dull). The scratch voices stay in `vo/` for the rough and version A.
 
 The story as built: his stadium is a fantasy; the drummer's "Play something we know." cuts to the real garage. In 2016 his post gets 3 views, his cat plays the riff with one lazy paw and gets 10M, and he pictures the cat on his own stage. In 2026 he asks his AI for something completely original, rejects it with the drummer's exact gesture and line, the robot glances at the old cat and plays the cat video, his stadium blooms back ("Now THAT'S original!"), the robot turns to us and the old cat yawns.
 
