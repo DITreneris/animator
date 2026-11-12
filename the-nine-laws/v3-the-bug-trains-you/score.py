@@ -16,7 +16,8 @@ from scipy.signal import fftconvolve, butter, sosfilt
 SR = 48000
 T = 30.041667
 N = int(SR * T)
-rng = np.random.default_rng(13)
+import os
+rng = np.random.default_rng(int(os.environ.get('SEED', 13)))
 mid = lambda m: 440.0 * 2 ** ((m - 69) / 12)
 
 CUTS = [1.333, 4.333, 5.792, 8.792, 11.792, 13.292, 14.875, 17.208, 19.875, 22.542, 25.208, 27.542]
@@ -310,19 +311,61 @@ def press_thunk():
 
 VOICE_DUR = {  # trimmed-clip durations, for ducking the bed under each line
     "reward": 0.65, "good_developer": 0.839, "still_on_call": 0.992,
-    "permission_to_rest": 1.417, "who_trained_whom": 1.130, "thus_spoke": 2.706,
+    "permission_to_rest": 1.417, "who_trained_whom": 1.130, "thus_spoke": 1.40,
 }
 
 
 def vline(bus_, name, t, g_dry=1.0, g_oct=0.6, pan=0.0):
-    put(bus_, load(f"{name}_trim.wav"), t, g_dry, pan)
-    put(bus_, load(f"{name}_oct.wav"), t, g_oct, pan)
+    dry, octv = load(f"{name}_trim.wav"), load(f"{name}_oct.wav")
+    if name == "permission_to_rest":      # this take's "P" is very soft: lift the onset
+        n1, n2 = int(0.07 * SR), int(0.13 * SR)
+        lift = np.ones(len(dry)); L = float(os.environ.get("LIFT", 1.0)); lift[:n1] = L; lift[n1:n2] = np.linspace(L, 1.0, n2 - n1)
+        dry = dry * lift
+    act = np.abs(dry) > 0.02 * np.abs(dry).max()            # speech-active samples only
+    g = 0.1 / (np.sqrt(np.mean(dry[act] ** 2)) + 1e-9)      # every line at the same level
+    put(bus_, dry * g, t, g_dry, pan)
+    put(bus_, octv * g, t, g_oct, pan)
     for b_ in (music, fx, amb):
         duck(b_, t - 0.05, t + VOICE_DUR.get(name, 1.0) + 0.15, depth=0.55, fade=0.08)
 
 
+def load_any(path):
+    """Any wav -> stereo float at SR (laugh clips may be mono/stereo, any rate)."""
+    import subprocess, tempfile, os
+    tmp = tempfile.mktemp(suffix=".wav")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", path, "-ac", "2", "-ar", str(SR), tmp], check=True)
+    w = wave.open(tmp)
+    x = np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(float).reshape(-1, 2) / 32768
+    os.remove(tmp)
+    return x
+
+
+LAUGH_RMS = 0.12   # placed laugh level (pre-mix), set so a laugh sits near the voice
+
+
+def laugh_slot(t, fname, max_dur=1.6):
+    import os
+    p = os.path.join("laughs", fname)
+    if not os.path.exists(p):
+        print("laugh slot empty:", fname)
+        return
+    x = load_any(p)
+    nz = np.flatnonzero(np.abs(x).max(1) > 0.01)          # trim leading silence
+    x = x[nz[0]:] if len(nz) else x
+    n = min(len(x), int(max_dur * SR))
+    x = x[:n].copy()
+    f = min(int(0.35 * SR), n // 3)
+    x[-f:] *= np.linspace(1, 0, f)[:, None] ** 2           # die away inside the slot
+    x *= LAUGH_RMS / (np.sqrt(np.mean(x ** 2)) + 1e-9)
+    for b_ in (music, amb, fx):
+        duck(b_, t - 0.05, t + n / SR + 0.1, depth=0.75, fade=0.08)
+    put(laughs, x, t, 1.0)   # dry: recorded laughs already carry their room
+
+
 # ---------------------------------------------------------------- timeline
 music, fx, voice, amb = bus(), bus(), bus(), bus()
+voice_dry = bus()
+laughs = bus()
 
 # ---- the tide: continuous, under everything
 put(amb, tide(T + 1), 0.0, 0.11)
@@ -337,10 +380,8 @@ put(music, tink(2093) * 0.4, 1.95, 0.4)
 # cut back to wide (4.333): the sip -- SeaShell states the card as the reward lands
 vline(voice, "reward", 4.48, 1.1, 0.32)
 put(music, bell(mid(76), 1.2) * 0.3, 4.5, 0.12)
-# laugh #1: right after the sip, bleeding across the hard cut into the law-card
-for b_ in (music, amb):
-    duck(b_, 5.5, 7.05, depth=0.65, fade=0.1)
-put(fx, laugh(1.7, voices=4, seed=1), 5.55, 1.35)
+# laugh slot #1: right after the sip, bleeding across the hard cut into the law-card
+laugh_slot(5.5, "laugh_small.wav")
 
 # ===================== interstitial: TRUST NO GREEN. (5.792 - 8.792) =====================
 put(amb, shell_breath(3.2, rate=0.2), 5.9, 0.12)
@@ -354,7 +395,7 @@ for b_ in (music, fx, amb):
     b_[gs:ge] *= 0.0
 
 # ===================== ACT 3: GOOD DEVELOPER. (8.792 - 14.875) =====================
-vline(voice, "good_developer", 8.95, 1.1, 0.32)
+vline(voice, "good_developer", 9.22, 1.1, 0.32)
 for t_ in (9.6, 10.4, 10.9):
     put(fx, bug_click(), t_, 0.18)
 # insert (11.792-13.292): bug hops off, cursor creeps in -- no reward chime this time
@@ -383,36 +424,33 @@ put(fx, splash(0.6), 20.7, 0.5)
 put(fx, power_down(), 20.85, 0.6)
 put(amb, shell_breath(2.6, rate=0.16), 19.95, 0.18)
 duck(amb, 20.1, 21.6, depth=0.45, fade=0.12)
-put(fx, foghorn(1.3, f0=88), 20.1, 0.6, pan=-0.3)
+put(fx, foghorn(1.3, f0=88), 20.1, 0.45, pan=-0.3)
 put(music, sub(mid(21), 2.0, 0.3, 1.2), 20.9, 0.3)
-# laugh #2: right after the claw breaks the surface
-duck(music, 21.5, 23.2, depth=0.65, fade=0.1)
-duck(amb, 21.5, 23.2, depth=0.65, fade=0.1)
-put(fx, laugh(1.6, voices=4, seed=2), 21.55, 1.35)
+# laugh slot #2: right after the claw breaks the surface (must clear "Permission" at 22.68)
+laugh_slot(21.45, "laugh_mid.wav", max_dur=1.05)
 
 # ===================== PERMISSION TO REST. (22.542 - 25.208) =====================
-vline(voice, "permission_to_rest", 22.68, 1.1, 0.32)
-put(amb, shell_breath(2.6, rate=0.12), 22.6, 0.2)
+vline(voice_dry, "permission_to_rest", 22.72, 1.2, 0.0)
+for b_ in (music, fx, amb):   # the quiet line gets the room to itself
+    duck(b_, 22.35, 24.3, depth=0.92, fade=0.12)
+put(amb, shell_breath(1.6, rate=0.12), 24.35, 0.16)
 for k, m in enumerate([76, 83, 88]):  # the motif, arriving early and soft -- foreshadowing the sign-off
-    put(music, bell(mid(m), 1.8) * 0.3, 23.9 + 0.3 * k, 0.07, pan=(-0.2, 0.2, 0)[k])
+    put(music, bell(mid(m), 1.8) * 0.3, 24.4 + 0.3 * k, 0.07, pan=(-0.2, 0.2, 0)[k])
 
 # ===================== WHO TRAINED WHOM? (25.208 - 27.542) =====================
 # ambulance #2: same scoring as #1 at first, then the flatline
-t = 25.4
-while t < 26.3:
-    put(fx, heartbeat_beep(1100), t, 0.3)
-    t += 0.85
-vline(voice, "who_trained_whom", 25.35, 1.1, 0.35)
-put(fx, flatline_tone(1.1), 26.35, 0.42)
-# laugh #3: right after the question lands, bleeding into the cut to the sign-off
-duck(music, 26.5, 28.3, depth=0.65, fade=0.1)
-duck(amb, 26.5, 28.3, depth=0.65, fade=0.1)
-put(fx, laugh(1.8, voices=4, seed=3), 26.55, 1.35)
+put(fx, heartbeat_beep(1100), 25.22, 0.3)   # one beat, then the question, then the flatline
+vline(voice, "who_trained_whom", 25.35, 1.1, 0.25)
+for b_ in (music, fx, amb):   # keep the soft closing "m" of "whom" audible
+    duck(b_, 25.3, 26.6, depth=0.85, fade=0.1)
+put(fx, flatline_tone(1.0), 26.62, 0.2)
+# laugh slot #3: right after the question lands; dies before the sign-off line
+laugh_slot(26.55, "laugh_big.wav", max_dur=1.55)
 
 # ===================== sign-off (27.542 - 30.042) =====================
 for k, m in enumerate([76, 83, 88]):
-    put(music, bell(mid(m), 1.5) * 0.4, 27.68 + 0.28 * k, 0.1, pan=(-0.3, 0.3, 0)[k])
-vline(voice, "thus_spoke", 27.75, 1.1, 0.38)
+    put(music, bell(mid(m), 1.5) * 0.4, 27.62 + 0.26 * k, 0.1, pan=(-0.3, 0.3, 0)[k])
+vline(voice, "thus_spoke", 28.25, 1.1, 0.38)
 # no closing bug-click here -- this episode ends on SeaShell's line and the tide, not a bug sound
 
 # ---------------------------------------------------------------- reverbs + mix
@@ -420,6 +458,9 @@ cathedral = ir(2.0, 0.7, pre=0.02, bright=6000, seed=3)
 music = reverb(music, ir(1.8, 0.55, pre=0.02, bright=5200, seed=11), 0.25)
 fx = reverb(fx, ir(1.1, 0.3, seed=7), 0.14)
 voice = hp(reverb(voice, cathedral, 0.22).T, 110).T
+voice_dry = hp(reverb(voice_dry, cathedral, 0.07).T, 110).T
+voice_dry = voice_dry + 0.6 * np.stack([bp(voice_dry[:, c], 2200, 5500) for c in range(2)], 1)  # consonant presence
+voice = voice + voice_dry
 
 room = lp(rng.normal(0, 1, (N, 2)), 2000, 1) * 0.0012
 def rms(x, a, b):
@@ -431,15 +472,16 @@ bed = music * 0.65 + fx * 0.8 + amb * 0.7
 ref = rms(bed, 8.9, 14.8)
 voice *= (ref * 3.0) / rms(voice, 4.48, 29.0)
 
-mix = bed + voice + room
+mix = bed + voice + laughs * 0.8 + room
 # re-apply the Act-2 silence gap after reverb too, so nothing rings across it
 for b_ in (mix,):
     gfade = int(0.02 * SR)
     b_[gs - gfade:gs] *= np.linspace(1, 0, gfade)[:, None]
     b_[gs:ge] *= 0.0
     b_[ge:ge + gfade] *= np.linspace(0, 1, gfade)[:, None]
-end = int(0.04 * SR)
-mix[-end:] *= np.linspace(1, 0.4, end)[:, None]
+# the episode ends on SeaShell's line: everything fades out right after it
+fe0 = int((28.25 + 1.40 + 0.05) * SR)
+mix[fe0:] *= np.linspace(1, 0, N - fe0)[:, None] ** 2
 
 
 def save(p, x):

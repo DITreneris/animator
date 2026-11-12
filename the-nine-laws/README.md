@@ -13,14 +13,14 @@ video with the video stream untouched.
 
 Unlike most folders in this repo, these can't be rebuilt from the repo
 alone: the picture is a supplied video, and the voice clips each
-`score.py` loads (`*_trim.wav`, `*_oct.wav`, `c_*.wav`, `w_*.wav`) are not
-committed. Each folder holds the scoring script and the final render.
+`score.py` loads (`*_trim.wav`, `*_oct.wav`, `c_*.wav`, `w_*.wav`), and Part 3's laugh
+clips, are not committed. Each folder holds the scoring script and the final render.
 
 | Folder | Video | Length | Loudness |
 |---|---|---|---|
 | [`v1/`](v1/) | `the_nine_laws_sound_v2.mp4` (built by `score.py`, the v2 score) | 45.0 s | -12.9 LUFS |
 | [`v2-almost-done/`](v2-almost-done/) | `almost_done_sound.mp4` | 21.3 s | -13.4 LUFS |
-| [`v3-the-bug-trains-you/`](v3-the-bug-trains-you/) | `the_bug_trains_you_sound.mp4` | 30.0 s | -17 LUFS, on purpose: a flat gain keeps the laugh hits above the ducked bed, where loudness matching to -14 flattened them |
+| [`v3-the-bug-trains-you/`](v3-the-bug-trains-you/) | `the_bug_trains_you_sound.mp4` | 30.0 s | -15.0 LUFS (flat gain + peak limiter, so the laughs aren't flattened) |
 
 ## Episodes
 
@@ -42,4 +42,11 @@ the *least* funny moments rather than the two beats that actually resemble
 jokes. Six new SeaShell lines (ElevenLabs reads, processed through the same
 dry + octave-down + reverb chain as every other episode): "Reward.", "Good
 developer.", "Still on call.", "Permission to rest.", "Who trained whom?",
-and the reused "Thus spoke SeaShell..." sign-off.
+and "Thus spoke SeaShell." to close; the episode ends on that line.
+
+The laughs are recorded ElevenLabs sound effects (the first synthesized
+versions weren't recognizable as people). `score.py` loads them from a
+`laughs/` folder that, like the voice clips, isn't committed. Checks run
+on the final render: speech recognition hears all six lines correctly in
+the mix, and an AudioSet classifier (CED-mini) scores all three laugh spots
+as laughter (0.32 / 0.53 / 0.72). `finish.sh` sets the loudness and muxes.
