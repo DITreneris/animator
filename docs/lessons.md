@@ -246,3 +246,13 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Brand tags belong in the title bar,** not over the picture: a chip under the bar sat on the little office in the pushed ending.
 - **A polish pass must not make any beat worse than the shipped cut.** Compare the new version beat by beat with the master: Learn to Code v4's cut-in put the HIRED stamp on his face and swept the robot's arm across HEAD OF HIRING, so the whole cut was held although everything else improved.
 - **Stamps and props placed in screen space must be checked in every framing,** especially close-ups, where faces move to new places.
+
+## Make It Better v3: an older episode brought up to standard (12 Nov)
+
+- **Audit an old episode against the current standard before polishing it.** Three of this one's five faults were series drift, not craft: no title bar, the brand tag in TikTok's top strip, a mono mix with a fixed limiter instead of two-pass loudnorm.
+- **A brand tag the episode doesn't need is one less problem.** Dropping it removed the safe-zone fault and the need for a no-tag twin in one move.
+- **Adding a title bar to an old episode pushes everything down.** The banner, the sign and every scene's big label collided with the bar; each had to move, and one crowd grid had to start lower.
+- **Sound effects placed on a beat can mask the first word of the line on that beat.** The label-pop sweeps sat exactly on "MORE" and "LESS"; moving the voices 0.12 s later fixed what re-recording alone had not.
+- **Transcribe each line from the final mix, not just the clean take.** The clean takes were correct while the mixed ones were not, which is what caught the masking.
+- **A loop that pops is usually one element appearing or vanishing.** Holding the character in his closing pose from frame 0 cut the loop's picture difference nearly in half, with no change to any beat.
+- **Keep a flashback or glitch card in the episode's palette.** A purple-and-cyan rewind card in a red-and-gold film reads as a technical error, not a story beat.
