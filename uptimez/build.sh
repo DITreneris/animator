@@ -4,6 +4,7 @@
 #        ./build.sh s131a | s131b    Saved to Cloud A/B test (15 s, 540x960)
 #        ./build.sh s136 | s136n     Saved to Cloud release, 1080x1920 (with / without the sniff tag)
 #        ./build.sh dlx | dlx_tag    Downloads Expedition v10, 1080x1920, BT.709 (clean / with the promptanatomy.app card)
+#        ./build.sh day1 | day1_thumb   How Sofía Survived Day One loop v3, 1080x1920, BT.709 / its cover
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -88,7 +89,27 @@ build_dlx() {
   echo "Wrote $out/$name"
 }
 
+# How Sofía Survived Day One: phoneme mouth shapes + looping mix (sound_day1_v4.py), drawn at 2x
+build_day1() {
+  local out=${OUT_DIR:-$HERE/sofia-day-one} name=uptimez_day1_loop_v3_1080.mp4; mkdir -p "$out"
+  ( cd src
+    python3 sound_day1_v4.py
+    local I G
+    I=$(ffmpeg -hide_banner -i day1_mix_v4.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.3-($I),2))")
+    python3 engine_hd.py day1_anim_v2 | ffmpeg -y -v error \
+      -f rawvideo -pix_fmt bgra -s 1080x1920 -r 30 -i - -i day1_mix_v4.wav \
+      -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+      -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+      -c:v libx264 -preset veryfast -crf 18 -c:a aac -b:a 192k -ar 48000 -t 25 \
+      -movflags +faststart "$out/$name.tmp.mp4"
+    mv "$out/$name.tmp.mp4" "$out/$name" )
+  echo "Wrote $out/$name"
+}
+
 case "${1:-}" in
+  day1)       build_day1 ;;
+  day1_thumb) ( cd src && python3 thumb_day1.py "${OUT_DIR:-$HERE/sofia-day-one}/day1_thumbnail.png" ) ;;
   dlx)     build_dlx B ;;
   dlx_tag) build_dlx B tag ;;
   s136|s136n) build_release "$1" ;;

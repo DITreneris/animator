@@ -246,3 +246,13 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Brand tags belong in the title bar,** not over the picture: a chip under the bar sat on the little office in the pushed ending.
 - **A polish pass must not make any beat worse than the shipped cut.** Compare the new version beat by beat with the master: Learn to Code v4's cut-in put the HIRED stamp on his face and swept the robot's arm across HEAD OF HIRING, so the whole cut was held although everything else improved.
 - **Stamps and props placed in screen space must be checked in every framing,** especially close-ups, where faces move to new places.
+
+## How Sofía Survived Day One (10–12 Nov)
+
+- **Bring a prop in on the cut where it's needed.** Parking the approval train at its final spot for all of 17:00 put the button on the robot's arm in the two-shot; arriving on the cut to the press kept both shots clean.
+- **In tight two-shots, bubbles go above the head or into clear wall,** not beside the mouth, where the other face sits. Use the same spot for a repeated line (all three "Pam?") so the rule of three reads at a glance.
+- **A blind press needs the hand and the eyes in one shot:** his hand on the button, his eyes still on her, the whole label visible.
+- **Dead air at the start is lost viewers.** If the opening gag is visual (pressing BREW), make it audible too and escalate it (one buzz, two, then the full "denied").
+- **Mouth shapes from phonemes beat loudness.** Spread the line's phonemes over its voiced span, give vowels more time, and keep at least one drawing for every m/b/p and f/v. Sample on the 12 fps drawing grid, because the engine only redraws 12 times a second.
+- **A matched loop rewinds state, not just the picture:** the coffee goes back up, the evening grade returns to morning, and the film opens on the exact framing it ends on. Measure the join (mean pixel difference about 9 against about 45 for an unrelated frame).
+- **Shared-kit changes go in as optional hooks that default to off,** then frame hashes prove the older episodes still draw identically.

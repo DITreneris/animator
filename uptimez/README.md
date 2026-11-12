@@ -4,7 +4,7 @@
 
 An AI office sitcom: short vertical cartoons about ridiculous people using AI, posted as if from the corporate account of a polished SaaS company. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
 
-Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud* and *Downloads Expedition* releases, rendered at 1080×1920.
+Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition* and *How Sofía Survived Day One* releases, rendered at 1080×1920.
 
 ## Cast
 
@@ -16,6 +16,10 @@ Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts fo
 | **MAX** | Developer | The only sensible one; asks the fair question, watches it burn | `am_michael` |
 | **LAPTOP** | The AI | Two dots and a flat line. Does exactly what it's told and gets overruled | none |
 | **CACHE** | Office cat | Always asleep on whatever the humans threw away | none |
+| **SOFÍA** | New hire (*Day One*) | Blonde, playful, unimpressed; learns the office's one rule by 17:00 | `af_bella` |
+| **DON 2.0** | Don's desk robot (*Day One*) | Waist-high, red tie, copies everything Don does, including delegating to PAM | Don's take, +4 semitones, light metal |
+
+In *How Sofía Survived Day One*, DON is the team lead who approves everything blind, voiced by `am_onyx`; PAM never speaks.
 
 Model sheets and the height line-up are in [`characters/`](characters/). They're drawn by the same kit as the episodes (`src/charsheets.py`), so a sheet always matches the video.
 
@@ -78,6 +82,26 @@ PAM asks "Where's the final?" without looking up from her keyboard, and points a
 
 Built by `dlx.py` (one module, `ENDING = "A" | "B"`; `dlx_a.py` / `dlx_b.py` apply a 0.6 s trim as a time map) with props from `dlx_kit.py`, a voice-first mix from `sound_dlx.py`, and automatic layout checks in `qa_dlx.py` (faces and eyes never crossed by props, labels or other faces; bubble tails at their speaker; text size and app-button zones). `./build.sh dlx` runs all three (`dlx_tag` for the tagged cut).
 
+### How Sofía Survived Day One — [`sofia-day-one/`](sofia-day-one/)
+
+Sofía's first day. At 9:00 the coffee maker refuses her: WAITING FOR APPROVAL. DON approves everything without looking ("I approve everything."), his robot copies him, and every question ends the same way: "Pam?" First DON, then the robot, then at 17:00 Sofía herself. PAM hands her coffee from her own thermos with one look into the camera. Then DON blindly presses APPROVE, and the 9:00 coffee finally pours. The screen resets, the coffee rewinds back into the machine, and the loop starts again. Pure comedy, no brand card; it should work on mute (clock stamps, the rule of three on "Pam?").
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_day1_loop_v3_1080.mp4` | **loop v3 (current)** | **1080×1920**, 25 s, BT.709, −16.2 LUFS, −1.6 dBFS peak. Mouth shapes from each line's phonemes (lips close on m/b/p, teeth on f/v); matched loop frame: after the reset the coffee rewinds, the evening light returns to morning and the camera settles on the close-up the film opens on |
+| `uptimez_day1_loop_v2_1080.mp4` | loop v2 | 1080×1920. Sound pass: the opening is the joke in sound (each BREW press gets an angrier denial over the machine hum), Sofía's heels, PAM's typing (dead stop for her look to camera) |
+| `uptimez_day1_loop_v1.mp4` | loop v1 | 540×960. Full animation: eased poses, loudness lip-sync, blinks, hair and hoop lag, screen-reset loop ending |
+| `uptimez_day1_animatic_v1.mp4` | animatic v1 | Storyboard v3 with voices and stings, 540×960 |
+| `day1_storyboard_silent_v3.mp4`, `_sheet_v3.png` | storyboard v3 | Company badges (Sofía's paper DAY 1 sticker until 17:00, DON 2.0 on the robot), APPROVE plate, contact shadows, evening grade |
+| `day1_storyboard_silent_v2.mp4`, `_sheet_v2.png` | storyboard v2 | Review fixes: DON's hand on the button, bubbles clear of faces, spaced 17:00 staging, tighter railway reveal, no white flash |
+| `day1_storyboard_silent.mp4`, `day1_storyboard_sheet.png` | storyboard v1 | Silent, 17 shots, sitcom framing (one wide, mirror framing on the three "Pam?") |
+| `day1_voice_auditions.mp4` | | Three voices each for DON and Sofía, two robot treatments (chosen: DON B, Sofía B, robot A) |
+| `day1_thumbnail.png`, `day1_thumbnail_grid_crop.png` | | 1080×1920 cover (`src/thumb_day1.py`) and its centre 1080×1440 grid crop |
+| `sofia_sheet_v1.png`, `sofia_sheet.png`, `sofia_sheet_v3.png` | | Sofía model sheets: first pass, v2 (blonde, shorter skirt, flirtier), v3 badges |
+| `day1_props_sheet.png`, `day1_props_sheet_v3.png` | | Robot, coffee maker, railway and train, thermos and mug; v3 badges |
+
+Built from `src/`: `sofia.py` (Sofía), `day1_kit.py` (robot, coffee maker, railway, props), `day1_sb.py` → `day1_sb_v2.py` → `day1_sb_v3.py` (storyboards), `day1_anim.py` → `day1_anim_v2.py` (animation; v2 reads `day1_visemes.json` from `day1_visemes.py`), `sound_day1.py` → `_v4.py` (voices, stings and foley; v2+ wrap every tail across the loop point). Every version is its own file, so each earlier cut still renders unchanged. `kit.py` gained an optional `BADGE_HOOK` (default off, so older episodes draw exactly as before). `./build.sh day1` rebuilds loop v3, `./build.sh day1_thumb` the cover.
+
 ### Where Files Live — [`storyboards/`](storyboards/)
 
 Nobody understands what's cloud, local, disk or phone. Storyboard animatics with ending variants.
@@ -103,6 +127,7 @@ pip install pycairo numpy soundfile kokoro-onnx
 ./uptimez/build.sh pt43      # one episode (keys: s3 s1 s3b s3c s1v2 pta ptb pt4 pt42 pt43 s131a s131b)
 ./uptimez/build.sh s136      # Saved to Cloud release at 1080x1920 (s136n = without the tag)
 ./uptimez/build.sh dlx       # Downloads Expedition final at 1080x1920 (dlx_tag = with the promptanatomy.app card)
+./uptimez/build.sh day1      # How Sofía Survived Day One, loop v3 at 1080x1920 (day1_thumb = cover)
 ./uptimez/build.sh all       # every episode
 ./uptimez/build.sh sheets    # logo files + character sheets
 ```
