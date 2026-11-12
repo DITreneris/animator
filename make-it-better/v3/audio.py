@@ -47,9 +47,28 @@ def load(p):
     return np.frombuffer(subprocess.run(['ffmpeg','-v','error','-i',p,'-ac','1','-ar',str(sr),'-f','s16le','-'],capture_output=True).stdout,'<i2').astype(float)/32768
 for n,t in(('ask',1.2),('pop',3.34),('pro',4.14),('less',4.94),('first',5.74),('end',12.92)):
     x=load(f'vo/v_{n}.wav');add(vo,t,x/np.abs(x).max(),.85)
+# A crowd, not one voice four times over: copies at different pitches and speeds, none quite in time,
+# each filtered a little differently, with a room tail over the whole thing.
 ch=load('vo/v_chantf.wav');ch=ch/np.abs(ch).max()
-for at in(0.02,8.9):
-    for dt,g in((0,.42),(.018,.34),(.04,.3),(.07,.24)):add(vo,at+dt,ch,g)
+def shift(x,r):
+    n=int(len(x)/r);return np.interp(np.arange(n)*r,np.arange(len(x)),x)
+VOICES=[(1.00,.000,.38,1.0),(1.05,.022,.28,.8),(0.95,.038,.28,1.3),(1.08,.013,.20,.7),
+        (0.92,.055,.20,1.5),(1.03,.068,.17,.9),(0.97,.031,.17,1.2),(1.11,.080,.12,.6)]
+crowd=np.zeros(int(1.6*sr))
+for r_,dt,g,tone in VOICES:
+    y=shift(ch,r_)
+    if tone>1: y=np.diff(y,prepend=0)*tone*.5+y*.5      # brighter, further forward
+    else: y=np.convolve(y,np.ones(int(3/tone))/int(3/tone),'same')
+    i=int(dt*sr);n=min(len(y),len(crowd)-i)
+    if n>0: crowd[i:i+n]+=y[:n]*g
+ir=rng.standard_normal(int(.35*sr))*np.exp(-np.arange(int(.35*sr))/sr*9)
+crowd=crowd+np.convolve(crowd,ir,'full')[:len(crowd)]/np.abs(ir).sum()*.45
+crowd=crowd/np.abs(crowd).max()
+# the tail has to be out of the way before he speaks at 1.2 s, or it eats "Could you"
+env=np.ones(len(crowd));f0=int(1.02*sr);f1=int(1.22*sr)
+env[f0:f1]=np.linspace(1,0,f1-f0);env[f1:]=0
+crowd*=env
+for at in(0.02,8.9):add(vo,at,crowd,.62)
 # duck music and fx by voice envelope
 w=int(.03*sr);e=np.convolve(np.abs(vo),np.ones(w)/w,'same');e=np.clip(e*14,0,1)
 a=np.exp(-1/(.012*sr));rl=np.exp(-1/(.2*sr));s=np.zeros(N);p=0

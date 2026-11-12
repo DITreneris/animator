@@ -38,7 +38,7 @@ def shades(c,x,y,s,rot=0):
     c.set_source_rgb(*YEL);c.set_line_width(10);c.move_to(-10,-14);c.line_to(10,-14);c.stroke()
     c.move_to(-76,-12);c.line_to(-48,-12);c.move_to(24,-12);c.line_to(52,-12);c.set_source_rgba(1,1,1,.55);c.set_line_width(7);c.stroke()
     c.restore()
-def robot(c,x,y,s,boss=False,walk=None,glow=1,rot=0,noshade=False,peek=0,eye=(0,0),tw=1):
+def robot(c,x,y,s,boss=False,walk=None,glow=1,rot=0,noshade=False,peek=0,eye=(0,0),tw=1,flat=False):
     c.save();c.translate(x,y);c.rotate(rot);c.scale(s,s);c.set_line_cap(cairo.LINE_CAP_ROUND)
     if walk is not None:
         a=math.sin(walk)*26
@@ -57,11 +57,14 @@ def robot(c,x,y,s,boss=False,walk=None,glow=1,rot=0,noshade=False,peek=0,eye=(0,
                 ell(c,q*42,-34,17,20);c.set_source_rgb(*BLUE);c.fill()
                 c.move_to(q*66,-66);c.line_to(q*20,-56);c.set_source_rgb(*INK);c.set_line_width(8);c.stroke()
         else:
-            c.move_to(-16,52);c.curve_to(-6,62,22,60,38,44);c.set_source_rgb(*INK);c.set_line_width(8);c.stroke()
+            c.move_to(-16,52)
+            if flat: c.line_to(34,50)                     # the leader's smile drops at the punchline
+            else: c.curve_to(-6,62,22,60,38,44)
+            c.set_source_rgb(*INK);c.set_line_width(8);c.stroke()
         shades(c,0,-12+peek*38,1.02)
     else:
         for q in(-1,1):
-            ell(c,q*36+eye[0],-8+eye[1],18,(23*glow+1)*(tw if q==1 else 1));c.set_source_rgb(*BLUE);c.fill()
+            ell(c,q*36+eye[0],-8+eye[1],18,(23*glow+1)*tw);c.set_source_rgb(*BLUE);c.fill()   # both eyes, or the twitch reads as a wink
     c.restore()
 def head(c,x,y,s,expr='calm',cool=False,rot=0,f=0):
     c.save();c.translate(x,y);c.rotate(rot);c.scale(s,s)

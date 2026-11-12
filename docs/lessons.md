@@ -256,3 +256,7 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Transcribe each line from the final mix, not just the clean take.** The clean takes were correct while the mixed ones were not, which is what caught the masking.
 - **A loop that pops is usually one element appearing or vanishing.** Holding the character in his closing pose from frame 0 cut the loop's picture difference nearly in half, with no change to any beat.
 - **Keep a flashback or glitch card in the episode's palette.** A purple-and-cyan rewind card in a red-and-gold film reads as a technical error, not a story beat.
+- **A twitch that scales one eye is a wink.** `(tw if q==1 else 1)` on the eye height made every "I'm done" beat read as a knowing wink at phone size. Apply the squash to both eyes, hold them flat for about 0.25 s, and let the prop drop afterwards so the shot has one clear action.
+- **Give the closing line a reaction, not just a caption.** Freezing the room for the last 0.4 s and flattening the leader's smirk to a straight line cost two lines of code and gave the punchline a consequence.
+- **A crowd is not one voice layered four times.** Eight copies at ±8% speed and pitch, offset up to 80 ms, each filtered differently, with a short room tail, reads as a crowd; wider than that and the words dissolve. Fade the chant out before the next line or it eats the first word.
+- **A background gag that cannot be read is a distraction.** The striking toaster only worked once it was bigger and carried its own picket sign.

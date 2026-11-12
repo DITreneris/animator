@@ -18,6 +18,9 @@ def sign(c,x,y,w,h,lines,sz,col=RED):
     for i,l in enumerate(lines):txt(c,l,x,y0+i*lh,sz,col,lw=0)
 def toaster(c,x,y,s,f=0):
     c.save();c.translate(x,y);c.scale(s,s)
+    c.set_source_rgb(*hx('8a5a2e'));c.rectangle(-150,-440,16,330);c.fill()          # its own picket sign
+    rr(c,-268,-600,250,170,10);fs(c,CREAM,7);txt(c,'V47',-143,-543,66,RED,lw=0)
+    limb(c,[(-96,20),(-150,-90),(-146,-150)],20,hx('c9d3e3'))
     limb(c,[(-46,88),(-46,128)],16,GREY);limb(c,[(46,88),(46,128)],16,GREY)
     for dx in(-34,34):
         rr(c,dx-34,-126,68,110,16);fs(c,hx('20130e'),7)
@@ -30,7 +33,8 @@ def thumb(c,x,y,k):
     c.save();c.translate(x,y);c.scale(k,k)
     rr(c,-12,-82,30,70,14);fs(c,SKIN,7)
     rr(c,-38,-30,76,66,22);fs(c,SKIN,7);c.restore()
-def rally(c,f,fp,ey,guyx=540,expr='calm',thumbk=0,paper=0,bot_x=170,dim=0):
+def rally(c,f,fp,ey,guyx=540,expr='calm',thumbk=0,paper=0,bot_x=170,dim=0,freeze=False,flat=False):
+    if freeze: f=438                                         # the room stops dead on the punchline
     bg(c,hx('8c1322'),hx('3c0b18'));rays(c,hx('f3c76a'),f,540,620,.13)
     rr(c,60,386,960,112,8);fs(c,CREAM,8)
     txt(c,"THE AI WENT ON STRIKE",540,444,74,hx('8c1322'),lw=0)
@@ -39,7 +43,7 @@ def rally(c,f,fp,ey,guyx=540,expr='calm',thumbk=0,paper=0,bot_x=170,dim=0):
     for i,x in enumerate((110,320,760,970)):fistbot(c,x,800,1.0,fp,ey)
     tx=540+118;ty=lerp(960,700,fp)
     limb(c,[(610,950),(tx+18,lerp(960,860,fp)),(tx,ty)],30,WHITE);ell(c,tx,ty-10,32,32);fs(c,WHITE,7)
-    robot(c,540,810,1.08,boss=True)
+    robot(c,540,810,1.08,boss=True,flat=flat)
     if guyx<1200:
         x=guyx;gy=1400
         torso(c,x,gy+145,1.3)
@@ -58,16 +62,13 @@ def rally(c,f,fp,ey,guyx=540,expr='calm',thumbk=0,paper=0,bot_x=170,dim=0):
         rb(c,bot_x,1410,.62,red=False,eye=(10,4))
         c.set_source_rgb(*hx('8a5a2e'));c.rectangle(bot_x-70,1300,10,175);c.fill()
         rr(c,bot_x-135,1236,140,84,8);fs(c,CREAM,6);txt(c,'V47',bot_x-65,1278,54,RED,lw=0)
-    toaster(c,885,1430,.5,f)
+    toaster(c,872,1430,.62,f)
 LOOP=['COULD YOU JUST','MAKE IT BETTER?']
 def bb(c,lines,sz=92,y=1110,h=220,w=800,hl=()):bubble(c,lines,sz,y=y,h=h,w=w,hl=hl)
 def A(c,f):
     fp=.55+.45*abs(math.sin(f*math.pi/15))
     rally(c,f,fp,0,guyx=540,bot_x=170,expr='happy',paper=1,thumbk=1)   # the pose he ends on, so the loop doesn't jump
-    if f<30:
-        # the roar answers him, in the spot his bubble will take
-        txt(c,'NO MORE VERSIONS!',540,1110,86,YEL,lw=18,rot=-.02,scale=1+.04*abs(math.sin(f*math.pi/15)))
-    elif f>=36:
+    if f>=36:
         bb(c,LOOP,hl=(1,))
 def S(c,f):
     r=f-66
@@ -97,6 +98,8 @@ def desk(c,f,a,lab,lines,prog,cnt=None):
     if prog<.9:rays(c,WHITE,f,540,1200,.1*(1-prog))
     if prog>=1 and f-a<6:c.translate(noise(f,1)*(6-(f-a))*4,noise(f,2)*(6-(f-a))*4)
     txt(c,lab,540,470,150,RED if prog>=1 else YEL,lw=24,scale=max(.02,back((f-a)/4)))
+    if prog==0 and f-a<26:                                   # dates the flashback: we have gone back, not forward
+        txt(c,'47 VERSIONS EARLIER',540,588,62,INK,lw=14,st=WHITE,alpha=min(1,(f-a)/4)*min(1,(26-(f-a))/5))
     h=40+prog*230
     pin=1+.10*oe((f-168)/30) if f>=168 else 1    # slow push-in on 'Actually, the first one was better.'
     c.save();c.translate(0,290);c.translate(540,1320);c.scale(1.22*pin,1.22*pin);c.translate(-540,-1320)
@@ -121,10 +124,11 @@ def C(c,f):
 def E_(c,f):
     r=f-213
     bg(c,hx('55595f'),hx('24262b'))
-    tw=.25 if (r%7)<2 and r<24 else 1
-    if r%7<1 and r<24:c.translate(noise(f,1)*6,0)
-    robot(c,540,860,3.1,glow=.25,tw=tw*3.2 if tw==1 else .25)
-    y=lerp(1370,2000,oe((r-10)/10))
+    hold=r>=9                                                # flat, done-with-this eyes from here to the end of the shot
+    tw=.25 if ((r%7)<2 and r<9) or hold else 3.2
+    if r%7<1 and r<9:c.translate(noise(f,1)*6,0)
+    robot(c,540,860,3.1,glow=.25,tw=tw)
+    y=lerp(1370,2000,oe((r-17)/7))
     rr(c,270,y,540,380,18);fs(c,hx('a9713f'),10)
     rr(c,320,y+60,440,300,8);fs(c,WHITE,6);txt(c,'V47',540,y+200,120,RED,lw=0)
 def rain(c,f,a=.5):
@@ -168,8 +172,8 @@ def G(c,f):
         txt(c,'THIS IS OUR',0,-95,104,INK,lw=0);txt(c,'FINAL VERSION.',0,40,104,RED,lw=0)
         txt(c,'- THE UNION',0,160,50,hx('66707f'),lw=0);c.restore()
 def H_(c,f):
-    r=f-375
-    rally(c,f,0,1,expr='happy',paper=1,thumbk=max(.02,back((r-3)/5)) if r>=3 else 0)
+    r=f-375;fz=f>=438
+    rally(c,f,0,1,expr='happy',paper=1,thumbk=max(.02,back((r-3)/5)) if r>=3 else 0,freeze=fz,flat=fz)
     if f>=TS:
         if f<TS+27: bb(c,['LOVE THE ENERGY.'],84)
         else: bb(c,LOOP,hl=(1,))

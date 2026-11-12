@@ -4,7 +4,7 @@ Built on the "AI Workers' Union" poster. The robots went on strike after one tin
 
 | Version | Video | Length | What changed |
 |---|---|---|---|
-| [`v3/`](v3/) | `make_it_better_v3.mp4` + cover | 15 s | **Master.** Series HOODYZ bar with a state pill, brand tag dropped, "MORE/LESS professional" audible, the loop no longer pops, a push-in on the last feedback line, the union beat no longer silent |
+| [`v3/`](v3/) | `make_it_better_v3.mp4` + cover | 15 s | **Master.** Series HOODYZ bar with a state pill, brand tag dropped, "MORE/LESS professional" audible, the loop no longer pops, a push-in on the last feedback line, the union beat no longer silent; then a polish pass (below) |
 | [`v1/`](v1/) | `make_it_better.mp4` | 15 s | Opens on the payoff (letter + thumbs-up), sentence split across the loop: "…make it better?" / "Love the energy. Could you just…" |
 | [`v2/`](v2/) | `make_it_better_v2.mp4` | 15 s | Clearer opening: "THE AI WENT ON STRIKE" + chant, his request, record scratch, three giant robots stare. Full line at the end, the army's roar restarts it |
 
@@ -46,11 +46,22 @@ Measured against v2:
 | Mastering | Mono, -14.8 LUFS, a fixed limiter | Stereo, -14.3 LUFS, two-pass loudnorm (`master.sh`), peak -1.1 dBFS |
 | Cover | None | `make_it_better_cover.png` |
 
-**Checks on v3:** 450 frames, 1080×1920, 30 fps; no flat frames; nothing in TikTok's top strip; all four feedback lines transcribe correctly from the final mix. A separate agent watched it muted, retold the story correctly and called the loop smooth. A clean rebuild from a copy reproduces the audio and cover exactly and the picture to within 95 dB PSNR (4 of 1154 frames differ; x264 is not bit-deterministic between runs).
+### Polish pass (second review)
+
+| Fixed | What changed |
+|---|---|
+| Two captions said the same thing at the open | The yellow "NO MORE VERSIONS!" is gone; the placard already says it. The loop's picture difference dropped again, 19.8 → 16.3 |
+| The flashback's chronology | "47 VERSIONS EARLIER" under the V1 label for 0.9 s |
+| The robot winked instead of giving up | **A bug:** the twitch scaled only the right eye (`tw if q==1 else 1`). Now both eyes twitch, hold flat from the ninth frame, and the V47 board drops after the hold as the shot's one clear action |
+| The punchline had no consequence | The room freezes for the last 0.4 s and the sunglasses leader's smirk flattens to a line while the guy keeps grinning |
+| The little grey object was unreadable | The toaster is bigger and carries its own V47 picket sign, so "even the appliances walked out" reads |
+| The chant was one voice layered four times | Eight copies at different pitches and speeds, none quite in time, each filtered differently, with a room tail; faded out before his first line so it no longer eats "Could you" |
+
+**Checks on v3:** 450 frames, 1080×1920, 30 fps; no flat frames; nothing in TikTok's top strip; all four feedback lines transcribe correctly from the final mix. A separate agent watched it muted, retold the story correctly and called the loop smooth. A clean rebuild from a copy reproduces the film, the cover and the audio bit for bit.
 
 **Not checked, needs people:** whether it is funny, the crowd chant (still one synthetic voice layered four times), the mix balance.
 
 ## Known issues
 
-- The chant is one synthetic voice layered four times.
+- "Make it pop" is partly masked by the music; the bubble carries it.
 - Days 3 and 4 are a wall of small robots; the mass is the gag, but individual robots are mush at phone size.
