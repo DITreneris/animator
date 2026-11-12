@@ -31,7 +31,9 @@ def state(**kw):
              sof_pose="stand", sof_face="neutral", sof_look=(0.6, 0),
              don_pose="stand", don_face="smug", don_look=(-0.6, 0), don_chin=0, don_thumb=False, don_wrench=False,
              burgers=False, dome=None, slip=0.0, oil_drop=None, edge_bolt=None, robot_feet=None, r_front=False,
-             burger_v=2, burger_dy=0.0, sof_lag=(0, 0))
+             burger_v=2, burger_dy=0.0, sof_lag=(0, 0),
+             don_tilt=0.0, sof_dx=0.0, don_thumb_scale=1.0,
+             pam_pose="type", pam_face="neutral")
     s.update(kw)
     st = ck.STAGE[s["stage"]]
     for key, who in (("sof_x", "sof"), ("robot_x", "robot"), ("don_x", "don")):
@@ -48,7 +50,8 @@ def world(k, s):
     ck.menu_board(k, 80, 330)
     pt42.wall_sign(k, 310, 340, 30)
     ck.counter(k, 760)
-    ck.pam_corner(k)
+    pp = s["pam_pose"]
+    ck.pam_corner(k, pose=anim.key(pp) if isinstance(pp, tuple) else pp, face=s["pam_face"])
     sx, rx, dx = s["sof_x"], s["robot_x"], s["don_x"]
     if sx is not None:
         ck.chair_back(k, sx, ck.SOF[1] - 214, 1250)
@@ -62,16 +65,26 @@ def world(k, s):
     if sx is not None:
         sp = s["sof_pose"]
         sp = anim.key(sp) if isinstance(sp, tuple) else sp
-        out["sof"] = ck.seated(k, lambda: sf.sofia(k, sx, ck.SOF[1], 1.0, sp, s["sof_face"],
-                                                   look=s["sof_look"], lag=s["sof_lag"], folder="none"))
+        sxx = sx + s["sof_dx"]
+
+        def draw_sof():
+            o = sf.sofia(k, sxx, ck.SOF[1], 1.0, sp, s["sof_face"], look=s["sof_look"], lag=s["sof_lag"],
+                         folder="none")
+            return o
+        out["sof"] = ck.seated(k, draw_sof)
     if dx is not None:
         dp = s["don_pose"]
         dp = anim.key(dp) if isinstance(dp, tuple) else dp
-        out["don"] = ck.seated(k, lambda: dv.don(k, dx, ck.DON[1], 1.0, dp, s["don_face"], look=s["don_look"],
-                                                 chin=s["don_chin"]))
+        def draw_don():
+            c.save()
+            c.translate(dx, ck.DON[1]); c.rotate(s["don_tilt"]); c.translate(-dx, -ck.DON[1])
+            o = dv.don(k, dx, ck.DON[1], 1.0, dp, s["don_face"], look=s["don_look"], chin=s["don_chin"])
+            c.restore()
+            return o
+        out["don"] = ck.seated(k, draw_don)
         hx, hy = out["don"]["hands"][1]
         if s["don_thumb"]:
-            dv.thumbs_up(k, (hx, hy))
+            dv.thumbs_up(k, (hx, hy), s["don_thumb_scale"])
         if s["don_wrench"]:
             ck.wrench(k, hx - 4, hy - 34, 0.9, 0.2)
         if s["oil_drop"] is not None:                       # a drop falling from the wrench onto his shirt

@@ -6,6 +6,7 @@
 #        ./build.sh dlx | dlx_tag    Downloads Expedition v10, 1080x1920, BT.709 (clean / with the promptanatomy.app card)
 #        ./build.sh day1 | day1_thumb   How Sofía Survived Day One loop v3, 1080x1920, BT.709 / its cover
 #        ./build.sh iwry | iwry_thumb   I Will Replace You animatic v3 (540x960) / its cover
+#        ./build.sh iwry_anim           I Will Replace You full animation, release: 540 rough + 1080
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -126,8 +127,33 @@ build_iwry() {
   echo "Wrote $out/$name"
 }
 
+build_iwry_release() {
+  # Full animation (lip-sync, blinks, eased motion) at 540 (rough) and 1080 (release).
+  local out=${OUT_DIR:-$HERE/i-will-replace-you}; mkdir -p "$out"
+  ( cd src
+    ROBOT=B WHISPER=2 DONSHOUT=2 LIPS=1 python3 sound_iwry.py mix
+    python3 iwry_visemes.py
+    local I G
+    I=$(ffmpeg -hide_banner -i iwry_mix_B_w2_d2.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.6-($I),2))")
+    python3 engine_v.py iwry_anim | ffmpeg -y -v error \
+      -f rawvideo -pix_fmt bgra -s 540x960 -r 30 -i - -i iwry_mix_B_w2_d2.wav \
+      -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+      -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+      -c:a aac -b:a 192k -ar 48000 -t 25 -movflags +faststart "$out/uptimez_iwry_anim_v2.mp4.tmp.mp4"
+    mv "$out/uptimez_iwry_anim_v2.mp4.tmp.mp4" "$out/uptimez_iwry_anim_v2.mp4"
+    python3 engine_hd.py iwry_anim | ffmpeg -y -v error \
+      -f rawvideo -pix_fmt bgra -s 1080x1920 -r 30 -i - -i iwry_mix_B_w2_d2.wav \
+      -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+      -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+      -c:a aac -b:a 192k -ar 48000 -t 25 -movflags +faststart "$out/uptimez_iwry_anim_v2_1080.mp4.tmp.mp4"
+    mv "$out/uptimez_iwry_anim_v2_1080.mp4.tmp.mp4" "$out/uptimez_iwry_anim_v2_1080.mp4" )
+  echo "Wrote $out/uptimez_iwry_anim_v2.mp4 and $out/uptimez_iwry_anim_v2_1080.mp4"
+}
+
 case "${1:-}" in
   iwry)       build_iwry ;;
+  iwry_anim)  build_iwry_release ;;
   iwry_thumb) ( cd src && python3 thumb_iwry.py "${OUT_DIR:-$HERE/i-will-replace-you}/iwry_thumbnail.png" ) ;;
   day1)       build_day1 ;;
   day1_thumb) ( cd src && python3 thumb_day1.py "${OUT_DIR:-$HERE/sofia-day-one}/day1_thumbnail.png" ) ;;

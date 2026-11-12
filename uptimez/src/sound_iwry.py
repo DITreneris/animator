@@ -274,6 +274,7 @@ def mix(key):
             if t0 + len(a) / SR <= slot + 0.1:
                 break
         add(voice, a, t0)
+        TAKES.append((who, txt, t0, a))
         print(f"{who} {txt:38s} {t0:5.2f}-{t0 + len(a) / SR:5.2f} slot {slot}  speed x{sp}",
               "OK" if t0 + len(a) / SR <= slot + 0.1 else "LATE")
     fx = np.zeros(L)
@@ -305,9 +306,25 @@ def mix(key):
     out /= max(1.0, np.max(np.abs(out)) / 0.85)
     tag = ("_w2" if WHISPER_V == 2 else "") + ("_d2" if DON_SHOUT_V == 2 else "")
     sf.write(f"iwry_mix_{key}{tag}.wav", np.stack([out, out], 1), SR)
+    if os.environ.get("LIPS"):                                   # per-frame loudness of each final take
+        import json
+        nf = int(DUR * 30)
+        lips = {"DON": [0.0] * nf, "SOF": [0.0] * nf, "ROB": [0.0] * nf, "lines": []}
+        hop = SR // 30
+        for who, txt, t0, a in TAKES:
+            e = np.array([np.sqrt(np.mean(a[j:j + hop] ** 2)) for j in range(0, len(a), hop)])
+            e = e / e.max()
+            f0 = int(round(t0 * 30))
+            for j, v in enumerate(e):
+                if f0 + j < nf:
+                    lips[who][f0 + j] = round(float(v), 3)
+            lips["lines"].append([who, txt, round(t0, 3), round(t0 + len(a) / SR, 3)])
+        json.dump(lips, open(f"iwry_lips{tag}.json", "w"))
+        print("lips written")
     print("peak", round(float(np.max(np.abs(out))), 3))
 
 
+TAKES = []
 WHISPER_V = int(os.environ.get("WHISPER", "1"))      # 2 = the de-essed, best-take whisper (animatic v2)
 DON_SHOUT_V = int(os.environ.get("DONSHOUT", "1"))   # 2 = Don's shout without the hard clipping (animatic v3)
 

@@ -106,13 +106,13 @@ def table(k, x0=TABLE_X0, x1=TABLE_X1, top=TABLE_TOP, seed=1230):
     rect(k, x0, top - 6, x1 - x0, 16, TABLE_TOP_COL, seed + 1, lw=2.4)
 
 
-def pam_corner(k, seed=1240):
+def pam_corner(k, seed=1240, pose="type", face="neutral"):
     """Pam at a smaller table further back on the right, with her thermos."""
     c = k.c
     x, feet = PAM
     c.save(); c.translate(x, feet); c.scale(PAM_S, PAM_S); c.translate(-x, -feet)
     chair_back(k, x, feet - 190, seed)
-    pt42._orig_person(k, "PAM", x, feet + 40, 1.0, pose="type", face="neutral", seed=44)
+    pt42._orig_person(k, "PAM", x, feet + 40, 1.0, pose=pose, face=face, seed=44)
     rect(k, x - 120, feet - 150, 240, 150, TABLE_FRONT, seed + 1, lw=2.4)
     rect(k, x - 130, feet - 156, 260, 14, TABLE_TOP_COL, seed + 2, lw=2.4)
     import day1_kit as dk

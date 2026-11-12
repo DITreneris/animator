@@ -87,6 +87,11 @@ def screen_face(k, face, look=(0, 0), talk=0.0, side=1):
     c.set_source_rgb(*col)
     c.set_line_cap(1)
     eyes = (-15, 15)
+    if face == "blink":                                 # screen blink: a one-frame flat line between faces
+        c.set_line_width(4)
+        for ex in eyes:
+            c.move_to(ex - 8, -3); c.line_to(ex + 8, -3); c.stroke()
+        return
     if face == "pleading":                              # big glossy eyes, brows tilted up in the middle
         for ex in eyes:
             c.arc(ex + lx, -4 + ly, 11, 0, 2 * math.pi); c.fill()

@@ -4,7 +4,7 @@
 
 An AI office sitcom: short vertical cartoons about ridiculous people using AI, posted as if from the corporate account of a polished SaaS company. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
 
-Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition* and *How Sofía Survived Day One* releases, rendered at 1080×1920.
+Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One* and *I Will Replace You* releases, rendered at 1080×1920.
 
 ## Cast
 
@@ -109,7 +109,9 @@ Cafeteria. DON: "Nice hoops. Can I get in your loop?" SOFÍA: "You're out of the
 
 | File | Version | Notes |
 |---|---|---|
-| `uptimez_iwry_animatic_v3.mp4` | **animatic v3 (current)** | 540×960, 25 s, −16 LUFS. Storyboard v2 with voices: Don `am_onyx`, Sofía `af_bella`, robot B `am_echo`. Don's shout without hard clipping (v2 squared 11.5% of its samples into a buzz) |
+| `uptimez_iwry_anim_v2_1080.mp4` | **release (current)** | **1080×1920**, 25 s, −16 LUFS. Full animation on storyboard v2: mouths from the real voice takes, blinks (Sofía, Don, Pam, the robot's screen), eased eye darts with hair/hoop lag, Don's lean-in overshoot and nod, Sofía's recoil on the shout, the thumbs-up pop, Pam typing |
+| `uptimez_iwry_anim_v2.mp4` | release, 540 rough | Same animation, 540×960, for review before the 1080 render |
+| `uptimez_iwry_animatic_v3.mp4` | animatic v3 | 540×960, 25 s, −16 LUFS. Storyboard v2 with voices: Don `am_onyx`, Sofía `af_bella`, robot B `am_echo`. Don's shout without hard clipping (v2 squared 11.5% of its samples into a buzz) |
 | `uptimez_iwry_animatic_v2.mp4` | animatic v2 | Robot voice B; the whisper regenerated: de-essed, best of three takes (the v1 high-pass turned its "s" sounds into glitchy bursts) |
 | `uptimez_iwry_animatic_v1.mp4` | animatic v1 | Robot voice A |
 | `iwry_robot_auditions.mp4` | | Three robot voices (A `am_puck`, B `am_echo`, C `bm_fable`), each with all four lines |
@@ -120,7 +122,7 @@ Cafeteria. DON: "Nice hoops. Can I get in your loop?" SOFÍA: "You're out of the
 | `robot_sheet_v1.png`, `cafe_set_v1.png` | sheets v1 | First robot and set; the 12 cameras on the set |
 | `iwry_thumbnail.png`, `iwry_thumbnail_grid_crop.png` | cover | 1080×1920; the shout is the title, the whisper the hook; key art inside the 1080×1440 grid crop |
 
-Built from `src/`: `waiter_kit.py` (robot, pose blending), `cafe_kit.py` (set, props, bubbles, per-shot staging `STAGE`), `iwry_common.py` (shared world and shots), `iwry_sb.py` / `iwry_sb_v2.py` (storyboards), `iwry_test_a.py` / `_b.py`, `qa_iwry.py` (renders each frame with and without bubbles and flags any bubble over a face), `sound_iwry.py` (voices, stings, mix), `thumb_iwry.py`. Earlier versions are kept as `_v1` files. `./build.sh iwry` rebuilds animatic v3, `./build.sh iwry_thumb` the cover.
+Built from `src/`: `waiter_kit.py` (robot, pose blending, the screen `"blink"` face), `cafe_kit.py` (set, props, bubbles, per-shot staging `STAGE`, Pam's pose/face params), `iwry_common.py` (shared world and shots; gained `don_tilt`, mouth overlays, `sof_dx`, `don_thumb_scale`, Pam's pose/face — all optional, default off), `iwry_mouths.py` (viseme mouth shapes, shared by Don and Sofía v4), `iwry_visemes.py` (reads the mix's per-line timings into a 12 fps viseme string per character), `iwry_sb.py` / `iwry_sb_v2.py` (silent storyboards), `iwry_anim.py` (full animation: lip-sync, blinks, eased motion; `iwry_anim_v1.py` kept), `iwry_test_a.py` / `_b.py`, `qa_iwry.py` (renders each frame with and without bubbles and flags any bubble over a face), `sound_iwry.py` (voices, stings, mix; `LIPS=1` exports per-frame loudness for the visemes), `thumb_iwry.py`. Earlier versions are kept as `_v1` files. `./build.sh iwry` rebuilds animatic v3, `./build.sh iwry_anim` the release (540 rough + 1080), `./build.sh iwry_thumb` the cover.
 
 ### Where Files Live — [`storyboards/`](storyboards/)
 
