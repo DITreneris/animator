@@ -8,8 +8,19 @@ video; the series continues from there with each episode reusing SeaShell's
 established sign-off card/line and sonic identity for continuity.
 
 All soundtracks here are synthesized from scratch in Python (numpy/scipy —
-no licensed music or sound libraries), mixed to roughly broadcast loudness,
-and muxed onto the original silent video with the video stream untouched.
+no licensed music or sound libraries) and muxed onto the original silent
+video with the video stream untouched.
+
+Unlike most folders in this repo, these can't be rebuilt from the repo
+alone: the picture is a supplied video, and the voice clips each
+`score.py` loads (`*_trim.wav`, `*_oct.wav`, `c_*.wav`, `w_*.wav`) are not
+committed. Each folder holds the scoring script and the final render.
+
+| Folder | Video | Length | Loudness |
+|---|---|---|---|
+| [`v1/`](v1/) | `the_nine_laws_sound_v2.mp4` (built by `score.py`, the v2 score) | 45.0 s | -12.9 LUFS |
+| [`v2-almost-done/`](v2-almost-done/) | `almost_done_sound.mp4` | 21.3 s | -13.4 LUFS |
+| [`v3-the-bug-trains-you/`](v3-the-bug-trains-you/) | `the_bug_trains_you_sound.mp4` | 30.0 s | -17 LUFS, on purpose: a flat gain keeps the laugh hits above the ducked bed, where loudness matching to -14 flattened them |
 
 ## Episodes
 

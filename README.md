@@ -20,6 +20,7 @@ Every frame is drawn from code and every sound is synthesized, so a video can be
 | [`whos-a-good-boy/`](whos-a-good-boy/) | **Who's a Good Boy?**: in 2024 he praises his robot like a puppy; by 2027 the robot says it to him (v3.3 shipped, v3.4–v3.5 push-ins and review fixes; with and without the brand chip) | 24 s | ✅ Source + render |
 | [`learn-to-code/`](learn-to-code/) | **Learn to Code**: his robot gets the job, the robots promote each other, he ends up under Tower Bridge (endings A and B, B v3 shipped, B v4 held; no-tag versions) | 25 s | ✅ Source + render |
 | [`chat-gifs/`](chat-gifs/) | **Emma Blocked**, **Babe / Voice Agent** and **Claude / Backups**: chat GIFs re-timed, reframed to 9:16 and given synthesized sound | 12–15 s | ✅ Source + render |
+| [`the-nine-laws/`](the-nine-laws/) | **The Nine Laws** (SeaShell, the hermit-crab Super AI): *The Nine Laws*, Part 2 *Almost Done*, Part 3 *The Bug Trains You* (a David Lynch *Rabbits*-style score). Synthesized soundtracks on supplied video | 21–45 s | 🔊 Sound source + render (picture and voice clips not in repo) |
 
 The full history of the work, including concepts not yet built, is in [`docs/sessions.md`](docs/sessions.md).
 
