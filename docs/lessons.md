@@ -256,3 +256,16 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Mouth shapes from phonemes beat loudness.** Spread the line's phonemes over its voiced span, give vowels more time, and keep at least one drawing for every m/b/p and f/v. Sample on the 12 fps drawing grid, because the engine only redraws 12 times a second.
 - **A matched loop rewinds state, not just the picture:** the coffee goes back up, the evening grade returns to morning, and the film opens on the exact framing it ends on. Measure the join (mean pixel difference about 9 against about 45 for an unrelated frame).
 - **Shared-kit changes go in as optional hooks that default to off,** then frame hashes prove the older episodes still draw identically.
+
+## I Will Replace You (12 Nov)
+
+- **When two spacing rules fight, cheat per shot.** The robot needed room from Don *and* clearance from Sofía on one 540-unit table. Sliding the pair apart whenever the third person is out of frame solved both; only the wide shows true spacing.
+- **Measure gestures, don't eyeball them.** The first point measured −6 px (touching her hair); the shipped one has a 29 px gap. The same check caught the cover's first draft poking her eye.
+- **A pose must read as a black shape.** Rendering the three robot poses as solid silhouettes showed "nervous" and "collapse" were the same diagonal; making one compact and the other diagonal fixed it.
+- **Brow direction decides the emotion.** Bars higher at the inner end read as sad, not stern; flat or inner-low reads as commanding.
+- **One obvious object beats five small ones** at phone size: a giant bolt sticking out of the bun read where a cluster of grey parts did not.
+- **9:16 two-shots are width-limited.** Cropping off ceiling and floor doesn't enlarge faces; seat the pair closer or let a third character be cut at the edge.
+- **Test the joke in motion before the storyboard.** Two 5 s silent tests (reveal → reaction, point → collapse → whisper) settled the hardest beats cheaply.
+- **Check bubbles with pixels.** Rendering each frame with and without bubbles and diffing the face discs found every overlap; a forced overlap proves the check works.
+- **Voice effects can create the glitch.** A high-pass "whisper" sharpened the s-sounds into bursts, and the robot's hard shout clipped Don into a buzz (11.5% of samples saturated). Soften s-sounds, choose the cleanest of several takes, and measure saturation before mixing.
+- **A narrative loop can beat a seamless one.** Sofía's look to Don, then to us, then a resigned blink makes the repeat a joke ("he learned nothing") without engineering a matched frame.

@@ -18,6 +18,7 @@ Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts fo
 | **CACHE** | Office cat | Always asleep on whatever the humans threw away | none |
 | **SOFÍA** | New hire (*Day One*) | Blonde, playful, unimpressed; learns the office's one rule by 17:00 | `af_bella` |
 | **DON 2.0** | Don's desk robot (*Day One*) | Waist-high, red tie, copies everything Don does, including delegating to PAM | Don's take, +4 semitones, light metal |
+| **TRAINEE** | Cafeteria waiter robot (*I Will Replace You*) | Short, round, one wobbly wheel, red bow tie. Wants a job, never understands the irony | `am_echo`, +2 semitones, small-speaker tone |
 
 In *How Sofía Survived Day One*, DON is the team lead who approves everything blind, voiced by `am_onyx`; PAM never speaks.
 
@@ -102,6 +103,25 @@ Sofía's first day. At 9:00 the coffee maker refuses her: WAITING FOR APPROVAL. 
 
 Built from `src/`: `sofia.py` (Sofía), `day1_kit.py` (robot, coffee maker, railway, props), `day1_sb.py` → `day1_sb_v2.py` → `day1_sb_v3.py` (storyboards), `day1_anim.py` → `day1_anim_v2.py` (animation; v2 reads `day1_visemes.json` from `day1_visemes.py`), `sound_day1.py` → `_v4.py` (voices, stings and foley; v2+ wrap every tail across the loop point). Every version is its own file, so each earlier cut still renders unchanged. `kit.py` gained an optional `BADGE_HOOK` (default off, so older episodes draw exactly as before). `./build.sh day1` rebuilds loop v3, `./build.sh day1_thumb` the cover.
 
+### I Will Replace You — [`i-will-replace-you/`](i-will-replace-you/)
+
+Cafeteria. DON: "Nice hoops. Can I get in your loop?" SOFÍA: "You're out of the loop." A robot waiter rolls up and she thinks: *Replace him.* It only talks to "sir", serves two cheeseburgers full of bolts, asks "Are you hiring, sir?", snaps upright, points at Sofía: "I WILL REPLACE YOU!", then collapses and whispers "If that's okay, sir?" DON: "Approved." Sofía looks at Don, then at us, a resigned blink; a bolt drops and Don's pun starts again. The joke: AI is coming for your job; it just needs your boss's approval first.
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_iwry_animatic_v3.mp4` | **animatic v3 (current)** | 540×960, 25 s, −16 LUFS. Storyboard v2 with voices: Don `am_onyx`, Sofía `af_bella`, robot B `am_echo`. Don's shout without hard clipping (v2 squared 11.5% of its samples into a buzz) |
+| `uptimez_iwry_animatic_v2.mp4` | animatic v2 | Robot voice B; the whisper regenerated: de-essed, best of three takes (the v1 high-pass turned its "s" sounds into glitchy bursts) |
+| `uptimez_iwry_animatic_v1.mp4` | animatic v1 | Robot voice A |
+| `iwry_robot_auditions.mp4` | | Three robot voices (A `am_puck`, B `am_echo`, C `bm_fable`), each with all four lines |
+| `iwry_storyboard_silent_v2.mp4`, `_sheet_v2.png` | **storyboard v2** | Review polish: hunched entrance below Don's face, eyes to Sofía before the point, tucked arms on the whisper, larger whisper text, metal separated from the buns, narrative-loop ending |
+| `iwry_storyboard_silent.mp4`, `iwry_storyboard_sheet.png` | storyboard v1 | 12 shots, 25 s, silent |
+| `iwry_test_a.mp4`, `iwry_test_b.mp4` (+ sheets) | motion tests | Reveal → proud robot → Don's reaction; point → collapse → whisper → "Approved." |
+| `robot_sheet_v2.png`, `cafe_set_v2.png` | sheets v2 | Submissive collapse, firm shout face, one-object burgers, per-shot staging with measured gaps, new faces |
+| `robot_sheet_v1.png`, `cafe_set_v1.png` | sheets v1 | First robot and set; the 12 cameras on the set |
+| `iwry_thumbnail.png`, `iwry_thumbnail_grid_crop.png` | cover | 1080×1920; the shout is the title, the whisper the hook; key art inside the 1080×1440 grid crop |
+
+Built from `src/`: `waiter_kit.py` (robot, pose blending), `cafe_kit.py` (set, props, bubbles, per-shot staging `STAGE`), `iwry_common.py` (shared world and shots), `iwry_sb.py` / `iwry_sb_v2.py` (storyboards), `iwry_test_a.py` / `_b.py`, `qa_iwry.py` (renders each frame with and without bubbles and flags any bubble over a face), `sound_iwry.py` (voices, stings, mix), `thumb_iwry.py`. Earlier versions are kept as `_v1` files. `./build.sh iwry` rebuilds animatic v3, `./build.sh iwry_thumb` the cover.
+
 ### Where Files Live — [`storyboards/`](storyboards/)
 
 Nobody understands what's cloud, local, disk or phone. Storyboard animatics with ending variants.
@@ -128,6 +148,7 @@ pip install pycairo numpy soundfile kokoro-onnx
 ./uptimez/build.sh s136      # Saved to Cloud release at 1080x1920 (s136n = without the tag)
 ./uptimez/build.sh dlx       # Downloads Expedition final at 1080x1920 (dlx_tag = with the promptanatomy.app card)
 ./uptimez/build.sh day1      # How Sofía Survived Day One, loop v3 at 1080x1920 (day1_thumb = cover)
+./uptimez/build.sh iwry      # I Will Replace You, animatic v3 at 540x960 (iwry_thumb = cover)
 ./uptimez/build.sh all       # every episode
 ./uptimez/build.sh sheets    # logo files + character sheets
 ```

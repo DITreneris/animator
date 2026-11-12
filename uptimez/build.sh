@@ -5,6 +5,7 @@
 #        ./build.sh s136 | s136n     Saved to Cloud release, 1080x1920 (with / without the sniff tag)
 #        ./build.sh dlx | dlx_tag    Downloads Expedition v10, 1080x1920, BT.709 (clean / with the promptanatomy.app card)
 #        ./build.sh day1 | day1_thumb   How Sofía Survived Day One loop v3, 1080x1920, BT.709 / its cover
+#        ./build.sh iwry | iwry_thumb   I Will Replace You animatic v3 (540x960) / its cover
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -107,7 +108,27 @@ build_day1() {
   echo "Wrote $out/$name"
 }
 
+# I Will Replace You: storyboard v2 + voiced mix (robot B, de-essed whisper, Don's soft shout)
+build_iwry() {
+  local out=${OUT_DIR:-$HERE/i-will-replace-you} name=uptimez_iwry_animatic_v3.mp4; mkdir -p "$out"
+  ( cd src
+    ROBOT=B WHISPER=2 DONSHOUT=2 python3 sound_iwry.py mix
+    local I G
+    I=$(ffmpeg -hide_banner -i iwry_mix_B_w2_d2.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.6-($I),2))")
+    python3 engine_v.py iwry_sb_v2 | ffmpeg -y -v error \
+      -f rawvideo -pix_fmt bgra -s 540x960 -r 30 -i - -i iwry_mix_B_w2_d2.wav \
+      -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+      -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+      -c:v libx264 -preset veryfast -crf 18 -c:a aac -b:a 192k -ar 48000 -t 25 \
+      -movflags +faststart "$out/$name.tmp.mp4"
+    mv "$out/$name.tmp.mp4" "$out/$name" )
+  echo "Wrote $out/$name"
+}
+
 case "${1:-}" in
+  iwry)       build_iwry ;;
+  iwry_thumb) ( cd src && python3 thumb_iwry.py "${OUT_DIR:-$HERE/i-will-replace-you}/iwry_thumbnail.png" ) ;;
   day1)       build_day1 ;;
   day1_thumb) ( cd src && python3 thumb_day1.py "${OUT_DIR:-$HERE/sofia-day-one}/day1_thumbnail.png" ) ;;
   dlx)     build_dlx B ;;
