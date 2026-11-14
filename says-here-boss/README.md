@@ -6,7 +6,7 @@ Based on the four-panel "2024 Prompt Engineer → 2027 My Agents Are Hiring" mem
 |---|---|---|---|
 | [`v1/`](v1/) | `says_here_you_were_our_boss.mp4` | 17 s | First build: interview, rewind, 2024 / 2025 / 2026, "HIRED: Prompt Engineer, 12 tokens/hour", "Thank you, sir", "One more thing…" |
 | [`v2/`](v2/) | `says_here_v2.mp4` | 15 s | Voiced lines, moving opening (robot slides its shades down), close-up "...YES?", the stolen-sunglasses payoff ("Nice shades, by the way." → "MY SHADES?!"), badge only at the end |
-| [`v3/`](v3/) | `says_here_v3.mp4` | 19 s | **Hoodyz episode.** Rebuilt from the concept up: HARV (the AI Hoody trained, now PROF. HARV, PhD, Head of Human Resources) has no record of him; faces carry every beat (no back-of-head shots); the dark-room podcast shot; 9.99 TOKENS / HOUR; HARV never smiles; "I've had these for years." → "THOSE ARE MINE!" → silence and a close-up of the cat's one eye; every key line also written, so it works on mute; Tomas's recorded voice; HOODYZ title bar; stereo master. See [`v3/README.md`](v3/README.md) |
+| [`v3/`](v3/) | `says_here_v3.mp4` | 19 s | **Hoodyz episode.** Rebuilt from the concept up: HARV (the AI Hoody trained, now PROF. HARV, PhD, Head of Human Resources) has no record of him; faces carry every beat (no back-of-head shots); the dark-room podcast shot; 9.99 TOKENS / HOUR; HARV never smiles; "I've had these for years." → "THOSE ARE MINE!" → silence and a close-up of the cat's one eye; every key line also written, so it works on mute; Tomas's recorded voice; ME + MY AI title bar with the Hoodyz badge; stereo master. See [`v3/README.md`](v3/README.md) |
 
 **Planted detail:** in 2026 a tiny robot steals his gold-framed sunglasses; the interviewer is wearing them in the first shot.
 

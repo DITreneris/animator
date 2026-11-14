@@ -119,17 +119,24 @@ def cat_one_eye(c, x, gy, s, look=-1, open_eye=True):
     c.restore()
 
 def topbar(c, pill, y0=222):
-    H_ = 138; c.save()
-    rr(c, 40, y0, 1000, H_, 40); fs(c, WHITE, 8)
-    ix, iy = 118, y0 + H_ / 2
-    c.move_to(ix - 34, iy + 34); c.line_to(ix - 34, iy - 4); c.curve_to(ix - 34, iy - 46, ix + 34, iy - 46, ix + 34, iy - 4)
-    c.line_to(ix + 34, iy + 34); c.close_path(); fs(c, NAVY, 6); ell(c, ix, iy - 2, 20, 18); fs(c, SKIN, 5)
-    txt(c, 'HOODYZ', 172, iy, 76, NAVY, lw=0, align='l')
+    """ME + MY AI series bar: the Hoodyz badge (hoodie icon + HOODYZ), the title, and a pill with the story state.
+    Drawn in screen space. The title shrinks only if a long pill would crowd it."""
+    c.save(); c.identity_matrix()
+    rr(c, 40, y0, 1000, 138, 40); fs(c, WHITE, 8)
+    iy = y0 + 69
+    rr(c, 58, iy - 38, 196, 76, 38); c.set_source_rgb(*NAVY); c.fill()                    # Hoodyz badge
+    c.save(); c.translate(96, iy + 2); c.scale(.62, .62)
+    c.move_to(-34, 34); c.line_to(-34, -4); c.curve_to(-34, -46, 34, -46, 34, -4); c.line_to(34, 34); c.close_path()
+    c.set_source_rgb(*WHITE); c.fill(); ell(c, 0, -2, 20, 18); c.set_source_rgb(*SKIN); c.fill(); c.restore()
+    txt(c, 'HOODYZ', 124, iy, 31, WHITE, lw=0, align='l')
     c.select_font_face('Lilita One'); c.set_font_size(58); w = max(200, c.text_extents(pill).width + 96)
-    px = 1000 - w / 2; rr(c, px - w / 2, iy - 44, w, 88, 44); fs(c, YEL, 7); txt(c, pill, px, iy, 58, INK, lw=0)
+    px = 1020 - w / 2
+    size = 68; c.set_font_size(size); tw = c.text_extents('ME + MY AI').width; room = (px - w / 2 - 22) - 274
+    if tw > room: size *= room / tw
+    txt(c, 'ME + MY AI', 274, iy, size, NAVY, lw=0, align='l')
+    rr(c, px - w / 2, iy - 44, w, 88, 44); fs(c, YEL, 7); txt(c, pill, px, iy, 58, INK, lw=0)
     c.restore()
 
-# ---------------- the sheet ----------------
 def label(c, s, x, y, size=40, col=INK): txt(c, s, x, y, size, col, lw=0)
 def section(c, s, y): txt(c, s, 60, y, 56, NAVY, lw=0, align='l'); c.rectangle(60, y + 34, 2040, 5); c.set_source_rgb(*NAVY); c.fill()
 

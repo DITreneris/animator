@@ -31,7 +31,7 @@ Hoodyz episode, rebuilt from the v2 experiment to the series standard. 19.07 s, 
 ## Files
 
 - `render.py`: the shots and the timeline (`python3 render.py frames 0 329` for checks, `video` for the picture)
-- `chars.py`: Hoody's new faces, HARV, the nameplate, the cat's one eye, the title bar, the dark room; run it to write `character_sheet.png`
+- `chars.py`: the ME + MY AI title bar (Hoodyz badge at its left, retitled 14 Nov), Hoody's new faces, HARV, the nameplate, the cat's one eye, the title bar, the dark room; run it to write `character_sheet.png`
 - `kit.py`: a copy of the drawing kit from `make-it-original/` (this folder stands alone)
 - `audio.py`: the mix (voices, a bed in the flashback only, effects, the silence after the shout)
 - `master.sh`: stereo master by one linear gain plus a peak limiter. The series loudnorm master switched to dynamic mode on this film (loudness range 12.6 LU > 11) and flattened the shout's lead from 11 dB to about 1
