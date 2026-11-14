@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
-# Masters a mono mix to stereo, -14 LUFS, true peak about -1.6 dBTP after AAC. Usage: master.sh mix.wav fin.wav
+# Masters a mono mix to stereo at -14 LUFS without touching its dynamics: one linear gain, then a peak limiter.
+# (The series loudnorm master switches to dynamic mode when loudness range > 11 LU and flattens the punchline.)
+# Usage: master.sh mix.wav fin.wav
 set -euo pipefail
-J=$(ffmpeg -hide_banner -i "$1" -af 'pan=stereo|c0=c0|c1=c0,loudnorm=I=-14:TP=-2:LRA=11:print_format=json' -f null - 2>&1 | sed -n '/^{/,/^}/p')
-g(){ echo "$J" | python3 -c "import json,sys;print(json.load(sys.stdin)['$1'])"; }
-ffmpeg -v error -y -i "$1" -af "pan=stereo|c0=c0|c1=c0,loudnorm=I=-14:TP=-2:LRA=11:measured_I=$(g input_i):measured_TP=$(g input_tp):measured_LRA=$(g input_lra):measured_thresh=$(g input_thresh):offset=$(g target_offset):linear=true,aresample=48000,alimiter=limit=0.66:level=false" -ar 48000 "$2"
+meas(){ ffmpeg -hide_banner -i "$1" -af ebur128 -f null - 2>&1 | awk '/Summary/{s=1} s&&/ I:/{print $2; exit}'; }
+ffmpeg -v error -y -i "$1" -af 'pan=stereo|c0=c0|c1=c0' -ar 48000 _st.wav
+G=$(python3 -c "print(-14-($(meas _st.wav)))")
+for pass in 1 2; do
+  ffmpeg -v error -y -i _st.wav -af "volume=${G}dB,alimiter=limit=0.70:attack=4:release=60:level=false" -ar 48000 "$2"
+  G=$(python3 -c "print($G+(-14-($(meas "$2"))))")
+done
+rm -f _st.wav

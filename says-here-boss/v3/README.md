@@ -1,6 +1,6 @@
 # Says Here You Were Our Boss: v3
 
-Hoodyz episode, rebuilt from the v2 experiment to the series standard. 18.7 s, 19 shots, 1080×1920, 30 fps, stereo.
+Hoodyz episode, rebuilt from the v2 experiment to the series standard. 18.97 s, 20 shots, 569 frames, 1080×1920, 30 fps, stereo.
 
 **Logline.** Hoody sits a job interview with HARV, the AI he trained. HARV is now a professor and Head of Human Resources. He's wearing Hoody's sunglasses, and the company has no record that Hoody ever existed.
 
@@ -11,7 +11,7 @@ Hoodyz episode, rebuilt from the v2 experiment to the series standard. 18.7 s, 1
 | # | Frames | Shot |
 |---|---|---|
 | 1 | 0–19 | Hoody, forced smile, sweat bead (no text in the first second) |
-| 2 | 20–61 | HARV at the desk with Hoody's CV: "Says here you used to be our boss?" |
+| 2 | 20–61 | HARV at the desk with Hoody's CV: "Says here you used to be our boss?" (HARV's mouth is flat in every shot: he never smiles) |
 | 3 | 62–80 | Hoody: the smile cracks, "…yes." |
 | 4–5 | 81–119 | His eyes flick to the shades; insert on the shades with a glint and a sparkle |
 | 6 | 120–133 | REWIND |
@@ -21,18 +21,20 @@ Hoodyz episode, rebuilt from the v2 experiment to the series standard. 18.7 s, 1
 | 13–15 | 330–399 | Offer letter (9.99 TOKENS / HOUR); eye twitch; crying "Thank you, sir." |
 | 16 | 400–455 | HARV adjusts the shades, flat-faced: "I've had these for years." |
 | 17 | 456–485 | "THOSE ARE MINE!", the loudest point in the film |
-| 18 | 486–512 | Silence. HARV still, the panel turns to look at each other, the cat opens one eye |
-| 19 | 513–561 | The forced smile returns: "About your experience." → loop |
+| 18 | 486–501 | Silence. HARV still; the panel turns to look at each other (one tiny beep) |
+| 19 | 502–519 | Close on the cat on the desk: she opens one eye at him, the only one who heard |
+| 20 | 520–568 | The forced smile returns: "About your experience." → loop |
 
 ## Files
 
 - `render.py`: the shots and the timeline (`python3 render.py frames 0 329` for checks, `video` for the picture)
 - `chars.py`: Hoody's new faces, HARV, the nameplate, the cat's one eye, the title bar, the dark room; run it to write `character_sheet.png`
 - `kit.py`: a copy of the drawing kit from `make-it-original/` (this folder stands alone)
-- `audio.py`: the mix (voices, a bed in the flashback only, effects, the silence after the shout); `master.sh`: stereo master
+- `audio.py`: the mix (voices, a bed in the flashback only, effects, the silence after the shout)
+- `master.sh`: stereo master by one linear gain plus a peak limiter. The series loudnorm master switched to dynamic mode on this film (loudness range 12.6 LU > 11) and flattened the shout's lead from 11 dB to about 1
 - `voices.py`: regenerates HARV's lines (needs `kokoro-onnx`; set `KOKORO_DIR`)
 - `cover.py`: `cover.png`, the dark-room frame
-- `build.sh`: everything. A clean rebuild from a fresh copy matched the master bit for bit (decoded video and audio md5)
+- `build.sh`: everything. The master is the build script's output; a second clean build matched it with identical audio and 3 video frames different at about 90 dB PSNR (invisible x264 nondeterminism)
 
 ## Voices
 
@@ -54,10 +56,10 @@ Hoodyz episode, rebuilt from the v2 experiment to the series standard. 18.7 s, 1
 
 | Check | Result |
 |---|---|
-| Every line, speech recognition on the final mix | All six correct; the podcast reads as "*Inaudible*" |
-| Section levels | Shout −14.8 dB, next loudest −17.1, the silence after it −33.8 |
-| Loudness | −15.1 LUFS, LRA 2.6 LU, peak −2.2 dBFS |
-| Loop, frame 0 vs last | Mean difference 1.9 / 255 |
+| Every line, speech recognition on the final mix | All six correct; the podcast is wordless (shuffled speech) |
+| Section levels | Shout −10.7 dB, next loudest −17.3, the silence after it −33.5, the opening interview −20.3 |
+| Loudness | −14.7 LUFS, LRA 6.0 LU, true peak −1.8 dBTP |
+| Loop, frame 0 vs last | Mean difference 0.3 / 255 |
 | Flat frames | None (min std below the bar 24.1) |
 | App zones | Clear |
 | Fresh-eyes mute test (frames only) | Story, theft, loop and cat all read; "Of everything he lost, he's only angry about the sunglasses" |

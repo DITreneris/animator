@@ -1,4 +1,4 @@
-"""Hoodyz - Says Here You Were Our Boss, v3. 19 shots, 18.73 s, 562 frames at 30 fps, 1080x1920.
+"""Hoodyz - Says Here You Were Our Boss, v3. 20 shots, 18.97 s, 569 frames at 30 fps, 1080x1920.
 Usage: python3 render.py frames 0 30 ...  |  python3 render.py video"""
 import sys, os, math, random, subprocess, cairo
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -88,7 +88,7 @@ def agents(c, f, r):
         rr(c, -90, -60, 180, 120, 14); fs(c, WHITE, 6); c.rectangle(-90, -60, 180, 24); c.set_source_rgb(*hx('64748b')); c.fill()
         ell(c, -28, 14, 12, 14); ell(c, 28, 14, 12, 14); c.set_source_rgb(*BLUE); c.fill(); c.restore()
 def mentee(c, f, r):
-    Sh.harv(c, 830, 1010 + math.sin(f * .4) * 4, .55, shade=False, mouth='smile', eyes=(-4, -4))
+    Sh.harv(c, 830, 1010 + math.sin(f * .4) * 4, .55, shade=False, mouth='flat', eyes=(-4, -4))
 def s8(c, f, r):  triptych(c, f, r, 'confident', 'PROMPT ENGINEER')
 def s9(c, f, r):
     triptych(c, f, r, 'sheepish', 'PROMPT MANAGER', extra=agents)
@@ -101,7 +101,7 @@ def s11(c, f, r):  # the theft
     k = ss((r - 3) / 10)
     bx, by, bs = 830, 1150, 1.0
     sx, sy, sc = lerp(hx_ + 6 * hs, bx, k), lerp(hy_ - 112 * hs, by - 12 * bs, k) - math.sin(k * math.pi) * 160, lerp(.78 * hs, 1.02 * bs, k)
-    Sh.harv(c, bx, by, bs, shade=False, mouth='smile', eyes=(-6, -6))
+    Sh.harv(c, bx, by, bs, shade=False, mouth='flat', eyes=(-6, -6))
     limb(c, [(bx - 70 * bs, by + 110 * bs), (lerp(bx - 200, bx - 40, k), lerp(by - 40, by + 40, k)), (sx + 40, sy + 20)], 30 * bs, WHITE)
     shades(c, sx, sy, sc, rot=-.06 * (1 - k))
     if r >= 9: txt(c, 'YOINK!', 760, 640, 110 * back((r - 9) / 5), YEL, lw=20, rot=.08)
@@ -145,7 +145,7 @@ def s18(c, f, r):  # THOSE ARE MINE! - the one wide of his face
     K.hoodie(c, 540, 1000 + 150 * hs, hs * 1.1); K.hoodyz_head(c, 540, 1000, hs, era='young', expr='blown', blink=False)
     txt(c, 'THOSE ARE', 540, 470, 120 * back(r / 3), YEL, lw=22); txt(c, 'MINE!', 540, 610, 170 * back((r - 1) / 3), YEL, lw=28)
 def s19(c, f, r):  # nothing happens: HARV still, the panel looks at each other, the cat opens one eye
-    look = ss((r - 2) / 4) * (1 - ss((r - 17) / 4))
+    look = ss((r - 1) / 4)
     bg(c, '10354f', '0d2236')
     for i in range(6): c.rectangle(90 + i * 180, 640, 8, 500); c.set_source_rgba(1, 1, 1, .05); c.fill()
     for x, q in ((190, 1), (890, -1)):
@@ -155,7 +155,15 @@ def s19(c, f, r):  # nothing happens: HARV still, the panel looks at each other,
     rr(c, -40, 1130, 1160, 60, 18); fs(c, hx('a9713f'))
     c.rectangle(30, 1190, 1020, 600); c.set_source_rgb(*hx('7c4f2a')); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(8); c.stroke()
     Sh.nameplate(c, 540, 1330, .92)                     # same room as shot 2: the nameplate stays
-    Sh.cat_one_eye(c, 560, 1135, 1.1, open_eye=(9 <= r < 21))
+    Sh.cat_one_eye(c, 560, 1135, 1.1, open_eye=False)
+def s19b(c, f, r):  # close on the cat: the only one in the room who heard him
+    bg(c, '10354f', '0d2236')
+    c.save(); c.translate(540, 520); c.scale(2.2, 2.2); c.translate(-540, -520)
+    Sh.harv(c, 540, 575, 1.3, mouth='flat'); c.restore()                       # HARV's body, out of focus behind
+    c.rectangle(0, 0, W, H); c.set_source_rgba(.04, .1, .18, .55); c.fill()
+    rr(c, -40, 1140, 1160, 70, 20); fs(c, hx('a9713f'))
+    c.rectangle(0, 1210, W, 710); c.set_source_rgb(*hx('7c4f2a')); c.fill()
+    Sh.cat_one_eye(c, 540 + 92 * 2.8, 1146, 2.8, open_eye=(r >= 4))
 def s20(c, f, r):  # back to frame 0
     if r < 5: hoody_close(c, f, 'deadpan')
     else: hoody_close(c, f, 'forced', sweat_t=0)
@@ -164,8 +172,9 @@ def s20(c, f, r):  # back to frame 0
 SHOTS = [(s1, 0, 20, '2027'), (s2, 20, 62, '2027'), (s3, 62, 81, '2027'), (s4, 81, 96, '2027'), (s5, 96, 120, '2027'),
          (s7, 120, 134, 'REWIND'), (s8, 134, 170, '2024'), (s9, 170, 206, '2025'), (s10, 206, 236, '2026'),
          (s11, 236, 260, '2026'), (s12, 260, 276, '2026'), (s13, 276, 330, '2027'), (s14, 330, 354, '2027'), (s15, 354, 369, '2027'),
-         (s16, 369, 400, '2027'), (s17, 400, 456, '2027'), (s18, 456, 486, '2027'), (s19, 486, 513, '2027'), (s20, 513, 562, '2027')]
-NF = 562
+         (s16, 369, 400, '2027'), (s17, 400, 456, '2027'), (s18, 456, 486, '2027'), (s19, 486, 502, '2027'), (s19b, 502, 520, '2027'),
+         (s20, 520, 569, '2027')]
+NF = 569
 
 def draw(f):
     S = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(S)

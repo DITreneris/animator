@@ -149,16 +149,16 @@ def sheet():
         label(c, l1, x, 812); label(c, l2, x, 852, 32, hx('66707f'))
 
     section(c, 'HARV - one design, two faces', 920)
-    cells = [('HR MODE', 'still, flat. the desk'), ('PROFESSOR MODE', 'warm, gesturing. the podcast'),
-             ('THE ONE SMILE', '"I\'ve had these for years."'), ('2026 vs 2027', 'shades from the theft on. never off')]
+    cells = [('HR MODE', 'still. the desk'), ('PROFESSOR MODE', 'gesturing. the podcast'),
+             ('THE ADJUST', '"I\'ve had these for years."'), ('2026 vs 2027', 'shades from the theft on. never off')]
     harv(c, 230, 1200, 1.15, mouth='flat')
-    harv(c, 900, 1200, 1.0, mouth='smile', arm='point')
-    harv(c, 1330, 1200, 1.0, mouth='fond', arm='adjust')
-    harv(c, 1760, 1270, .55, shade=False, mouth='smile', eyes=(0, -2))
+    harv(c, 900, 1200, 1.0, mouth='flat', arm='point')
+    harv(c, 1330, 1200, 1.0, mouth='flat', arm='adjust')
+    harv(c, 1760, 1270, .55, shade=False, mouth='flat', eyes=(0, -2))
     harv(c, 1980, 1180, 1.0, mouth='flat')
     for i, (a, b) in enumerate(cells):
         x = [230, 780, 1330, 1860][i]; label(c, a, x, 1500); label(c, b, x, 1546, 32, hx('66707f'))
-    label(c, 'No visor - every other robot has one.', 1080, 1600, 34, hx('9a3412'))
+    label(c, 'No visor - every other robot has one. Mouth always flat - HARV never smiles.', 1080, 1600, 34, hx('9a3412'))
 
     section(c, 'PROPS', 1660)
     nameplate(c, 520, 1830, .95)
@@ -213,7 +213,7 @@ def darkroom_draw(c, t=1.0, bob=0.0):
     # neon show title
     txt(c, 'THE HUMAN TOUCH', 770, 494, 46, hx('ff7ab8'), lw=6, st=hx('5b0d2a'))
     # desk, mic, HARV
-    harv(c, 800, 690 + bob, .95, mouth='smile', arm='point')
+    harv(c, 800, 690 + bob, .95, mouth='flat', arm='point')
     rr(c, 560, 830, 430, 200, 20); fs(c, hx('2a1d3a'), 7)
     limb(c, [(640, 830), (640, 790), (670, 760)], 10, INK); ell(c, 682, 748, 22, 30); fs(c, hx('22242e'), 6)
     # lower third
