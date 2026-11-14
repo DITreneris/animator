@@ -1,6 +1,6 @@
 # Says Here You Were Our Boss: v3
 
-Hoodyz episode, rebuilt from the v2 experiment to the series standard. 18.97 s, 20 shots, 569 frames, 1080×1920, 30 fps, stereo.
+Hoodyz episode, rebuilt from the v2 experiment to the series standard. 19.07 s, 19 shots, 572 frames, 1080×1920, 30 fps, stereo.
 
 **Logline.** Hoody sits a job interview with HARV, the AI he trained. HARV is now a professor and Head of Human Resources. He's wearing Hoody's sunglasses, and the company has no record that Hoody ever existed.
 
@@ -18,12 +18,15 @@ Hoodyz episode, rebuilt from the v2 experiment to the series standard. 18.97 s, 
 | 7–9 | 134–235 | Triptych, one framing: 2024 PROMPT ENGINEER / 2025 PROMPT MANAGER / 2026 MENTOR (small HARV) |
 | 10–11 | 236–275 | Small HARV takes the shades (YOINK!); Hoody's hand reaches for his empty head |
 | 12 | 276–329 | The dark room: Hoody on the sofa with JOBS on his laptop, the cat beside him; on TV, *THE HUMAN TOUCH*, where HARV points at a line labelled HUMANS falling off a cliff |
-| 13–15 | 330–399 | Offer letter (9.99 TOKENS / HOUR); eye twitch; crying "Thank you, sir." |
-| 16 | 400–455 | HARV adjusts the shades, flat-faced: "I've had these for years." |
-| 17 | 456–485 | "THOSE ARE MINE!", the loudest point in the film |
-| 18 | 486–501 | Silence. HARV still; the panel turns to look at each other (one tiny beep) |
-| 19 | 502–519 | Close on the cat on the desk: she opens one eye at him, the only one who heard |
-| 20 | 520–568 | The forced smile returns: "About your experience." → loop |
+| 13 | 330–371 | Offer letter: **9.99** TOKENS / HOUR, readable for about 1.1 s |
+| 14 | 372–402 | Crying "Thank you, sir." |
+| 15 | 403–458 | HARV adjusts the shades, flat-faced: "I've had these for years." |
+| 16 | 459–488 | "THOSE ARE MINE!": he points at HARV's gold shades in the foreground; the loudest point in the film |
+| 17 | 489–504 | Silence. HARV still; the panel turns to look at each other (one tiny beep) |
+| 18 | 505–522 | Close on the cat on the desk: she opens one eye at him, the only one who heard |
+| 19 | 523–571 | The forced smile returns: "About your experience…" → loop |
+
+**Every key line is also written** in a speech bubble (HARV's three lines and "Thank you, sir."), so the film works on mute. The last bubble is gone before the final frame, so the loop still matches frame 0.
 
 ## Files
 
@@ -57,12 +60,12 @@ Hoodyz episode, rebuilt from the v2 experiment to the series standard. 18.97 s, 
 | Check | Result |
 |---|---|
 | Every line, speech recognition on the final mix | All six correct; the podcast is wordless (shuffled speech) |
-| Section levels | Shout −10.7 dB, next loudest −17.3, the silence after it −33.5, the opening interview −20.3 |
+| Section levels | Shout −10.7 dB, next loudest −17.3, the silence after it −33.4, the opening interview −20.2 |
 | Loudness | −14.7 LUFS, LRA 6.0 LU, true peak −1.8 dBTP |
-| Loop, frame 0 vs last | Mean difference 0.3 / 255 |
+| Loop, frame 0 vs last | Mean difference 1.2 / 255 |
 | Flat frames | None (min std below the bar 24.1) |
 | App zones | Clear |
-| Fresh-eyes mute test (frames only) | Story, theft, loop and cat all read; "Of everything he lost, he's only angry about the sunglasses" |
+| Fresh-eyes mute tests (frames only, three cold viewers) | Story, theft, loop and cat read. Third test, after the bubbles: the shout is about "the sunglasses: he points at the robot's glasses right after it says 'I've had these for years'" |
 
 ## Not measured
 

@@ -1,4 +1,4 @@
-"""Hoodyz - Says Here You Were Our Boss, v3. 20 shots, 18.97 s, 569 frames at 30 fps, 1080x1920.
+"""Hoodyz - Says Here You Were Our Boss, v3. 19 shots, 19.07 s, 572 frames at 30 fps, 1080x1920.
 Usage: python3 render.py frames 0 30 ...  |  python3 render.py video"""
 import sys, os, math, random, subprocess, cairo
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -15,6 +15,19 @@ def rays(c, col, f, cx=540, cy=1050, a=.10):
     for i in range(12):
         th = i / 12 * 2 * math.pi; c.move_to(0, 0); c.line_to(2400 * math.cos(th), 2400 * math.sin(th)); c.line_to(2400 * math.cos(th + .26), 2400 * math.sin(th + .26)); c.close_path()
     c.set_source_rgba(*col, a); c.fill(); c.restore()
+def bubble(c, lines, r, tail, cy=500, size=66, out=None, cx=540):
+    """Speech bubble under the title bar. tail: (x, y) the tail points at. Pops in on r; out: frames left -> shrink away."""
+    k = back(r / 5) if out is None else back(r / 5) * cl(out / 3)
+    if k <= .03: return
+    c.save(); c.translate(cx, cy); c.scale(k, k)
+    c.select_font_face('Lilita One'); c.set_font_size(size)
+    w = max(c.text_extents(l).width for l in lines) + 90; h = len(lines) * size * 1.12 + 56
+    tx, ty = (tail[0] - cx) / k, (tail[1] - cy) / k
+    c.move_to(-60, h / 2 - 6); c.line_to(tx, ty); c.line_to(30, h / 2 - 6); c.close_path(); fs(c, WHITE, 8)
+    rr(c, -w / 2, -h / 2, w, h, 40); fs(c, WHITE, 8)
+    c.move_to(-58, h / 2 - 12); c.line_to(28, h / 2 - 12); c.set_source_rgb(*WHITE); c.set_line_width(14); c.stroke()
+    for i, l in enumerate(lines): txt(c, l, 0, -h / 2 + 28 + size * .56 + i * size * 1.12, size, NAVY, lw=0)
+    c.restore()
 def caption(c, s, r, col=WHITE, y=470, size=96):
     txt(c, s, 540, y, size * back(r / 6), col, lw=size * .18)
 
@@ -52,7 +65,9 @@ def triptych(c, f, r, expr, cap, extra=None, gold=True):
 
 # ---------------- the 20 shots ----------------
 def s1(c, f, r):  hoody_close(c, f, 'forced', sweat_t=r / 20 * .5)
-def s2(c, f, r):  desk_room(c, f, z=1.0 + .03 * r / 42)
+def s2(c, f, r):
+    desk_room(c, f, z=1.0 + .03 * r / 42)
+    bubble(c, ['SAYS HERE YOU USED', 'TO BE OUR BOSS?'], r - 1, (610, 670), cy=500)
 def s3(c, f, r):  hoody_close(c, f, 'cracked' if r >= 3 else 'forced')
 def s4(c, f, r):  # eyes insert, flick to the shades
     bg(c, '1a3a5c', '0d2236')
@@ -115,34 +130,34 @@ def s13(c, f, r):
 def s14(c, f, r):  # offer letter, his face above it
     bg(c, '10354f', '0d2236')
     K.hoodie(c, 540, 700 + 150 * 1.6, 1.6 * 1.1); K.hoodyz_head(c, 540, 700, 1.6, era='young', expr='hopeful' if r < 10 else 'deadpan', blink=False)
-    y = lerp(1950, 1260, oe(r / 6))
-    c.save(); c.translate(540, y); c.rotate(-.025)
+    y = lerp(1950, 1260, oe(r / 6)); z = 1 + .06 * ss((r - 10) / 30)
+    c.save(); c.translate(540, y); c.rotate(-.025); c.scale(z, z)
     rr(c, -400, -420, 800, 840, 26); fs(c, hx('fbf8ee'), 10)
     txt(c, 'OFFER LETTER', 0, -350, 66, INK, lw=0); c.rectangle(-330, -300, 660, 7); c.set_source_rgb(*INK); c.fill()
     txt(c, 'ROLE:', -330, -240, 46, hx('66707f'), lw=0, align='l'); txt(c, 'PROMPT ENGINEER', -330, -180, 70, INK, lw=0, align='l')
     txt(c, 'PAY:', -330, -100, 46, hx('66707f'), lw=0, align='l')
     if r >= 8: txt(c, '9.99', 0, 50, 260 * back((r - 8) / 5), RED, lw=0)
-    if r >= 8: txt(c, 'TOKENS / HOUR', 0, 220, 60, INK, lw=0)
+    if r >= 8: txt(c, 'TOKENS / HOUR', 0, 225, 78, INK, lw=0)
     c.restore()
-def s15(c, f, r):
-    snap = r in (3, 4, 7, 8) or r >= 11
-    hoody_close(c, f, 'twitch' if snap else 'polite')
 def s16(c, f, r):
     bg(c, 'ff8ebf', 'e8437e'); rays(c, WHITE, f, a=.13)
     K.hoodie(c, 540, 1020 + 150 * HS, HS * 1.1); K.hoodyz_head(c, 540, 1020 + K.math.sin(f) * 4, HS, era='young', expr='cry', blink=False)
     for q in (-1, 1):
         for i in range(2):
             ph = ((r / 10 + i * .5) % 1); ell(c, 540 + q * (50 + ph * 14) * HS, 1020 + (40 + ph * 110) * HS, 14, 20); fs(c, Sh.TEAR, 5)
+    bubble(c, ['THANK YOU, SIR.'], r - 1, (560, 660), cy=470)
 def s17(c, f, r):  # "I've had these for years."
     desk_room(c, f, z=1.22 + .02 * r / 56, mouth='flat', arm='adjust', cv=False)
+    bubble(c, ["I'VE HAD THESE", 'FOR YEARS.'], r - 2, (520, 640), cy=500, cx=360)
 def s18(c, f, r):  # THOSE ARE MINE! - the one wide of his face
     if r < 8: c.translate(K.math.sin(f * 7) * (8 - r) * 4, K.math.cos(f * 9) * (8 - r) * 4)
     bg(c, 'c91e47', '5b0d2a'); rays(c, YEL, f, a=.10)
     hs = 1.5
-    for q in (-1, 1):
-        K.arm(c, [(540 + q * 150, 1290), (540 + q * 300, 1150), (540 + q * 330, 900)], hs)
-        ell(c, 540 + q * 330, 890, 46, 46); fs(c, SKIN, 8)
+    K.arm(c, [(690, 1290), (840, 1150), (870, 900)], hs); ell(c, 870, 890, 46, 46); fs(c, SKIN, 8)       # fist up
+    K.arm(c, [(390, 1290), (360, 1230), (380, 1190)], hs)                                                  # arm out at the shades
     K.hoodie(c, 540, 1000 + 150 * hs, hs * 1.1); K.hoodyz_head(c, 540, 1000, hs, era='young', expr='blown', blink=False)
+    limb(c, [(372, 1192), (300, 1200)], 26, SKIN); ell(c, 372, 1194, 40, 40); fs(c, SKIN, 8)             # pointing hand
+    Sh.harv(c, 40, 1300, 2.2, mouth='flat')                                                                # foreground: HARV in Hoody's shades
     txt(c, 'THOSE ARE', 540, 470, 120 * back(r / 3), YEL, lw=22); txt(c, 'MINE!', 540, 610, 170 * back((r - 1) / 3), YEL, lw=28)
 def s19(c, f, r):  # nothing happens: HARV still, the panel looks at each other, the cat opens one eye
     look = ss((r - 1) / 4)
@@ -167,14 +182,15 @@ def s19b(c, f, r):  # close on the cat: the only one in the room who heard him
 def s20(c, f, r):  # back to frame 0
     if r < 5: hoody_close(c, f, 'deadpan')
     else: hoody_close(c, f, 'forced', sweat_t=0)
+    bubble(c, ['ABOUT YOUR', 'EXPERIENCE...'], r - 2, (860, 650), cy=500, cx=660, out=45 - r)
 
 # fix 1: the jaw-tight shot (old 6) is cut - a fresh viewer couldn't read it. Retimed for the recorded lines.
 SHOTS = [(s1, 0, 20, '2027'), (s2, 20, 62, '2027'), (s3, 62, 81, '2027'), (s4, 81, 96, '2027'), (s5, 96, 120, '2027'),
          (s7, 120, 134, 'REWIND'), (s8, 134, 170, '2024'), (s9, 170, 206, '2025'), (s10, 206, 236, '2026'),
-         (s11, 236, 260, '2026'), (s12, 260, 276, '2026'), (s13, 276, 330, '2027'), (s14, 330, 354, '2027'), (s15, 354, 369, '2027'),
-         (s16, 369, 400, '2027'), (s17, 400, 456, '2027'), (s18, 456, 486, '2027'), (s19, 486, 502, '2027'), (s19b, 502, 520, '2027'),
-         (s20, 520, 569, '2027')]
-NF = 569
+         (s11, 236, 260, '2026'), (s12, 260, 276, '2026'), (s13, 276, 330, '2027'), (s14, 330, 372, '2027'),
+         (s16, 372, 403, '2027'), (s17, 403, 459, '2027'), (s18, 459, 489, '2027'), (s19, 489, 505, '2027'), (s19b, 505, 523, '2027'),
+         (s20, 523, 572, '2027')]
+NF = 572   # 15 Nov review: twitch shot cut, 9.99 held ~1.1 s
 
 def draw(f):
     S = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(S)

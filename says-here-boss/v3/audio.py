@@ -1,7 +1,7 @@
 """Says Here v3 mix: voices, a bed in the flashback only, key effects, real silence after the shout.
 Writes mix.wav (mono, 48 kHz, exactly NF frames long)."""
 import numpy as np, soundfile as sf, subprocess
-SR = 48000; NF = 569; N = NF * SR // 30
+SR = 48000; NF = 572; N = NF * SR // 30
 rng = np.random.default_rng(3)
 vo = np.zeros(N); bed = np.zeros(N); fx = np.zeros(N)
 T = lambda d: np.arange(int(d * SR)) / SR
@@ -24,13 +24,13 @@ def lowpass(x, fc):
 
 # ---- voices: (file, start s, gain). HARV = Kokoro bm_george 1.05 + machine treatment (locked, see voices.py).
 # Hoody = Tomas, recorded 14 Nov (yes take 4, thanks take 4, shout take 1).
-for f, t, g in (('h1', .10, .62), ('g1', 2.12, .62), ('g2', 12.33, .62), ('h2', 13.38, .58), ('h3', 17.38, .58)):
+for f, t, g in (('h1', .10, .62), ('g1', 2.12, .62), ('g2', 12.45, .62), ('h2', 13.48, .58), ('h3', 17.48, .58)):
     add(vo, t, load(f'vo/{f}.wav'), g)
-add(vo, 15.24, load('vo/g3.wav'), .62)                                  # THOSE ARE MINE! - the loudest thing in the film
+add(vo, 15.34, load('vo/g3.wav'), .62)                                  # THOSE ARE MINE! - the loudest thing in the film
 
 # ---- room tone under the 2027 interview (quiet, so the silence after the shout is real)
 room = lowpass(rng.standard_normal(N), 300) * .02
-mask = np.ones(N); mask[int(4.00 * SR):int(9.20 * SR)] = 0; mask[int(16.20 * SR):int(17.33 * SR)] = .25
+mask = np.ones(N); mask[int(4.00 * SR):int(9.20 * SR)] = 0; mask[int(16.30 * SR):int(17.43 * SR)] = .25
 bed += room * mask * .8
 
 # ---- bed: the flashback only, 4.47-9.20 s, 120 bpm
@@ -59,9 +59,8 @@ r = sweep(1400, 90, .45, 0, 'sq'); add(fx, 4.00, r * np.linspace(.4, .9, len(r))
 add(fx, 4.00, hp(noise(.45, 2)), .15)
 add(fx, 8.17, sweep(500, 2400, .16), .22); add(fx, 8.33, sweep(2400, 600, .2, 4), .18)  # yoink
 add(fx, 11.27, kick(1.4), .9); add(fx, 11.27, noise(.18, 22), .3)               # 9.99 stamp
-for t in (11.90, 12.03): add(fx, t, hp(hp(noise(.03, 200))), .35)               # eyelid twitch ticks
-add(fx, 15.20, kick(1.8), 1.1); add(fx, 15.20, noise(.5, 7), .45)              # the shout hit
-b = np.sin(2 * np.pi * 1250 * T(.11)) * np.minimum(1, (.11 - T(.11)) * 60); add(fx, 16.47, b, .10)   # one tiny beep, on the panel's glance
+add(fx, 15.30, kick(1.8), 1.1); add(fx, 15.30, noise(.5, 7), .45)              # the shout hit
+b = np.sin(2 * np.pi * 1250 * T(.11)) * np.minimum(1, (.11 - T(.11)) * 60); add(fx, 16.57, b, .10)   # one tiny beep, on the panel's glance
 
 # ---- duck the bed under the voices, then sum
 w = int(.03 * SR); e = np.convolve(np.abs(vo), np.ones(w) / w, 'same'); e = np.clip(e * 10, 0, 1)
