@@ -271,3 +271,14 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **A narrative loop can beat a seamless one.** Sofía's look to Don, then to us, then a resigned blink makes the repeat a joke ("he learned nothing") without engineering a matched frame.
 - **A face wrapper that draws a stock expression can paint over a mouth drawn before it.** Don's "grin" wrapper (used for the pun and "Approved.") drew its smile after the lip-sync mouth, so the words never showed. Fix: draw the moving mouth *after* the wrapper runs, not inside the normal face hook.
 - **Reuse the mouth-shape code instead of re-deriving it per episode.** The viseme set, openness map and the mouth-drawing function from *Day One* carried over directly to Don and Sofía v4 and to the robot's screen talk; only the skin tone, lip colour and erase size changed per character.
+
+## Happy Compliance (14 Nov)
+
+- **Check the 9:16 frame before the storyboard.** Drawing the key shots into real 9:16 frames on the set sheet showed that a wide with four characters makes every face tiny; it moved frame 0 to Don alone and tightened shot 8 before any animation existed.
+- **A prop that covers the eyes kills the setup.** The razor at Don's cheek hid his eyes, so nobody could see him look at the ornaments; at the jaw, plus a point-of-view cut, the line makes sense.
+- **Size bubbles from the measured text, and guard the tail.** A box pushed down by the safe area can end up over its own anchor and draw its tail back across the text; detect it and point the tail straight down.
+- **Draw a handed-over object in front of the receiver.** In the first handoff the ornament was hidden behind Pam's body; it needed to be drawn after her, bigger, with the camera pushing in.
+- **Opt-in fixes keep old renders exact.** The HR-badge fix and Don's jaw pose went in behind flags and new constants, and the film's polish runs through hooks applied only while it renders, so every earlier sheet, test and storyboard still rebuilds byte for byte.
+- **Don't let a pinned script and a live one write the same file.** A sheet script whose default output was the previous version's name overwrote it once; the frozen v1 script restored it exactly, and every sheet script now writes its own version's name.
+- **Outside reviews: take the readability notes, check the story notes.** Most suggestions (bigger bars, larger robot face, intentional handoff) were cheap wins; one ("make Pam self-satisfied") contradicted an approved choice and the reason for the joke, so it was declined.
+

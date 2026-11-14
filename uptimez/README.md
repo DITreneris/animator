@@ -4,7 +4,7 @@
 
 An AI office sitcom: short vertical cartoons about ridiculous people using AI, posted as if from the corporate account of a polished SaaS company. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
 
-Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One* and *I Will Replace You* releases, rendered at 1080×1920.
+Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One*, *I Will Replace You* and *Happy Compliance* releases, rendered at 1080×1920.
 
 ## Cast
 
@@ -123,6 +123,25 @@ Cafeteria. DON: "Nice hoops. Can I get in your loop?" SOFÍA: "You're out of the
 | `iwry_thumbnail.png`, `iwry_thumbnail_grid_crop.png` | cover | 1080×1920; the shout is the title, the whisper the hook; key art inside the 1080×1440 grid crop |
 
 Built from `src/`: `waiter_kit.py` (robot, pose blending, the screen `"blink"` face), `cafe_kit.py` (set, props, bubbles, per-shot staging `STAGE`, Pam's pose/face params), `iwry_common.py` (shared world and shots; gained `don_tilt`, mouth overlays, `sof_dx`, `don_thumb_scale`, Pam's pose/face — all optional, default off), `iwry_mouths.py` (viseme mouth shapes, shared by Don and Sofía v4), `iwry_visemes.py` (reads the mix's per-line timings into a 12 fps viseme string per character), `iwry_sb.py` / `iwry_sb_v2.py` (silent storyboards), `iwry_anim.py` (full animation: lip-sync, blinks, eased motion; `iwry_anim_v1.py` kept), `iwry_test_a.py` / `_b.py`, `qa_iwry.py` (renders each frame with and without bubbles and flags any bubble over a face), `sound_iwry.py` (voices, stings, mix; `LIPS=1` exports per-frame loudness for the visemes), `thumb_iwry.py`. Earlier versions are kept as `_v1` files. `./build.sh iwry` rebuilds animatic v3, `./build.sh iwry_anim` the release (540 rough + 1080), `./build.sh iwry_thumb` the cover.
+
+### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
+
+Christmas Eve at the office. DON walks in mid-shave in an open bathrobe: "Sorry. Getting ready for the ball." SOFÍA (glamorous nurse) and PAM (a five-minute home-made superhero: bath-towel cape, cardboard mask, paper "P"): "Eww." Don's eyes drop to the two red ornaments in Sofía's hands: "Nice balls. I've got two for you." The office robot, now promoted to HR and in a Santa hat, rolls in: "Inappropriate balls detected." It points at Don, rolls straight past him, and censors every ornament on the tree, then the two in Sofía's hands. "Violation resolved." Don gives a relieved thumbs-up. Sofía hands Pam a censored ornament: "Get him." The mask goes on: "Human in the loop." Sofía, sweetly: "Merry Christmas, Don." THUD. "Happy compliance!" A bar falls off, the alarm starts again. The joke: AI governance protects the company from the tree, not from the boss.
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_xmas_anim_v1_1080.mp4` | **release (current)** | **1080×1920**, 28.9 s, −16 LUFS. Lip-sync on all ten lines (Don, Sofía, Pam, the robot's screen), blinks, camera punches (DETECTED push, slap jolts, THUD shake), the robot's spinning wheel, Don's anticipation dip, a bigger razor payoff, warm light glow and vignette |
+| `uptimez_xmas_anim_v1.mp4` | release, 540 rough | Same animation, 540×960, for review |
+| `uptimez_xmas_animatic_v1.mp4` | animatic v1 | Storyboard v2 with the mix: Don `am_onyx`, Sofía `af_bella`, Pam `bf_emma`, robot B (`am_echo`, last episode's shout); an original sleigh-bell bed that stops dead on "Nice balls" |
+| `xmas_pam_auditions.mp4` | | Pam's first voice: A `bf_emma` (picked), B `bf_alice`, C `bf_isabella` |
+| `xmas_storyboard_silent_v2.mp4`, `_sheet_v2.png` | **storyboard v2** | Razor at Don's jaw (both eyes visible), his eyes drop and we cut to his point of view, "Eww." / "Get him." / "Merry Christmas, Don." added, HR fits its badge, bubbles sized from their text with pop-in and a shaking shout, THUD burst |
+| `xmas_storyboard_silent_v1.mp4`, `_sheet_v1.png` | storyboard v1 | 11 shots, 27.5 s |
+| `xmas_motion_test_a.mp4`, `_b_v1.mp4`, `_b_v2.mp4`, `xmas_motion_tests_contact.png` | motion tests | A: the censoring (three slaps, the flung cascade, Sofía's two). B: the handoff (v2: a close push-in, the bigger ornament) and the mask snap |
+| `xmas_set_sheet_v2.png` (v1 kept) | set | The Day One office wall, decorated; 9:16 frames for the key shots; v2 bigger censor bars and the robot's v3 face |
+| `sofia_xmas_earring_options.png`, `sofia_xmas_v1_vs_v2.png` | | Sofía's earring/braid options (B picked) and the figure change |
+| `xmas_thumbnail.png`, `xmas_thumbnail_grid_crop.png` | cover | The censored tree, the smug robot, furious Sofía; its own line as the title |
+
+Character sheets are in [`characters/`](characters/) (`*-xmas-*`, `uptimez-robot-hr-*`). Built from `src/`: `sofia_xmas.py`, `don_xmas.py`, `pam_xmas.py`, `santa_robot.py` (costumes on the existing characters; earlier versions kept as `_v1`…), `xmas_set.py` (set, tree, ornaments, censor bars), `xmas_test_a.py` / `xmas_test_b.py`, `xmas_sb.py` / `xmas_sb_v2.py`, `xmas_bubbles.py` (fitted, popping bubbles, shout, burst), `sound_xmas.py` (audition, voices, effects, music, mix), `xmas_visemes.py`, `xmas_anim.py` (the polish, applied through hooks for this render only), `thumb_xmas.py`. `./build.sh xmas` rebuilds the mix, both renders and the cover (needs the Kokoro model in `src/models` or `KOKORO_DIR`).
 
 ### Where Files Live — [`storyboards/`](storyboards/)
 

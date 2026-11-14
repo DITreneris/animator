@@ -7,6 +7,7 @@
 #        ./build.sh day1 | day1_thumb   How Sofía Survived Day One loop v3, 1080x1920, BT.709 / its cover
 #        ./build.sh iwry | iwry_thumb   I Will Replace You animatic v3 (540x960) / its cover
 #        ./build.sh iwry_anim           I Will Replace You full animation, release: 540 rough + 1080
+#        ./build.sh xmas                Happy Compliance (Christmas special): mix, 540 + 1080, cover
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -151,7 +152,31 @@ build_iwry_release() {
   echo "Wrote $out/uptimez_iwry_anim_v2.mp4 and $out/uptimez_iwry_anim_v2_1080.mp4"
 }
 
+build_xmas() {
+  # Happy Compliance: mix (+ lip-sync data), then the full animation at 540 (rough) and 1080 (release), and the cover.
+  local out=${OUT_DIR:-$HERE/happy-compliance}; mkdir -p "$out"
+  ( cd src
+    python3 sound_xmas.py mix
+    python3 xmas_visemes.py
+    local I G
+    I=$(ffmpeg -hide_banner -i xmas_mix_v1.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.6-($I),2))")
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_xmas_anim_v1.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_xmas_anim_v1_1080.mp4
+      python3 $eng xmas_anim | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i xmas_mix_v1.wav \
+        -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+        -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+        -c:a aac -b:a 192k -ar 48000 -t 28.9 -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done
+    python3 thumb_xmas.py "$out/xmas_thumbnail.png" )
+  echo "Wrote $out/uptimez_xmas_anim_v1.mp4, _1080.mp4 and the cover"
+}
+
 case "${1:-}" in
+  xmas)       build_xmas ;;
   iwry)       build_iwry ;;
   iwry_anim)  build_iwry_release ;;
   iwry_thumb) ( cd src && python3 thumb_iwry.py "${OUT_DIR:-$HERE/i-will-replace-you}/iwry_thumbnail.png" ) ;;
