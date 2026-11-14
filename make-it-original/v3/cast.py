@@ -291,17 +291,22 @@ def robot_turn(c, x, y, s, turn, emote, eye, f):
     c.restore()
 
 def topbar_a(c, year):
-    """Refined HOODYZ bar: a small hoodie icon, tighter letters, the year pill."""
+    """ME + MY AI series bar: the Hoodyz badge (hoodie icon + HOODYZ), the title, and a pill with the story state.
+    Drawn in screen space. The title shrinks only if a long pill would crowd it."""
     c.save(); c.identity_matrix()
-    rr(c, 40, BAR_Y, 1000, BAR_H, 40); fs(c, WHITE, 8)
-    ix, iy = 118, BAR_Y + BAR_H / 2
-    c.move_to(ix - 34, iy + 34); c.line_to(ix - 34, iy - 4); c.curve_to(ix - 34, iy - 46, ix + 34, iy - 46, ix + 34, iy - 4); c.line_to(ix + 34, iy + 34); c.close_path()
-    fs(c, NAVY, 6); ell(c, ix, iy - 2, 20, 18); fs(c, SKIN, 5)
-    c.select_font_face('Lilita One'); c.set_font_size(76); x0 = 172
-    for ch in 'HOODYZ':
-        c.move_to(x0, iy + 27); c.text_path(ch); c.set_source_rgb(*NAVY); c.fill(); x0 += c.text_extents(ch).x_advance - 3
-    px, py = 860, iy
-    rr(c, px - 110, py - 44, 220, 88, 44); fs(c, YEL, 7); txt(c, str(year), px, py, 58, fill=INK, lw=0)
+    rr(c, 40, BAR_Y, 1000, 138, 40); fs(c, WHITE, 8)
+    iy = BAR_Y + 69
+    rr(c, 58, iy - 38, 196, 76, 38); c.set_source_rgb(*NAVY); c.fill()                    # Hoodyz badge
+    c.save(); c.translate(96, iy + 2); c.scale(.62, .62)
+    c.move_to(-34, 34); c.line_to(-34, -4); c.curve_to(-34, -46, 34, -46, 34, -4); c.line_to(34, 34); c.close_path()
+    c.set_source_rgb(*WHITE); c.fill(); ell(c, 0, -2, 20, 18); c.set_source_rgb(*SKIN); c.fill(); c.restore()
+    txt(c, 'HOODYZ', 124, iy, 31, WHITE, lw=0, align='l')
+    c.select_font_face('Lilita One'); c.set_font_size(58); w = max(200, c.text_extents(str(year)).width + 96)
+    px = 1020 - w / 2
+    size = 68; c.set_font_size(size); tw = c.text_extents('ME + MY AI').width; room = (px - w / 2 - 22) - 274
+    if tw > room: size *= room / tw
+    txt(c, 'ME + MY AI', 274, iy, size, NAVY, lw=0, align='l')
+    rr(c, px - w / 2, iy - 44, w, 88, 44); fs(c, YEL, 7); txt(c, str(year), px, iy, 58, INK, lw=0)
     c.restore()
 
 _stadium = stadium

@@ -38,7 +38,7 @@ The story as built: his stadium is a fantasy; the drummer's "Play something we k
 | `timeline.py` | One source of timing for picture and sound; the riff, the AI tune and every beat |
 | `sound.py` | Synthesized instruments and effects: plucked-string guitar with soft clip, paw plucks, meow, electric piano, tape fast-forward, swipe, counter ticks |
 | `riffs.py` | Riff candidates and the originality screen against 41 famous riffs and tunes (3+ shared consecutive intervals fails) |
-| `kit.py` | The drawing kit: series helpers copied from `whos-a-good-boy/v3`, plus Hoodyz at three ages, the drummer, the cat, the guitar, the cassette, robot faces and the HOODYZ title bar |
+| `kit.py` | The drawing kit: series helpers copied from `whos-a-good-boy/v3`, plus Hoodyz at three ages, the drummer, the cat, the guitar, the cassette, robot faces and the original HOODYZ title bar. The films use `topbar_a` in `v3/cast.py`: ME + MY AI with the Hoodyz badge since 14 Nov |
 | `sheet.py`, `auditions.py`, `mix.py`, `rough.py` | The sheets, the auditions, the soundtrack (with lip-flap envelopes) and the rough |
 | `vo/` | Scratch voices (Kokoro: Hoodyz `am_puck`, 1.5 semitones lower in 2026; drummer `am_onyx`). The stress on "THAT'S" is written in phonemes |
 
