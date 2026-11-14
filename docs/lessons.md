@@ -246,3 +246,20 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Brand tags belong in the title bar,** not over the picture: a chip under the bar sat on the little office in the pushed ending.
 - **A polish pass must not make any beat worse than the shipped cut.** Compare the new version beat by beat with the master: Learn to Code v4's cut-in put the HIRED stamp on his face and swept the robot's arm across HEAD OF HIRING, so the whole cut was held although everything else improved.
 - **Stamps and props placed in screen space must be checked in every framing,** especially close-ups, where faces move to new places.
+
+## Says Here v3: experiment to series standard (12–14 Nov)
+
+- **Read the analytics as a warning, not a diagnosis.** 61 views and 43% stayed-to-watch couldn't prove why viewers left, and 0 subscribers from 61 views is the expected result. Fix what every best practice points at (a first frame that's text over the back of a head), and don't claim the data proves it.
+- **Count the back-of-head seconds.** v2 spent 8 of 15 s (53%) behind Hoody, the whole present-day plot included. v3 has none: 13 face shots out of 19, and the rest are HARV, inserts and the room.
+- **Look in the code before designing a character.** HARV already existed: the boss robot in gold shades in Says Here v2 is the same drawing as Make It Better's strike leader. A new design would have broken two films.
+- **Check continuity across episodes in code, not memory.** Make It Original's 2026 Hoody is grey and bearded, while Says Here's is young; settled by a floating-timeline rule in the character bible.
+- **Measure the real lines before fixing the timeline.** The beat sheet said 17.8 s; the measured lines needed 18.8 s. Then the recorded "Thank you, sir" ran 0.26 s longer than the stand-in, and the second half was retimed around it.
+- **A peaky real shout caps the whole mix.** Normalising to its peak left it under 1 dB louder than the music. A harder compressor and limiter on that line only (crest 10.7 → 7.8 dB) made it lead by 2.3 dB, with the silence after it 19 dB down.
+- **Speech recognition reads through heavy low-pass filtering.** Three passes at 380 Hz still decoded "And honestly, that is great". Shuffling the speech in 120 ms pieces keeps its rhythm with no words ("*Inaudible*").
+- **Run the cold mute test twice: on the rough and on the master.** The first found six fixes (an unreadable face, an arm like a stick, a smile read as smug, an unseen glance and cat). The second viewer caught the cat and the theft and put the joke better than our concept did.
+- **Pick takes by measurement first:** pitch rise for a half-question "yes", pitch and energy for a shout, length for fit. Then ask the person to confirm by ear.
+- **The series loudnorm master can flatten a punchline.** When the mix's loudness range is over its 11 LU target, `loudnorm` drops `linear=true` and runs dynamic: the shout's 11 dB lead came out at about 1 dB. Print `normalization_type` from the first pass; for films built on one loud moment, master with one linear gain plus a peak limiter, and set the balance in the mix (shout +6.6 dB over the next section, opening within 3 dB of the music).
+- **Check a claim against the code before telling the person.** I said HARV's mouth was flat in every shot; the 2026 mentor and theft shots and the podcast still drew a smile. A grep for `mouth=` would have caught it.
+- **Write the key lines, not just the punchline.** v3 only wrote "THOSE ARE MINE!", so a reviewer watching on mute read the shout as being about jobs and the ending as uncaused. Speech bubbles for HARV's three lines fixed both; the next cold viewer named the sunglasses unprompted. Make a bubble on the last shot disappear before the final frame so the loop still matches frame 0.
+- **The shout needs its object in the same frame.** He now points at HARV's shades in the foreground; a viewer shouldn't have to remember them from the shot before.
+
