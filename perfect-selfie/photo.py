@@ -4,7 +4,9 @@ At the left edge: the bush, a tiny navy sleeve gripping the selfie stick, and on
 import os, sys, math, cairo
 HERE = os.path.dirname(os.path.abspath(__file__)); PD = os.path.join(HERE, '..', 'perfect-date')
 sys.path.insert(0, PD); sys.path.insert(0, os.path.join(PD, 'characters'))
-import render as R                      # Perfect Date: park, bench, Hoody's arm, the title bar
+import importlib.util                   # Perfect Date's render.py, under its own name (this folder has a render.py too)
+_spec = importlib.util.spec_from_file_location('pd_render', os.path.join(PD, 'render.py')); R = importlib.util.module_from_spec(_spec)
+sys.modules['pd_render'] = R; _spec.loader.exec_module(R)
 import kit as K, chars as Sh, eva as E, myai as A
 import places as P
 from kit import INK, WHITE, NAVY, rr, fs, ell, limb, hx
