@@ -71,7 +71,7 @@ def s_invite(c, f, r):  # before: "Do you want to go on a trip?" - she nods - MY
              dict(eye='focus' if r > 86 else 'wide', arms=('up', 'up') if r < 90 else ('down', 'wave'), talk=talk(f, 'ai_plan')),
              .2 + .8 * talk(f, 'h_invite'), 'charmed' if r >= 62 else 'evacalm',
              math.sin(cl((r - 62) / 12) * math.pi * 2) * .08 if 62 <= r < 74 else 0)
-    if r < 78: R.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], r - 4, (360, 1000), cy=560, cx=430, size=58)
+    if r < 78: R.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], r - 4, (342, 1184), cy=640, cx=440, size=58)   # tail to his mouth
     if r >= 80: R.bubble(c, ["I'LL PLAN", 'EVERYTHING!'], r - 80, (540, lerp(AI_HIDE, AI_UP, pop) - 420 * 1.1), cy=560, cx=560, size=58)
 def bench_scene_back(c, f):
     R.park(c, f, zoom=1.35, cy=1500)
@@ -97,12 +97,12 @@ def s_after(c, f, r):   # after: "How did you like our trip?" - she turns her ph
         rr(c, px - 10, py - 10, pw + 20, ph + 20, 30); fs(c, hx('1d2130'), 6)
         c.save(); rr(c, px, py, pw, ph, 22); c.clip(); c.translate(px, py); c.scale(pw / W, ph / H); c.set_source_surface(_PHOTO, 0, 0); c.paint(); c.restore()
         ell(c, px + pw + 6, py + ph * .6, 26, 30); fs(c, E.SKIN_E, 5)
-    if r < 88: R.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, (330, 1000), cy=560, cx=430, size=56)
+    if r < 88: R.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, (316, 1184), cy=640, cx=430, size=56)
     if r >= 90: R.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], r - 90, (880, BS - 6 - 420), cy=600, cx=700, size=56)
 def s_another(c, f, r): # "...Another trip?" - quietly, to her. MY AI ducks back behind the bench: the last frame is frame 0
     duck = oe(r / 10)
     two_shot(c, f, lerp(AI_UP, AI_HIDE, duck), dict(eye='happy', arms=('down', 'down')), .2 + .8 * talk(f, 'h_another'))
-    if r < 50: R.bubble(c, ['...ANOTHER TRIP?'], r - 8, (360, 1000), cy=600, cx=430, size=58)
+    if r < 50: R.bubble(c, ['...ANOTHER TRIP?'], r - 8, (342, 1184), cy=660, cx=440, size=58)
 
 def s_rome_act(c, f, r):  # MY AI hands Hoody the phone ("you take it") and sits down with Eva: the cameraman is made
     P.rome(c, f, s=.62, cx=540, horizon=1230)
@@ -125,11 +125,11 @@ def eva_rome(c):
 
 def s_open(c, f, r):   # frame 0: the giant face in the phone preview at Pisa - "ONE SELFIE?"
     P.pisa(c, f)
-    E.eva_head(c, 900, 1250, 1.0, 'charmed', tilt=-.15)                     # she's in the frame too, squeezed at the edge
+    E.eva_head(c, 900, 1420, 1.0, 'charmed', tilt=-.15)                     # she's in the frame too, squeezed at the edge
     K.hoodie(c, 540, 1060 + 150 * 3.0, 3.0 * 1.1)
     K.hoodyz_head(c, 540, 1060, 3.0, era='young', expr='happy', blink=False, op=.2 + .8 * talk(f, 'h_selfie'))
     phone_ui(c)
-    R.bubble(c, ['ONE SELFIE?'], r + 5, (600, 1250), cy=620, cx=760, size=62)
+    R.bubble(c, ['ONE SELFIE?'], r + 5, (590, 1258), cy=1000, cx=840, size=62)   # in from the side, below his eyes, to his mouth
 def phone_ui(c):
     """The camera preview: dark rounded corners and a shutter dot."""
     c.rectangle(0, 0, W, H); rr(c, 40, 40, W - 80, H - 80, 70); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD); c.set_source_rgb(*hx('1d2130')); c.fill()
@@ -186,12 +186,12 @@ def s_giza(c, f, r):   # live: "MORE!" - the camel drags Hoody back to the lugga
     if .1 < d < .8:                                                        # dust where his heels drag
         for k in range(4): ell(c, lerp(560, 400, d) + 40 + k * 26, lerp(1860, 1530, d) - 10, 22 * (1 - d), 14 * (1 - d)); c.set_source_rgba(.9, .8, .6, .7); c.fill()
     m = oe((r - 34) / 18)
-    rx = lerp(640, 700, m)
-    A.myai(c, rx, 1860, 1.3, eye='focus' if r < 30 else 'happy', arms=('wave', 'hold' if m > .9 else 'down'), tilt=10 * m, talk=talk(f, 'ai_more'))
+    rx = lerp(780, 700, m)                                                 # clear of his face, so MORE!'s tail can reach its antenna
     hp = A.hand_at(rx, 1860, 1.3, 1, 'hold')
-    E.eva(c, 900, 1880, 1.0, 'laugh' if m > .9 else 'impressed', sip=.1, tilt=-.2 * m, pose='holdlow' if m > .9 else 'coffee', hand_to=hp if m > .9 else None)
+    E.eva(c, 920, 1880, 1.0, 'laugh' if m > .9 else 'impressed', sip=.1, tilt=-.2 * m, pose='holdlow' if m > .9 else 'coffee', hand_to=hp if m > .9 else None)
+    A.myai(c, rx, 1860, 1.3, eye='focus' if r < 30 else 'happy', arms=('wave', 'hold' if m > .9 else 'down'), tilt=10 * m, talk=talk(f, 'ai_more'))
     backpack_cat(c, 210, 1720, .9, 'disapproving')
-    R.bubble(c, ['MORE!'], r - 2, (rx, 1860 - 420 * 1.3), cy=600, cx=720)
+    R.bubble(c, ['MORE!'], r - 2, (rx, 1860 - 420 * 1.3), cy=640, cx=700)
 
 def s_rome(c, f, r):   # the couple photo; the label switches after it lands
     TP.rome(c, f, label='ITS TRIP' if r >= 14 else 'HIS TRIP')
@@ -231,10 +231,10 @@ def draw(f):
     return S
 
 def pulse(c, t):
-    k = 1 + .75 * (1 - t / 16) ** 2
+    k = 1 + .25 * (1 - t / 16) ** 2                                       # swells in place, down a little: never over ME + MY AI or off the edge
     c.select_font_face('Lilita One'); c.set_font_size(58); w = max(200, c.text_extents('ITS TRIP').width + 96)
     px, iy = 1020 - w / 2, 222 + 69
-    c.save(); c.translate(px - 40 * (k - 1), iy + 60 * (k - 1)); c.scale(k, k)
+    c.save(); c.translate(px - 6 * (k - 1), iy + 40 * (k - 1)); c.scale(k, k)
     rr(c, -w / 2, -44, w, 88, 44); fs(c, YEL, 7); txt(c, 'ITS TRIP', 0, 0, 58, INK, lw=0); c.restore()
 
 if __name__ == '__main__':
