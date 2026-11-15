@@ -25,32 +25,44 @@ def ledge(c, x0, x1, top, h=150):
     c.rectangle(x0 + 6, top + 26, x1 - x0 - 12, 10); c.set_source_rgb(*hx('d4c4a0')); c.fill()
     for k in range(4): c.move_to(x0 + 60 + k * (x1 - x0 - 120) / 3, top + 44); c.line_to(x0 + 60 + k * (x1 - x0 - 120) / 3, top + h - 8); c.set_source_rgb(*hx('cdbd98')); c.set_line_width(4); c.stroke()
 
+def backpack_cat(c, x, y, s=1.0):
+    """The corner of Hoody's backpack with the cat's head poking out: both ears, one eye open."""
+    c.save(); c.translate(x, y); c.scale(s, s)
+    rr(c, -150, -10, 300, 260, 50); fs(c, hx('d9533f'), 7)                          # the backpack
+    rr(c, -150, -10, 300, 70, 30); fs(c, hx('b8412f'), 6)                            # its open flap
+    c.move_to(-150, 120); c.line_to(150, 120); c.set_source_rgb(*hx('8f2f22')); c.set_line_width(5); c.stroke()
+    K._cat_head(c, 0, -40, 1.5, False, 'sleep', 0)                                   # the cat, sleepy...
+    ell(c, 30 * 1.5, -46, 17 * 1.5, 14 * 1.5); c.set_source_rgb(*K.TABBY); c.fill()  # ...but one eye open
+    ell(c, 30 * 1.5, -44, 11 * 1.5, 14 * 1.5); fs(c, hx('b8e04a'), 4); ell(c, 27 * 1.5, -44, 4 * 1.5, 10 * 1.5); c.set_source_rgb(*INK); c.fill()
+    rr(c, -160, 20, 320, 40, 16); fs(c, hx('b8412f'), 6)                             # the rim in front of her chin
+    c.restore()
+
+def pinch_hand(c, x0, y_top, y_bot, reach):
+    """Hoody's hand near the camera, from the left edge: the index finger over the top, the thumb under the base - the pinch pose."""
+    my = (y_top + y_bot) / 2
+    limb(c, [(-80, my + 160), (x0 - 60, my + 40)], 120, NAVY)                     # the sleeve
+    rr(c, x0 - 110, my - 120, 170, 230, 70); fs(c, K.SKIN, 7)                       # the back of the hand
+    rr(c, x0 - 10, y_top - 30, reach, 52, 26); fs(c, K.SKIN, 7)                     # index finger, over the top
+    rr(c, x0 - 10, y_bot - 20, reach * .8, 56, 28); fs(c, K.SKIN, 7)               # thumb, under the base
+    for k in range(2): rr(c, x0 - 60 + k * 10, my - 60 + k * 50, 90, 40, 20); fs(c, K.SKIN, 5)   # curled fingers
+
 def photo(c, f=0, label='ITS TRIP', stamp_k=1.0):
-    """Rome, the final photo. Reading order: the couple; Hoody's finger 'pressing' the Colosseum; the cat in the corner."""
-    P.rome(c, f)
-    TOP = 1500
-    ledge(c, 150, 1110, TOP)
-    es, ex = 1.25, 760
-    c.save(); c.rectangle(0, 0, W, TOP + 6); c.clip()                     # Eva seated on the ledge: hips on the top, standing legs clipped away
+    """Rome, the final photo. Reading order: the couple; Hoody's big hand pinching the (far, small) Colosseum; the cat in his backpack."""
+    CS, CX = .42, 330                                                    # the Colosseum, far away at the left: small enough to pinch
+    P.rome(c, f, s=CS, cx=CX)
+    TOP = 1520
+    ledge(c, 480, 1110, TOP)
+    es, ex = 1.12, 870
+    c.save(); c.rectangle(0, 0, W, TOP + 6); c.clip()
     E.eva(c, ex, TOP + 250 * es, es, 'charmed', sip=0, tilt=-.24, pose='coffee'); c.restore()
-    for q in (-1, 1):                                                     # knees at the edge, shins down the front
+    for q in (-1, 1):
         limb(c, [(ex + q * 34 * es, TOP + 4), (ex + q * 38 * es, TOP + 200)], 32 * es, E.TROUS)
         ell(c, ex + q * 34 * es, TOP + 6, 36 * es, 26 * es); fs(c, E.TROUS, 5)
         ell(c, ex + q * 42 * es, TOP + 206, 30 * es, 14 * es); fs(c, E.SHOE, 4)
-    # MY AI standing on the ledge beside her: the perfect demo smile, a clear open-palm wave, its other hand nearly touching hers
-    A.myai(c, 450, TOP - 6, 1.7, eye='happy', arms=('wave', 'down'), tilt=8)
-    # Hoody: only his sleeve and finger, in from the left edge, pressing the Colosseum's corner - the forced-perspective pose, at last
-    c.save(); c.translate(44, 0)                                          # clear of the photo's border
-    tip = (120, 748)                                                     # down onto the Colosseum's top edge
-    limb(c, [(-80, 560), (40, 600), (118, 650)], 70, NAVY)                # sleeve in from the left edge, above the corner
-    rr(c, 84, 612, 76, 64, 28); fs(c, K.SKIN, 6)                          # the hand
-    rr(c, tip[0] - 15, 660, 30, tip[1] - 660, 14); fs(c, K.SKIN, 6)      # the finger, pressing down on the corner
-    # the cat, riding on his shoulder just out of frame: an ear tip and one eye peeking in under the sleeve
-    c.move_to(-6, 640); c.line_to(34, 600); c.line_to(52, 668); c.close_path(); fs(c, K.TABBY, 6)
-    c.move_to(14, 630); c.line_to(32, 612); c.line_to(40, 650); c.close_path(); c.set_source_rgb(*hx('ffb3a7')); c.fill()
-    ell(c, 18, 700, 64, 50); fs(c, K.TABBY, 6)
-    ell(c, 44, 694, 18, 14); fs(c, hx('b8e04a'), 4); ell(c, 42, 694, 5, 11); c.set_source_rgb(*INK); c.fill()
-    c.restore()
+    A.myai(c, 640, TOP - 6, 1.45, eye='happy', arms=('wave', 'down'), tilt=8)
+    base = P.GY - 60; top = base - (base - 700) * CS                     # the small Colosseum's top and base
+    pinch_hand(c, 120, top - 10, base + 12, CX - 70)
+    backpack_cat(c, 190, 1660, 1.0)
     P.stamp(c, 'rome', k=stamp_k)
     c.rectangle(0, 0, W, H); c.rectangle(34, 34, W - 68, H - 68); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD); c.set_source_rgb(*WHITE); c.fill()
     c.set_fill_rule(cairo.FILL_RULE_WINDING)

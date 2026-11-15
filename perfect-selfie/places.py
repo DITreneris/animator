@@ -92,7 +92,8 @@ def egypt(c, f=0):
         ell(c, x, y + r * .5, r * 1.6, r * .5); fs(c, hx('efc985') if i % 2 else hx('f6dba0'), 5)
 
 # ---------------- Rome: the Colosseum, its broken top stepping down to one side
-def rome(c, f=0):
+def rome(c, f=0, s=1.0, cx=540):
+    """s, cx: the Colosseum's size and centre on the horizon (s < 1: further away, e.g. small enough to pinch)."""
     sky(c, '86c9ff', 'd6eeff'); clouds(c, f, ((150, 400, 60), (920, 520, 75)))
     ST, ST_D, ST_L = hx('e2c896'), hx('b99a66'), hx('efdcb4')
     left, right, top, base = 70, 1010, 760, GY - 60
@@ -104,7 +105,8 @@ def rome(c, f=0):
         c.move_to(left, base); c.line_to(left, top + 40 + cy(left))
         for x, dy in edge: c.line_to(x, top + 40 + cy(x) + dy)
         c.line_to(right, base + 0); c.close_path()
-    c.save(); outline(); c.clip_preserve(); fs(c, ST, 7)
+    c.save(); c.translate(cx, base); c.scale(s, s); c.translate(-540, -base)          # the Colosseum's own frame
+    c.save(); outline(); c.clip_preserve(); fs(c, ST, 7 / s)
     for t in range(tiers):
         y0 = top + t * th
         c.move_to(left, y0 + th - 16 + cy(left))
@@ -117,7 +119,7 @@ def rome(c, f=0):
             c.move_to(ax - w_, y0 + th - 16 + yo); c.line_to(ax - w_, y0 + 46 + yo); c.arc(ax, y0 + 46 + yo, w_, math.pi, 0); c.line_to(ax + w_, y0 + th - 16 + yo); c.close_path()
             c.set_source_rgb(*hx('6e5638')); c.fill()
     c.restore()
-    outline(); c.set_source_rgb(*INK); c.set_line_width(7); c.stroke()
+    outline(); c.set_source_rgb(*INK); c.set_line_width(7 / s); c.stroke(); c.restore()
     c.rectangle(0, base, W, H - base); c.set_source_rgb(*hx('d9cdb3')); c.fill()
     c.move_to(0, base); c.line_to(W, base); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
     for i in range(40): rr(c, (i * 137) % 1080, base + 40 + (i * 53) % 380, 60, 26, 10); c.set_source_rgb(*hx('cbbd9f')); c.fill()
