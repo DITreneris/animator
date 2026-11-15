@@ -1,75 +1,82 @@
-"""Perfect Date mix: park ambience, a synthesised romance tune (the speaker), its dead stop at the hand-hold, voices and effects.
-Shot starts come from render.py, so the sound follows any re-timing. Writes mix.wav (mono, 48 kHz, exactly NF frames)."""
+"""Perfect Date v2 mix: park, his old riff (Make It Original), the pump, the rise, plonk, creak, pop, the fall and the landing.
+No new voices: Tomas's whisper, "oh" and "whoa"; MY AI's two lines. Shot starts come from render.py. Writes mix.wav (mono, 48 kHz)."""
 import os, sys, numpy as np, soundfile as sf
 HERE = os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE); sys.path.insert(0, HERE)
-import render as R
+import render as R, sound as S
 SR = 48000; N = R.NF * SR // 30
 T0 = [a / 30 for fn, a, b in R.SHOTS]                          # shot start times, s (index 0 = shot 1)
 rng = np.random.default_rng(5)
 vo = np.zeros(N); mus = np.zeros(N); fx = np.zeros(N); amb = np.zeros(N)
 T = lambda d: np.arange(int(d * SR)) / SR
-def add(buf, t, x, g=1.0, wrap=False):
-    i = int(t * SR); n = len(x)
-    if wrap and i + n > N:                                      # the loop: what runs past the end comes in at the start
-        buf[i:] += x[:N - i] * g; buf[:i + n - N] += x[N - i:] * g; return
-    x = x[:max(0, N - i)]; buf[i:i + len(x)] += x * g
+def add(buf, t, x, g=1.0):
+    i = int(t * SR); x = x[:max(0, N - i)]; buf[i:i + len(x)] += x * g
 def load(p): x, sr = sf.read(p); assert sr == SR; return x / np.abs(x).max()
+lp = lambda x, fc: S.onepole_lp(x, fc)
+def env_seg(pts):                                               # piecewise-linear gain over the whole film: [(t, g), ...]
+    t = np.arange(N) / SR; return np.interp(t, [p[0] for p in pts], [p[1] for p in pts])
 midi = lambda n: 440 * 2 ** ((n - 69) / 12)
-def lowpass(x, fc):
-    a = np.exp(-2 * np.pi * fc / SR); y = np.zeros_like(x); p = 0.
-    for i in range(len(x)): p = (1 - a) * x[i] + a * p; y[i] = p
-    return y
-def epiano(f, d, v=1.0):
-    t = T(d); e = np.exp(-t * 3.2) * np.minimum(1, t * 200)
-    return v * e * (np.sin(2 * np.pi * f * t) + .35 * np.sin(4 * np.pi * f * t) * np.exp(-t * 6) + .12 * np.sin(6 * np.pi * f * t) * np.exp(-t * 9))
-def pad(f, d):
-    t = T(d); e = np.minimum(1, t * 3) * np.minimum(1, (d - t) * 3)
-    return e * sum(np.sin(2 * np.pi * f * k * t + k) / k for k in (1, 2, 3)) * .5
 
-# ---- park ambience: soft wind and birds, under everything
-amb += lowpass(rng.standard_normal(N), 500) * .02
+# ---- ambience: park birds on the ground, wind in the sky (shots 12-19)
+park = lp(rng.standard_normal(N), 500) * .045
 t = .3
 while t < N / SR - .3:
     d = rng.uniform(.06, .12); f0 = rng.uniform(3200, 4600); tt = T(d)
-    chirp = np.sin(2 * np.pi * (f0 * tt + rng.uniform(-9000, 9000) * tt ** 2)) * np.sin(np.pi * tt / d)
-    add(amb, t, chirp, .025); t += rng.uniform(.5, 1.6)
+    add(park, t, np.sin(2 * np.pi * (f0 * tt + rng.uniform(-9000, 9000) * tt ** 2)) * np.sin(np.pi * tt / d), .05); t += rng.uniform(.5, 1.6)
+sky_on = T0[11]
+wind = lp(lp(rng.standard_normal(N), 700), 700) * .5 * (1 + .4 * np.sin(np.arange(N) / SR * 2 * np.pi * .4))
+amb = park * env_seg([(0, 1), (sky_on - .3, 1), (sky_on + .3, .15), (N / SR, .15)]) \
+    + wind * env_seg([(0, 0), (sky_on - .3, 0), (sky_on + .3, 1), (N / SR, 1)])
 
-# ---- the rose: a harp sting (shot 8)
-for i, n in enumerate([72, 76, 79, 84, 88]): add(fx, T0[7] + .05 + i * .045, epiano(midi(n), .9), .12)
+# ---- the rose: a harp sting (shot 6)
+for i, n in enumerate([72, 76, 79, 84, 88]):
+    tt = T(.9); add(fx, T0[5] + .3 + i * .045, np.exp(-tt * 3.2) * np.sin(2 * np.pi * midi(n) * tt), .12)
 
-# ---- the speaker: a little romance tune from "play" (shot 10, frame 12) to the hand-hold (shot 16)
-start, stop = T0[9] + 12 / 30, T0[15]
-beat = 60 / 92
-mel = [77, 81, 84, 81, 79, 82, 86, 82, 77, 81, 84, 89, 88, 84, 79, 82]
-ch = [(53, 57, 60), (50, 53, 57), (46, 50, 53), (48, 52, 55)]
-t, k = start, 0
-while t < stop:
-    add(mus, t, epiano(midi(mel[k % len(mel)]), beat * 1.6), .22)
-    if k % 3 == 0:
-        for n in ch[(k // 3) % 4]: add(mus, t, pad(midi(n), beat * 3), .05)
-    t += beat / 2; k += 1
-mus[int(stop * SR):] = 0                                         # dead stop: she takes its hand
-# the trip (shot 12): the tune warbles while the speaker flies
-a, b = int((T0[11] + .2) * SR), int((T0[11] + .75) * SR)
-seg = mus[a:b].copy(); idx = np.cumsum(1 + .12 * np.sin(np.linspace(0, 9 * np.pi, b - a))); idx = idx / idx[-1] * (len(seg) - 1)
-mus[a:b] = np.interp(idx, np.arange(len(seg)), seg)
+# ---- his riff, his 1986 take, round and round from shot 8 until his eyes open (shot 13)
+take, ln = S.guitar_phrase(R.K.__dict__.get('RIFF') or [(62, 3), (65, 1), (60, 2), (69, 2), (67, 2), (74, 4)], detune_cents=18, seed=11)
+start, stop = T0[7] + .15, T0[12]
+t = start
+while t < stop: add(mus, t, take / np.abs(take).max(), .55); t += ln
+mus *= env_seg([(0, 1), (T0[9], 1), (T0[9] + .5, .7), (T0[10] + .8, .45), (T0[11], .45), (T0[11] + .3, .8), (N / SR, .8)])
+k = int(stop * SR); mus[k:] = 0; f = int(.02 * SR); mus[k - f:k] *= np.linspace(1, 0, f)      # cut dead: eyes open
 
-# ---- effects
-for i in range(10): add(fx, T0[3] + i * .045, np.diff(rng.standard_normal(int(.03 * SR)), prepend=0) * np.exp(-T(.03) * 80), .06)   # paws
-yt = T(.22); add(fx, T0[5] + .05, np.sin(2 * np.pi * (900 * yt + 2400 * yt ** 2)) * np.exp(-yt * 9), .10)                  # yelp
-st = T(.12); add(fx, T0[12] + .1, np.sin(2 * np.pi * (1500 * st + 9000 * st ** 2)) * np.exp(-st * 25), .05)               # balloon squeak
-for i in range(4): add(fx, T0[19] + .1 + i * .28, lowpass(rng.standard_normal(int(.05 * SR)), 900) * np.exp(-T(.05) * 60), .25)   # her footsteps
+# ---- the pump: hiss in strokes (shot 9 from frame 8, through shot 10 frame 26)
+a, b = T0[8] + 8 / 30, T0[9] + 26 / 30
+hiss = lp(rng.standard_normal(int((b - a) * SR)), 3500) - lp(rng.standard_normal(int((b - a) * SR)), 800) * .5
+tt = np.arange(len(hiss)) / SR
+add(fx, a, hiss * (.55 + .45 * np.maximum(0, np.sin(2 * np.pi * 2.2 * tt))) * np.minimum(1, tt * 20), .10)
+# rubber squeaks as it swells, rising
+for i, t in enumerate((T0[8] + .7, T0[8] + .95, T0[9] + .3, T0[9] + .7, T0[9] + 1.1)):
+    tt = T(.14); f0 = 700 + i * 140
+    add(fx, t, np.sin(2 * np.pi * (f0 * tt + 900 * tt ** 2)) * np.sin(np.pi * tt / .14) * (1 + .3 * np.sin(2 * np.pi * 60 * tt)), .06)
+# the hose pops off (shot 10, frame 26)
+tt = T(.08); add(fx, T0[9] + 26 / 30, np.sin(2 * np.pi * 420 * tt) * np.exp(-tt * 60), .25)
 
-# ---- voices: Hoody = Tomas (whisper take 3, whoa 2, ooh 2, oh 3, sigh 1, breath 3); MY AI = its Learn to Code voice
-for f, t, g, w in (('h_whisper', T0[2] + .07, .7, False), ('ai_watch', T0[6] + .15, .6, False),
-                   ('h_whoa', T0[11] + .2, .55, False), ('h_ooh', T0[12] + .22, .55, False), ('h_oh', T0[14] + .27, .5, False),
-                   ('ai_turn', T0[17] + .2, .6, False), ('h_sigh', T0[18] + .07, .45, False), ('h_breath', T0[19] + .55, .5, True)):
-    add(vo, t, load(f'vo/{f}.wav'), g, wrap=w)
+# ---- dog: a tiny whimper as it backs off (shot 4)
+tt = T(.3); add(fx, T0[3] + 18 / 30, np.sin(2 * np.pi * (1300 * tt - 900 * tt ** 2)) * np.sin(np.pi * tt / .3) ** 2, .05)
 
-# ---- duck music and ambience under the voices, then sum
+# ---- plonk: one string, the wrong note (shot 15, frame 3)
+pl = S.ks_pluck(midi(49) * 2 ** (-40 / 1200), 1.2, bright=.25, decay=.993, seed=4)
+add(fx, T0[14] + 3 / 30, S.amp(pl, drive=1.5) * np.exp(-T(1.2) * 1.5)[:len(pl)], .5)
+
+# ---- creak: the rubber stretching (shot 17)
+tt = T(.7); cr = np.sin(2 * np.pi * (180 * tt + 60 * np.sin(2 * np.pi * 3 * tt))) * (1 + .5 * np.sign(np.sin(2 * np.pi * 37 * tt)))
+add(fx, T0[16] + .2, lp(cr, 1500) * np.sin(np.pi * tt / .7), .18)
+
+# ---- POP (shot 18), then the falling whistle (shot 19) and the landing thump on frame 0
+pop = rng.standard_normal(int(.06 * SR)) * np.exp(-T(.06) * 70); tt = T(.15)
+add(fx, T0[17] + .02, pop, 1.2); add(fx, T0[17] + .02, np.sin(2 * np.pi * 90 * tt) * np.exp(-tt * 30), .9)
+tt = T(.6); add(fx, T0[18] - .05, np.sin(2 * np.pi * np.cumsum(np.geomspace(2200, 500, len(tt))) / SR) * np.minimum(1, tt * 15), .10)
+tt = T(.25); add(fx, .0, lp(rng.standard_normal(len(tt)), 300) * np.exp(-tt * 18) * 3 + np.sin(2 * np.pi * 60 * tt) * np.exp(-tt * 14), .35)
+
+# ---- voices
+for f, t, g in (('h_whisper', T0[2] + .07, .7), ('ai_watch', T0[4] + .15, .6), ('ai_turn', T0[6] + .25, .6),
+                ('h_oh', T0[12] + .35, .55), ('h_whoa', T0[17] + .25, .55)):
+    add(vo, t, load(f'vo/{f}.wav'), g)
+
+# ---- duck under the voices, then sum
 w = int(.03 * SR); e = np.clip(np.convolve(np.abs(vo), np.ones(w) / w, 'same') * 10, 0, 1)
 s = np.zeros(N); p = 0.; rl = np.exp(-1 / (.2 * SR))
 for i in range(N): p = e[i] if e[i] > p else p * rl; s[i] = p
-out = vo + mus * (1 - .55 * s) + amb * (1 - .85 * s) + fx      # birds clear out of the way of every line
+out = vo + mus * (1 - .55 * s) + amb * (1 - .85 * s) + fx
 out = out / np.abs(out).max() * .9
 sf.write('mix.wav', out, SR, subtype='PCM_16'); print('mix ok', round(len(out) / SR, 2), 's')
