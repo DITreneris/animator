@@ -14,9 +14,9 @@ W, H = 1080, 1920
 oe = lambda t: 1 - (1 - cl(t)) ** 3
 
 # ---------------- voices: where each line sits (shot index, seconds in); the mix and the lip sync both read this
-VO = [('h_invite', 0, .3, .8), ('ai_plan', 0, 2.75, .7), ('h_selfie', 1, .1, .8), ('h_proud', 2, .35, .6), ('ai_stepback', 4, .25, .7),
-      ('h_huh', 4, 1.25, .6), ('ai_more', 6, .2, .7), ('h_whoa', 6, .75, .6), ('h_effort', 6, 1.35, .5),
-      ('h_howtrip', 10, .3, .8), ('ai_thanks', 10, 3.0, .7), ('h_sigh', 10, 4.1, .55), ('h_another', 11, .35, .8)]   # Hoody: Tomas's takes
+VO = [('h_invite', 0, .3, .8), ('ai_plan', 0, 2.75, .7), ('h_selfie', 2, .1, .8), ('h_proud', 3, .35, .6), ('ai_stepback', 5, .25, .7),
+      ('h_huh', 5, 1.25, .6), ('ai_more', 7, .2, .95), ('h_whoa', 7, .75, .6), ('h_effort', 7, 1.35, .5),
+      ('h_howtrip', 11, .3, .8), ('ai_thanks', 11, 3.0, .7), ('h_sigh', 11, 4.1, .55), ('h_another', 12, .35, .8)]   # Hoody: Tomas's takes
 _ENV = {}
 def env(name):
     if name not in _ENV:
@@ -100,8 +100,10 @@ def s_after(c, f, r):   # after: "How did you like our trip?" - she turns her ph
     if r < 88: R.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, (316, 1184), cy=640, cx=430, size=56)
     if r >= 90: R.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], r - 90, (880, BS - 6 - 420), cy=600, cx=700, size=56)
 def s_another(c, f, r): # "...Another trip?" - quietly, to her. MY AI ducks back behind the bench: the last frame is frame 0
-    duck = oe(r / 10)
-    two_shot(c, f, lerp(AI_UP, AI_HIDE, duck), dict(eye='happy', arms=('down', 'down')), .2 + .8 * talk(f, 'h_another'))
+    duck = oe((r - 22) / 10)                                               # a facepalm at "another trip?", then it ducks back down
+    fp = 3 <= r < 22
+    two_shot(c, f, lerp(AI_UP, AI_HIDE, duck), dict(eye='blank' if fp else 'happy', arms=('down', 'chest' if fp else 'down'), tilt=-12 if fp else 0),
+             .2 + .8 * talk(f, 'h_another'))
     if r < 50: R.bubble(c, ['...ANOTHER TRIP?'], r - 8, (342, 1184), cy=660, cx=440, size=58)
 
 def s_rome_act(c, f, r):  # MY AI hands Hoody the phone ("you take it") and sits down with Eva: the cameraman is made
@@ -129,29 +131,61 @@ def s_open(c, f, r):   # frame 0: the giant face in the phone preview at Pisa - 
     K.hoodie(c, 540, 1060 + 150 * 3.0, 3.0 * 1.1)
     K.hoodyz_head(c, 540, 1060, 3.0, era='young', expr='happy', blink=False, op=.2 + .8 * talk(f, 'h_selfie'))
     phone_ui(c)
-    R.bubble(c, ['ONE SELFIE?'], r + 5, (590, 1258), cy=1000, cx=840, size=62)   # in from the side, below his eyes, to his mouth
+    R.bubble(c, ['ONE SELFIE?'], r + 5, (590, 1258), cy=1000, cx=720, size=62)   # in from the side, below his eyes, to his mouth
 def phone_ui(c):
     """The camera preview: dark rounded corners and a shutter dot."""
     c.rectangle(0, 0, W, H); rr(c, 40, 40, W - 80, H - 80, 70); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD); c.set_source_rgb(*hx('1d2130')); c.fill()
     c.set_fill_rule(cairo.FILL_RULE_WINDING)
     ell(c, 540, 1800, 52, 52); fs(c, WHITE, 8)
 
-def s_pisa(c, f, r):   # live: Hoody does the pose proudly; MY AI's arm telescopes up and props the very top
-    P.pisa(c, f)
-    k = oe((r - 16) / 26)
-    sh = (330 + 72 * .85, 1600 - 280 * .85 + 112 * .85)
-    tgt = (edge_pisa(470, -1) + 10, 470)
-    A.myai(c, 330, 1600, .85, eye='focus' if k < 1 else 'happy', arms=('hip', None if k > 0 else 'down'), tilt=8)
-    if k > 0: tele_arm(c, 330, 1600, .85, 1, (lerp(sh[0] + 40, tgt[0], k), lerp(sh[1] - 60, tgt[1], k)), tip='palm')
-    E.eva(c, 150, 1880, .92, 'bored', sip=.5, gaze=-14, blink=K.blinking(f, 7))
-    a = oe(r / 10)
-    R.hoody(c, 860, 1830, 1.05, expr='happy', arms=('out' if a > .5 else 'rest', 'rest'), rot=-.06 * a, f=f)
-    backpack_cat(c, 210, 1720, .9, 'suspicious')
-def s_photo(place):
+def director_frame(c, x, y, s):
+    """MY AI's two hands making a director's frame [ ] in front of its face: the perfectionist sizing up the shot."""
+    for q in (-1, 1):
+        c.move_to(x + q * 30 * s, y - 50 * s); c.line_to(x + q * 74 * s, y - 50 * s); c.line_to(x + q * 74 * s, y + 50 * s); c.line_to(x + q * 30 * s, y + 50 * s)
+        c.set_source_rgb(*INK); c.set_line_width(26 * s); c.stroke_preserve(); c.set_source_rgb(*WHITE); c.set_line_width(14 * s); c.stroke()
+
+def s_pisa(c, f, r):   # live: MY AI sizes up the shot (a director's frame), Hoody strikes the pose, its arm telescopes under the overhang
+    k = oe((r - 18) / 24); a = oe(r / 10)
+    TP.pisa(c, f, k=k, hoody_a=a, photo=False)
+    c.identity_matrix()
+    if r < 16:
+        rx, rgy, rs = TP.PISA_AI; director_frame(c, rx, rgy - 280 * rs, rs)
+# ---------------- the photo-story look: a title card, slow drift towards Hoody's spot, a soft vignette and grain
+KB_TARGET = dict(pisa=(720, 1300), paris=(200, 1500), giza=(400, 1330), rome=(300, 1400))   # where the drift ends: his spot (Rome: where he isn't)
+def memory_filter(c, f):
+    g = cairo.RadialGradient(540, 980, 420, 540, 980, 1200); g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, .1, .06, .02, .32)
+    c.set_source(g); c.paint()
+    import random
+    rnd = random.Random(f * 7919)
+    for _ in range(900):
+        x, y = rnd.random() * W, rnd.random() * H; v = rnd.random()
+        c.rectangle(x, y, 2, 2); c.set_source_rgba(v, v, v, .07); c.fill()
+def photo_surface(fn, **kw):
+    """Render an album photo without the series bar (the drift must not scale the bar)."""
+    S = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); cc = cairo.Context(S)
+    keep = Sh.topbar; Sh.topbar = lambda *a, **k: None
+    try: fn(cc, 0, **kw)
+    finally: Sh.topbar = keep
+    return S
+_PHOTOS = {}
+def kenburns(c, place, r, d, f, **kw):
+    if place not in _PHOTOS: _PHOTOS[place] = photo_surface(getattr(TP, place), **kw)
+    t = ss(cl(r / d)); z = 1 + .09 * t; tx, ty = KB_TARGET[place]
+    c.save(); c.translate(tx, ty); c.scale(z, z); c.translate(-tx, -ty); c.set_source_surface(_PHOTOS[place], 0, 0); c.paint(); c.restore()
+    memory_filter(c, f)
+def s_photo(place, d):
     def shot(c, f, r):
-        getattr(TP, place)(c, f)
+        kenburns(c, place, r, d, f)
         flash(c, r)
     shot.__name__ = f's_{place}_photo'; return shot
+def s_title(c, f, r):  # the memory begins: PERFECT TRIP · NOV 2026, thin type over a soft Pisa
+    P.pisa(c, f); c.set_source_rgba(1, 1, 1, .45); c.paint(); memory_filter(c, f)
+    a = cl(r / 6) * cl((30 - r) / 6)
+    c.select_font_face('Inter', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+    for text, size, y, col in (('PERFECT TRIP', 92, 900, INK), ('NOV 2026', 40, 990, hx('4b5563'))):
+        c.set_font_size(size); e = c.text_extents(text)
+        c.move_to(540 - e.width / 2 - e.x_bearing, y + 4); c.set_source_rgba(1, 1, 1, .6 * a); c.text_path(text); c.fill()
+        c.move_to(540 - e.width / 2 - e.x_bearing, y); c.set_source_rgba(*col, a); c.show_text(text)
 
 def s_paris(c, f, r):  # live: "STEP BACK!" - Hoody backs away and shrinks into an extra; MY AI steps in, finger to the spire
     rx, rgy, rs, hz = 900, 1760, 1.25, 1640
@@ -160,12 +194,13 @@ def s_paris(c, f, r):  # live: "STEP BACK!" - Hoody backs away and shrinks into 
     w = ss(cl((r - 14) / 42))                                              # he walks back, slowly, looking back at the robot
     hx_, hgy, hs = lerp(520, 200, w), lerp(1880, hz + 40, w), lerp(1.0, .5, w)
     hx_ = lerp(640, 200, w)
-    him = lambda: R.hoody(c, hx_, hgy + math.sin(r * .9) * 10 * (0 < w < 1) * hs, hs, expr='hopeful' if w < .6 else 'bored', arms=('rest', 'rest'), gaze=24 * w, f=f)
+    him = lambda: R.hoody(c, hx_, hgy, hs, step=r * .45 if 0 < w < 1 else None, expr='hopeful' if w < .6 else 'bored', arms=('rest', 'rest'), gaze=24 * w, f=f)
     if w >= .5: him()                                                      # once he's far back, Eva is in front of him
     E.eva(c, 400, 1900, .9, 'impressed' if r > 50 else 'evacalm', sip=.2, gaze=18 if r > 46 else -6, blink=K.blinking(f, 7))
     if w < .5: him()
     k = oe((r - 50) / 18)
-    A.myai(c, rx, rgy, rs, eye='focus', arms=(None if k > 0 else 'wave', 'down'), tilt=-4, talk=talk(f, 'ai_stepback'))
+    A.myai(c, rx, rgy, rs, eye='focus', arms=(None if k > 0 else 'wave', 'down'), tilt=-4, talk=talk(f, 'ai_stepback'),
+           walk=r * 1.6 if 14 < r < 40 else None)   # tapping its foot while he dawdles
     if k > 0:
         sh = (rx - 72 * rs, rgy - 280 * rs + 112 * rs)
         tele_arm(c, rx, rgy, rs, -1, (lerp(sh[0] - 40, tipxy[0], k), lerp(sh[1] - 60, tipxy[1] + 26, k)), tip='finger')
@@ -179,7 +214,7 @@ def s_giza(c, f, r):   # live: "MORE!" - the camel drags Hoody back to the lugga
         c.save(); c.translate(x, y); c.rotate(a); suitcase(c, 0, 0, w_, h, col); c.restore()
     if r < 18:                                                             # "MORE!": MY AI hands him the bags first
         bx = lerp(560, 480, oe(r / 12)); suitcase(c, bx, 1640, 110, 80, 'e85a4f')
-    d = ss(cl((r - 22) / 24))                                              # then the camel yanks him back
+    d = R.back((r - 22) / 14) if r >= 22 else 0                            # then the camel YANKS him back (overshoot, settle)
     hands, _ = R.hoody(c, lerp(560, 400, d), lerp(1860, 1530, d), lerp(.95, .52, d), expr='shock' if d < .9 else 'wince', arms=('out', 'down'), rot=.3 * d, f=f)
     if d > .05: c.move_to(*hands[0]); c.line_to(*rope_to); c.set_source_rgb(*hx('8a5a2e')); c.set_line_width(5); c.stroke()
     if d > .9: Sh.sweat(c, 450, 1260, .7)
@@ -189,12 +224,14 @@ def s_giza(c, f, r):   # live: "MORE!" - the camel drags Hoody back to the lugga
     rx = lerp(780, 700, m)                                                 # clear of his face, so MORE!'s tail can reach its antenna
     hp = A.hand_at(rx, 1860, 1.3, 1, 'hold')
     E.eva(c, 920, 1880, 1.0, 'laugh' if m > .9 else 'impressed', sip=.1, tilt=-.2 * m, pose='holdlow' if m > .9 else 'coffee', hand_to=hp if m > .9 else None)
-    A.myai(c, rx, 1860, 1.3, eye='focus' if r < 30 else 'happy', arms=('wave', 'hold' if m > .9 else 'down'), tilt=10 * m, talk=talk(f, 'ai_more'))
+    sigh = math.sin(cl(r / 8) * math.pi) * 22 if r < 8 else 0             # a shoulder-drop sigh before MORE!
+    if 0 < r < 9: txt(c, 'pff', rx + 120, 1200, 50, NAVY, lw=0)
+    A.myai(c, rx, 1860 + sigh, 1.3, eye='focus' if r < 30 else 'happy', arms=('wave', 'hold' if m > .9 else 'down'), tilt=10 * m, talk=talk(f, 'ai_more'))
     backpack_cat(c, 210, 1720, .9, 'disapproving')
     R.bubble(c, ['MORE!'], r - 2, (rx, 1860 - 420 * 1.3), cy=640, cx=700)
 
-def s_rome(c, f, r):   # the couple photo; the label switches after it lands
-    TP.rome(c, f, label='ITS TRIP' if r >= 14 else 'HIS TRIP')
+def s_rome(c, f, r):   # the couple photo, drifting; the label switches after it lands
+    kenburns(c, 'rome', r, 60, f)
     flash(c, r)
 
 def s_reveal(c, f, r): # pull back: the photo is on the phone in Hoody's hands. "THANKS FOR THE PHOTOS!"
@@ -212,22 +249,31 @@ def s_more(c, f, r):   # "ONE MORE?" - his hopeful face; MY AI's facepalm; then 
     fp = r >= 16
     A.myai(c, 900, 1760, 1.1, eye='blank' if fp else 'happy', arms=('down', 'chest' if fp else 'down'), tilt=-12 if fp else 0)
 
-DUR = [120, 48, 60, 30, 81, 30, 69, 27, 45, 60, 156, 60]
-FNS = [s_invite, s_open, s_pisa, s_photo('pisa'), s_paris, s_photo('paris'), s_giza, s_photo('giza'), s_rome_act, s_rome, s_after, s_another]
+DUR = [120, 30, 48, 60, 30, 81, 30, 69, 27, 45, 60, 156, 60]
+FNS = [s_invite, s_title, s_open, s_pisa, s_photo('pisa', 30), s_paris, s_photo('paris', 30), s_giza, s_photo('giza', 27), s_rome_act, s_rome, s_after, s_another]
 SHOTS = []; _t = 0
 for fn, d in zip(FNS, DUR): SHOTS.append((fn, _t, _t + d)); _t += d
 NF = _t
-LIVE_LABEL = {s_pisa, s_paris, s_giza, s_rome_act, s_invite}                                     # live shots carry the series bar; photos draw their own
+TRIP = range(1, 11)                                                       # the "memory": title card to the Rome photo
+XF = 6                                                                    # crossfade frames between trip shots, photo-story style
+
+def render_shot(i, f):
+    fn, a, b = SHOTS[i]
+    S = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(S)
+    c.save(); fn(c, f, f - a); c.restore(); return S
 
 def draw(f):
-    S = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(S)
-    for fn, a, b in SHOTS:
-        if a <= f < b:
-            c.save(); fn(c, f, f - a); c.restore(); c.identity_matrix()
-            if fn in LIVE_LABEL or fn is s_open: Sh.topbar(c, 'HIS TRIP')
-            if fn in (s_after, s_another): Sh.topbar(c, 'ITS TRIP')
-            if fn is s_rome and 14 <= f - a < 30: pulse(c, f - a - 14)
-            break
+    i = next(k for k, (fn, a, b) in enumerate(SHOTS) if a <= f < b)
+    fn, a, b = SHOTS[i]; r = f - a
+    S = render_shot(i, f); c = cairo.Context(S)
+    if i in TRIP and i - 1 in TRIP and r < XF:                            # crossfade from the shot before
+        prev = render_shot(i - 1, a - 1); c.set_source_surface(prev, 0, 0); c.paint_with_alpha(1 - (r + 1) / (XF + 1))
+    if fn is s_title: return S
+    label = 'ITS TRIP' if (fn is s_rome and r >= 14) or fn in (s_after, s_another) else 'HIS TRIP'
+    Sh.topbar(c, label)
+    if fn is s_rome and 14 <= r < 30: pulse(c, r - 14)
+    if fn.__name__.endswith('_photo') or fn is s_rome:                    # the stamp thumps down at the shutter (drawn over the bar's level, unscaled)
+        pass
     return S
 
 def pulse(c, t):
