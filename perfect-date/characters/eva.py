@@ -77,6 +77,9 @@ def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, 
     if pose == 'hip':
         lh = (x - 96 * s, hy + 318 * s)
         limb(c, [(x - 76 * s, hy + 142 * s), (x - 168 * s, hy + 236 * s), lh], 30 * s, COAT)
+    elif pose == 'holdlow':                                     # holding someone's hand at her side
+        lh = (x - 190 * s, hy + 410 * s)
+        limb(c, [(x - 76 * s, hy + 142 * s), (x - 150 * s, hy + 280 * s), lh], 30 * s, COAT)
     elif pose == 'reach':
         lh = (x - 250 * s, hy + 236 * s)
         limb(c, [(x - 76 * s, hy + 142 * s), (x - 170 * s, hy + 214 * s), lh], 30 * s, COAT)
