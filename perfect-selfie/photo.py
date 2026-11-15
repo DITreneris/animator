@@ -48,8 +48,8 @@ def pinch_hand(c, x0, y_top, y_bot, reach):
 
 def photo(c, f=0, label='ITS TRIP', stamp_k=1.0):
     """Rome, the final photo. Reading order: the couple; Hoody's big hand pinching the (far, small) Colosseum; the cat in his backpack."""
-    CS, CX = .42, 330                                                    # the Colosseum, far away at the left: small enough to pinch
-    P.rome(c, f, s=CS, cx=CX)
+    CS, CX, HZ = .62, 300, 1230                                          # the Colosseum, far off at the left, on a raised horizon: big, but pinchable
+    P.rome(c, f, s=CS, cx=CX, horizon=HZ)
     TOP = 1520
     ledge(c, 480, 1110, TOP)
     es, ex = 1.12, 870
@@ -60,8 +60,8 @@ def photo(c, f=0, label='ITS TRIP', stamp_k=1.0):
         ell(c, ex + q * 34 * es, TOP + 6, 36 * es, 26 * es); fs(c, E.TROUS, 5)
         ell(c, ex + q * 42 * es, TOP + 206, 30 * es, 14 * es); fs(c, E.SHOE, 4)
     A.myai(c, 640, TOP - 6, 1.45, eye='happy', arms=('wave', 'down'), tilt=8)
-    base = P.GY - 60; top = base - (base - 700) * CS                     # the small Colosseum's top and base
-    pinch_hand(c, 120, top - 10, base + 12, CX - 70)
+    base = HZ; top = HZ - (P.GY - 60 - 700) * CS                         # the Colosseum's top and base on screen
+    pinch_hand(c, 120, top - 10, base + 12, CX - 30)
     backpack_cat(c, 190, 1660, 1.0)
     P.stamp(c, 'rome', k=stamp_k)
     c.rectangle(0, 0, W, H); c.rectangle(34, 34, W - 68, H - 68); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD); c.set_source_rgb(*WHITE); c.fill()

@@ -92,7 +92,7 @@ def egypt(c, f=0):
         ell(c, x, y + r * .5, r * 1.6, r * .5); fs(c, hx('efc985') if i % 2 else hx('f6dba0'), 5)
 
 # ---------------- Rome: the Colosseum, its broken top stepping down to one side
-def rome(c, f=0, s=1.0, cx=540):
+def rome(c, f=0, s=1.0, cx=540, horizon=None):
     """s, cx: the Colosseum's size and centre on the horizon (s < 1: further away, e.g. small enough to pinch)."""
     sky(c, '86c9ff', 'd6eeff'); clouds(c, f, ((150, 400, 60), (920, 520, 75)))
     ST, ST_D, ST_L = hx('e2c896'), hx('b99a66'), hx('efdcb4')
@@ -105,7 +105,8 @@ def rome(c, f=0, s=1.0, cx=540):
         c.move_to(left, base); c.line_to(left, top + 40 + cy(left))
         for x, dy in edge: c.line_to(x, top + 40 + cy(x) + dy)
         c.line_to(right, base + 0); c.close_path()
-    c.save(); c.translate(cx, base); c.scale(s, s); c.translate(-540, -base)          # the Colosseum's own frame
+    hz = base if horizon is None else horizon                                # where the square meets the sky
+    c.save(); c.translate(cx, hz); c.scale(s, s); c.translate(-540, -base)          # the Colosseum's own frame
     c.save(); outline(); c.clip_preserve(); fs(c, ST, 7 / s)
     for t in range(tiers):
         y0 = top + t * th
@@ -120,9 +121,9 @@ def rome(c, f=0, s=1.0, cx=540):
             c.set_source_rgb(*hx('6e5638')); c.fill()
     c.restore()
     outline(); c.set_source_rgb(*INK); c.set_line_width(7 / s); c.stroke(); c.restore()
-    c.rectangle(0, base, W, H - base); c.set_source_rgb(*hx('d9cdb3')); c.fill()
-    c.move_to(0, base); c.line_to(W, base); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
-    for i in range(40): rr(c, (i * 137) % 1080, base + 40 + (i * 53) % 380, 60, 26, 10); c.set_source_rgb(*hx('cbbd9f')); c.fill()
+    c.rectangle(0, hz, W, H - hz); c.set_source_rgb(*hx('d9cdb3')); c.fill()
+    c.move_to(0, hz); c.line_to(W, hz); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
+    for i in range(48): rr(c, (i * 137) % 1080, hz + 40 + (i * 53) % (H - hz - 60), 60, 26, 10); c.set_source_rgb(*hx('cbbd9f')); c.fill()
 
 PLACES = dict(pisa=pisa, paris=paris, giza=egypt, rome=rome)
 STAMP = dict(pisa=('PISA', 'c8323c', -.18, 220), paris=('PARIS', '2f5fb3', .14, 870), giza=('GIZA', 'b5651d', -.1, 240), rome=('ROMA', '7b3fa0', .2, 870))   # name, ink, tilt, x (kept off the landmark)
