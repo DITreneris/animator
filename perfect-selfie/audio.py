@@ -18,12 +18,12 @@ def load(p): x, sr = sf.read(p); assert sr == SR; return x / np.abs(x).max()
 midi = lambda n: 440 * 2 ** ((n - 69) / 12)
 
 # ---- ambience per place: birds (Pisa, Paris), desert wind (Giza), a city square (Rome)
-place_of = ['pisa', 'pisa', 'pisa', 'paris', 'paris', 'giza', 'giza', 'rome', 'rome', 'rome']
+place_of = ['park', 'pisa', 'pisa', 'pisa', 'paris', 'paris', 'giza', 'giza', 'rome', 'rome', 'park', 'park']
 noise = lp(rng.standard_normal(N), 600)
 for i, (fn, a, b) in enumerate(R.SHOTS):
     t0, t1 = a / 30, b / 30; seg = slice(int(t0 * SR), int(t1 * SR)); pl = place_of[i]
     amb[seg] += noise[seg] * (.05 if pl == 'giza' else .02)
-    if pl in ('pisa', 'paris'):
+    if pl in ('pisa', 'paris', 'park'):
         t = t0 + .2
         while t < t1 - .2:
             d = rng.uniform(.06, .12); tt = T(d); f0 = rng.uniform(3200, 4600)
@@ -35,7 +35,7 @@ for i, (fn, a, b) in enumerate(R.SHOTS):
 def clicks(t, n=3, gap=.16):
     for k in range(n):
         tt = T(.05); add(fx, t + k * gap, np.sin(2 * np.pi * (2400 - 300 * k) * tt) * np.exp(-tt * 90) + rng.standard_normal(len(tt)) * np.exp(-tt * 120) * .4, .25)
-clicks(T0[1] + 16 / 30); clicks(T0[3] + 36 / 30, gap=.12)
+clicks(T0[2] + 16 / 30); clicks(T0[4] + 50 / 30, gap=.12)
 
 # ---- every photo: the shutter (click + whirr), then the stamp's thunk
 def shutter(t):
@@ -43,16 +43,20 @@ def shutter(t):
     tt = T(.12); add(fx, t + .05, np.sin(2 * np.pi * 900 * tt) * np.exp(-tt * 40) * .5 + lp(rng.standard_normal(len(tt)), 2000) * .4, .25)
 def thunk(t):
     tt = T(.18); add(fx, t, np.sin(2 * np.pi * 110 * tt) * np.exp(-tt * 30) + lp(rng.standard_normal(len(tt)), 400) * np.exp(-tt * 40), .5)
-for i in (2, 4, 6, 7):
+for i in (3, 5, 7, 9):
     shutter(T0[i]); thunk(T0[i] + 6 / 30)
 
 # ---- Hoody shuffling back (Paris), the rope creaking (Giza)
-for k in range(6): tt = T(.06); add(fx, T0[3] + (14 + k * 5) / 30, lp(rng.standard_normal(len(tt)), 700) * np.exp(-tt * 50), .25)
-tt = T(.5); add(fx, T0[5] + 12 / 30, np.sin(2 * np.pi * (150 * tt + 30 * np.sin(2 * np.pi * 5 * tt))) * np.sin(np.pi * tt / .5) * (1 + .4 * np.sign(np.sin(2 * np.pi * 33 * tt))), .12)
+for k in range(8): tt = T(.06); add(fx, T0[4] + (14 + k * 5) / 30, lp(rng.standard_normal(len(tt)), 700) * np.exp(-tt * 50), .25)
+tt = T(.5); add(fx, T0[6] + 24 / 30, np.sin(2 * np.pi * (150 * tt + 30 * np.sin(2 * np.pi * 5 * tt))) * np.sin(np.pi * tt / .5) * (1 + .4 * np.sign(np.sin(2 * np.pi * 33 * tt))), .12)
 
 # ---- Rome: a short flourish as the label switches; the reveal is near silence
 for k, n in enumerate([72, 76, 79, 84]):
-    tt = T(.9); add(fx, T0[7] + 14 / 30 + k * .06, np.exp(-tt * 3) * np.sin(2 * np.pi * midi(n) * tt), .12)
+    tt = T(.9); add(fx, T0[9] + 14 / 30 + k * .06, np.exp(-tt * 3) * np.sin(2 * np.pi * midi(n) * tt), .12)
+
+# ---- MY AI pops up from behind the bench (a springy boing); her phone turns (a soft swish)
+tt = T(.3); add(fx, T0[0] + 56 / 30, np.sin(2 * np.pi * (300 * tt + 500 * tt ** 2)) * np.exp(-tt * 9), .18)
+tt = T(.2); add(fx, T0[10] + 40 / 30, lp(rng.standard_normal(len(tt)), 3000) * np.sin(np.pi * tt / .2), .12)
 
 # ---- voices
 for f, shot, off, g in R.VO: add(vo, T0[shot] + round(off * 30) / 30, load(f'vo/{f}.wav'), g)
