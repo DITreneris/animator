@@ -55,16 +55,24 @@ def eva_seated(c, x, es, expr='evacalm', tilt=0, pose='coffee', sip=.2, hand_to=
         ell(c, x + q * 42 * es, BS + 156, 30 * es, 14 * es); fs(c, E.SHOE, 4)
     return hand
 
-def s_invite(c, f, r):  # before: "Do you want to go on a trip?" - she nods - MY AI pops up from behind the bench
-    pop = oe((r - 76) / 8)
+AI_HIDE, AI_UP = 1662, 1310                                               # MY AI behind the bench: only its antenna showing / popped up
+def two_shot(c, f, ai_gy, ai_kw, hoody_op, eva_expr='evacalm', nod=0, hoody_gaze=20):
+    """The bench two-shot that opens and closes the film (so the loop is seamless): MY AI's antenna peeks over the backrest."""
     bench_scene_back(c, f)
-    if pop > 0: A.myai(c, 540, BS + 330 - 470 * pop, 1.1, eye='focus' if r > 86 else 'wide', arms=('up', 'up') if r < 90 else ('down', 'wave'), talk=talk(f, 'ai_plan'))
+    c.save(); c.rectangle(0, 0, W, BS - 204); c.clip()                  # behind the backrest: only what rises above it shows
+    A.myai(c, 540, ai_gy, 1.1, **ai_kw); c.restore()
     bench_front(c)
-    R.hoody(c, 330, BS, 1.0, expr='hopeful', pose='sit', seat=(BX0, BX1), arms=('rest', 'rest'), op=.2 + .8 * talk(f, 'h_invite'), gaze=20, f=f)
-    nod = math.sin(cl((r - 62) / 12) * math.pi * 2) * .08 if 62 <= r < 74 else 0
-    eva_seated(c, 760, 1.0, 'charmed' if r >= 62 else 'evacalm', tilt=nod, blink=K.blinking(f, 7))
+    R.hoody(c, 330, BS, 1.0, expr='hopeful', pose='sit', seat=(BX0, BX1), arms=('rest', 'rest'), op=hoody_op, gaze=hoody_gaze, f=f)
+    eva_seated(c, 760, 1.0, eva_expr, tilt=nod, blink=K.blinking(f, 7))
+
+def s_invite(c, f, r):  # before: "Do you want to go on a trip?" - she nods - MY AI (its antenna there all along) pops up
+    pop = oe((r - 76) / 8)
+    two_shot(c, f, lerp(AI_HIDE, AI_UP, pop),
+             dict(eye='focus' if r > 86 else 'wide', arms=('up', 'up') if r < 90 else ('down', 'wave'), talk=talk(f, 'ai_plan')),
+             .2 + .8 * talk(f, 'h_invite'), 'charmed' if r >= 62 else 'evacalm',
+             math.sin(cl((r - 62) / 12) * math.pi * 2) * .08 if 62 <= r < 74 else 0)
     if r < 78: R.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], r - 4, (360, 1000), cy=560, cx=430, size=58)
-    if r >= 80: R.bubble(c, ["I'LL PLAN", 'EVERYTHING!'], r - 80, (540, BS + 330 - 470 * pop - 420 * 1.1), cy=560, cx=560, size=58)
+    if r >= 80: R.bubble(c, ["I'LL PLAN", 'EVERYTHING!'], r - 80, (540, lerp(AI_HIDE, AI_UP, pop) - 420 * 1.1), cy=560, cx=560, size=58)
 def bench_scene_back(c, f):
     R.park(c, f, zoom=1.35, cy=1500)
 def bench_front(c):
@@ -85,17 +93,16 @@ def s_after(c, f, r):   # after: "How did you like our trip?" - she turns her ph
     if turn > 0:                                                         # her phone, turned to him: the Rome photo
         pw, ph = 250 * turn + 20, 440
         px, py = 480 - pw / 2, 1170
+        limb(c, [(564, 1160), (600, 1330), (px + pw + 4, py + ph * .62)], 30, E.COAT)          # her yellow sleeve: it's her phone
         rr(c, px - 10, py - 10, pw + 20, ph + 20, 30); fs(c, hx('1d2130'), 6)
-        if turn > .3:
-            c.save(); rr(c, px, py, pw, ph, 22); c.clip(); c.translate(px, py); c.scale(pw / W, ph / H); c.set_source_surface(_PHOTO, 0, 0); c.paint(); c.restore()
+        c.save(); rr(c, px, py, pw, ph, 22); c.clip(); c.translate(px, py); c.scale(pw / W, ph / H); c.set_source_surface(_PHOTO, 0, 0); c.paint(); c.restore()
         ell(c, px + pw + 6, py + ph * .6, 26, 30); fs(c, E.SKIN_E, 5)
     if r < 88: R.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, (330, 1000), cy=560, cx=430, size=56)
     if r >= 90: R.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], r - 90, (880, BS - 6 - 420), cy=600, cx=700, size=56)
-def s_another(c, f, r): # "...Another trip?" - quietly, not giving up. Loops into the invitation
-    R.park(c, f, zoom=1.6, cy=1300)
-    K.hoodie(c, 500, 1040 + 150 * 2.4, 2.4 * 1.1)
-    K.hoodyz_head(c, 500, 1040, 2.4, era='young', expr='hopeful', blink=False, gaze=18, op=.15 + .7 * talk(f, 'h_another'))
-    R.bubble(c, ['...ANOTHER TRIP?'], r - 8, (560, 1230), cy=620, cx=600, size=60)
+def s_another(c, f, r): # "...Another trip?" - quietly, to her. MY AI ducks back behind the bench: the last frame is frame 0
+    duck = oe(r / 10)
+    two_shot(c, f, lerp(AI_UP, AI_HIDE, duck), dict(eye='happy', arms=('down', 'down')), .2 + .8 * talk(f, 'h_another'))
+    if r < 50: R.bubble(c, ['...ANOTHER TRIP?'], r - 8, (360, 1000), cy=600, cx=430, size=58)
 
 def s_rome_act(c, f, r):  # MY AI hands Hoody the phone ("you take it") and sits down with Eva: the cameraman is made
     P.rome(c, f, s=.62, cx=540, horizon=1230)
@@ -118,6 +125,7 @@ def eva_rome(c):
 
 def s_open(c, f, r):   # frame 0: the giant face in the phone preview at Pisa - "ONE SELFIE?"
     P.pisa(c, f)
+    E.eva_head(c, 900, 1250, 1.0, 'charmed', tilt=-.15)                     # she's in the frame too, squeezed at the edge
     K.hoodie(c, 540, 1060 + 150 * 3.0, 3.0 * 1.1)
     K.hoodyz_head(c, 540, 1060, 3.0, era='young', expr='happy', blink=False, op=.2 + .8 * talk(f, 'h_selfie'))
     phone_ui(c)
@@ -170,13 +178,15 @@ def s_giza(c, f, r):   # live: "MORE!" - the camel drags Hoody back to the lugga
     for (x, y, w_, h, col, a) in ((250, 1530, 110, 80, '3f7fd6', 0), (262, 1450, 84, 62, 'e8b23a', .25), (330, 1530, 70, 110, '5aa84f', 0)):
         c.save(); c.translate(x, y); c.rotate(a); suitcase(c, 0, 0, w_, h, col); c.restore()
     if r < 18:                                                             # "MORE!": MY AI hands him the bags first
-        bx = lerp(820, 600, oe(r / 12)); suitcase(c, bx, 1640, 110, 80, 'e85a4f')
+        bx = lerp(560, 480, oe(r / 12)); suitcase(c, bx, 1640, 110, 80, 'e85a4f')
     d = ss(cl((r - 22) / 24))                                              # then the camel yanks him back
     hands, _ = R.hoody(c, lerp(560, 400, d), lerp(1860, 1530, d), lerp(.95, .52, d), expr='shock' if d < .9 else 'wince', arms=('out', 'down'), rot=.3 * d, f=f)
     if d > .05: c.move_to(*hands[0]); c.line_to(*rope_to); c.set_source_rgb(*hx('8a5a2e')); c.set_line_width(5); c.stroke()
     if d > .9: Sh.sweat(c, 450, 1260, .7)
+    if .1 < d < .8:                                                        # dust where his heels drag
+        for k in range(4): ell(c, lerp(560, 400, d) + 40 + k * 26, lerp(1860, 1530, d) - 10, 22 * (1 - d), 14 * (1 - d)); c.set_source_rgba(.9, .8, .6, .7); c.fill()
     m = oe((r - 34) / 18)
-    rx = lerp(900 if r < 18 else 960, 700, m)
+    rx = lerp(640, 700, m)
     A.myai(c, rx, 1860, 1.3, eye='focus' if r < 30 else 'happy', arms=('wave', 'hold' if m > .9 else 'down'), tilt=10 * m, talk=talk(f, 'ai_more'))
     hp = A.hand_at(rx, 1860, 1.3, 1, 'hold')
     E.eva(c, 900, 1880, 1.0, 'laugh' if m > .9 else 'impressed', sip=.1, tilt=-.2 * m, pose='holdlow' if m > .9 else 'coffee', hand_to=hp if m > .9 else None)
