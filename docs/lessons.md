@@ -311,6 +311,7 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Fonts miss glyphs silently.** ♥ and → rendered as empty boxes in Inter and Permanent Marker; draw hearts as paths and check every sheet's text.
 - **Name frame dumps so cleanup globs can't hit deliverables.** `rm ss_sb_*.png` also deleted `ss_sb_sheet_v1.png`; the checksum list caught it and the pinned script rebuilt it byte for byte.
 - **Measure true peak after the AAC encode.** The same limiter gave −0.3 dBTP from the WAV and −2.4 dBTP when fed AAC; render the audio once, measure it, then mux.
+- **Check that every speaking character's mouth actually moves.** Don's faces ignore `mouth=`; his mouth is drawn on top (`don_mouth`), so the v1 release played his lines on a fixed face and only a viewer caught it. Before a release, sample a frame mid-line for each speaker.
 - **Separate conventions from defects in an automated frame check.** Tails above the hair, hard cuts and the 12 fps steps are the series' look; a cropped brand sign, a clipped prop card ("P SECRET / ANTA") and untagged colour were real.
 
 ## Make It Original: auditions, sheet, rough (11 Nov)

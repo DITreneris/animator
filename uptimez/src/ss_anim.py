@@ -1,4 +1,7 @@
-"""FULL ANIMATION v1 for "Secret Santa": animatic v3 (same takes, mix, timing and lip-sync, 40.8 s) plus the polish
+"""FULL ANIMATION v2 (ss_anim_v1.py = v1, kept): Don's lips now sync. His mouth is never drawn by the mouth=
+parameter (don_mf faces ignore it; Mandatory Fun drew it on top with iwry_mouths.don_mouth), so v1 played his lines
+on his fixed face. v2 draws his viseme over the face at his head, scaled with him.
+v1: FULL ANIMATION v1 for "Secret Santa": animatic v3 (same takes, mix, timing and lip-sync, 40.8 s) plus the polish
 and the frame-check fixes:
 - blinks: Pam and Sofia blink for two drawings every few seconds (own rhythms); Don's shades hide his, the robot has
   its screen;
@@ -19,6 +22,7 @@ import pam_ss
 import don_ss
 import sofia_ss
 import pam_mf
+import iwry_mouths as im
 from kit import INK, ellipse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -75,8 +79,16 @@ def _pam(k, x, feet, s=1.0, *a, **kw):
 
 
 def _don(k, x, feet, s=1.0, *a, **kw):
-    kw["mouth"] = code("DON") or None
-    return sway(k, x, feet, s, 1.7, lambda: don_ss.don(k, x, feet, s, *a, **kw))
+    kw["mouth"] = None
+    out = sway(k, x, feet, s, 1.7, lambda: don_ss.don(k, x, feet, s, *a, **kw))
+    cd = code("DON")
+    if cd and "head" in out:                                 # v2: his mouth, drawn over the face, at his scale
+        hx, hy = out["head"]
+        c = k.c
+        c.save(); c.translate(hx, hy); c.scale(s, s)
+        im.don_mouth(k, (0, 0), cd)
+        c.restore()
+    return out
 
 
 def _sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", *a, **kw):

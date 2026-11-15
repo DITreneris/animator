@@ -130,7 +130,9 @@ Christmas at the office. PAM, uncapping a dusty-rose lipstick, whispers: "Sofía
 
 | File | Version | Notes |
 |---|---|---|
-| `uptimez_ss_anim_v1_1080.mp4` | **release (current)** | **1080×1920**, 40.8 s, −15.8 LUFS, −2.4 dBTP, BT.709. Animatic v3 plus blinks, an idle breathing sway, Sofía's crystal earrings swinging; Don's vest card and the UptimeZ sign always whole |
+| `uptimez_ss_anim_v2_1080.mp4` | **release (current)** | **1080×1920**, v1 with Don's lips synced (v1 played his lines on his fixed face: his mouth is drawn on top with `iwry_mouths.don_mouth`, not through `mouth=`) |
+| `uptimez_ss_anim_v2.mp4` | release, 540 rough | Same, 540×960 |
+| `uptimez_ss_anim_v1_1080.mp4` | release v1 | **1080×1920**, 40.8 s, −15.8 LUFS, −2.4 dBTP, BT.709. Animatic v3 plus blinks, an idle breathing sway, Sofía's crystal earrings swinging; Don's vest card and the UptimeZ sign always whole |
 | `uptimez_ss_anim_v1.mp4` | release, 540 rough | Same animation, 540×960 |
 | `ss_animatic_v3.mp4` (v1, v2 kept) | animatic | Storyboard v2 re-timed to the real takes with piecewise time warps (34.6 → 40.8 s; voices never sped up), Pam `bf_emma` (a soft whispered opening), Sofía `af_bella`, Don `am_onyx` (a slower purr), robot B (warmer "You're welcome."), an original jingle-bell bed that drops out with the kiss stamp; v2: shot 4 un-tangled, a tidy earpiece wire, Don's forearm to the dome; v3: the M of PAM no longer cut in the write-on |
 | `ss_storyboard_silent_v2.mp4`, `_sheet_v2.png` | **storyboard v2** | Concept v5: the reflection flirt, "Sofía." / "Or a full-length mirror." split, Pam's denial, the whole tag and a bigger kiss, UNCLAIMED vs APPROVED, the matched loop |
@@ -140,7 +142,7 @@ Christmas at the office. PAM, uncapping a dusty-rose lipstick, whispers: "Sofía
 | `ss_frame0_phone_v2.png`, `don_heads_phone_v2.png`, `robot_bars_phone_v2.png` | phone checks | Frame 0 at real size; Don's three heads (hat, beard, bald agent: C chosen); the stamp bars at real size |
 | `ss_thumbnail.png` | cover | UNCLAIMED vs APPROVED in one frame; the hand-drawn sign as the title |
 
-Character sheets are in [`characters/`](characters/) (`*-ss-*`). Built from `src/`: `sofia_ss.py`, `pam_ss.py`, `don_ss.py`, `robot_ss.py`, `props_ss.py`, `ss_set.py`, `ss_motion.py`, `ss_sb.py`, `ss_takes.py` (the kept takes in `ss_takes/`), `ss_timing.py`, `ss_sound.py`, `ss_visemes.py`, `ss_animatic.py`, `ss_anim.py`, `thumb_ss.py`, and the sheet scripts `*_sheet_ss.py`, `ss_set_sheet.py`, `ss_sb_sheet.py`; earlier versions kept as `_v1`/`_v2`, later fixes behind opt-in flags so they rebuild unchanged. `./build.sh ss` rebuilds the mix, both renders and the cover.
+Character sheets are in [`characters/`](characters/) (`*-ss-*`). Built from `src/`: `sofia_ss.py`, `pam_ss.py`, `don_ss.py`, `robot_ss.py`, `props_ss.py`, `ss_set.py`, `ss_motion.py`, `ss_sb.py`, `ss_takes.py` (the kept takes in `ss_takes/`), `ss_timing.py`, `ss_sound.py`, `ss_visemes.py`, `ss_animatic.py`, `ss_anim.py`, `thumb_ss.py`, and the sheet scripts `*_sheet_ss.py`, `ss_set_sheet.py`, `ss_sb_sheet.py`; earlier versions kept as `_v1`/`_v2`, later fixes behind opt-in flags so they rebuild unchanged. `./build.sh ss` rebuilds the mix, both v2 renders and the cover (`./build.sh ss_v1`: v1).
 
 ### Mandatory Fun — [`mandatory-fun/`](mandatory-fun/)
 

@@ -11,7 +11,8 @@
 #        ./build.sh tg                  Raises for Everyone (Thanksgiving) v2: mix, lip-sync, 540 + 1080, cover
 #        ./build.sh tg_v1               the same, animation v1 (before the framing fixes)
 #        ./build.sh mf                  Mandatory Fun: mix, lip-sync, 540 + 1080 (animation v2), cover
-#        ./build.sh ss                  Secret Santa: mix, lip-sync, 540 + 1080 (animation v1), cover
+#        ./build.sh ss                  Secret Santa v2 (Don lip-synced): mix, lip-sync, 540 + 1080, cover
+#        ./build.sh ss_v1               the same, animation v1 (Don's lines on his fixed face)
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -232,17 +233,18 @@ build_mf() {
 }
 
 build_ss() {
-  # Secret Santa: mix (the kept takes in src/ss_takes/, jingle-bell bed, effects) + lip-sync data, then animation v1
+  # $1 = v2 (ss_anim.py) or v1 (ss_anim_v1.py). Secret Santa: mix (the kept takes in src/ss_takes/, jingle-bell bed, effects) + lip-sync data, then animation v1
   # at 540 (rough) and 1080 (release), and the cover. ss_takes.py re-records the takes (not needed to rebuild).
   local out=${OUT_DIR:-$HERE/secret-santa}; mkdir -p "$out"
   ( cd src
     python3 ss_sound.py
     python3 ss_visemes.py
     ffmpeg -y -v error -i ss_mix_v1.wav -af "volume=2.2dB,alimiter=limit=0.5:level=disabled" -c:a aac -b:a 192k ss_audio.tmp.m4a
+    local mod=ss_anim; [ "$1" = v1 ] && mod=ss_anim_v1
     for res in 540 1080; do
-      local eng=engine_v.py size=540x960 name=uptimez_ss_anim_v1.mp4 crf="-preset veryfast -crf 20"
-      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_ss_anim_v1_1080.mp4 crf="-preset medium -crf 18"
-      python3 $eng ss_anim | ffmpeg -y -v error \
+      local eng=engine_v.py size=540x960 name=uptimez_ss_anim_$1.mp4 crf="-preset veryfast -crf 20"
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_ss_anim_$1_1080.mp4 crf="-preset medium -crf 18"
+      python3 $eng $mod | ffmpeg -y -v error \
         -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i ss_audio.tmp.m4a -map 0:v -map 1:a \
         -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
         -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
@@ -251,11 +253,12 @@ build_ss() {
     done
     rm -f ss_audio.tmp.m4a
     python3 thumb_ss.py "$out/ss_thumbnail.png" )
-  echo "Wrote $out/uptimez_ss_anim_v1.mp4, _1080.mp4 and the cover"
+  echo "Wrote $out/uptimez_ss_anim_$1.mp4, _1080.mp4 and the cover"
 }
 
 case "${1:-}" in
-  ss)         build_ss ;;
+  ss)         build_ss v2 ;;
+  ss_v1)      build_ss v1 ;;
   tg)         build_tg v2 ;;
   tg_v1)      build_tg v1 ;;
   mf)         build_mf ;;
