@@ -1,6 +1,6 @@
 # Perfect Trip
 
-ME + MY AI episode. 1080×1920, 30 fps, 816 frames (27.2 s), −14.1 LUFS, true peak −1.9 dBTP.
+ME + MY AI episode. 1080×1920, 30 fps, 816 frames (27.2 s), −14.3 LUFS, true peak −1.9 dBTP.
 
 On the park bench Hoody asks Eva, "Do you want to go on a trip?" MY AI pops up from behind the bench: "I'LL PLAN EVERYTHING!" At every landmark the perfectionist director demonstrates the classic tourist photo better than Hoody can, and Hoody loses his role: **hero** in Pisa, **extra** in Paris ("STEP BACK!"), **assistant** in Giza ("MORE!", the bags, the camel), **cameraman** in Rome. The Rome photo is Eva and MY AI, and the label turns HIS TRIP → ITS TRIP. Back on the bench: "How did you like our trip?" Eva turns her phone to him. "THANKS FOR THE PHOTOS!" "…Another trip?" MY AI facepalms, ducks behind the bench, and the last frame is frame 0.
 
@@ -33,7 +33,7 @@ A clean rebuild from `git archive` gives the same decoded video and audio (md5).
 | Check | Result |
 |---|---|
 | Frames, size, rate | 816, 1080×1920, 30 fps |
-| Loudness | −14.1 LUFS, LRA 5.8, true peak −1.9 |
+| Loudness | −14.3 LUFS, true peak −1.9 (music bed about 5 dB under the voices) |
 | Speech recognition in the final mix | all 8 lines read correctly ("MORE!" regenerated at speed 0.8: at 0.85 the single word flipped with the window) |
 | Phone-app zones | no text in the top strip, right rail or caption area |
 | Loop | the last frame is frame 0 below the title bar (difference 0.45/255); the label resets HIS TRIP on the cut |

@@ -84,7 +84,7 @@ while t < m1:
     if n and (k // len(MEL)) % 2 == 1: add(mus, t, piano(midi(n), 1.6), .16)   # the tune comes in on the second pass
     t += beat / 2; k += 1
 gain = np.interp(np.arange(N) / SR, [0, m0, m0 + 1.2, rome, rome + 1.6, m1 - .6, m1, N / SR], [0, 0, 1, 1, 1.9, 1.2, 0, 0])
-mus *= gain
+mus *= gain * .55                                                    # about 5 dB down: a bed under the scene, not over it (Tomas: 'a bit loud')
 
 # ---- voices
 for f, shot, off, g in R.VO: add(vo, T0[shot] + round(off * 30) / 30, load(f'vo/{f}.wav'), g)
