@@ -1,4 +1,5 @@
-"""Eva, v1. Built on the neighbour from Who's a Good Boy? (yellow coat, dark curls, coffee, the red-collared dog),
+"""Eva, v2 (v1 + gold hoops, lash on every expression, one-brow signature, four poses, slimmer coat).
+Eva, v1. Built on the neighbour from Who's a Good Boy? (yellow coat, dark curls, coffee, the red-collared dog),
 moved onto the series face system so she can act. Writes eva_sheet.png."""
 import sys, math, cairo
 HERE = __import__('os').path.dirname(__import__('os').path.abspath(__file__))
@@ -8,6 +9,7 @@ import kit as K
 from kit import INK, WHITE, NAVY, YEL, RED, rr, fs, ell, limb, txt, hx
 
 SKIN_E = hx('e8b48c'); HAIR_E = hx('3b2416'); COAT = hx('ffcf2e'); TROUS = hx('30364a'); SHOE = hx('1f2230')
+GOLD = hx('e7b84b')             # hoops: her permanent accessory
 SCARF = hx('33bfff')            # matches MY AI's eyes: the one hint she likes machines
 BROWN = hx('9a5b2e'); DARKB = hx('5e3416')
 
@@ -25,6 +27,7 @@ K.FACES.update({
     'laugh':     ('happy', ('raised', 'raised'), 'grin'),
     'notices':   ('open', ('raised', None), 'soft'),
 })
+HAPPY = {'charmed', 'laugh', 'happy'}
 OPEN = {'evacalm', 'calm', 'amused', 'impressed', 'notices', 'polite', 'shock', 'hopeful'}
 
 BACK = [(-98, -40, 54), (-62, -98, 56), (0, -120, 60), (62, -98, 56), (98, -40, 54), (-114, 18, 42), (114, 20, 42),
@@ -40,12 +43,16 @@ def eva_head(c, x, y, s, expr='evacalm', gaze=0, tilt=0, blink=False, op=0):
     rr(c, -92, -70, 184, 176, 84); fs(c, SKIN_E)
     for b in FRINGE: ell(c, *b[:2], b[2], b[2])
     c.set_source_rgb(*HAIR_E); c.fill()
+    for q in (-1, 1):                                      # gold mini hoops
+        ell(c, q * 100, 92, 15, 17); c.set_source_rgb(*INK); c.set_line_width(13); c.stroke()
+        ell(c, q * 100, 92, 15, 17); c.set_source_rgb(*GOLD); c.set_line_width(6); c.stroke()
     old = K.SKIN; K.SKIN = SKIN_E
     try: K.face(c, expr, gaze, blink, op)
     finally: K.SKIN = old
-    if expr in OPEN and not blink:                         # a single lash flick on each eye
-        for q in (-1, 1):
-            c.move_to(q * 60, -6); c.line_to(q * 74, -16); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
+    for q in (-1, 1):                                      # a lash flick on every expression: open or closed eyes
+        if expr in HAPPY or blink: c.move_to(q * 60, 20); c.line_to(q * 74, 12)
+        else: c.move_to(q * 60, -6); c.line_to(q * 74, -16)
+        c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
     c.restore()
 
 def coffee(c, x, y, s):
@@ -53,20 +60,30 @@ def coffee(c, x, y, s):
     c.rectangle(x - 22 * s, y - 30 * s, 44 * s, 16 * s); c.set_source_rgb(*hx('8a5a2e')); c.fill()
     rr(c, x - 25 * s, y - 58 * s, 50 * s, 12 * s, 5 * s); fs(c, WHITE, max(3, 4 * s))
 
-def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0):
-    """Full figure standing at ground y. sip 0 = cup at the waist, 1 = at the mouth. Returns the leash hand."""
+def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, pose='coffee'):
+    """Full figure standing at ground y. sip 0 = cup at the waist, 1 = at the mouth. Returns the free hand (the leash hand).
+    pose: coffee (default) | hip (free hand on the hip) | glance (sip, sideways look, one brow up) | reach (free hand out: takes a hand)"""
+    if pose == 'glance': sip, gaze, tilt, expr = max(sip, .7), 16, .1, 'amused'
     hy = gy - 690 * s
     for q in (-1, 1):
         limb(c, [(x + q * 26 * s, gy - 250 * s), (x + q * 28 * s, gy - 14 * s)], 30 * s, TROUS)
         ell(c, x + q * 32 * s, gy - 8 * s, 28 * s, 14 * s); fs(c, SHOE, max(3, 5 * s))
-    c.move_to(x - 84 * s, hy + 120 * s); c.line_to(x + 84 * s, hy + 120 * s); c.line_to(x + 122 * s, gy - 226 * s); c.line_to(x - 122 * s, gy - 226 * s)
+    c.move_to(x - 84 * s, hy + 120 * s); c.line_to(x + 84 * s, hy + 120 * s); c.line_to(x + 110 * s, gy - 226 * s); c.line_to(x - 110 * s, gy - 226 * s)
     c.close_path(); fs(c, COAT, max(3, 7 * s))
     for i in range(3): ell(c, x, hy + 178 * s + i * 72 * s, 7 * s, 7 * s); c.set_source_rgb(*INK); c.fill()
     hxp = x + 46 * s + (1 - sip) * 44 * s; hyp = hy + K.lerp(270, 84, sip) * s
     limb(c, [(x + 76 * s, hy + 142 * s), (x + 124 * s, hy + 256 * s), (hxp, hyp)], 30 * s, COAT)
     coffee(c, hxp, hyp + 4 * s, s)
-    lh = (x - 116 * s, hy + 344 * s)
-    limb(c, [(x - 76 * s, hy + 142 * s), (x - 120 * s, hy + 262 * s), lh], 30 * s, COAT); ell(c, *lh, 18 * s, 18 * s); fs(c, SKIN_E, max(3, 5 * s))
+    if pose == 'hip':
+        lh = (x - 96 * s, hy + 318 * s)
+        limb(c, [(x - 76 * s, hy + 142 * s), (x - 168 * s, hy + 236 * s), lh], 30 * s, COAT)
+    elif pose == 'reach':
+        lh = (x - 250 * s, hy + 236 * s)
+        limb(c, [(x - 76 * s, hy + 142 * s), (x - 170 * s, hy + 214 * s), lh], 30 * s, COAT)
+    else:
+        lh = (x - 116 * s, hy + 344 * s)
+        limb(c, [(x - 76 * s, hy + 142 * s), (x - 120 * s, hy + 262 * s), lh], 30 * s, COAT)
+    ell(c, *lh, 18 * s, 18 * s); fs(c, SKIN_E, max(3, 5 * s))
     rr(c, x - 80 * s, hy + 96 * s, 160 * s, 46 * s, 22 * s); fs(c, SCARF, max(3, 6 * s))         # scarf
     rr(c, x + 24 * s, hy + 128 * s, 34 * s, 80 * s, 12 * s); fs(c, SCARF, max(3, 5 * s))
     eva_head(c, x, hy, .74 * s, expr, gaze, tilt, op=op)
@@ -105,10 +122,10 @@ def load_wgb():
 
 def sheet(out='eva_sheet.png'):
     v9 = load_wgb()
-    W, H = 2160, 2880
+    W, H = 2160, 3560
     S = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(S)
     c.set_source_rgb(*hx('eef1f6')); c.paint()
-    txt(c, 'ME + MY AI  -  EVA  -  CHARACTER SHEET v1', 1080, 60, 58, INK, lw=0)
+    txt(c, 'ME + MY AI  -  EVA  -  CHARACTER SHEET v2', 1080, 60, 58, INK, lw=0)
 
     section(c, 'EVA - who she is', 130)
     lh = eva(c, 330, 1090, 1.12, 'evacalm', sip=.15)
@@ -134,13 +151,21 @@ def sheet(out='eva_sheet.png'):
         eva_head(c, x, 1520, 1.0, e, gaze=(14 if e == 'notices' else 0), tilt=(.12 if e == 'notices' else 0), op=(.9 if e == 'laugh' else 0))
         label(c, a, x, 1730, 36); label(c, b, x, 1772, 28, hx('66707f'))
 
-    section(c, 'PALETTE + PROPS', 1860)
-    for i, (col, n) in enumerate([(COAT, 'COAT ffcf2e'), (HAIR_E, 'HAIR 3b2416'), (SKIN_E, 'SKIN e8b48c'), (SCARF, 'SCARF 33bfff'), (TROUS, 'TROUSERS 30364a'), (BROWN, 'DOG 9a5b2e')]):
-        x = 150 + i * 330; rr(c, x - 110, 1940, 220, 120, 20); fs(c, col, 6); label(c, n, x, 2100, 28)
-    coffee(c, 400, 2380, 2.2); label(c, 'the coffee', 400, 2470, 32, hx('66707f'))
-    dog(c, 900, 2440, 1.4, look=1); label(c, 'her dog (red collar)', 920, 2490, 32, hx('66707f'))
-    eva(c, 1640, 2780, .62, 'amused', sip=.55)
-    label(c, 'sip = the beat she watches a scene', 1640, 2830, 30, hx('66707f'))
+    section(c, 'POSES', 1860)
+    P = [('coffee', 'COFFEE', 'her default'), ('hip', 'HAND ON HIP', 'confident, waiting'),
+         ('glance', 'THE GLANCE', 'sip + one brow: I see you'), ('reach', 'REACH', 'takes the hand (Perfect Date)')]
+    for i, (p_, a, b) in enumerate(P):
+        x = 300 + i * 520
+        if p_ == 'reach': v9.bot(c, 1680, 2600, 1.15, walk=0, eye=(12, -6), glow=.55)    # MY AI, human height, her hand on his
+        eva(c, 2010 if p_ == 'reach' else x, 2600, .78, 'charmed' if p_ == 'reach' else 'evacalm', sip=.1, pose=p_)
+        label(c, a, x, 2660, 36); label(c, b, x, 2702, 28, hx('66707f'))
+
+    section(c, 'PALETTE + PROPS', 2780)
+    for i, (col, n) in enumerate([(COAT, 'COAT ffcf2e'), (HAIR_E, 'HAIR 3b2416'), (SKIN_E, 'SKIN e8b48c'), (SCARF, 'SCARF 33bfff'), (GOLD, 'HOOPS e7b84b'), (TROUS, 'TROUSERS 30364a'), (BROWN, 'DOG 9a5b2e')]):
+        x = 150 + i * 310; rr(c, x - 105, 2860, 210, 110, 20); fs(c, col, 6); label(c, n, x, 3010, 26)
+    coffee(c, 360, 3330, 2.0); label(c, 'the coffee', 360, 3420, 32, hx('66707f'))
+    dog(c, 860, 3400, 1.3, look=1); label(c, 'her dog (red collar)', 880, 3450, 32, hx('66707f'))
+    eva_head(c, 1560, 3250, 1.25, 'amused'); label(c, 'SIGNATURE: one brow up + hoops', 1560, 3480, 32)
     S.write_to_png(out)
 
 if __name__ == '__main__':
