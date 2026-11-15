@@ -71,6 +71,11 @@ def arm(c, q, pose, prop=None):
     hand(c, *h_, t2, q, open_=(pose == 'wait'))
     return h_
 
+def antenna(x, gy, s, tilt=0, bob=0):
+    """Where the antenna ball is drawn (for speech tails): it swings with the head tilt about NECK."""
+    t = math.radians(max(LIMITS['tilt'][0], min(LIMITS['tilt'][1], tilt)))
+    return x + s * 225 * math.sin(t), gy - 280 * s - bob + s * (NECK[1] - 225 * math.cos(t))
+
 def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(None, None), rot=0, walk=None, bob=0, tilt=0, turn=0, talk=0.0):
     """Standing on ground y. arms = (screen-left pose, screen-right pose). rot tips the whole robot about its feet (bow: -.35).
     tilt: head tilt in degrees (limit +-15). turn: -1..1, a three-quarter turn (visor and antenna slide, far ear hides)."""

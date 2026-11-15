@@ -71,7 +71,7 @@ def s_invite(c, f, r):  # before: "Do you want to go on a trip?" - she nods - MY
              dict(eye='focus' if r > 86 else 'wide', arms=('up', 'up') if r < 90 else ('down', 'wave'), talk=talk(f, 'ai_plan')),
              .2 + .8 * talk(f, 'h_invite'), 'charmed' if r >= 62 else 'evacalm',
              math.sin(cl((r - 62) / 12) * math.pi * 2) * .08 if 62 <= r < 74 else 0)
-    if r < 78: R.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], r - 4, (342, 1184), cy=640, cx=440, size=58)   # tail to his mouth
+    if r < 78: R.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], r - 4, (330, 1196), cy=1450, cx=300, size=58)   # from below: the tail crosses only his chin, never the eyes or hair
     if r >= 80: R.bubble(c, ["I'LL PLAN", 'EVERYTHING!'], r - 80, (540, lerp(AI_HIDE, AI_UP, pop) - 420 * 1.1), cy=560, cx=560, size=58)
 def bench_scene_back(c, f):
     R.park(c, f, zoom=1.35, cy=1500)
@@ -131,7 +131,7 @@ def s_open(c, f, r):   # frame 0: the giant face in the phone preview at Pisa - 
     K.hoodie(c, 540, 1060 + 150 * 3.0, 3.0 * 1.1)
     K.hoodyz_head(c, 540, 1060, 3.0, era='young', expr='happy', blink=False, op=.2 + .8 * talk(f, 'h_selfie'))
     phone_ui(c)
-    R.bubble(c, ['ONE SELFIE?'], r + 5, (590, 1258), cy=1000, cx=720, size=62)   # in from the side, below his eyes, to his mouth
+    R.bubble(c, ['ONE SELFIE?'], r + 5, (590, 1272), cy=1480, cx=560, size=62)   # from below, on the hoodie: the tail meets the mouth, off the eyes
 def phone_ui(c):
     """The camera preview: dark rounded corners and a shutter dot."""
     c.rectangle(0, 0, W, H); rr(c, 40, 40, W - 80, H - 80, 70); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD); c.set_source_rgb(*hx('1d2130')); c.fill()
@@ -228,7 +228,7 @@ def s_giza(c, f, r):   # live: "MORE!" - the camel drags Hoody back to the lugga
     if 0 < r < 9: txt(c, 'pff', rx + 120, 1200, 50, NAVY, lw=0)
     A.myai(c, rx, 1860 + sigh, 1.3, eye='focus' if r < 30 else 'happy', arms=('wave', 'hold' if m > .9 else 'down'), tilt=10 * m, talk=talk(f, 'ai_more'))
     backpack_cat(c, 210, 1720, .9, 'disapproving')
-    R.bubble(c, ['MORE!'], r - 2, (rx, 1860 - 420 * 1.3), cy=640, cx=700)
+    R.bubble(c, ['MORE!'], r - 2, A.antenna(rx, 1860 + sigh, 1.3, tilt=10 * m), cy=640, cx=700)   # follows the antenna as it tilts
 
 def s_rome(c, f, r):   # the couple photo, drifting; the label switches after it lands
     kenburns(c, 'rome', r, 60, f)

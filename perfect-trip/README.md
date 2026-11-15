@@ -47,7 +47,7 @@ A clean rebuild from `git archive` gives the same decoded video and audio (md5).
 3. **One gag per place.** "The robot touches the landmark" three times read as one joke; each place now has its own beat.
 4. **A frame story makes the loop.** The bench before and after, with "…Another trip?" leading into "Do you want to go on a trip?", the same two-shot, and MY AI's antenna peeking over the backrest from frame 0 (planted, then paid off).
 5. **Clothes can impersonate a character.** Eva's navy trousers read as Hoody's legs in a photo he wasn't in. Distinct colours per character, all the way down.
-6. **Speech tails go to the mouth.** Four of Hoody's tails stopped in his hair; a review caught them, as one did on Perfect Date. Check every tail against the open mouth.
+6. **Speech tails go to the mouth, and only cross the chin.** A bubble above the head sends its tail through the hair and eyes, so on a phone it reads as stopping in his hair. Hoody's bubbles now sit below his face and come up into the mouth. Aim at the drawn body part, not a fixed point: MY AI's tail follows the antenna as it tilts (`myai.antenna()`).
 7. **A punchline label must stay inside its bar.** The ITS TRIP pulse grew over the series name; it now swells in place.
 
 ## Caption (draft)
