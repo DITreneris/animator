@@ -105,11 +105,27 @@ def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(No
 
 # ---------------- props ----------------
 def rose(c, x, y, q=1):
-    limb(c, [(x, y + 20), (x + q * 6, y - 50), (x + q * 4, y - 120)], 9, hx('2f9e4f'))
-    c.save(); c.translate(x + q * 4, y - 140)
-    for i in range(5): a = i * 2 * math.pi / 5; ell(c, 14 * math.cos(a), 14 * math.sin(a), 18, 18)
-    c.set_source_rgb(*RED); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
-    ell(c, 0, 0, 12, 12); c.set_source_rgb(*hx('b3122c')); c.fill(); c.restore()
+    """A decorative long-stemmed rose: layered petals, two leaves, a satin bow on the stem, a glint."""
+    GRN, GRN_D, R1, R2, R3 = hx('2f9e4f'), hx('1f7a3a'), hx('b3122c'), hx('e0243e'), hx('ff5a6e')
+    limb(c, [(x, y + 20), (x + q * 8, y - 60), (x + q * 4, y - 150)], 9, GRN)
+    for side, yy, rot in ((1, -50, .5), (-1, -95, -.6)):                # leaves
+        c.save(); c.translate(x + q * 6 + side * 6, y + yy); c.rotate(rot * side); ell(c, side * 26, 0, 28, 12); fs(c, GRN, 4)
+        c.move_to(0, 0); c.line_to(side * 46, 0); c.set_source_rgb(*GRN_D); c.set_line_width(3); c.stroke(); c.restore()
+    c.save(); c.translate(x + q * 6, y - 20)                           # the satin bow
+    for side in (-1, 1):
+        c.move_to(0, 0); c.curve_to(side * 30, -26, side * 46, 6, 0, 0); fs(c, hx('ff8fc7'), 4)
+        c.move_to(0, 2); c.line_to(side * 18, 40); c.line_to(side * 8, 42); c.close_path(); fs(c, hx('ff8fc7'), 3)
+    ell(c, 0, 0, 8, 7); fs(c, hx('ff8fc7'), 3); c.restore()
+    c.save(); c.translate(x + q * 4, y - 182); c.scale(1.5, 1.5)      # the bloom: sepals, outer, middle, inner, spiral heart
+    for i in range(3): a = -2.3 + i * .8; c.move_to(0, 18); c.line_to(22 * math.cos(a) * -1, 30 + 6 * i); c.line_to(6, 22); c.close_path(); fs(c, GRN, 3)
+    for i in range(6): a = i * math.pi / 3; ell(c, 20 * math.cos(a), 4 + 14 * math.sin(a), 20, 18); fs(c, R1, 4)
+    for i in range(5): a = i * 2 * math.pi / 5 + .3; ell(c, 11 * math.cos(a), 11 * math.sin(a) - 2, 15, 14); fs(c, R2, 3)
+    ell(c, 0, -6, 12, 11); fs(c, R3, 3)
+    c.move_to(0, -6)
+    for i in range(1, 22): a = i * .5; rd = i * .5; c.line_to(rd * math.cos(a), -6 + rd * math.sin(a))
+    c.set_source_rgb(*R1); c.set_line_width(2.5); c.stroke()
+    ell(c, -12, -16, 4, 6); c.set_source_rgba(1, 1, 1, .8); c.fill()     # glint
+    c.restore()
 def speaker(c, x, y, q=1):
     """A small boombox: handle, two speakers - reads as music at a glance."""
     c.move_to(x - 34, y - 40); c.line_to(x - 34, y - 62); c.line_to(x + 34, y - 62); c.line_to(x + 34, y - 40)

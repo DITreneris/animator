@@ -1,11 +1,55 @@
-# Perfect Date (in development)
+# Perfect Date
 
-ME + MY AI episode. Hoody asks his AI to help him impress Eva; the AI's demonstration wins her instead ("Your turn!").
-Concept and character work only; nothing is built yet.
+ME + MY AI episode. 1080×1920, 30 fps, 670 frames (22.3 s), −14.1 LUFS, true peak −2.0 dBTP.
 
-- `characters/eva.py`: Eva v2 (gold hoops, a lash on every expression, the one-brow signature, four poses) and her dog. `python3 characters/eva.py` writes `characters/eva_sheet.png`
-- `characters/myai.py`: MY AI v2, his companion robot (body from `whos-a-good-boy/v3/v.py`). Arms are a fixed two-segment rig (upper arm 68, forearm 68, shoulders at ±72, 112) posed by joint angles within limits, so arm length cannot drift; ten named poses incl. WAIT; head tilt ±15°; a three-quarter turn; eight eye shapes incl. CONFUSED and BLANK; the rose, speaker and heart balloon. `python3 characters/myai.py` writes `characters/myai_sheet.png`
-- `vo/`: MY AI's two lines ("Watch.", "Your turn!") in its locked voice, and `voices.py` to regenerate them
-- `kit.py`: a copy of the series drawing kit (from `says-here-boss/v3/`)
+Hoody asks his AI to help him impress Eva. MY AI shows him how (a rose: "Watch!"), hands him the guitar ("Your turn!") and, as a proud stage tech, pumps up his heart balloon for the show. He floats up playing his old riff from *Make It Original* with his eyes shut, while Eva takes the robot's hand (HIS DATE → ITS DATE). He opens his eyes above an empty bench. *Plonk.* The cat covers her ears. The balloon pops, he falls, and he lands on the bench with a BOOM, dizzy. The loop cut to the calm opening face is the reset.
 
-**Eva** first appeared, unnamed, as the neighbour walking the red-collared dog in *Who's a Good Boy?* (`whos-a-good-boy/v3/v9.py`, `neighbor()`). v1 keeps that design (yellow coat, dark curls, coffee, the dog) and moves her onto the series face system. Her scarf is MY AI's eye colour (#33bfff).
+- `perfect_date.mp4`: the final (x264 crf 14 slow, AAC 256k, faststart)
+- `cover.png`: the gap wide with the title (`cover.py`)
+
+## Build
+
+```bash
+bash build.sh        # render.py final → audio.py → master.sh → perfect_date.mp4, then cover.py
+```
+
+A clean rebuild from `git archive` gives the same decoded video and audio (md5).
+
+## Files
+
+- `render.py`: 20 shots. `VO` holds where each line sits; the lip sync and `audio.py` both read it, so mouth and sound cannot drift
+- `audio.py`: park and wind, the riff (`sound.py`, the 1986 take), pump hiss and squeaks, MY AI's alarm boops, plonk, three creaks, the pop, the falling whistle, the BOOM (its tail wraps the loop)
+- `master.sh`: linear gain to −14 LUFS + a limiter (no loudnorm: it flattened the Says Here shout)
+- `characters/eva.py`: Eva v2, now with a walk cycle (knees) and blinks
+- `characters/myai.py`: MY AI v2: fixed two-segment arm rig, eight eye shapes, `talk` (eyes squash, antenna glows with the voice), a stepping walk with knees, the decorative rose
+- `vo/`: Tomas's takes (whisper 3, oh 3, whoa 2; ooh, sigh, breath unused) and MY AI's two lines in its locked voice
+
+## Checks on the final
+
+| Check | Result |
+|---|---|
+| Frames, size, rate | 670, 1080×1920, 30 fps |
+| Loudness | −14.1 LUFS, LRA 8.2, true peak −2.0 |
+| The BOOM vs the pop | about 9 dB louder (RMS) |
+| Phone-app zones | no text in the top strip, right rail or caption area |
+| Speech recognition in the final mix | "Watch!", "Your turn.", "Oh", "Wow" ✓ · the whisper reads "Help me, Prescott" (borderline; the bubble carries it) |
+| Clean rebuild | identical decoded md5 |
+| Cold mute tests | five, one per rough; fixes from each are in the commit log |
+
+## Lessons from this episode
+
+1. **A helpful machine can read as a saboteur.** When MY AI pumped the balloon with no reaction, viewers read "gets him out of the way". One beat fixed it: wide eyes, a red "!", arms reaching up after him, *then* Eva takes its hand, *then* heart eyes. The reaction to the accident is what proves it was one.
+2. **Plant every prop in every shot it belongs to.** The balloon vanished from the playing close-up and Tomas caught it. Check prop continuity shot by shot, not only where the prop matters.
+3. **Lip sync from loudness needs a floor.** Normalising each take to its own peak kept the whisper's mouth open the whole line. Mapping the per-frame dB between the take's 35th and 97th percentiles makes the gaps between syllables close the mouth.
+4. **A 4 fps mute test can miss a 0.2 s impact.** The BOOM fell between the sampled frames. Judge very short beats at full frame rate, and with sound.
+5. **"Last frame = frame 0" isn't always right.** Here the loop cut itself is the reset joke (dizzy → calm), so the film ends on the dizzy face and the label resets on frame 0.
+6. **Views straight down need two cues.** Legs hanging into the top of the frame read as "poles" until the soles faced the camera and his shadow sat on the grass below. A tiny couple in a high view read as strange; a side-on wide with him small in the sky read at once.
+7. **A label change is the punchline, so make it move.** ITS DATE in a small pill was missed; popping it big for half a second made every viewer catch it.
+
+## Caption (draft)
+
+> He asked his AI for help impressing her. It helped. 🎸🎈 Watch the top bar.
+
+Pinned comment: *Was MY AI being helpful or did it know exactly what it was doing? 👀*
+
+Hashtags: #MEandMYAI #Hoodyz #AIcomedy #animation #wingman #fyp

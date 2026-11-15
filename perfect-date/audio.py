@@ -24,8 +24,9 @@ while t < N / SR - .3:
     add(park, t, np.sin(2 * np.pi * (f0 * tt + rng.uniform(-9000, 9000) * tt ** 2)) * np.sin(np.pi * tt / d), .05); t += rng.uniform(.5, 1.6)
 sky_on = T0[10] + 1.0                                          # from the view down past his shoes
 wind = lp(lp(rng.standard_normal(N), 700), 700) * .5 * (1 + .4 * np.sin(np.arange(N) / SR * 2 * np.pi * .4))
-amb = park * env_seg([(0, 1), (sky_on - .3, 1), (sky_on + .3, .15), (N / SR, .15)]) \
-    + wind * env_seg([(0, 0), (sky_on - .3, 0), (sky_on + .3, 1), (N / SR, 1)])
+land = T0[19] + R.IMPACT / 30                                    # the boom
+amb = park * env_seg([(0, 1), (sky_on - .3, 1), (sky_on + .3, .15), (land + .4, .15), (land + .9, 1), (N / SR, 1)]) \
+    + wind * env_seg([(0, 0), (sky_on - .3, 0), (sky_on + .3, 1), (land - .05, 1), (land, 0), (N / SR, 0)])
 
 # ---- the rose: a harp sting (shot 6)
 for i, n in enumerate([72, 76, 79, 84, 88]):
@@ -72,8 +73,20 @@ for j in range(6):
 # ---- POP (shot 18), then the falling whistle (shot 19) and the landing thump on frame 0
 pop = rng.standard_normal(int(.06 * SR)) * np.exp(-T(.06) * 70); tt = T(.15)
 add(fx, T0[17] + .02, pop, 1.2); add(fx, T0[17] + .02, np.sin(2 * np.pi * 90 * tt) * np.exp(-tt * 30), .9)
-tt = T(.6); add(fx, T0[18] - .05, np.sin(2 * np.pi * np.cumsum(np.geomspace(2200, 500, len(tt))) / SR) * np.minimum(1, tt * 15), .10)
-tt = T(.25); add(fx, .0, lp(rng.standard_normal(len(tt)), 300) * np.exp(-tt * 18) * 3 + np.sin(2 * np.pi * 60 * tt) * np.exp(-tt * 14), .35)
+# the fall: a whistle diving in pitch, cut dead one frame before the hit
+d = land - 1 / 30 - T0[18]; tt = T(d)
+add(fx, T0[18], np.sin(2 * np.pi * np.cumsum(np.geomspace(2400, 450, len(tt))) / SR) * np.minimum(1, tt * 15), .12)
+# BOOM: a deep thud, the wood cracking, the dust - the loudest thing in the film. Its tail wraps over the loop point
+def wadd(buf, t, x, g):
+    i = int(t * SR); n = len(x); k = min(n, N - i); buf[i:i + k] += x[:k] * g
+    if n > k: buf[:n - k] += x[k:] * g
+tt = T(1.2)
+sub = np.sin(2 * np.pi * np.cumsum(np.geomspace(90, 38, len(tt))) / SR) * np.exp(-tt * 4.5)
+crack = np.diff(rng.standard_normal(int(.09 * SR)), prepend=0) * np.exp(-T(.09) * 45)
+dust = lp(rng.standard_normal(len(tt)), 900) * np.exp(-tt * 3) * np.minimum(1, tt * 40)
+wadd(fx, land, sub, 1.6); wadd(fx, land, crack, .9); wadd(fx, land + .01, dust, 1.0)
+tt = T(.25); wadd(fx, land + .2, np.sin(2 * np.pi * (140 * tt + 40 * np.sin(2 * np.pi * 6 * tt))) * np.sin(np.pi * tt / .25), .25)   # bench creak
+tt = T(.3); wadd(fx, land + 7 / 30, np.sin(2 * np.pi * (260 * tt + 120 * np.sin(2 * np.pi * 9 * tt) * np.exp(-tt * 8))) * np.exp(-tt * 9), .2)  # boing
 
 # ---- voices
 for f, shot, off, g in R.VO:                                     # the same table the lip sync reads
