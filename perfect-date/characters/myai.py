@@ -71,19 +71,25 @@ def arm(c, q, pose, prop=None):
     hand(c, *h_, t2, q, open_=(pose == 'wait'))
     return h_
 
-def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(None, None), rot=0, walk=None, bob=0, tilt=0, turn=0):
+def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(None, None), rot=0, walk=None, bob=0, tilt=0, turn=0, talk=0.0):
     """Standing on ground y. arms = (screen-left pose, screen-right pose). rot tips the whole robot about its feet (bow: -.35).
     tilt: head tilt in degrees (limit +-15). turn: -1..1, a three-quarter turn (visor and antenna slide, far ear hides)."""
     tilt = max(LIMITS['tilt'][0], min(LIMITS['tilt'][1], tilt))
-    c.save(); c.translate(x, gy); c.rotate(rot); c.translate(0, -280 * s - bob); c.scale(s, s); c.set_line_cap(cairo.LINE_CAP_ROUND)
-    a = math.sin(walk) * 26 if walk is not None else 0
-    limb(c, [(-34, 205), (-34 - a, 280)], 34, WHITE); limb(c, [(34, 205), (34 + a, 280)], 34, WHITE)
+    c.save(); c.translate(x, gy); c.rotate(rot); c.translate(0, -280 * s - bob - (abs(math.sin(walk)) * 8 * s if walk is not None else 0)); c.scale(s, s); c.set_line_cap(cairo.LINE_CAP_ROUND)
+    if walk is None:
+        limb(c, [(-34, 205), (-34, 280)], 34, WHITE); limb(c, [(34, 205), (34, 280)], 34, WHITE)
+    else:                                                             # a step: the swinging leg lifts, the knee bends
+        for q, ph in ((-1, walk), (1, walk + math.pi)):
+            fx = q * 34 + math.sin(ph) * 30; lift = max(0, math.cos(ph)) * 22
+            limb(c, [(q * 34, 205), (q * 34 + math.sin(ph) * 12 + 8, 244 - lift * .5), (fx, 280 - lift)], 34, WHITE)
     rr(c, -72, 85, 144, 135, 44); fs(c, WHITE)
     ell(c, turn * 22, 150, 30 - abs(turn) * 6, 30); fs(c, CHEST, 5)
     for q, p, pr in zip((-1, 1), arms, props): arm(c, q, p, pr)
     c.save(); c.translate(*NECK); c.rotate(math.radians(tilt)); c.translate(-NECK[0], -NECK[1])
     ax = turn * 40
     c.move_to(ax, -90); c.line_to(ax, -132); c.set_source_rgb(*INK); c.set_line_width(9); c.stroke()
+    if talk > .05:                                                    # speaking: the antenna glows with the voice
+        ell(c, ax, -140, 17 + 22 * talk, 17 + 22 * talk); c.set_source_rgba(*EYE, .35 * talk); c.fill()
     ell(c, ax, -140, 17, 17); fs(c, EYE, 7)
     for q in (-1, 1):
         if turn * q < -.5: continue                                  # far ear hidden in a three-quarter view
@@ -91,7 +97,10 @@ def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(No
     rr(c, -108, -95, 216, 180, 78); fs(c, WHITE)
     vx = turn * 40
     rr(c, -82 + vx, -54, 164 - abs(turn) * 30, 92, 40); fs(c, VISOR, 6)
-    eyes(c, eye, (look[0] + turn * 34, look[1]))
+    if talk > .05:                                                    # ...and the eyes squash on each syllable
+        c.save(); c.translate(vx, -8); c.scale(1 + .08 * talk, 1 - .38 * talk); c.translate(-vx, 8)
+        eyes(c, eye, (look[0] + turn * 34, look[1])); c.restore()
+    else: eyes(c, eye, (look[0] + turn * 34, look[1]))
     c.restore(); c.restore()
 
 # ---------------- props ----------------

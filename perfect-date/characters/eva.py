@@ -1,3 +1,4 @@
+import math
 """Eva, v2 (v1 + gold hoops, lash on every expression, one-brow signature, four poses, slimmer coat).
 Eva, v1. Built on the neighbour from Who's a Good Boy? (yellow coat, dark curls, coffee, the red-collared dog),
 moved onto the series face system so she can act. Writes eva_sheet.png."""
@@ -60,14 +61,17 @@ def coffee(c, x, y, s):
     c.rectangle(x - 22 * s, y - 30 * s, 44 * s, 16 * s); c.set_source_rgb(*hx('8a5a2e')); c.fill()
     rr(c, x - 25 * s, y - 58 * s, 50 * s, 12 * s, 5 * s); fs(c, WHITE, max(3, 4 * s))
 
-def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, pose='coffee', hand_to=None):
+def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, pose='coffee', hand_to=None, walk=None, blink=False):
     """Full figure standing at ground y. sip 0 = cup at the waist, 1 = at the mouth. Returns the free hand (the leash hand).
     pose: coffee (default) | hip (free hand on the hip) | glance (sip, sideways look, one brow up) | reach (free hand out: takes a hand)"""
     if pose == 'glance': sip, gaze, tilt, expr = max(sip, .7), 16, .1, 'amused'
+    for q, ph in ((-1, walk or 0), (1, (walk or 0) + math.pi)):     # legs: hip, knee, foot; a step when walking
+        if walk is None: fx, lift, kx = x + q * 28 * s, 0, x + q * 28 * s
+        else: fx = x + q * 26 * s + math.sin(ph) * 46 * s; lift = max(0, math.cos(ph)) * 26 * s; kx = x + q * 26 * s + math.sin(ph) * 26 * s + 10 * s
+        limb(c, [(x + q * 26 * s, gy - 250 * s), (kx, gy - 130 * s - lift * .5), (fx, gy - 14 * s - lift)], 30 * s, TROUS)
+        ell(c, fx + 4 * s, gy - 8 * s - lift, 28 * s, 14 * s); fs(c, SHOE, max(3, 5 * s))
+    if walk is not None: gy -= abs(math.sin(walk)) * 7 * s
     hy = gy - 690 * s
-    for q in (-1, 1):
-        limb(c, [(x + q * 26 * s, gy - 250 * s), (x + q * 28 * s, gy - 14 * s)], 30 * s, TROUS)
-        ell(c, x + q * 32 * s, gy - 8 * s, 28 * s, 14 * s); fs(c, SHOE, max(3, 5 * s))
     c.move_to(x - 84 * s, hy + 120 * s); c.line_to(x + 84 * s, hy + 120 * s); c.line_to(x + 110 * s, gy - 226 * s); c.line_to(x - 110 * s, gy - 226 * s)
     c.close_path(); fs(c, COAT, max(3, 7 * s))
     for i in range(3): ell(c, x, hy + 178 * s + i * 72 * s, 7 * s, 7 * s); c.set_source_rgb(*INK); c.fill()
@@ -90,7 +94,7 @@ def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, 
     ell(c, *lh, 18 * s, 18 * s); fs(c, SKIN_E, max(3, 5 * s))
     rr(c, x - 80 * s, hy + 96 * s, 160 * s, 46 * s, 22 * s); fs(c, SCARF, max(3, 6 * s))         # scarf
     rr(c, x + 24 * s, hy + 128 * s, 34 * s, 80 * s, 12 * s); fs(c, SCARF, max(3, 5 * s))
-    eva_head(c, x, hy, .74 * s, expr, gaze, tilt, op=op)
+    eva_head(c, x, hy, .74 * s, expr, gaze, tilt, op=op, blink=blink)
     return lh
 
 def dog(c, x, gy, s, look=0, f=0):

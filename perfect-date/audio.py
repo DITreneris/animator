@@ -22,7 +22,7 @@ t = .3
 while t < N / SR - .3:
     d = rng.uniform(.06, .12); f0 = rng.uniform(3200, 4600); tt = T(d)
     add(park, t, np.sin(2 * np.pi * (f0 * tt + rng.uniform(-9000, 9000) * tt ** 2)) * np.sin(np.pi * tt / d), .05); t += rng.uniform(.5, 1.6)
-sky_on = T0[11]
+sky_on = T0[10] + 1.0                                          # from the view down past his shoes
 wind = lp(lp(rng.standard_normal(N), 700), 700) * .5 * (1 + .4 * np.sin(np.arange(N) / SR * 2 * np.pi * .4))
 amb = park * env_seg([(0, 1), (sky_on - .3, 1), (sky_on + .3, .15), (N / SR, .15)]) \
     + wind * env_seg([(0, 0), (sky_on - .3, 0), (sky_on + .3, 1), (N / SR, 1)])
@@ -52,15 +52,22 @@ for i, t in enumerate((T0[8] + .7, T0[8] + .95, T0[9] + .3, T0[9] + .7, T0[9] + 
 tt = T(.08); add(fx, T0[9] + 26 / 30, np.sin(2 * np.pi * 420 * tt) * np.exp(-tt * 60), .25)
 
 # ---- dog: a tiny whimper as it backs off (shot 4)
-tt = T(.3); add(fx, T0[3] + 18 / 30, np.sin(2 * np.pi * (1300 * tt - 900 * tt ** 2)) * np.sin(np.pi * tt / .3) ** 2, .05)
+tt = T(.3); add(fx, T0[3] + 11 / 30, np.sin(2 * np.pi * (1300 * tt - 900 * tt ** 2)) * np.sin(np.pi * tt / .3) ** 2, .05)
 
 # ---- plonk: one string, the wrong note (shot 15, frame 3)
 pl = S.ks_pluck(midi(49) * 2 ** (-40 / 1200), 1.2, bright=.25, decay=.993, seed=4)
-add(fx, T0[14] + 3 / 30, S.amp(pl, drive=1.5) * np.exp(-T(1.2) * 1.5)[:len(pl)], .5)
+add(fx, T0[14] + 4 / 30, S.amp(pl, drive=1.5) * np.exp(-T(1.2) * 1.5)[:len(pl)], .5)
 
 # ---- creak: the rubber stretching (shot 17)
-tt = T(.7); cr = np.sin(2 * np.pi * (180 * tt + 60 * np.sin(2 * np.pi * 3 * tt))) * (1 + .5 * np.sign(np.sin(2 * np.pi * 37 * tt)))
-add(fx, T0[16] + .2, lp(cr, 1500) * np.sin(np.pi * tt / .7), .18)
+for j, st in enumerate(R.STEPS):                                 # one creak per swell step, each higher
+    tt = T(.3); cr = np.sin(2 * np.pi * ((160 + 50 * j) * tt + 40 * np.sin(2 * np.pi * 4 * tt))) * (1 + .5 * np.sign(np.sin(2 * np.pi * (31 + 6 * j) * tt)))
+    add(fx, T0[16] + st / 30, lp(cr, 1500) * np.sin(np.pi * tt / .3), .2 + .05 * j)
+# MY AI's alarm: two quick rising boops when he lifts off (shot 10, frame 30)
+for j in range(2):
+    tt = T(.09); add(fx, T0[9] + 1.0 + j * .12, np.sin(2 * np.pi * (900 + 500 * j) * tt + 2 * np.pi * 2500 * tt ** 2) * np.sin(np.pi * tt / .09), .12)
+# confetti sparkle tinkles while it pumps
+for j in range(6):
+    tt = T(.12); add(fx, T0[8] + .4 + j * .17, np.sin(2 * np.pi * (2600 + 300 * (j % 3)) * tt) * np.exp(-tt * 30), .04)
 
 # ---- POP (shot 18), then the falling whistle (shot 19) and the landing thump on frame 0
 pop = rng.standard_normal(int(.06 * SR)) * np.exp(-T(.06) * 70); tt = T(.15)
@@ -69,9 +76,8 @@ tt = T(.6); add(fx, T0[18] - .05, np.sin(2 * np.pi * np.cumsum(np.geomspace(2200
 tt = T(.25); add(fx, .0, lp(rng.standard_normal(len(tt)), 300) * np.exp(-tt * 18) * 3 + np.sin(2 * np.pi * 60 * tt) * np.exp(-tt * 14), .35)
 
 # ---- voices
-for f, t, g in (('h_whisper', T0[2] + .07, .7), ('ai_watch', T0[4] + .15, .6), ('ai_turn', T0[6] + .25, .6),
-                ('h_oh', T0[12] + .35, .55), ('h_whoa', T0[17] + .25, .55)):
-    add(vo, t, load(f'vo/{f}.wav'), g)
+for f, shot, off, g in R.VO:                                     # the same table the lip sync reads
+    add(vo, T0[shot] + round(off * 30) / 30, load(f'vo/{f}.wav'), g)
 
 # ---- duck under the voices, then sum
 w = int(.03 * SR); e = np.clip(np.convolve(np.abs(vo), np.ones(w) / w, 'same') * 10, 0, 1)
