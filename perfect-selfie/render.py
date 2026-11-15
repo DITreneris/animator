@@ -1,7 +1,7 @@
 """ME + MY AI - Perfect Trip. Timed rough: 10 shots, 1080x1920, 30 fps.
 Each place: the live scene (MY AI directs, Hoody loses his role), the shutter, the album photo with its stamp.
 Rome: the couple photo, HIS TRIP -> ITS TRIP, the pull back to the phone in Hoody's hands, "THANKS FOR THE PHOTOS!", "ONE MORE?".
-Hoody's two lines are Kokoro STAND-INS until Tomas records them.
+Hoody's lines and reactions are Tomas's recorded takes (vo/h_*.wav).
 Usage: python3 render.py frames 0 60 ...  |  python3 render.py video  |  python3 render.py final"""
 import os, sys, math, subprocess, cairo
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
@@ -14,8 +14,9 @@ W, H = 1080, 1920
 oe = lambda t: 1 - (1 - cl(t)) ** 3
 
 # ---------------- voices: where each line sits (shot index, seconds in); the mix and the lip sync both read this
-VO = [('h_invite_STANDIN', 0, .3, .8), ('ai_plan', 0, 2.05, .7), ('h_selfie_STANDIN', 1, .1, .8), ('ai_stepback', 4, .25, .7),
-      ('ai_more', 6, .2, .7), ('h_howtrip_STANDIN', 10, .3, .8), ('ai_thanks', 10, 2.6, .7), ('h_another_STANDIN', 11, .35, .8)]
+VO = [('h_invite', 0, .3, .8), ('ai_plan', 0, 2.75, .7), ('h_selfie', 1, .1, .8), ('h_proud', 2, .35, .6), ('ai_stepback', 4, .25, .7),
+      ('h_huh', 4, 1.25, .6), ('ai_more', 6, .2, .7), ('h_whoa', 6, .75, .6), ('h_effort', 6, 1.35, .5),
+      ('h_howtrip', 10, .3, .8), ('ai_thanks', 10, 3.0, .7), ('h_sigh', 10, 4.1, .55), ('h_another', 11, .35, .8)]   # Hoody: Tomas's takes
 _ENV = {}
 def env(name):
     if name not in _ENV:
@@ -55,15 +56,15 @@ def eva_seated(c, x, es, expr='evacalm', tilt=0, pose='coffee', sip=.2, hand_to=
     return hand
 
 def s_invite(c, f, r):  # before: "Do you want to go on a trip?" - she nods - MY AI pops up from behind the bench
-    pop = oe((r - 56) / 8)
+    pop = oe((r - 76) / 8)
     bench_scene_back(c, f)
-    if pop > 0: A.myai(c, 540, BS + 330 - 470 * pop, 1.1, eye='focus' if r > 66 else 'wide', arms=('up', 'up') if r < 70 else ('down', 'wave'), talk=talk(f, 'ai_plan'))
+    if pop > 0: A.myai(c, 540, BS + 330 - 470 * pop, 1.1, eye='focus' if r > 86 else 'wide', arms=('up', 'up') if r < 90 else ('down', 'wave'), talk=talk(f, 'ai_plan'))
     bench_front(c)
-    R.hoody(c, 330, BS, 1.0, expr='hopeful', pose='sit', seat=(BX0, BX1), arms=('rest', 'rest'), op=.2 + .8 * talk(f, 'h_invite_STANDIN'), gaze=20, f=f)
-    nod = math.sin(cl((r - 44) / 12) * math.pi * 2) * .08 if 44 <= r < 56 else 0
-    eva_seated(c, 760, 1.0, 'charmed' if r >= 44 else 'evacalm', tilt=nod, blink=K.blinking(f, 7))
-    if r < 58: R.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], r - 4, (360, 1000), cy=560, cx=430, size=58)
-    if r >= 60: R.bubble(c, ["I'LL PLAN", 'EVERYTHING!'], r - 60, (540, BS + 330 - 470 * pop - 420 * 1.1), cy=560, cx=560, size=58)
+    R.hoody(c, 330, BS, 1.0, expr='hopeful', pose='sit', seat=(BX0, BX1), arms=('rest', 'rest'), op=.2 + .8 * talk(f, 'h_invite'), gaze=20, f=f)
+    nod = math.sin(cl((r - 62) / 12) * math.pi * 2) * .08 if 62 <= r < 74 else 0
+    eva_seated(c, 760, 1.0, 'charmed' if r >= 62 else 'evacalm', tilt=nod, blink=K.blinking(f, 7))
+    if r < 78: R.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], r - 4, (360, 1000), cy=560, cx=430, size=58)
+    if r >= 80: R.bubble(c, ["I'LL PLAN", 'EVERYTHING!'], r - 80, (540, BS + 330 - 470 * pop - 420 * 1.1), cy=560, cx=560, size=58)
 def bench_scene_back(c, f):
     R.park(c, f, zoom=1.35, cy=1500)
 def bench_front(c):
@@ -76,10 +77,10 @@ def s_after(c, f, r):   # after: "How did you like our trip?" - she turns her ph
     if _PHOTO is None:
         _PHOTO = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); TP.rome(cairo.Context(_PHOTO), 0, label='ITS TRIP')
     bench_scene(c, f)
-    R.hoody(c, 300, BS, 1.0, expr='hopeful' if r < 70 else 'bored', pose='sit', seat=(BX0, BX1), arms=('rest', 'rest'),
-            op=.2 + .8 * talk(f, 'h_howtrip_STANDIN'), gaze=20, f=f)
-    A.myai(c, 880, BS - 6, 1.0, eye='happy', arms=('down', 'wave' if r > 74 else 'down'), talk=talk(f, 'ai_thanks'))
-    turn = oe((r - 40) / 10)
+    R.hoody(c, 300, BS, 1.0, expr='hopeful' if r < 96 else 'bored', pose='sit', seat=(BX0, BX1), arms=('rest', 'rest'),
+            op=.2 + .8 * talk(f, 'h_howtrip'), gaze=20, f=f)
+    A.myai(c, 880, BS - 6, 1.0, eye='happy', arms=('down', 'wave' if r > 90 else 'down'), talk=talk(f, 'ai_thanks'))
+    turn = oe((r - 62) / 10)
     eva_seated(c, 640, 1.0, 'charmed', tilt=-.15 * turn, blink=K.blinking(f, 7))
     if turn > 0:                                                         # her phone, turned to him: the Rome photo
         pw, ph = 250 * turn + 20, 440
@@ -88,12 +89,12 @@ def s_after(c, f, r):   # after: "How did you like our trip?" - she turns her ph
         if turn > .3:
             c.save(); rr(c, px, py, pw, ph, 22); c.clip(); c.translate(px, py); c.scale(pw / W, ph / H); c.set_source_surface(_PHOTO, 0, 0); c.paint(); c.restore()
         ell(c, px + pw + 6, py + ph * .6, 26, 30); fs(c, E.SKIN_E, 5)
-    if r < 70: R.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, (330, 1000), cy=560, cx=430, size=56)
-    if r >= 74: R.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], r - 74, (880, BS - 6 - 420), cy=600, cx=700, size=56)
+    if r < 88: R.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, (330, 1000), cy=560, cx=430, size=56)
+    if r >= 90: R.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], r - 90, (880, BS - 6 - 420), cy=600, cx=700, size=56)
 def s_another(c, f, r): # "...Another trip?" - quietly, not giving up. Loops into the invitation
     R.park(c, f, zoom=1.6, cy=1300)
     K.hoodie(c, 500, 1040 + 150 * 2.4, 2.4 * 1.1)
-    K.hoodyz_head(c, 500, 1040, 2.4, era='young', expr='hopeful', blink=False, gaze=18, op=.15 + .7 * talk(f, 'h_another_STANDIN'))
+    K.hoodyz_head(c, 500, 1040, 2.4, era='young', expr='hopeful', blink=False, gaze=18, op=.15 + .7 * talk(f, 'h_another'))
     R.bubble(c, ['...ANOTHER TRIP?'], r - 8, (560, 1230), cy=620, cx=600, size=60)
 
 def s_rome_act(c, f, r):  # MY AI hands Hoody the phone ("you take it") and sits down with Eva: the cameraman is made
@@ -118,7 +119,7 @@ def eva_rome(c):
 def s_open(c, f, r):   # frame 0: the giant face in the phone preview at Pisa - "ONE SELFIE?"
     P.pisa(c, f)
     K.hoodie(c, 540, 1060 + 150 * 3.0, 3.0 * 1.1)
-    K.hoodyz_head(c, 540, 1060, 3.0, era='young', expr='happy', blink=False, op=.2 + .8 * talk(f, 'h_selfie_STANDIN'))
+    K.hoodyz_head(c, 540, 1060, 3.0, era='young', expr='happy', blink=False, op=.2 + .8 * talk(f, 'h_selfie'))
     phone_ui(c)
     R.bubble(c, ['ONE SELFIE?'], r + 5, (600, 1250), cy=620, cx=760, size=62)
 def phone_ui(c):
@@ -201,7 +202,7 @@ def s_more(c, f, r):   # "ONE MORE?" - his hopeful face; MY AI's facepalm; then 
     fp = r >= 16
     A.myai(c, 900, 1760, 1.1, eye='blank' if fp else 'happy', arms=('down', 'chest' if fp else 'down'), tilt=-12 if fp else 0)
 
-DUR = [105, 36, 60, 30, 81, 30, 69, 27, 45, 60, 135, 54]
+DUR = [120, 48, 60, 30, 81, 30, 69, 27, 45, 60, 156, 60]
 FNS = [s_invite, s_open, s_pisa, s_photo('pisa'), s_paris, s_photo('paris'), s_giza, s_photo('giza'), s_rome_act, s_rome, s_after, s_another]
 SHOTS = []; _t = 0
 for fn, d in zip(FNS, DUR): SHOTS.append((fn, _t, _t + d)); _t += d

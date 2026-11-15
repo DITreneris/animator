@@ -55,8 +55,8 @@ for k, n in enumerate([72, 76, 79, 84]):
     tt = T(.9); add(fx, T0[9] + 14 / 30 + k * .06, np.exp(-tt * 3) * np.sin(2 * np.pi * midi(n) * tt), .12)
 
 # ---- MY AI pops up from behind the bench (a springy boing); her phone turns (a soft swish)
-tt = T(.3); add(fx, T0[0] + 56 / 30, np.sin(2 * np.pi * (300 * tt + 500 * tt ** 2)) * np.exp(-tt * 9), .18)
-tt = T(.2); add(fx, T0[10] + 40 / 30, lp(rng.standard_normal(len(tt)), 3000) * np.sin(np.pi * tt / .2), .12)
+tt = T(.3); add(fx, T0[0] + 76 / 30, np.sin(2 * np.pi * (300 * tt + 500 * tt ** 2)) * np.exp(-tt * 9), .18)
+tt = T(.2); add(fx, T0[10] + 62 / 30, lp(rng.standard_normal(len(tt)), 3000) * np.sin(np.pi * tt / .2), .12)
 
 # ---- voices
 for f, shot, off, g in R.VO: add(vo, T0[shot] + round(off * 30) / 30, load(f'vo/{f}.wav'), g)
