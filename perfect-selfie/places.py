@@ -30,17 +30,22 @@ def pisa(c, f=0):
     ground(c, '7cc66a', '6ab55a')
     rr(c, -40, 1200, 300, 240, 10); fs(c, hx('f2ead6'), 6)                    # the cathedral's corner, low at the left
     for i in range(4): c.arc(30 + i * 60, 1300, 20, math.pi, 0); c.set_source_rgb(*hx('d8ccb0')); c.fill()
-    c.save(); c.translate(640, GY - 60); c.rotate(math.radians(5))          # it leans
-    w, h = 230, 960
-    for i in range(7):                                                       # seven arcaded tiers, the bell chamber narrower
-        y0 = -h + i * (h / 7.3); ww = w * (.86 if i == 0 else 1)
-        rr(c, -ww / 2, y0 + 8, ww, h / 7.3 - 4, 8); fs(c, hx('f6f0e0'), 5)
-        n = 5 if i else 4
-        for j in range(n):
-            ax = -ww / 2 + (j + .5) * ww / n
-            c.move_to(ax - 12, y0 + h / 7.3 - 6); c.line_to(ax - 12, y0 + 40); c.arc(ax, y0 + 40, 12, math.pi, 0); c.line_to(ax + 12, y0 + h / 7.3 - 6)
+    ell(c, 660, GY - 52, 200, 26); c.set_source_rgba(0, 0, 0, .22); c.fill()             # contact shadow
+    c.save(); c.translate(640, GY - 60); c.rotate(math.radians(8))          # it leans, as one rigid body
+    w, h = 230, 960; n = 7; th = h / n
+    rr(c, -w / 2, -h, w, h, 18); fs(c, hx('f6f0e0'), 6)                       # one cylinder
+    g = cairo.LinearGradient(-w / 2, 0, w / 2, 0); g.add_color_stop_rgba(0, 0, 0, 0, .0); g.add_color_stop_rgba(.7, 0, 0, 0, .0); g.add_color_stop_rgba(1, 0, 0, 0, .14)
+    rr(c, -w / 2, -h, w, h, 18); c.set_source(g); c.fill()                     # round shading on one side
+    for i in range(n):
+        y0 = -h + i * th
+        if i: c.rectangle(-w / 2 - 8, y0 - 6, w + 16, 12); fs(c, hx('e9dfc6'), 4)  # gallery ledges
+        for j in range(5):
+            ax = -w / 2 + (j + .5) * w / 5
+            c.move_to(ax - 11, y0 + th - 14); c.line_to(ax - 11, y0 + 34); c.arc(ax, y0 + 34, 11, math.pi, 0); c.line_to(ax + 11, y0 + th - 14)
             c.close_path(); c.set_source_rgb(*hx('cfc3a6')); c.fill()
-    rr(c, -w * .43, -h - 70, w * .86, 80, 8); fs(c, hx('f6f0e0'), 5)
+    rr(c, -w * .4, -h - 76, w * .8, 82, 10); fs(c, hx('f6f0e0'), 5)           # the bell chamber
+    for j in range(4):
+        ax = -w * .4 + (j + .5) * w * .8 / 4; c.arc(ax, -h - 30, 9, math.pi, 0); c.line_to(ax + 9, -h - 6); c.line_to(ax - 9, -h - 6); c.close_path(); c.set_source_rgb(*hx('cfc3a6')); c.fill()
     c.restore()
 
 # ---------------- Paris: the iron tower over the Champ de Mars (daylight only)
@@ -48,16 +53,19 @@ def paris(c, f=0):
     sky(c, '8fd0ff', 'f3f8ff'); clouds(c, f, ((180, 520, 70), (900, 380, 80)))
     ground(c, '86cf74', '74bd63')
     c.move_to(-20, GY + 300); c.line_to(420, GY - 60); c.line_to(660, GY - 60); c.line_to(1100, GY + 300); c.close_path(); c.set_source_rgb(*hx('e7d9b6')); c.fill()
-    for i in range(4): tree(c, 60 + i * 70, GY - 150 - i * 6, 60 - i * 6); tree(c, 1020 - i * 70, GY - 150 - i * 6, 60 - i * 6)
+    for i, r in enumerate((66, 52, 60, 44)): tree(c, 60 + i * 72, GY - 150 - i * 6, r); tree(c, 1020 - i * 72, GY - 150 - i * 6, (48, 64, 46, 56)[i])
     IRON, IRON_D = hx('9b7650'), hx('6f5236')
     cx, base = 540, GY - 70
     def leg(q):
         c.move_to(cx + q * 300, base); c.curve_to(cx + q * 230, base - 260, cx + q * 150, base - 420, cx + q * 110, base - 520)
         c.line_to(cx + q * 60, base - 520); c.curve_to(cx + q * 100, base - 400, cx + q * 150, base - 240, cx + q * 190, base)
         c.close_path(); fs(c, IRON, 6)
-        for k in range(6):                                                    # lattice
-            t = k / 6; y = base - 520 * t
-            c.move_to(cx + q * (300 - 190 * t), y); c.line_to(cx + q * (190 - 130 * (t + 1 / 6)), y - 87); c.set_source_rgb(*IRON_D); c.set_line_width(3); c.stroke()
+        for k in range(4):                                                    # a few X-braces, so the legs read as iron lattice
+            t0, t1 = k / 4, (k + 1) / 4
+            ox = lambda t: cx + q * (300 - 190 * t); ix = lambda t: cx + q * (190 - 130 * t); yy = lambda t: base - 520 * t
+            for a_, b_ in (((ox(t0), yy(t0)), (ix(t1), yy(t1))), ((ix(t0), yy(t0)), (ox(t1), yy(t1)))):
+                c.move_to(*a_); c.line_to(*b_); c.set_source_rgb(*IRON_D); c.set_line_width(5); c.stroke()
+            c.move_to(ox(t1), yy(t1)); c.line_to(ix(t1), yy(t1)); c.stroke()
     leg(-1); leg(1)
     c.move_to(cx - 190, base); c.curve_to(cx - 120, base - 210, cx + 120, base - 210, cx + 190, base); c.set_source_rgb(*IRON_D); c.set_line_width(14); c.stroke()   # the arch
     rr(c, cx - 150, base - 540, 300, 34, 6); fs(c, IRON, 5)                    # first platform
@@ -72,9 +80,10 @@ def paris(c, f=0):
 def egypt(c, f=0):
     sky(c, 'ffd27a', 'fff3d6')
     ell(c, 840, 520, 90, 90); c.set_source_rgb(*hx('fff7c2')); c.fill()
-    for x, base_w, hgt in ((250, 380, 330), (870, 300, 250), (560, 640, 600)):   # the big one last, in front
+    for x, base_w, hgt in ((230, 330, 280), (880, 260, 210), (560, 660, 620)):   # the big one last, in front; the side ones smaller
         bx, by = x, GY - 40
-        c.move_to(bx - base_w / 2, by); c.line_to(bx, by - hgt); c.line_to(bx + base_w / 2, by); c.close_path(); fs(c, hx('e8c27a'), 6)
+        side = base_w < 600
+        c.move_to(bx - base_w / 2, by); c.line_to(bx, by - hgt); c.line_to(bx + base_w / 2, by); c.close_path(); fs(c, hx('f0d49a') if side else hx('e8c27a'), 6)
         c.move_to(bx, by - hgt); c.line_to(bx + base_w / 2, by); c.line_to(bx + base_w * .12, by); c.close_path(); c.set_source_rgb(*hx('c99c55')); c.fill()
         c.move_to(bx - base_w / 2, by); c.line_to(bx, by - hgt); c.line_to(bx + base_w / 2, by); c.close_path(); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
         for k in range(1, 6): t = k / 6; y = by - hgt * t; c.move_to(bx - base_w / 2 * (1 - t), y); c.line_to(bx - base_w * .02 * (1 - t), y); c.set_source_rgb(*hx('d4ab66')); c.set_line_width(3); c.stroke()
@@ -84,31 +93,36 @@ def egypt(c, f=0):
 
 # ---------------- Rome: the Colosseum, its broken top stepping down to one side
 def rome(c, f=0):
-    sky(c, '86c9ff', 'f6f1e6'); clouds(c, f, ((150, 400, 60), (920, 520, 75)))
+    sky(c, '86c9ff', 'd6eeff'); clouds(c, f, ((150, 400, 60), (920, 520, 75)))
     ST, ST_D, ST_L = hx('e2c896'), hx('b99a66'), hx('efdcb4')
-    left, right, top, base = 90, 990, 760, GY - 60
+    left, right, top, base = 70, 1010, 760, GY - 60
     tiers = 4; th = (base - top) / tiers
-    c.save()
-    c.move_to(left, base); c.line_to(left, top + 40); c.line_to(560, top - 10); c.line_to(700, top + th * .9)       # the broken top: full at the left, stepping down to the right
-    c.line_to(840, top + th * 1.6); c.line_to(right, top + th * 2.1); c.line_to(right, base); c.close_path(); c.clip_preserve(); fs(c, ST, 7)
+    bow = 70                                                                  # the facade curves away: edges higher in the middle
+    cy = lambda x: -bow * (1 - ((x - 540) / 470) ** 2)                       # 0 at the ends, -bow in the middle
+    edge = [(70, 0), (300, -14), (520, -6), (600, 70), (640, 50), (720, 170), (800, 210), (860, 300), (930, 320), (1010, 430)]   # the broken top
+    def outline():
+        c.move_to(left, base); c.line_to(left, top + 40 + cy(left))
+        for x, dy in edge: c.line_to(x, top + 40 + cy(x) + dy)
+        c.line_to(right, base + 0); c.close_path()
+    c.save(); outline(); c.clip_preserve(); fs(c, ST, 7)
     for t in range(tiers):
         y0 = top + t * th
-        c.rectangle(left, y0 + th - 16, right - left, 16); c.set_source_rgb(*ST_D); c.fill()                       # cornices
-        if t == 0: continue                                                                                         # the attic has small windows
-        for j in range(9):
-            ax = left + 40 + j * (right - left - 80) / 8.5
-            c.move_to(ax - 26, y0 + th - 16); c.line_to(ax - 26, y0 + 46); c.arc(ax, y0 + 46, 26, math.pi, 0); c.line_to(ax + 26, y0 + th - 16); c.close_path()
+        c.move_to(left, y0 + th - 16 + cy(left))
+        for x in range(left, right + 1, 20): c.line_to(x, y0 + th - 16 + cy(x) * (1 - t / tiers))
+        c.set_source_rgb(*ST_D); c.set_line_width(16); c.stroke()            # curved cornices
+        if t == 0: continue
+        for j in range(10):
+            ax = left + 40 + j * (right - left - 80) / 9.5; yo = cy(ax) * (1 - t / tiers)
+            w_ = 24 * (1 - .35 * abs(ax - 540) / 470)                         # arches narrow towards the ends: the curve
+            c.move_to(ax - w_, y0 + th - 16 + yo); c.line_to(ax - w_, y0 + 46 + yo); c.arc(ax, y0 + 46 + yo, w_, math.pi, 0); c.line_to(ax + w_, y0 + th - 16 + yo); c.close_path()
             c.set_source_rgb(*hx('6e5638')); c.fill()
-            c.rectangle(ax + 34, y0 + 14, 14, th - 32); c.set_source_rgb(*ST_L); c.fill()                         # half-columns
-    for j in range(12): c.rectangle(left + 30 + j * 76, top + 30, 24, 30); c.set_source_rgb(*ST_D); c.fill()
     c.restore()
-    c.move_to(left, base); c.line_to(left, top + 40); c.line_to(560, top - 10); c.line_to(700, top + th * .9); c.line_to(840, top + th * 1.6); c.line_to(right, top + th * 2.1); c.line_to(right, base)
-    c.set_source_rgb(*INK); c.set_line_width(7); c.stroke()
-    c.rectangle(0, base, W, H - base); c.set_source_rgb(*hx('d9cdb3')); c.fill()                                    # the cobbled square
+    outline(); c.set_source_rgb(*INK); c.set_line_width(7); c.stroke()
+    c.rectangle(0, base, W, H - base); c.set_source_rgb(*hx('d9cdb3')); c.fill()
     c.move_to(0, base); c.line_to(W, base); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
     for i in range(40): rr(c, (i * 137) % 1080, base + 40 + (i * 53) % 380, 60, 26, 10); c.set_source_rgb(*hx('cbbd9f')); c.fill()
 
-PLACES = dict(pisa=pisa, paris=paris, egypt=egypt, rome=rome)
+PLACES = dict(pisa=pisa, paris=paris, giza=egypt, rome=rome)
 
 if __name__ == '__main__':
     from PIL import Image
