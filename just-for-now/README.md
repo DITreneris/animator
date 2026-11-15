@@ -6,10 +6,10 @@ Based on the "Temporary fix. Permanent problem." poster. A taped-up "temporary" 
 |---|---|---|---|
 | [`test/`](test/) | `just_for_now_test_back.mp4`, `just_for_now_test_passed.mp4` | 6.9 s each | Rough test of the reveal + collapse only, identical pictures, two Tester lines to A/B |
 | [`rough/`](rough/) | `just_for_now_rough.mp4` | 24.5 s | Whole story, rough: the tester's 23–25 s structure |
-| [`v2/`](v2/) | `just_for_now_v2.mp4` | 28.5 s | Polish: dynamic opening and a bigger twist |
-| [`v3.2/`](v3.2/) | `just_for_now_v3_2.mp4`, `just_for_now_v3_2_notag.mp4` | 25.3 s | Second review fixes: PAYROLL no longer looks like a second HEADQUARTERS, the boss holds the trophy instead of a white bar crossing it, the tag sits in the title bar |
-| [`v3.1/`](v3.1/) | `just_for_now_v3_1.mp4`, `just_for_now_v3_1_notag.mp4` | 25.3 s | Review fixes: no blank frame in the collapse, continuous collapse cut, hair clear of the title bar |
-| [`v3/`](v3/) | `just_for_now_v3.mp4`, `just_for_now_v3_notag.mp4` | 25.3 s | Series pass: title bar, character polish, the Day 1 smiley as a readable plant, push-ins, trimmed, stereo master; no-tag version ends on the boss |
+| [`v2/`](v2/) | `just_for_now_v2.mp4` | 28.5 s | Polish: dynamic opening and a bigger twist. **Shipped master** |
+| [`v3/`](v3/) | `just_for_now_v3.mp4`, `just_for_now_v3_notag.mp4` | 25.3 s | Series pass: title bar, character polish, the Day 1 smiley as a readable plant, push-ins, trimmed, stereo master; no-tag version ends on the boss. Held after review |
+| [`v3.1/`](v3.1/) | `just_for_now_v3_1.mp4`, `just_for_now_v3_1_notag.mp4` | 25.3 s | Review fixes: no blank frame in the collapse, continuous collapse cut, hair clear of the title bar. Held after review |
+| [`v3.2/`](v3.2/) | `just_for_now_v3_2.mp4`, `just_for_now_v3_2_notag.mp4` | 25.3 s | Second review fixes: PAYROLL no longer looks like a second HEADQUARTERS, the boss holds the trophy instead of a white bar crossing it, the tag sits in the title bar. **In review** |
 
 ## v2 beats
 

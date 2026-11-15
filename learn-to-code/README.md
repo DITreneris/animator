@@ -6,9 +6,9 @@ He learned to code. His robot got the job, then the robots promoted each other. 
 |---|---|---|
 | `learn_to_code_A.mp4` | "They fired you too?" / "Worse. Our AIs promoted each other." | Ending A for the A/B test |
 | `learn_to_code_B_v2.mp4` | "Any news on my application?" / "My AI is still talking with your AI." | Ending B with a setup line it can answer, and the robots shown still talking |
-| `learn_to_code_B_v3.mp4` | as B v2 | Polish: camera push-ins on the reaction beats, big chat bubbles in 2025, a visible charger, the cable coil after the stamp, a slower tent reveal |
+| `learn_to_code_B_v3.mp4` | as B v2 | Polish: camera push-ins on the reaction beats, big chat bubbles in 2025, a visible charger, the cable coil after the stamp, a slower tent reveal. **Shipped master** (as `video/out/still-talking-en-9x16-vo.mp4`) |
 | `learn_to_code_B_v3_notag.mp4` | as B v2 | No burned-in chip, TODAY clear of the right edge, and it ends on the board meeting with the punch line on screen instead of looping |
-| `learn_to_code_B_v4.mp4` / `_notag.mp4` | as B v2 | Rewatch twist: the job site that rejects him has his own robot's face as its logo (JOBS), the app his robot launched in 2024. Motion pass (wind-up and overshoot, the robot hops onto the pad, the pigeon lands, a white flash on each stamp), a hard cut-in on "You're hired!" |
+| `learn_to_code_B_v4.mp4` / `_notag.mp4` | as B v2 | Rewatch twist: the job site that rejects him has his own robot's face as its logo (JOBS), the app his robot launched in 2024. Motion pass (wind-up and overshoot, the robot hops onto the pad, the pigeon lands, a white flash on each stamp), a hard cut-in on "You're hired!". **Held**: the cut-in made the hire beat worse (see Review status) |
 
 ## Review status (9 Nov)
 
