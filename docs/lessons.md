@@ -246,3 +246,29 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Brand tags belong in the title bar,** not over the picture: a chip under the bar sat on the little office in the pushed ending.
 - **A polish pass must not make any beat worse than the shipped cut.** Compare the new version beat by beat with the master: Learn to Code v4's cut-in put the HIRED stamp on his face and swept the robot's arm across HEAD OF HIRING, so the whole cut was held although everything else improved.
 - **Stamps and props placed in screen space must be checked in every framing,** especially close-ups, where faces move to new places.
+
+## Make It Original: auditions, sheet, rough (11 Nov)
+
+- **Screen every melody, not only the hero riff.** The AI's first tune shared three intervals with Smoke on the Water; the interval screen caught it before anyone heard it. It's a quick aid, not a guarantee.
+- **Measure synthesized notes against the written ones.** A single-note lead whose notes ring into each other turns into wrong low tones through distortion (up to an octave and a half off). Stop each note when the next starts, then check pitch per note.
+- **Kokoro ignores capitals for stress.** "Now THAT'S original" came out flat; writing the phonemes with a stress mark (`ðˈˈæts`) and `is_phonemes=True` put the loudest point on THAT'S.
+- **A gesture that carries the callback needs its own test.** The first wave-off read as "hi". Drawing three silhouettes side by side picked the one that reads as "go away" (a backhand brush outward).
+- **Keep the gesture inside the frame and away from the buttons.** A world zoom pushed the flick off the left edge; the cat first played under TikTok's right-hand buttons. Check the key action, not just text, against the safe zones.
+- **Make a looping riff fill whole bars.** With the riff on a 2 s bar, the robot plays it twice and the film cuts where a third pass would start, which lands on frame 0's riff.
+- **Copy helpers into the new episode's own kit.** The series modules load their own voice files on import; a self-contained `kit.py` rebuilt cleanly from the repo.
+
+## Make It Original: from rough to master (11 Nov)
+
+- **A rough that explains the joke isn't a rough that performs it.** The slideshow passed every layout check and still failed on mute: one framing per era, half-bodies, decorative motion. Test the acting, not only the layout: tell the story from body positions alone.
+- **Build matched shots from one function.** The 1986 rejection and the 2026 rejection, and the two stadium poses, share the same framing code and arm path, so a 50% overlay of the pair shows one figure. Prove each callback with an overlay.
+- **Lock what the joke is before adding gags.** The cat was funny and still gave the ending two meanings. It came back only once the ending played them in order: his joy, then the cat on the monitor, then the robot's look.
+- **Let a running image carry the structure.** The stadium appears three times (his fantasy, the cat on his stage, his fantasy again) and gives a hook at frame 0, a reveal and a payoff.
+- **Sound can tell the joke too.** The speaker plays the cat's version, his fantasy turns it into his own guitar, the snap back returns the cat's. Cut arena reverb and crowd dead on the cut to reality.
+- **Measure voices against the music around them.** The first mix had the lines 6-8 dB under the riff; raise the lines and check per-section levels, not just the overall loudness.
+- **Check the key action against the frame edge after every camera change.** A zoom pushed his face off the left edge and exposed the set's right edge as a black strip.
+- **A reported defect you can't reproduce still needs an answer.** "Stepped" floor edges did not exist in the frames; they were compression in the half-size preview. Say so, measure the edge on the final encode, and never send a low-quality preview for a finish review.
+- **Use a fresh-eyes agent on muted frames before delivery.** It retold the story, confirmed both callbacks and found a cropped face, a too-subtle glance and dead space that the maker's eye had stopped seeing.
+- **Reuse a finished cut by time-shifting it.** v4 imports version A's shot functions and calls the 2026 ones with `t - D`, so the two cuts can't drift apart and version A stays byte-identical.
+- **Make the audio exactly the video's length** (`frames * 48000 / 30` samples), or `-shortest` drops the last frame.
+- **Sort recorded takes by transcribing them.** A small Whisper model from the `k2-fsa/sherpa-onnx` GitHub releases (with `pip install sherpa-onnx`) runs offline when Hugging Face is blocked; split each file on silence and transcribe every take to find which line it is. Cut takes by time with short fades: a silence trimmer set for loud audio ate the first word of a quiet take. Then transcribe each line again from the final mix to check it's still intelligible over the music.
+- **Noise reduction makes voices dull; measure it.** `afftdn=nf=-30` cost these takes 10 dB of 2-6 kHz presence (the band that carries consonants) against their 200-1000 Hz body. Use a gentler `nf=-45:tn=1`, then add about +5 dB at 3.2 kHz and a 6 kHz shelf and light compression, and compare the presence ratio with the raw take. Apply any pitch shift *before* the boost, or the shift drags the boost down with it.
