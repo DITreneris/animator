@@ -273,6 +273,20 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Sort recorded takes by transcribing them.** A small Whisper model from the `k2-fsa/sherpa-onnx` GitHub releases (with `pip install sherpa-onnx`) runs offline when Hugging Face is blocked; split each file on silence and transcribe every take to find which line it is. Cut takes by time with short fades: a silence trimmer set for loud audio ate the first word of a quiet take. Then transcribe each line again from the final mix to check it's still intelligible over the music.
 - **Noise reduction makes voices dull; measure it.** `afftdn=nf=-30` cost these takes 10 dB of 2-6 kHz presence (the band that carries consonants) against their 200-1000 Hz body. Use a gentler `nf=-45:tn=1`, then add about +5 dB at 3.2 kHz and a 6 kHz shelf and light compression, and compare the presence ratio with the raw take. Apply any pitch shift *before* the boost, or the shift drags the boost down with it.
 
+## Make It Better v3: an older episode brought up to standard (12 Nov)
+
+- **Audit an old episode against the current standard before polishing it.** Three of this one's five faults were series drift, not craft: no title bar, the brand tag in TikTok's top strip, a mono mix with a fixed limiter instead of two-pass loudnorm.
+- **A brand tag the episode doesn't need is one less problem.** Dropping it removed the safe-zone fault and the need for a no-tag twin in one move.
+- **Adding a title bar to an old episode pushes everything down.** The banner, the sign and every scene's big label collided with the bar; each had to move, and one crowd grid had to start lower.
+- **Sound effects placed on a beat can mask the first word of the line on that beat.** The label-pop sweeps sat exactly on "MORE" and "LESS"; moving the voices 0.12 s later fixed what re-recording alone had not.
+- **Transcribe each line from the final mix, not just the clean take.** The clean takes were correct while the mixed ones were not, which is what caught the masking.
+- **A loop that pops is usually one element appearing or vanishing.** Holding the character in his closing pose from frame 0 cut the loop's picture difference nearly in half, with no change to any beat.
+- **Keep a flashback or glitch card in the episode's palette.** A purple-and-cyan rewind card in a red-and-gold film reads as a technical error, not a story beat.
+- **A twitch that scales one eye is a wink.** `(tw if q==1 else 1)` on the eye height made every "I'm done" beat read as a knowing wink at phone size. Apply the squash to both eyes, hold them flat for about 0.25 s, and let the prop drop afterwards so the shot has one clear action.
+- **Give the closing line a reaction, not just a caption.** Freezing the room for the last 0.4 s and flattening the leader's smirk to a straight line cost two lines of code and gave the punchline a consequence.
+- **A crowd is not one voice layered four times.** Eight copies at ±8% speed and pitch, offset up to 80 ms, each filtered differently, with a short room tail, reads as a crowd; wider than that and the words dissolve. Fade the chant out before the next line or it eats the first word.
+- **A background gag that cannot be read is a distraction.** The striking toaster only worked once it was bigger and carried its own picket sign.
+
 ## Says Here v3: experiment to series standard (12–14 Nov)
 
 - **Read the analytics as a warning, not a diagnosis.** 61 views and 43% stayed-to-watch couldn't prove why viewers left, and 0 subscribers from 61 views is the expected result. Fix what every best practice points at (a first frame that's text over the back of a head), and don't claim the data proves it.
