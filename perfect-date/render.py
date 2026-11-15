@@ -309,14 +309,15 @@ def s10(c, f, r):  # the balloon swells; he lifts off still playing. MY AI's ala
     ell(c, 290, GY + 60, 120 * sk, 22 * sk); c.set_source_rgba(0, 0, 0, .25 * sk); c.fill()
     k = cl(r / 30); bk = 2.3 + 1.6 * k
     hgy = GY + 30 - lift - max(0, r - 48) * 9                         # and on up, out of the top
-    _, hd = hoody(c, 290, hgy, .78, expr='bliss', pose='float' if lift > 5 else 'stand', guitar=strum(f), f=f, legs='dangle')
+    hd = guitar_points(290, hgy - 300 * .78 - 326 * .78, .78)[2]       # where the headstock will be, so the hose can go behind him
     tip = (hd[0] + 20, hd[1] - 150 + math.sin(f * .15) * 8)
-    string(c, hd, tip, sway=math.sin(r * .3) * 10); heart(c, *tip, bk)
-    if r < 26:
+    if r < 26:                                                        # the hose (orange, as in shot 9) runs behind his body
         ch = (100, GY + 70 - 130 * .85)
-        c.move_to(*ch); c.curve_to(ch[0] + 120, ch[1] - 60, tip[0] - 160, tip[1] + 120, tip[0], tip[1] + 6)
-        c.set_source_rgb(*INK); c.set_line_width(18); c.stroke_preserve(); c.set_source_rgb(*HOSE); c.set_line_width(9); c.stroke()
-        if r >= 4: sparkles(c, tip[0], tip[1] + 10, r, n=4)
+        c.move_to(*ch); c.curve_to(ch[0] + 160, ch[1] - 40, tip[0] - 60, tip[1] + 260, tip[0], tip[1] + 6)
+        c.set_source_rgb(*INK); c.set_line_width(24); c.stroke_preserve(); c.set_source_rgb(*hx('ff8a3d')); c.set_line_width(14); c.stroke()
+    _, hd = hoody(c, 290, hgy, .78, expr='bliss', pose='float' if lift > 5 else 'stand', guitar=strum(f), f=f, legs='dangle')
+    string(c, hd, tip, sway=math.sin(r * .3) * 10); heart(c, *tip, bk)
+    if 4 <= r < 26: sparkles(c, tip[0], tip[1] + 10, r, n=4)
     if 30 <= r < 40: txt(c, '!', 100, GY - 330, 110, RED, lw=8)
     notes(c, 290, hgy - 520, r, n=2, size=60)
 
@@ -545,6 +546,7 @@ if __name__ == '__main__':
     if sys.argv[1:2] == ['frames']:
         for f in map(int, sys.argv[2:]): draw(f).write_to_png(os.path.join(HERE, f'chk_{f:03d}.png'))
     else:
-        p = subprocess.Popen(f'ffmpeg -y -v error -f rawvideo -pix_fmt bgra -s {W}x{H} -r 30 -i - -vf format=yuv420p -c:v libx264 -crf 18 -preset veryfast -pix_fmt yuv420p -color_primaries bt709 -color_trc bt709 -colorspace bt709 {os.path.join(HERE, "tmp_video.mp4")}'.split(), stdin=subprocess.PIPE)
+        CRF, PRESET = ('14', 'slow') if sys.argv[1:2] == ['final'] else ('18', 'veryfast')   # final: a better copy for the platform to re-compress
+        p = subprocess.Popen(f'ffmpeg -y -v error -f rawvideo -pix_fmt bgra -s {W}x{H} -r 30 -i - -vf format=yuv420p -c:v libx264 -crf {CRF} -preset {PRESET} -pix_fmt yuv420p -color_primaries bt709 -color_trc bt709 -colorspace bt709 {os.path.join(HERE, "tmp_video.mp4")}'.split(), stdin=subprocess.PIPE)
         for f in range(NF): p.stdin.write(bytes(draw(f).get_data()))
         p.stdin.close(); assert p.wait() == 0; os.rename(os.path.join(HERE, 'tmp_video.mp4'), os.path.join(HERE, 'video.mp4')); print('video ok', NF)
