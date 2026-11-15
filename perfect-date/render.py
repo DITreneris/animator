@@ -260,7 +260,9 @@ def s7(c, f, r):   # "Your turn!": MY AI holds the guitar (balloon tied on) and 
     bubble(c, ['YOUR TURN!'], r - 2, (rx - 24 * rs, 1800 - 420 * rs), cy=560, cx=640)
 def s8(c, f, r):   # eyes closed, giving it everything
     g = cairo.LinearGradient(0, 0, 0, H); g.add_color_stop_rgb(0, *hx('ffd36b')); g.add_color_stop_rgb(1, *hx('ff8fa6')); c.set_source(g); c.paint()
-    hoody(c, 470, 2350, 1.9, expr='bliss', guitar=strum(f), rot=-.06 + .05 * math.sin(r * .3), f=f)
+    _, hd = hoody(c, 470, 2350, 1.9, expr='bliss', guitar=strum(f), rot=-.06 + .05 * math.sin(r * .3), f=f)
+    tip = (hd[0] - 60, hd[1] - 330 + math.sin(f * .15) * 10)          # the heart balloon, still tied to the headstock
+    string(c, hd, tip); heart(c, *tip, 1.9); ell(c, *hd, 12, 12); c.set_source_rgb(*INK); c.fill()
     notes(c, 470, 900, r, size=96)
 def sparkles(c, x, y, r, n=6):
     for i in range(n):
@@ -381,6 +383,8 @@ def s13(c, f, r):  # eyes open. "oh" - lips on the take
     sky(c, f, trees=False)
     K.hoodie(c, 540, 1020 + 150 * 2.4, 2.4 * 1.1)
     K.guitar(c, 560, 1700, 1.3, rot=GROT)
+    hs = (560 + 440 * 1.3 * math.cos(GROT), 1700 + 440 * 1.3 * math.sin(GROT))   # the balloon string, up out of frame
+    c.move_to(*hs); c.curve_to(hs[0] - 40, hs[1] - 400, hs[0] - 120, 600, hs[0] - 140, -10); c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
     K.hoodyz_head(c, 540, 1020, 2.4, era='young', expr='bliss' if r < 6 else 'shock', blink=False, gaze=0, op=.2 + .8 * talk(f, 'h_oh'))
 def s14(c, f, r):  # the gap, wide: him a speck in the sky; below, the bench with the cat, and the couple walking off hand in hand
     park(c, f)
@@ -419,6 +423,8 @@ def s15(c, f, r):  # an insert: one finger, one string, the wrong note - then hi
     sky(c, f, trees=False)
     K.hoodie(c, 540, 1020 + 150 * 2.4, 2.4 * 1.1)
     K.guitar(c, 560, 1700, 1.3, rot=GROT)
+    hs = (560 + 440 * 1.3 * math.cos(GROT), 1700 + 440 * 1.3 * math.sin(GROT))   # the balloon string, up out of frame
+    c.move_to(*hs); c.curve_to(hs[0] - 40, hs[1] - 400, hs[0] - 120, 600, hs[0] - 140, -10); c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
     K.hoodyz_head(c, 540, 1020, 2.4, era='young', expr='deadpan', blink=False, gaze=0)
 def s16(c, f, r):  # the cat, close: both paws over her ears, one eye open
     g = cairo.LinearGradient(0, 0, 0, H); g.add_color_stop_rgb(0, *hx('8fd0ff')); g.add_color_stop_rgb(1, *hx('fff0c8')); c.set_source(g); c.paint()
