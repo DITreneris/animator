@@ -4,7 +4,7 @@
 
 An AI office sitcom: short vertical cartoons about ridiculous people using AI, posted as if from the corporate account of a polished SaaS company. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
 
-Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One*, *I Will Replace You*, *Happy Compliance*, *Raises for Everyone* and *Mandatory Fun* releases, rendered at 1080×1920.
+Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One*, *I Will Replace You*, *Happy Compliance*, *Raises for Everyone*, *Mandatory Fun* and *Secret Santa* releases, rendered at 1080×1920.
 
 ## Cast
 
@@ -123,6 +123,24 @@ Cafeteria. DON: "Nice hoops. Can I get in your loop?" SOFÍA: "You're out of the
 | `iwry_thumbnail.png`, `iwry_thumbnail_grid_crop.png` | cover | 1080×1920; the shout is the title, the whisper the hook; key art inside the 1080×1440 grid crop |
 
 Built from `src/`: `waiter_kit.py` (robot, pose blending, the screen `"blink"` face), `cafe_kit.py` (set, props, bubbles, per-shot staging `STAGE`, Pam's pose/face params), `iwry_common.py` (shared world and shots; gained `don_tilt`, mouth overlays, `sof_dx`, `don_thumb_scale`, Pam's pose/face — all optional, default off), `iwry_mouths.py` (viseme mouth shapes, shared by Don and Sofía v4), `iwry_visemes.py` (reads the mix's per-line timings into a 12 fps viseme string per character), `iwry_sb.py` / `iwry_sb_v2.py` (silent storyboards), `iwry_anim.py` (full animation: lip-sync, blinks, eased motion; `iwry_anim_v1.py` kept), `iwry_test_a.py` / `_b.py`, `qa_iwry.py` (renders each frame with and without bubbles and flags any bubble over a face), `sound_iwry.py` (voices, stings, mix; `LIPS=1` exports per-frame loudness for the visemes), `thumb_iwry.py`. Earlier versions are kept as `_v1` files. `./build.sh iwry` rebuilds animatic v3, `./build.sh iwry_anim` the release (540 rough + 1080), `./build.sh iwry_thumb` the cover.
+
+### Secret Santa — [`secret-santa/`](secret-santa/)
+
+Christmas at the office. PAM, uncapping a dusty-rose lipstick, whispers: "Sofía… do you think I could pull off nude?" SOFÍA: "On your lips, Pam." "Would Don notice?" "Don notices mirrors." The door bangs open: DON as Agent Secret Santa (cheap shades, an earpiece, a laminated TOP SECRET · SANTA card sealed with a ketchup thumbprint): "Secret Santa! HR-approved!" (the robot THUNKs APPROVED). Pam takes off her glasses and holds them out; Don leans in, catches his own reflection in her lenses and purrs: "Agent Santa. Licensed to gift." She melts. "Don… what would you like Santa to bring?" "Sofía." A smug hold. "Or a full-length mirror." Pam is hurt, then brightens anyway: she writes TO: DON ♥ FROM: PAM on her present's tag and kisses it. The HR robot: "Personal data detected. Anonymizing." It bars the sender (sensible), the recipient (absurd) and, after a considered hover, the kiss (THUNK.). Silence. Pam, glasses back on: "Will Don get it?" The robot moves her present to UNCLAIMED, Don's TO: SOFÍA ♥ FROM: DON (SECRET!) gets APPROVED: "He won't." … "You're welcome." Pam slides a fresh tag toward herself and uncaps the lipstick: frame 0. The joke: the robot does its job perfectly and is the only one who thinks Christmas went well.
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_ss_anim_v1_1080.mp4` | **release (current)** | **1080×1920**, 40.8 s, −15.8 LUFS, −2.4 dBTP, BT.709. Animatic v3 plus blinks, an idle breathing sway, Sofía's crystal earrings swinging; Don's vest card and the UptimeZ sign always whole |
+| `uptimez_ss_anim_v1.mp4` | release, 540 rough | Same animation, 540×960 |
+| `ss_animatic_v3.mp4` (v1, v2 kept) | animatic | Storyboard v2 re-timed to the real takes with piecewise time warps (34.6 → 40.8 s; voices never sped up), Pam `bf_emma` (a soft whispered opening), Sofía `af_bella`, Don `am_onyx` (a slower purr), robot B (warmer "You're welcome."), an original jingle-bell bed that drops out with the kiss stamp; v2: shot 4 un-tangled, a tidy earpiece wire, Don's forearm to the dome; v3: the M of PAM no longer cut in the write-on |
+| `ss_storyboard_silent_v2.mp4`, `_sheet_v2.png` | **storyboard v2** | Concept v5: the reflection flirt, "Sofía." / "Or a full-length mirror." split, Pam's denial, the whole tag and a bigger kiss, UNCLAIMED vs APPROVED, the matched loop |
+| `ss_storyboard_silent_v1.mp4`, `_sheet_v1.png` | storyboard v1 | 16 shots, 36.5 s |
+| `ss_motion_v2_A.mp4` (v1 A, B, AB kept) | motion test | Shots 11-14: three stamps (THUNK, THUNK!, take A's THUNK. after a hover), Pam's stare turning to hurt |
+| `ss_set_sheet_v2.png` (v1 kept) | set | The office at Christmas (red/green chains, the hand-drawn SECRET SANTA sign with an HR-APPROVED stamp, Pam's present + 2, fairy lights over Sofía's desk), one 9:16 frame per shot; v2 after the cinematic audit |
+| `ss_frame0_phone_v2.png`, `don_heads_phone_v2.png`, `robot_bars_phone_v2.png` | phone checks | Frame 0 at real size; Don's three heads (hat, beard, bald agent: C chosen); the stamp bars at real size |
+| `ss_thumbnail.png` | cover | UNCLAIMED vs APPROVED in one frame; the hand-drawn sign as the title |
+
+Character sheets are in [`characters/`](characters/) (`*-ss-*`). Built from `src/`: `sofia_ss.py`, `pam_ss.py`, `don_ss.py`, `robot_ss.py`, `props_ss.py`, `ss_set.py`, `ss_motion.py`, `ss_sb.py`, `ss_takes.py` (the kept takes in `ss_takes/`), `ss_timing.py`, `ss_sound.py`, `ss_visemes.py`, `ss_animatic.py`, `ss_anim.py`, `thumb_ss.py`, and the sheet scripts `*_sheet_ss.py`, `ss_set_sheet.py`, `ss_sb_sheet.py`; earlier versions kept as `_v1`/`_v2`, later fixes behind opt-in flags so they rebuild unchanged. `./build.sh ss` rebuilds the mix, both renders and the cover.
 
 ### Mandatory Fun — [`mandatory-fun/`](mandatory-fun/)
 

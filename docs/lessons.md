@@ -297,6 +297,22 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Plants can live in a cutaway.** Squeezing Pam into the edge of a two-shot to plant her look cost the frame; a 0.6 s close-up on the cue word ("arrest") planted it better and gave the two-shot back.
 - **Fix one seating order before the storyboard.** Exits, the robot's beam and the chain all depend on who sits where (Sofía, Don, Pam, the robot left of them).
 
+## Secret Santa (15 Nov)
+
+- **Triage every outside review against the brief and the user's own picks.** Six reviews this round: most points were already done or were conventions on purpose; a few were real misses. Answer with OK / partial / disagree and the evidence, and never adopt a point that undoes a choice the user made (the shy closed proud smile, the loop).
+- **Check each costume prop against every shot that uses the character.** Don's Santa hat looked fine on the sheet and hid the bald head that the shot 6 gag is about. The fix (no hat, the bald agent) came from a phone-size A/B/C of three heads, not from argument.
+- **A "looking past her" beat needs a visible target.** Don looked screen-right with nobody there, so it read as looking at Pam. Put Sofía's earring at the frame edge; with shades on, slide them down so the eyes carry it.
+- **Small plants must be 2-3x bigger and get their own beat.** The lipstick kiss on the tag nearly vanished on a phone, and the third stamp's joke with it. Keep the whole tag (TO:, FROM:, both names) in frame before anything is barred.
+- **Show the consequence, don't say it.** "He won't. You're welcome." landed only once the robot moved Pam's present to UNCLAIMED while Don's TO: SOFÍA (SECRET!) got APPROVED in the same still frame.
+- **Re-time with piecewise time warps.** Knots at each line's start: only the stretch that needs room slows down; an uncap, a stamp or a reaction before the first line keeps its speed. Voices are never sped up; the total lands where the takes put it (34.6 to 40.8 s).
+- **Hide by not drawing, not by covering.** The tag's write-on drew the names with the kiss already barred, and the bar cut the M of PAM.
+- **cairo `arc()` joins to the current point.** Eleven rings drawn without `new_path()` became one tangle: the earpiece read as spaghetti in close-up. Start each closed shape with `new_path()`.
+- **Stage tight two-shots with a gap between bodies.** Don leaning into Pam's held-out glasses merged two arms and a vest into one knot; standing him clear, with the lenses in the gap, fixed it.
+- **Fonts miss glyphs silently.** ♥ and → rendered as empty boxes in Inter and Permanent Marker; draw hearts as paths and check every sheet's text.
+- **Name frame dumps so cleanup globs can't hit deliverables.** `rm ss_sb_*.png` also deleted `ss_sb_sheet_v1.png`; the checksum list caught it and the pinned script rebuilt it byte for byte.
+- **Measure true peak after the AAC encode.** The same limiter gave −0.3 dBTP from the WAV and −2.4 dBTP when fed AAC; render the audio once, measure it, then mux.
+- **Separate conventions from defects in an automated frame check.** Tails above the hair, hard cuts and the 12 fps steps are the series' look; a cropped brand sign, a clipped prop card ("P SECRET / ANTA") and untagged colour were real.
+
 ## Make It Original: auditions, sheet, rough (11 Nov)
 
 - **Screen every melody, not only the hero riff.** The AI's first tune shared three intervals with Smoke on the Water; the interval screen caught it before anyone heard it. It's a quick aid, not a guarantee.

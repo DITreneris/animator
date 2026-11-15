@@ -1,0 +1,106 @@
+[
+ {
+  "id": 1,
+  "who": "PAM",
+  "text": "Sofia... do you think I could pull off nude?",
+  "panel": "s1",
+  "at": 1.35,
+  "dur": 2.167
+ },
+ {
+  "id": 2,
+  "who": "SOF",
+  "text": "On your lips, Pam.",
+  "panel": "s1",
+  "at": 2.6,
+  "dur": 0.951
+ },
+ {
+  "id": 3,
+  "who": "PAM",
+  "text": "Would Don notice?",
+  "panel": "s2b",
+  "at": 0.1,
+  "dur": 1.302
+ },
+ {
+  "id": 4,
+  "who": "SOF",
+  "text": "Don notices mirrors.",
+  "panel": "s2b",
+  "at": 1.15,
+  "dur": 1.183
+ },
+ {
+  "id": 5,
+  "who": "DON",
+  "text": "Secret Santa! H.R. approved!",
+  "panel": "s3b",
+  "at": 0.3,
+  "dur": 2.124
+ },
+ {
+  "id": 6,
+  "who": "DON",
+  "text": "Agent Santa. Licensed to gift.",
+  "panel": "s4b",
+  "at": 1.25,
+  "dur": 2.271
+ },
+ {
+  "id": 7,
+  "who": "PAM",
+  "text": "Don... what would you like Santa to bring?",
+  "panel": "s5b",
+  "at": 0.15,
+  "dur": 1.931
+ },
+ {
+  "id": 8,
+  "who": "DON",
+  "text": "Sofia.",
+  "panel": "s6b",
+  "at": 0.15,
+  "dur": 0.829
+ },
+ {
+  "id": 9,
+  "who": "DON",
+  "text": "Or a full-length mirror.",
+  "panel": "s6b",
+  "at": 1.5,
+  "dur": 1.51
+ },
+ {
+  "id": 10,
+  "who": "ROB",
+  "text": "Personal data detected. Anonymizing.",
+  "panel": "s10b",
+  "at": 0.5,
+  "dur": 2.45
+ },
+ {
+  "id": 11,
+  "who": "PAM",
+  "text": "Will Don get it?",
+  "panel": "s15b",
+  "at": 1.0,
+  "dur": 1.21
+ },
+ {
+  "id": 12,
+  "who": "ROB",
+  "text": "He won't.",
+  "panel": "s15b",
+  "at": 2.4,
+  "dur": 0.72
+ },
+ {
+  "id": 13,
+  "who": "ROB",
+  "text": "You're welcome.",
+  "panel": "s15b",
+  "at": 3.3,
+  "dur": 0.974
+ }
+]
