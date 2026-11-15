@@ -20,11 +20,15 @@ What has been made so far, chat by chat, and what is in this repo. Dates are 202
 | 9 Nov | **Just for Now v3** (same chat) | Series pass on the 6 Nov film: title bar with DAY pill, character polish, readable Day 1 smiley plant, push-ins, 28.5 → 25.3 s with the audio re-placed, stereo −14 LUFS; no-tag version ending on the boss | ✅ |
 | 9 Nov | **Review fixes: Just for Now v3.1, Who's a Good Boy v3.5** (same chat) | Outside review of v3 and v3.4: blank collapse frames, collapse cut jump, hair in the title bar; detached-looking pat arm, cropped entrance, scribble dog, hand over the hair. All fixed, same timing and audio | ✅ |
 | 9 Nov | **Just for Now v3.2, Learn to Code v4 review** (same chat) | Second review of Just for Now v3.1: PAYROLL restyled (it read as a second HEADQUARTERS), the boss's arm holds the trophy instead of crossing it, the tag moved into the title bar. Learn to Code B v4 no-tag held for a hire-beat regression (not rebuilt yet) | ✅ |
+| 11 Nov | **Hoodyz ep. 4: Make It Original** (same chat) | Series named Hoodyz (episodes 1–3: Just for Now, Who's a Good Boy?, Learn to Code). Concept doc through two outside reviews (third era 2016 with the cat, the copied wave-off, no notification). Audio auditions with an originality screen, character sheets, a 19.5 s timed-slideshow rough | 🧪 rough, viewer test next |
+| 11 Nov | **Make It Original: v2 → v4 master** (same chat) | Four outside reviews. 17-shot storyboard with matched gesture and performance shots; the stadium fantasy; version A without the cat (14.1 s); the cat brought back as v4 (19 shots, 19.9 s): lazy paw, the cat on his stage, the old cat's yawn. Full render, cover, fresh-eyes muted review by a separate agent, clean rebuild | ✅ master, awaiting sign-off |
 | 7 Nov | **The List added** | `the-list/`: source, six trimmed voice lines, Permanent Marker font, history stills; rebuild matches the released video exactly | ✅ |
 | 4–7 Nov | **Repo setup** | This repo: structure, build docs, Anton font + OFL, first push | ✅ |
 
 ## Next ideas
 
+- **Make It Original**: muted test of the v4 master with 5 fresh viewers ("What happened?", "Which moment was funny?"), your recorded voices, the posting pack; optional A/B against version A (no cat)
+- **Time Saved** (Hoodyz): concept, with the guitar he never gets to
 - **Just For Now**: review of v3.2, then a viewer test (two laughs? tape rule clear? is the Day 1 smiley noticed?)
 - **Make It Better / Says Here**: swap in real recorded voice lines
 - **Learn to Code**: fix the B v4 hire beat (v3 framing, nameplate in front of the arm, HIRED stamp on the wall), then the viewer A/B test of ending A vs B (3 of 5 non-tech viewers laugh at the ending), then real voices for her three lines and his four
