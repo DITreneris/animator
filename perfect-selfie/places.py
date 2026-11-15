@@ -123,13 +123,32 @@ def rome(c, f=0):
     for i in range(40): rr(c, (i * 137) % 1080, base + 40 + (i * 53) % 380, 60, 26, 10); c.set_source_rgb(*hx('cbbd9f')); c.fill()
 
 PLACES = dict(pisa=pisa, paris=paris, giza=egypt, rome=rome)
+STAMP = dict(pisa=('PISA', 'c8323c', -.18, 220), paris=('PARIS', '2f5fb3', .14, 870), giza=('GIZA', 'b5651d', -.1, 240), rome=('ROMA', '7b3fa0', .2, 870))   # name, ink, tilt, x (kept off the landmark)
+
+def stamp(c, place, x=None, y=500, k=1.0, op=.85):
+    """A small passport stamp naming the place, in the photo's top-right corner (clear of the title bar and the app's buttons).
+    k animates it in (0..1: it thumps down from a bit bigger)."""
+    if k <= 0: return
+    name, col, rot, x0 = STAMP[place]; col = hx(col); x = x0 if x is None else x
+    sc = 1 + .5 * (1 - k)
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(sc, sc)
+    c.set_source_rgba(*col, op * k)
+    rr(c, -130, -62, 260, 124, 26); c.set_line_width(9); c.stroke()
+    rr(c, -114, -46, 228, 92, 18); c.set_line_width(3); c.stroke()
+    for q in (-1, 1):                                                        # the little stars of a stamp
+        cx = q * 92; c.move_to(cx, -14)
+        for j in range(1, 10): rd = 12 if j % 2 == 0 else 5; c.line_to(cx + rd * math.sin(j * math.pi / 5), -14 + rd * -math.cos(j * math.pi / 5) + 14 - 14)
+        c.close_path(); c.fill()
+    c.select_font_face('Lilita One'); c.set_font_size(58); e = c.text_extents(name)
+    c.move_to(-e.width / 2 - e.x_bearing, 20); c.show_text(name)
+    c.restore()
 
 if __name__ == '__main__':
     from PIL import Image
     ims = []
     for name, fn in PLACES.items():
         S = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(S); fn(c, 0)
-        txt(c, name.upper(), 540, 1820, 64, WHITE, lw=8)
+        stamp(c, name)
         p = os.path.join(HERE, f'_{name}.png'); S.write_to_png(p); ims.append(Image.open(p).convert('RGB').resize((540, 960))); os.remove(p)
     sheet = Image.new('RGB', (540 * 4 + 60, 960 + 40), 'white')
     for i, im in enumerate(ims): sheet.paste(im, (20 + i * 555, 20))
