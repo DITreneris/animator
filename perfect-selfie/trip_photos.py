@@ -88,20 +88,20 @@ def pisa(c, f=0):
     its telescopic arm props the very top. Eva bored. The cat suspicious."""
     P.pisa(c, f)
     edge = lambda y, q: 640 + math.tan(math.radians(8)) * (P.GY - 60 - y) + q * 115
-    A.myai(c, 400, 1620, .85, eye='happy', arms=('hip', None), tilt=8)       # further back, left of the tower
-    tele_arm(c, 400, 1620, .85, 1, (edge(470, -1) + 10, 470), tip='palm')   # propping the very top: helping too keenly
-    E.eva(c, 170, 1870, .92, 'bored', sip=.5, gaze=-14)
+    A.myai(c, 330, 1600, .85, eye='happy', arms=('hip', None), tilt=8)       # further back, left of the tower
+    tele_arm(c, 330, 1600, .85, 1, (edge(470, -1) + 10, 470), tip='palm')   # propping the very top: helping too keenly
+    E.eva(c, 150, 1880, .92, 'bored', sip=.5, gaze=-14)
     R.hoody(c, 860, 1830, 1.05, expr='happy', arms=('out', 'rest'), rot=-.06, f=f)   # the hero: in front, biggest, palm to the tower
     backpack_cat(c, 210, 1720, .9, 'suspicious')
     frame(c, 'pisa')
 
 def paris(c, f=0):
     """EXTRA. MY AI in front with the spire on its fingertip; Eva turned to it, surprised. Hoody small at the left, whole and annoyed."""
-    rx, rgy, rs, hz = 800, 1880, 1.5, 1640
-    tipxy = (470, 760)
+    rx, rgy, rs, hz = 900, 1760, 1.25, 1640
+    tipxy = (500, 760)
     s = ((hz - 10) - tipxy[1]) / 1370
     P.paris(c, f, s=s, cx0=tipxy[0], horizon=hz)
-    R.hoody(c, 210, hz + 40, .5, expr='deadpan', arms=('rest', 'rest'), f=f)      # an extra in his own trip
+    R.hoody(c, 200, hz + 40, .5, expr='bored', arms=('rest', 'rest'), gaze=24, f=f)   # an extra in his own trip, glaring at the robot
     E.eva(c, 400, 1900, .9, 'impressed', sip=.2, gaze=18)
     A.myai(c, rx, rgy, rs, eye='focus', arms=(None, 'down'), tilt=-4)
     tele_arm(c, rx, rgy, rs, -1, (tipxy[0], tipxy[1] + 26), tip='finger')
@@ -111,14 +111,15 @@ def paris(c, f=0):
 def giza(c, f=0):
     """ASSISTANT. MY AI and Eva pose together, delighted. Behind them Hoody drags the luggage and the camel won't budge."""
     P.egypt(c, f, s=.72, cx0=600, horizon=1460)
-    rope_to = camel(c, 160, 1500, .42, f, pull=20)
-    for (x, y, w, h, col) in ((420, 1520, 90, 70, '3f7fd6'), (470, 1450, 70, 55, 'e8b23a'), (330, 1520, 80, 100, '5aa84f')):
-        suitcase(c, x, y, w, h, col)
-    hands, _ = R.hoody(c, 500, 1510, .5, expr='wince', arms=('out', 'down'), rot=-.18, f=f)   # leaning into the rope
+    rope_to = camel(c, 150, 1500, .42, f, pull=20)
+    for (x, y, w, h, col, a) in ((250, 1530, 110, 80, '3f7fd6', 0), (262, 1450, 84, 62, 'e8b23a', .25), (330, 1530, 70, 110, '5aa84f', 0)):
+        c.save(); c.translate(x, y); c.rotate(a); suitcase(c, 0, 0, w, h, col); c.restore()      # the luggage, stacked, the top one sliding
+    hands, _ = R.hoody(c, 400, 1530, .52, expr='wince', arms=('out', 'down'), rot=.3, f=f)     # leaning far back: the camel won't come
+    Sh.sweat(c, 450, 1260, .7)
     c.move_to(*hands[0]); c.line_to(*rope_to); c.set_source_rgb(*hx('8a5a2e')); c.set_line_width(5); c.stroke()
-    A.myai(c, 640, 1860, 1.35, eye='happy', arms=('wave', 'hold'), tilt=10)
-    hp = A.hand_at(640, 1860, 1.35, 1, 'hold')
-    E.eva(c, 870, 1880, 1.0, 'laugh', sip=.1, tilt=-.2, pose='holdlow', hand_to=hp)
+    A.myai(c, 700, 1860, 1.3, eye='happy', arms=('wave', 'hold'), tilt=10)
+    hp = A.hand_at(700, 1860, 1.3, 1, 'hold')
+    E.eva(c, 900, 1880, 1.0, 'laugh', sip=.1, tilt=-.2, pose='holdlow', hand_to=hp)
     backpack_cat(c, 210, 1720, .9, 'disapproving')
     frame(c, 'giza')
 
@@ -127,11 +128,11 @@ def rome(c, f=0, label='ITS TRIP', stamp=True):
     P.rome(c, f, s=.62, cx=540, horizon=1230)
     TOP = 1520
     PH.ledge(c, 200, 1000, TOP)
-    es, ex = 1.05, 690
-    rx, rs = 430, 1.32
+    es, ex = 1.05, 650
+    rx, rs = 450, 1.32
     hp = A.hand_at(rx, TOP - 6, rs, 1, 'hold')
     c.save(); c.rectangle(0, 0, W, TOP + 6); c.clip()
-    E.eva(c, ex, TOP + 250 * es, es, 'charmed', sip=.1, tilt=-.22, pose='holdlow', hand_to=hp); c.restore()
+    E.eva(c, ex, TOP + 250 * es, es, 'charmed', sip=.1, tilt=-.34, pose='holdlow', hand_to=hp); c.restore()
     for q in (-1, 1):
         limb(c, [(ex + q * 34 * es, TOP + 4), (ex + q * 38 * es, TOP + 200)], 32 * es, E.TROUS)
         ell(c, ex + q * 34 * es, TOP + 6, 36 * es, 26 * es); fs(c, E.TROUS, 5)
@@ -146,24 +147,32 @@ def rome(c, f=0, label='ITS TRIP', stamp=True):
 
 _ROME = None
 def rome_reveal(c, f=0):
-    """CAMERAMAN, part 2: pull back - the photo is on the phone in Hoody's hands; his annoyed face over the top of it.
-    MY AI, at the right, says thanks."""
+    """CAMERAMAN, part 2: pull back - on the phone in Hoody's hands, a tight couple portrait; over it, his flat, exhausted
+    stare. MY AI, at the right, thanks him."""
     global _ROME
-    if _ROME is None:
-        _ROME = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); rome(cairo.Context(_ROME), 0, stamp=True)
+    if _ROME is None:                                                      # the couple alone: no bar, no stamp, no cat, no border
+        _ROME = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); cc = cairo.Context(_ROME)
+        P.rome(cc, 0, s=.62, cx=540, horizon=1230)
+        TOP = 1520; PH.ledge(cc, 200, 1000, TOP); es, ex = 1.05, 650; rx, rs = 450, 1.32
+        hp = A.hand_at(rx, TOP - 6, rs, 1, 'hold')
+        cc.save(); cc.rectangle(0, 0, W, TOP + 6); cc.clip()
+        E.eva(cc, ex, TOP + 250 * es, es, 'charmed', sip=.1, tilt=-.34, pose='holdlow', hand_to=hp); cc.restore()
+        A.myai(cc, rx, TOP - 6, rs, eye='happy', arms=('wave', 'hold'), tilt=8); ell(cc, *hp, 20 * es, 18 * es); fs(cc, E.SKIN_E, 4)
     P.rome(c, f, s=.62, cx=540, horizon=1230)
-    K.hoodie(c, 470, 1020 + 150 * 2.1, 2.1 * 1.1)                           # Hoody, close, behind his phone
-    K.hoodyz_head(c, 470, 1020, 2.1, era='young', expr='deadpan', blink=False, gaze=0)
-    px, py, pw, ph = 230, 1080, 470, 830                                    # the phone, held up in front of his chest
+    K.hoodie(c, 400, 1020 + 150 * 2.1, 2.1 * 1.1)
+    K.hoodyz_head(c, 400, 1020, 2.1, era='young', expr='bored', blink=False, gaze=0)
+    px, py, pw, ph = 150, 1080, 500, 800                                   # the phone
     rr(c, px - 18, py - 18, pw + 36, ph + 36, 60); fs(c, hx('1d2130'), 8)
     c.save(); rr(c, px, py, pw, ph, 44); c.clip()
-    c.translate(px, py); c.scale(pw / W, ph / H); c.set_source_surface(_ROME, 0, 0); c.paint(); c.restore()
-    for q, hy_ in ((-1, 1620), (1, 1560)):                                  # his hands on the phone's sides, sleeves from below
+    cx0, cy0, cw = 210, 820, 720                                           # crop: the couple, close
+    k = pw / cw; c.translate(px, py); c.scale(k, k); c.translate(-cx0, -cy0); c.set_source_surface(_ROME, 0, 0); c.paint(); c.restore()
+    for q, hy_ in ((-1, 1620), (1, 1560)):
         hx_ = px - 8 if q < 0 else px + pw + 8
         limb(c, [(hx_ + q * 120, 1960), (hx_ + q * 40, hy_ + 80), (hx_, hy_)], 70, NAVY)
         ell(c, hx_, hy_, 44, 52); fs(c, K.SKIN, 6)
-    A.myai(c, 900, 1700, 1.1, eye='happy', arms=('down', 'wave'), tilt=-8)
-    PH.R.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], 10, (900 - 20, 1700 - 420 * 1.1), cy=560, cx=700, size=60)
+    rx, rgy, rs = 900, 1640, 1.05
+    A.myai(c, rx, rgy, rs, eye='happy', arms=('down', 'wave'), tilt=-8)
+    PH.R.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], 10, (rx, rgy - 420 * rs), cy=780, cx=820, size=56)
     Sh.topbar(c, 'ITS TRIP')
 
 PHOTOS = dict(pisa=pisa, paris=paris, giza=giza, rome=rome, reveal=rome_reveal)
