@@ -27,10 +27,13 @@ SCREEN_RX, SCREEN_RY = 46, 38
 WORDS = {"violation": (("POLICY", "VIOLATION."), RED), "accurate": (("ACCURATE.",), GREEN)}
 
 
+HAT_LIFT = 0.0          # opt-in (tg_anim v2 sets it while rendering): raise the hat so the brim clears the screen
+
+
 def pilgrim_hat(k, seed=0):
     """Head-local units (screen centre 0, 0; head 50 x 44). Folded paper, crooked, taped."""
     c = k.c
-    c.save(); c.translate(-4, -38); c.rotate(-0.09)
+    c.save(); c.translate(-4, -38 - HAT_LIFT); c.rotate(-0.09)
     cut(k, [(-30, 0), (30, 0), (25, -50), (-24, -52)], PAPER_BLACK, lw=2.4)
     cut(k, [(0, 0), (30, 0), (25, -50), (1, -51)], PAPER_FOLD, shadow=False, lw=1.6)   # folded-over half, lighter
     c.set_source_rgb(0.42, 0.42, 0.46); c.set_line_width(1.6)

@@ -1,4 +1,7 @@
-"""ANIMATION v1 of "Raises for Everyone" (540 rough of the release), 36.6 s. Built on animatic v2 (tg_animatic.py,
+"""ANIMATION v2 (tg_anim_v1.py = v1, kept): storyboard v4 framing (the banner whole in shot 1; the whole turkey leg
+over the screen in shot 11, "OK. SIGNED." aimed at the screen) and the pilgrim hat lifted 7 units so its brim
+clears the robot's screen.
+ANIMATION v1 of "Raises for Everyone" (540 rough of the release), 36.6 s. Built on animatic v2 (tg_animatic.py,
 the approved timing, laugh and lip-sync, kept as is) with the approved mix (tg_mix_v2.wav). Adds the acting and
 polish by hooking drawing functions for this render only (every module and earlier render unchanged):
 - blinks: Don, Sofía and Pam (eyelids over open eyes only, never on the verdict stare or the closed/laughing faces);
@@ -175,11 +178,13 @@ def wrap(fn):
         c.translate(270 + ox, 480 + oy); c.scale(z, z); c.translate(-270, -480)
         an.sb.dt.don, an.sb.st.sofia, an.sb.pt.pam = _don, _sofia, _pam
         st.face, sb.rt.robot, ts.turkey = _sface, _robot, _turkey
+        rt.HAT_LIFT = 7.0
         try:
             fn(k, t, tl)
         finally:
             an.sb.dt.don, an.sb.st.sofia, an.sb.pt.pam = _don_prev, _sofia_prev, _pam_prev
             st.face, sb.rt.robot, ts.turkey = _sface0, _robot0, _turkey0
+            rt.HAT_LIFT = 0.0
         c.restore()
         c.save(); c.identity_matrix()
         for gx, gy, r, col in GLOWS:

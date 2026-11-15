@@ -1,4 +1,7 @@
-"""SILENT STORYBOARD v3 (tg_sb_v2.py = v2, tg_sb_v1.py = v1, kept) for "Raises for Everyone", 35.0 s, 540x960.
+"""v4 (tg_sb_v3.py = v3, kept), after a frame check: shot 1's pull-up ends a little further left, so the banner
+reads "THANKFUL" whole and the tail lands on Don; shot 11 is framed wider so the whole turkey leg reads (bone,
+frill, bitten end) over the glowing screen, and "OK. SIGNED." points at the covered screen, not the hat.
+SILENT STORYBOARD v3 (tg_sb_v2.py = v2, tg_sb_v1.py = v1, kept) for "Raises for Everyone", 35.0 s, 540x960.
 v3: three emoji reaction pops (no words, one emoji each, a round tinted bubble with no tail, beside the head):
 Sofía 🙄 in 4b, Sofía 😮‍💨 in 8d, Pam 💗 while she pats her hair in 9. 4b and 8d grow to 0.8 s so the pops read;
 everything after 4b moves 0.3 s later, everything after 8d 0.6 s later (the shot functions below keep the v2 times
@@ -107,7 +110,7 @@ def held_form(k):
 
 # ------------------------------------------------------------------ 1  the slap, then the pull-up to Don
 CAM1A = (605, 590, 3.0)
-CAM1B = (470, 500, 1.15)
+CAM1B = (446, 528, 1.04)
 
 
 def _form0():
@@ -416,7 +419,7 @@ def s10c(k, t, tl):
 
 
 # ------------------------------------------------------------------ 11  TILTED: collapse, recovery, Sign it.
-CAM11 = (612, 470, 1.65)
+CAM11 = (650, 470, 1.45)
 
 
 def s11(k, t, tl):
@@ -447,7 +450,7 @@ def s11(k, t, tl):
         xb.speech(k, "Sign it.", top(CAM11, X["don"] - 30, DON_FEET, DON_HY, 50), t, 30.95)
     if 31.7 <= t < 32.4 and SCREEN11:
         ax, ay = ts.to_screen(CAM11, *SCREEN11[0])
-        xb.speech(k, "OK. SIGNED.", [(ax + 20, ay - 50)], t, 31.7, at=(400, 230), size=24, fill=(0.93, 0.98, 0.93))
+        xb.speech(k, "OK. SIGNED.", [(ax + 56, ay - 6)], t, 31.7, at=(400, 230), size=24, fill=(0.93, 0.98, 0.93))
 
 
 SCREEN11 = []

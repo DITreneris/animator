@@ -292,3 +292,7 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Staging must let hands reach.** Don standing at the set's floor line couldn't reach the table for the slap; he stands closer in the storyboard.
 - **Emoji pops are not thought bubbles.** One emoji, a round tinted bubble with no tail, only on silent reaction beats; never on the payoff smile or a spoken line.
 - **Verify the repo copy, not just the workspace.** Every sheet, storyboard sheet and the cover rebuild byte for byte from `src/`, and sampled frames of the storyboard, animatics and animation match.
+- **Spell-check the props the frame crops.** A hand over the "PO" of POLICE left "LICE" on screen; a crop of THANKFUL read "HANKFUL". Check what partial words read as, in every shot, not only on the sheet.
+- **Fit the camera to the payoff, then add the push.** The final two-shot lost half of Pam's face once the slow push was added; frame the payoff wider than the push needs.
+- **Plants can live in a cutaway.** Squeezing Pam into the edge of a two-shot to plant her look cost the frame; a 0.6 s close-up on the cue word ("arrest") planted it better and gave the two-shot back.
+- **Fix one seating order before the storyboard.** Exits, the robot's beam and the chain all depend on who sits where (Sofía, Don, Pam, the robot left of them).

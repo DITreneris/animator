@@ -8,7 +8,9 @@
 #        ./build.sh iwry | iwry_thumb   I Will Replace You animatic v3 (540x960) / its cover
 #        ./build.sh iwry_anim           I Will Replace You full animation, release: 540 rough + 1080
 #        ./build.sh xmas                Happy Compliance (Christmas special): mix, 540 + 1080, cover
-#        ./build.sh tg                  Raises for Everyone (Thanksgiving): mix, lip-sync, 540 + 1080, cover
+#        ./build.sh tg                  Raises for Everyone (Thanksgiving) v2: mix, lip-sync, 540 + 1080, cover
+#        ./build.sh tg_v1               the same, animation v1 (before the framing fixes)
+#        ./build.sh mf                  Mandatory Fun: mix, lip-sync, 540 + 1080 (animation v2), cover
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -178,6 +180,9 @@ build_xmas() {
 
 build_tg() {
   # Raises for Everyone: mix (+ lip-sync data), then the full animation at 540 (rough) and 1080 (release), and the cover.
+  # $1 = v2 (default: tg_anim.py, the framing fixes) or v1 (tg_anim_v1.py, as first released).
+  local v=${1:-v2} mod=tg_anim
+  [ "$v" = v1 ] && mod=tg_anim_v1
   local out=${OUT_DIR:-$HERE/raises-for-everyone}; mkdir -p "$out"
   ( cd src
     python3 sound_tg.py mix
@@ -186,9 +191,9 @@ build_tg() {
     I=$(ffmpeg -hide_banner -i tg_mix_v2.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
     G=$(python3 -c "print(round(-15.6-($I),2))")
     for res in 540 1080; do
-      local eng=engine_v.py size=540x960 name=uptimez_tg_anim_v1.mp4
-      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_tg_anim_v1_1080.mp4
-      python3 $eng tg_anim | ffmpeg -y -v error \
+      local eng=engine_v.py size=540x960 name=uptimez_tg_anim_$v.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_tg_anim_${v}_1080.mp4
+      python3 $eng $mod | ffmpeg -y -v error \
         -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i tg_mix_v2.wav \
         -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
         -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
@@ -197,11 +202,38 @@ build_tg() {
       mv "$out/$name.tmp.mp4" "$out/$name"
     done
     python3 thumb_tg.py "$out/tg_thumbnail.png" )
-  echo "Wrote $out/uptimez_tg_anim_v1.mp4, _1080.mp4 and the cover"
+  echo "Wrote $out/uptimez_tg_anim_$v.mp4, _1080.mp4 and the cover"
+}
+
+build_mf() {
+  # Mandatory Fun: mix (voices, jingle, effects) + lip-sync data, then animation v2 at 540 (rough) and 1080 (release),
+  # and the cover.
+  local out=${OUT_DIR:-$HERE/mandatory-fun}; mkdir -p "$out"
+  ( cd src
+    python3 sound_mf.py mix
+    python3 mf_visemes.py
+    local I G
+    I=$(ffmpeg -hide_banner -i mf_mix_v1.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.6-($I),2))")
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_mf_anim_v2.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_mf_anim_v2_1080.mp4
+      python3 $eng mf_anim | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i mf_mix_v1.wav \
+        -af "volume=${G}dB,alimiter=limit=0.5:level=false" \
+        -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
+        -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+        -c:v libx264 -preset veryfast -crf 18 -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done
+    python3 thumb_mf.py "$out/mf_thumbnail.png" )
+  echo "Wrote $out/uptimez_mf_anim_v2.mp4, _1080.mp4 and the cover"
 }
 
 case "${1:-}" in
-  tg)         build_tg ;;
+  tg)         build_tg v2 ;;
+  tg_v1)      build_tg v1 ;;
+  mf)         build_mf ;;
   xmas)       build_xmas ;;
   iwry)       build_iwry ;;
   iwry_anim)  build_iwry_release ;;
