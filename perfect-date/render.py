@@ -392,7 +392,7 @@ def s14(c, f, r):  # the gap, wide: him a speck in the sky; below, the bench wit
     E.eva(c, hp[0] + 40 * rs + 76 * rs * .95 / .95, GY + 60, rs * .95, 'charmed', sip=.1, pose='holdlow', hand_to=hp, walk=r * .5)
     A.myai(c, rx, GY + 60, rs, eye='heart', arms=('down', 'hold2'), walk=r * .5)
     if r >= 8:                                                        # a little heart pops over the two of them
-        k = oe((r - 8) / 6); c.save(); c.translate(rx + 120, GY - 680 - (r - 8) * 3); c.scale(.6 * k, .6 * k)
+        k = max(.05, oe((r - 8) / 6)); c.save(); c.translate(rx + 120, GY - 680 - (r - 8) * 3); c.scale(.6 * k, .6 * k)
         c.move_to(0, 18); c.curve_to(-30, -2, -18, -30, 0, -12); c.curve_to(18, -30, 30, -2, 0, 18); c.close_path(); fs(c, A.PINK, 5); c.restore()
     hy_ = 1010 + math.sin(r * .2) * 10                                 # him, small, high above the trees
     _, hd = hoody(c, 250, hy_, .42, expr='shock', pose='float', guitar=0, legs='dangle', f=f, blink=False)
