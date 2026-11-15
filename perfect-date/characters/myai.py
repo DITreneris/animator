@@ -84,7 +84,8 @@ def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(No
             limb(c, [(q * 34, 205), (q * 34 + math.sin(ph) * 12 + 8, 244 - lift * .5), (fx, 280 - lift)], 34, WHITE)
     rr(c, -72, 85, 144, 135, 44); fs(c, WHITE)
     ell(c, turn * 22, 150, 30 - abs(turn) * 6, 30); fs(c, CHEST, 5)
-    for q, p, pr in zip((-1, 1), arms, props): arm(c, q, p, pr)
+    for q, p, pr in zip((-1, 1), arms, props):
+        if p is not None: arm(c, q, p, pr)                          # None: that arm is drawn by the caller (e.g. a telescopic arm)
     c.save(); c.translate(*NECK); c.rotate(math.radians(tilt)); c.translate(-NECK[0], -NECK[1])
     ax = turn * 40
     c.move_to(ax, -90); c.line_to(ax, -132); c.set_source_rgb(*INK); c.set_line_width(9); c.stroke()

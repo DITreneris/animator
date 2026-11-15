@@ -16,7 +16,7 @@ def clouds(c, f, pts=((160, 430, 70), (860, 560, 90), (560, 300, 55))):
         for dx, dy, k in ((-r, 10, .7), (0, 0, 1), (r, 12, .75)): ell(c, x + dx, y + dy, r * k, r * k * .8)
         c.set_source_rgb(*WHITE); c.fill()
 def ground(c, col, col2=None, y=GY - 60):
-    c.rectangle(0, y, W, H - y); c.set_source_rgb(*hx(col)); c.fill()
+    c.rectangle(0, y, W, H - y + 2000); c.set_source_rgb(*hx(col)); c.fill()
     c.move_to(0, y); c.line_to(W, y); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
     if col2:
         for i in range(9): ell(c, 60 + i * 130, y + 160 + (i % 2) * 40, 70, 16); c.set_source_rgb(*hx(col2)); c.fill()
@@ -49,11 +49,15 @@ def pisa(c, f=0):
     c.restore()
 
 # ---------------- Paris: the iron tower over the Champ de Mars (daylight only)
-def paris(c, f=0):
+def paris(c, f=0, s=1.0, cx0=540, horizon=None):
+    """s, cx0: the tower's size and centre (s < 1: further away, small enough to balance on a fingertip).
+    horizon: move the ground line (and everything on it) to this y."""
     sky(c, '8fd0ff', 'f3f8ff'); clouds(c, f, ((180, 520, 70), (900, 380, 80)))
+    dy = 0 if horizon is None else horizon - (GY - 60); c.save(); c.translate(0, dy)
     ground(c, '86cf74', '74bd63')
     c.move_to(-20, GY + 300); c.line_to(420, GY - 60); c.line_to(660, GY - 60); c.line_to(1100, GY + 300); c.close_path(); c.set_source_rgb(*hx('e7d9b6')); c.fill()
     for i, r in enumerate((66, 52, 60, 44)): tree(c, 60 + i * 72, GY - 150 - i * 6, r); tree(c, 1020 - i * 72, GY - 150 - i * 6, (48, 64, 46, 56)[i])
+    c.save(); c.translate(cx0, GY - 70); c.scale(s, s); c.translate(-540, -(GY - 70))
     IRON, IRON_D = hx('9b7650'), hx('6f5236')
     cx, base = 540, GY - 70
     def leg(q):
@@ -75,11 +79,15 @@ def paris(c, f=0):
     c.move_to(cx - 44, base - 896); c.line_to(cx - 8, base - 1290); c.line_to(cx + 8, base - 1290); c.line_to(cx + 44, base - 896); c.close_path(); fs(c, IRON, 5)
     rr(c, cx - 22, base - 1310, 44, 24, 5); fs(c, IRON, 4)
     c.move_to(cx, base - 1310); c.line_to(cx, base - 1370); c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
+    c.restore(); c.restore()
 
 # ---------------- Egypt: three pyramids in the dunes
-def egypt(c, f=0):
+def egypt(c, f=0, s=1.0, cx0=540, horizon=None):
+    """s, cx0: the pyramids' size and centre on the horizon; horizon: move the ground line to this y."""
     sky(c, 'ffd27a', 'fff3d6')
     ell(c, 840, 520, 90, 90); c.set_source_rgb(*hx('fff7c2')); c.fill()
+    dy = 0 if horizon is None else horizon - (GY - 40); c.save(); c.translate(0, dy)
+    c.save(); c.translate(cx0, GY - 40); c.scale(s, s); c.translate(-540, -(GY - 40))
     for x, base_w, hgt in ((230, 330, 280), (880, 260, 210), (560, 660, 620)):   # the big one last, in front; the side ones smaller
         bx, by = x, GY - 40
         side = base_w < 600
@@ -87,9 +95,11 @@ def egypt(c, f=0):
         c.move_to(bx, by - hgt); c.line_to(bx + base_w / 2, by); c.line_to(bx + base_w * .12, by); c.close_path(); c.set_source_rgb(*hx('c99c55')); c.fill()
         c.move_to(bx - base_w / 2, by); c.line_to(bx, by - hgt); c.line_to(bx + base_w / 2, by); c.close_path(); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
         for k in range(1, 6): t = k / 6; y = by - hgt * t; c.move_to(bx - base_w / 2 * (1 - t), y); c.line_to(bx - base_w * .02 * (1 - t), y); c.set_source_rgb(*hx('d4ab66')); c.set_line_width(3); c.stroke()
-    c.rectangle(0, GY - 40, W, H); c.set_source_rgb(*hx('f2d394')); c.fill()
+    c.restore()
+    c.rectangle(0, GY - 40, W, H + 2000); c.set_source_rgb(*hx('f2d394')); c.fill()
     for i, (x, y, r) in enumerate(((150, GY + 60, 260), (820, GY + 40, 300), (500, GY + 260, 380))):   # dunes
         ell(c, x, y + r * .5, r * 1.6, r * .5); fs(c, hx('efc985') if i % 2 else hx('f6dba0'), 5)
+    c.restore()
 
 # ---------------- Rome: the Colosseum, its broken top stepping down to one side
 def rome(c, f=0, s=1.0, cx=540, horizon=None):
