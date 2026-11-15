@@ -4,7 +4,7 @@
 
 An AI office sitcom: short vertical cartoons about ridiculous people using AI, posted as if from the corporate account of a polished SaaS company. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
 
-Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One*, *I Will Replace You* and *Happy Compliance* releases, rendered at 1080×1920.
+Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One*, *I Will Replace You*, *Happy Compliance* and *Raises for Everyone* releases, rendered at 1080×1920.
 
 ## Cast
 
@@ -123,6 +123,23 @@ Cafeteria. DON: "Nice hoops. Can I get in your loop?" SOFÍA: "You're out of the
 | `iwry_thumbnail.png`, `iwry_thumbnail_grid_crop.png` | cover | 1080×1920; the shout is the title, the whisper the hook; key art inside the 1080×1440 grid crop |
 
 Built from `src/`: `waiter_kit.py` (robot, pose blending, the screen `"blink"` face), `cafe_kit.py` (set, props, bubbles, per-shot staging `STAGE`, Pam's pose/face params), `iwry_common.py` (shared world and shots; gained `don_tilt`, mouth overlays, `sof_dx`, `don_thumb_scale`, Pam's pose/face — all optional, default off), `iwry_mouths.py` (viseme mouth shapes, shared by Don and Sofía v4), `iwry_visemes.py` (reads the mix's per-line timings into a 12 fps viseme string per character), `iwry_sb.py` / `iwry_sb_v2.py` (silent storyboards), `iwry_anim.py` (full animation: lip-sync, blinks, eased motion; `iwry_anim_v1.py` kept), `iwry_test_a.py` / `_b.py`, `qa_iwry.py` (renders each frame with and without bubbles and flags any bubble over a face), `sound_iwry.py` (voices, stings, mix; `LIPS=1` exports per-frame loudness for the visemes), `thumb_iwry.py`. Earlier versions are kept as `_v1` files. `./build.sh iwry` rebuilds animatic v3, `./build.sh iwry_anim` the release (540 rough + 1080), `./build.sh iwry_thumb` the cover.
+
+### Raises for Everyone (Thanksgiving) — [`raises-for-everyone/`](raises-for-everyone/)
+
+Thanksgiving at the office. DON slaps down a form: "Raises for everyone! Sign here." It reads I AM HAPPY WITH MY CURRENT SALARY. SOFÍA: "Still hoping for a raise?" PAM: "I'm expecting." Don: "Boy or girl? HA!" The HR robot (paper pilgrim hat): POLICY VIOLATION. Pam: "A raise for saying we don't want one?" Don: "Now you're getting it." Pam: "No." Don tears off a turkey leg: "You failed." Sofía: "She refused. She didn't fail." Don, chewing: "Same thing here." Pam stands, pats her hair (she has a soft spot for him), then: "You're a walking policy violation." Don: "HR. Back me up." ACCURATE. Don covers the verdict with the turkey leg and slides the form to the robot: "Sign it." Muffled: "OK. Signed." The form, signed by the only employee without a salary, gets a 100% SATISFACTION stamp. The joke: the robot judges truth, not loyalty, and the company still gets its number.
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_tg_anim_v1_1080.mp4` | **release (current)** | **1080×1920**, 36.6 s, −16 LUFS, BT.709. Lip-sync on Don, Sofía and Pam, blinks, Don's laughing bounce, swinging star earrings, red/green verdict light spill, turkey steam, camera punches (slap jolt, verdict hit, "No." push, ACCURATE push, stamp shake), warm vignette |
+| `uptimez_tg_anim_v1.mp4` | release, 540 rough | Same animation, 540×960, for review |
+| `tg_animatic_v2.mp4` (v1 kept) | animatic | Storyboard v3 re-timed to the real takes (four shots held longer, 35.0 → 36.6 s), voices Don `am_onyx`, Sofía `af_bella`, Pam `bf_emma`, robot B (muffled "OK. Signed."); v2: a real laugh for Don; an original plucked-guitar bed that stops dead on "No." |
+| `tg_storyboard_silent_v3.mp4`, `_sheet_v3.png` | **storyboard v3** | Emoji reaction pops: Sofía 🙄 and 😮‍💨, Pam 💗 |
+| `tg_storyboard_silent_v2.mp4`, `_sheet_v2.png` | storyboard v2 | New ending: the robot signs; the stamped form |
+| `tg_storyboard_silent_v1.mp4`, `_sheet_v1.png` | storyboard v1 | 18 shots, 33 s; close-ups carry the jokes, two tilted shots |
+| `tg_set_sheet_v1.png` | set | Day One wall, leaf garland, THANKFUL FOR OUR EMPLOYEES* banner, the long table; 9:16 frames for six key shots |
+| `tg_thumbnail.png` | cover | Don's opening line as the title, the turkey leg over the verdict, Pam's stare |
+
+Character sheets are in [`characters/`](characters/) (`*-tg-*`). Built from `src/`: `sofia_tg.py`, `don_tg.py`, `pam_tg.py`, `robot_tg.py` (Thanksgiving looks on the existing characters; v1s kept as `_v1`), `tg_set.py`, `tg_sb.py` (storyboard; `tg_sb_v1.py`, `_v2.py` kept), `sound_tg.py` (voices, laugh, effects, music, mix), `tg_timing.py` (re-timing to the takes), `tg_visemes.py`, `tg_animatic.py`, `tg_anim.py` (the polish, through hooks for this render only), `thumb_tg.py`, and the sheet scripts `*_sheet_tg.py`, `tg_set_sheet.py`, `tg_sb_sheet.py`. `./build.sh tg` rebuilds the mix, both renders and the cover.
 
 ### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
 

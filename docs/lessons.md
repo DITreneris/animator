@@ -282,3 +282,13 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Don't let a pinned script and a live one write the same file.** A sheet script whose default output was the previous version's name overwrote it once; the frozen v1 script restored it exactly, and every sheet script now writes its own version's name.
 - **Outside reviews: take the readability notes, check the story notes.** Most suggestions (bigger bars, larger robot face, intentional handoff) were cheap wins; one ("make Pam self-satisfied") contradicted an approved choice and the reason for the joke, so it was declined.
 
+## Raises for Everyone (15 Nov)
+
+- **Measure the takes, then hold shots; don't squeeze voices.** Four lines ran past their storyboard slots; holding those four shots a little longer (35.0 → 36.6 s) kept Pam's slow deadpan and changed nothing inside any shot. A remap table moves every line and effect with them.
+- **A laugh is its own line.** "Boy or girl? Ha!" read the "Ha" as a word. Splitting the laugh off and building it from four pitched, spaced takes running down, with a wheezy breath, made it a laugh.
+- **Watch the pen colour after an erase.** Don's smug smirk vanished because the skin ellipse that cleared the old mouth left the pen in skin colour; fixed behind a flag so earlier renders stay exact.
+- **A cheated prop needs a size check against the real thing.** The drumstick has to cover the word on the robot's real screen; the sheet compared real size with a 1.5× cheat, and the person picked.
+- **Reviewers can misread a prop name.** "Turkey leg" was read as Don's own leg. Label props unambiguously on sheets ("a drumstick, not his leg").
+- **Staging must let hands reach.** Don standing at the set's floor line couldn't reach the table for the slap; he stands closer in the storyboard.
+- **Emoji pops are not thought bubbles.** One emoji, a round tinted bubble with no tail, only on silent reaction beats; never on the payoff smile or a spoken line.
+- **Verify the repo copy, not just the workspace.** Every sheet, storyboard sheet and the cover rebuild byte for byte from `src/`, and sampled frames of the storyboard, animatics and animation match.
