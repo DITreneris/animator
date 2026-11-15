@@ -21,6 +21,7 @@ Every frame is drawn from code and every sound is synthesized, so a video can be
 | [`learn-to-code/`](learn-to-code/) | **Learn to Code**: his robot gets the job, the robots promote each other, he ends up under Tower Bridge (endings A and B, B v3 shipped, B v4 held; no-tag versions) | 25 s | ✅ Source + render |
 | [`make-it-original/`](make-it-original/) | **Make It Original** (Hoodyz ep. 4): his stadium fantasy, the drummer's rejection, his cat making the riff famous, and in 2026 he rejects his AI's original tune with the drummer's own gesture (master in `v4/`, plus cover) | 19.9 s | ✅ Master, awaiting sign-off |
 | [`chat-gifs/`](chat-gifs/) | **Emma Blocked**, **Babe / Voice Agent** and **Claude / Backups**: chat GIFs re-timed, reframed to 9:16 and given synthesized sound | 12–15 s | ✅ Source + render |
+| [`the-nine-laws/`](the-nine-laws/) | **The Nine Laws** (SeaShell, the hermit-crab Super AI): *The Nine Laws*, Part 2 *Almost Done*, Part 3 *The Bug Trains You* (a David Lynch *Rabbits*-style score). Synthesized soundtracks on supplied video | 21–45 s | 🔊 Sound source + render (picture and voice clips not in repo) |
 
 The full history of the work, including concepts not yet built, is in [`docs/sessions.md`](docs/sessions.md).
 
