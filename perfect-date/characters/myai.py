@@ -102,8 +102,12 @@ def rose(c, x, y, q=1):
     c.set_source_rgb(*RED); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
     ell(c, 0, 0, 12, 12); c.set_source_rgb(*hx('b3122c')); c.fill(); c.restore()
 def speaker(c, x, y, q=1):
-    rr(c, x - 44, y - 40, 88, 64, 14); fs(c, hx('22252e'), 6)
-    ell(c, x, y - 8, 20, 20); fs(c, hx('5b6170'), 4); ell(c, x, y - 8, 7, 7); c.set_source_rgb(*INK); c.fill()
+    """A small boombox: handle, two speakers - reads as music at a glance."""
+    c.move_to(x - 34, y - 40); c.line_to(x - 34, y - 62); c.line_to(x + 34, y - 62); c.line_to(x + 34, y - 40)
+    c.set_source_rgb(*INK); c.set_line_width(9); c.stroke()
+    rr(c, x - 64, y - 42, 128, 72, 14); fs(c, hx('e8504f'), 6)
+    for q_ in (-1, 1): ell(c, x + q_ * 34, y - 6, 22, 22); fs(c, hx('22252e'), 5); ell(c, x + q_ * 34, y - 6, 8, 8); c.set_source_rgb(*hx('5b6170')); c.fill()
+    rr(c, x - 10, y - 34, 20, 12, 4); c.set_source_rgb(*hx('ffd23f')); c.fill()
 def balloon(c, x, y, q=1):
     c.move_to(x, y); c.curve_to(x + 20, y - 80, x - 20, y - 160, x, y - 230); c.set_source_rgb(*INK); c.set_line_width(3); c.stroke()
     c.save(); c.translate(x, y - 300); c.scale(1.6, 1.6)
