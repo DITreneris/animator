@@ -219,7 +219,7 @@ def s3(c, f, r):   # "Help me impress her!" - his lips follow the whisper
     g = cairo.LinearGradient(0, 0, 0, H); g.add_color_stop_rgb(0, *hx('8fd0ff')); g.add_color_stop_rgb(1, *hx('fff0c8')); c.set_source(g); c.paint()
     hoody(c, 400, 1820, 1.25, expr='hopeful', pose='stand', arms=('rest', 'chin'), rot=.06, op=.15 + .6 * talk(f, 'h_whisper'), f=f)
     ai(c, 800, 1700, 1.15, eye='happy', tilt=-10, look=(-10, 0), f=f)
-    bubble(c, ['HELP ME', 'IMPRESS HER!'], r - 2, (430, 860), cy=520, cx=480)
+    bubble(c, ['HELP ME', 'IMPRESS HER!'], r - 2, (478, 1124), cy=620, cx=700)     # tail from the side, to the corner of his mouth
 def s4(c, f, r):   # 0.8 s: the dog sniffs toward the cat; one eye; it backs off behind her
     park(c, f, zoom=1.6, cy=1500)
     rr(c, -40, 1380, 420, 50, 14); fs(c, WOOD, 7)
@@ -481,7 +481,6 @@ def s19(c, f, r):  # he drops out of the bottom of the frame - legs pedalling, t
 
 IMPACT = 3                                                            # shot 20: the frame he hits the bench
 def s20(c, f, r):  # BOOM: he slams onto the bench, the camera shakes, the cat doesn't care; dizzy; snap back to frame 0
-    if r >= 16: s1(c, f, 0); return                                   # the last frames are frame 0: a seamless loop
     if r < 9:                                                         # wide: the impact
         sh = 26 * math.exp(-(r - IMPACT) * .45) if r >= IMPACT else 0
         c.translate(sh * math.sin(r * 7.3), sh * math.cos(r * 5.1))
@@ -519,12 +518,12 @@ def s20(c, f, r):  # BOOM: he slams onto the bench, the camera shakes, the cat d
         for j in range(1, 10): rad = 30 if j % 2 == 0 else 12; c.line_to(rad * math.sin(j * math.pi / 5), -rad * math.cos(j * math.pi / 5))
         c.close_path(); fs(c, YEL, 4); c.restore()
 
-DUR = [24, 36, 45, 24, 27, 36, 45, 39, 30, 63, 66, 36, 30, 30, 30, 30, 27, 24, 12, 22]
+DUR = [24, 36, 45, 24, 27, 36, 45, 39, 30, 63, 66, 36, 30, 30, 30, 30, 27, 24, 12, 16]
 FNS = [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20]
 SHOTS = []; _t = 0
 for fn, d in zip(FNS, DUR): SHOTS.append((fn, _t, _t + d)); _t += d
 NF = _t
-def pill(f): return 'ITS DATE' if SHOTS[10][1] + 8 <= f < SHOTS[19][1] + 16 else 'HIS DATE'      # resets with the snap
+def pill(f): return 'ITS DATE' if f >= SHOTS[10][1] + 8 else 'HIS DATE'      # resets on the loop cut: dizzy -> frame 0
 def pulse(c, f):
     """The moment the label flips to ITS DATE, the pill pops big and settles: the punchline can't be missed."""
     t = f - (SHOTS[10][1] + 8)
