@@ -71,19 +71,25 @@ def arm(c, q, pose, prop=None):
     hand(c, *h_, t2, q, open_=(pose == 'wait'))
     return h_
 
-def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(None, None), rot=0, walk=None, bob=0, tilt=0, turn=0):
+def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(None, None), rot=0, walk=None, bob=0, tilt=0, turn=0, talk=0.0):
     """Standing on ground y. arms = (screen-left pose, screen-right pose). rot tips the whole robot about its feet (bow: -.35).
     tilt: head tilt in degrees (limit +-15). turn: -1..1, a three-quarter turn (visor and antenna slide, far ear hides)."""
     tilt = max(LIMITS['tilt'][0], min(LIMITS['tilt'][1], tilt))
-    c.save(); c.translate(x, gy); c.rotate(rot); c.translate(0, -280 * s - bob); c.scale(s, s); c.set_line_cap(cairo.LINE_CAP_ROUND)
-    a = math.sin(walk) * 26 if walk is not None else 0
-    limb(c, [(-34, 205), (-34 - a, 280)], 34, WHITE); limb(c, [(34, 205), (34 + a, 280)], 34, WHITE)
+    c.save(); c.translate(x, gy); c.rotate(rot); c.translate(0, -280 * s - bob - (abs(math.sin(walk)) * 8 * s if walk is not None else 0)); c.scale(s, s); c.set_line_cap(cairo.LINE_CAP_ROUND)
+    if walk is None:
+        limb(c, [(-34, 205), (-34, 280)], 34, WHITE); limb(c, [(34, 205), (34, 280)], 34, WHITE)
+    else:                                                             # a step: the swinging leg lifts, the knee bends
+        for q, ph in ((-1, walk), (1, walk + math.pi)):
+            fx = q * 34 + math.sin(ph) * 30; lift = max(0, math.cos(ph)) * 22
+            limb(c, [(q * 34, 205), (q * 34 + math.sin(ph) * 12 + 8, 244 - lift * .5), (fx, 280 - lift)], 34, WHITE)
     rr(c, -72, 85, 144, 135, 44); fs(c, WHITE)
     ell(c, turn * 22, 150, 30 - abs(turn) * 6, 30); fs(c, CHEST, 5)
     for q, p, pr in zip((-1, 1), arms, props): arm(c, q, p, pr)
     c.save(); c.translate(*NECK); c.rotate(math.radians(tilt)); c.translate(-NECK[0], -NECK[1])
     ax = turn * 40
     c.move_to(ax, -90); c.line_to(ax, -132); c.set_source_rgb(*INK); c.set_line_width(9); c.stroke()
+    if talk > .05:                                                    # speaking: the antenna glows with the voice
+        ell(c, ax, -140, 17 + 22 * talk, 17 + 22 * talk); c.set_source_rgba(*EYE, .35 * talk); c.fill()
     ell(c, ax, -140, 17, 17); fs(c, EYE, 7)
     for q in (-1, 1):
         if turn * q < -.5: continue                                  # far ear hidden in a three-quarter view
@@ -91,7 +97,10 @@ def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(No
     rr(c, -108, -95, 216, 180, 78); fs(c, WHITE)
     vx = turn * 40
     rr(c, -82 + vx, -54, 164 - abs(turn) * 30, 92, 40); fs(c, VISOR, 6)
-    eyes(c, eye, (look[0] + turn * 34, look[1]))
+    if talk > .05:                                                    # ...and the eyes squash on each syllable
+        c.save(); c.translate(vx, -8); c.scale(1 + .08 * talk, 1 - .38 * talk); c.translate(-vx, 8)
+        eyes(c, eye, (look[0] + turn * 34, look[1])); c.restore()
+    else: eyes(c, eye, (look[0] + turn * 34, look[1]))
     c.restore(); c.restore()
 
 # ---------------- props ----------------
@@ -102,8 +111,12 @@ def rose(c, x, y, q=1):
     c.set_source_rgb(*RED); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
     ell(c, 0, 0, 12, 12); c.set_source_rgb(*hx('b3122c')); c.fill(); c.restore()
 def speaker(c, x, y, q=1):
-    rr(c, x - 44, y - 40, 88, 64, 14); fs(c, hx('22252e'), 6)
-    ell(c, x, y - 8, 20, 20); fs(c, hx('5b6170'), 4); ell(c, x, y - 8, 7, 7); c.set_source_rgb(*INK); c.fill()
+    """A small boombox: handle, two speakers - reads as music at a glance."""
+    c.move_to(x - 34, y - 40); c.line_to(x - 34, y - 62); c.line_to(x + 34, y - 62); c.line_to(x + 34, y - 40)
+    c.set_source_rgb(*INK); c.set_line_width(9); c.stroke()
+    rr(c, x - 64, y - 42, 128, 72, 14); fs(c, hx('e8504f'), 6)
+    for q_ in (-1, 1): ell(c, x + q_ * 34, y - 6, 22, 22); fs(c, hx('22252e'), 5); ell(c, x + q_ * 34, y - 6, 8, 8); c.set_source_rgb(*hx('5b6170')); c.fill()
+    rr(c, x - 10, y - 34, 20, 12, 4); c.set_source_rgb(*hx('ffd23f')); c.fill()
 def balloon(c, x, y, q=1):
     c.move_to(x, y); c.curve_to(x + 20, y - 80, x - 20, y - 160, x, y - 230); c.set_source_rgb(*INK); c.set_line_width(3); c.stroke()
     c.save(); c.translate(x, y - 300); c.scale(1.6, 1.6)
