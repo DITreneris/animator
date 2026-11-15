@@ -276,6 +276,9 @@ def arm(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
     return hx, hy
 
 
+BADGE_HOOK = None   # callable(k, name, person_dict, body_top, seed), drawn under the arms; None = classic tag
+
+
 def person(k, name, x, feet, s=1.0, pose="stand", face="neutral", seed=1, look=(0, 0), seated=False, badge=True):
     """Draws a person; returns dict of key points (head, hands) in canvas coords."""
     p = PEOPLE[name]
@@ -293,7 +296,9 @@ def person(k, name, x, feet, s=1.0, pose="stand", face="neutral", seed=1, look=(
     cut(k, body, p["body"])
     if p.get("tie"):
         cut(k, [(0, body_top + 4), (-10, body_top + 70), (0, body_top + 86), (10, body_top + 70)], p["tie"], shadow=False, lw=1.8)
-    if badge:
+    if badge and BADGE_HOOK is not None:                 # optional custom badge (set by a film module)
+        BADGE_HOOK(k, name, p, body_top, seed)
+    elif badge:
         rect(k, -22 if not p.get("tie") else 8, body_top + 34, 36, 22, (1, 1, 1), seed + 40, shadow=False, lw=1.6)
         text(k, name, (-4 if not p.get("tie") else 26), body_top + 45, 11, INK)
     a = ARM_POSES[pose]

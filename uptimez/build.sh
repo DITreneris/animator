@@ -4,6 +4,14 @@
 #        ./build.sh s131a | s131b    Saved to Cloud A/B test (15 s, 540x960)
 #        ./build.sh s136 | s136n     Saved to Cloud release, 1080x1920 (with / without the sniff tag)
 #        ./build.sh dlx | dlx_tag    Downloads Expedition v10, 1080x1920, BT.709 (clean / with the promptanatomy.app card)
+#        ./build.sh day1 | day1_thumb   How Sofía Survived Day One loop v3, 1080x1920, BT.709 / its cover
+#        ./build.sh iwry | iwry_thumb   I Will Replace You animatic v3 (540x960) / its cover
+#        ./build.sh iwry_anim           I Will Replace You full animation, release: 540 rough + 1080
+#        ./build.sh xmas                Happy Compliance (Christmas special): mix, 540 + 1080, cover
+#        ./build.sh tg                  Raises for Everyone (Thanksgiving) v2: mix, lip-sync, 540 + 1080, cover
+#        ./build.sh tg_v1               the same, animation v1 (before the framing fixes)
+#        ./build.sh mf                  Mandatory Fun: mix, lip-sync, 540 + 1080 (animation v2), cover
+#        ./build.sh ss                  Secret Santa: mix, lip-sync, 540 + 1080 (animation v1), cover
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -88,7 +96,175 @@ build_dlx() {
   echo "Wrote $out/$name"
 }
 
+# How Sofía Survived Day One: phoneme mouth shapes + looping mix (sound_day1_v4.py), drawn at 2x
+build_day1() {
+  local out=${OUT_DIR:-$HERE/sofia-day-one} name=uptimez_day1_loop_v3_1080.mp4; mkdir -p "$out"
+  ( cd src
+    python3 sound_day1_v4.py
+    local I G
+    I=$(ffmpeg -hide_banner -i day1_mix_v4.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.3-($I),2))")
+    python3 engine_hd.py day1_anim_v2 | ffmpeg -y -v error \
+      -f rawvideo -pix_fmt bgra -s 1080x1920 -r 30 -i - -i day1_mix_v4.wav \
+      -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+      -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+      -c:v libx264 -preset veryfast -crf 18 -c:a aac -b:a 192k -ar 48000 -t 25 \
+      -movflags +faststart "$out/$name.tmp.mp4"
+    mv "$out/$name.tmp.mp4" "$out/$name" )
+  echo "Wrote $out/$name"
+}
+
+# I Will Replace You: storyboard v2 + voiced mix (robot B, de-essed whisper, Don's soft shout)
+build_iwry() {
+  local out=${OUT_DIR:-$HERE/i-will-replace-you} name=uptimez_iwry_animatic_v3.mp4; mkdir -p "$out"
+  ( cd src
+    ROBOT=B WHISPER=2 DONSHOUT=2 python3 sound_iwry.py mix
+    local I G
+    I=$(ffmpeg -hide_banner -i iwry_mix_B_w2_d2.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.6-($I),2))")
+    python3 engine_v.py iwry_sb_v2 | ffmpeg -y -v error \
+      -f rawvideo -pix_fmt bgra -s 540x960 -r 30 -i - -i iwry_mix_B_w2_d2.wav \
+      -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+      -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+      -c:v libx264 -preset veryfast -crf 18 -c:a aac -b:a 192k -ar 48000 -t 25 \
+      -movflags +faststart "$out/$name.tmp.mp4"
+    mv "$out/$name.tmp.mp4" "$out/$name" )
+  echo "Wrote $out/$name"
+}
+
+build_iwry_release() {
+  # Full animation (lip-sync, blinks, eased motion) at 540 (rough) and 1080 (release).
+  local out=${OUT_DIR:-$HERE/i-will-replace-you}; mkdir -p "$out"
+  ( cd src
+    ROBOT=B WHISPER=2 DONSHOUT=2 LIPS=1 python3 sound_iwry.py mix
+    python3 iwry_visemes.py
+    local I G
+    I=$(ffmpeg -hide_banner -i iwry_mix_B_w2_d2.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.6-($I),2))")
+    python3 engine_v.py iwry_anim | ffmpeg -y -v error \
+      -f rawvideo -pix_fmt bgra -s 540x960 -r 30 -i - -i iwry_mix_B_w2_d2.wav \
+      -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+      -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+      -c:a aac -b:a 192k -ar 48000 -t 25 -movflags +faststart "$out/uptimez_iwry_anim_v2.mp4.tmp.mp4"
+    mv "$out/uptimez_iwry_anim_v2.mp4.tmp.mp4" "$out/uptimez_iwry_anim_v2.mp4"
+    python3 engine_hd.py iwry_anim | ffmpeg -y -v error \
+      -f rawvideo -pix_fmt bgra -s 1080x1920 -r 30 -i - -i iwry_mix_B_w2_d2.wav \
+      -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+      -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+      -c:a aac -b:a 192k -ar 48000 -t 25 -movflags +faststart "$out/uptimez_iwry_anim_v2_1080.mp4.tmp.mp4"
+    mv "$out/uptimez_iwry_anim_v2_1080.mp4.tmp.mp4" "$out/uptimez_iwry_anim_v2_1080.mp4" )
+  echo "Wrote $out/uptimez_iwry_anim_v2.mp4 and $out/uptimez_iwry_anim_v2_1080.mp4"
+}
+
+build_xmas() {
+  # Happy Compliance: mix (+ lip-sync data), then the full animation at 540 (rough) and 1080 (release), and the cover.
+  local out=${OUT_DIR:-$HERE/happy-compliance}; mkdir -p "$out"
+  ( cd src
+    python3 sound_xmas.py mix
+    python3 xmas_visemes.py
+    local I G
+    I=$(ffmpeg -hide_banner -i xmas_mix_v1.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.6-($I),2))")
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_xmas_anim_v1.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_xmas_anim_v1_1080.mp4
+      python3 $eng xmas_anim | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i xmas_mix_v1.wav \
+        -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+        -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+        -c:a aac -b:a 192k -ar 48000 -t 28.9 -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done
+    python3 thumb_xmas.py "$out/xmas_thumbnail.png" )
+  echo "Wrote $out/uptimez_xmas_anim_v1.mp4, _1080.mp4 and the cover"
+}
+
+build_tg() {
+  # Raises for Everyone: mix (+ lip-sync data), then the full animation at 540 (rough) and 1080 (release), and the cover.
+  # $1 = v2 (default: tg_anim.py, the framing fixes) or v1 (tg_anim_v1.py, as first released).
+  local v=${1:-v2} mod=tg_anim
+  [ "$v" = v1 ] && mod=tg_anim_v1
+  local out=${OUT_DIR:-$HERE/raises-for-everyone}; mkdir -p "$out"
+  ( cd src
+    python3 sound_tg.py mix
+    python3 tg_visemes.py
+    local I G
+    I=$(ffmpeg -hide_banner -i tg_mix_v2.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.6-($I),2))")
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_tg_anim_$v.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_tg_anim_${v}_1080.mp4
+      python3 $eng $mod | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i tg_mix_v2.wav \
+        -af "volume=${G}dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+        -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
+        -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+        -c:v libx264 -preset veryfast -crf 18 -c:a aac -b:a 192k -ar 48000 -t 36.6 -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done
+    python3 thumb_tg.py "$out/tg_thumbnail.png" )
+  echo "Wrote $out/uptimez_tg_anim_$v.mp4, _1080.mp4 and the cover"
+}
+
+build_mf() {
+  # Mandatory Fun: mix (voices, jingle, effects) + lip-sync data, then animation v2 at 540 (rough) and 1080 (release),
+  # and the cover.
+  local out=${OUT_DIR:-$HERE/mandatory-fun}; mkdir -p "$out"
+  ( cd src
+    python3 sound_mf.py mix
+    python3 mf_visemes.py
+    local I G
+    I=$(ffmpeg -hide_banner -i mf_mix_v1.wav -af ebur128 -f null - 2>&1 | grep "I:" | tail -1 | awk '{print $2}')
+    G=$(python3 -c "print(round(-15.6-($I),2))")
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_mf_anim_v2.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_mf_anim_v2_1080.mp4
+      python3 $eng mf_anim | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i mf_mix_v1.wav \
+        -af "volume=${G}dB,alimiter=limit=0.5:level=false" \
+        -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
+        -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+        -c:v libx264 -preset veryfast -crf 18 -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done
+    python3 thumb_mf.py "$out/mf_thumbnail.png" )
+  echo "Wrote $out/uptimez_mf_anim_v2.mp4, _1080.mp4 and the cover"
+}
+
+build_ss() {
+  # Secret Santa: mix (the kept takes in src/ss_takes/, jingle-bell bed, effects) + lip-sync data, then animation v1
+  # at 540 (rough) and 1080 (release), and the cover. ss_takes.py re-records the takes (not needed to rebuild).
+  local out=${OUT_DIR:-$HERE/secret-santa}; mkdir -p "$out"
+  ( cd src
+    python3 ss_sound.py
+    python3 ss_visemes.py
+    ffmpeg -y -v error -i ss_mix_v1.wav -af "volume=2.2dB,alimiter=limit=0.5:level=disabled" -c:a aac -b:a 192k ss_audio.tmp.m4a
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_ss_anim_v1.mp4 crf="-preset veryfast -crf 20"
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_ss_anim_v1_1080.mp4 crf="-preset medium -crf 18"
+      python3 $eng ss_anim | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i ss_audio.tmp.m4a -map 0:v -map 1:a \
+        -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
+        -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+        -c:v libx264 $crf -c:a copy -shortest -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done
+    rm -f ss_audio.tmp.m4a
+    python3 thumb_ss.py "$out/ss_thumbnail.png" )
+  echo "Wrote $out/uptimez_ss_anim_v1.mp4, _1080.mp4 and the cover"
+}
+
 case "${1:-}" in
+  ss)         build_ss ;;
+  tg)         build_tg v2 ;;
+  tg_v1)      build_tg v1 ;;
+  mf)         build_mf ;;
+  xmas)       build_xmas ;;
+  iwry)       build_iwry ;;
+  iwry_anim)  build_iwry_release ;;
+  iwry_thumb) ( cd src && python3 thumb_iwry.py "${OUT_DIR:-$HERE/i-will-replace-you}/iwry_thumbnail.png" ) ;;
+  day1)       build_day1 ;;
+  day1_thumb) ( cd src && python3 thumb_day1.py "${OUT_DIR:-$HERE/sofia-day-one}/day1_thumbnail.png" ) ;;
   dlx)     build_dlx B ;;
   dlx_tag) build_dlx B tag ;;
   s136|s136n) build_release "$1" ;;

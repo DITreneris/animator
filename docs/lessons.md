@@ -247,6 +247,72 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **A polish pass must not make any beat worse than the shipped cut.** Compare the new version beat by beat with the master: Learn to Code v4's cut-in put the HIRED stamp on his face and swept the robot's arm across HEAD OF HIRING, so the whole cut was held although everything else improved.
 - **Stamps and props placed in screen space must be checked in every framing,** especially close-ups, where faces move to new places.
 
+## How Sofía Survived Day One (10–12 Nov)
+
+- **Bring a prop in on the cut where it's needed.** Parking the approval train at its final spot for all of 17:00 put the button on the robot's arm in the two-shot; arriving on the cut to the press kept both shots clean.
+- **In tight two-shots, bubbles go above the head or into clear wall,** not beside the mouth, where the other face sits. Use the same spot for a repeated line (all three "Pam?") so the rule of three reads at a glance.
+- **A blind press needs the hand and the eyes in one shot:** his hand on the button, his eyes still on her, the whole label visible.
+- **Dead air at the start is lost viewers.** If the opening gag is visual (pressing BREW), make it audible too and escalate it (one buzz, two, then the full "denied").
+- **Mouth shapes from phonemes beat loudness.** Spread the line's phonemes over its voiced span, give vowels more time, and keep at least one drawing for every m/b/p and f/v. Sample on the 12 fps drawing grid, because the engine only redraws 12 times a second.
+- **A matched loop rewinds state, not just the picture:** the coffee goes back up, the evening grade returns to morning, and the film opens on the exact framing it ends on. Measure the join (mean pixel difference about 9 against about 45 for an unrelated frame).
+- **Shared-kit changes go in as optional hooks that default to off,** then frame hashes prove the older episodes still draw identically.
+
+## I Will Replace You (12 Nov)
+
+- **When two spacing rules fight, cheat per shot.** The robot needed room from Don *and* clearance from Sofía on one 540-unit table. Sliding the pair apart whenever the third person is out of frame solved both; only the wide shows true spacing.
+- **Measure gestures, don't eyeball them.** The first point measured −6 px (touching her hair); the shipped one has a 29 px gap. The same check caught the cover's first draft poking her eye.
+- **A pose must read as a black shape.** Rendering the three robot poses as solid silhouettes showed "nervous" and "collapse" were the same diagonal; making one compact and the other diagonal fixed it.
+- **Brow direction decides the emotion.** Bars higher at the inner end read as sad, not stern; flat or inner-low reads as commanding.
+- **One obvious object beats five small ones** at phone size: a giant bolt sticking out of the bun read where a cluster of grey parts did not.
+- **9:16 two-shots are width-limited.** Cropping off ceiling and floor doesn't enlarge faces; seat the pair closer or let a third character be cut at the edge.
+- **Test the joke in motion before the storyboard.** Two 5 s silent tests (reveal → reaction, point → collapse → whisper) settled the hardest beats cheaply.
+- **Check bubbles with pixels.** Rendering each frame with and without bubbles and diffing the face discs found every overlap; a forced overlap proves the check works.
+- **Voice effects can create the glitch.** A high-pass "whisper" sharpened the s-sounds into bursts, and the robot's hard shout clipped Don into a buzz (11.5% of samples saturated). Soften s-sounds, choose the cleanest of several takes, and measure saturation before mixing.
+- **A narrative loop can beat a seamless one.** Sofía's look to Don, then to us, then a resigned blink makes the repeat a joke ("he learned nothing") without engineering a matched frame.
+- **A face wrapper that draws a stock expression can paint over a mouth drawn before it.** Don's "grin" wrapper (used for the pun and "Approved.") drew its smile after the lip-sync mouth, so the words never showed. Fix: draw the moving mouth *after* the wrapper runs, not inside the normal face hook.
+- **Reuse the mouth-shape code instead of re-deriving it per episode.** The viseme set, openness map and the mouth-drawing function from *Day One* carried over directly to Don and Sofía v4 and to the robot's screen talk; only the skin tone, lip colour and erase size changed per character.
+
+## Happy Compliance (14 Nov)
+
+- **Check the 9:16 frame before the storyboard.** Drawing the key shots into real 9:16 frames on the set sheet showed that a wide with four characters makes every face tiny; it moved frame 0 to Don alone and tightened shot 8 before any animation existed.
+- **A prop that covers the eyes kills the setup.** The razor at Don's cheek hid his eyes, so nobody could see him look at the ornaments; at the jaw, plus a point-of-view cut, the line makes sense.
+- **Size bubbles from the measured text, and guard the tail.** A box pushed down by the safe area can end up over its own anchor and draw its tail back across the text; detect it and point the tail straight down.
+- **Draw a handed-over object in front of the receiver.** In the first handoff the ornament was hidden behind Pam's body; it needed to be drawn after her, bigger, with the camera pushing in.
+- **Opt-in fixes keep old renders exact.** The HR-badge fix and Don's jaw pose went in behind flags and new constants, and the film's polish runs through hooks applied only while it renders, so every earlier sheet, test and storyboard still rebuilds byte for byte.
+- **Don't let a pinned script and a live one write the same file.** A sheet script whose default output was the previous version's name overwrote it once; the frozen v1 script restored it exactly, and every sheet script now writes its own version's name.
+- **Outside reviews: take the readability notes, check the story notes.** Most suggestions (bigger bars, larger robot face, intentional handoff) were cheap wins; one ("make Pam self-satisfied") contradicted an approved choice and the reason for the joke, so it was declined.
+
+## Raises for Everyone (15 Nov)
+
+- **Measure the takes, then hold shots; don't squeeze voices.** Four lines ran past their storyboard slots; holding those four shots a little longer (35.0 → 36.6 s) kept Pam's slow deadpan and changed nothing inside any shot. A remap table moves every line and effect with them.
+- **A laugh is its own line.** "Boy or girl? Ha!" read the "Ha" as a word. Splitting the laugh off and building it from four pitched, spaced takes running down, with a wheezy breath, made it a laugh.
+- **Watch the pen colour after an erase.** Don's smug smirk vanished because the skin ellipse that cleared the old mouth left the pen in skin colour; fixed behind a flag so earlier renders stay exact.
+- **A cheated prop needs a size check against the real thing.** The drumstick has to cover the word on the robot's real screen; the sheet compared real size with a 1.5× cheat, and the person picked.
+- **Reviewers can misread a prop name.** "Turkey leg" was read as Don's own leg. Label props unambiguously on sheets ("a drumstick, not his leg").
+- **Staging must let hands reach.** Don standing at the set's floor line couldn't reach the table for the slap; he stands closer in the storyboard.
+- **Emoji pops are not thought bubbles.** One emoji, a round tinted bubble with no tail, only on silent reaction beats; never on the payoff smile or a spoken line.
+- **Verify the repo copy, not just the workspace.** Every sheet, storyboard sheet and the cover rebuild byte for byte from `src/`, and sampled frames of the storyboard, animatics and animation match.
+- **Spell-check the props the frame crops.** A hand over the "PO" of POLICE left "LICE" on screen; a crop of THANKFUL read "HANKFUL". Check what partial words read as, in every shot, not only on the sheet.
+- **Fit the camera to the payoff, then add the push.** The final two-shot lost half of Pam's face once the slow push was added; frame the payoff wider than the push needs.
+- **Plants can live in a cutaway.** Squeezing Pam into the edge of a two-shot to plant her look cost the frame; a 0.6 s close-up on the cue word ("arrest") planted it better and gave the two-shot back.
+- **Fix one seating order before the storyboard.** Exits, the robot's beam and the chain all depend on who sits where (Sofía, Don, Pam, the robot left of them).
+
+## Secret Santa (15 Nov)
+
+- **Triage every outside review against the brief and the user's own picks.** Six reviews this round: most points were already done or were conventions on purpose; a few were real misses. Answer with OK / partial / disagree and the evidence, and never adopt a point that undoes a choice the user made (the shy closed proud smile, the loop).
+- **Check each costume prop against every shot that uses the character.** Don's Santa hat looked fine on the sheet and hid the bald head that the shot 6 gag is about. The fix (no hat, the bald agent) came from a phone-size A/B/C of three heads, not from argument.
+- **A "looking past her" beat needs a visible target.** Don looked screen-right with nobody there, so it read as looking at Pam. Put Sofía's earring at the frame edge; with shades on, slide them down so the eyes carry it.
+- **Small plants must be 2-3x bigger and get their own beat.** The lipstick kiss on the tag nearly vanished on a phone, and the third stamp's joke with it. Keep the whole tag (TO:, FROM:, both names) in frame before anything is barred.
+- **Show the consequence, don't say it.** "He won't. You're welcome." landed only once the robot moved Pam's present to UNCLAIMED while Don's TO: SOFÍA (SECRET!) got APPROVED in the same still frame.
+- **Re-time with piecewise time warps.** Knots at each line's start: only the stretch that needs room slows down; an uncap, a stamp or a reaction before the first line keeps its speed. Voices are never sped up; the total lands where the takes put it (34.6 to 40.8 s).
+- **Hide by not drawing, not by covering.** The tag's write-on drew the names with the kiss already barred, and the bar cut the M of PAM.
+- **cairo `arc()` joins to the current point.** Eleven rings drawn without `new_path()` became one tangle: the earpiece read as spaghetti in close-up. Start each closed shape with `new_path()`.
+- **Stage tight two-shots with a gap between bodies.** Don leaning into Pam's held-out glasses merged two arms and a vest into one knot; standing him clear, with the lenses in the gap, fixed it.
+- **Fonts miss glyphs silently.** ♥ and → rendered as empty boxes in Inter and Permanent Marker; draw hearts as paths and check every sheet's text.
+- **Name frame dumps so cleanup globs can't hit deliverables.** `rm ss_sb_*.png` also deleted `ss_sb_sheet_v1.png`; the checksum list caught it and the pinned script rebuilt it byte for byte.
+- **Measure true peak after the AAC encode.** The same limiter gave −0.3 dBTP from the WAV and −2.4 dBTP when fed AAC; render the audio once, measure it, then mux.
+- **Separate conventions from defects in an automated frame check.** Tails above the hair, hard cuts and the 12 fps steps are the series' look; a cropped brand sign, a clipped prop card ("P SECRET / ANTA") and untagged colour were real.
+
 ## Make It Original: auditions, sheet, rough (11 Nov)
 
 - **Screen every melody, not only the hero riff.** The AI's first tune shared three intervals with Smoke on the Water; the interval screen caught it before anyone heard it. It's a quick aid, not a guarantee.
