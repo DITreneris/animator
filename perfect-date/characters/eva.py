@@ -60,7 +60,7 @@ def coffee(c, x, y, s):
     c.rectangle(x - 22 * s, y - 30 * s, 44 * s, 16 * s); c.set_source_rgb(*hx('8a5a2e')); c.fill()
     rr(c, x - 25 * s, y - 58 * s, 50 * s, 12 * s, 5 * s); fs(c, WHITE, max(3, 4 * s))
 
-def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, pose='coffee'):
+def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, pose='coffee', hand_to=None):
     """Full figure standing at ground y. sip 0 = cup at the waist, 1 = at the mouth. Returns the free hand (the leash hand).
     pose: coffee (default) | hip (free hand on the hip) | glance (sip, sideways look, one brow up) | reach (free hand out: takes a hand)"""
     if pose == 'glance': sip, gaze, tilt, expr = max(sip, .7), 16, .1, 'amused'
@@ -77,9 +77,10 @@ def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, 
     if pose == 'hip':
         lh = (x - 96 * s, hy + 318 * s)
         limb(c, [(x - 76 * s, hy + 142 * s), (x - 168 * s, hy + 236 * s), lh], 30 * s, COAT)
-    elif pose == 'holdlow':                                     # holding someone's hand at her side
-        lh = (x - 190 * s, hy + 410 * s)
-        limb(c, [(x - 76 * s, hy + 142 * s), (x - 150 * s, hy + 280 * s), lh], 30 * s, COAT)
+    elif pose == 'holdlow':                                     # holding someone's hand at her side (hand_to: where it lands)
+        sh = (x - 76 * s, hy + 142 * s); lh = hand_to or (x - 190 * s, hy + 410 * s)
+        el = ((sh[0] + lh[0]) / 2 - 30 * s, (sh[1] + lh[1]) / 2 + 10 * s)
+        limb(c, [sh, el, lh], 30 * s, COAT)
     elif pose == 'reach':
         lh = (x - 250 * s, hy + 236 * s)
         limb(c, [(x - 76 * s, hy + 142 * s), (x - 170 * s, hy + 214 * s), lh], 30 * s, COAT)
