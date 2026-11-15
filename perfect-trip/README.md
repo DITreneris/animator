@@ -1,11 +1,15 @@
 # Perfect Trip
 
-ME + MY AI episode. 1080×1920, 30 fps, 786 frames (26.2 s), −14.2 LUFS, true peak −2.1 dBTP.
+ME + MY AI episode. 1080×1920, 30 fps, 816 frames (27.2 s), −14.1 LUFS, true peak −1.7 dBTP.
 
 On the park bench Hoody asks Eva, "Do you want to go on a trip?" MY AI pops up from behind the bench: "I'LL PLAN EVERYTHING!" At every landmark the perfectionist director demonstrates the classic tourist photo better than Hoody can, and Hoody loses his role: **hero** in Pisa, **extra** in Paris ("STEP BACK!"), **assistant** in Giza ("MORE!", the bags, the camel), **cameraman** in Rome. The Rome photo is Eva and MY AI, and the label turns HIS TRIP → ITS TRIP. Back on the bench: "How did you like our trip?" Eva turns her phone to him. "THANKS FOR THE PHOTOS!" "…Another trip?" MY AI facepalms, ducks behind the bench, and the last frame is frame 0.
 
 - `perfect_trip.mp4`: the final (x264 crf 14 slow, AAC 256k, faststart)
 - `cover.png`: the Paris photo with the title (`cover.py`)
+
+## The memory look
+
+The trip plays like a phone's photo-story video (generic, no real app or brand): a thin title card, **PERFECT TRIP · NOV 2026**; a synthesised gentle piano with warm strings (80 bpm, C–Am–F–G, an original tune) from the title card to the Rome photo, swelling on Rome and fading back to the park on the bench; 6-frame crossfades between trip shots; each album photo drifts slowly towards Hoody's spot (Rome: where he isn't), with a soft vignette and grain. The bench before and after is real life: park sounds only. The sweet music over his demotion is the irony.
 
 ## Build
 
@@ -28,9 +32,9 @@ A clean rebuild from `git archive` gives the same decoded video and audio (md5).
 
 | Check | Result |
 |---|---|
-| Frames, size, rate | 786, 1080×1920, 30 fps |
-| Loudness | −14.2 LUFS, LRA 7.2, true peak −2.1 |
-| Speech recognition in the final mix | all 8 lines read correctly |
+| Frames, size, rate | 816, 1080×1920, 30 fps |
+| Loudness | −14.1 LUFS, true peak −1.7 |
+| Speech recognition in the final mix | all 8 lines read correctly ("MORE!" regenerated at speed 0.8: at 0.85 the single word flipped with the window) |
 | Phone-app zones | no text in the top strip, right rail or caption area |
 | Loop | the last frame is frame 0 below the title bar (difference 0.45/255); the label resets HIS TRIP on the cut |
 | Clean rebuild | identical decoded md5 |
