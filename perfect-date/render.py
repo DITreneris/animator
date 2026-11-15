@@ -120,7 +120,7 @@ def guitar_points(x, hy, s):
     return body, at(250), at(440)
 
 def hoody(c, x, gy, s, expr='calm', pose='stand', arms=('rest', 'rest'), gaze=0, op=0, rot=0, prop=None, seat=None,
-          guitar=None, f=0, legs='dangle', blink=None, hair=False, soles=False):
+          guitar=None, f=0, legs='dangle', blink=None, hair=False, soles=False, step=None):
     """pose 'stand': feet on gy. 'sit': gy is the seat. 'float': gy is where the feet hang, toes down, legs swaying.
     guitar: None, or the strum offset (he is playing; arms are then set by the guitar). Returns (hands, headstock)."""
     c.save(); c.translate(x, gy); c.rotate(rot); c.translate(-x, -gy)
@@ -135,7 +135,10 @@ def hoody(c, x, gy, s, expr='calm', pose='stand', arms=('rest', 'rest'), gaze=0,
     else:
         for q in (-1, 1):
             hip = (x + q * 40 * s, waist - 10 * s); toe = 0
-            if pose == 'stand':
+            if pose == 'stand' and step is not None:                     # walking: the swinging foot lifts, the knee bends
+                ph = step + (q > 0) * math.pi; lift = max(0, math.cos(ph)) * 26 * s
+                foot = (x + q * 40 * s + math.sin(ph) * 46 * s, gy - 14 * s - lift); knee = (x + q * 44 * s + math.sin(ph) * 30 * s, waist + 130 * s - lift * .5)
+            elif pose == 'stand':
                 knee = (x + q * 44 * s, waist + 140 * s); foot = (x + q * 44 * s, gy - 14 * s)
             elif legs == 'dangle':                                       # loose, swaying, toes pointed
                 sw = math.sin(f * .22 + q * 1.3) * 18 * s

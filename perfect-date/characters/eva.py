@@ -9,7 +9,7 @@ sys.path.insert(0, __import__('os').path.join(HERE, '..'))
 import kit as K
 from kit import INK, WHITE, NAVY, YEL, RED, rr, fs, ell, limb, txt, hx
 
-SKIN_E = hx('e8b48c'); HAIR_E = hx('3b2416'); COAT = hx('ffcf2e'); TROUS = hx('30364a'); SHOE = hx('1f2230')
+SKIN_E = hx('e8b48c'); HAIR_E = hx('3b2416'); COAT = hx('ffcf2e'); TROUS = hx('8193ad'); SHOE = hx('1f2230')   # trousers grey-blue (15 Nov): navy read as Hoody's legs
 GOLD = hx('e7b84b')             # hoops: her permanent accessory
 SCARF = hx('33bfff')            # matches MY AI's eyes: the one hint she likes machines
 BROWN = hx('9a5b2e'); DARKB = hx('5e3416')

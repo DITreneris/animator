@@ -7,7 +7,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import photo as PH                     # shared helpers (ledge, backpack) and Perfect Date's characters through it
 import places as P
 from photo import R, K, Sh, E, A
-from kit import INK, WHITE, NAVY, rr, fs, ell, limb, hx, txt
+from kit import INK, WHITE, NAVY, rr, fs, ell, limb, hx, txt, lerp
 W, H = 1080, 1920
 CAMEL, CAMEL_D = hx('c8955a'), hx('a8763f')
 K.FACES['bored'] = ('half', ('flat', 'flat'), 'meh')
@@ -83,17 +83,25 @@ def tele_arm(c, rx, gy, rs, q, target, tip='finger'):
     ell(c, *sh, 20 * rs, 20 * rs); fs(c, WHITE, 6)
 
 # ---------------- the four photos
-def pisa(c, f=0):
-    """HERO. Hoody proudly does the classic pose right, palms 'holding up' the leaning tower. MY AI helps too keenly:
-    its telescopic arm props the very top. Eva bored. The cat suspicious."""
-    P.pisa(c, f)
-    edge = lambda y, q: 640 + math.tan(math.radians(8)) * (P.GY - 60 - y) + q * 115
-    A.myai(c, 330, 1600, .85, eye='happy', arms=('hip', None), tilt=8)       # further back, left of the tower
-    tele_arm(c, 330, 1600, .85, 1, (edge(470, -1) + 10, 470), tip='palm')   # propping the very top: helping too keenly
+PISA_AI = (935, 1580, .8)
+def pisa_overhang(lean):
+    """Under the leaning side, near the top: where MY AI's palm holds it up."""
+    y = 600; return (640 + math.tan(math.radians(lean)) * (P.GY - 60 - y) + 118, y)
+def pisa(c, f=0, k=1.0, hoody_a=1.0, photo=True):
+    """HERO. Hoody, in front, proudly does the classic pose. MY AI, behind him at the right, puts a telescopic palm under
+    the overhang and the tower straightens a little: it holds it up better. Eva bored. The cat suspicious.
+    k: how far the arm has gone up (the tower straightens with it); hoody_a: how far into his pose he is."""
+    lean = 8 - 2 * k
+    P.pisa(c, f, lean=lean)
+    rx, rgy, rs = PISA_AI
+    A.myai(c, rx, rgy, rs, eye='happy' if k >= 1 else 'focus', arms=(None if k > 0 else 'down', 'hip'), tilt=-8)
+    if k > 0:
+        sh = (rx - 72 * rs, rgy - 280 * rs + 112 * rs); tgt = pisa_overhang(lean)
+        tele_arm(c, rx, rgy, rs, -1, (lerp(sh[0] - 30, tgt[0], k), lerp(sh[1] - 50, tgt[1] + 16, k)), tip='palm')
     E.eva(c, 150, 1880, .92, 'bored', sip=.5, gaze=-14)
-    R.hoody(c, 860, 1830, 1.05, expr='happy', arms=('out', 'rest'), rot=-.06, f=f)   # the hero: in front, biggest, palm to the tower
+    R.hoody(c, 720, 1830, 1.05, expr='happy', arms=('out' if hoody_a > .5 else 'rest', 'rest'), rot=-.06 * hoody_a, f=f)
     backpack_cat(c, 210, 1720, .9, 'suspicious')
-    frame(c, 'pisa')
+    if photo: frame(c, 'pisa')
 
 def paris(c, f=0):
     """EXTRA. MY AI in front with the spire on its fingertip; Eva turned to it, surprised. Hoody small at the left, whole and annoyed."""

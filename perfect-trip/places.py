@@ -25,13 +25,13 @@ def tree(c, x, y, r):
     ell(c, x, y, r, r); fs(c, hx('5cbf5e'), 6)
 
 # ---------------- Pisa: the leaning tower on the lawn
-def pisa(c, f=0):
+def pisa(c, f=0, lean=8):
     sky(c, '7fc8ff', 'e9f6ff'); clouds(c, f)
     ground(c, '7cc66a', '6ab55a')
     rr(c, -40, 1200, 300, 240, 10); fs(c, hx('f2ead6'), 6)                    # the cathedral's corner, low at the left
     for i in range(4): c.arc(30 + i * 60, 1300, 20, math.pi, 0); c.set_source_rgb(*hx('d8ccb0')); c.fill()
     ell(c, 660, GY - 52, 200, 26); c.set_source_rgba(0, 0, 0, .22); c.fill()             # contact shadow
-    c.save(); c.translate(640, GY - 60); c.rotate(math.radians(8))          # it leans, as one rigid body
+    c.save(); c.translate(640, GY - 60); c.rotate(math.radians(lean))       # it leans, as one rigid body
     w, h = 230, 960; n = 7; th = h / n
     rr(c, -w / 2, -h, w, h, 18); fs(c, hx('f6f0e0'), 6)                       # one cylinder
     g = cairo.LinearGradient(-w / 2, 0, w / 2, 0); g.add_color_stop_rgba(0, 0, 0, 0, .0); g.add_color_stop_rgba(.7, 0, 0, 0, .0); g.add_color_stop_rgba(1, 0, 0, 0, .14)
