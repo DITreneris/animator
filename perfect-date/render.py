@@ -15,6 +15,7 @@ oe = lambda t: 1 - (1 - cl(t)) ** 3
 JEANS = hx('2b3a55'); SHOE = hx('1f2230'); WOOD = hx('b9783f'); WOOD_D = hx('8a5a2e'); IRON = hx('2a2d36')
 HOSE = hx('9aa3b2'); SKY0, SKY1 = hx('5fb8ff'), hx('cfeaff'); TREE = hx('3f9a4a'); TREE_D = hx('2f7a3a')
 K.FACES['bliss'] = ('shut', ('raised', 'raised'), 'grin')          # eyes shut, giving it everything
+K.FACES['spiral'] = ('spiral', ('worried', 'worried'), 'wobble')
 K.FACES['wince'] = ('shut', ('worried', 'worried'), 'wobble')
 
 # ---------------- helpers ----------------
@@ -105,11 +106,10 @@ def ai(c, *a, f=0, **k):
     A.myai(c, *a, **k)
 
 def tuft(c, x, hy, s):
-    """Messed-up hair after the landing: three spikes on the crown."""
-    for i, (dx, ang, ln) in enumerate(((-30, -.5, 60), (6, -.05, 74), (40, .45, 56))):
-        c.save(); c.translate(x + dx * s, hy - 128 * s); c.rotate(ang)
-        c.move_to(-10 * s, 4 * s); c.curve_to(-8 * s, -ln * .5 * s, 10 * s, -ln * .8 * s, 4 * s, -ln * .7 * s); c.curve_to(6 * s, -ln * .3 * s, 10 * s, 0, 10 * s, 4 * s)
-        c.close_path(); c.set_source_rgb(*K.HAIR_DARK); c.fill(); c.restore()
+    """Messed-up hair after the landing: two loose cowlick curls sticking up off the crown, in his hair colour."""
+    for dx, q, ln in ((-18, -1, 70), (22, 1, 58)):
+        c.move_to(x + dx * s, hy - 120 * s); c.curve_to(x + (dx + q * 10) * s, hy - (120 + ln) * s, x + (dx + q * 44) * s, hy - (120 + ln) * s, x + (dx + q * 36) * s, hy - (120 + ln * .6) * s)
+        c.set_source_rgb(*INK); c.set_line_width(20 * s); c.stroke_preserve(); c.set_source_rgb(.36, .22, .13); c.set_line_width(12 * s); c.stroke()
 
 # ---------------- Hoody, full body ----------------
 GROT = -.45; GS = .6                                     # the guitar on him: rotation and scale (times s)
@@ -120,7 +120,7 @@ def guitar_points(x, hy, s):
     return body, at(250), at(440)
 
 def hoody(c, x, gy, s, expr='calm', pose='stand', arms=('rest', 'rest'), gaze=0, op=0, rot=0, prop=None, seat=None,
-          guitar=None, f=0, legs='dangle', blink=None, hair=False):
+          guitar=None, f=0, legs='dangle', blink=None, hair=False, soles=False):
     """pose 'stand': feet on gy. 'sit': gy is the seat. 'float': gy is where the feet hang, toes down, legs swaying.
     guitar: None, or the strum offset (he is playing; arms are then set by the guitar). Returns (hands, headstock)."""
     c.save(); c.translate(x, gy); c.rotate(rot); c.translate(-x, -gy)
@@ -151,7 +151,9 @@ def hoody(c, x, gy, s, expr='calm', pose='stand', arms=('rest', 'rest'), gaze=0,
                 foot = (knee[0] + math.cos(ph + .8) * 40 * s, knee[1] + 130 * s); toe = .3 * q
             limb(c, [hip, knee, foot], 40 * s, JEANS)
             c.save(); c.translate(foot[0] + q * 4 * s, foot[1] + 6 * s); c.rotate(toe)
-            ell(c, 0, 0, 32 * s, 15 * s); fs(c, SHOE, max(3, 5 * s)); c.restore()
+            ell(c, 0, 0, 32 * s, 15 * s); fs(c, SHOE, max(3, 5 * s))
+            if soles: ell(c, 0, 6 * s, 25 * s, 8 * s); c.set_source_rgb(*hx('8a8f9c')); c.fill()
+            c.restore()
     sl, sr_ = K.hoodie(c, x, neck, s * 1.1)
     hands = []; head = None
     if guitar is not None:
@@ -204,14 +206,8 @@ def eva_dog(c, f, x, gy, s, expr='evacalm', pose='coffee', sip=.2, dog_dx=-150, 
 
 def s1(c, f, r):   # frame 0: just landed back on the bench - dust settling, hair messed - hand on chin, eyes locked off right
     head_close(c, f, 'calm', gaze=26, op=.35)
-    tuft(c, 540, 1020, 2.4)
+
     K.arm(c, [(240, 1400), (250, 1260), (330, 1180)], 2.0)
-    if r < 14:                                                        # the landing dust
-        k = r / 14
-        for i in range(7):
-            a = math.pi + i * math.pi / 6
-            ell(c, 540 + math.cos(a) * (300 + 260 * k), 1880 + math.sin(a) * 120 * k, 90 * (1 - k * .5), 60 * (1 - k * .5))
-            c.set_source_rgba(.85, .78, .62, .7 * (1 - k)); c.fill()
 def s2(c, f, r):   # she walks in and sits at the far end with coffee and the dog
     wide(c, f, hoody_kw=dict(expr='shock', gaze=24, f=f))
     ai(c, 140, GY + 40, .95, eye='open', look=(14, 0), f=f)
@@ -280,9 +276,16 @@ def s9(c, f, r):   # MY AI, the proud stage tech: a hose from its chest, confett
     string(c, tip, (900, 1960)); heart(c, *tip, bk)
     ch = (rx, gy - 130 * rs)
     reach = oe(r / 8); end = (lerp(ch[0] + 60, tip[0], reach), lerp(ch[1], tip[1] + 10, reach))
-    c.move_to(*ch); c.curve_to(ch[0] + 160, ch[1] + 140, end[0] - 80, end[1] + 260, *end)
-    c.set_source_rgb(*INK); c.set_line_width(26); c.stroke_preserve(); c.set_source_rgb(*HOSE); c.set_line_width(14); c.stroke()
-    ell(c, *ch, 26, 26); fs(c, HOSE, 6)
+    P = [ch, (ch[0] + 160, ch[1] + 140), (end[0] - 80, end[1] + 260), end]
+    c.move_to(*P[0]); c.curve_to(*P[1], *P[2], *P[3])
+    c.set_source_rgb(*INK); c.set_line_width(42); c.stroke_preserve(); c.set_source_rgb(*hx('ff8a3d')); c.set_line_width(28); c.stroke()
+    if r >= 8:                                                        # a bulge of air per pump stroke, running up to the balloon
+        for i in range(3):
+            t = ((r - 8) / 12 + i / 3) % 1
+            bx = sum(w * p[0] for w, p in zip(((1 - t) ** 3, 3 * t * (1 - t) ** 2, 3 * t * t * (1 - t), t ** 3), P))
+            by = sum(w * p[1] for w, p in zip(((1 - t) ** 3, 3 * t * (1 - t) ** 2, 3 * t * t * (1 - t), t ** 3), P))
+            ell(c, bx, by, 30, 30); fs(c, hx('ff8a3d'), 6)
+    ell(c, *ch, 30, 30); fs(c, hx('ff8a3d'), 6)
     if r >= 8: sparkles(c, end[0], end[1] + 20, r)
 def lift_y(r):                                                        # shot 10: how far his feet are off the ground
     return 380 * ss(cl((r - 14) / 34))
@@ -315,7 +318,8 @@ def s10(c, f, r):  # the balloon swells; he lifts off still playing. MY AI's ala
 # ---- from above: the park seen past his own shoes
 def top_legs(c, f, mode, s=2.1, y=620, x=540):
     """His legs hanging into the top of a view straight down: the hoodie hem at the top edge, the shoes nearest the camera."""
-    hoody(c, x, y, s, pose='float', legs=mode, arms=('up', 'up'), f=f, blink=False)
+    ell(c, x + 60, 1180, 90, 34); c.set_source_rgba(0, 0, 0, .22); c.fill()        # his shadow on the grass, far below
+    hoody(c, x, y, s, pose='float', legs=mode, arms=('up', 'up'), f=f, blink=False, soles=True)
     c.move_to(x + 30, -10); c.line_to(x + 34, y - 300 * s); c.set_source_rgb(*INK); c.set_line_width(4); c.stroke()
 def ground(c, f, z):
     """The park from above at zoom z (1 = just off the ground, smaller = higher). Returns a mapper for ground points."""
@@ -364,12 +368,12 @@ def s11(c, f, r):  # she takes its hand (it's still looking up after him) -> ITS
     top_legs(c, f, 'dangle', y=620 - k * 60)
     notes(c, 540, 820, r, n=2, size=54)
 def s12(c, f, r):  # over the treetops, eyes still closed, one more bar
-    sky(c, f, ty=1650)
+    sky(c, f, ty=1860)
     bob = math.sin(r * .15) * 20
-    _, hd = hoody(c, 480, 1480 + bob, 1.05, expr='bliss', pose='float', guitar=strum(f), f=f, legs='dangle')
+    _, hd = hoody(c, 480, 1400 + bob, 1.05, expr='bliss', pose='float', guitar=strum(f), f=f, legs='dangle')
     tip = (hd[0] + 10, hd[1] - 120)
     string(c, hd, tip); heart(c, *tip, 4.2)
-    notes(c, 480, 860 + bob, r, n=3, size=70)
+    notes(c, 480, 780 + bob, r, n=3, size=70)
 def s13(c, f, r):  # eyes open. "oh" - lips on the take
     sky(c, f, trees=False)
     K.hoodie(c, 540, 1020 + 150 * 2.4, 2.4 * 1.1)
@@ -423,6 +427,9 @@ def s16(c, f, r):  # the cat, close: both paws over her ears, one eye open
         ear = (hx_ + q * 34 * s, hy_ - 62 * s); base = (hx_ + q * 200, 1400)
         p = (lerp(base[0], ear[0], k), lerp(base[1] - 20, ear[1], k))
         limb(c, [base, (lerp(base[0], ear[0], .5) + q * 70, lerp(base[1], ear[1], .5)), p], 64, TABBY)
+        if k > .8:                                                    # ears pressed flat, tips sticking out sideways
+            c.move_to(p[0] + q * 30, p[1] - 22); c.line_to(p[0] + q * 110, p[1] - 4); c.line_to(p[0] + q * 34, p[1] + 16); c.close_path(); fs(c, TABBY, 7)
+            c.move_to(p[0] + q * 44, p[1] - 10); c.line_to(p[0] + q * 88, p[1] - 3); c.line_to(p[0] + q * 46, p[1] + 6); c.close_path(); c.set_source_rgb(*hx('ffb3a7')); c.fill()
         ell(c, *p, 52, 42); fs(c, TABBY, 8)
 STEPS = (0, 9, 18)                                                    # the balloon swells in three visible steps (a creak each)
 def s17(c, f, r):  # the balloon stretches... creak, creak, creak
@@ -432,10 +439,8 @@ def s17(c, f, r):  # the balloon stretches... creak, creak, creak
     st = .07 * math.sin((r - STEPS[n - 1]) * 1.6) * math.exp(-(r - STEPS[n - 1]) * .3)
     tip = (hd[0] - 60, hd[1] - 640)
     string(c, hd, tip); heart(c, *tip, kk, sx=1 + st, sy=1 - st)
-    for q in (-1, 1):
-        for i in range(n):
-            c.move_to(tip[0] + q * (300 + i * 18), tip[1] - 300 + i * 50); c.line_to(tip[0] + q * (350 + i * 18), tip[1] - 320 + i * 50)
-            c.set_source_rgb(*INK); c.set_line_width(7); c.stroke()
+    j = .015 * n * math.sin(r * 3.1)                                  # the skin shivers harder with each step
+    heart(c, tip[0] + 6 * n * math.sin(r * 2.3), tip[1], kk * (1.03 + .01 * n), sx=1 + st + j, sy=1 - st - j, op=.25)
 def s18(c, f, r):  # POP. A cartoon hold in the air. "whoa" - lips on the take
     sky(c, f, trees=False)
     hoody(c, 540, 1950, 1.25, expr='shock', pose='float', guitar=0, gaze=0, f=f, legs='stiff', op=.3 + .7 * talk(f, 'h_whoa'))
@@ -454,19 +459,59 @@ def s18(c, f, r):  # POP. A cartoon hold in the air. "whoa" - lips on the take
         rr(c, -26, -12, 52, 24, 10); fs(c, RED, 5); c.restore()
 def s19(c, f, r):  # he drops out of the bottom of the frame - legs pedalling, the guitar tumbling after him
     sky(c, f, trees=False)
-    y = 1950 + (r / 16) ** 2 * 1500
+    y = 1950 + (r / 10) ** 2 * 1500
     for i in range(6):
         x = 300 + i * 90; c.move_to(x, y - 1300 - i * 30); c.line_to(x, y - 1700 - i * 30); c.set_source_rgba(1, 1, 1, .9); c.set_line_width(10); c.stroke()
     hoody(c, 540, y, 1.25, expr='shock', pose='float', arms=('flail', 'flail'), f=f, legs='pedal', op=.6)
-    gy_ = 1300 + (r / 16) ** 2 * 1300
+    gy_ = 1300 + (r / 10) ** 2 * 1300
     K.guitar(c, 860, gy_, .7, rot=r * .5)
 
-DUR = [24, 36, 45, 24, 27, 36, 45, 39, 30, 63, 66, 36, 30, 30, 30, 30, 27, 24, 18]
-FNS = [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19]
+IMPACT = 3                                                            # shot 20: the frame he hits the bench
+def s20(c, f, r):  # BOOM: he slams onto the bench, the camera shakes, the cat doesn't care; dizzy; snap back to frame 0
+    if r >= 16: s1(c, f, 0); return                                   # the last frames are frame 0: a seamless loop
+    if r < 9:                                                         # wide: the impact
+        sh = 26 * math.exp(-(r - IMPACT) * .45) if r >= IMPACT else 0
+        c.translate(sh * math.sin(r * 7.3), sh * math.cos(r * 5.1))
+        park(c, f)
+        sag = 16 * math.exp(-(r - IMPACT) * .6) if r >= IMPACT else 0
+        c.save(); c.translate(0, sag); bench(c, 220, 780, SEAT, GY); c.restore()
+        Sh.cat_one_eye(c, 700, SEAT - 6 + sag, .62, open_eye=(5 <= r < 8))   # one eye: unbothered
+        if r < IMPACT:                                                # the streak coming down
+            y1 = SEAT - 120 + (r - IMPACT) * 500
+            rr(c, 360, y1 - 900, 120, 900, 60); c.set_source_rgba(*NAVY, .85); c.fill()
+            for i in range(4): c.move_to(330 + i * 60, y1 - 1000); c.line_to(330 + i * 60, y1 - 1400); c.set_source_rgba(1, 1, 1, .9); c.set_line_width(8); c.stroke()
+            return
+        if r <= IMPACT + 1:                                           # the impact frame: an ink starburst behind him
+            c.save(); c.translate(420, SEAT - 200); c.move_to(0, -420)
+            for i in range(1, 33): rad = 420 if i % 2 == 0 else 200; c.line_to(rad * math.sin(i * math.pi / 16), -rad * math.cos(i * math.pi / 16))
+            c.close_path(); fs(c, YEL, 12); c.restore()
+        q = r - IMPACT; sq = .35 * math.exp(-q * .7) * math.cos(q * 1.6)
+        c.save(); c.translate(420, SEAT + sag); c.scale(1 + sq, 1 - sq); c.translate(-420, -SEAT - sag)
+        hoody(c, 420, SEAT + sag, .82, expr='spiral' if r > IMPACT + 1 else 'shock', pose='sit', seat=(220, 780), arms=('flail', 'flail'), f=f, blink=False)
+        c.restore()
+        for i in range(9):                                            # the dust bursts out sideways
+            a = math.pi + i * math.pi / 8; d = 120 + q * 70
+            ell(c, 420 + math.cos(a) * d * 1.6, GY - 10 + math.sin(a) * d * .35, 70 + q * 8, 44 + q * 5)
+            c.set_source_rgba(.88, .80, .64, max(0, .85 - q * .12)); c.fill()
+        return
+    q = r - 9                                                         # close-up: two bounces, dizzy, then the snap
+    y = 1020 - 70 * abs(math.cos(q * 1.1)) * math.exp(-q * .45)
+    g = cairo.LinearGradient(0, 0, 0, H); g.add_color_stop_rgb(0, *hx('8fd0ff')); g.add_color_stop_rgb(1, *hx('fff0c8')); c.set_source(g); c.paint()
+    K.hoodie(c, 540, y + 150 * 2.4, 2.4 * 1.1)
+    K.hoodyz_head(c, 540, y, 2.4, era='young', expr='spiral', blink=False)
+
+    for i in range(3):                                                # stars circling his head
+        a = q * .7 + i * 2.1
+        c.save(); c.translate(540 + math.cos(a) * 300, y - 300 + math.sin(a) * 60); c.scale(.8, .8); c.move_to(0, -30)
+        for j in range(1, 10): rad = 30 if j % 2 == 0 else 12; c.line_to(rad * math.sin(j * math.pi / 5), -rad * math.cos(j * math.pi / 5))
+        c.close_path(); fs(c, YEL, 4); c.restore()
+
+DUR = [24, 36, 45, 24, 27, 36, 45, 39, 30, 63, 66, 36, 30, 30, 30, 30, 27, 24, 12, 22]
+FNS = [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20]
 SHOTS = []; _t = 0
 for fn, d in zip(FNS, DUR): SHOTS.append((fn, _t, _t + d)); _t += d
 NF = _t
-def pill(f): return 'ITS DATE' if f >= SHOTS[10][1] + 8 else 'HIS DATE'
+def pill(f): return 'ITS DATE' if SHOTS[10][1] + 8 <= f < SHOTS[19][1] + 16 else 'HIS DATE'      # resets with the snap
 def pulse(c, f):
     """The moment the label flips to ITS DATE, the pill pops big and settles: the punchline can't be missed."""
     t = f - (SHOTS[10][1] + 8)

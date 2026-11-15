@@ -1,7 +1,7 @@
 """Make It Original: the episode's drawing kit.
 Self-contained copy of the series helpers (from whos-a-good-boy/v3: v.py, chars.py) plus the new
 characters and props. Every function draws at a world point with a scale; frame-deterministic."""
-import cairo, math, random
+import math, cairo, math, random
 W, H, FPS = 1080, 1920, 30
 INK = (.07, .08, .13); WHITE = (1, 1, 1); NAVY = (.11, .15, .27); SKIN = (1, .87, .76)
 BLUE = (.2, .75, 1); YEL = (1, .84, .15); RED = (.95, .2, .25); GREEN = (.15, .8, .42); GREY = (.62, .65, .72)
@@ -99,6 +99,10 @@ def face(c, expr, gx=0, blink=False, op=0):
         brow(c, q, b)
         if e == 'happy': eye_closed(c, q, True)
         elif e == 'shut' or blink: eye_closed(c, q, False)
+        elif e == 'spiral':                                        # dizzy after the landing
+            c.move_to(q * 42, 8)
+            for i in range(1, 40): a_ = i * .45; rd = i * .7; c.line_to(q * 42 + rd * math.cos(a_ * q), 8 + rd * math.sin(a_ * q))
+            c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
         elif e == 'big': eye_open(c, q, gx, big=True)
         elif e == 'half': eye_open(c, q, gx, lid=.5)
         elif e == 'smug': eye_open(c, q, 10, lid=.55)
