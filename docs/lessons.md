@@ -369,3 +369,35 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Write the key lines, not just the punchline.** v3 only wrote "THOSE ARE MINE!", so a reviewer watching on mute read the shout as being about jobs and the ending as uncaused. Speech bubbles for HARV's three lines fixed both; the next cold viewer named the sunglasses unprompted. Make a bubble on the last shot disappear before the final frame so the loop still matches frame 0.
 - **The shout needs its object in the same frame.** He now points at HARV's shades in the foreground; a viewer shouldn't have to remember them from the shot before.
 
+
+# Retrospective, 16 Nov: why Perfect Date and Perfect Trip work and Infinite Undo and Make It Better v3 don't
+
+Prompted by two outside audits (Infinite Undo key poses; Make It Better v3: "the idea is better than the film") and Tomas's verdict on Infinite Undo: "not ironic, not iconic".
+
+## The series check (gate before any stills)
+
+| Check | Perfect Date | Perfect Trip | Infinite Undo (shelved) | Make It Better v3 |
+|---|---|---|---|---|
+| What Hoody wants | Eva | A trip with her | A glass of water | "Better", vaguely |
+| The AI takes it | The date | The photos, then the trip | No: the cat is the agent | An anonymous robot strikes |
+| Ironic surface | A sweet balloon show | A soft photo-story | None | "Love the energy" |
+| One iconic image | Hoody floating away | Hoody demoted to cameraman | A rewinding arc (read as a tentacle) | None: numbers and badges |
+
+Every concept now gets this row before stills. Two or more weak cells: go back to premises.
+
+## What correlates
+
+1. **Characters act; labels don't.** When a number, badge or caption carries the change (V1 → V47, ×14, a rewind outline), the story is told, not shown. Whatever the label says must also happen to a body: MY AI's antenna droops version by version, its tie goes on and comes off.
+2. **A situation ladder beats a repeated gag.** Perfect Date has about 8 situations in 22 s (rose, guitar, pump, float, the hand, plonk, pop, fall); Perfect Trip a new role per place. Infinite Undo was one situation repeated; Make It Better v3 two. Each beat must change Hoody's status or role, joined by "but" or "therefore".
+3. **Situation jokes beat mechanism jokes.** If the viewer must work out a rule (what UNDO rewinds, who presses it) the laugh comes late. Use situations everyone has lived: a client's feedback, autocorrect, a camera roll. Visual clarity scored lowest in all four Infinite Undo audits for this reason, not because of drawing.
+4. **Show the breaking point.** A consequence (a strike) needs the snap on screen first: the twitch, the stare, the tie dropped on the desk.
+5. **The last image is a new action.** A tableau or a repeat of the middle ends flat; a one-beat action ends it (the sign flipped to NO., the antenna over the backrest ducking away).
+6. **Three motivated camera changes beat uniform frontal framing:** a close-up for the emotion, an insert of the key object, a low angle for power. More cuts are not the fix.
+7. **Outside audits polish execution; the gate checks the premise.** Four audit rounds improved how Infinite Undo worked and none asked whether it was a ME + MY AI episode.
+
+## What our pipeline can't improve (work around it)
+
+- **Full-body acting.** The characters are rigs with fixed poses and faces: no fluid squash, overlap or weight. Work around it with a clear pose per beat, a prop that does the acting (tie, antenna, sign), and reaction close-ups.
+- **A real 3D camera.** Only 2D pans, zooms and crops. Fake an over-the-shoulder with a foreground silhouette; get depth from layers (the bench backrest, the desk).
+- **Voices for MY AI and Eva** are synthetic; Hoody's are Tomas's takes. Keep synthetic lines short and characterful.
+- **Whether it's funny.** Frames, levels and speech recognition can be measured; laughs need people. The silent five-viewer test stays the gate.
