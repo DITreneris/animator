@@ -415,3 +415,10 @@ Every concept now gets this row before stills. Two or more weak cells: go back t
 13. **Write a shot list before any key poses.** Each beat gets an action shot and a reaction shot, with the size (close-up, point of view, over the shoulder, low angle) and the eyelines written down. Key poses are then drawn as shots, not scenes. Seven wide "illustrated statements" read as a slideshow; the same story as 16 shots reads as a film.
 14. **Show the consequence, not the comment.** The audience should feel, in order: poor Eva, then they're plotting, then he still doesn't get it. Each needs its own close-up and a hold.
 15. **The camera changes sides.** It starts with Hoody (his point of view, his confidence) and ends with the others, looking at him as the problem. A Dutch angle is spent once, when his world turns.
+
+## Added 16 Nov: the protect list, and composing for the frame
+
+16. **Audits make each version better and the episode thinner.** Each cut they suggest is fair alone; together they removed Make It Better's most visual performer (MY AI's patience ladder), its best line pair (more/less professional) and the establishing wide. Before accepting any audit cut, check it against a **protect list**: the five things that make it this episode, written in the concept doc.
+17. **Adding reaction shots costs time; don't pay for it with the setup.** Let a story episode run 24-27 s rather than cut what the reactions react to.
+18. **Compose every shot for the 9:16 frame; never crop one wide set.** Faces in the band just under the title bar; heads big in close-ups; a foreground layer (a sofa back, a cake, a hand) for depth; eyelines that meet; consistent character sizes from shot to shot; a simplified wall behind faces. Keep one real wide early so the viewer knows where and whose (the silent viewer asked "whose birthday?").
+19. **A second pair can echo the turning point at a smaller scale.** Eva and MY AI share a look; then the cat recruits the dog with one open eye. The echo is a laugh and widens the alliance without dialogue.
