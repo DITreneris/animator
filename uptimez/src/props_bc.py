@@ -1,0 +1,226 @@
+"""v3 (props_bc_v2.py = v2, kept): cv_brick(stuffed=True) (loose certificates sticking out, three degrees on the
+cover, a gold seal) and clipboard(marks=n) (a red cross per rejected candidate).
+THE BEST CANDIDATE, v2 (props_bc_v1.py = v1, kept; v2 adds cookie_tin(tag=False) for the tiny tin and Don's
+hovering pen). Props. The small one's CV (as thick as a brick), the macho's cookie tin, Pam's pen,
+Don's clipboard (with the doodle he hides) and his lanyard card: a VISITOR pass with VISITOR crossed out and
+HEAD OF TALENT written on it in marker."""
+import math
+import kit
+from kit import INK, cut, rect, ellipse
+
+PAPER = (0.99, 0.98, 0.95)
+PAPER_EDGE = (0.86, 0.84, 0.78)
+TIN = (0.74, 0.16, 0.18)
+TIN_DARK = (0.52, 0.09, 0.12)
+COOKIE = (0.86, 0.64, 0.36)
+CHIP = (0.34, 0.20, 0.12)
+BOARD = (0.55, 0.38, 0.24)
+CLIP = (0.62, 0.64, 0.68)
+MARKER = (0.10, 0.10, 0.14)
+ORANGE = (0.96, 0.56, 0.14)
+LANYARD = (0.17, 0.71, 0.45)
+
+
+def cv_brick(k, x, y, s=1.0, rot=0.0, seed=0, label=True, stuffed=False):
+    """A CV about 300 pages thick: a white cover, a block of page edges, coloured tabs. (x, y) = centre."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    w, h, d = 74, 92, 30
+    if stuffed:                                                              # certificates that would not fit
+        for i, (dx, a, col) in enumerate(((-18, -0.22, PAPER), (6, 0.12, (0.99, 0.95, 0.80)), (24, 0.30, PAPER))):
+            c.save(); c.translate(dx, -h / 2 - 2); c.rotate(a)
+            rect(k, -14, -22, 28, 30, col, seed + 20 + i, shadow=False, lw=1.5)
+            c.set_source_rgb(0.60, 0.60, 0.63); c.set_line_width(1.4)
+            for yy in (-15, -10):
+                c.move_to(-9, yy); c.line_to(9, yy); c.stroke()
+            c.restore()
+    cut(k, [(-w / 2 + d * 0.5, -h / 2 - d * 0.35), (w / 2 + d * 0.5, -h / 2 - d * 0.35), (w / 2 + d * 0.5, h / 2 - d * 0.35),
+            (w / 2, h / 2), (-w / 2, h / 2), (-w / 2, -h / 2)], PAPER_EDGE, lw=2)
+    c.set_source_rgb(0.62, 0.60, 0.55); c.set_line_width(1)
+    for i in range(1, 9):                                                    # page edges, top and right faces
+        u = i / 9.0
+        c.move_to(-w / 2 + d * 0.5 * u, -h / 2 - d * 0.35 * u); c.line_to(w / 2 + d * 0.5 * u, -h / 2 - d * 0.35 * u)
+        c.line_to(w / 2 + d * 0.5 * u, h / 2 - d * 0.35 * u); c.stroke()
+    for i, col in enumerate(((0.95, 0.40, 0.35), (0.98, 0.78, 0.25), (0.35, 0.72, 0.50), (0.38, 0.60, 0.90))):
+        rect(k, w / 2 + d * 0.5 - 2, -h / 2 + 4 + i * 19, 9, 12, col, seed + 5 + i, shadow=False, lw=1.3)   # tabs
+    rect(k, -w / 2, -h / 2, w, h, PAPER, seed + 1, shadow=False, lw=2)
+    if label and stuffed:
+        kit.text(k, "CV", 0, -24, 26, INK)
+        for i, deg in enumerate(("PhD", "MSc", "MBA")):
+            kit.text(k, deg, -8, -2 + i * 12, 9.5, INK, font="Inter", bold=True)
+            c.set_source_rgb(0.20, 0.62, 0.42); c.set_line_width(2.2); c.set_line_cap(1)
+            c.move_to(11, -3 + i * 12); c.line_to(14, 1 + i * 12); c.line_to(20, -6 + i * 12); c.stroke()
+        c.set_source_rgb(0.78, 0.14, 0.16)
+        for a in (-0.35, 0.35):
+            c.save(); c.translate(22, 34); c.rotate(a); c.rectangle(-3.5, 0, 7, 15); c.fill(); c.restore()
+        ellipse(k, 22, 32, 8.5, 8.5, (0.95, 0.78, 0.25), seed + 30, shadow=False, lw=1.5)
+    elif label:
+        kit.text(k, "CV", 0, -18, 30, INK)
+        c.set_source_rgb(0.55, 0.55, 0.58); c.set_line_width(2.4); c.set_line_cap(1)
+        for i, ww in enumerate((46, 38, 44, 30)):
+            c.move_to(-w / 2 + 12, 8 + i * 9); c.line_to(-w / 2 + 12 + ww, 8 + i * 9); c.stroke()
+    c.restore()
+
+
+def cookie(k, x, y, r, seed=0):
+    ellipse(k, x, y, r, r * 0.92, COOKIE, seed, shadow=False, lw=1.6)
+    c = k.c
+    c.set_source_rgb(*CHIP)
+    for dx, dy in ((-0.35, -0.25), (0.3, -0.3), (0.05, 0.3), (-0.4, 0.35), (0.42, 0.2)):
+        c.arc(x + dx * r, y + dy * r, r * 0.15, 0, 2 * math.pi); c.fill()
+
+
+def cookie_tin(k, x, y, s=1.0, seed=0, lid=True, tag=True):
+    """An open round tin seen from the front, cookies piled above the rim, a hand-written tag: FOR EVERYONE."""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(s, s)
+    for i, (dx, dy) in enumerate(((-22, -22), (0, -28), (22, -22), (-11, -34), (12, -35))):
+        cookie(k, dx, dy, 13, seed + 10 + i)
+    cut(k, [(-40, -18), (40, -18), (36, 22), (-36, 22)], TIN, lw=2.2)
+    c.set_source_rgb(*TIN_DARK); c.set_line_width(2.2)
+    c.move_to(-39, -9); c.line_to(39, -9); c.stroke()
+    if tag:
+        rect(k, -24, -3, 48, 19, PAPER, seed + 2, shadow=False, lw=1.4)
+        kit.text(k, "FOR EVERYONE", 0, 6, 6.6, MARKER, font="Permanent Marker")
+    else:                                                       # tiny in his hands: a plain gold band
+        c.set_source_rgb(0.95, 0.80, 0.35); c.rectangle(-36, 1, 72, 8); c.fill()
+    c.restore()
+
+
+def pen(k, x, y, s=1.0, ang=0.0):
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    c.set_source_rgb(*INK); c.set_line_width(7); c.set_line_cap(1); c.move_to(-17, 0); c.line_to(17, 0); c.stroke()
+    c.set_source_rgb(0.45, 0.29, 0.62); c.set_line_width(4.2); c.move_to(-17, 0); c.line_to(12, 0); c.stroke()
+    c.set_source_rgb(0.85, 0.85, 0.88); c.set_line_width(4.2); c.move_to(12, 0); c.line_to(17, 0); c.stroke()
+    c.restore()
+
+
+def doodle(c, x, y, s=1.0):
+    """Don's interview notes: a stick figure of himself with a crown, and a heart."""
+    c.save(); c.translate(x, y); c.scale(s, s)
+    c.set_source_rgb(*MARKER); c.set_line_width(2); c.set_line_cap(1); c.set_line_join(1)
+    c.arc(0, -8, 7, 0, 2 * math.pi); c.stroke()
+    c.move_to(-7, -15); c.line_to(-6, -22); c.line_to(-2.5, -17); c.line_to(0, -23); c.line_to(2.5, -17)
+    c.line_to(6, -22); c.line_to(7, -15); c.stroke()
+    c.move_to(0, -1); c.line_to(0, 14); c.move_to(-8, 5); c.line_to(8, 5)
+    c.move_to(0, 14); c.line_to(-6, 24); c.move_to(0, 14); c.line_to(6, 24); c.stroke()
+    c.set_source_rgb(0.82, 0.16, 0.20)
+    c.move_to(18, 2); c.curve_to(12, -6, 22, -8, 18, -1); c.curve_to(14, -8, 24, -6, 18, 2); c.stroke()
+    c.restore()
+
+
+def clipboard(k, x, y, s=1.0, rot=0.0, seed=0, side="front", marks=0):
+    """(x, y) = centre. side "front": the paper with the doodle; "back": the bare board (hidden from Mom)."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    rect(k, -30, -40, 60, 80, BOARD, seed + 1, lw=2)
+    if side == "front":
+        rect(k, -25, -30, 50, 66, PAPER, seed + 2, shadow=False, lw=1.5)
+        kit.text(k, "CANDIDATES", 0, -20, 6.4, INK, font="Inter", bold=True)
+        c.set_source_rgb(0.60, 0.60, 0.63); c.set_line_width(1.6)
+        for i in range(3):
+            c.move_to(-20, -10 + i * 6); c.line_to(-4 - i * 3, -10 + i * 6); c.stroke()
+        doodle(c, 4, 16, 0.78)
+        c.set_source_rgb(0.82, 0.14, 0.16); c.set_line_width(2.4); c.set_line_cap(1)
+        for i in range(marks):                                               # rejected, unread
+            yy = -10 + i * 6
+            c.move_to(13, yy - 2.6); c.line_to(19, yy + 2.6); c.move_to(19, yy - 2.6); c.line_to(13, yy + 2.6); c.stroke()
+    rect(k, -13, -47, 26, 12, CLIP, seed + 3, shadow=False, lw=1.6)
+    c.restore()
+
+
+def talent_card(k, x, y, s=1.0, rot=0.0, seed=0):
+    """Don's lanyard card: a VISITOR pass, VISITOR struck through, HEAD OF TALENT in marker. (x, y) = centre."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    rect(k, -5, -22, 10, 7, CLIP, seed + 1, shadow=False, lw=1.3)
+    rect(k, -24, -17, 48, 34, (1, 1, 1), seed + 2, shadow=False, lw=1.8)
+    c.set_source_rgb(*ORANGE); c.rectangle(-22.5, -15.5, 45, 9); c.fill()
+    kit.text(k, "VISITOR", 0, -10.6, 6.2, INK, font="Inter", bold=True)
+    c.set_source_rgb(*MARKER); c.set_line_width(1.8); c.set_line_cap(1)
+    c.move_to(-17, -10); c.line_to(17, -11.5); c.stroke()
+    kit.text(k, "HEAD OF", 0, -0.5, 7.6, MARKER, font="Permanent Marker")
+    kit.text(k, "TALENT", 0, 9.5, 10.5, MARKER, font="Permanent Marker")
+    c.restore()
+
+
+def ballpen(k, x, y, s=1.0, ang=0.0):
+    """Don's pen: (x, y) is the tip, which never touches the paper."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    c.set_source_rgb(*INK); c.set_line_width(6.6); c.set_line_cap(1); c.move_to(0, 0); c.line_to(0, -34); c.stroke()
+    c.set_source_rgb(0.16, 0.42, 0.78); c.set_line_width(3.8); c.move_to(0, -6); c.line_to(0, -34); c.stroke()
+    c.set_source_rgb(0.85, 0.85, 0.88); c.move_to(0, 0); c.line_to(0, -6); c.stroke()
+    c.restore()
+
+
+def paddle(k, x, y, s=1.0, ang=0.0, word="YES", seed=0):
+    """A vote paddle; (x, y) = where the hand grips the stick. YES is brand green, NO is red."""
+    c = k.c
+    col = (0.17, 0.71, 0.45) if word == "YES" else (0.84, 0.16, 0.18)
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    rect(k, -3.5, -30, 7, 44, (0.82, 0.68, 0.46), seed + 1, shadow=False, lw=1.8)
+    ellipse(k, 0, -52, 27, 27, col, seed + 2, lw=2.4)
+    ellipse(k, 0, -52, 22, 22, (1, 1, 1), seed + 3, shadow=False, lw=1.4)
+    kit.text(k, word, 0, -47, 15 if word == "YES" else 17, col)
+    c.restore()
+
+
+def notepad(k, x, y, s=1.0, rot=0.0, word="KIND", seed=0):
+    """Pam's notepad; (x, y) = centre. One word, in her handwriting, underlined."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    rect(k, -24, -30, 48, 60, PAPER, seed + 1, lw=2)
+    c.set_source_rgb(*INK); c.set_line_width(1.6)
+    for i in range(6):                                                       # the spiral
+        c.new_path(); c.arc(-17 + i * 6.8, -30, 2.4, 0, 2 * math.pi); c.stroke()
+    c.set_source_rgb(0.80, 0.84, 0.92); c.set_line_width(1)
+    for yy in (-12, 0, 12, 22):
+        c.move_to(-19, yy); c.line_to(19, yy); c.stroke()
+    if word:
+        kit.text(k, word, 0, -1, 15, MARKER, font="Permanent Marker")
+        c.set_source_rgb(*MARKER); c.set_line_width(2); c.set_line_cap(1)
+        c.move_to(-17, 8); c.curve_to(-6, 10, 6, 6, 17, 8); c.stroke()
+    c.restore()
+
+
+def phone(k, x, y, s=1.0, state="missed", buzz=True, rot=-0.08):
+    """The client's call, big enough to read: (x, y) = centre. state: "missed" (CLIENT, 47 missed calls, red) or
+    "answered" (CALL ANSWERED, green). buzz draws the shake lines."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    rect(k, -46, -78, 92, 156, (0.10, 0.10, 0.13), 0, lw=2.4)
+    col = (0.80, 0.16, 0.18) if state == "missed" else (0.13, 0.62, 0.36)
+    c.set_source_rgb(0.96, 0.96, 0.97); c.rectangle(-39, -66, 78, 132); c.fill()
+    c.set_source_rgb(*col); c.rectangle(-39, -66, 78, 34); c.fill()
+    kit.text(k, "CLIENT", 0, -48, 15, (1, 1, 1), font="Inter", bold=True)
+    if state == "missed":
+        kit.text(k, "47", 0, -6, 44, col)
+        kit.text(k, "MISSED CALLS", 0, 22, 8.6, INK, font="Inter", bold=True)
+    else:
+        kit.text(k, "CALL", 0, -12, 21, col)
+        kit.text(k, "ANSWERED", 0, 10, 15.5, col)
+        c.set_source_rgb(*col); c.set_line_width(6); c.set_line_cap(1); c.set_line_join(1)
+        c.move_to(-14, 36); c.line_to(-4, 47); c.line_to(16, 24); c.stroke()
+    c.set_source_rgb(*col); c.arc(0, 54, 7, 0, 2 * math.pi)
+    if state == "missed":
+        c.fill()
+    c.restore()
+    if buzz and state == "missed":
+        c.set_source_rgb(*INK); c.set_line_width(3.2 * s); c.set_line_cap(1)
+        for sx in (-1, 1):
+            for d in (0, 11):
+                c.new_path(); c.arc(x, y, (62 + d) * s, (0 if sx > 0 else math.pi) - 0.5, (0 if sx > 0 else math.pi) + 0.5)
+                c.stroke()
+
+
+def phone_small(k, x, y, s=1.0, buzz=False):
+    """The same phone lying on the table, seen at a shallow angle."""
+    c = k.c
+    cut(k, [(x - 15 * s, y), (x + 15 * s, y), (x + 13 * s, y - 9 * s), (x - 13 * s, y - 9 * s)], (0.10, 0.10, 0.13), lw=1.6)
+    if buzz:
+        c.set_source_rgb(*INK); c.set_line_width(2 * s); c.set_line_cap(1)
+        for sx in (-1, 1):
+            c.move_to(x + sx * 20 * s, y - 12 * s); c.line_to(x + sx * 27 * s, y - 17 * s); c.stroke()
+            c.move_to(x + sx * 21 * s, y - 4 * s); c.line_to(x + sx * 29 * s, y - 4 * s); c.stroke()

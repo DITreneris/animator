@@ -16,6 +16,8 @@
 #        ./build.sh on                  Office Noir: The Secret of a Stolen Heart: timing + mix (jazz-noir cue) from the
 #                                       kept takes, animatics, animation at 540 and native 1080, cover
 #        ./build.sh xmas2               Happy Compliance v2 (Pam v4, curved tails, no cropped signs): 540 + 1080, cover v2
+#        ./build.sh bc                  The Best Candidate, animation v3 (540x960): timing + mix from the kept takes,
+#                                       the bubble checks on the board and on every drawing, then the render
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -252,6 +254,28 @@ build_on() {
   echo "Wrote $out/uptimez_on_anim.mp4, _1080.mp4, the animatics and the cover"
 }
 
+build_bc() {
+  # The Best Candidate, animation v3. The kept takes are in src/bc_voices/ (sound_bc.py takes re-records them with
+  # Kokoro; not needed to rebuild, though the model files must be present: sound_iwry.py loads them on import).
+  # bc_anim.py: timing from the measured takes; sound_bc_mix.py: the mix and its
+  # -14 LUFS master; qa_bc.py: the bubble rules on rendered pixels, first on the 64 board panels (with its self-test),
+  # then on every drawing of the film. Either check failing stops the build before anything is rendered.
+  local out=${OUT_DIR:-$HERE/the-best-candidate}; mkdir -p "$out"
+  ( cd src
+    python3 bc_anim.py timing >/dev/null
+    python3 sound_bc_mix.py
+    python3 bc_anim.py pushes >/dev/null
+    python3 qa_bc.py
+    python3 bc_anim.py qa all
+    python3 bc_anim.py render bc_anim_silent.tmp.mp4 540
+    # no -shortest: with AAC it drops the last video frames, and the last frame is the loop's join
+    ffmpeg -y -v error -i bc_anim_silent.tmp.mp4 -i bc_mix_master.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k \
+      -movflags +faststart "$out/uptimez_bc_anim_v3.tmp.mp4"
+    mv "$out/uptimez_bc_anim_v3.tmp.mp4" "$out/uptimez_bc_anim_v3.mp4"
+    rm -f bc_anim_silent.tmp.mp4 bc_mix_master.wav )
+  echo "Wrote $out/uptimez_bc_anim_v3.mp4"
+}
+
 build_xmas2() {
   # Happy Compliance v2: xmas_anim2.py wraps the approved v1 panels (Pam v4, curved tails, no cropped signs, the razor,
   # the badge); same mix and loudness chain as v1.
@@ -305,6 +329,7 @@ case "${1:-}" in
   mf)         build_mf ;;
   xmas)       build_xmas ;;
   xmas2)      build_xmas2 ;;
+  bc)         build_bc ;;
   on)         build_on ;;
   iwry)       build_iwry ;;
   iwry_anim)  build_iwry_release ;;

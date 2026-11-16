@@ -339,6 +339,42 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Curved tails, drawn to the mouth in that frame.** Three reviews in a row said straight tails missed the mouth (a head that bobs, a box the safe area moved). What fixed it: record where the mouth was actually drawn this frame, then draw a curved wedge from the box that bends outside the head and ends beside the mouth, never on it. Key the record by the bubble's anchor x, because the layout step moves the anchor y.
 - **GitHub refuses files over 100 MB.** A grainy 40 s 1080 film at crf 17 was 143 MB; grain costs bits. Re-encode the release at `-preset slow -crf 23` (74 MB here), check it by eye and level, and keep the crf 17 master locally.
 
+## The Best Candidate (16 Nov)
+
+A 92.5 s interview film (35 lines, 64 shots). Animation v2 passed its own bubble check on 278 frames; an outside frame audit then held 18 frames, and 13 of them were real.
+
+Checks:
+
+- **A check must not read the numbers the drawing was made from.** The bubble check compared each tail's tip with the head sizes the tail had been aimed with, so every wrong size passed itself: tips on Sofía's hair, on Mom's hat, on the small one's collar, in the air above Don's scalp. A check has to get its facts from somewhere else: here, from the rendered pixels.
+- **Find things in a frame by redrawing it, not by colour.** Draw the frame again with the speaker left out (the difference is the speaker's silhouette, as that frame shows it), with the mouth forced open and forced shut (where the mouth is), and with the skin in a marker colour (what is skin and what is hair, hat or cloth). No thresholds on colour, and it works under the lighting pass, because both drawings are lit the same.
+- **Put every shipped fault into the self-test.** The six kinds the audit found (on hair, on a hat, a gap above the scalp, on a collar, by the ear, short of the antenna) are planted on purpose and must be caught, next to the older ones. A self-test that held only faults I had imagined did not hold the faults I made.
+- **Check every drawing, not a sample.** A frame each 1/3 s was clean; all 1,110 drawings found five where the shout's shake carried its box out of the safe zone (four) or onto Mom's ear (one). Anything that moves per drawing (a shake, a pop-in, a push) needs the full pass, and it takes about three minutes.
+- **A hold can hide a second fault.** "The mouth is the smile" at 3 s read as a timing note. Measuring the mouth found none: Don's "smug" face ignored the spoken mouth, so "First candidate." had never been lip-synced. When fixing one face for a bug (the lips stroked in skin colour had been in two faces, not one), run all of them through the same test.
+- **Separate the audit's holds into defects and conventions before building,** then say which is which. Hard cuts and 12 fps steps stayed; no file was re-encoded to clear that line.
+
+Bubbles:
+
+- **Aim a tail at the head as drawn, in that drawing.** `measure()` renders the speaker alone and reads the mouth, the last skin walking out from it at mouth height (the cheek) and the topmost pixel over it (the crown). Typed offsets were right for the old cast and wrong for both new candidates; poses, leans and the robot's raised arm move heads too.
+- **A side bubble needs wall, so frame for the bubble.** With signs that must be whole or absent, safe zones and a neighbour's face, a two-shot has no place for it: Sofía got her own single for each line, Pam a single with the wall on her right, Mom's seated lines the wall on her right, and her standing lines a wider two-shot with both of them at the right of frame. Twelve shots moved; no line did.
+- **Overhead only onto bare scalp or an antenna,** and only where a face sits either side of the mouth (Don between Sofía and Pam). The tail touches; a gap reads as pointing at the wall. Anyone with hair or a hat gets a side bubble or a new framing.
+- **Hair beside the cheek: the box stands clear of it and the tail runs over it to the cheek.** Limit how much wall a tail crosses (26 px), not its whole length; Sofía's are 55 to 90 px and read at once, because they end on skin beside an open mouth.
+- **Keep the box off ears and hands in its own rows,** not only off the cheek at mouth height: the macho's ear and a raised fist sat inside boxes that cleared the face.
+- **A bubble lives as long as its line.** On from the first syllable, gone one drawing after the last word; held through the shot's tail it sat over a resting mouth. Its box is measured once per shot and held still; only the tail follows the head from drawing to drawing.
+- **Hold every line's bubble in one table** (`SAY`) read by the board and the animation. Twelve animated shots had their own copy of a bubble call, and each was one more place to miss.
+
+Props, pacing, sound:
+
+- **A prop that is read stays whole through a move,** not only at its ends: the YES paddle peeked over the table at the frame's edge for one drawing on its way up, and Don's sleeve lay across the word while he pushed it. Keep the prop out until it is in, and carry the elbow high so the forearm comes down onto the thing instead of across it.
+- **To shorten, cut air, not lines.** 100.8 → 92.5 s by trimming leads and holds and by letting a line's last sentence land on the next shot ("Proceed." on the red cross, "Hired." on the stamp). The holds that are jokes kept their length.
+- **Choose between two wordings by ear.** "Father is coming" was right on paper; recorded, "Father is parking" was funnier: a small practical detail, and a harder consonant.
+- **A loop value should not sit at a threshold.** The door drew its panels below 0.5 open and the last drawing came out at 0.49998; the join was moved to 0.56 and made exact.
+
+Delivery and the repo:
+
+- **`-shortest` with AAC drops the last video frames** (four here), and the last frame is the loop's join. Mux without it and count frames in the finished file.
+- **Pin a version's data with its code.** The pinned v2 animation read the same push-in file as v3 and drew four different stills until it got its own.
+- **Check that the branch you build on has reached main** (`git merge-base --is-ancestor`). This episode was built on a branch whose Office Noir commit had never been merged and shared no history with main; it had to be carried onto main first.
+
 ## Make It Original: auditions, sheet, rough (11 Nov)
 
 - **Screen every melody, not only the hero riff.** The AI's first tune shared three intervals with Smoke on the Water; the interval screen caught it before anyone heard it. It's a quick aid, not a guarantee.

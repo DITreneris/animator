@@ -197,6 +197,20 @@ DON dreams he is a hard-boiled detective in a black-and-white rain-soaked office
 
 Character sheets: `characters/uptimez-{don,mom,sofia}-on-*`, `uptimez-pam-on-v1..v3-*`. Built from `src/` (`on_*.py`, `*_on.py`, `sound_on*.py`, `thumb_on.py`); `./uptimez/build.sh on`.
 
+### The Best Candidate — [`the-best-candidate/`](the-best-candidate/)
+
+Three candidates for ASSISTANT TO DON, and an HR robot that rules on bias. DON opens each interview with the same question, "What if I made a mistake?", and marks the answers. The small one (three degrees, "and a half") would show him the data: "Too short." The robot: "Height is not protected. Proceed." The nice macho hands SOFÍA her dropped pen, tells Don "Everybody makes mistakes. It's okay.", and gets "Too distracting." ("For whom?"). Then MOM walks in ("Forty years. One very difficult client."), and to Don's question, asked very small this time: "I'd make you apologize." "Sorry." A two-second pause; his phone has 47 missed calls from a client; he answers it: "Sorry." "Good boy." The robot: "She made him answer the client. Hired." At the door she licks her thumb: "DONNIE! Your vest!" and scrubs it. "Donnie. Father is parking." "Why?" "He's applying for your job." It loops on the door. 92.5 s, 35 lines; at 540×960 for now, the 1080 master comes after the frame audit.
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_bc_anim_v3.mp4` | **animation v3 (current)** | 540×960, 92.5 s, −14.0 LUFS, true peak −1.1 dB. The bubble pass after a frame audit of v2: every tail ends where the drawing says the speaker's cheek or crown is; 18 of the 32 bubbles sit beside the face at mouth height (Sofía, Pam and Mom have framings with clear wall for it), Don at the table and the robot keep theirs overhead, down onto bare scalp or the antenna; a bubble is on screen only while its line is spoken; Don's "smug" face is lip-synced; the chair insert sits under the macho's badge and YES stays whole while Don pushes the paddle. Clean on all 1,110 drawings under `qa_bc.py` v2. Animations v1 (101 s) and v2 (the tightening to 92.5 s, Don's missing lips) are not in the repo; `src/bc_anim_v2.py` still draws v2 |
+| `the-best-candidate-interview-script-v1..v6.md` | script | v6 is cut: "Good boy.", "Donnie. Father is parking.", the measured section times |
+| `bc_storyboard_v1..v3_1.png`, `_2.png`, `bc_storyboard_phone_v1..v3.png`, `bc_storyboard_silent_v1..v3.mp4` | storyboard | 64 panels. v3 is the first bubble pass (one speaker to a panel, signs whole or absent, inserts for what must be read). The animation's board has since moved on (`src/bc_sb.py`); no v4 pages have been drawn |
+| `bc_set_sheet_v1..v4.png`, `bc_set_phone_v1..v4.png` | set | The interview room: the door, the notice, the BIAS MONITOR and its states; v3 hangs the signs higher to leave wall for bubbles, v4 adds the ficus, a dado and window light |
+| `bc_cast_sheet_v1..v3.png`, `bc_cast_phone_v1..v3.png`, `mom_bc_*`, `sofia_bc_*`, `pam_bc_*`, `bc_tech_sheet_v3.png` | cast | The small one and the nice macho (new), Mom, Sofía and Pam dressed for the interview, the robot's rulings |
+
+Built from `src/`: `bc_set.py` (set v4; `_v1`…`_v3` kept), `cand_bc.py`, `don_bc.py`, `mom_bc.py`, `sofia_bc.py`, `pam_bc.py`, `props_bc.py` (characters and props, earlier versions kept), `bc_sb.py` (the board: cameras, the `SAY` table of every bubble, `measure()`), `qa_bc.py` (the checks), `sound_bc.py` (the takes, kept in `src/bc_voices/`), `sound_bc_mix.py` (effects, the looping bed, the master), `bc_anim.py` (timing, lip-sync, actions, light, the render). `./uptimez/build.sh bc` checks and rebuilds the animation from the kept takes: no voice is re-recorded, but the Kokoro model files must be in `src/models` or `KOKORO_DIR`, because the older sound modules the mix borrows its effects from load them on import.
+
 ### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
 
 Christmas Eve at the office. DON walks in mid-shave in an open bathrobe: "Sorry. Getting ready for the ball." SOFÍA (glamorous nurse) and PAM (a five-minute home-made superhero: bath-towel cape, cardboard mask, paper "P"): "Eww." Don's eyes drop to the two red ornaments in Sofía's hands: "Nice balls. I've got two for you." The office robot, now promoted to HR and in a Santa hat, rolls in: "Inappropriate balls detected." It points at Don, rolls straight past him, and censors every ornament on the tree, then the two in Sofía's hands. "Violation resolved." Don gives a relieved thumbs-up. Sofía hands Pam a censored ornament: "Get him." The mask goes on: "Human in the loop." Sofía, sweetly: "Merry Christmas, Don." THUD. "Happy compliance!" A bar falls off, the alarm starts again. The joke: AI governance protects the company from the tree, not from the boss.
@@ -246,6 +260,7 @@ pip install pycairo numpy soundfile kokoro-onnx
 ./uptimez/build.sh dlx       # Downloads Expedition final at 1080x1920 (dlx_tag = with the promptanatomy.app card)
 ./uptimez/build.sh day1      # How Sofía Survived Day One, loop v3 at 1080x1920 (day1_thumb = cover)
 ./uptimez/build.sh iwry      # I Will Replace You, animatic v3 at 540x960 (iwry_thumb = cover)
+./uptimez/build.sh bc        # The Best Candidate, animation v3 at 540x960 (its bubble checks run first and can stop it)
 ./uptimez/build.sh all       # every episode
 ./uptimez/build.sh sheets    # logo files + character sheets
 ```
