@@ -401,3 +401,10 @@ Every concept now gets this row before stills. Two or more weak cells: go back t
 - **A real 3D camera.** Only 2D pans, zooms and crops. Fake an over-the-shoulder with a foreground silhouette; get depth from layers (the bench backrest, the desk).
 - **Voices for MY AI and Eva** are synthetic; Hoody's are Tomas's takes. Keep synthetic lines short and characterful.
 - **Whether it's funny.** Frames, levels and speech recognition can be measured; laughs need people. The silent five-viewer test stays the gate.
+
+## Added after the Make It Better v5 audit (16 Nov)
+
+8. **Never show the punchline's words before the reveal.** Signs being lettered on screen, a label that switches early, or a TV that explains the idea all spend the surprise. Show the making from behind; let the words appear on the flip.
+9. **A lovable flaw shows the kindness first, then the flaw.** Hoody loves the cake (a forkful, eyes closed, a real thumbs-up) and only then asks for it better. The other order reads as cruelty and loses the audience.
+10. **The turning point is a look between two characters, not an outside trigger.** Eva and MY AI decide together because of V47; HARV on the TV only confirms. An external cue makes them followers.
+11. **After the big laugh, a smaller one that proves nothing changed.** NO. NO. no., then Hoody studies the signs: "Bigger?" The sting turns the hero's flaw on the very thing that rejected him.
