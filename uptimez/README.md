@@ -4,7 +4,7 @@
 
 An AI office sitcom: short vertical cartoons about ridiculous people using AI, posted as if from the corporate account of a polished SaaS company. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
 
-Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One*, *I Will Replace You*, *Happy Compliance*, *Raises for Everyone*, *Mandatory Fun* and *Secret Santa* releases, rendered at 1080×1920.
+Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One*, *I Will Replace You*, *Happy Compliance*, *Raises for Everyone*, *Mandatory Fun*, *Secret Santa* and *Office Noir* releases, rendered at 1080×1920.
 
 ## Cast
 
@@ -181,13 +181,32 @@ Thanksgiving at the office. DON slaps down a form: "Raises for everyone! Sign he
 
 Character sheets are in [`characters/`](characters/) (`*-tg-*`). Built from `src/`: `sofia_tg.py`, `don_tg.py`, `pam_tg.py`, `robot_tg.py` (Thanksgiving looks on the existing characters; v1s kept as `_v1`), `tg_set.py`, `tg_sb.py` (storyboard; `tg_sb_v1.py`, `_v2.py` kept), `sound_tg.py` (voices, laugh, effects, music, mix), `tg_timing.py` (re-timing to the takes), `tg_visemes.py`, `tg_animatic.py`, `tg_anim.py` (the polish, through hooks for this render only; v2, `tg_anim_v1.py` kept), `thumb_tg.py`, and the sheet scripts `*_sheet_tg.py`, `tg_set_sheet.py`, `tg_sb_sheet.py`. `./build.sh tg` rebuilds the mix, both v2 renders and the cover (`./build.sh tg_v1` the v1 renders).
 
+### Office Noir: The Secret of a Stolen Heart — [`office-noir/`](office-noir/)
+
+DON dreams he is a hard-boiled detective in a black-and-white rain-soaked office, the only colour a stolen red heart. His partner, the robot (fedora, trench, silver badge: "My partner. Never blinks."), "Suspect identified." Don's narration: "Nobody tells me what to do. Whiskey. Money. Women." MOM (curlers, an old shouting voice): "DONNIE!" Back in the dream, Don to SOFÍA: "Sofía… did you steal my heart?" SOFÍA, low and slow: "I sign my work… darling." The robot points: "You." Don to PAM: "I was framed!" Every dream object has a reality twin in his bedroom (flask → strawberry milk, informant → a pink bunny, the boss's shadow → Mom, the robot → a baby monitor). Hat gag C: the brim pulled down and a Bogart squint. 40 s, kept long for noir pacing.
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_on_anim_1080.mp4` | **release (current)** | **1080×1920**, native 1080 render (not upscaled), 40.1 s, −15.6 LUFS, −1.5 dBTP, lip-sync, rain, lightning at 0.13 s so frame 0 is readable, an original jazz bed that dies on "DONNIE!", tails at the cheek. Encoded crf 23 to stay under GitHub's 100 MB |
+| `uptimez_on_anim.mp4` | release, 540 preview | Same film, 540×960 |
+| `on_cover_v2.png` (v1 kept) | cover | Title cards "Office Noir: The Secret of a Stolen Heart" |
+| `on_animatic_silent.mp4`, `on_animatic_voiced.mp4` | animatics | Storyboard timed to the takes |
+| `on_auditions_v5.mp4`, `on_mom_auditions.mp4`, `_v2.mp4` | auditions | Voices; Mom F (`bf_alice` + `bm_lewis`, aged, shouting); Sofía A (−2 semitones, a pause) |
+| `on_sb_sheet_v1..v5.png`, `on_sb_loop_v1..v5.png` | storyboard | v5: the partner robot, the brag list, hat C, the cheek tails |
+| `on_set_sheet_v1..v3.png`, `on_set_phone_v1..v3.png`, `props_sheet_on_v1..v2.png`, `props_phone_on_v1..v2.png` | set and props | The noir office and its bedroom twin; phone-size checks |
+
+Character sheets: `characters/uptimez-{don,mom,sofia}-on-*`, `uptimez-pam-on-v1..v3-*`. Built from `src/` (`on_*.py`, `*_on.py`, `sound_on*.py`, `thumb_on.py`); `./uptimez/build.sh on`.
+
 ### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
 
 Christmas Eve at the office. DON walks in mid-shave in an open bathrobe: "Sorry. Getting ready for the ball." SOFÍA (glamorous nurse) and PAM (a five-minute home-made superhero: bath-towel cape, cardboard mask, paper "P"): "Eww." Don's eyes drop to the two red ornaments in Sofía's hands: "Nice balls. I've got two for you." The office robot, now promoted to HR and in a Santa hat, rolls in: "Inappropriate balls detected." It points at Don, rolls straight past him, and censors every ornament on the tree, then the two in Sofía's hands. "Violation resolved." Don gives a relieved thumbs-up. Sofía hands Pam a censored ornament: "Get him." The mask goes on: "Human in the loop." Sofía, sweetly: "Merry Christmas, Don." THUD. "Happy compliance!" A bar falls off, the alarm starts again. The joke: AI governance protects the company from the tree, not from the boss.
 
 | File | Version | Notes |
 |---|---|---|
-| `uptimez_xmas_anim_v1_1080.mp4` | **release (current)** | **1080×1920**, 28.9 s, −16 LUFS. Lip-sync on all ten lines (Don, Sofía, Pam, the robot's screen), blinks, camera punches (DETECTED push, slap jolts, THUD shake), the robot's spinning wheel, Don's anticipation dip, a bigger razor payoff, warm light glow and vignette |
+| `uptimez_xmas_anim_v2_1080.mp4` | **release v2 (current)** | **1080×1920**. Pam v4 (canon head, a fond side-eye, "over" for "Human in the loop.", the mask up, then a visible drop over her readers), a two-row banner, no cropped signs (shown whole or not at all), the razor drawn without fingers, Sofía's badge raised, curved tails ending beside the mouth actually drawn in each frame |
+| `uptimez_xmas_anim_v2.mp4` | release v2, 540 | Same, 540×960 |
+| `xmas_thumbnail_v2.png`, `xmas_storyboard_sheet_v2.png`, `xmas_storyboard_silent_v2.mp4`, `xmas_set_sheet_v2.png`, `xmas_motion_test_b_v2.mp4`, `sofia_xmas_v1_vs_v2.png` | v2 extras | Cover v2: the badge fix only. `./uptimez/build.sh xmas2` |
+| `uptimez_xmas_anim_v1_1080.mp4` | release v1 | **1080×1920**, 28.9 s, −16 LUFS. Lip-sync on all ten lines (Don, Sofía, Pam, the robot's screen), blinks, camera punches (DETECTED push, slap jolts, THUD shake), the robot's spinning wheel, Don's anticipation dip, a bigger razor payoff, warm light glow and vignette |
 | `uptimez_xmas_anim_v1.mp4` | release, 540 rough | Same animation, 540×960, for review |
 | `uptimez_xmas_animatic_v1.mp4` | animatic v1 | Storyboard v2 with the mix: Don `am_onyx`, Sofía `af_bella`, Pam `bf_emma`, robot B (`am_echo`, last episode's shout); an original sleigh-bell bed that stops dead on "Nice balls" |
 | `xmas_pam_auditions.mp4` | | Pam's first voice: A `bf_emma` (picked), B `bf_alice`, C `bf_isabella` |

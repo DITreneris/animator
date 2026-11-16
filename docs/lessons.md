@@ -314,6 +314,32 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Check that every speaking character's mouth actually moves.** Don's faces ignore `mouth=`; his mouth is drawn on top (`don_mouth`), so the v1 release played his lines on a fixed face and only a viewer caught it. Before a release, sample a frame mid-line for each speaker.
 - **Separate conventions from defects in an automated frame check.** Tails above the hair, hard cuts and the 12 fps steps are the series' look; a cropped brand sign, a clipped prop card ("P SECRET / ANTA") and untagged colour were real.
 
+## Office Noir: The Secret of a Stolen Heart (16 Nov)
+
+- **Black and white with one accent colour carries a genre.** Grey everything with a tone curve, keep exact key colours (the red heart, Sofía's lips, gold at 35 %) and cut to full colour for reality. The colour cut is itself a punchline.
+- **Every dream object needs a reality twin, visible at phone size.** Flask → strawberry milk (both with a bendy straw), informant → pink bunny, boss shadow → Mom in curlers, robot partner → baby monitor. Make the twins whole and big in the last shot, not set dressing.
+- **A supporting character's role must read in one second.** The robot read as a guard until he got a fedora, a trench, a badge and Don's VO "My partner. Never blinks.", then pointed: "You."
+- **Lines: say the whole thing, then interrupt on the punch word.** "Sofía, did—" sounded like a glitch; the full question works. The brag list is recorded item by item ("Whiskey. Money. Women.") so Mom's "DONNIE!" lands on the strongest word.
+- **Wording trade-offs are the user's call.** "Did you steal *my* heart?" (Don's flirt, rewatch irony) vs "*a* heart" (first-watch clarity): lay out both in two lines and keep their pick.
+- **TTS casting:** older, shouting Mom = a female voice blended with 25–30 % of an older male voice, a slow wobble, a dry rasp, a drawn-out "Donnieee!" with drive; measure the spectral centroid (≈5 kHz means hiss). Sofía's put-down = her own voice 2 semitones down, slower, a pause before "darling".
+- **The length is the user's decision.** Two reviews wanted 30–33 s; the user chose 40 s for noir pacing. Don't re-propose cuts they declined.
+- **Bubble tails: aim at the mouth from the side.** After two reviews flagged tails ending on hats, hair and curlers, the rule changed: the box stays put, the tip lands at the cheek at mouth height on the side facing the box, never over eyes or mouth. Off-screen speakers keep tails running out of frame; the robot speaks in its own mono type.
+- **Frame 0 is the thumbnail: never a flash.** The lightning moved to 0.13 s; frame 0 is the readable office and the loop's heart match.
+- **Native 1080 from 540-unit code:** swap `cairo.ImageSurface` for a factory that makes 540x960 requests at 1080x1920 with `set_device_scale(2, 2)`; give code that reads `get_width()` for geometry an opt-in logical size. Limiter 0.80 overshot to +0.3 dBTP after AAC; 0.60 is safe.
+- **Hat gags:** sliding a hat down uncovers the head. Keep it seated, grow it ~10 %, bend the brim; act with a squint, because a brow under a brim is invisible.
+
+## Happy Compliance v2 (16 Nov)
+
+- **A character redesign must reach earlier-released-later episodes.** Christmas releases after Thanksgiving, Mandatory Fun and Secret Santa, so Pam gets her canon head there (streak, readers on the chain, rose lips) while every costume gag stays.
+- **A prop drawn by two pieces of code breaks continuity.** The new Pam wore the mask up, but shot 10 drew its own mask at her neck. Search every place a prop is drawn when its state changes.
+- **Payoff moves need ≥0.35 s and a hold.** A 0.18 s snap was invisible to reviewers. Reordered: the line with the mask up, then the visible drop over her readers, a push-in and a silent hold.
+- **No cropped words: show a sign whole or not at all.** Place the banner where every camera shows it whole or not at all, and leave signs out of shots whose camera would cut them; since no camera ever shows that part of the wall whole, nothing pops between cuts.
+- **A prop that reads as a body part is a defect.** The razor drawn with Don's fingers read as a cut-off hand on the floor; draw it alone, bigger, with foam.
+- **Pinned scripts must import pinned modules,** or the `_v3` sheet stops rebuilding byte for byte as soon as v4 lands.
+- **A wrapper module for an engine forwards the engine's module attributes** (`DURATION`): without it the render silently stopped at 15 s.
+- **Curved tails, drawn to the mouth in that frame.** Three reviews in a row said straight tails missed the mouth (a head that bobs, a box the safe area moved). What fixed it: record where the mouth was actually drawn this frame, then draw a curved wedge from the box that bends outside the head and ends beside the mouth, never on it. Key the record by the bubble's anchor x, because the layout step moves the anchor y.
+- **GitHub refuses files over 100 MB.** A grainy 40 s 1080 film at crf 17 was 143 MB; grain costs bits. Re-encode the release at `-preset slow -crf 23` (74 MB here), check it by eye and level, and keep the crf 17 master locally.
+
 ## Make It Original: auditions, sheet, rough (11 Nov)
 
 - **Screen every melody, not only the hero riff.** The AI's first tune shared three intervals with Smoke on the Water; the interval screen caught it before anyone heard it. It's a quick aid, not a guarantee.

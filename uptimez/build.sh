@@ -13,6 +13,9 @@
 #        ./build.sh mf                  Mandatory Fun: mix, lip-sync, 540 + 1080 (animation v2), cover
 #        ./build.sh ss                  Secret Santa v2 (Don lip-synced): mix, lip-sync, 540 + 1080, cover
 #        ./build.sh ss_v1               the same, animation v1 (Don's lines on his fixed face)
+#        ./build.sh on                  Office Noir: The Secret of a Stolen Heart: timing + mix (jazz-noir cue) from the
+#                                       kept takes, animatics, animation at 540 and native 1080, cover
+#        ./build.sh xmas2               Happy Compliance v2 (Pam v4, curved tails, no cropped signs): 540 + 1080, cover v2
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -24,7 +27,7 @@ HERE=$(pwd)
 export KOKORO_DIR=${KOKORO_DIR:-$HERE/src/models}
 
 # fonts used by the kit (installed per-user if missing)
-for f in LilitaOne-Regular.ttf Inter-400.ttf Inter-700.ttf Inter-800.ttf PermanentMarker-Regular.ttf; do
+for f in LilitaOne-Regular.ttf Inter-400.ttf Inter-700.ttf Inter-800.ttf PermanentMarker-Regular.ttf SpecialElite-Regular.ttf; do
   if [ -f "$ROOT/fonts/$f" ] && ! fc-list | grep -qi "${f%%[-.]*}"; then
     mkdir -p ~/.fonts && cp "$ROOT/fonts/$f" ~/.fonts/ && fc-cache -f >/dev/null
   fi
@@ -232,6 +235,44 @@ build_mf() {
   echo "Wrote $out/uptimez_mf_anim_v2.mp4, _1080.mp4 and the cover"
 }
 
+build_on() {
+  # Office Noir: The Secret of a Stolen Heart. The kept takes are in src/on_voices/ (sound_on.py takes / extra re-records
+  # them; not needed to rebuild). on_anim.py: timing from the measured takes, the mix (jazz-noir cue, rain, effects) and
+  # the two animatics; on_film.py: the animation at 540 and the release drawn natively at 1080 (stereo master, BT.709).
+  local out=${OUT_DIR:-$HERE/office-noir}; mkdir -p "$out"
+  ( cd src
+    python3 on_anim.py F
+    python3 on_film.py preview
+    python3 on_film.py release
+    python3 thumb_on.py "$out/on_cover_v2.png"
+    mv on_animatic_voiced.mp4 on_animatic_silent.mp4 "$out/"
+    mv on_film_preview.mp4 "$out/uptimez_on_anim.mp4"
+    mv on_film_1080.mp4 "$out/uptimez_on_anim_1080.mp4"
+    rm -f on_mix_master.wav )
+  echo "Wrote $out/uptimez_on_anim.mp4, _1080.mp4, the animatics and the cover"
+}
+
+build_xmas2() {
+  # Happy Compliance v2: xmas_anim2.py wraps the approved v1 panels (Pam v4, curved tails, no cropped signs, the razor,
+  # the badge); same mix and loudness chain as v1.
+  local out=${OUT_DIR:-$HERE/happy-compliance}; mkdir -p "$out"
+  ( cd src
+    python3 sound_xmas.py mix
+    python3 xmas_visemes.py
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_xmas_anim_v2.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_xmas_anim_v2_1080.mp4
+      python3 $eng xmas_anim2 | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i xmas_mix_v1.wav \
+        -af "volume=0.9dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+        -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+        -c:a aac -b:a 192k -ar 48000 -t 28.9 -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done
+    python3 thumb_xmas2.py "$out/xmas_thumbnail_v2.png" )
+  echo "Wrote $out/uptimez_xmas_anim_v2.mp4, _1080.mp4 and cover v2"
+}
+
 build_ss() {
   # $1 = v2 (ss_anim.py) or v1 (ss_anim_v1.py). Secret Santa: mix (the kept takes in src/ss_takes/, jingle-bell bed, effects) + lip-sync data, then animation v1
   # at 540 (rough) and 1080 (release), and the cover. ss_takes.py re-records the takes (not needed to rebuild).
@@ -263,6 +304,8 @@ case "${1:-}" in
   tg_v1)      build_tg v1 ;;
   mf)         build_mf ;;
   xmas)       build_xmas ;;
+  xmas2)      build_xmas2 ;;
+  on)         build_on ;;
   iwry)       build_iwry ;;
   iwry_anim)  build_iwry_release ;;
   iwry_thumb) ( cd src && python3 thumb_iwry.py "${OUT_DIR:-$HERE/i-will-replace-you}/iwry_thumbnail.png" ) ;;
