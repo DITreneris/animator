@@ -131,35 +131,66 @@ def counter(c, x, y, n, k=1.0, check=True):
         c.set_source_rgb(*hx('3ee07a')); c.set_line_width(9); c.set_line_cap(cairo.LINE_CAP_ROUND); c.stroke()
     c.restore()
 
-def cat_drink(c, x, y, s, f, lap=0.0, tail_to=None, head_up=.45, lids=.55):
-    """The cat on the desk, facing left (towards the glass): head tilted up into the stream, tongue lapping (lap 0..1),
-    its tail curled up behind onto `tail_to` (the button). Half-closed, content eyes. Returns the mouth point (screen)."""
-    c.save(); c.translate(x, y); c.scale(-s, s)                              # drawn facing +x, mirrored to face left
+def cat(c, x, y, s, f=0, face=-1, look_back=False, head_up=0.0, lap=0.0, eyes='content', lids=.55, look=0,
+        paw_to=None, tail_to=None, ears_up=False):
+    """The cat on the desk. face -1: body towards the glass (left), +1: towards MY AI (right). look_back turns the head
+    over the shoulder. eyes: content (half lids), track (alert, pupils shifted by look), wide (ears-up surprise).
+    paw_to / tail_to: screen points the front paw or the tail tip rests on (the button). lap 0..1: the tongue.
+    Returns the tongue tip (or mouth) in screen coordinates."""
+    c.save(); c.translate(x, y); c.scale(face * s, s)                        # drawn facing +x
+    loc = lambda p: ((p[0] - x) / (face * s), (p[1] - y) / s)
     if tail_to is not None:
-        tx, ty = (tail_to[0] - x) / -s, (tail_to[1] - y) / s
-        c.move_to(-100, -70); c.curve_to(-170, -90, tx - 30, ty + 70, tx, ty)
+        tx, ty = loc(tail_to); c.move_to(-100, -70); c.curve_to(-170, -90, tx - 30, ty + 70, tx, ty)
     else:
         tw = math.sin(f * .15) * 10; c.move_to(-100, -70); c.curve_to(-150, -110, -150 + tw, -180, -120 + tw, -200)
     c.set_source_rgb(*INK); c.set_line_width(28); c.set_line_cap(cairo.LINE_CAP_ROUND); c.stroke_preserve(); c.set_source_rgb(*TABBY); c.set_line_width(16); c.stroke()
-    for lx in (-70, -40, 50, 80):
+    for lx in ((-70, -40, 50) if paw_to is not None else (-70, -40, 50, 80)):
         limb(c, [(lx, -50), (lx, 0)], 20, TABBY); ell(c, lx, 0, 16, 10); fs(c, TABBY, 5)
     ell(c, 0, -76, 108, 40); fs(c, TABBY)
     for i in range(4): c.arc(-60 + i * 36, -100, 24, math.pi * 1.2, math.pi * 1.8); c.set_source_rgb(*TABBY_D); c.set_line_width(8); c.stroke()
-    hx_, hy = 110, -116
-    c.save(); c.translate(hx_, hy); c.rotate(-head_up)
+    if paw_to is not None:
+        px, py = loc(paw_to)
+        limb(c, [(80, -60), ((80 + px) / 2 + 8, (py - 60) / 2 - 16), (px - 8, py)], 20, TABBY)
+        ell(c, px - 4, py, 17, 13); fs(c, TABBY, 5)
+    hx_, hy = (70, -150) if look_back else (110, -116)
+    c.save(); c.translate(hx_, hy)
+    if look_back: c.scale(-1, 1)                                               # the head turned over the shoulder
+    c.rotate(-head_up)
+    if ears_up: c.translate(0, -8)
     K._cat_head(c, 0, 0, 1.0, False, 'sleep', 0)
-    for q in (-1, 1):                                                       # content, half-closed eyes
+    for q in (-1, 1):
         ex, ey = q * 24 + 6, -4
         ell(c, ex, ey, 14, 16); c.set_source_rgb(*TABBY); c.fill()
-        ell(c, ex, ey + 2, 10, 10); fs(c, hx('b8e04a'), 3); ell(c, ex + 2, ey + 2, 3.5, 8); c.set_source_rgb(*INK); c.fill()
-        c.rectangle(ex - 14, ey - 16, 28, 16 * lids + 4); c.set_source_rgb(*TABBY); c.fill()
-        c.move_to(ex - 12, ey - 12 + 16 * lids); c.line_to(ex + 12, ey - 12 + 16 * lids); c.set_source_rgb(*INK); c.set_line_width(4); c.stroke()
-    mx, my = 44, 30                                                         # the tongue, curling up and out
+        big = eyes == 'wide'
+        ell(c, ex, ey + 1, 12 if big else 10, 14 if big else 11); fs(c, hx('b8e04a'), 3)
+        ell(c, ex + 2 + look, ey + 1, 3 if big else 3.5, 9); c.set_source_rgb(*INK); c.fill()
+        lid = {'content': lids, 'track': .18, 'wide': 0}[eyes]
+        if lid > 0:
+            c.rectangle(ex - 14, ey - 16, 28, 16 * lid + 4); c.set_source_rgb(*TABBY); c.fill()
+            c.move_to(ex - 12, ey - 12 + 16 * lid); c.line_to(ex + 12, ey - 12 + 16 * lid); c.set_source_rgb(*INK); c.set_line_width(4); c.stroke()
+    mx, my = 44, 30
     if lap > 0:
         c.move_to(mx - 8, my - 6); c.curve_to(mx + 14 * lap, my - 6 - 20 * lap, mx + 36 * lap, my - 28 * lap, mx + 42 * lap, my - 42 * lap)
         c.set_source_rgb(*INK); c.set_line_width(17); c.set_line_cap(cairo.LINE_CAP_ROUND); c.stroke_preserve()
         c.set_source_rgb(*hx('ff8fa6')); c.set_line_width(10); c.stroke()
     c.restore(); c.restore()
+    hd = -1 if look_back else 1
     ca, sa = math.cos(-head_up), math.sin(-head_up)
-    lx, ly = hx_ + ca * (mx + 42 * lap) - sa * (my - 42 * lap), hy + sa * (mx + 42 * lap) + ca * (my - 42 * lap)
-    return (x - s * lx, y + s * ly)
+    tx_, ty_ = mx + 42 * lap, my - 42 * lap
+    lx, ly = hx_ + hd * (ca * tx_ - sa * ty_), hy + sa * tx_ + ca * ty_
+    return (x + face * s * lx, y + s * ly)
+
+def cat_drink(c, x, y, s, f, lap=0.0, tail_to=None, head_up=.45, lids=.55):
+    return cat(c, x, y, s, f, face=-1, head_up=head_up, lap=lap, lids=lids, tail_to=tail_to)
+
+def phone(c, x, y, s=1.0, rot=0):
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    rr(c, -24, -44, 48, 88, 10); fs(c, hx('2a2f3d'), 5); rr(c, -17, -34, 34, 62, 5); c.set_source_rgb(*hx('7fd0ff')); c.fill()
+    c.restore()
+
+def thumb_up(c, x, gy, s):
+    """MY AI's screen-left arm raised in a thumbs-up (myai drawn with that arm None)."""
+    c.save(); c.translate(x, gy - 280 * s); c.scale(s, s)
+    hx_, hy = A.arm(c, -1, (70, 100))
+    rr(c, hx_ - 8, hy - 50, 16, 34, 8); fs(c, WHITE, 5)
+    c.restore()
