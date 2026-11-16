@@ -119,6 +119,10 @@ def guitar_points(x, hy, s):
     at = lambda d: (body[0] + d * GS * s * math.cos(GROT), body[1] + d * GS * s * math.sin(GROT))
     return body, at(250), at(440)
 
+def _shoe(q):
+    """SHOE may be one colour or a (left, right) pair: socks at home, odd ones."""
+    return SHOE[0 if q < 0 else 1] if isinstance(SHOE, list) else SHOE
+
 def hoody(c, x, gy, s, expr='calm', pose='stand', arms=('rest', 'rest'), gaze=0, op=0, rot=0, prop=None, seat=None,
           guitar=None, f=0, legs='dangle', blink=None, hair=False, soles=False, step=None):
     """pose 'stand': feet on gy. 'sit': gy is the seat. 'float': gy is where the feet hang, toes down, legs swaying.
@@ -129,7 +133,7 @@ def hoody(c, x, gy, s, expr='calm', pose='stand', arms=('rest', 'rest'), gaze=0,
     if pose == 'sit':
         for q in (-1, 1):
             limb(c, [(x + q * 50 * s, waist + 30 * s), (x + q * 54 * s, waist + 168 * s)], 40 * s, JEANS)
-            ell(c, x + q * 58 * s, waist + 176 * s, 32 * s, 15 * s); fs(c, SHOE, max(3, 5 * s))
+            ell(c, x + q * 58 * s, waist + 176 * s, 32 * s, 15 * s); fs(c, _shoe(q), max(3, 5 * s))
         if seat: seat_front(c, seat[0], seat[1], gy)
         for q in (-1, 1): ell(c, x + q * 50 * s, waist + 26 * s, 36 * s, 30 * s); fs(c, JEANS, max(3, 6 * s))
     else:
@@ -154,7 +158,7 @@ def hoody(c, x, gy, s, expr='calm', pose='stand', arms=('rest', 'rest'), gaze=0,
                 foot = (knee[0] + math.cos(ph + .8) * 40 * s, knee[1] + 130 * s); toe = .3 * q
             limb(c, [hip, knee, foot], 40 * s, JEANS)
             c.save(); c.translate(foot[0] + q * 4 * s, foot[1] + 6 * s); c.rotate(toe)
-            ell(c, 0, 0, 32 * s, 15 * s); fs(c, SHOE, max(3, 5 * s))
+            ell(c, 0, 0, 32 * s, 15 * s); fs(c, _shoe(q), max(3, 5 * s))
             if soles: ell(c, 0, 6 * s, 25 * s, 8 * s); c.set_source_rgb(*hx('8a8f9c')); c.fill()
             c.restore()
     sl, sr_ = K.hoodie(c, x, neck, s * 1.1)

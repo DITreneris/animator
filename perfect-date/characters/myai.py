@@ -71,7 +71,7 @@ def arm(c, q, pose, prop=None):
     hand(c, *h_, t2, q, open_=(pose == 'wait'))
     return h_
 
-def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(None, None), rot=0, walk=None, bob=0, tilt=0, turn=0, talk=0.0):
+def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(None, None), rot=0, walk=None, bob=0, tilt=0, turn=0, talk=0.0, droop=0.0):
     """Standing on ground y. arms = (screen-left pose, screen-right pose). rot tips the whole robot about its feet (bow: -.35).
     tilt: head tilt in degrees (limit +-15). turn: -1..1, a three-quarter turn (visor and antenna slide, far ear hides)."""
     tilt = max(LIMITS['tilt'][0], min(LIMITS['tilt'][1], tilt))
@@ -88,10 +88,13 @@ def myai(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(No
         if p is not None: arm(c, q, p, pr)                          # None: that arm is drawn by the caller (e.g. a telescopic arm)
     c.save(); c.translate(*NECK); c.rotate(math.radians(tilt)); c.translate(-NECK[0], -NECK[1])
     ax = turn * 40
-    c.move_to(ax, -90); c.line_to(ax, -132); c.set_source_rgb(*INK); c.set_line_width(9); c.stroke()
+    bx, by = ax + 70 * droop, -140 + 30 * droop                 # droop 0..1: patience running out, the antenna bends over
+    if droop: c.move_to(ax, -90); c.curve_to(ax, -128, bx - 20 * droop, by - 30, bx, by + 8)
+    else: c.move_to(ax, -90); c.line_to(ax, -132)
+    c.set_source_rgb(*INK); c.set_line_width(9); c.stroke()
     if talk > .05:                                                    # speaking: the antenna glows with the voice
-        ell(c, ax, -140, 17 + 22 * talk, 17 + 22 * talk); c.set_source_rgba(*EYE, .35 * talk); c.fill()
-    ell(c, ax, -140, 17, 17); fs(c, EYE, 7)
+        ell(c, bx, by, 17 + 22 * talk, 17 + 22 * talk); c.set_source_rgba(*EYE, .35 * talk); c.fill()
+    ell(c, bx, by, 17, 17); fs(c, (EYE[0] * (1 - .55 * droop), EYE[1] * (1 - .55 * droop), EYE[2] * (1 - .4 * droop)), 7)
     for q in (-1, 1):
         if turn * q < -.5: continue                                  # far ear hidden in a three-quarter view
         ell(c, q * 110 - turn * 10, 0, 22 - abs(turn) * 4 * (q == (1 if turn > 0 else -1)), 38); fs(c, EARS, 8)
