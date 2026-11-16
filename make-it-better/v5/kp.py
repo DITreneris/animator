@@ -57,20 +57,25 @@ def sofa_front(c, x0=230, x1=1010, y=1300):
     for i in range(3): rr(c, x0 + 40 + i * (x1 - x0 - 80) / 3, y + 206, (x1 - x0 - 80) / 3 - 10, 60, 18); fs(c, SOFA, 5)
     for x in (x0 - 10, x1 - 70): rr(c, x, y + 120, 80, 310, 30); fs(c, SOFA, 7)          # the arms
 
-def party_hat(c, head, s=1.0, tilt=-.15):
+def party_hat(c, head, s=1.0, tilt=-.15, slip=0.0):
+    """slip 0..1: the hat slides a notch with every demand, until it's over his eyes ("Bigger?"). He never notices."""
     x, y = head
-    c.save(); c.translate(x + 20 * s, y - 150 * s); c.rotate(tilt)
+    tilt = tilt - .2 - .55 * slip
+    c.save(); c.translate(x + 20 * s - 30 * s * slip, y - 150 * s + 150 * s * slip); c.rotate(tilt)
     c.move_to(-50 * s, 40 * s); c.line_to(0, -110 * s); c.line_to(50 * s, 40 * s); c.close_path(); fs(c, hx('b56cff'), 6)
     for i in range(3): ell(c, -18 * s + i * 18 * s, -10 * s - i * 32 * s, 8 * s, 8 * s); c.set_source_rgb(*YEL); c.fill()
     ell(c, 0, -116 * s, 14 * s, 14 * s); fs(c, YEL, 5)
     c.restore()
 
-def hoody(c, f, x, gy, s=1.0, expr='happy', arms=('rest', 'take'), thumb=True, hat=True, gaze=0, rot=0, pose='stand'):
+SOCKS = [hx('ff8fa6'), hx('5ec8ff')]                                                     # one pink, one blue
+def hoody(c, f, x, gy, s=1.0, expr='happy', arms=('rest', 'take'), thumb=True, hat=True, gaze=0, rot=0, pose='stand', slip=0.0):
+    old = R.SHOE; R.SHOE = SOCKS
     hands, _ = R.hoody(c, x, gy, s, expr=expr, pose=pose, arms=arms, f=f, blink=False, gaze=gaze, rot=rot)
     if thumb: P4.thumbs_up(c, hands[1][0] + 8 * s, hands[1][1] - 6 * s, s)
     dy = -(0 if pose == 'sit' else 300 * s) - 326 * s                                          # the head centre, turned with the body
     head = (x - dy * math.sin(rot), gy + dy * math.cos(rot))
-    if hat: party_hat(c, head, s, tilt=-.15 + rot)
+    R.SHOE = old
+    if hat: party_hat(c, head, s, tilt=-.15 + rot, slip=slip)
     return hands, head
 
 def cake(c, x, y, s=1.0, sag=0.0):
@@ -87,8 +92,9 @@ def cake(c, x, y, s=1.0, sag=0.0):
         c.save(); c.translate(fx, fy); c.rotate(sag * 1.3); ell(c, 0, 0, 9, 16 - 6 * sag); fs(c, hx('ffb02e'), 3); c.restore()
     c.restore()
 
+EVA_IN = dict(outfit='sweater', cup=False, feet=hx('ffcf9e'))
 def eva_cake(c, x, gy, s, expr='evacalm', gaze=0, sag=0.0):
-    E.eva(c, x, gy, s, expr=expr, gaze=gaze)
+    E.eva(c, x, gy, s, expr=expr, gaze=gaze, **EVA_IN)
     hy = gy - 690 * s
     cake(c, x + 24 * s, hy + 286 * s, 1.15 * s, sag)                     # held in front: covers her usual coffee
 
@@ -160,12 +166,12 @@ def p03(c, f=0):   # the cat: he studies the bed like a designer, nudges it 3 cm
 def p04(c, f=0):   # the look: MY AI and Eva, same problem, same thought; HARV small on the TV between them
     c.save(); cam(c, 1.45, 540, 1900); room(c, f, tv_at=(420, 1250))
     A.myai(c, 300, 1900, 1.0, eye='focus', look=(16, 0), droop=1.0, arms=('down', 'down'))
-    E.eva(c, 800, 1990, 1.0, expr='notices', gaze=-16)
+    E.eva(c, 800, 1990, 1.0, expr='notices', gaze=-16, **EVA_IN)
     c.restore(); Sh.topbar(c, 'HIS PARTY')
 
 def union(c, f, flip=False, hoody_in=None):
     c.save(); cam(c, 1.12); room(c, f, tv_at=(60, 1150))
-    E.eva(c, 790, 1760, .95, expr='evacalm' if not flip else 'amused')                       # behind the sofa: reads as sitting
+    E.eva(c, 790, 1760, .95, expr='evacalm' if not flip else 'amused', **EVA_IN)                       # behind the sofa: reads as sitting
     sofa_back(c)
     sofa_front(c)
     A.myai(c, 560, 1520, .85, eye='focus', droop=0.0, arms=('offer', 'offer'))              # standing on the cushion

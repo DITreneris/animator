@@ -77,11 +77,12 @@ def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, 
     if walk is not None: gy -= abs(math.sin(walk)) * 7 * s
     hy = gy - 690 * s
     lw_ = max(3, 7 * s)
-    if outfit == 'sweater':
-        rr(c, x - 62 * s, gy - 330 * s, 124 * s, 110 * s, 24 * s); fs(c, TROUS, lw_)                      # trousers to the waist
-        c.move_to(x - 84 * s, hy + 120 * s); c.line_to(x + 84 * s, hy + 120 * s); c.line_to(x + 104 * s, gy - 300 * s); c.line_to(x - 104 * s, gy - 300 * s)
+    if outfit == 'sweater':                                                    # oversized, cosy: her happy place
+        rr(c, x - 62 * s, gy - 330 * s, 124 * s, 110 * s, 24 * s); fs(c, TROUS, lw_)
+        c.move_to(x - 86 * s, hy + 118 * s); c.curve_to(x - 126 * s, hy + 220 * s, x - 136 * s, gy - 330 * s, x - 124 * s, gy - 268 * s)
+        c.line_to(x + 124 * s, gy - 268 * s); c.curve_to(x + 136 * s, gy - 330 * s, x + 126 * s, hy + 220 * s, x + 86 * s, hy + 118 * s)
         c.close_path(); fs(c, COAT, lw_)
-        for i in range(7): c.move_to(x - 90 * s + i * 30 * s, gy - 330 * s); c.line_to(x - 90 * s + i * 30 * s, gy - 302 * s); c.set_source_rgba(0, 0, 0, .25); c.set_line_width(4 * s); c.stroke()
+        for i in range(9): c.move_to(x - 116 * s + i * 29 * s, gy - 300 * s); c.line_to(x - 116 * s + i * 29 * s, gy - 272 * s); c.set_source_rgba(0, 0, 0, .25); c.set_line_width(4 * s); c.stroke()
     elif outfit == 'dress':
         c.move_to(x - 78 * s, hy + 120 * s); c.line_to(x + 78 * s, hy + 120 * s); c.line_to(x + 132 * s, gy - 190 * s); c.line_to(x - 132 * s, gy - 190 * s)
         c.close_path(); fs(c, COAT, lw_)
@@ -96,7 +97,9 @@ def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, 
         coffee(c, hxp, hyp + 4 * s, s)
     else:
         rh = (x + 116 * s, hy + 344 * s)
-        limb(c, [(x + 76 * s, hy + 142 * s), (x + 120 * s, hy + 262 * s), rh], 30 * s, COAT); ell(c, *rh, 18 * s, 18 * s); fs(c, SKIN_E, max(3, 5 * s))
+        limb(c, [(x + 76 * s, hy + 142 * s), (x + 120 * s, hy + 262 * s), rh], (40 if outfit == 'sweater' else 30) * s, COAT)
+        if outfit == 'sweater': ell(c, *rh, 24 * s, 22 * s); fs(c, COAT, max(3, 5 * s))           # sleeve over the fingers
+        else: ell(c, *rh, 18 * s, 18 * s); fs(c, SKIN_E, max(3, 5 * s))
     if pose == 'hip':
         lh = (x - 96 * s, hy + 318 * s)
         limb(c, [(x - 76 * s, hy + 142 * s), (x - 168 * s, hy + 236 * s), lh], 30 * s, COAT)
@@ -110,7 +113,8 @@ def eva(c, x, gy, s, expr='evacalm', sip=0.0, gaze=0, tilt=0, leash=True, op=0, 
     else:
         lh = (x - 116 * s, hy + 344 * s)
         limb(c, [(x - 76 * s, hy + 142 * s), (x - 120 * s, hy + 262 * s), lh], 30 * s, COAT)
-    ell(c, *lh, 18 * s, 18 * s); fs(c, SKIN_E, max(3, 5 * s))
+    if outfit == 'sweater': ell(c, *lh, 24 * s, 22 * s); fs(c, COAT, max(3, 5 * s))
+    else: ell(c, *lh, 18 * s, 18 * s); fs(c, SKIN_E, max(3, 5 * s))
     if outfit == 'coat':
         rr(c, x - 80 * s, hy + 96 * s, 160 * s, 46 * s, 22 * s); fs(c, SCARF, max(3, 6 * s))     # scarf
         rr(c, x + 24 * s, hy + 128 * s, 34 * s, 80 * s, 12 * s); fs(c, SCARF, max(3, 5 * s))

@@ -38,7 +38,7 @@ def hoody_back(c, x, y, s=1.0):
     rr(c, x - 260 * s, y + 120 * s, 520 * s, 400 * s, 120 * s); fs(c, NAVY, 7)
     ell(c, x, y, 190 * s, 180 * s); fs(c, hx('3b2416'), 7)
     for i in range(7): ell(c, x - 150 * s + i * 50 * s, y - 150 * s + abs(i - 3) * 22 * s, 46 * s, 42 * s); fs(c, hx('3b2416'), 5)
-    S.party_hat(c, (x, y + 60 * s), s * 1.4, tilt=.2)
+    S.party_hat(c, (x, y + 60 * s), s * 1.4, tilt=.2, slip=.6)
 
 ALL = []
 def sb(fn): ALL.append(fn); return fn
@@ -57,7 +57,7 @@ def s01(c, f=0):   # CU MY AI: V47 up, antenna drooped, eyes flat; V1 flashes be
 @sb
 def s02(c, f=0):   # MCU Hoody: beaming, hat, thumbs-up
     S.room(c, f)
-    c.save(); shot(c, 330, 1450, 2.0); S.hoody(c, f, 300, 1900); c.restore()
+    c.save(); shot(c, 330, 1450, 2.0); S.hoody(c, f, 300, 1900, slip=.05); c.restore()
 
 @sb
 def s03(c, f=0):   # CU the cake: proud, one crooked heart
@@ -68,7 +68,7 @@ def s03(c, f=0):   # CU the cake: proud, one crooked heart
 def s04(c, f=0):   # MCU Hoody: a forkful, bliss, a sincere thumbs-up
     S.room(c, f)
     c.save(); shot(c, 330, 1450, 2.0)
-    hands, _ = S.hoody(c, f, 300, 1900, expr='happy', arms=('chin', 'take'))
+    hands, _ = S.hoody(c, f, 300, 1900, expr='happy', arms=('chin', 'take'), slip=.25)
     limb(c, [(hands[0][0] + 6, hands[0][1] - 4), (hands[0][0] + 40, hands[0][1] - 60)], 8, hx('c0c4cc'))      # the fork
     ell(c, hands[0][0] + 44, hands[0][1] - 66, 16, 12); fs(c, hx('f7c6d9'), 4)
     c.restore()
@@ -105,11 +105,16 @@ def s09(c, f=0):   # CU MY AI: looks at V47, then away; a tired blink
     c.save(); shot(c, 560, 1450, 2.6); A.myai(c, 560, 1900, 1.0, eye='blank', look=(-14, 6), droop=1.0, arms=('down', 'down')); c.restore()
 
 @sb
+def s10a(c, f=0):  # her eyeline, first: hat... down to his socks (one pink, one blue)... back up
+    S.room(c, f)
+    c.save(); shot(c, 300, 1820, 3.2); S.hoody(c, f, 300, 1900, slip=.4); c.restore()
+
+@sb
 def s10(c, f=0):   # two-shot, matching eyelines: recognition; HARV's fist on the TV behind, an easter egg
     S.room(c, f, tv_at=(430, 1260))
     c.save(); shot(c, 580, 1420, 1.55)
     A.myai(c, 340, 1900, 1.0, eye='open', look=(18, -4), droop=.6, arms=('down', 'down'))
-    E.eva(c, 800, 1990, 1.0, expr='notices', gaze=-18)
+    E.eva(c, 800, 1990, 1.0, expr='notices', gaze=-18, **S.EVA_IN)
     c.restore()
 
 @sb
@@ -123,7 +128,7 @@ def sofa(c, f, flip=False, k=1.25, cy=1450):
 def union_only(c, f, flip):
     """kp.union without its topbar and camera: the room, the sofa, the three and their signs."""
     S.room(c, f, tv_at=(60, 1150))
-    E.eva(c, 790, 1760, .95, expr='evacalm' if not flip else 'amused')
+    E.eva(c, 790, 1760, .95, expr='evacalm' if not flip else 'amused', **S.EVA_IN)
     S.sofa_back(c); S.sofa_front(c)
     A.myai(c, 560, 1520, .85, eye='focus', droop=0.0, arms=('offer', 'offer'))
     K.cat(c, 975, 1440, .5, pose='walk', phase=0, look=-1)
@@ -148,7 +153,7 @@ def s14(c, f=0):   # low angle, straight on: NO. NO. ... no.
 @sb
 def s15(c, f=0):   # CU Hoody, the Dutch angle (once): the smile held too long, then "Bigger?"
     S.room(c, f)
-    c.save(); shot(c, 330, 1420, 2.3, rot=.18); S.hoody(c, f, 300, 1900, expr='designer', thumb=False, gaze=12); c.restore()
+    c.save(); shot(c, 330, 1420, 2.3, rot=.18); S.hoody(c, f, 300, 1900, expr='happy', thumb=True, slip=1.0); c.restore()
     R.bubble(c, ['BIGGER?'], 10, (560, 1380), cy=1700, cx=640, size=80)
 
 @sb
@@ -162,15 +167,15 @@ def s16(c, f=0):   # extreme foreground: MY AI shoves its NO into the lens; the 
     S.card_front(c, 760, 1560, 200, 130, 'no.', 70, 'box')
 
 NAMES = ['CU MY AI: V47 = V1', 'Hoody beams', 'the cake, her heart', 'bliss, thumbs-up', 'his finger (POV)', 'her smile dies',
-         'cat level: cushion', 'one eye', 'MY AI: tired', 'the look', 'the cat looks', 'his POV: the sofa', 'over his shoulder',
+         'cat level: cushion', 'one eye', 'MY AI: tired', 'her eyeline: his socks', 'the look', 'the cat looks', 'his POV: the sofa', 'over his shoulder',
          'NO. NO. no.', 'Dutch: "Bigger?"', 'NO. into the lens']
-PILL = ['HIS PARTY'] * 13 + ['ITS UNION'] * 3
+PILL = ['HIS PARTY'] * 14 + ['ITS UNION'] * 3
 if __name__ == '__main__':
     surfs = []
     for i, fn in enumerate(ALL):
         s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); c = cairo.Context(s); fn(c, 0); Sh.topbar(c, PILL[i])
         s.write_to_png(os.path.join(HERE, f'sb_{i + 1:02d}.png')); surfs.append(s)
-    cols, k = 8, .25; sw, sh = int(W * k), int(H * k)
+    cols, k = 9, .25; sw, sh = int(W * k), int(H * k)
     out = cairo.ImageSurface(cairo.FORMAT_ARGB32, cols * (sw + 8) + 8, 2 * (sh + 56) + 10); c = cairo.Context(out); c.set_source_rgb(1, 1, 1); c.paint()
     for i, s in enumerate(surfs):
         x, y = 8 + (i % cols) * (sw + 8), 48 + (i // cols) * (sh + 56)
