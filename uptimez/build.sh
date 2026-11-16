@@ -11,7 +11,13 @@
 #        ./build.sh tg                  Raises for Everyone (Thanksgiving) v2: mix, lip-sync, 540 + 1080, cover
 #        ./build.sh tg_v1               the same, animation v1 (before the framing fixes)
 #        ./build.sh mf                  Mandatory Fun: mix, lip-sync, 540 + 1080 (animation v2), cover
-#        ./build.sh ss                  Secret Santa: mix, lip-sync, 540 + 1080 (animation v1), cover
+#        ./build.sh ss                  Secret Santa v2 (Don lip-synced): mix, lip-sync, 540 + 1080, cover
+#        ./build.sh ss_v1               the same, animation v1 (Don's lines on his fixed face)
+#        ./build.sh on                  Office Noir: The Secret of a Stolen Heart: timing + mix (jazz-noir cue) from the
+#                                       kept takes, animatics, animation at 540 and native 1080, cover
+#        ./build.sh xmas2               Happy Compliance v2 (Pam v4, curved tails, no cropped signs): 540 + 1080, cover v2
+#        ./build.sh bc                  The Best Candidate, animation v3 (540x960): timing + mix from the kept takes,
+#                                       the bubble checks on the board and on every drawing, then the render
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -23,7 +29,7 @@ HERE=$(pwd)
 export KOKORO_DIR=${KOKORO_DIR:-$HERE/src/models}
 
 # fonts used by the kit (installed per-user if missing)
-for f in LilitaOne-Regular.ttf Inter-400.ttf Inter-700.ttf Inter-800.ttf PermanentMarker-Regular.ttf; do
+for f in LilitaOne-Regular.ttf Inter-400.ttf Inter-700.ttf Inter-800.ttf PermanentMarker-Regular.ttf SpecialElite-Regular.ttf; do
   if [ -f "$ROOT/fonts/$f" ] && ! fc-list | grep -qi "${f%%[-.]*}"; then
     mkdir -p ~/.fonts && cp "$ROOT/fonts/$f" ~/.fonts/ && fc-cache -f >/dev/null
   fi
@@ -231,18 +237,79 @@ build_mf() {
   echo "Wrote $out/uptimez_mf_anim_v2.mp4, _1080.mp4 and the cover"
 }
 
+build_on() {
+  # Office Noir: The Secret of a Stolen Heart. The kept takes are in src/on_voices/ (sound_on.py takes / extra re-records
+  # them; not needed to rebuild). on_anim.py: timing from the measured takes, the mix (jazz-noir cue, rain, effects) and
+  # the two animatics; on_film.py: the animation at 540 and the release drawn natively at 1080 (stereo master, BT.709).
+  local out=${OUT_DIR:-$HERE/office-noir}; mkdir -p "$out"
+  ( cd src
+    python3 on_anim.py F
+    python3 on_film.py preview
+    python3 on_film.py release
+    python3 thumb_on.py "$out/on_cover_v2.png"
+    mv on_animatic_voiced.mp4 on_animatic_silent.mp4 "$out/"
+    mv on_film_preview.mp4 "$out/uptimez_on_anim.mp4"
+    mv on_film_1080.mp4 "$out/uptimez_on_anim_1080.mp4"
+    rm -f on_mix_master.wav )
+  echo "Wrote $out/uptimez_on_anim.mp4, _1080.mp4, the animatics and the cover"
+}
+
+build_bc() {
+  # The Best Candidate, animation v3. The kept takes are in src/bc_voices/ (sound_bc.py takes re-records them with
+  # Kokoro; not needed to rebuild, though the model files must be present: sound_iwry.py loads them on import).
+  # bc_anim.py: timing from the measured takes; sound_bc_mix.py: the mix and its
+  # -14 LUFS master; qa_bc.py: the bubble rules on rendered pixels, first on the 64 board panels (with its self-test),
+  # then on every drawing of the film. Either check failing stops the build before anything is rendered.
+  local out=${OUT_DIR:-$HERE/the-best-candidate}; mkdir -p "$out"
+  ( cd src
+    python3 bc_anim.py timing >/dev/null
+    python3 sound_bc_mix.py
+    python3 bc_anim.py pushes >/dev/null
+    python3 qa_bc.py
+    python3 bc_anim.py qa all
+    python3 bc_anim.py render bc_anim_silent.tmp.mp4 540
+    # no -shortest: with AAC it drops the last video frames, and the last frame is the loop's join
+    ffmpeg -y -v error -i bc_anim_silent.tmp.mp4 -i bc_mix_master.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k \
+      -movflags +faststart "$out/uptimez_bc_anim_v3.tmp.mp4"
+    mv "$out/uptimez_bc_anim_v3.tmp.mp4" "$out/uptimez_bc_anim_v3.mp4"
+    rm -f bc_anim_silent.tmp.mp4 bc_mix_master.wav )
+  echo "Wrote $out/uptimez_bc_anim_v3.mp4"
+}
+
+build_xmas2() {
+  # Happy Compliance v2: xmas_anim2.py wraps the approved v1 panels (Pam v4, curved tails, no cropped signs, the razor,
+  # the badge); same mix and loudness chain as v1.
+  local out=${OUT_DIR:-$HERE/happy-compliance}; mkdir -p "$out"
+  ( cd src
+    python3 sound_xmas.py mix
+    python3 xmas_visemes.py
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_xmas_anim_v2.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_xmas_anim_v2_1080.mp4
+      python3 $eng xmas_anim2 | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i xmas_mix_v1.wav \
+        -af "volume=0.9dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+        -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+        -c:a aac -b:a 192k -ar 48000 -t 28.9 -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done
+    python3 thumb_xmas2.py "$out/xmas_thumbnail_v2.png" )
+  echo "Wrote $out/uptimez_xmas_anim_v2.mp4, _1080.mp4 and cover v2"
+}
+
 build_ss() {
-  # Secret Santa: mix (the kept takes in src/ss_takes/, jingle-bell bed, effects) + lip-sync data, then animation v1
+  # $1 = v2 (ss_anim.py) or v1 (ss_anim_v1.py). Secret Santa: mix (the kept takes in src/ss_takes/, jingle-bell bed, effects) + lip-sync data, then animation v1
   # at 540 (rough) and 1080 (release), and the cover. ss_takes.py re-records the takes (not needed to rebuild).
   local out=${OUT_DIR:-$HERE/secret-santa}; mkdir -p "$out"
   ( cd src
     python3 ss_sound.py
     python3 ss_visemes.py
     ffmpeg -y -v error -i ss_mix_v1.wav -af "volume=2.2dB,alimiter=limit=0.5:level=disabled" -c:a aac -b:a 192k ss_audio.tmp.m4a
+    local mod=ss_anim; [ "$1" = v1 ] && mod=ss_anim_v1
     for res in 540 1080; do
-      local eng=engine_v.py size=540x960 name=uptimez_ss_anim_v1.mp4 crf="-preset veryfast -crf 20"
-      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_ss_anim_v1_1080.mp4 crf="-preset medium -crf 18"
-      python3 $eng ss_anim | ffmpeg -y -v error \
+      local eng=engine_v.py size=540x960 name=uptimez_ss_anim_$1.mp4 crf="-preset veryfast -crf 20"
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_ss_anim_$1_1080.mp4 crf="-preset medium -crf 18"
+      python3 $eng $mod | ffmpeg -y -v error \
         -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i ss_audio.tmp.m4a -map 0:v -map 1:a \
         -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
         -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
@@ -251,15 +318,19 @@ build_ss() {
     done
     rm -f ss_audio.tmp.m4a
     python3 thumb_ss.py "$out/ss_thumbnail.png" )
-  echo "Wrote $out/uptimez_ss_anim_v1.mp4, _1080.mp4 and the cover"
+  echo "Wrote $out/uptimez_ss_anim_$1.mp4, _1080.mp4 and the cover"
 }
 
 case "${1:-}" in
-  ss)         build_ss ;;
+  ss)         build_ss v2 ;;
+  ss_v1)      build_ss v1 ;;
   tg)         build_tg v2 ;;
   tg_v1)      build_tg v1 ;;
   mf)         build_mf ;;
   xmas)       build_xmas ;;
+  xmas2)      build_xmas2 ;;
+  bc)         build_bc ;;
+  on)         build_on ;;
   iwry)       build_iwry ;;
   iwry_anim)  build_iwry_release ;;
   iwry_thumb) ( cd src && python3 thumb_iwry.py "${OUT_DIR:-$HERE/i-will-replace-you}/iwry_thumbnail.png" ) ;;

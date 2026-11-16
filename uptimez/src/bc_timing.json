@@ -1,0 +1,700 @@
+{
+ "shots": [
+  {
+   "id": "01",
+   "name": "s_door",
+   "sec": 0,
+   "t0": 0.0,
+   "d": 1.0
+  },
+  {
+   "id": "02",
+   "name": "s_first",
+   "sec": 0,
+   "t0": 1.0,
+   "d": 1.6667
+  },
+  {
+   "id": "03",
+   "name": "s_phone47",
+   "sec": 0,
+   "t0": 2.6667,
+   "d": 0.9167
+  },
+  {
+   "id": "04",
+   "name": "s_small_low",
+   "sec": 1,
+   "t0": 3.5834,
+   "d": 1.0
+  },
+  {
+   "id": "05",
+   "name": "s_feet",
+   "sec": 1,
+   "t0": 4.5834,
+   "d": 0.5
+  },
+  {
+   "id": "06",
+   "name": "s_pov",
+   "sec": 1,
+   "t0": 5.0834,
+   "d": 1.25
+  },
+  {
+   "id": "07",
+   "name": "s_half",
+   "sec": 1,
+   "t0": 6.3334,
+   "d": 1.0833
+  },
+  {
+   "id": "08",
+   "name": "s_q1",
+   "sec": 1,
+   "t0": 7.4167,
+   "d": 2.0833
+  },
+  {
+   "id": "09",
+   "name": "s_data",
+   "sec": 1,
+   "t0": 9.5,
+   "d": 1.5833
+  },
+  {
+   "id": "10",
+   "name": "s_short",
+   "sec": 1,
+   "t0": 11.0833,
+   "d": 1.4167
+  },
+  {
+   "id": "11",
+   "name": "s_robot_height",
+   "sec": 1,
+   "t0": 12.5,
+   "d": 1.4167
+  },
+  {
+   "id": "12",
+   "name": "s_cross",
+   "sec": 1,
+   "t0": 13.9167,
+   "d": 0.5833
+  },
+  {
+   "id": "13",
+   "name": "s_small_out",
+   "sec": 1,
+   "t0": 14.5,
+   "d": 1.0
+  },
+  {
+   "id": "14",
+   "name": "s_loom",
+   "sec": 2,
+   "t0": 15.5,
+   "d": 1.0
+  },
+  {
+   "id": "15",
+   "name": "s_legs",
+   "sec": 2,
+   "t0": 16.5,
+   "d": 0.8333
+  },
+  {
+   "id": "16",
+   "name": "s_pen_goes",
+   "sec": 2,
+   "t0": 17.3333,
+   "d": 1.0
+  },
+  {
+   "id": "17",
+   "name": "s_boot",
+   "sec": 2,
+   "t0": 18.3333,
+   "d": 0.5
+  },
+  {
+   "id": "18",
+   "name": "s_dropped",
+   "sec": 2,
+   "t0": 18.8333,
+   "d": 1.6667
+  },
+  {
+   "id": "19",
+   "name": "s_thanks",
+   "sec": 2,
+   "t0": 20.5,
+   "d": 1.4167
+  },
+  {
+   "id": "20",
+   "name": "s_chain",
+   "sec": 2,
+   "t0": 21.9167,
+   "d": 1.5
+  },
+  {
+   "id": "21",
+   "name": "s_eyes_jealous",
+   "sec": 2,
+   "t0": 23.4167,
+   "d": 0.6667
+  },
+  {
+   "id": "22",
+   "name": "s_q2",
+   "sec": 2,
+   "t0": 24.0834,
+   "d": 2.3333
+  },
+  {
+   "id": "23",
+   "name": "s_okay",
+   "sec": 2,
+   "t0": 26.4167,
+   "d": 3.3333
+  },
+  {
+   "id": "24",
+   "name": "s_true",
+   "sec": 2,
+   "t0": 29.75,
+   "d": 1.5833
+  },
+  {
+   "id": "25",
+   "name": "s_distracting",
+   "sec": 2,
+   "t0": 31.3333,
+   "d": 1.5833
+  },
+  {
+   "id": "26",
+   "name": "s_whom",
+   "sec": 2,
+   "t0": 32.9166,
+   "d": 1.1667
+  },
+  {
+   "id": "27",
+   "name": "s_push",
+   "sec": 2,
+   "t0": 34.0833,
+   "d": 2.0833
+  },
+  {
+   "id": "28",
+   "name": "s_push_cu",
+   "sec": 2,
+   "t0": 36.1666,
+   "d": 0.9167
+  },
+  {
+   "id": "29",
+   "name": "s_no_worries",
+   "sec": 2,
+   "t0": 37.0833,
+   "d": 1.5
+  },
+  {
+   "id": "30",
+   "name": "s_mom_door",
+   "sec": 3,
+   "t0": 38.5833,
+   "d": 2.4167
+  },
+  {
+   "id": "31",
+   "name": "s_eyes_afraid",
+   "sec": 3,
+   "t0": 41.0,
+   "d": 0.6667
+  },
+  {
+   "id": "32",
+   "name": "s_upright",
+   "sec": 3,
+   "t0": 41.6667,
+   "d": 0.8333
+  },
+  {
+   "id": "33",
+   "name": "s_mom_sits",
+   "sec": 3,
+   "t0": 42.5,
+   "d": 1.0
+  },
+  {
+   "id": "34",
+   "name": "s_experience",
+   "sec": 3,
+   "t0": 43.5,
+   "d": 1.25
+  },
+  {
+   "id": "35",
+   "name": "s_forty",
+   "sec": 3,
+   "t0": 44.75,
+   "d": 3.3333
+  },
+  {
+   "id": "36",
+   "name": "s_five",
+   "sec": 3,
+   "t0": 48.0833,
+   "d": 1.6667
+  },
+  {
+   "id": "37",
+   "name": "s_ageism",
+   "sec": 3,
+   "t0": 49.75,
+   "d": 1.8333
+  },
+  {
+   "id": "38",
+   "name": "s_family_q",
+   "sec": 3,
+   "t0": 51.5833,
+   "d": 2.1667
+  },
+  {
+   "id": "39",
+   "name": "s_family",
+   "sec": 3,
+   "t0": 53.75,
+   "d": 2.75
+  },
+  {
+   "id": "40",
+   "name": "s_q3",
+   "sec": 3,
+   "t0": 56.5,
+   "d": 2.75
+  },
+  {
+   "id": "41",
+   "name": "s_apologize",
+   "sec": 3,
+   "t0": 59.25,
+   "d": 3.3333
+  },
+  {
+   "id": "42",
+   "name": "s_sorry",
+   "sec": 3,
+   "t0": 62.5833,
+   "d": 1.0
+  },
+  {
+   "id": "43",
+   "name": "s_pause",
+   "sec": 3,
+   "t0": 63.5833,
+   "d": 2.0
+  },
+  {
+   "id": "44",
+   "name": "s_mom_looks",
+   "sec": 3,
+   "t0": 65.5833,
+   "d": 0.6667
+  },
+  {
+   "id": "45",
+   "name": "s_phone_hover",
+   "sec": 3,
+   "t0": 66.25,
+   "d": 0.8333
+  },
+  {
+   "id": "46",
+   "name": "s_sorry_client",
+   "sec": 3,
+   "t0": 67.0833,
+   "d": 1.3333
+  },
+  {
+   "id": "47",
+   "name": "s_answered",
+   "sec": 3,
+   "t0": 68.4166,
+   "d": 0.75
+  },
+  {
+   "id": "48",
+   "name": "s_good_boy",
+   "sec": 3,
+   "t0": 69.1666,
+   "d": 2.0
+  },
+  {
+   "id": "49",
+   "name": "s_verdict",
+   "sec": 4,
+   "t0": 71.1666,
+   "d": 1.75
+  },
+  {
+   "id": "50",
+   "name": "s_stamp",
+   "sec": 4,
+   "t0": 72.9166,
+   "d": 0.8333
+  },
+  {
+   "id": "51",
+   "name": "s_approved",
+   "sec": 4,
+   "t0": 73.7499,
+   "d": 1.5833
+  },
+  {
+   "id": "52",
+   "name": "s_leaves",
+   "sec": 5,
+   "t0": 75.3332,
+   "d": 0.8333
+  },
+  {
+   "id": "53",
+   "name": "s_welcome",
+   "sec": 5,
+   "t0": 76.1665,
+   "d": 1.0833
+  },
+  {
+   "id": "54",
+   "name": "s_lick",
+   "sec": 5,
+   "t0": 77.2498,
+   "d": 0.8333
+  },
+  {
+   "id": "55",
+   "name": "s_shout",
+   "sec": 5,
+   "t0": 78.0831,
+   "d": 1.8333
+  },
+  {
+   "id": "56",
+   "name": "s_stain",
+   "sec": 5,
+   "t0": 79.9164,
+   "d": 0.6667
+  },
+  {
+   "id": "57",
+   "name": "s_scrub",
+   "sec": 5,
+   "t0": 80.5831,
+   "d": 1.25
+  },
+  {
+   "id": "58",
+   "name": "s_witnesses",
+   "sec": 5,
+   "t0": 81.8331,
+   "d": 1.0
+  },
+  {
+   "id": "59",
+   "name": "s_lapel",
+   "sec": 5,
+   "t0": 82.8331,
+   "d": 1.5
+  },
+  {
+   "id": "60",
+   "name": "s_father",
+   "sec": 6,
+   "t0": 84.3331,
+   "d": 2.3333
+  },
+  {
+   "id": "61",
+   "name": "s_why",
+   "sec": 6,
+   "t0": 86.6664,
+   "d": 1.0
+  },
+  {
+   "id": "62",
+   "name": "s_job",
+   "sec": 6,
+   "t0": 87.6664,
+   "d": 2.5833
+  },
+  {
+   "id": "63",
+   "name": "s_tilt",
+   "sec": 6,
+   "t0": 90.2497,
+   "d": 1.0
+  },
+  {
+   "id": "64",
+   "name": "s_door_end",
+   "sec": 6,
+   "t0": 91.2497,
+   "d": 1.25
+  }
+ ],
+ "lines": [
+  {
+   "key": "first",
+   "who": "DON",
+   "t0": 1.2,
+   "t1": 2.368,
+   "shot": "s_first"
+  },
+  {
+   "key": "three",
+   "who": "SOF",
+   "t0": 5.283,
+   "t1": 6.014,
+   "shot": "s_pov"
+  },
+  {
+   "key": "half",
+   "who": "SMALL",
+   "t0": 6.533,
+   "t1": 7.109,
+   "shot": "s_half"
+  },
+  {
+   "key": "q1",
+   "who": "DON",
+   "t0": 7.617,
+   "t1": 9.069,
+   "shot": "s_q1"
+  },
+  {
+   "key": "data",
+   "who": "SMALL",
+   "t0": 9.65,
+   "t1": 10.732,
+   "shot": "s_data"
+  },
+  {
+   "key": "short",
+   "who": "DON",
+   "t0": 11.333,
+   "t1": 12.071,
+   "shot": "s_short"
+  },
+  {
+   "key": "r_height",
+   "who": "ROB",
+   "t0": 12.65,
+   "t1": 14.552,
+   "shot": "s_robot_height"
+  },
+  {
+   "key": "dropped",
+   "who": "MACHO",
+   "t0": 19.133,
+   "t1": 20.2,
+   "shot": "s_dropped"
+  },
+  {
+   "key": "thanks",
+   "who": "SOF",
+   "t0": 20.8,
+   "t1": 21.455,
+   "shot": "s_thanks"
+  },
+  {
+   "key": "q2",
+   "who": "DON",
+   "t0": 24.203,
+   "t1": 26.003,
+   "shot": "s_q2"
+  },
+  {
+   "key": "okay",
+   "who": "MACHO",
+   "t0": 26.617,
+   "t1": 29.343,
+   "shot": "s_okay"
+  },
+  {
+   "key": "true",
+   "who": "SOF",
+   "t0": 30.0,
+   "t1": 30.878,
+   "shot": "s_true"
+  },
+  {
+   "key": "distracting",
+   "who": "DON",
+   "t0": 31.453,
+   "t1": 32.706,
+   "shot": "s_distracting"
+  },
+  {
+   "key": "whom",
+   "who": "SOF",
+   "t0": 33.067,
+   "t1": 33.726,
+   "shot": "s_whom"
+  },
+  {
+   "key": "r_looks",
+   "who": "ROB",
+   "t0": 34.433,
+   "t1": 36.769,
+   "shot": "s_push"
+  },
+  {
+   "key": "worries",
+   "who": "MACHO",
+   "t0": 37.283,
+   "t1": 38.214,
+   "shot": "s_no_worries"
+  },
+  {
+   "key": "morning",
+   "who": "MOM",
+   "t0": 39.083,
+   "t1": 40.669,
+   "shot": "s_mom_door"
+  },
+  {
+   "key": "experience",
+   "who": "ROB",
+   "t0": 43.6,
+   "t1": 44.567,
+   "shot": "s_experience"
+  },
+  {
+   "key": "forty",
+   "who": "MOM",
+   "t0": 44.95,
+   "t1": 47.652,
+   "shot": "s_forty"
+  },
+  {
+   "key": "five",
+   "who": "SOF",
+   "t0": 48.233,
+   "t1": 49.678,
+   "shot": "s_five"
+  },
+  {
+   "key": "r_ageism",
+   "who": "ROB",
+   "t0": 50.0,
+   "t1": 51.315,
+   "shot": "s_ageism"
+  },
+  {
+   "key": "family",
+   "who": "PAM",
+   "t0": 51.783,
+   "t1": 53.492,
+   "shot": "s_family_q"
+  },
+  {
+   "key": "r_family",
+   "who": "ROB",
+   "t0": 53.95,
+   "t1": 56.253,
+   "shot": "s_family"
+  },
+  {
+   "key": "q3",
+   "who": "DON",
+   "t0": 56.9,
+   "t1": 58.722,
+   "shot": "s_q3"
+  },
+  {
+   "key": "apologize",
+   "who": "MOM",
+   "t0": 59.7,
+   "t1": 62.043,
+   "shot": "s_apologize"
+  },
+  {
+   "key": "sorry",
+   "who": "DON",
+   "t0": 62.703,
+   "t1": 63.314,
+   "shot": "s_sorry"
+  },
+  {
+   "key": "sorry2",
+   "who": "DON",
+   "t0": 67.433,
+   "t1": 68.097,
+   "shot": "s_sorry_client"
+  },
+  {
+   "key": "goodboy",
+   "who": "MOM",
+   "t0": 69.517,
+   "t1": 70.664,
+   "shot": "s_good_boy"
+  },
+  {
+   "key": "verdict",
+   "who": "ROB",
+   "t0": 71.467,
+   "t1": 73.451,
+   "shot": "s_verdict"
+  },
+  {
+   "key": "approved",
+   "who": "DON",
+   "t0": 74.15,
+   "t1": 74.974,
+   "shot": "s_approved"
+  },
+  {
+   "key": "welcome",
+   "who": "DON",
+   "t0": 76.516,
+   "t1": 77.177,
+   "shot": "s_welcome"
+  },
+  {
+   "key": "donnie",
+   "who": "MOM",
+   "t0": 78.163,
+   "t1": 79.609,
+   "shot": "s_shout"
+  },
+  {
+   "key": "father",
+   "who": "MOM",
+   "t0": 84.583,
+   "t1": 86.365,
+   "shot": "s_father"
+  },
+  {
+   "key": "why",
+   "who": "DON",
+   "t0": 86.866,
+   "t1": 87.417,
+   "shot": "s_why"
+  },
+  {
+   "key": "job",
+   "who": "MOM",
+   "t0": 87.916,
+   "t1": 89.703,
+   "shot": "s_job"
+  }
+ ],
+ "total": 92.4997
+}
