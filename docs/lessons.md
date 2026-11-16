@@ -372,6 +372,7 @@ Props, pacing, sound:
 Delivery and the repo:
 
 - **`-shortest` with AAC drops the last video frames** (four here), and the last frame is the loop's join. Mux without it and count frames in the finished file.
+- **Compare the master with the checked film, frame by frame.** The 1080 render was the 540 drawing at twice the size, except that hinted text is a few pixels narrower at 1080, so one long bubble sat 5 px off its checked place. Scaling the master down against the 540 film (PSNR per frame) showed the shot at once; bubble text is now measured at 540 scale whatever the output size.
 - **Pin a version's data with its code.** The pinned v2 animation read the same push-in file as v3 and drew four different stills until it got its own.
 - **Check that the branch you build on has reached main** (`git merge-base --is-ancestor`). This episode was built on a branch whose Office Noir commit had never been merged and shared no history with main; it had to be carried onto main first.
 
