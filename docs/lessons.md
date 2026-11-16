@@ -369,3 +369,83 @@ What *Learn to Code* (25 s, 2024 → 2026, ending under Tower Bridge) taught us 
 - **Write the key lines, not just the punchline.** v3 only wrote "THOSE ARE MINE!", so a reviewer watching on mute read the shout as being about jobs and the ending as uncaused. Speech bubbles for HARV's three lines fixed both; the next cold viewer named the sunglasses unprompted. Make a bubble on the last shot disappear before the final frame so the loop still matches frame 0.
 - **The shout needs its object in the same frame.** He now points at HARV's shades in the foreground; a viewer shouldn't have to remember them from the shot before.
 
+
+# Retrospective, 16 Nov: why Perfect Date and Perfect Trip work and Infinite Undo and Make It Better v3 don't
+
+Prompted by two outside audits (Infinite Undo key poses; Make It Better v3: "the idea is better than the film") and Tomas's verdict on Infinite Undo: "not ironic, not iconic".
+
+## The series check (gate before any stills)
+
+| Check | Perfect Date | Perfect Trip | Infinite Undo (shelved) | Make It Better v3 |
+|---|---|---|---|---|
+| What Hoody wants | Eva | A trip with her | A glass of water | "Better", vaguely |
+| The AI takes it | The date | The photos, then the trip | No: the cat is the agent | An anonymous robot strikes |
+| Ironic surface | A sweet balloon show | A soft photo-story | None | "Love the energy" |
+| One iconic image | Hoody floating away | Hoody demoted to cameraman | A rewinding arc (read as a tentacle) | None: numbers and badges |
+
+Every concept now gets this row before stills. Two or more weak cells: go back to premises.
+
+## What correlates
+
+1. **Characters act; labels don't.** When a number, badge or caption carries the change (V1 → V47, ×14, a rewind outline), the story is told, not shown. Whatever the label says must also happen to a body: MY AI's antenna droops version by version, its tie goes on and comes off.
+2. **A situation ladder beats a repeated gag.** Perfect Date has about 8 situations in 22 s (rose, guitar, pump, float, the hand, plonk, pop, fall); Perfect Trip a new role per place. Infinite Undo was one situation repeated; Make It Better v3 two. Each beat must change Hoody's status or role, joined by "but" or "therefore".
+3. **Situation jokes beat mechanism jokes.** If the viewer must work out a rule (what UNDO rewinds, who presses it) the laugh comes late. Use situations everyone has lived: a client's feedback, autocorrect, a camera roll. Visual clarity scored lowest in all four Infinite Undo audits for this reason, not because of drawing.
+4. **Show the breaking point.** A consequence (a strike) needs the snap on screen first: the twitch, the stare, the tie dropped on the desk.
+5. **The last image is a new action.** A tableau or a repeat of the middle ends flat; a one-beat action ends it (the sign flipped to NO., the antenna over the backrest ducking away).
+6. **Three motivated camera changes beat uniform frontal framing:** a close-up for the emotion, an insert of the key object, a low angle for power. More cuts are not the fix.
+7. **Outside audits polish execution; the gate checks the premise.** Four audit rounds improved how Infinite Undo worked and none asked whether it was a ME + MY AI episode.
+
+## What our pipeline can't improve (work around it)
+
+- **Full-body acting.** The characters are rigs with fixed poses and faces: no fluid squash, overlap or weight. Work around it with a clear pose per beat, a prop that does the acting (tie, antenna, sign), and reaction close-ups.
+- **A real 3D camera.** Only 2D pans, zooms and crops. Fake an over-the-shoulder with a foreground silhouette; get depth from layers (the bench backrest, the desk).
+- **Voices for MY AI and Eva** are synthetic; Hoody's are Tomas's takes. Keep synthetic lines short and characterful.
+- **Whether it's funny.** Frames, levels and speech recognition can be measured; laughs need people. The silent five-viewer test stays the gate.
+
+## Added after the Make It Better v5 audit (16 Nov)
+
+8. **Never show the punchline's words before the reveal.** Signs being lettered on screen, a label that switches early, or a TV that explains the idea all spend the surprise. Show the making from behind; let the words appear on the flip.
+9. **A lovable flaw shows the kindness first, then the flaw.** Hoody loves the cake (a forkful, eyes closed, a real thumbs-up) and only then asks for it better. The other order reads as cruelty and loses the audience.
+10. **The turning point is a look between two characters, not an outside trigger.** Eva and MY AI decide together because of V47; HARV on the TV only confirms. An external cue makes them followers.
+11. **After the big laugh, a smaller one that proves nothing changed.** NO. NO. no., then Hoody studies the signs: "Bigger?" The sting turns the hero's flaw on the very thing that rejected him.
+
+## Added after the second Make It Better v5 audit (16 Nov): the shot-list gate
+
+12. **Premise scores high, execution scores low, every time** (premise 8-9 in every audit; drama, camera and pacing 3.5-6). The series check fixed our ideas; our weakness is now directing.
+13. **Write a shot list before any key poses.** Each beat gets an action shot and a reaction shot, with the size (close-up, point of view, over the shoulder, low angle) and the eyelines written down. Key poses are then drawn as shots, not scenes. Seven wide "illustrated statements" read as a slideshow; the same story as 16 shots reads as a film.
+14. **Show the consequence, not the comment.** The audience should feel, in order: poor Eva, then they're plotting, then he still doesn't get it. Each needs its own close-up and a hold.
+15. **The camera changes sides.** It starts with Hoody (his point of view, his confidence) and ends with the others, looking at him as the problem. A Dutch angle is spent once, when his world turns.
+
+## Added 16 Nov: the protect list, and composing for the frame
+
+16. **Audits make each version better and the episode thinner.** Each cut they suggest is fair alone; together they removed Make It Better's most visual performer (MY AI's patience ladder), its best line pair (more/less professional) and the establishing wide. Before accepting any audit cut, check it against a **protect list**: the five things that make it this episode, written in the concept doc.
+17. **Adding reaction shots costs time; don't pay for it with the setup.** Let a story episode run 24-27 s rather than cut what the reactions react to.
+18. **Compose every shot for the 9:16 frame; never crop one wide set.** Faces in the band just under the title bar; heads big in close-ups; a foreground layer (a sofa back, a cake, a hand) for depth; eyelines that meet; consistent character sizes from shot to shot; a simplified wall behind faces. Keep one real wide early so the viewer knows where and whose (the silent viewer asked "whose birthday?").
+19. **A second pair can echo the turning point at a smaller scale.** Eva and MY AI share a look; then the cat recruits the dog with one open eye. The echo is a laugh and widens the alliance without dialogue.
+
+## Added 16 Nov: craft from the research (the "Marry" list)
+
+20. **A story turn must be an action, not a glance.** The rough 2 mute viewer read the dog's recruitment (a look) as nothing and the Eva / MY AI look as "plotting, I guess". Hand a card over, nod together, push a bed: something a body does.
+21. **Every reaction is a take:** anticipation (a squash or a small move the other way), the accent (the big face, 2-4 frames), then a settle and a hold of at least 0.5 s. A face that only swaps drawings doesn't read as a reaction.
+22. **Stage one idea at a time.** In each shot one thing moves and everything else waits; the eye goes where the motion is. Two moving gags in one frame cancel each other.
+23. **The reaction comes after the gag, with a hold.** The viewer's favourite beat ("Bigger?") lost because we cut away before his face after the NO. Never cut on the joke's own frame.
+24. **Push in only on the turns.** A slow push on every shot makes none of them matter. Save camera moves for the 2-3 beats where the story changes.
+25. **Signs and plants read at 270 px wide** (a phone in a feed). If a label can't be read in the grid thumbnail, it doesn't exist for the viewer.
+26. **The last image is the hero's flaw in action**, not a tableau: his thumbs-up pops back up over the NO board.
+
+## Added 16 Nov: gates and workers
+
+Each gate has a pass mark and runs before the next stage. A failed gate goes back one stage, not to the start.
+
+| Gate | When | Pass |
+|---|---|---|
+| G0 Series check | concept | the five questions all yes: what Hoody wants, AI takes it, ironic surface, one iconic image, someone who matters sees him fail |
+| G1 Protect list | concept | five things written in the doc; every later cut is checked against them |
+| G2 Shot list | before key poses | each beat has an action shot and a reaction shot, size and eyelines written; every turn is an action |
+| G3 Composition check | key poses / shots | faces in the band under the bar, foreground layer, eyelines meet, sizes consistent, signs legible at 270 px |
+| G4 Cold mute test | each rough | two fresh viewers on 4 fps and 8 fps grids, standard questions; 4 of 5 beats told back correctly by both |
+| G5 QA worker | each render | 1080x1920, 30 fps, frame count; true peak ≤ -1 dBTP and -14 to -16 LUFS after AAC; ASR on every line in the mix; text in safe zones; loop seam |
+| G6 Audit triage | after reviews | ok / partial / fail table, what correlates, protect-list check; at most two rounds before going back to premises |
+
+27. **Workers must be cold.** The mute test only works when the viewer has never seen the script: a fresh subagent with frames only, the same questions every time ("what's happening, whose is it, what changed, who sides with whom, what's the last image"), and its answers compared to the intended reading line by line.
+28. **Gates must fail loudly.** Rough 2 shipped at -0.1 dBTP because the peak was measured but nothing stopped on it. A QA check that only prints is not a gate.
