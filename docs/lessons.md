@@ -422,3 +422,30 @@ Every concept now gets this row before stills. Two or more weak cells: go back t
 17. **Adding reaction shots costs time; don't pay for it with the setup.** Let a story episode run 24-27 s rather than cut what the reactions react to.
 18. **Compose every shot for the 9:16 frame; never crop one wide set.** Faces in the band just under the title bar; heads big in close-ups; a foreground layer (a sofa back, a cake, a hand) for depth; eyelines that meet; consistent character sizes from shot to shot; a simplified wall behind faces. Keep one real wide early so the viewer knows where and whose (the silent viewer asked "whose birthday?").
 19. **A second pair can echo the turning point at a smaller scale.** Eva and MY AI share a look; then the cat recruits the dog with one open eye. The echo is a laugh and widens the alliance without dialogue.
+
+## Added 16 Nov: craft from the research (the "Marry" list)
+
+20. **A story turn must be an action, not a glance.** The rough 2 mute viewer read the dog's recruitment (a look) as nothing and the Eva / MY AI look as "plotting, I guess". Hand a card over, nod together, push a bed: something a body does.
+21. **Every reaction is a take:** anticipation (a squash or a small move the other way), the accent (the big face, 2-4 frames), then a settle and a hold of at least 0.5 s. A face that only swaps drawings doesn't read as a reaction.
+22. **Stage one idea at a time.** In each shot one thing moves and everything else waits; the eye goes where the motion is. Two moving gags in one frame cancel each other.
+23. **The reaction comes after the gag, with a hold.** The viewer's favourite beat ("Bigger?") lost because we cut away before his face after the NO. Never cut on the joke's own frame.
+24. **Push in only on the turns.** A slow push on every shot makes none of them matter. Save camera moves for the 2-3 beats where the story changes.
+25. **Signs and plants read at 270 px wide** (a phone in a feed). If a label can't be read in the grid thumbnail, it doesn't exist for the viewer.
+26. **The last image is the hero's flaw in action**, not a tableau: his thumbs-up pops back up over the NO board.
+
+## Added 16 Nov: gates and workers
+
+Each gate has a pass mark and runs before the next stage. A failed gate goes back one stage, not to the start.
+
+| Gate | When | Pass |
+|---|---|---|
+| G0 Series check | concept | the five questions all yes: what Hoody wants, AI takes it, ironic surface, one iconic image, someone who matters sees him fail |
+| G1 Protect list | concept | five things written in the doc; every later cut is checked against them |
+| G2 Shot list | before key poses | each beat has an action shot and a reaction shot, size and eyelines written; every turn is an action |
+| G3 Composition check | key poses / shots | faces in the band under the bar, foreground layer, eyelines meet, sizes consistent, signs legible at 270 px |
+| G4 Cold mute test | each rough | two fresh viewers on 4 fps and 8 fps grids, standard questions; 4 of 5 beats told back correctly by both |
+| G5 QA worker | each render | 1080x1920, 30 fps, frame count; true peak ≤ -1 dBTP and -14 to -16 LUFS after AAC; ASR on every line in the mix; text in safe zones; loop seam |
+| G6 Audit triage | after reviews | ok / partial / fail table, what correlates, protect-list check; at most two rounds before going back to premises |
+
+27. **Workers must be cold.** The mute test only works when the viewer has never seen the script: a fresh subagent with frames only, the same questions every time ("what's happening, whose is it, what changed, who sides with whom, what's the last image"), and its answers compared to the intended reading line by line.
+28. **Gates must fail loudly.** Rough 2 shipped at -0.1 dBTP because the peak was measured but nothing stopped on it. A QA check that only prints is not a gate.
