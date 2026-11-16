@@ -408,3 +408,10 @@ Every concept now gets this row before stills. Two or more weak cells: go back t
 9. **A lovable flaw shows the kindness first, then the flaw.** Hoody loves the cake (a forkful, eyes closed, a real thumbs-up) and only then asks for it better. The other order reads as cruelty and loses the audience.
 10. **The turning point is a look between two characters, not an outside trigger.** Eva and MY AI decide together because of V47; HARV on the TV only confirms. An external cue makes them followers.
 11. **After the big laugh, a smaller one that proves nothing changed.** NO. NO. no., then Hoody studies the signs: "Bigger?" The sting turns the hero's flaw on the very thing that rejected him.
+
+## Added after the second Make It Better v5 audit (16 Nov): the shot-list gate
+
+12. **Premise scores high, execution scores low, every time** (premise 8-9 in every audit; drama, camera and pacing 3.5-6). The series check fixed our ideas; our weakness is now directing.
+13. **Write a shot list before any key poses.** Each beat gets an action shot and a reaction shot, with the size (close-up, point of view, over the shoulder, low angle) and the eyelines written down. Key poses are then drawn as shots, not scenes. Seven wide "illustrated statements" read as a slideshow; the same story as 16 shots reads as a film.
+14. **Show the consequence, not the comment.** The audience should feel, in order: poor Eva, then they're plotting, then he still doesn't get it. Each needs its own close-up and a hold.
+15. **The camera changes sides.** It starts with Hoody (his point of view, his confidence) and ends with the others, looking at him as the problem. A Dutch angle is spent once, when his world turns.
