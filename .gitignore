@@ -19,3 +19,5 @@ uptimez/src/models/
 uptimez/src/*_mix.wav
 uptimez/src/*_mix_master.wav
 uptimez/src/*_sync.json
+# uptimez 1080 renders: rebuilt by build.sh, not committed (17 Nov). Already-tracked ones stay tracked.
+uptimez/**/*_1080.mp4
