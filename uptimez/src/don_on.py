@@ -157,7 +157,15 @@ def _base(k, x, feet, s, pose, face, look, seed, mouth):
     finally:
         kit.face_draw, ds.earpiece = old, old_ear
     if mouth:
-        im.don_mouth(k, out["head"], mouth, seed=seed + 30)
+        if MOUTH_SCALED and s != 1.0:                         # v (film, tail review): the talking mouth at his size
+            c = k.c; hx, hy = out["head"]
+            c.save(); c.translate(hx, hy); c.scale(s, s); c.translate(-hx, -hy)
+            try:
+                im.don_mouth(k, out["head"], mouth, seed=seed + 30)
+            finally:
+                c.restore()
+        else:
+            im.don_mouth(k, out["head"], mouth, seed=seed + 30)
     return out
 
 
@@ -259,6 +267,7 @@ def don_noir(k, x, feet, s=1.0, pose="stand", face="cynic", look=(0, 0), brim=1.
 POSE_HUG = dm.ik(-1, -6, BT + 96) + (10, -4)          # 10B: his screen-left arm around the bunny
 
 
+MOUTH_SCALED = False        # opt-in (film): draw the lip-sync mouth at the figure's scale (it was 1x on a 4x close-up)
 PJ_BRIM_DROP = 0.0          # opt-in (film): pulls the fedora down over his eyes in bed; 0 = unchanged
 PJ_HAT_SCALE = 1.0          # opt-in (film): a bigger hat as it comes down, so it still covers the crown; 1 = unchanged
 PJ_BRIM_FLAP = 0.0          # opt-in (film): 0..1, the brim's front bends down over his eyes (the hat stays put)

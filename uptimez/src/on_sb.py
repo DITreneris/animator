@@ -57,6 +57,9 @@ W2, H2 = 1200, 1990
 GREY = (0.35, 0.40, 0.50)
 BG = (0.97, 0.96, 0.93)
 ACC = setsh.ACC
+SHOUT_CY = 150              # v8 opt-in (film): the shout's centre, lower to clear the app's top bar
+SUSPECT_HUD = False         # v8 opt-in (film): "Suspect identified." as a CCTV readout, no bubble
+SUSPECT_TIP = None          # v7 opt-in (film): the off-screen robot's tail ends inside the CCTV corner bracket
 HEART0 = (330.0, 830.0, 58.0)                     # v2: bigger; x, y, size in frame 0 and the last frame
 
 
@@ -220,7 +223,7 @@ def k_informant(kk):
 
 # ---- builders for the beats --------------------------------------------------------------------------------------
 
-def b_shot3(stroke=0.0):
+def b_shot3(stroke=0.0, bubble=True):
     s3 = surf()
     ssh.shot3(Ctx(cairo.Context(s3), 0), stroke=stroke); eng.accent_pass(s3, ssh.ACC); ssh.relight3(s3)
     c3 = cairo.Context(s3)
@@ -229,6 +232,8 @@ def b_shot3(stroke=0.0):
     c3.set_source_rgba(0, 0, 0, 0.25); c3.rectangle(hx + 8 * s_, hy - 60 * s_, 70 * s_, 120 * s_); c3.fill(); c3.restore()
     st.key_light(c3, hx - 6 * s_, hy + 30 * s_, 26 * s_, 0.22)
     c3.set_source_rgb(1, 1, 1); c3.arc(hx - 18 * s_ + 3 * s_, hy + 1 * s_, 2.6 * s_, 0, 2 * math.pi); c3.fill()
+    if not bubble:                                                   # v8 (film): the film draws its own, on cue
+        return s3
     return say_to(s3, "I sign my work\u2026\ndarling.", 150, 40, (300, 490), (300, 420), 125, 34)
 
 
@@ -259,7 +264,15 @@ def b_shot5():
     cs.move_to(380, 112); cs.show_text("II 0.6 s")
     old = P.TYPE; P.TYPE = "DejaVu Sans Mono"                       # the robot's voice: his own mono type
     try:
-        P.bubble(cs, "Suspect\nidentified.", 250, 640, tail=(300, 120), size=34)
+        if SUSPECT_HUD:                                             # v8 (film): his line as a readout on the footage
+            cs.select_font_face("DejaVu Sans Mono", 0, 1); cs.set_font_size(27)
+            msg = "> SUSPECT IDENTIFIED."
+            e = cs.text_extents(msg)
+            cs.set_source_rgba(0.02, 0.03, 0.05, 0.82); cs.rectangle(34, 742, e.x_advance + 28, 50); cs.fill()
+            cs.set_source_rgb(0.72, 0.96, 1.0); cs.move_to(48, 776); cs.show_text(msg)
+        else:
+            tl_ = (300, 120) if SUSPECT_TIP is None else (SUSPECT_TIP[0] - 250, SUSPECT_TIP[1] - (640 + 34 * 1.25 * 2 + 30))
+            P.bubble(cs, "Suspect\nidentified.", 250, 640, tail=tl_, size=34)
     finally:
         P.TYPE = old
     exitf = P.cctv(P.frame5(1.0, walk=True), "MON 08:59:17")
@@ -419,7 +432,7 @@ def shout(sf, text, size=64):
     c = cairo.Context(sf)
     c.select_font_face(psh.TYPE, 0, 0); c.set_font_size(size)
     w = c.text_extents(text).x_advance
-    cx, cy, rx, ry = 270, 150, w / 2 + 50, 70
+    cx, cy, rx, ry = 270, SHOUT_CY, w / 2 + 50, 70
     c.new_path()
     for i in range(24):
         a = i * math.pi / 12; r = 1.0 if i % 2 == 0 else 0.78
@@ -550,6 +563,79 @@ def main(out, loop_out):
     sheet.write_to_png(out)
     lc.write_to_png(loop_out)
     return total
+
+
+
+
+# ---- v7 (film, third tail review): curved tails to the mouth actually drawn ----------------------------------
+
+def say_curve(sf, text, x, y, tip, head=None, size=34, mono=False, width=13):
+    """A bubble whose tail is a tapering curved wedge ending at tip (user coords). head=(hx, hy, R): the curve
+    bends around the outside of that circle; head=None: a straight wedge (off-screen speakers, to the frame edge).
+    The base sits on the box edge facing the tip."""
+    c = cairo.Context(sf)
+    font = "DejaVu Sans Mono" if mono else psh.TYPE
+    c.select_font_face(font, 0, 0); c.set_font_size(size)
+    lines = text.split("\n")
+    w = max(c.text_extents(t).x_advance for t in lines) + 40
+    h = size * 1.25 * len(lines) + 30
+    tx, ty = tip
+    if ty > y + h + 10:                                              # below the box: from the bottom edge
+        base = (min(max(tx, x + 30), x + w - 30), y + h - 3)
+    elif tx > x + w:
+        base = (x + w - 3, min(max(ty, y + 26), y + h - 26))
+    elif tx < x:
+        base = (x + 3, min(max(ty, y + 26), y + h - 26))
+    else:
+        base = (min(max(tx, x + 30), x + w - 30), y + 3)
+    if head:                                                         # down outside the face, then in at mouth height
+        hx, hy, R = head
+        side = 1 if tx >= hx else -1
+        ox = hx + side * R
+        if (ox - base[0]) * side < 0 and (tx - base[0]) * side < 0:
+            ox = base[0]                                             # the box is already outside the face
+        p1 = (ox, base[1] + 0.40 * (ty - base[1]))
+        p2 = (ox, ty)
+    else:
+        p1 = (base[0] + (tx - base[0]) / 3, base[1] + (ty - base[1]) / 3)
+        p2 = (base[0] + 2 * (tx - base[0]) / 3, base[1] + 2 * (ty - base[1]) / 3)
+    L, Rr = [], []
+    n = 24
+    for i in range(n + 1):
+        t = i / n; a, b_, c_, d_ = (1 - t) ** 3, 3 * (1 - t) ** 2 * t, 3 * (1 - t) * t * t, t ** 3
+        px = a * base[0] + b_ * p1[0] + c_ * p2[0] + d_ * tx
+        py = a * base[1] + b_ * p1[1] + c_ * p2[1] + d_ * ty
+        dx = 3 * (1 - t) ** 2 * (p1[0] - base[0]) + 6 * (1 - t) * t * (p2[0] - p1[0]) + 3 * t * t * (tx - p2[0])
+        dy = 3 * (1 - t) ** 2 * (p1[1] - base[1]) + 6 * (1 - t) * t * (p2[1] - p1[1]) + 3 * t * t * (ty - p2[1])
+        ln = math.hypot(dx, dy) or 1
+        wd = width * (1 - t) ** 1.1
+        L.append((px - dy / ln * wd, py + dx / ln * wd)); Rr.append((px + dy / ln * wd, py - dx / ln * wd))
+    poly = L + Rr[::-1]
+
+    def box(dx=0, dy=0):
+        r = 14; x0, y0 = x + dx, y + dy
+        c.new_sub_path()
+        c.arc(x0 + w - r, y0 + r, r, -math.pi / 2, 0); c.arc(x0 + w - r, y0 + h - r, r, 0, math.pi / 2)
+        c.arc(x0 + r, y0 + h - r, r, math.pi / 2, math.pi); c.arc(x0 + r, y0 + r, r, math.pi, 1.5 * math.pi)
+        c.close_path()
+
+    def tail(dx=0, dy=0):
+        c.new_sub_path(); c.move_to(poly[0][0] + dx, poly[0][1] + dy)
+        for q in poly[1:]:
+            c.line_to(q[0] + dx, q[1] + dy)
+        c.close_path()
+    c.new_path(); box(7, 7); c.set_source_rgb(0, 0, 0); c.fill()
+    c.new_path(); tail(4, 4); c.fill()
+    c.set_line_join(1)
+    for f in (box, tail):                                           # outline twice as wide, then the white
+        c.new_path(); f(); c.set_line_width(8); c.stroke()
+    c.set_source_rgb(1, 1, 1)
+    for f in (box, tail):
+        c.new_path(); f(); c.fill()
+    c.set_source_rgb(0, 0, 0)
+    for i, t in enumerate(lines):
+        c.move_to(x + 20, y + 15 + size * 0.95 + i * size * 1.25); c.show_text(t)
+    return sf
 
 
 if __name__ == "__main__":

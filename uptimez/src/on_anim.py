@@ -57,10 +57,10 @@ def retime(P, tk, mom):
     cues = [
         ("sfx:thunder", 2 / 15, 1.0),                                    # v6: with the flash, after frame 0
         ("vo1", 0.25, 1.0),
-        ("sfx:sting", 0.25 + tk["vo1"] - 0.85, 0.8),                   # on "Unsigned."
+        ("sfx:sting", 0.25 + tk["vo1"] - 0.85, 0.45),                  # on "Unsigned." (v8: 0.8 masked the word)
         ("vo_drink", st[2] - VO_LEAD, 1.0), ("sfx:flask", st[2] + 0.05, 0.9),
         ("vo_inf", st[3] - VO_LEAD, 1.0),
-        ("vo_boss", st[4] - VO_LEAD, 1.0), ("sfx:sting_low", st[4] + 0.45, 0.9),
+        ("vo_boss", st[4] - VO_LEAD, 1.0), ("sfx:sting_low", st[4] - VO_LEAD + tk["vo_boss"] - 0.06, 0.7),   # v8: right after "boss" (on it, it masked the word)
         ("sfx:gun", st[5] + 0.3, 1.0),
         ("don_sofia", st[7] + 0.35, 1.0),
         ("sofia", st[8] + 0.1, 1.0),
