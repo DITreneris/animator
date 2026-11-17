@@ -376,6 +376,39 @@ Delivery and the repo:
 - **Pin a version's data with its code.** The pinned v2 animation read the same push-in file as v3 and drew four different stills until it got its own.
 - **Check that the branch you build on has reached main** (`git merge-base --is-ancestor`). This episode was built on a branch whose Office Noir commit had never been merged and shared no history with main; it had to be carried onto main first.
 
+## The Onboarding (17 Nov)
+
+A 74 s film (21 lines, 51 shots), from concept to animation v10 in one day. Most of what was wrong was found by the director's ear and eye, by an outside audit and by cold viewers, not by the worker, whose report said "clean" each time.
+
+Sound:
+
+- **Nobody in the build hears the film, so run the speech check from the first mix.** "Oh..." shipped with 0.15 s of breath in front of the vowel and the director heard "so". Whisper (base.en through sherpa-onnx, the model from the k2-fsa GitHub releases) says "So..." on that mix and "Oh" on the fixed one. Run for the first time on v9, it also heard Pam's line as "Some shit other scooper". Every earlier QA report had said "Whisper not run: model not installed", and nobody installed it.
+- **A breath before a vowel is heard as a consonant.** Scan every take for energy above 4 kHz before its first voiced 20 ms. A take that should start on a vowel is cut to the vowel with a 12 ms fade.
+- **Test a take through the mix's own chain, not dry.** "Some shit, others scoop." was heard "...other scooper" in the final mix. Given as two sentences it passed dry and still failed in the mix: the room and the master's knee turned the last p into a syllable. Each candidate was then run through the same chain (room, room tone, gain, knee); the same four words at pace 1.0 pass in 3 windows of 3, at 0.92 and 0.84 they don't. The caption keeps the comma: what the voice is given and what the bubble says are two fields.
+- **Leave air after a line's last consonant.** A rustle placed a tenth of a second after "scoop." was part of what the recogniser heard as "-er". It is gone from the mix.
+- **A music bed raises the voices at the same LUFS.** The bed fills the gaps, the gaps now pass the loudness gate, the integrated figure drops, and the one constant gain to −14 LUFS went from 4.0 to 5.9 dB. Measure the true peak again after adding a bed.
+- **Stop the music for the line that has to land.** The cannon cuts the ceiling-speaker bossa dead, Don's shout and Pam's remark are in silence, and it returns on the stamp. Built on whole four-bar phrases over the film's length, it has no musical join at the loop.
+- **Random state is shared inside a process.** Two mixes rendered one after the other in one Python process are not the two mixes rendered separately. Compare md5 only between runs that each had a process of their own.
+
+Checks:
+
+- **"Clean" means only what the checker tests.** Animation v5 was reported clean while SOFÍA read SOFÍ in every close-up and her tails ended on her earring. The checker tested faces, the safe zone and "skin at the tip", and nothing else.
+- **Worn text is whole or hidden: find out by drawing the frame twice.** The second time the name is drawn in magenta; the pixels that differ are the letters actually seen, compared with the letters' own mask. Under 5 % seen is hidden, which is fine. Otherwise 90 % must show and the name may not touch the edge of the frame. Colour thresholds failed first: a white sleeve, a white bubble and a blue plan with white lines all count as "card or ink".
+- **A badge the costume half-covers is half-covered in every shot.** Sofía's card sat under her own sleeve (85 % of the name), Pam's behind her tablet, the VISITOR sticker under his arm whenever a hand was in his pocket. The fixes are hooks applied only while this film draws (the card moved, the fists lower), so every earlier sheet still rebuilds byte for byte.
+- **"Skin at the tip" passes a tail that stops at the edge of the face.** Walk on from the tip toward the middle of the face: the mouth has to begin within 0.4 of the face's radius. On a tipped head, aim along the head's own axis, or the tail lands on the glasses.
+- **Every held prop needs an arm, and the prop is drawn at the hand the pose returns.** The plan floated on two extra hand discs while his arms hung at his sides, through four animation versions and a mute test, until the director saw it. Going through every shot at three moments for the same fault found the roll missing from his next two singles.
+- **Start from main, not from the last episode's branch.** That branch had been merged, and `uptimez/CLAUDE.md` and STORYLINE v3.1 had landed on main since; neither was in the working tree for the whole build.
+
+Cutting and staging:
+
+- **A trim that merges a reaction chain can delete the beat.** Three shots of Don's jealousy became one single and two shots of Pam's silence became one. Both then read as nothing ("he wrings his hands", "one moment"). The mute test passed on v4 and failed on v8: run it again after any cut to a silent beat.
+- **A reaction shares a frame with its cause.** Neither fix took more time: her hand turning the pearl in front of Don, and the shredder's full bin beside him in Pam's frame.
+- **An emoji can be carrying a beat.** Taking the two pops out was right for the pace, and it took out the only thing that said "jealous".
+- **A pose change in one cut reads as a fall.** Standing, then on the floor: "fell or knelt?" in three tests. Turn the final pose about the feet for two drawings, so the knees are seen coming down.
+- **Name what was bought on a screen.** UptimeZ Find existed only in spoken lines. Once it was on the tablet and the payment screen, both cold viewers read it back unprompted.
+- **Viewers name the setup you never paid off.** Both expected the empty OUR FIRST CLIENT frame to be filled by the end. The last shot now fills it with his photograph.
+- **An audit made from one still a second misses anything shorter.** It never saw "Oh..." (0.66 s) or the plan opening, and proposed cutting the six seconds they were in. Check a review's claims against the timing table before agreeing. Its framing findings (the cropped badges) were right.
+
 ## Make It Original: auditions, sheet, rough (11 Nov)
 
 - **Screen every melody, not only the hero riff.** The AI's first tune shared three intervals with Smoke on the Water; the interval screen caught it before anyone heard it. It's a quick aid, not a guarantee.

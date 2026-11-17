@@ -1,0 +1,51 @@
+{
+ "liam": {
+  "f0": 114.3,
+  "st_vs_don": 3.5,
+  "seconds": 5.32,
+  "presence_db": -17.3,
+  "click": 0.132,
+  "note": "even and warm"
+ },
+ "liam_low": {
+  "f0": 109.6,
+  "st_vs_don": 2.7,
+  "seconds": 5.67,
+  "presence_db": -17.3,
+  "click": 0.126,
+  "note": "the same man, lower and broader"
+ },
+ "fenrir": {
+  "f0": 124.2,
+  "st_vs_don": 4.9,
+  "seconds": 5.11,
+  "presence_db": -18.8,
+  "click": 0.174,
+  "note": "gruff, a big chest"
+ },
+ "adam": {
+  "f0": 115.1,
+  "st_vs_don": 3.6,
+  "seconds": 5.01,
+  "presence_db": -19.2,
+  "click": 0.177,
+  "note": "dry and direct"
+ },
+ "liam_george": {
+  "f0": 121.2,
+  "st_vs_don": 4.5,
+  "seconds": 5.71,
+  "presence_db": -17.6,
+  "click": 0.124,
+  "note": "older grain, still American"
+ },
+ "fenrir_michael": {
+  "f0": 120.0,
+  "st_vs_don": 4.3,
+  "seconds": 5.23,
+  "presence_db": -19.1,
+  "click": 0.141,
+  "note": "gruff, softened"
+ },
+ "_don_f0": 93.6
+}
