@@ -16,8 +16,8 @@
 #        ./build.sh on                  Office Noir: The Secret of a Stolen Heart: timing + mix (jazz-noir cue) from the
 #                                       kept takes, animatics, animation at 540 and native 1080, cover
 #        ./build.sh xmas2               Happy Compliance v2 (Pam v4, curved tails, no cropped signs): 540 + 1080, cover v2
-#        ./build.sh bc                  The Best Candidate, animation v3 (540x960): timing + mix from the kept takes,
-#                                       the bubble checks on the board and on every drawing, then the render
+#        ./build.sh bc                  The Best Candidate, animation v3: timing + mix from the kept takes, the bubble
+#                                       checks on the board and on every drawing, then 540x960 and the 1080 master
 #        ./build.sh all             every episode
 #        ./build.sh sheets          brand marks + character sheets
 # Needs: python3 (pycairo, numpy, soundfile, kokoro-onnx), ffmpeg,
@@ -272,8 +272,13 @@ build_bc() {
     ffmpeg -y -v error -i bc_anim_silent.tmp.mp4 -i bc_mix_master.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k \
       -movflags +faststart "$out/uptimez_bc_anim_v3.tmp.mp4"
     mv "$out/uptimez_bc_anim_v3.tmp.mp4" "$out/uptimez_bc_anim_v3.mp4"
+    # the master: the same drawings, drawn natively at 1080 x 1920 (bubble boxes are sized at 540 scale, so they match)
+    BC_PRESET=medium BC_CRF=17 python3 bc_anim.py render bc_anim_silent.tmp.mp4 1080
+    ffmpeg -y -v error -i bc_anim_silent.tmp.mp4 -i bc_mix_master.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k \
+      -movflags +faststart "$out/uptimez_bc_anim_v3_1080.tmp.mp4"
+    mv "$out/uptimez_bc_anim_v3_1080.tmp.mp4" "$out/uptimez_bc_anim_v3_1080.mp4"
     rm -f bc_anim_silent.tmp.mp4 bc_mix_master.wav )
-  echo "Wrote $out/uptimez_bc_anim_v3.mp4"
+  echo "Wrote $out/uptimez_bc_anim_v3.mp4 and _1080.mp4"
 }
 
 build_xmas2() {

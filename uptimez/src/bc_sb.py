@@ -83,6 +83,8 @@ SKINS = {"sofia": [sf4.SKIN], "don": [db.SKIN], "pam": [pam_mf.SKIN], "small": [
 MOUTHS = {"sofia": ("A", "M"), "don": ("A", "M"), "pam": ("A", "M"), "small": ("A", "M"), "macho": ("A", "M"),
           "mom": ("A", "O"), "robot": (1.0, 0.0)}           # two shapes to tell the mouth by (the robot's is its talk level)
 _NULL = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4))
+_REF = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4))   # text is measured here, at 540 scale, whatever
+#                                                                     the output size: a box is the same at 1080 as at 540
 PAD = 140                                                  # the measuring sheet is the frame and this much around it
 
 
@@ -241,10 +243,10 @@ def bubble(k, lines, who, form="R", size=30, kind="normal", dx=0, dy=0, gap=20, 
     c = k.c
     if isinstance(lines, str):
         lines = [lines]
-    c.select_font_face(MONO if mono else kit.FONT, cairo.FONT_SLANT_NORMAL,
-                       cairo.FONT_WEIGHT_BOLD if mono else cairo.FONT_WEIGHT_NORMAL)
-    c.set_font_size(size)
-    ws = [c.text_extents(t).x_advance for t in lines]
+    _REF.select_font_face(MONO if mono else kit.FONT, cairo.FONT_SLANT_NORMAL,
+                          cairo.FONT_WEIGHT_BOLD if mono else cairo.FONT_WEIGHT_NORMAL)
+    _REF.set_font_size(size)
+    ws = [_REF.text_extents(t).x_advance for t in lines]    # at 1080 the hinted widths differ by a few px: not the box's
     lh = size * 1.12
     bw, bh = max(ws) + 44, len(lines) * lh + 26
     ms = None
@@ -310,8 +312,8 @@ def bubble(k, lines, who, form="R", size=30, kind="normal", dx=0, dy=0, gap=20, 
     c.select_font_face(MONO if mono else kit.FONT, cairo.FONT_SLANT_NORMAL,
                        cairo.FONT_WEIGHT_BOLD if mono else cairo.FONT_WEIGHT_NORMAL)
     c.set_font_size(size); c.set_source_rgb(*(S.NAVY if mono else INK))
-    for i, t in enumerate(lines):
-        c.move_to(bx + (bw - ws[i]) / 2, by + 13 + size * 0.86 + i * lh); c.show_text(t)
+    for i, t in enumerate(lines):                           # centred by its width as drawn here
+        c.move_to(bx + (bw - c.text_extents(t).x_advance) / 2, by + 13 + size * 0.86 + i * lh); c.show_text(t)
 
 
 # Every line's bubble: shot -> (lines, speaker, form, size, options). The storyboard and the animation both read it.

@@ -985,7 +985,8 @@ def render_section(sec, w, path):
     tmp = path + ".part.mp4"
     p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", f"{w}x{h}",
                           "-r", str(FPS), "-i", "-", "-vf", "scale=out_color_matrix=bt709", "-c:v", "libx264",
-                          "-preset", "veryfast", "-crf", "17", "-pix_fmt", "yuv420p", "-colorspace", "bt709",
+                          "-preset", os.environ.get("BC_PRESET", "veryfast"), "-crf", os.environ.get("BC_CRF", "17"),
+                          "-pix_fmt", "yuv420p", "-colorspace", "bt709",
                           "-color_primaries", "bt709", "-color_trc", "bt709", "-an", tmp], stdin=subprocess.PIPE)
     surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h)
     c = cairo.Context(surf)
