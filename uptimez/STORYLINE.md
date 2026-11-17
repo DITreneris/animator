@@ -1,8 +1,8 @@
-# UptimeZ Inc. — STORYLINE (series bible, v3)
+# UptimeZ Inc. — STORYLINE (series bible, v3.1)
 
 **99.9% uptime. 0% findability.**
 
-v3 takes in three outside reviews (17 Nov) and Tomas's decisions on each. It's the last development pass: the next proof is the episode 9 script and cold viewers. v1 and v2 are kept in [`series/`](series/).
+v3 took in three outside reviews (17 Nov) and Tomas's decisions on each. **v3.1** rebuilds Act B around the strongest thing we already have, the Client's **blueprint** from *The Onboarding* concept, instead of rewriting episode 9 to fit the plan. The next proof is the episode 9 script and cold viewers. v1–v3 are kept in [`series/`](series/).
 
 ## In one line
 
@@ -77,7 +77,7 @@ People who are exceptionally good at one thing, disastrously bad at another, and
 | Who | Contradiction | Use |
 |---|---|---|
 | **MOM**, Assistant to Don | Wants him to be an adult; her protection keeps him a child | Sparingly. When she enters, Don shrinks without a word. "DONNIE!" is for big moments. **She knows Father is the investor** |
-| **THE CLIENT**, owner of ten garages | Wants a useful answer, not an impressive system; starts out believing confident professionals deliver | **Not an idiot.** He signs a limited pilot with a testable condition and grows sceptical of Don, while coming to trust Pam |
+| **THE CLIENT**, owner of ten garages | Wants a useful answer, not an impressive system; starts out believing confident professionals deliver | **Not an idiot.** He signs up because he keeps losing his best idea: the **blueprint** of his transmission system, the only blue paper in the show. He grows sceptical of Don while coming to trust Pam |
 | **FATHER** (from episode 14) | Treats authority as proof of competence, just as Don treats selling | **The investor**: his money founded UptimeZ, he holds the majority share, and he can replace the CEO. A threatening version of Don, not just an angry old man. Mom makes Don feel like a little boy; Father makes others see him as one |
 
 ## Relationships that work without Don
@@ -112,13 +112,13 @@ People who are exceptionally good at one thing, disastrously bad at another, and
 
 *Prompt Telephone*, *Saved to Cloud* and *Downloads Expedition* are prequel shorts from the same office, before Sofía. Pam's doodle of Don with horns is from there.
 
-**Act B: The exposure (episodes 9–11).** A real customer finds out how the company actually delivers.
+**Act B: The exposure (episodes 9–11).** A real customer finds out how the company actually delivers. **One prop carries all three: the Client's blueprint.** Episode 9 destroys it, 10 denies it, 11 repairs it, so it's escalation, not repetition.
 
 | # | Episode | The engine | Character pressure | Carried consequence |
 |---|---|---|---|---|
-| 9 | **The Onboarding** | Don's pitch truly charms the garage owner; for a moment he really is the most impressive man in the room. Sofía slips her CV into the welcome pack. Don takes it for a contract page and approves it | Two desires collide: Don wants to impress the Client, Sofía wants out from under Don. Her smile goes real once, and he's more interested in a working answer than in her pitch | A limited pilot with one testable condition (find a van's repair history). **Don's signature authorizes Sofía's application** |
-| 10 | **First Search** | "Find the van's repair history." 0 RESULTS. "Can you make the zero green?" "Approved." The robot reports *100% of approved interface changes completed* | Don sells brilliantly, then dodges the one question that matters, and the Client notices | The pilot is failing; the dashboard says success |
-| 11 | **Customer Success** | Pam finds the record by phoning garages, after a strategic silence while Don squirms. Robot: "The result was obtained by a human." Don approves a report crediting AI | **The Client saves Pam's direct number.** Pam sees it, and for a second feels respected. Don walks in and takes it as praise for his strategy | The loop ends at the same desk, but the Client's number is now on Pam's phone |
+| 9 | **The Onboarding** | "Ten garages. And I keep losing this." Don's pitch truly charms the garage owner, and for a moment he really is the most impressive man in the room. Eyes on Sofía, Don sweeps the desk clear and the blue roll goes into the shredder; only the audience sees. The celebration confetti is the blueprint, under a green **ONBOARDING COMPLETE** stamp | Don wants to impress the Client with Sofía watching; Sofía wants the Client's attention (her CV in his welcome pack, his oily thumbprint kept). Nobody watches the blueprint | **The blueprint is gone and nobody knows.** A strip lands in his palm at the door; he pockets it without looking and leaves happy. The rest is still in the shredder bin |
+| 10 | **First Search** | A parts manufacturer wants to see his transmission system on Friday. "Find my blueprint." **0 RESULTS**. "Can you make the zero green?" "Approved." The robot reports *100% of approved interface changes completed* and emails him the success report | Don sells him Premium brilliantly, then dodges "Is my blueprint even in there?". Sofía's "present it as a clean result" turns into Don's green zero. The audience knows why it's zero; the Client doesn't | He pays more, the pilot condition has failed, and the dashboard and his inbox say success |
+| 11 | **Customer Success** | The Client is furious. Pam finds the strips in the shredder bin and tapes the blueprint back together, strip by strip. Robot: "The result was obtained by a human." Don approves a report crediting AI | **The Client saves Pam's direct number.** Pam sees it, and for a second feels respected. Don walks in and takes it as praise for his strategy | The loop ends at the same desk, but the Client's number is now on Pam's phone. The strip from his pocket may complete the drawing |
 
 **Act C: The price (episodes 12–16).** Keeping the client forces everyone to choose what matters more. These are working titles, to be decided after cold viewers have seen 9–11.
 

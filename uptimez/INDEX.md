@@ -16,7 +16,8 @@ A map of every document in `uptimez/`, so a person, worker or agent can find the
 
 | Document | Contents |
 |---|---|
-| [`STORYLINE.md`](STORYLINE.md) | v3, current (17 Nov), after three outside showrunner reviews |
+| [`STORYLINE.md`](STORYLINE.md) | v3.1, current (17 Nov): v3 plus Act B rebuilt around the Client's blueprint |
+| [`series/storyline-v3.md`](series/storyline-v3.md) | v3: after three outside showrunner reviews (character engines, relationships, world rules) |
 | [`series/storyline-v1.md`](series/storyline-v1.md) | v1: the first canon cleanup (early cast as prequel shorts; one promoted robot; Mom hired; Sofía flirts upward; calendar order; the one-client spine) |
 | [`series/storyline-v2.md`](series/storyline-v2.md) | v2: goals that collide, Don can sell, the robot's permission rule, episodes 9–11, *The Human Algorithm* finale planned |
 
@@ -38,7 +39,8 @@ Episodes in **story order** (STORYLINE.md, Season 1). Each folder holds its rend
 | 6 | *Happy Compliance* (Christmas Eve) | [`happy-compliance/`](happy-compliance/) | README section |
 | 7 | *Office Noir: The Secret of a Stolen Heart* | [`office-noir/`](office-noir/) | README section |
 | 8 | *The Best Candidate* | [`the-best-candidate/`](the-best-candidate/) | `the-best-candidate-interview-script-v1.md` … `v6.md` (v6 is current) |
-| 9 | *The Onboarding* | not in the repo yet | Concepts v1–v4 were written in the claude.ai chat "The Onboarding"; to be rebuilt on STORYLINE.md v3 |
+| 9 | *The Onboarding* | not in the repo yet | Concepts v1–v4 are in the claude.ai chat "The Onboarding". STORYLINE v3.1 keeps concept v4's blueprint ending, with one change: the Client pockets the strip without looking |
+| 10 | *First Search* | [`first-search/`](first-search/) | `first-search-premise-v2.md` (current, the blueprint); v1 (the van) kept |
 | — | *Saved Locally* (retired) | [`history/saved-locally/`](history/saved-locally/) | its own README |
 
 ## Characters and brand
@@ -72,5 +74,6 @@ Each episode has its own file prefix; earlier versions are kept as `_v1`, `_v2`�
 ## Where things are *not*
 
 - **Voices:** the kept takes are in `src/*_voices/` or `src/*_takes/`. Re-recording needs the Kokoro model files in `src/models` or `KOKORO_DIR`.
+- **1080 renders** from 17 Nov on: not committed (`.gitignore`); rebuild with `build.sh <episode>`. Older 1080 files are still in the repo.
 - **Speech-recognition model** for QA: Whisper base.en through sherpa-onnx, kept outside the repo.
 - **Outside reviews** are summarized in each episode's lessons and in STORYLINE.md's history; the raw review files are not stored.

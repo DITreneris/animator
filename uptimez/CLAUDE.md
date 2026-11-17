@@ -50,7 +50,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | Text | Every bubble, card and shout inside the safe area (18, 96, 522, 820 at 540×960) and off the right-hand button rail. Speech bubbles never cover a face |
 | Tails | Each tail ends beside the mouth **drawn in that frame**, curving round outside the head. Off-screen speakers get no tail (a caption, a screen readout or a quoted card instead) |
 | Frame 0 | Complete (no flash, nothing scaling in), and the last frame leads back into it |
-| Size | Release files under GitHub's 100 MB limit: `-preset slow -crf 23` for grainy films; keep the high-quality master outside the repo |
+| Size | **1080 renders are not committed** (`uptimez/**/*_1080.mp4` is in `.gitignore`); `build.sh` rebuilds them and they're delivered directly. The 540 previews, covers and sheets are committed. The 1080 files committed before 17 Nov stay tracked |
 
 Validate every new check on a known failure first; a check that always passes is worse than none.
 
