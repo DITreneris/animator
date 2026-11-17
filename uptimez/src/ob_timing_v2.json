@@ -1,0 +1,621 @@
+{
+ "total": 78.8667,
+ "fps": 30,
+ "shots": [
+  {
+   "shot": "1.1",
+   "span": 2,
+   "t0": 0.0,
+   "d": 1.5,
+   "f0": 0,
+   "n": 45,
+   "what": "The door slides open. He walks in."
+  },
+  {
+   "shot": "1.2",
+   "span": 2,
+   "t0": 1.5,
+   "d": 1.2,
+   "f0": 45,
+   "n": 36,
+   "what": "Pam looks at Don, Don at Sof\u00eda, Sof\u00eda at him. Pam is already typing."
+  },
+  {
+   "shot": "1.3",
+   "span": 1,
+   "t0": 2.7,
+   "d": 1.8667,
+   "f0": 81,
+   "n": 56,
+   "what": "",
+   "line": {
+    "who": "CLIENT",
+    "text": "Hi. I'd like to sign up.",
+    "t0": 2.85,
+    "t1": 4.322
+   }
+  },
+  {
+   "shot": "1.4",
+   "span": 1,
+   "t0": 4.5667,
+   "d": 0.8,
+   "f0": 137,
+   "n": 24,
+   "what": "Don: the vest."
+  },
+  {
+   "shot": "2.1",
+   "span": 2,
+   "t0": 5.3667,
+   "d": 1.6667,
+   "f0": 161,
+   "n": 50,
+   "what": "A hand out. His nose wrinkles: oil.",
+   "line": {
+    "who": "DON",
+    "text": "Don. CEO.",
+    "t0": 5.6667,
+    "t1": 6.8447
+   }
+  },
+  {
+   "shot": "2.2",
+   "span": 2,
+   "t0": 7.0333,
+   "d": 2.2333,
+   "f0": 211,
+   "n": 67,
+   "what": "The red paddle snaps up between the palms.",
+   "line": {
+    "who": "ROBOT",
+    "text": "CONTACT NOT VERIFIED.",
+    "t0": 7.5333,
+    "t1": 9.0303
+   }
+  },
+  {
+   "shot": "2.3",
+   "span": 1,
+   "t0": 9.2667,
+   "d": 2.0,
+   "f0": 278,
+   "n": 60,
+   "what": "Stranded. A bigger title.",
+   "line": {
+    "who": "DON",
+    "text": "Founder. And CEO.",
+    "t0": 9.6667,
+    "t1": 11.0267
+   }
+  },
+  {
+   "shot": "2.4",
+   "span": 1,
+   "t0": 11.2667,
+   "d": 0.8,
+   "f0": 338,
+   "n": 24,
+   "what": "What just happened?"
+  },
+  {
+   "shot": "3.1",
+   "span": 2,
+   "t0": 12.0667,
+   "d": 3.2333,
+   "f0": 362,
+   "n": 97,
+   "what": "He shows the drawing; it springs shut in his hand.",
+   "line": {
+    "who": "CLIENT",
+    "text": "Ten garages. And I keep losing this.",
+    "t0": 12.3167,
+    "t1": 14.8397
+   }
+  },
+  {
+   "shot": "3.2",
+   "span": 1,
+   "t0": 15.3,
+   "d": 2.3333,
+   "f0": 459,
+   "n": 70,
+   "what": "Sweet.",
+   "line": {
+    "who": "SOFIA",
+    "text": "Does your missus love your garages?",
+    "t0": 15.5,
+    "t1": 17.35
+   }
+  },
+  {
+   "shot": "3.3",
+   "span": 1,
+   "t0": 17.6333,
+   "d": 1.5333,
+   "f0": 529,
+   "n": 46,
+   "what": "Plain.",
+   "line": {
+    "who": "CLIENT",
+    "text": "I live alone.",
+    "t0": 17.8833,
+    "t1": 18.8173
+   }
+  },
+  {
+   "shot": "3.4",
+   "span": 1,
+   "t0": 19.1667,
+   "d": 0.8,
+   "f0": 575,
+   "n": 24,
+   "what": "Her eyes go down him."
+  },
+  {
+   "shot": "3.5",
+   "span": 1,
+   "t0": 19.9667,
+   "d": 0.7,
+   "f0": 599,
+   "n": 21,
+   "what": "What they are on: him. Plain, friendly, unaware."
+  },
+  {
+   "shot": "3.6",
+   "span": 1,
+   "t0": 20.6667,
+   "d": 0.9,
+   "f0": 620,
+   "n": 27,
+   "what": "They come back up. Her face answers."
+  },
+  {
+   "shot": "3.7",
+   "span": 1,
+   "t0": 21.5667,
+   "d": 1.4667,
+   "f0": 647,
+   "n": 44,
+   "what": "Thumb and index take one pearl, and roll it.",
+   "line": {
+    "who": "SOFIA",
+    "text": "Oh...",
+    "t0": 21.9667,
+    "t1": 22.6247
+   }
+  },
+  {
+   "shot": "3.8",
+   "span": 2,
+   "t0": 23.0333,
+   "d": 1.1,
+   "f0": 691,
+   "n": 33,
+   "what": "She rolls the pearl, her eyes on him. He is looking at his drawing."
+  },
+  {
+   "shot": "3.9",
+   "span": 1,
+   "t0": 24.1333,
+   "d": 1.1,
+   "f0": 724,
+   "n": 33,
+   "what": "Don has seen it. He goes still; the smile is gone."
+  },
+  {
+   "shot": "3.10",
+   "span": 1,
+   "t0": 25.2333,
+   "d": 1.0,
+   "f0": 757,
+   "n": 30,
+   "what": "She sees that he saw. Her hand stops. Her mouth closes."
+  },
+  {
+   "shot": "3.11",
+   "span": 1,
+   "t0": 26.2333,
+   "d": 0.9,
+   "f0": 787,
+   "n": 27,
+   "what": "The vest. The smile comes back, too wide."
+  },
+  {
+   "shot": "3.12",
+   "span": 1,
+   "t0": 27.1333,
+   "d": 2.2,
+   "f0": 814,
+   "n": 66,
+   "what": "He saw none of it.",
+   "line": {
+    "who": "CLIENT",
+    "text": "Can it find this when I lose it?",
+    "t0": 27.3833,
+    "t1": 29.0873
+   }
+  },
+  {
+   "shot": "4.1",
+   "span": 1,
+   "t0": 29.3333,
+   "d": 2.8,
+   "f0": 880,
+   "n": 84,
+   "what": "He believes it.",
+   "line": {
+    "who": "DON",
+    "text": "Here, you will never lose anything again.",
+    "t0": 29.5333,
+    "t1": 31.8203
+   }
+  },
+  {
+   "shot": "4.2",
+   "span": 2,
+   "t0": 32.1333,
+   "d": 1.1,
+   "f0": 964,
+   "n": 33,
+   "what": "An open palm. He holds the roll back a moment."
+  },
+  {
+   "shot": "4.3",
+   "span": 2,
+   "t0": 33.2333,
+   "d": 1.7667,
+   "f0": 997,
+   "n": 53,
+   "what": "He gives it.",
+   "line": {
+    "who": "DON",
+    "text": "We'll take care of it.",
+    "t0": 33.5833,
+    "t1": 34.7413
+   }
+  },
+  {
+   "shot": "4.4",
+   "span": 1,
+   "t0": 35.0,
+   "d": 1.1,
+   "f0": 1050,
+   "n": 33,
+   "what": "Eyes on Sof\u00eda. He stands it beside him."
+  },
+  {
+   "shot": "4.5",
+   "span": 1,
+   "t0": 36.1,
+   "d": 1.5,
+   "f0": 1083,
+   "n": 45,
+   "what": "The slot. Blue strips fill the bin."
+  },
+  {
+   "shot": "4.6",
+   "span": 1,
+   "t0": 37.6,
+   "d": 0.8,
+   "f0": 1128,
+   "n": 24,
+   "what": "Impressed."
+  },
+  {
+   "shot": "5.1",
+   "span": 1,
+   "t0": 38.4,
+   "d": 1.1,
+   "f0": 1152,
+   "n": 33,
+   "what": "Pam saw. A finger goes up. Don does not see her."
+  },
+  {
+   "shot": "5.2",
+   "span": 1,
+   "t0": 39.5,
+   "d": 0.7,
+   "f0": 1185,
+   "n": 21,
+   "what": "Don, glowing."
+  },
+  {
+   "shot": "5.3",
+   "span": 1,
+   "t0": 40.2,
+   "d": 1.3,
+   "f0": 1206,
+   "n": 39,
+   "what": "She looks at him, and lowers it."
+  },
+  {
+   "shot": "5.4",
+   "span": 1,
+   "t0": 41.5,
+   "d": 2.4333,
+   "f0": 1245,
+   "n": 73,
+   "what": "The watch.",
+   "line": {
+    "who": "CLIENT",
+    "text": "One month. I ask, you find it.",
+    "t0": 41.75,
+    "t1": 43.691
+   }
+  },
+  {
+   "shot": "5.5",
+   "span": 1,
+   "t0": 43.9333,
+   "d": 1.3,
+   "f0": 1318,
+   "n": 39,
+   "what": "No question asked. His eyes go to Sof\u00eda.",
+   "line": {
+    "who": "DON",
+    "text": "Approved.",
+    "t0": 44.0533,
+    "t1": 44.7713
+   }
+  },
+  {
+   "shot": "5.6",
+   "span": 1,
+   "t0": 45.2333,
+   "d": 0.8,
+   "f0": 1357,
+   "n": 24,
+   "what": "She is looking at the Client."
+  },
+  {
+   "shot": "6.1",
+   "span": 2,
+   "t0": 46.0333,
+   "d": 1.1,
+   "f0": 1381,
+   "n": 33,
+   "what": "Clipboard under her arm, she takes Pam's tablet without a look."
+  },
+  {
+   "shot": "6.2",
+   "span": 2,
+   "t0": 47.1333,
+   "d": 1.4,
+   "f0": 1414,
+   "n": 42,
+   "what": "One green button. A breath, close to him.",
+   "line": {
+    "who": "SOFIA",
+    "text": "Tap here.",
+    "t0": 47.5833,
+    "t1": 48.1733
+   }
+  },
+  {
+   "shot": "6.3",
+   "span": 1,
+   "t0": 48.5333,
+   "d": 0.5,
+   "f0": 1456,
+   "n": 15,
+   "what": "His thumb."
+  },
+  {
+   "shot": "6.4",
+   "span": 1,
+   "t0": 49.0333,
+   "d": 0.9,
+   "f0": 1471,
+   "n": 27,
+   "what": "A tick. His thumbprint, in oil."
+  },
+  {
+   "shot": "6.5",
+   "span": 1,
+   "t0": 49.9333,
+   "d": 1.3,
+   "f0": 1498,
+   "n": 39,
+   "what": "Pleased with a result.",
+   "line": {
+    "who": "CLIENT",
+    "text": "That worked.",
+    "t0": 50.1333,
+    "t1": 50.9883
+   }
+  },
+  {
+   "shot": "6.6",
+   "span": 1,
+   "t0": 51.2333,
+   "d": 0.7,
+   "f0": 1537,
+   "n": 21,
+   "what": "Her smile turns real. Half a second."
+  },
+  {
+   "shot": "6.7",
+   "span": 2,
+   "t0": 51.9333,
+   "d": 1.2,
+   "f0": 1558,
+   "n": 36,
+   "what": "The smile goes; then her eyes cut to Don. He saw, and has gone still."
+  },
+  {
+   "shot": "6.8",
+   "span": 1,
+   "t0": 53.1333,
+   "d": 2.0,
+   "f0": 1594,
+   "n": 60,
+   "what": "Her CV, into the welcome pack.",
+   "line": {
+    "who": "SOFIA",
+    "text": "Everything you need is in there.",
+    "t0": 53.3833,
+    "t1": 54.7973
+   }
+  },
+  {
+   "shot": "6.9",
+   "span": 1,
+   "t0": 55.1333,
+   "d": 0.7,
+   "f0": 1654,
+   "n": 21,
+   "what": "Pam's empty hands."
+  },
+  {
+   "shot": "7.1",
+   "span": 2,
+   "t0": 55.8333,
+   "d": 1.0,
+   "f0": 1675,
+   "n": 30,
+   "what": "The handshake framing again. He taps his card."
+  },
+  {
+   "shot": "7.2",
+   "span": 1,
+   "t0": 56.8333,
+   "d": 0.9,
+   "f0": 1705,
+   "n": 27,
+   "what": ""
+  },
+  {
+   "shot": "7.3",
+   "span": 1,
+   "t0": 57.7333,
+   "d": 1.6333,
+   "f0": 1732,
+   "n": 49,
+   "what": "Green at once. It leans toward the card.",
+   "line": {
+    "who": "ROBOT",
+    "text": "CONTACT APPROVED.",
+    "t0": 57.8833,
+    "t1": 59.1053
+   }
+  },
+  {
+   "shot": "7.4",
+   "span": 1,
+   "t0": 59.3667,
+   "d": 0.8,
+   "f0": 1781,
+   "n": 24,
+   "what": "He pumps his unshaken hand. One dollar."
+  },
+  {
+   "shot": "8.1",
+   "span": 1,
+   "t0": 60.1667,
+   "d": 2.4,
+   "f0": 1805,
+   "n": 72,
+   "what": "The bin, into the cannon.",
+   "line": {
+    "who": "ROBOT",
+    "text": "FIRST CUSTOMER. CELEBRATION REQUIRED.",
+    "t0": 60.3167,
+    "t1": 62.3157
+   }
+  },
+  {
+   "shot": "8.2",
+   "span": 2,
+   "t0": 62.5667,
+   "d": 1.2,
+   "f0": 1877,
+   "n": 36,
+   "what": "Boom. Full in Don's face."
+  },
+  {
+   "shot": "8.3",
+   "span": 1,
+   "t0": 63.7667,
+   "d": 2.3,
+   "f0": 1913,
+   "n": 69,
+   "what": "Strips in his face, still beaming.",
+   "line": {
+    "who": "DON",
+    "text": "SOF\u00cdA! WE HAVE A CUSTOMER!",
+    "t0": 63.9667,
+    "t1": 65.7667
+   }
+  },
+  {
+   "shot": "8.4",
+   "span": 2,
+   "t0": 66.0667,
+   "d": 1.2,
+   "f0": 1982,
+   "n": 36,
+   "what": "Sof\u00eda walks him to the door."
+  },
+  {
+   "shot": "8.5",
+   "span": 1,
+   "t0": 67.2667,
+   "d": 1.2,
+   "f0": 2018,
+   "n": 36,
+   "what": "Pam looks at his hand. Then at the floor, and starts down."
+  },
+  {
+   "shot": "9.1",
+   "span": 2,
+   "t0": 68.4667,
+   "d": 4.0,
+   "f0": 2054,
+   "n": 120,
+   "what": "Held: his hand is free; she is on the floor; Sof\u00eda takes her trophy; the robot reports."
+  },
+  {
+   "shot": "10.1",
+   "span": 1,
+   "t0": 72.4667,
+   "d": 1.1,
+   "f0": 2174,
+   "n": 33,
+   "what": "A strip settles in his palm."
+  },
+  {
+   "shot": "10.2",
+   "span": 1,
+   "t0": 73.5667,
+   "d": 1.0,
+   "f0": 2207,
+   "n": 30,
+   "what": "White lines on blue. Part of a gear."
+  },
+  {
+   "shot": "10.3",
+   "span": 1,
+   "t0": 74.5667,
+   "d": 1.3,
+   "f0": 2237,
+   "n": 39,
+   "what": "Into his pocket, eyes already up. The watch."
+  },
+  {
+   "shot": "10.4",
+   "span": 2,
+   "t0": 75.8667,
+   "d": 3.0,
+   "f0": 2276,
+   "n": 90,
+   "what": "",
+   "line": {
+    "who": "ROBOT",
+    "text": "ONBOARDING COMPLETE.",
+    "t0": 76.8667,
+    "t1": 78.0827
+   }
+  }
+ ]
+}
