@@ -2,25 +2,40 @@
 
 **99.9% uptime. 0% findability.**
 
-An AI office sitcom: short vertical cartoons about ridiculous people using AI, posted as if from the corporate account of a polished SaaS company. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
+An AI office sitcom: short vertical cartoons about ridiculous people using AI, presented in the style of a polished SaaS company's corporate posts. The brand is the straight man; the people inside it are the joke. Formerly *Uptime Inc.*
 
-Most videos here are **540×960 animatics** (30 fps, mostly 15 s): rough cuts for audience tests. The exceptions are the *Saved to Cloud*, *Downloads Expedition*, *How Sofía Survived Day One*, *I Will Replace You*, *Happy Compliance*, *Raises for Everyone*, *Mandatory Fun*, *Secret Santa* and *Office Noir* releases, rendered at 1080×1920.
+The prequel shorts here are mostly **540×960 animatics** (30 fps, about 15 s): rough cuts for audience tests. The main-series episodes (from *How Sofía Survived Day One*) are released at **1080×1920** and run 15–90 s; *Saved to Cloud* and *Downloads Expedition* also have 1080 releases.
 
 ## Cast
 
+**Series canon lives in [`STORYLINE.md`](STORYLINE.md)**: each character's want, private lie, contradiction and moral line, the relationships, and Season 1. [`INDEX.md`](INDEX.md) maps every document; [`CLAUDE.md`](CLAUDE.md) has the working rules for agents.
+
+### Main series (from *How Sofía Survived Day One*)
+
 | Badge | Role | In one line | Voice (Kokoro) |
 |---|---|---|---|
-| **DON** | CEO | Shouts in capitals, understands nothing, softens only when it's about him. Bald. | `am_fenrir` |
+| **DON** | CEO (and whatever title he gives himself) | Sells anything, examines nothing, believes his own pitch. Bald, fleece vest with a ketchup stain | `am_onyx` |
+| **SOFÍA** | New hire, then the office's sharpest player | Wants authority independent of Don; rejects him; never fakes a record | `af_bella` |
+| **PAM** | Project manager | Can't stop fixing things; loves Don, unrequited; strategic silence | British, picked per episode by audition |
+| **THE ROBOT** | One machine, reassigned: Don's desk robot (*Day One*) → cafeteria waiter (*I Will Replace You*) → HR (from *Raises for Everyone*) | Every statement and stamp technically true; needs human approval for money, access and commitments | Pitched and filtered per episode |
+| **MOM** | Don's mother; Assistant to Don since *The Best Candidate* | Curlers, an old shouting voice; Don shrinks when she enters | Voice F: `bf_alice` + `bm_lewis`, aged |
+| **THE CLIENT** | Owner of ten garages (from *The Onboarding*, in development) | The first real customer; not an idiot | not cast yet |
+| **FATHER** | The investor (from episode 14, planned) | Holds the majority share; can replace the CEO | not cast yet |
+
+### Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*)
+
+Same office, before Sofía. These shorts set the tone ("0% findability") but sit outside the main storyline.
+
+| Badge | Role | In one line | Voice (Kokoro) |
+|---|---|---|---|
+| **DON** | CEO | Shouts in capitals, understands nothing, softens only when it's about him | `am_fenrir` |
 | **PAM** | Project manager | "Improves" every instruction on the way down | `bf_emma` |
 | **RUSH** | Sales | Panics first, types before he reads | `am_adam` |
 | **MAX** | Developer | The only sensible one; asks the fair question, watches it burn | `am_michael` |
 | **LAPTOP** | The AI | Two dots and a flat line. Does exactly what it's told and gets overruled | none |
 | **CACHE** | Office cat | Always asleep on whatever the humans threw away | none |
-| **SOFÍA** | New hire (*Day One*) | Blonde, playful, unimpressed; learns the office's one rule by 17:00 | `af_bella` |
-| **DON 2.0** | Don's desk robot (*Day One*) | Waist-high, red tie, copies everything Don does, including delegating to PAM | Don's take, +4 semitones, light metal |
-| **TRAINEE** | Cafeteria waiter robot (*I Will Replace You*) | Short, round, one wobbly wheel, red bow tie. Wants a job, never understands the irony | `am_echo`, +2 semitones, small-speaker tone |
 
-In *How Sofía Survived Day One*, DON is the team lead who approves everything blind, voiced by `am_onyx`; PAM never speaks.
+In *How Sofía Survived Day One*, DON acts as the team lead who approves everything blind, and PAM never speaks. Don's desk robot is DON 2.0 (waist-high, red tie, copies Don, voiced from Don's take +4 semitones). In *I Will Replace You*, the same robot works as TRAINEE, the cafeteria waiter (`am_echo` +2 semitones, small-speaker tone).
 
 Model sheets and the height line-up are in [`characters/`](characters/). They're drawn by the same kit as the episodes (`src/charsheets.py`), so a sheet always matches the video.
 
@@ -31,6 +46,8 @@ Logo files are in [`brand/`](brand/): an uptime pulse line whose last spike beco
 The professional-network post in v04.2+ evokes LinkedIn through its culture only (company page, corporate-speak, reactions), never its logo or exact interface. No trademark search has been done on the name.
 
 ## Episodes
+
+This list is not in story order. For the story order (Season 1, episodes 1–8 and what's next), see [`STORYLINE.md`](STORYLINE.md) or [`INDEX.md`](INDEX.md).
 
 ### Prompt Telephone — [`prompt-telephone/`](prompt-telephone/)
 
@@ -187,8 +204,9 @@ DON dreams he is a hard-boiled detective in a black-and-white rain-soaked office
 
 | File | Version | Notes |
 |---|---|---|
-| `uptimez_on_anim_1080.mp4` | **release (current)** | **1080×1920**, native 1080 render (not upscaled), 40.1 s, −15.6 LUFS, −1.5 dBTP, lip-sync, rain, lightning at 0.13 s so frame 0 is readable, an original jazz bed that dies on "DONNIE!", tails at the cheek. Encoded crf 23 to stay under GitHub's 100 MB |
-| `uptimez_on_anim.mp4` | release, 540 preview | Same film, 540×960 |
+| `uptimez_on_anim_1080.mp4` | **release v8 (current, 17 Nov)** | **1080×1920**, native 1080, 40.1 s, −15.7 LUFS, −1.2 dBTP. Passes the G5 QA worker `src/on_qa.py` (report: `on_qa_report.txt`). v8 fixes after four frame reviews: curved tails ending beside the mouth drawn in that frame; off-screen speakers without tails (Don's line to Sofía as a quoted card, "> SUSPECT IDENTIFIED." as a CCTV readout, the robot's "YOU." on his screen); one Sofía bubble (an older one was hidden underneath); Don's lip-sync mouth scaled to his close-up; every card, bubble and the DONNIE! shout moved under the app's top bar; a clearer "Whiskey" and "Donnie!", and the two stings moved off "Unsigned" and "boss". Previous release (v5) in git history |
+| `uptimez_on_anim.mp4` | release v8, 540 preview | Same film, 540×960 |
+| `on_tails_v8_check.png`, `on_qa_report.txt` | v8 checks | The ticketed moments; the G5 report |
 | `on_cover_v2.png` (v1 kept) | cover | Title cards "Office Noir: The Secret of a Stolen Heart" |
 | `on_animatic_silent.mp4`, `on_animatic_voiced.mp4` | animatics | Storyboard timed to the takes |
 | `on_auditions_v5.mp4`, `on_mom_auditions.mp4`, `_v2.mp4` | auditions | Voices; Mom F (`bf_alice` + `bm_lewis`, aged, shouting); Sofía A (−2 semitones, a pause) |
@@ -217,7 +235,7 @@ Christmas Eve at the office. DON walks in mid-shave in an open bathrobe: "Sorry.
 
 | File | Version | Notes |
 |---|---|---|
-| `uptimez_xmas_anim_v2_1080.mp4` | **release v2 (current)** | **1080×1920**. Pam v4 (canon head, a fond side-eye, "over" for "Human in the loop.", the mask up, then a visible drop over her readers), a two-row banner, no cropped signs (shown whole or not at all), the razor drawn without fingers, Sofía's badge raised, curved tails ending beside the mouth actually drawn in each frame |
+| `uptimez_xmas_anim_v2_1080.mp4` | **release v2 (current; tails fixed 17 Nov)** | **1080×1920**. Pam v4 (canon head, a fond side-eye, "over" for "Human in the loop.", the mask up, then a visible drop over her readers), a two-row banner, no cropped signs (shown whole or not at all), the razor drawn without fingers, Sofía's badge raised, curved tails ending beside the mouth actually drawn in each frame | **17 Nov (`xmas_anim2` v4):** every box placed clear of the speaker's head, hat, cap or mask, with the tail running outside the face to beside the mouth; "Eww." as two bubbles a beat apart with their own emoticons (Sofía's eye-roll, Pam's queasy green); "Merry Christmas, Don." beside him with its tail to the left edge; the PARTY sign also kept out of shots 1 and 4. Check grid: `xmas_tails_v4_check.png` |
 | `uptimez_xmas_anim_v2.mp4` | release v2, 540 | Same, 540×960 |
 | `xmas_thumbnail_v2.png`, `xmas_storyboard_sheet_v2.png`, `xmas_storyboard_silent_v2.mp4`, `xmas_set_sheet_v2.png`, `xmas_motion_test_b_v2.mp4`, `sofia_xmas_v1_vs_v2.png` | v2 extras | Cover v2: the badge fix only. `./uptimez/build.sh xmas2` |
 | `uptimez_xmas_anim_v1_1080.mp4` | release v1 | **1080×1920**, 28.9 s, −16 LUFS. Lip-sync on all ten lines (Don, Sofía, Pam, the robot's screen), blinks, camera punches (DETECTED push, slap jolts, THUD shake), the robot's spinning wheel, Don's anticipation dip, a bigger razor payoff, warm light glow and vignette |

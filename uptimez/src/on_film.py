@@ -58,10 +58,13 @@ def _wrap(mod, name, key, blink=False):
         b = A.get("breath", 0.0)
         c = k.c
         c.save(); c.translate(x, feet); c.scale(1, 1 + b); c.translate(-x, -feet)
+        prev, REC["cur"] = REC["cur"], key
         try:
             out = orig(*ba.args, **ba.kwargs)
         finally:
-            c.restore()
+            c.restore(); REC["cur"] = prev
+        if out and "head" in out:                                    # v7: where the head is, in device space
+            REC["heads"][key] = c.user_to_device(*out["head"])
         if blink and A.get("blink") and out and "head" in out:
             hx, hy = out["head"]
             for sx in (-17, 17):
@@ -74,10 +77,53 @@ def _wrap(mod, name, key, blink=False):
     return orig
 
 
+HEAD_R = {"don": 4.1, "sofia": 2.6, "pam": 4.3, "mom": 4.9}   # v7: face half-width in mouth half-widths
 ORIG = {}
+REC = {"cur": None, "mouths": [], "heads": {}, "screen": None}     # v7: what was drawn this frame, device space
+LAST = {}                                                          # mouth relative to head, for mouthless frames
+import iwry_mouths as im
+
+
+def _rec_mouth(k, x, my, code, *a, **kw):
+    c = k.c
+    REC["mouths"].append((REC["cur"], c.user_to_device(x, my), c.user_to_device(x + 14, my)))
+    return ORIG["im_mouth"](k, x, my, code, *a, **kw)
+
+
+def _rec_mom_mouth(c, face, mouth, turn=0.0):
+    my = mo.HY + 32
+    REC["mouths"].append(("mom", c.user_to_device(turn, my), c.user_to_device(turn + 16, my)))
+    return ORIG["mom_mouth"](c, face, mouth, turn)
+
+
+def _rec_screen(c, out, s, text, size=26):
+    x, y = out["screen"]
+    REC["screen"] = (c.user_to_device(x, y), c.user_to_device(x + 40 * s, y), c.user_to_device(x, y + 34 * s))
+    return ORIG["screen_text"](c, out, s, text, size)
+
+
+def _rec_robot(k, x, feet, s=1.0, *a, **kw):
+    out = ORIG["robot_noir"](k, x, feet, s, *a, **kw)
+    if out and "screen" in out:
+        c = k.c; sx, sy = out["screen"]
+        REC["screen"] = (c.user_to_device(sx, sy), c.user_to_device(sx + 40 * s, sy), c.user_to_device(sx, sy + 34 * s))
+    return out
+
+
+TOP = 100                                                          # v8: text starts under the app's top bar (series SAFE y 96)
+
+
+def _cap_low(c, s, x, y, size=34):
+    return ORIG["caption"](c, s, x, y + (TOP - 36) if y < 300 else y, size)       # every top card, same shift
 
 
 def patch():
+    ORIG["caption"], psh.caption = psh.caption, _cap_low
+    sb.SHOUT_CY = TOP + 72
+    ORIG["robot_noir"], ro.robot_noir = ro.robot_noir, _rec_robot
+    ORIG["im_mouth"], im.mouth = im.mouth, _rec_mouth
+    ORIG["mom_mouth"], mo._mouth = mo._mouth, _rec_mom_mouth
+    ORIG["screen_text"], ro.screen_text = ro.screen_text, _rec_screen
     ORIG["don"] = _wrap(d, "don_noir", "don", blink=True)
     ORIG["don_pj"] = _wrap(d, "don_pj", "don", blink=True)
     ORIG["sofia"] = _wrap(so, "sofia_noir", "sofia")
@@ -86,6 +132,9 @@ def patch():
 
 
 def unpatch():
+    psh.caption = ORIG["caption"]; sb.SHOUT_CY = 150
+    im.mouth, mo._mouth, ro.screen_text = ORIG["im_mouth"], ORIG["mom_mouth"], ORIG["screen_text"]
+    ro.robot_noir = ORIG["robot_noir"]
     d.don_noir, d.don_pj = ORIG["don"], ORIG["don_pj"]
     so.sofia_noir, pn.pam_noir, mo.mom = ORIG["sofia"], ORIG["pam"], ORIG["mom"]
 
@@ -202,6 +251,10 @@ class Film:
         self.st, self.d = T["starts"], T["durations"]
         self.lips = Lips(T)
         self.cache = {}
+        self.qa = []                                                  # v7: (t, who, tip, mouth) for the tail check
+        d.MOUTH_SCALED = True                                         # v7: Don's talking mouth at his close-up size
+        sb.SUSPECT_HUD = True                                         # v8: the robot's line as a CCTV readout
+        sb.SUSPECT_TIP = (509, 929)                                   # v7: into the CCTV corner bracket
         self.P = sb.build()                                        # the static panels (captions on)
         d.FEDORA_BAND, d.FEDORA_RIM = (0.42, 0.42, 0.44), True
         base = surf(); sb.k2b_base(Ctx(cairo.Context(base), 0)); eng.accent_pass(base, sb.ACC)
@@ -218,8 +271,40 @@ class Film:
                 return t0
         return None
 
+    def talk(self, out, text, x, y, who, size=36, mono=False):
+        """v7: the bubble's curved tail ends beside the mouth drawn in this very frame (the robot: the rim of his
+        face screen), coming round the outside of the head."""
+        c = cairo.Context(out)
+        c.select_font_face("DejaVu Sans Mono" if mono else psh.TYPE, 0, 0); c.set_font_size(size)
+        bw = max(c.text_extents(q).x_advance for q in text.split("\n")) + 40
+        bxc = x + bw / 2
+        U = lambda p: c.device_to_user(*p)
+        if who == "robot":
+            (cx, cy), (rx_, _), (_, ry_) = [U(p) for p in REC["screen"]]
+            rx, ry = abs(rx_ - cx), abs(ry_ - cy)
+            side = 1 if bxc >= cx else -1
+            mouth = (cx, cy); tip = (cx + side * (rx + 7), cy - 0.25 * ry); head = (cx, cy, rx + 22)
+        else:
+            ms = [m for m in REC["mouths"] if m[0] == who]
+            hd = REC["heads"].get(who)
+            if ms:
+                (mx, my), (mx2, _) = U(ms[-1][1]), U(ms[-1][2])
+                mw = abs(mx2 - mx)
+                if hd:
+                    hx, hy = U(hd); LAST[(who, self.cur_beat)] = (mx - hx, my - hy, mw)
+            else:                                                  # no talking mouth this drawing: this shot's last one
+                ox, oy, mw = LAST[(who, self.cur_beat)]; hx, hy = U(hd); mx, my = hx + ox, hy + oy
+            hx, hy = U(hd) if hd else (mx, my - 2.2 * mw)
+            side = 1 if bxc >= hx else -1
+            mouth = (mx, my); tip = (mx + side * mw * 0.8, my)              # v8: touching the lip corner
+            head = (hx, hy, HEAD_R.get(who, 3.4) * mw)
+        lines_ = text.split("\n"); bh = size * 1.25 * len(lines_) + 30
+        self.qa.append((self.now, who, tip, mouth, (x, y, bw, bh), mw))
+        return sb.say_curve(out, text, x, y, tip, head, size, mono)
+
     def beat(self, i, t):
         """The drawing of beat i at film time t (captions and bubbles included)."""
+        REC["mouths"].clear(); REC["heads"].clear(); REC["screen"] = None; self.now, self.cur_beat = t, i
         st_, d_ = self.st, self.d
         tl = t - st_[i]; u = tl / d_[i]
         for k in ANIM:
@@ -254,28 +339,27 @@ class Film:
             x = 280 - 60 * (1 - ease(u / 0.5)); y = 405 + 40 * (1 - ease(u / 0.5))
             pr.lens_view(cl, self.pov, x, y, 165, zoom=1.12, rot=1.25)
             if t >= self.cue("don_sofia") - 0.05:
-                say(L, "Sofía… did you\nsteal my heart?", 120, 690, (200, 110), 36)
+                sb.two_cards(L, "\u201cSof\u00eda\u2026 did you", "steal my heart?\u201d")   # v8: his voice off screen = a quoted card
             return L
         if i == 8:
-            s3 = sb.b_shot3(stroke=0.5 + 0.5 * math.sin(t * 7.0))
+            s3 = sb.b_shot3(stroke=0.5 + 0.5 * math.sin(t * 7.0), bubble=False)   # v8: one bubble, ours
             c3 = cairo.Context(s3); smoke(c3, t, 70, 990, 700, 0.12)
             if t >= self.cue("sofia") - 0.05:
-                sb.say_to(s3, "I sign my work\u2026\ndarling.", 150, 40, (300, 490), (300, 420), 125, 34)
+                self.talk(s3, "I sign my work\u2026\ndarling.", 150, TOP, "sofia", 34)
             return s3
         if i == 9:                                                  # v5: the partner tips his fedora (antenna)
             foot = psh.cctv(psh.frame5(0.0, lean=4 + 8 * ease(u)), "MON 08:59:14")
             lift = math.sin(math.pi * min(1.0, max(0.0, (tl - 0.25) / 0.75)))
             out = surf(); sb.k4(Ctx(cairo.Context(out), 0), foot, hat_lift=max(lift, 1e-6))
             eng.accent_pass(out, sb.ACC)
-            return two(out, "My partner.", "Never blinks.")
+            return sb.vo(out, "My partner. Never blinks.", 24)        # v8: one line, clear of the antenna tip
         if i == 10:
             f = psh.frame5(0.0, lean=4 + 8 * ease(u))
             return psh.cctv(f, "MON 08:59:14")
         if i == 16:                                                 # the partner turns and points
             arm = ease(tl / 0.3)
             out = noir(lambda kk: sb.k_you(kk, arm, screen=arm >= 0.999), lambda c: st.hard_side(c, 330, 0.1, 0.4))
-            if t >= self.cue("robot_you") - 0.03:
-                sb.say_to(out, "You.", 330, 60, (360, 490), (360, 490), 112, 40, mono=True)
+            # v8: no bubble: his face screen reads YOU. as he says it (a tail beside a word is not a mouth)
             return out
         if i == 17:
             ANIM["don"].setdefault("kw", {})["look"] = (0.3, 0.95 * ease(u / 0.5))
@@ -291,7 +375,7 @@ class Film:
             pms.soft_light(ca, 165, 1010 + pn.HY * 2.0, 230, 0.30)
             eng.side_light(ca, 300, 0, 240, 960, from_left=True, amount=0.45)
             if t >= self.cue("pam") - 0.05:
-                sb.say_to(out, "You left me\nyour heart.", 40, 60, (160, 522), (160, 466), 100, 36)
+                self.talk(out, "You left me\nyour heart.", 40, TOP, "pam", 36)
             return out
         if i in (23, 24):
             a0, a1 = ((0.0, 0.0), (-0.1, 0.95)) if i == 23 else ((-0.1, 0.95), (-0.5, -0.6))
@@ -301,7 +385,7 @@ class Film:
         if i == 26:
             out = noir(sb.k8, sb.l8)
             if t >= self.cue("don_framed") - 0.05:
-                sb.say_to(out, "I was framed!", 40, 60, (270, 480), (270, 352), 185, 36)
+                self.talk(out, "I was framed!", 40, TOP, "don", 36)
             return out
         if i in (27, 28, 29):                                        # the shadow grows over the whole of shot 9
             g = ease((t - st_[27]) / (st_[29] + 0.3 - st_[27]))
@@ -322,7 +406,7 @@ class Film:
                 st.mom_shadow(Ctx(c, 0), hx, hy - mo.HY * 2.4, 2.4, skew=0.0, alpha=0.82, head=1.0, big=True)
                 c.restore()
             if t >= self.cue(f"mom_{self.T['mom']}_up") - 0.05:
-                sb.say_to(out, "Up.\nTime for work.", 30, 50, (420, 392), (428, 320), 122, 36)
+                self.talk(out, "Up.\nTime for work.", 18, TOP, "mom", 31)
             return out
         if i in (31, 32, 33):
             beat = i - 30

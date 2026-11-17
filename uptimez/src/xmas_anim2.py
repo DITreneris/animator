@@ -7,6 +7,11 @@ frame and only for this render:
 - Sofia's badge raised above her forearm (the arm hid its A: "SOFI");
 - the razor on the floor without Don's fingers (it read as a cut-off hand), bigger, with a blob of foam;
 - every bubble tail aimed at the speaker and stopping at the edge of the head ("Eww." keeps its two tails).
+v4 (xmas_anim2_v3.py = v3 kept), after the fourth tail review: every box placed by hand clear of the speaker's
+head, hat, cap or mask (V4), tails leave the box outside the face and hook in beside the mouth drawn this frame;
+"Eww." as two bubbles a beat apart with their own emoticons (Sofia's eye-roll, Pam's queasy green); "Merry Christmas,
+Don." beside him with its tail to the left edge (Sofia off screen); the door's PARTY sign also out of shots 1 and 4,
+where it was only ever hidden behind the old boxes.
 v3 (xmas_anim2_v2.py = v2 kept), after the third frame review: tails curve around the outside of the head and end
 on the cheek right beside the mouth corner (a tapered curved wedge), keyed by the speaker's x so a box pushed by the
 safe area keeps its tail; the tip used to overshoot the face (onto the tree) or fall back to the crown.
@@ -37,7 +42,7 @@ DURATION = xa.DURATION
 SHOT11 = (26.9, 28.9)
 NO_SIGN = ((11.8, 13.4), (13.4, 15.8), (19.8, 21.5))               # shots 6, 7, 9 (cameras 6 and 7)
 NO_BOARD = ((15.8, 19.8),)                                          # shot 8 (motion test A's camera)
-NO_PARTY = ((13.4, 15.8), (19.8, 21.5), (25.5, 26.9))         # shots 7, 9 and 10b
+NO_PARTY = ((0.0, 2.4), (6.7, 9.5), (13.4, 15.8), (19.8, 21.5), (25.5, 26.9))   # v4: + shots 1 and 4 (boxes beside Don)
 TIPS = {}
 _saved = {}
 
@@ -181,7 +186,7 @@ def _on():
     xs.banner, xs.wall, dx.razor, sb.top = banner2, wall2, razor_floor, top2
     xb._tail, xs.incident_board, xs.door = _tail2, board2, door2
     _saved["speech"] = xb.speech
-    xb.speech = SPEECH
+    xb.speech = speech4
     sx.BADGE_HOOK = badge_high
     route.apply()
 
@@ -206,6 +211,148 @@ def _wrap(fn):
             _off()
     panel.__name__ = getattr(fn, "__name__", "panel")
     return panel
+
+
+LOG = []                                                       # v4 probe: what each bubble knew
+# v4 (fourth tail review): every box placed by hand clear of the speaker's head, hat, cap or mask; the tail leaves
+# the box outside the face, runs down beside it and hooks in level with the mouth actually drawn this frame.
+# (x, y) = the box's top-left, size, the text as laid out, the side the tail comes from (+1 right, -1 left);
+# tip="edge": an off-screen speaker (to the frame edge at edge_y); icon: an emoticon at the box's right end.
+V4 = {
+    "Sorry. Getting ready\nfor the ball.": [dict(x=None, y=150, size=22, text="Sorry.\nGetting ready\nfor the ball.", side=1)],
+    "Nice balls.\nI've got two for you.": [dict(x=356, y=118, size=23, text="Nice balls.\nI've got two\nfor you.", side=1)],
+    "Eww.": [dict(x=18, y=112, size=30, text="Eww.", side=-1, who=0, icon="roll"),
+             dict(x=None, y=112, size=30, text="Eww.", side=1, who=1, icon="queasy", delay=0.25, reach=511)],
+    "Violation resolved.": [dict(x=196, y=104, size=26, text="Violation resolved.", side=1)],
+    "Get him.": [dict(x=222, y=234, size=30, text="Get him.", side=1)],          # under the sign, off her cap
+    "Human in the loop.": [dict(x=None, y=158, size=26, text="Human in the loop.", side=1)],
+    "Merry Christmas, Don.": [dict(x=18, y=380, size=22, text="Merry\nChristmas,\nDon.", tip="edge", edge_y=440,
+                                   sweet=True)],
+    "Happy compliance!": [dict(x=None, y=170, size=25, text="Happy\ncompliance!", side=1)],
+}
+
+
+def _emoticon(c, kind, cx, cy, r):
+    c.save()
+    face = (1.0, 0.82, 0.25) if kind == "roll" else (0.62, 0.84, 0.42)
+    c.arc(cx, cy, r, 0, 2 * math.pi); c.set_source_rgb(*face); c.fill_preserve()
+    c.set_source_rgb(*INK); c.set_line_width(2.2); c.stroke()
+    if kind == "roll":                                           # the eye-roll: pupils up, a flat mouth
+        for sx_ in (-1, 1):
+            c.arc(cx + sx_ * r * 0.36, cy - r * 0.12, r * 0.24, 0, 2 * math.pi); c.set_source_rgb(1, 1, 1); c.fill_preserve()
+            c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+            c.arc(cx + sx_ * r * 0.36, cy - r * 0.26, r * 0.10, 0, 2 * math.pi); c.fill()
+        c.set_line_width(2.2); c.move_to(cx - r * 0.35, cy + r * 0.45); c.line_to(cx + r * 0.35, cy + r * 0.40); c.stroke()
+    else:                                                        # queasy: squeezed eyes, puffed cheeks, wavy mouth
+        c.set_line_width(2.0)
+        for sx_ in (-1, 1):
+            ex = cx + sx_ * r * 0.36
+            c.move_to(ex - r * 0.18, cy - r * 0.30); c.line_to(ex + r * 0.18 * 0, cy - r * 0.18); c.line_to(ex + r * 0.18, cy - r * 0.30)
+            c.stroke()
+            c.arc(cx + sx_ * r * 0.62, cy + r * 0.22, r * 0.17, 0, 2 * math.pi); c.set_source_rgb(0.45, 0.70, 0.30); c.fill()
+            c.set_source_rgb(*INK)
+        c.move_to(cx - r * 0.42, cy + r * 0.42)
+        for i in range(1, 5):
+            c.line_to(cx - r * 0.42 + i * r * 0.21, cy + r * (0.32 if i % 2 else 0.48))
+        c.stroke()
+    c.restore()
+
+
+def _mouth_tip(c, info, side):
+    """The speaker's mouth this frame (MOUTHS) or its usual place; the tip sits just beside it."""
+    hx, hy = info["head"]; z = info["z"]
+    if info["robot"]:
+        mx, my, R = hx, hy + 15 * z, 44 * z
+        return (mx + side * 13 * z, my), (mx, my), R
+    mx, my, R = hx, hy + 27 * z, 37 * z
+    best = None
+    for dxy in MOUTHS:
+        x_, y_ = c.device_to_user(*dxy)
+        dd = (x_ - hx) ** 2 + (y_ - hy - 27 * z) ** 2
+        if dd < (70 * z) ** 2 and (best is None or dd < best[0]):
+            best = (dd, x_, y_)
+    if best:
+        mx, my = best[1], best[2]
+    return (mx + side * 11 * z, my), (mx, my), R
+
+
+def _bubble4(k, B, info, t, t0):
+    c = k.c
+    lines = B["text"].split("\n"); size = B["size"]
+    tw, lh = xb._measure(c, lines, size)
+    icon = B.get("icon")
+    iw = 44 if icon else 0
+    bw, bh = tw + 2 * xb.PAD_X + iw, lh * len(lines) + 2 * xb.PAD_Y
+    bx = B["x"] if B["x"] is not None else xb.SAFE[2] - bw
+    by = B["y"]
+    t0 = t0 + B.get("delay", 0.0)
+    if t < t0:
+        return None
+    if B.get("tip") == "edge":
+        tip, mouth, head = (-14, B["edge_y"]), None, None
+        base = (bx + 3, min(max(B["edge_y"] - 20, by + 22), by + bh - 22))
+        p1 = (base[0] + (tip[0] - base[0]) / 3, base[1] + (tip[1] - base[1]) / 3)
+        p2 = (base[0] + 2 * (tip[0] - base[0]) / 3, base[1] + 2 * (tip[1] - base[1]) / 3)
+    else:
+        side = B["side"]
+        tip, mouth, R = _mouth_tip(c, info, side)
+        hx, hy = info["head"]
+        ox = B.get("reach", hx + side * (R + 12))
+        base = (min(max(ox, bx + 26), bx + bw - 26), by + bh - 3)
+        if (base[0] - hx) * side > R + 12 and "reach" not in B:
+            ox = base[0]
+        p1 = (ox, base[1] + 0.45 * (tip[1] - base[1]))
+        p2 = (ox, tip[1])
+        head = (hx, hy, R)
+    L, Rr = [], []
+    n = 24
+    for i in range(n + 1):
+        u = i / n; a, b_, c_, d_ = (1 - u) ** 3, 3 * (1 - u) ** 2 * u, 3 * (1 - u) * u * u, u ** 3
+        px = a * base[0] + b_ * p1[0] + c_ * p2[0] + d_ * tip[0]
+        py = a * base[1] + b_ * p1[1] + c_ * p2[1] + d_ * tip[1]
+        dx_ = 3 * (1 - u) ** 2 * (p1[0] - base[0]) + 6 * (1 - u) * u * (p2[0] - p1[0]) + 3 * u * u * (tip[0] - p2[0])
+        dy_ = 3 * (1 - u) ** 2 * (p1[1] - base[1]) + 6 * (1 - u) * u * (p2[1] - p1[1]) + 3 * u * u * (tip[1] - p2[1])
+        ln = math.hypot(dx_, dy_) or 1
+        wd = 12 * (1 - u) ** 1.1
+        L.append((px - dy_ / ln * wd, py + dx_ / ln * wd)); Rr.append((px + dy_ / ln * wd, py - dx_ / ln * wd))
+    poly = L + Rr[::-1]
+    p = xb._pop(t, t0)
+    c.save(); c.translate(bx + bw / 2, by + bh / 2); c.scale(p, p); c.translate(-(bx + bw / 2), -(by + bh / 2))
+    c.set_line_join(1)
+
+    def shapes():
+        c.new_path(); c.move_to(*poly[0]); [c.line_to(*q) for q in poly[1:]]; c.close_path()
+        xb._round_rect(c, bx, by, bw, bh, 16)
+    shapes(); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
+    shapes(); c.set_source_rgb(1, 1, 1); c.fill()
+    c.select_font_face(xb.FONT); c.set_font_size(size); c.set_source_rgb(*INK)
+    for i, l in enumerate(lines):
+        e = c.text_extents(l)
+        c.move_to(bx + (bw - iw) / 2 - e.x_advance / 2, by + xb.PAD_Y + lh * i + size * 0.88); c.show_text(l)
+    if icon:
+        _emoticon(c, icon, bx + bw - xb.PAD_X - 14, by + bh / 2, 17)
+    if B.get("sweet"):
+        c.set_source_rgb(0.86, 0.10, 0.16)
+        hx_, hy_, hs = bx + bw - 10, by + 8, 7
+        c.move_to(hx_, hy_ + hs * 0.9); c.curve_to(hx_ - hs * 1.5, hy_ - hs * 0.2, hx_ - hs * 0.7, hy_ - hs * 1.2, hx_, hy_ - hs * 0.4)
+        c.curve_to(hx_ + hs * 0.7, hy_ - hs * 1.2, hx_ + hs * 1.5, hy_ - hs * 0.2, hx_, hy_ + hs * 0.9); c.fill()
+    c.restore()
+    return dict(box=(bx, by, bw, bh), tip=tip, mouth=mouth, head=head, poly=poly)
+
+
+def speech4(k, s, anchors, t, t0, side="up", size=28, at=None, fill=(1, 1, 1), italic_sweet=False):
+    a = [anchors] if isinstance(anchors, tuple) else anchors
+    rec = dict(s=s, t=t, anchors=a, tips={kk: dict(v) for kk, v in TIPS.items()},
+               mouths=[k.c.device_to_user(*m) for m in MOUTHS], drawn=[])
+    LOG.append(rec)
+    if s not in V4:
+        return SPEECH(k, s, anchors, t, t0, side, size, at, fill, italic_sweet)
+    for B in V4[s]:
+        info = None
+        if B.get("tip") != "edge":
+            ax = a[B.get("who", 0)][0]
+            info = TIPS.get(round(ax, 1))
+        rec["drawn"].append(_bubble4(k, B, info, t, t0))
 
 
 SPEECH, _NS = _speech_poly()

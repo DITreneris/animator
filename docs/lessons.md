@@ -511,3 +511,20 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 
 27. **Workers must be cold.** The mute test only works when the viewer has never seen the script: a fresh subagent with frames only, the same questions every time ("what's happening, whose is it, what changed, who sides with whom, what's the last image"), and its answers compared to the intended reading line by line.
 28. **Gates must fail loudly.** Rough 2 shipped at -0.1 dBTP because the peak was measured but nothing stopped on it. A QA check that only prints is not a gate.
+
+## UptimeZ: Office Noir v8 and Happy Compliance tails (16 Nov, evening)
+
+- **A tail can only end on a mouth that's on screen.** Reviewers rejected every off-screen tail (to the frame edge, to a CCTV corner). An off-screen line becomes a quoted card, a screen readout, or the speaker's own screen.
+- **Check for a bubble baked into the shot.** Noir's Sofía shot drew its own storyboard bubble under the film's; the old tail showed through for a whole review round.
+- **Moving a box exposes what it hid.** Christmas boxes had been covering a PARTY sign; moved, it showed up half-cropped.
+- **A lip-sync mouth must scale with the figure.** Don's talking mouth was drawn at 1× on a 4× close-up, a dot at his nose.
+- **Measure the safe area against every text box, not just the ones a review mentions.** Every Noir card and bubble sat under the app's top bar, and no reviewer flagged it.
+- **Whisper needs care:** three windows per line, a lone word gets the line before as context, and score by letters as well as words ("Pam a heart" comes out "Pamahart"). Test the dry take first: if it fails there, the take is the problem, not the mix.
+
+## UptimeZ: developing the series (17 Nov)
+
+29. **Outside reviews go one level deeper each round.** The first asked for goals instead of habits, the second for psychology instead of goals, the third for relationships that don't run through Don. The fixes stacked; none contradicted. Lock what every review agrees on, and stop after the third: the next proof is a script and cold viewers.
+30. **Look for the fix inside the episodes before inventing one.** Most "new" ideas were already on screen and underused: Sofía × Pam (the thermos coffee, "Get him."), Pam's darkness (the horned doodle of Don), the robot that makes things worse by procedure (the blanked recipient, the 100% SATISFACTION stamp).
+31. **Give the world one stable failure rule** ("no customer data was ever connected"), so no script can fix the product by accident.
+32. **One canon file wins.** A storyline, an index and agent rules beside the episodes, with the README pointing to them, means a worker never has to rebuild the canon from forty files.
+
