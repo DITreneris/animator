@@ -27,6 +27,16 @@ Hoody asks his AI to help him impress Eva. MY AI shows him how (a rose: "Watch!"
 | Biggest laugh | HIS -> ITS DATE (~12 s) | HIS -> ITS DATE (~9 s) |
 | QA | pass | pass: -14.1 LUFS, -1.1 dBTP; "Your turn!" reads as "your time" in 2 of 3 recognition windows (the bubble carries it) |
 
+**v2.1** (same file, 16.4 s, 493 frames):
+- MY AI bounces and rubs its mitts while he fidgets.
+- The ask runs 1.2 s, and the rose lands by ~2 s with Hoody in the shot.
+- A head-shake bridge leads into the loop.
+- The pink close-up and the rose shot are trimmed.
+- The mix dips 4 dB under "Your turn!", which now passes the speech check.
+- `v2/master2.sh` adds a 15 kHz low-pass and limiter 0.6, after the BOOM overshot to -0.5 dBTP.
+
+QA passes: -14.4 LUFS, -3.6 dBTP. Both fresh testers still swipe at 1 s: the motion is too small in a wide shot. Both independently said to open on the result, the robot handing her the rose. The loop "half works": the dazed hold drags, and the robot and Eva pop in.
+
 ## Build
 
 ```bash

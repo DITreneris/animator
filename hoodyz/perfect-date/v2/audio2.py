@@ -93,6 +93,9 @@ tt = T(.3); wadd(fx, land + 7 / 30, np.sin(2 * np.pi * (260 * tt + 120 * np.sin(
 for f, shot, off, g in R.VO:                                     # the same table the lip sync reads
     add(vo, T0[shot] + round(off * 30) / 30, load(f'vo/{f}.wav'), g)
 
+# v2.1: 4 dB more room under MY AI's "Your turn!"
+dip = env_seg([(0, 1), (T0[3] + .15, 1), (T0[3] + .25, .63), (T0[3] + .95, .63), (T0[3] + 1.05, 1), (N / SR, 1)])
+amb *= dip; fx *= dip; mus *= dip
 # ---- duck under the voices, then sum
 w = int(.03 * SR); e = np.clip(np.convolve(np.abs(vo), np.ones(w) / w, 'same') * 10, 0, 1)
 s = np.zeros(N); p = 0.; rl = np.exp(-1 / (.2 * SR))

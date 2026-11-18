@@ -1,4 +1,7 @@
-"""Perfect Date v2: the hook and the loop. Built on render.py (imported, not touched).
+"""Perfect Date v2.1: the hook and the loop.
+v2.1: motion in the first second (MY AI bounces and rubs its mitts, he fidgets), the ask 1.2 s, the rose by ~2 s with
+Hoody in the shot, a head-shake bridge into the loop, the pink close-up and the rose trimmed.
+v2: Built on render.py (imported, not touched).
 - Frame 0 is the ask: on the bench, "HELP ME IMPRESS HER!" already on screen, MY AI leaning in, Eva right there.
 - The film ends in the same shot: he crashes onto the bench, dizzy and alone, held 0.8 s. The cut lands on frame 0:
   the same bench, him asking MY AI again. The label resets ITS -> HIS on the cut.
@@ -23,8 +26,14 @@ def s_ask(c, f, r):   # frame 0: on the bench, the ask already on screen; MY AI 
     col = E.dog(c, 880 - 135 * .9, GY + 40, .72, look=0, f=f)
     hand = E.eva(c, 880, GY + 30, .85, 'evacalm', sip=.2, blink=K.blinking(f, 7))
     E.leash(c, hand, col, sag=40)
-    ai(c, 170, GY + 50, .9, eye='happy', tilt=12, look=(12, -4), f=f)
-    hoody(c, 420, SEAT, .82, expr='hopeful', pose='sit', seat=(220, 780), gaze=-20, op=.15 + .6 * talk(f, 'h_whisper'), f=f)
+    b = abs(math.sin(f * .55)); sq = .06 * b                         # MY AI bounces on its toes, eager, rubbing its mitts
+    c.save(); c.translate(170, GY + 50); c.scale(1 + sq * .5, 1 - sq); c.translate(-170, -(GY + 50) - 26 * b)
+    ai(c, 170, GY + 50, .9, eye='happy', tilt=12, look=(12, -4), arms=('hold', 'hold'), f=f)
+    mx, my = 170 + 70 * .9, GY + 50 - 150 * .9
+    for q in (-1, 1): ell(c, mx + q * (14 + 10 * math.sin(f * 1.3)), my + q * 4, 22, 20); fs(c, WHITE, 5)
+    c.restore()
+    hoody(c, 420, SEAT, .82, expr='hopeful', pose='sit', seat=(220, 780), gaze=-20 + 14 * math.sin(f * .4), rot=.04 * math.sin(f * .7),
+          op=.15 + .6 * talk(f, 'h_whisper'), f=f)            # he fidgets, eyes darting to her
     c.restore()
     bubble(c, ['HELP ME', 'IMPRESS HER!'], 20, (440, 1110), cy=600, cx=430)          # full size on frame 0
 
@@ -51,6 +60,13 @@ def s_pump(c, f, r):  # MY AI, the proud stage tech, on a real hand pump: handle
             a_ = -.5 + i * .8; ell(c, tip[0] + math.cos(a_) * 70 * p, tip[1] + 40 + math.sin(a_) * 40 * p, 16 * p, 16 * p); c.set_source_rgba(1, 1, 1, .9); c.fill()
         txt(c, 'PFF!', tip[0] - 40, tip[1] + 330, 76, NAVY, lw=0)
     if r >= 6: sparkles(c, tip[0], tip[1] + 20, r)
+
+def s_rose(c, f, r):  # the rose, with Hoody in the shot: he watches it work
+    park(c, f, zoom=1.2, cy=1450)
+    hoody(c, 120, 1830, .78, expr='hopeful', gaze=20, f=f)
+    k = oe((r - 2) / 8)
+    ai(c, 380, 1720, 1.15, eye='focus', arms=('down', 'offer'), props=(None, A.rose), rot=-.12 * k, f=f)
+    E.eva(c, 800, 1760, 1.0, 'impressed' if r >= 8 else 'evacalm', sip=.1, blink=K.blinking(f, 7))
 
 def s_take(c, f, r): R.s11(c, f, min(r, 29))                          # she takes its hand -> ITS DATE (the top-down half is cut)
 
@@ -90,25 +106,30 @@ def s_land(c, f, r):  # BOOM onto the bench (as v1), then the same bench shot as
     q = r - 9
     bench_shot(c, f)
     Sh.cat_one_eye(c, 700, SEAT - 6, .62, open_eye=q > 12)
-    hoody(c, 420, SEAT, .82, expr='spiral', pose='sit', seat=(220, 780), f=f, blink=False)
+    shake = q >= 24                                                   # the bridge: he shakes it off, the stars fly away, he turns to MY AI
+    u = (q - 24) / 5 if shake else 0
+    gz = (-20 if u >= .8 else 34 * math.sin(u * 3 * math.pi)) if shake else 0     # rot would tilt the seat plank too: shake with the eyes
+    hoody(c, 420, SEAT, .82, expr='spiral' if not shake or u < .35 else 'hopeful', pose='sit', seat=(220, 780),
+          gaze=gz, f=f, blink=False)
     hy = SEAT - 520
-    for i in range(3):                                                # stars circling his head
-        a = q * .5 + i * 2.1
-        c.save(); c.translate(420 + math.cos(a) * 110, hy + math.sin(a) * 22); c.scale(.6, .6); c.move_to(0, -30)
+    for i in range(3):                                                # stars circling his head, flung off on the shake
+        a = q * .5 + i * 2.1; fly = 1 + 6 * cl(u) if shake else 1
+        if shake and u > .8: break
+        c.save(); c.translate(420 + math.cos(a) * 110 * fly, hy + math.sin(a) * 22 * fly - 120 * cl(u)); c.scale(.6, .6); c.move_to(0, -30)
         for j in range(1, 10): rad = 30 if j % 2 == 0 else 12; c.line_to(rad * math.sin(j * math.pi / 5), -rad * math.cos(j * math.pi / 5))
         c.close_path(); fs(c, YEL, 4); c.restore()
     for i in range(5):                                                # the last of the dust
         ell(c, 260 + i * 90, GY - 10, 60, 30); c.set_source_rgba(.88, .80, .64, max(0, .5 - q * .03)); c.fill()
     c.restore()
 
-PLAN = [(s_ask, 45), (R.s5, 27), (R.s6, 36), (R.s7, 33), (R.s8, 36), (s_pump, 30), (R.s10, 52), (s_take, 30), (R.s12, 24),
-        (R.s13, 30), (R.s14, 30), (s_plonk, 30), (R.s16, 27), (R.s17, 27), (R.s18, 24), (R.s19, 12), (s_land, 33)]
+PLAN = [(s_ask, 36), (R.s5, 18), (s_rose, 27), (R.s7, 33), (R.s8, 24), (s_pump, 30), (R.s10, 52), (s_take, 30), (R.s12, 24),
+        (R.s13, 30), (R.s14, 30), (s_plonk, 30), (R.s16, 27), (R.s17, 27), (R.s18, 24), (R.s19, 12), (s_land, 39)]
 SHOTS = []; _t = 0
 for fn, d in PLAN: SHOTS.append((fn, _t, _t + d)); _t += d
 NF = _t
 IMPACT, STEPS = R.IMPACT, R.STEPS                                    # audio2.py reads these
 TAKE = 7                                                              # index of the hand-take shot
-VO = [('h_whisper', 0, .07, .7), ('ai_watch', 1, .15, .6), ('ai_turn', 3, .25, .6), ('h_oh', 9, .35, .55), ('h_whoa', 14, .25, .55)]
+VO = [('h_whisper', 0, .07, .7), ('ai_watch', 1, .2, .6), ('ai_turn', 3, .25, .6), ('h_oh', 9, .35, .55), ('h_whoa', 14, .25, .55)]
 R.SHOTS, R.NF, R.VO = SHOTS, NF, VO                                   # talk() reads these
 def pill(f): return 'ITS DATE' if f >= SHOTS[TAKE][1] + 8 else 'HIS DATE'
 def pulse(c, f):                                                      # twice the size of v1, held 0.8 s
