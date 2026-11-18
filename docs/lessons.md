@@ -593,3 +593,9 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 - **The payoff frame needs one thing to read.** A wide shot with eleven pieces of text hid the joke at phone size; a 2-second insert of just the two tags became both viewers' screenshot.
 - **Retime with the old clock.** Shifting a film by 0.3 s would have moved every lip shape, blink and breath off its line; passing the old film time to the drawing code kept them all in place while the shots moved.
 - **Check true peak after the encode, every time.** A 0.3 s shift moved a THUNK onto a different AAC frame and the same mix overshot to +0.4 dBTP; a 16 kHz low-pass and 256k brought it to −3.2.
+
+## UptimeZ: Happy Compliance v3–v6 (18 Nov)
+
+- **Hiding a problem leaves a hole.** v2 had hidden the PARTY sign and kept Don's fall off screen; cold viewers then could not read the ending at all (3/5). Putting the throw, the hit and the fall on screen took them to 5/5.
+- **A prop that has done its job should leave.** Once Don's legs were in the shot, his razor on the floor only read as "a blue limb"; removing it cleared the punchline.
+- **Spinning props keep their words upright.** A CENSORED bar that tumbled with its bauble read as a mistake.

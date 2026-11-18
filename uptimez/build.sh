@@ -350,6 +350,29 @@ build_ss() {
   echo "Wrote $out/uptimez_ss_anim_$1.mp4, _1080.mp4 and the cover"
 }
 
+build_xmas_final() {
+  # Happy Compliance, the final (v6): xmas_anim6.py over v5/v4/v3 (each kept) over v2 (xmas_anim2.py). Sound: v2's mix
+  # (sound_xmas.py mix -> xmas_mix_v1.wav), 0.8 s later, with the cold open's and the ending's effects
+  # (sound_xmas5.py -> xmas_mix_v5.wav). -t, not -shortest: the last frame is the loop's join.
+  local out=${OUT_DIR:-$HERE/happy-compliance}; mkdir -p "$out"
+  ( cd src
+    python3 sound_xmas.py mix
+    python3 xmas_visemes.py
+    python3 sound_xmas5.py
+    local dur; dur=$(python3 -c "import xmas_anim6 as M; print(M.DURATION)")
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_xmas_anim_v6.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_xmas_anim_v6_1080.mp4
+      python3 $eng xmas_anim6 | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i xmas_mix_v5.wav \
+        -af "volume=0.9dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+        -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+        -c:a aac -b:a 192k -ar 48000 -t "$dur" -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done )
+  echo "Wrote $out/uptimez_xmas_anim_v6.mp4 and _1080.mp4"
+}
+
 case "${1:-}" in
   ss)         build_ss v2 ;;
   ss_v1)      build_ss v1 ;;
@@ -358,6 +381,7 @@ case "${1:-}" in
   mf)         build_mf ;;
   xmas)       build_xmas ;;
   xmas2)      build_xmas2 ;;
+  xmas_final) build_xmas_final ;;
   bc)         build_bc ;;
   ob)         build_ob ;;
   on)         build_on ;;
