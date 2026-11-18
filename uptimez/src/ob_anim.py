@@ -1,4 +1,8 @@
-"""v18 (18 Nov): his watch held out to the side (5.4, 10.3), clear of the VISITOR badge. ob_anim_v17.py is pinned.
+"""v19 (18 Nov): Tomas: "0:14 the Client is smaller than our people" (3.1 drew him at 0.56 against their 0.80; now
+0.72, the tallest, as everywhere else); "0:30 too much empty wall", and the same where Pam picks up the strips:
+4.1, 6.1 and 8.5 closer, with the UptimeZ sign and OUR FIRST CLIENT (crooked, as Pam hung it) on the wall.
+ob_anim_v18.py is pinned.
+v18 (18 Nov): his watch held out to the side (5.4, 10.3), clear of the VISITOR badge. ob_anim_v17.py is pinned.
 v15 (18 Nov): polish (Tomas chose, after the cold mute test of v14): mouths one drawing ahead of the sound, 3.1 two
 more (measured on its take); bubble text 30 px; v16: Pam carries the frame in both hands (1.5), MY GARAGES over the plan,
 and the loop is in the wide shot (10.5); v17: 3.5 out, 3.12 and 4.1 tighter, 4.1 wider with Don sliding in between
@@ -117,7 +121,7 @@ import set_ob as st
 import hands_ob as hd
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v18"
+V = "v19"
 W, H, FPS = 540, 960, 30
 HERE = os.path.dirname(os.path.abspath(__file__))
 TK = json.load(open(os.path.join(HERE, "ob_voices", "film_v10", "takes.json")))
@@ -464,6 +468,25 @@ def rolling(start, stop=None):
 # ---------------------------------------------------------------- cameras, backgrounds, light
 def wall(k):
     k.c.set_source_rgb(*kit.WALL); k.c.paint()
+
+
+def zoom(k, z, about):
+    "v19: scale everything drawn after it about a point (inside a push's save)."
+    c = k.c
+    c.translate(*about); c.scale(z, z); c.translate(-about[0], -about[1])
+
+
+def decor(k, logo=None, frame=None):
+    "v19: the wall in the mid shots: the UptimeZ sign, and OUR FIRST CLIENT, crooked, as Pam hung it. (x, y, size) or None."
+    c = k.c
+    if logo:
+        x, y, s = logo
+        brand.mark(c, x, y, s, zzz=False)
+        c.select_font_face("Inter", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(s * 0.30)
+        c.set_source_rgb(*brand.NAVY); c.move_to(x + s * 1.12, y + s * 0.62); c.show_text("UptimeZ")
+    if frame:
+        x, y, s = frame
+        c.save(); c.translate(x, y); c.rotate(0.07); st.first_client(k, 0, 0, s); c.restore()
 
 
 def floor_line(k, y):
@@ -907,9 +930,10 @@ def s3_1(k):
     rolled = shut or opening <= 0
     w = 0.35 + 0.65 * opening * (1.06 if within(0.25, 0.34) else 1.0)
     half = 54.0 if rolled else 57.0 * w                    # v8: his arms hold it (they hung at his sides while it floated)
-    ly = (170 + (jolt if shut else 0) - fl) / 0.56
-    pose = co._ik(-1, -half / 0.56, ly) + co._ik(1, half / 0.56, ly)
-    o = client(k, 76, fl + co.HY * 0.56, 0.56, pose, "plain", (0.8, 0.0), shut=blink(snap + 1 / 12.0), mouth=code(), roll=False)
+    cs = 0.72                                              # v19: as tall as he is beside them everywhere else (was 0.56)
+    ly = (170 + (jolt if shut else 0) - fl) / cs
+    pose = co._ik(-1, -half / cs, ly) + co._ik(1, half / cs, ly)
+    o = client(k, 72, fl + co.HY * cs, cs, pose, "plain", (0.8, 0.0), shut=blink(snap + 1 / 12.0), mouth=code(), roll=False)
     (hlx, hly), (hrx, hry) = o["hands"]
     mx, my = (hlx + hrx) / 2.0, (hly + hry) / 2.0
     if rolled:
@@ -922,7 +946,7 @@ def s3_1(k):
         ellipse(k, hx, hy, 9, 9, co.SKIN, 931, shadow=False, lw=1.6)
     c.restore(); c.restore()
     light(k)
-    speak(k, "A", 24, 262, at=(20, 348), side=-1)                         # v18: the tail to the near cheek
+    speak(k, "A", 24, 230, at=(20, 232), side=-1)                         # v19: above him (he is bigger); the tail to his cheek
 
 
 def s3_2(k):
@@ -1040,11 +1064,13 @@ def s3_12(k):
 # ================================================================ BEAT 04 · the pitch, and the handover
 def s4_1(k):
     """v17: wider: Don slides in between the Client and Sofía, his back to her, and sells. He believes it."""
-    wall(k); push(k, 0.04, (270, 520)); floor_line(k, 1010)
+    wall(k); push(k, 0.04, (270, 520)); zoom(k, 1.15, (270, 1010))      # v19: closer, the wall dressed
+    decor(k, logo=(70, 230, 84), frame=(430, 300, 1.25))
+    floor_line(k, 1010)
     g = ease(seg(0.0, 0.42))
     sofia(k, 446, 1010 + so.HY * 1.15, 1.15, "low", "recover" if g < 1 else "interested", (-0.9, -0.1))
     client(k, 92, 1010 + co.HY * 1.15, 1.15, "open", "plain", (0.8, -0.1), roll=True, shut=blink(1.4))
-    dx = 520 - 236 * g
+    dx = 640 - 356 * g                                                    # v19: from off the right edge (the shot is closer)
     don(k, dx, 1010 - 302 * 1.25, 1.25, raw=("pleased_low", "grin"), look=(-1, -0.2), mouth=code(), shut=blink(0.0))
     k.c.restore(); light(k)
     speak(k, "T", 26, 260, dx=40)
@@ -1175,7 +1201,8 @@ def s5_6(k):
 # ================================================================ BEAT 06 · Sofia does it
 def s6_1(k):
     """Clipboard under her arm, she takes Pam's tablet without a look."""
-    wall(k); push(k, 0.03, (270, 450))
+    wall(k); push(k, 0.03, (270, 450)); zoom(k, 1.2, (300, 400))        # v19: closer, the wall dressed
+    decor(k, logo=(70, 150, 84), frame=(420, 190, 1.2))
     taken = after(5 / 12.0)
     pam(k, 438, 440, 1.5, "empty_low" if taken else "typing", ((-0.2, 0.9) if CUR["tl"] < 9 / 12.0 - 1e-6 else (-0.9, 0.0)) if taken else None)
     sofia(k, 262, 430, 1.5, "show" if taken else "hold", "recover", (-0.9, -0.1))
@@ -1413,7 +1440,10 @@ def s8_4(k):
 
 def s8_5(k):
     """She looks at his raised hand. Then at the floor; she goes down on her knees, upright, and then leans to a strip."""
-    wall(k); push(k, 0.03, (270, 480)); floor_line(k, 884)
+    wall(k); push(k, 0.03, (270, 480))
+    decor(k, logo=(64, 150, 84))                                          # v19: the wall dressed, and her bigger
+    zoom(k, 1.35, (300, 930))
+    floor_line(k, 884)
     ac.scatter(k, 40, 500, 892, 1.6, n=12, seed=9)
     n = int(round(CUR["tl"] * 12))
     if n >= 12:                                            # a hand on one strip, and up it comes
