@@ -1,4 +1,30 @@
-"""THE ONBOARDING: the animation, v10 (ob_anim_v9.py = v9, kept): one take. Speech recognition on the final mix (qa_ob_speech.py,
+"""v18 (18 Nov): his watch held out to the side (5.4, 10.3), clear of the VISITOR badge. ob_anim_v17.py is pinned.
+v15 (18 Nov): polish (Tomas chose, after the cold mute test of v14): mouths one drawing ahead of the sound, 3.1 two
+more (measured on its take); bubble text 30 px; v16: Pam carries the frame in both hands (1.5), MY GARAGES over the plan,
+and the loop is in the wide shot (10.5); v17: 3.5 out, 3.12 and 4.1 tighter, 4.1 wider with Don sliding in between
+them, 9.1 pushes in on Pam, 10.4 pushes in on his photo and the stamp; the plan's bays are garages, no. 7 ringed, and the strip in his palm is a
+slice of garage 7; Pam's rehang closer and longer (1.5); after the shredder, Pam's eyes on the bin, not his smile
+(4.6); 10.5 he finds only the strip, the watch hand down; Don's lines framed four ways (2.3 tight and leaning, 4.1
+from below, 5.5 over the Client's shoulder, 8.3 a Dutch tilt); CONFETTI on the cannon and a fuse (8.1); her CV goes
+into a WELCOME PACK that goes to his hand (6.8); 3.6 and 3.8 shorter. ob_anim_v14.py is pinned.
+v14 (18 Nov): the loop (Tomas chose): 10.5 is new, he has lost it again outside the glass and turns back to the door;
+the cut is to the first drawing; footsteps over the seam (sound_ob_mix anim=9). ob_anim_v13.py is pinned.
+v13 (18 Nov): the leaf stays on his head through 2.1; in 2.2 the paddle snaps up between the hands, and the jolt
+knocks it off: it flutters down to his feet (Tomas: "the leaf can fall after the handshake"). ob_anim_v12.py is v12.
+THE ONBOARDING: the animation, v12 (ob_anim_v11.py = v11, kept). 18 Nov. The first joke now lands in the first two
+seconds (Tomas: "the client is coming, something needs to drop on his head; the ficus, or OUR FIRST CLIENT"; he chose):
+  - OUR FIRST CLIENT hangs over the glass door, a little potted ficus on the door's ledge beside it. The door slams into
+    its stop, the wall shakes, the frame drops onto the Client and hangs from his neck, the plate on his chest; then a
+    ficus leaf settles on his head. He does not blink, and says his line wearing it (1.3);
+  - 1.5 (new, 10 drawings): Pam lifts it off him and hangs it back on the wall, lower and crooked; nobody looks at her.
+    From then on it hangs there, and at the end his photograph is in it there.
+The film is 1.5 s longer. Sound: sound_ob_mix anim=8 (the slam, the wire, the landing, the leaf, Pam).
+THE ONBOARDING: the animation, v11 (ob_anim_v10.py = v10, kept): the music only. The director found the bossa "a bit
+annoying" (too loud, never changing, a shaker hissing all the way) and chose candidate A of three by ear
+(ob_music_audition_v1.mp4): sparse vibes, one soft rolled chord a bar and a quiet bass note, no percussion, 78 bpm,
+an eight-bar progression, 5 dB lower (sound_ob_music.py). Still cut dead by the cannon and back with the stamp. Every
+drawing is v10's.
+THE ONBOARDING: the animation, v10 (ob_anim_v9.py = v9, kept): one take. Speech recognition on the final mix (qa_ob_speech.py,
 run for the first time on this film) heard 20 of 21 lines; Pam's was heard as "Some shit other scooper". Her line is
 recorded again (ob_voices/film_v10: the voice is given two sentences), and the rustle that followed it by a tenth of a
 second is gone from the mix (it was heard as a last syllable). The shot is one drawing longer. Nothing else changes.
@@ -91,7 +117,7 @@ import set_ob as st
 import hands_ob as hd
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v10"
+V = "v18"
 W, H, FPS = 540, 960, 30
 HERE = os.path.dirname(os.path.abspath(__file__))
 TK = json.load(open(os.path.join(HERE, "ob_voices", "film_v10", "takes.json")))
@@ -111,7 +137,28 @@ TIMING["5.1"] = 20 / 12.0
 TIMING["7.2"] = 14 / 12.0                                  # v6: two more lines to read on the payment
 TIMING.update({"8.4": 10 / 12.0, "8.5": 18 / 12.0, "9.1": (13 / 12.0, 0.33), "10.1": 11 / 12.0, "10.2": 11 / 12.0,
                "10.3": 13 / 12.0, "10.4": (1.0, 0.5)})     # v7: Pam's line in the hold; the ending's pauses trimmed
+_t = {}
+for _k, _v in TIMING.items():                              # v12: 1.1 is longer (the frame, the leaf), and 1.5 is new
+    _t[_k] = 26 / 12.0 if _k == "1.1" else _v
+    if _k == "1.4":
+        _t["1.5"] = 10 / 12.0
+_t["10.5"] = 14 / 12.0                                     # v14: the loop: he has lost it again
+_t["1.5"] = 18 / 12.0                                      # v15: Pam's rehang, long enough to be seen (cold viewers missed it)
+_t["3.6"], _t["3.8"] = 8 / 12.0, 8 / 12.0                  # v15: fewer side-eyes (both viewers: the same look again)
+_t["4.6"] = 12 / 12.0                                      # v15: Pam's eyes on the bin, not his smile
+del _t["3.5"]                                              # v17: out (the camera going down him): the talk is too long on mute
+_t["3.12"], _t["4.1"] = (0.17, 0.17), (0.17, 0.25)         # v17: tighter
+_t["3.6"] = 11 / 12.0                                      # v17: back to v14 (Whisper lost "Oh..." when it came sooner)
+_t["5.4"], _t["5.5"] = (0.25, 0.25 + 1 / 12.0), (0.12 + 3 / 12.0, 0.45)   # v17: "Approved." a little later (Whisper heard "Approve.")
+TIMING = _t
+ac.GARAGES[0] = True                                       # v15: the plan's bays are garages; no. 7 ringed
+ac.TITLE[0] = True                                         # v16: MY GARAGES over the plan
+st.CANNON_LABEL[0] = True                                  # v15: CONFETTI on the cannon, a fuse
 st.ONE_SIGNAL[0] = True
+FRAME_TOP = (98, 318)                                      # v12: over the door, before it falls
+FRAME_AT2 = (240, 498)                                     # where Pam hangs it back: lower, crooked
+st.FRAME_AT = FRAME_AT2; st.FRAME_S[0] = 0.7; st.FRAME_ROT[0] = 0.07
+PLANT = (150, 391)                                         # the little ficus on the door's ledge
 PX = [1.0]                                                 # device pixels to one design pixel, for this drawing
 ANCH, QA = {}, {"bubbles": [], "faces": [], "badges": []}
 OPT = {"bubbles": True, "plain": False, "fault": None, "mark": False}
@@ -180,14 +227,21 @@ def said():
     return line()["t1"] - SHOT[CUR["shot"]]["t0"]
 
 
+LIP = [1]                                                  # v15: mouths one drawing ahead of the sound (0: on it, as v14)
+LIPSHIFT = {"3.1": 1}                                      # v15: measured on the take: this one ran late (2 with the lead)
+
+
 def code():
     """The mouth shape of this shot's speaker now: "" at rest inside the shot, a letter while he speaks."""
     ln = line()
     if not ln:
         return None
     vis = TK[CUR["shot"]].get("vis") or []
-    i = int(round((CUR["t"] - ln["t0"]) * 12))
-    return vis[i] if 0 <= i < len(vis) else ""
+    i0 = int(round((CUR["t"] - ln["t0"]) * 12))
+    i = i0 + LIP[0] + LIPSHIFT.get(CUR["shot"], 0)          # v15: a drawing ahead of the sound
+    if 0 <= i < len(vis):
+        return vis[i]
+    return vis[-1] if 0 <= i0 < len(vis) else ""            # v18: ahead to open, but not shut before the sound ends
 
 
 def speaking(pad=0.0):
@@ -317,6 +371,8 @@ def client(k, hx, hy, s, pose="open", face="plain", look=(0.7, 0.0), shut=False,
     """The Client, placed by the centre of his head."""
     o = co.client(k, hx + 4 * s, hy - co.HY * s, s, pose, face, look=look, mouth=mouth or None, **kw)
     ox, oy = o["head"]
+    if who == "CLIENT" and (CUR["shot"] == "2.1" or (CUR["shot"] == "2.2" and CUR["tl"] < 1 / 12.0 - 1e-6)):
+        leaf(k, hx + 4.5 * s, hy - 56 * s, 2.42 * s, 0.4)  # v13: the leaf from 1.1, still on his head
     if shut:
         _lids(k, [(ox - 17 * s, oy - 1 * s), (ox + 17 * s, oy - 1 * s)], (co.FACES[face]["eye"] + 0.6) * s, co.SKIN)
     _reg(k, who, ox, oy, s, 30, 45, 57, 62, 50, co.SKIN, mw=31 if face == "warm" else 27)   # his wide crooked smile   # the tail's cheek: beside the mouth, above his collar
@@ -361,9 +417,11 @@ def sofia(k, hx, hy, s, pose, face, look, lean=0, mouth=None, roll=0.0, rise=0.0
     return o
 
 
-def pam(k, hx, hy, s, act, look=None):
-    """Pam standing, placed by the centre of her head."""
-    o = ac.pam(k, hx, hy - pm.HY * s, s, act, look)
+def pam(k, hx, hy, s, act, look=None, hands=None):
+    """Pam standing, placed by the centre of her head. hands (v16): two screen points for her hands."""
+    feet = hy - pm.HY * s
+    loc = None if hands is None else tuple(((x - hx) / s, (y - feet) / s) for x, y in hands)
+    o = ac.pam(k, hx, feet, s, act, look, hands=loc)
     _reg(k, "PAM", hx, hy, s, 30, 40, 56, 60, 45, kit.PEOPLE["PAM"]["skin"])
     return o
 
@@ -434,6 +492,8 @@ def world(k, x0, y0, z, open_=0.0, sway=0.0, amount=0.0, shake=(0, 0), decor=Tru
     x0 += (W / z - W / zz) / 2.0; y0 += (H / z - H / zz) / 2.0
     c.save(); c.translate(*shake); c.scale(zz, zz); c.translate(-x0, -y0)
     st.stage(k, open_=open_, sway=sway, decor=decor)
+    if decor:
+        st.ficus(k, PLANT[0], PLANT[1], 0.32, sway * 1.6, 470)          # v12
     st.desk(k)
 
 
@@ -509,6 +569,9 @@ def _rows(c, text, width):
     return rows + [cur]
 
 
+BUB = [30 / 26.0]                                          # v15: bubble text scale (1.0: v14)
+
+
 def speak(k, form, size=26, maxw=300, at=None, side=1, gap=14, dx=0, dy=0, who=None, rows=None):
     """This shot's line, in screen space (call after the last c.restore()). See the module's notes for the forms."""
     ln = line()
@@ -519,6 +582,7 @@ def speak(k, form, size=26, maxw=300, at=None, side=1, gap=14, dx=0, dy=0, who=N
     a = ANCH.get(who)
     c = k.c
     mono = ln["who"] == "ROBOT"
+    size, maxw = size * BUB[0], maxw * BUB[0]                # v15: bigger on a phone (30 px for the usual 26)
     font = (MONO, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD) if mono else (kit.FONT, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
     c.select_font_face(*font); c.set_font_size(size)
     rows = rows or _rows(c, ln["text"], maxw)
@@ -613,7 +677,109 @@ def _through_glass(k, draw_, open_):
     c.restore()
 
 
+def hung(k, nx, ny, s=0.7, rot=0.0):
+    """v12: OUR FIRST CLIENT hanging by its wire from (nx, ny): the nail, or his neck."""
+    c = k.c
+    c.save(); c.translate(nx, ny); c.rotate(rot); st.first_client(k, 0, 66 * s, s); c.restore()
+
+
+def leaf(k, x, y, s=1.0, rot=0.3):
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    ellipse(k, 0, 0, 15 * 0.32, 27 * 0.32, (0.26, 0.60, 0.36), 471, shadow=False, lw=1.2)
+    c.set_source_rgb(0.14, 0.36, 0.22); c.set_line_width(0.6); c.move_to(0, -6); c.line_to(0, 6); c.stroke()
+    c.restore()
+
+
+NECK = (109.4, 554.5 + 52 * 0.66)                          # his neck, where he stops in 1.1 (stage)
+HEADTOP = (112, 554.5 - 56 * 0.66)
+
+
 def s1_1(k):
+    """v12: the door slides open and slams into its stop; the wall shakes. He walks in and stops under OUR FIRST CLIENT;
+    it drops onto him and hangs from his neck. A leaf from the little ficus settles on his head. He does not blink."""
+    tl = CUR["tl"]
+    old = st.FRAME_AT
+    st.FRAME_AT = (-999, -999)                             # the frame on the wall is drawn here, not by the set
+    try:
+        _s1_1(k, tl)
+    finally:
+        st.FRAME_AT = old
+
+
+def _s1_1(k, tl):
+    c = k.c
+    op = 0.85 * seg(0.08, 0.70)
+    sway = 3.2 * math.sin((tl - 0.25) * 10) * math.exp(-(tl - 0.25) * 2.4) if tl > 0.25 else 0.0
+    wide(k, open_=op, sway=sway)
+    step = seg(0.66, 1.42)
+    x = 78 + 34 * step
+    bob = -3.0 * abs(math.sin(step * math.pi * 3)) if 0 < step < 1 else 0.0
+    dip = 3 if 20 <= CUR["n"] - SHOT["1.1"]["n0"] <= 20 else 0           # the frame lands: he gives a little
+    hy = F + co.HY * 0.66 + bob + dip
+    if tl < 0.66 - 1e-6:
+        _through_glass(k, lambda: client(k, x - 4 * 0.66, hy, 0.66, "arrive", "confident", (0.8, 0.0)), op)
+    _staff(k, dlook=(-1, 0) if tl > 0.5 else (-0.2, 0.3), sof=("hold", "smile" if tl > 0.9 else "tiny", (-0.9, -0.2)))
+    d = CUR["n"] - SHOT["1.1"]["n0"]
+    if tl >= 0.66 - 1e-6:
+        client(k, x - 4 * 0.66, hy, 0.66, "arrive", "confident", (0.8, 0.0) if d < 18 else (0.8, -0.5) if d < 23 else (0.8, 0.0),
+               shut=d == 23)
+    wob = 0.10 * math.sin((tl - 0.72) * 22) * math.exp(-(tl - 0.72) * 2.0) if tl > 0.72 else 0.0
+    if d < 17:                                             # on its nail, shaking after the slam
+        hung(k, FRAME_TOP[0], FRAME_TOP[1] - 66 * 0.7, 0.7, wob + (0.25 if d >= 14 else 0.0))
+    elif d < 20:                                           # falling
+        f = (d - 16) / 3.0
+        hung(k, FRAME_TOP[0] + (NECK[0] - FRAME_TOP[0]) * f, (FRAME_TOP[1] - 46) + (NECK[1] + dip - FRAME_TOP[1] + 46) * f * f, 0.7, 0.25 - 0.45 * f)
+        c.set_source_rgb(*INK); c.set_line_width(2.4); c.set_line_cap(1)
+        for dx in (-30, 0, 30):
+            c.move_to(NECK[0] + dx, NECK[1] - 250 * (1 - f) - 40); c.line_to(NECK[0] + dx, NECK[1] - 250 * (1 - f) - 80); c.stroke()
+    else:                                                  # on him
+        swing = (-0.18, 0.10, -0.05, 0.02)[min(3, d - 20)]
+        hung(k, NECK[0], NECK[1] + dip, 0.7, swing)
+    if d >= 19:                                            # the leaf: off the little ficus, down, onto his head
+        g = min(1.0, (d - 19) / 6.0)
+        lx = PLANT[0] - 10 + (HEADTOP[0] - PLANT[0] + 10) * g + 14 * math.sin(g * 9)
+        ly = PLANT[1] - 70 + (HEADTOP[1] - PLANT[1] + 70) * g
+        leaf(k, lx, ly + dip, 1.6, 0.3 + 1.2 * math.sin(g * 7) * (1 - g))
+    k.c.restore(); light(k)
+
+
+def s1_5(k):
+    """v16: Pam takes the frame off him in both hands, carries it up and hangs it back on the wall, lower and crooked
+    (two cold viewers saw it fly up by itself). Nobody looks at her."""
+    old = st.FRAME_AT
+    d = CUR["n"] - SHOT["1.5"]["n0"]
+    if d < 12:
+        st.FRAME_AT = (-999, -999)
+    try:
+        world(k, 52, 352, 2.15)
+        ac.shredder(k, st.SHRED_X, F, 1.0, fill=0.0)
+        cx = 120
+        _two_client(k, co.POSES["arrive"][:2] + co.POSES["open"][2:], "confident", look=(0.9, 0.0), x=cx, roll=True)
+        hx0, hy0 = cx - 4 * 0.66, F + co.HY * 0.66
+        leaf(k, hx0 + 3, hy0 - 56 * 0.66, 1.6, 0.4)                        # she takes the frame; the leaf stays
+        neck = (hx0 + 1, hy0 + 52 * 0.66)
+        fs = 0.7; half = 44 * fs; drop = 66 * fs                         # the frame: half its width, and nail to centre
+        c0 = (neck[0], neck[1] + drop)                                    # its centre, hanging on him
+        c1 = FRAME_AT2                                                    # and on the wall
+        if d < 12:
+            f = 0.0 if d < 3 else ease(min(1.0, (d - 3) / 6.0))
+            cxf = c0[0] + (c1[0] - c0[0]) * f
+            cyf = c0[1] + (c1[1] - c0[1]) * f - 36 * math.sin(math.pi * f)
+            rot = 0.07 * f + (0.04 if d == 10 else 0.0)
+            hands = ((cxf - half + 3, cyf + 4), (cxf + half - 3, cyf + 4))
+            pam(k, 180, F + pm.HY * 0.67, 0.67, "stand", (-0.6, 0.2) if d < 4 else (0.5, -0.8), hands=hands)
+            hung(k, cxf, cyf - drop, fs, rot)
+            sk = kit.PEOPLE["PAM"]["skin"]
+            for hx_, hy_ in hands:                                        # her hands on its sides, over the frame
+                ellipse(k, hx_, hy_, 7.5, 7.5, sk, 981, shadow=False, lw=1.6)
+        else:
+            pam(k, 180, F + pm.HY * 0.67, 0.67, "stand", (1.0, 0.0) if d < 15 else (-0.2, 0.2))
+        k.c.restore(); light(k)
+    finally:
+        st.FRAME_AT = old
+
+def s1_1_old(k):
     """The glass door slides open. He walks in."""
     op = 0.85 * seg(0.08, 0.70)
     tl = CUR["tl"]
@@ -644,7 +810,10 @@ def s1_3(k):
     wall(k); push(k, 0.03, (200, 430))
     nod = 4 * math.sin(math.pi * min(1.0, max(0.0, (CUR["tl"] - lead()) / 0.33))) if after(lead()) else 0
     pose = co.POSES["arrive"][:2] + co.POSES["open"][2:]     # the roll under one arm; the other hand out of his pocket
-    client(k, 140, 430 + nod, 2.3, pose, "confident", (0.8, 0.0), shut=blink(said() + 0.08), mouth=code(), roll=True)
+    client(k, 140, 380 + nod, 2.0, pose, "confident", (0.8, 0.0), shut=blink(said() + 0.08), mouth=code(), roll=True)
+    sc = 2.0 / 0.66                                        # v12: still wearing it, and the leaf
+    hung(k, 140 + 4 * 2.0 + 1, 380 + nod + 52 * 2.0, 0.7 * sc, 0.02)
+    leaf(k, 146, 380 + nod - 56 * 2.0, 1.6 * sc, 0.4)
     k.c.restore(); light(k)
     speak(k, "R", 26, 152)
 
@@ -692,6 +861,13 @@ def s2_2(k):
         robot(k, 230, F + 4, 0.54)                         # on its way in
     else:
         robot(k, 262, F + 10, 0.58, "block", look=(0, 0))
+    hx, hy = 150 - 4 * 0.66, F + co.HY * 0.66                # v13: the jolt knocks the leaf off his head
+    d = CUR["n"] - SHOT["2.2"]["n0"]
+    if d >= 1:
+        g = min(1.0, (d - 1) / 7.0)
+        x0, y0, y1 = hx + 3, hy - 56 * 0.66, F - 2
+        leaf(k, x0 - 16 * g + 12 * math.sin(g * 10) * (1 - g), y0 + (y1 - y0) * g * g, 1.6,
+             0.4 + 1.4 * math.sin(g * 8) * (1 - g) + 1.2 * g)
     k.c.restore(); light(k)
     flash(k, 1 / 12.0, (0.86, 0.16, 0.16), 0.22)
     speak(k, "T", 24, 170, dx=-6, dy=-150, rows=["CONTACT", "NOT", "VERIFIED."])
@@ -699,8 +875,9 @@ def s2_2(k):
 
 def s2_3(k):
     """Stranded. A bigger title."""
-    wall(k); push(k, 0.03, (300, 430))
-    don(k, 380, 440, 2.2, "hand_out", (-1, -0.2) if after(lead() - 0.1) else (-1.2, 0.9), mouth=code())
+    wall(k); push(k, 0.06, (330, 420))                                    # v15: tighter, the camera leaning with him
+    k.c.translate(330, 420); k.c.rotate(-0.05); k.c.translate(-330, -420)
+    don(k, 370, 430, 2.7, "hand_out", (-1, -0.2) if after(lead() - 0.1) else (-1.2, 0.9), mouth=code())
     k.c.restore(); light(k)
     speak(k, "L", 28, 200, rows=["Founder.", "And CEO."])
 
@@ -745,7 +922,7 @@ def s3_1(k):
         ellipse(k, hx, hy, 9, 9, co.SKIN, 931, shadow=False, lw=1.6)
     c.restore(); c.restore()
     light(k)
-    speak(k, "A", 24, 262, at=(20, 348), side=1)
+    speak(k, "A", 24, 262, at=(20, 348), side=-1)                         # v18: the tail to the near cheek
 
 
 def s3_2(k):
@@ -862,12 +1039,15 @@ def s3_12(k):
 
 # ================================================================ BEAT 04 · the pitch, and the handover
 def s4_1(k):
-    """He steps between them and sells. He believes it."""
-    wall(k); push(k, 0.035, (270, 470))
-    don(k, 396, 470, 2.5, raw=("pleased_low", "grin"), look=(-1, 0), mouth=code(), shut=blink(0.0))
+    """v17: wider: Don slides in between the Client and Sofía, his back to her, and sells. He believes it."""
+    wall(k); push(k, 0.04, (270, 520)); floor_line(k, 1010)
+    g = ease(seg(0.0, 0.42))
+    sofia(k, 446, 1010 + so.HY * 1.15, 1.15, "low", "recover" if g < 1 else "interested", (-0.9, -0.1))
+    client(k, 92, 1010 + co.HY * 1.15, 1.15, "open", "plain", (0.8, -0.1), roll=True, shut=blink(1.4))
+    dx = 520 - 236 * g
+    don(k, dx, 1010 - 302 * 1.25, 1.25, raw=("pleased_low", "grin"), look=(-1, -0.2), mouth=code(), shut=blink(0.0))
     k.c.restore(); light(k)
-    speak(k, "L", 24, 168)
-
+    speak(k, "T", 26, 260, dx=40)
 
 def s4_2(k):
     """An open palm. He looks at the roll, holds it back a moment, then looks at Don."""
@@ -929,10 +1109,11 @@ def s4_5(k):
 
 
 def s4_6(k):
-    """He is looking at Don, and nods slowly."""
-    wall(k); push(k, 0.03, (270, 400))
-    nod = 7 * math.sin(math.pi * min(1.0, max(0.0, (CUR["tl"] - 0.2) / 0.45)))
-    client(k, 262, 420 + nod, 3.2, "open", "warm", (0.8, 0.1), shut=blink(0.33))
+    """v15: Pam, close: her eyes on the bin, the only one who saw (cold viewers read his smile as pleased to be shredded)."""
+    wall(k); push(k, 0.04, (300, 400))
+    n = int(round(CUR["tl"] * 12))
+    pam(k, 330, 360, 2.6, "stand", (-0.9, 0.8) if n < 8 else (-0.6, 0.2))
+    ac.shredder(k, 70, 1010, 2.4, fill=0.85)                             # what she is looking at, in the corner of the frame
     k.c.restore(); light(k)
 
 
@@ -962,7 +1143,7 @@ def s5_1(k):
 def s5_4(k):
     """The watch. His terms."""
     wall(k); push(k, 0.03, (200, 430))
-    pose = co.POSES["open"][:2] + co._ik(1, 52, co.BT + 74)
+    pose = co.POSES["open"][:2] + co._ik(1, 92, co.BT + 46)
     up = after(lead() - 1 / 12.0)
     client(k, 140, 430, 2.3, pose, "confident", (0.8, 0.0) if up else (0.9, 2.2), shut=blink(g12(said() + 0.08)), mouth=code(),
            roll=False)
@@ -972,8 +1153,14 @@ def s5_4(k):
 
 def s5_5(k):
     """No question asked. His eyes go to Sofia."""
-    wall(k); push(k, 0.04, (270, 470))
-    don(k, 392, 470, 2.6, raw=("stand", "grin"), look=(1.4, 0.0) if after(said() + 0.1) else (-1, 0), mouth=code())
+    wall(k); push(k, 0.04, (330, 470))                                    # v15: over the Client's shoulder
+    don(k, 356, 450, 2.1, raw=("stand", "grin"), look=(1.4, 0.0) if after(said() + 0.1) else (-1, 0.1), mouth=code())
+    c = k.c                                                               # his shoulder and the back of his head, close, out of focus
+    cut(k, [(-120, 1000), (-120, 640), (20, 580), (210, 600), (290, 740), (300, 1000)], (0.34, 0.42, 0.28), shadow=False, lw=5)
+    cut(k, [(150, 600), (200, 590), (250, 690), (210, 700)], (0.42, 0.30, 0.20), shadow=False, lw=4)       # his collar
+    ellipse(k, 150, 640, 30, 52, co.SKIN, 977, shadow=False, lw=4)                                         # an ear
+    ellipse(k, 60, 470, 170, 190, co.HAIR, 976, shadow=False, lw=5)                                        # the back of his head
+    c.set_source_rgba(1, 1, 1, 0.08); c.rectangle(-120, 260, 420, 740); c.fill()
     k.c.restore(); light(k)
     speak(k, "L", 32)
 
@@ -1080,10 +1267,26 @@ def lipstick_phone(k, x, y):
 def s6_8(k):
     """Her CV, into the welcome pack."""
     wall(k); tile(k, 0.02, (270, 520))
+    c = k.c
+    n = int(round(CUR["tl"] * 12))
+    away = 0.55 * ease(max(0.0, (n - 17) / 6.0))                          # v15: his hand takes the pack, at the end
+    c.save(); c.translate(-260 * away, 40 * away)
+    rect(k, 34, 214, 150, 96, (0.20, 0.42, 0.66), 978, lw=2.0)             # v15: the welcome pack, open at the top
     g = ease(CUR["tl"] / 0.34)
-    k.c.translate(26 * (1 - g), 16 - 30 * (1 - g))
-    sh.cv_insert(k.c, k, 80, 153, 1.0, hers=True)
+    sink = 70 * ease(max(0.0, (n - 8) / 6.0))                             # her CV goes down into it
+    c.save(); c.rectangle(-60, -200, 400, 432); c.clip()
+    c.save(); c.translate(26 * (1 - g), 16 - 30 * (1 - g) + sink)
+    sh.cv_insert(c, k, 80, 153, 1.0, hers=True)
     lipstick_phone(k, 80, 153)
+    c.restore(); c.restore()
+    rect(k, 34, 232, 150, 78, (0.24, 0.48, 0.72), 979, lw=2.0)            # its front
+    c.select_font_face("Inter", 0, 1); c.set_font_size(15); c.set_source_rgb(1, 1, 1)
+    for t_, yy in (("WELCOME", 266), ("PACK", 286)):
+        e = c.text_extents(t_); c.move_to(109 - e.x_advance / 2, yy); c.show_text(t_)
+    if n >= 15:                                                           # his hand, the green sleeve
+        cut(k, [(-60, 300), (24, 276), (40, 306), (-60, 340)], (0.34, 0.42, 0.28), shadow=False, lw=2.0)
+        ellipse(k, 40, 284, 16, 15, co.SKIN, 980, shadow=False, lw=2.0)
+    c.restore()
     k.c.restore(); light(k)
     speak(k, "off", 26, 330, at=(64, 104))
 
@@ -1157,7 +1360,7 @@ def s7_4(k):
 def s8_1(k):
     """It tips the shredder's bin into the cannon."""
     wall(k); push(k, 0.03, (270, 480)); floor_line(k, 912)
-    st.cannon(k, 440, 900, 2.5)
+    st.cannon(k, 440, 900, 2.5, fuse=CUR["tl"] if after(lead() + 1.2) else 0.0)
     robot(k, 226, 900, 1.9, "tip" if after(lead() + 0.5) else "idle", look=(1, 0), side=1)
     k.c.restore(); light(k)
     speak(k, "T", 24, 240, rows=["FIRST CUSTOMER.", "CELEBRATION", "REQUIRED."])
@@ -1191,8 +1394,9 @@ def s8_2(k):
 
 def s8_3(k):
     """Strips in his face and on his head, still beaming. A hand thrown up for someone to take."""
-    wall(k); push(k, 0.03, (270, 480))
-    don(k, 366, 500, 2.2, "hand_up", (1, 0.0), mouth=code(), strips=True)
+    wall(k); push(k, 0.07, (300, 520))                                    # v15: closer, a Dutch tilt: he is beside himself
+    k.c.translate(300, 520); k.c.rotate(-0.09); k.c.translate(-300, -520)
+    don(k, 392, 540, 2.6, "hand_up", (1.3, -0.2), mouth=code(), strips=True)
     k.c.restore()
     falling(k, 14, 3); light(k)
     speak(k, "L", 28, 200, rows=["SOFÍA!", "WE HAVE A", "CUSTOMER!"])
@@ -1232,7 +1436,9 @@ KNEEL = [22.0, 11.0]                                       # two drawings on the
 def s9_1(k):
     """Held: his hand is still up and his eyes are on the door. She is on her knees; once, she looks up at him; he does
     not see her; she looks down again and says it, to nobody."""
-    world(k, 142, 341, 1.55, amount=0.02)
+    gx_ = ease(min(1.0, CUR["u"] / 0.30))                                  # v17: slowly in on her, as she says it: across first,
+    gy_ = ease(max(0.0, (CUR["u"] - 0.62) / 0.38))                        # so Don leaves at the side, then down to her
+    world(k, 142 + (190 - 142) * gx_, 341 + (440 - 341) * gy_, 1.55 + (1.9 - 1.55) * ease(CUR["u"]))
     ac.scatter(k, 310, 490, F + 24, 1.0, n=16, seed=9)
     g = seg(0.08, 0.75)
     back = after(0.83)
@@ -1249,7 +1455,7 @@ def s9_1(k):
     don(k, 212, F + 86 - 302 * 1.15, 1.15, "hand_up", (-1.2, -0.3), strips=True)
     k.c.restore()
     falling(k, 10, 9); light(k)
-    speak(k, "L", 26, 200, rows=["Some shit,", "others scoop."], dy=34)
+    speak(k, "L", 24, 180, rows=["Some shit,", "others scoop."], dy=70, gap=24)
 
 
 # ================================================================ BEAT 10 · the door
@@ -1281,7 +1487,7 @@ def s10_3(k):
         pose = co.POSES["open"][:2] + co._ik(1, 62, co.BT + 118)                # into his jacket pocket: clear of the sticker
         client(k, 236, 400, 1.7, pose, "warm", (0.8, -0.1), shut=blink(0.08), roll=False)
     else:
-        pose = co.POSES["open"][:2] + co._ik(1, 52, co.BT + 74)
+        pose = co.POSES["open"][:2] + co._ik(1, 92, co.BT + 46)
         client(k, 236, 400, 1.7, pose, "confident", (0.9, 2.2) if CUR["tl"] < 10 / 12.0 - 1e-6 else (-0.8, 0.0), roll=False)
     k.c.restore()
     falling(k, 3, 13); light(k)
@@ -1291,11 +1497,14 @@ def client_photo(k):
     """OUR FIRST CLIENT, filled: his photograph, the face he made when the robot stopped his hand."""
     c = k.c
     x, y = st.FRAME_AT
-    c.save(); c.rectangle(x - 31.4, y - 41.4, 62.8, 82.8); c.clip()
+    fs = st.FRAME_S[0]                                     # v12: where Pam hung it, smaller and crooked
+    c.save(); c.translate(x, y); c.rotate(st.FRAME_ROT[0]); c.scale(fs, fs)
+    c.save(); c.rectangle(-31.4, -41.4, 62.8, 82.8); c.clip()
     c.set_source_rgb(0.74, 0.84, 0.94); c.paint()
-    client(k, x - 1, y - 6, 0.44, "open", "puzzled", (0.0, 0.0), who="-PHOTO", badge=False, roll=False)
+    client(k, -1, -6, 0.44, "open", "puzzled", (0.0, 0.0), who="-PHOTO", badge=False, roll=False)
     c.restore()
-    c.set_source_rgb(*INK); c.set_line_width(1.2); c.rectangle(x - 32, y - 42, 64, 84); c.stroke()
+    c.set_source_rgb(*INK); c.set_line_width(1.2); c.rectangle(-32, -42, 64, 84); c.stroke()
+    c.restore()
 
 
 def s10_4(k):
@@ -1303,7 +1512,10 @@ def s10_4(k):
     tl = CUR["tl"]
     op = 0.85 * (1 - seg(0.0, 0.5))
     n = int(round((tl - 8 / 12.0) * 12))
-    wide(k, open_=op, shake=((0, 3), (0, -2))[n] if 0 <= n < 2 else (0, 0))
+    g_ = ease(seg(1.0, 2.6))                                               # v17: in on his photo and the stamp, after it lands
+    cx0, cy0, cz = st.CAM
+    world(k, cx0 + (60 - cx0) * g_, cy0 + (300 - cy0) * g_, cz + (1.8 - cz) * g_, open_=op,
+          shake=((0, 3), (0, -2))[n] if 0 <= n < 2 else (0, 0))
     c = k.c
     _through_glass(k, lambda: ac.client(k, 112 - 14 * seg(0.0, 1.6), F + 6, 0.50, "watch", look=(-0.9, 2.2)), op)
     client_photo(k)
@@ -1317,6 +1529,38 @@ def s10_4(k):
     c.restore()
     falling(k, 6, 15); light(k)
 
+
+def s10_5(k):
+    """v16, the loop, in 10.4's wide shot (cold viewers read the close behind the glass as "locked in?"): outside the
+    door he stops, takes the strip out of his pocket, looks at it, looks at the door, and comes back to it. The cut is
+    to the film's first drawing, the same shot with the room reset: he is coming in."""
+    d = CUR["n"] - SHOT["10.5"]["n0"]
+    wide(k, open_=0.0)
+    c = k.c
+    B = co.BT
+    if d < 6:
+        L_, face, look = (-34, B + 40), "puzzled", (0.1, 0.8)             # the strip, up in front of his face
+    elif d < 9:
+        L_, face, look = (-40, B + 70), "dawning", (1.0, -0.1)            # the door
+    else:
+        L_, face, look = (-50, B + 150), "confident", (0.8, 0.0)
+    x = 60 + (0 if d < 9 else 18 * (d - 8) / 5.0)                          # three steps back toward the door, to where 1.1 starts
+    def him():
+        o = client(k, x - 4 * 0.66, F + co.HY * 0.66 + (3 if d in (10, 12) else 0), 0.66, co._ik(-1, *L_) + co._ik(1, 60, B + 178),
+                   face, look, roll=False)
+        if d < 9:
+            hx_, hy_ = o["hands"][0]
+            ac.plan_strip(k, hx_ + 2, hy_ - 24, 0.36, n=7, ang=-0.25)
+    _through_glass(k, him, 0.0)
+    client_photo(k)
+    st.stamp(c, st.STAMP_AT[0], st.STAMP_AT[1], 0.74)
+    ac.scatter(k, 214, 286, F + 10, 1.0, n=7, seed=4)
+    ac.scatter(k, 322, 478, F + 30, 1.0, n=13, seed=9)
+    robot(k, 204, F, 0.62, "stamp", look=(-1, 0), side=-1)
+    don(k, 292, F + 6 - 302 * 0.72, 0.72, "hand_up", (-1.2, -0.4), strips=True)
+    pam_floor(k, 446, F + 46, 0.63, True)
+    c.restore()
+    falling(k, 6, 15); light(k)
 
 ANIM = {s["shot"]: globals()["s" + s["shot"].replace(".", "_")] for s in T["shots"]}
 
@@ -1418,7 +1662,7 @@ def film(out):
     tj = os.path.join(HERE, "ob_anim_timing_%s.json" % V)
     json.dump(T, open(tj, "w"), indent=1)
     wav = os.path.join(HERE, "ob_anim_mix_%s.wav" % V)
-    bm.master(mx.main("/tmp/ob_anim_mix_full.wav", timing=tj, anim=7, takes="ob_voices/film_v10"), wav)
+    bm.master(mx.main("/tmp/ob_anim_mix_full.wav", timing=tj, anim=10, takes="ob_voices/film_v10", music="A"), wav)
     silent = "/tmp/ob_anim_%s_silent.mp4" % V
     render(silent, 1080)
     tmp = out[:-4] + ".tmp.mp4"

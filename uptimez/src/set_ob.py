@@ -1,4 +1,7 @@
-"""THE ONBOARDING: the set, v4 (set_ob_v3.py = v3, kept), after the audit of the set sheet:
+"""v6 (18 Nov): CANNON_LABEL, opt-in: CONFETTI on the barrel and a fuse (cold viewers saw a striped cone until it fired).
+set_ob_v5.py is pinned.
+v5 (18 Nov): FRAME_S and FRAME_ROT, opt-in, for The Onboarding v12. set_ob_v4.py is pinned.
+THE ONBOARDING: the set, v4 (set_ob_v3.py = v3, kept), after the audit of the set sheet:
   - one camera for both wide shots, closer: cam() (CAM: the window's left, top and zoom). Less empty wall above the
     frame, the floor kept for Pam; the people are 12 % larger;
   - the cast stand in depth, not in a row (POS): Don half a step forward, Sofia a little behind him with a clear view
@@ -74,6 +77,7 @@ def door(k, open_=0.0, seed=300):
 DECOR = [True, 0.0]
 GILT, BRASS, MAT = (0.76, 0.60, 0.24), (0.85, 0.72, 0.38), (0.96, 0.94, 0.88)
 FRAME_AT = (262, 356)                                      # the centre of OUR FIRST CLIENT on the stage wall
+FRAME_S, FRAME_ROT = [1.0], [0.0]                          # v5, opt-in: its size and tilt (the defaults draw as before)
 FICUS_X = 478
 
 
@@ -125,7 +129,10 @@ def stage(k, open_=0.0, shred=0.0, terminal=True, back=True, decor=True, sway=0.
         brand.mark(c, 372, 300, 64, zzz=False)
     px = door(k, open_)
     if decor:
-        first_client(k, *FRAME_AT)
+        if FRAME_S[0] == 1.0 and FRAME_ROT[0] == 0.0:
+            first_client(k, *FRAME_AT)
+        else:
+            c.save(); c.translate(*FRAME_AT); c.rotate(FRAME_ROT[0]); first_client(k, 0, 0, FRAME_S[0]); c.restore()
     DECOR[0], DECOR[1] = decor, sway                       # the ficus stands in front of the desk: desk() draws it
     return px
 
@@ -188,7 +195,10 @@ def paddle(k, x, y, s, ok=False, seed=380):
     c.stroke()
 
 
-def cannon(k, x, floor, s=1.0, seed=400):
+CANNON_LABEL = [False]                                     # v6, opt-in: CONFETTI on the barrel and a fuse
+
+
+def cannon(k, x, floor, s=1.0, seed=400, fuse=0.0):
     c = k.c
     c.set_source_rgb(*INK); c.set_line_width(3.2 * s); c.set_line_cap(1)
     for dx in (-22, 0, 22):
@@ -197,6 +207,18 @@ def cannon(k, x, floor, s=1.0, seed=400):
     cut(k, [(-14 * s, 22 * s), (14 * s, 22 * s), (24 * s, -44 * s), (-24 * s, -44 * s)], (0.93, 0.74, 0.20), lw=2.2 * s)
     for yy in (8, -12, -32):
         c.set_source_rgb(0.86, 0.22, 0.20); c.set_line_width(5 * s); c.move_to(-17 * s, yy * s); c.line_to(17 * s, yy * s); c.stroke()
+    if CANNON_LABEL[0]:                                    # v6: what it is, on the barrel, and a fuse with a spark
+        c.save(); c.translate(0, -2 * s); c.rotate(math.pi / 2)
+        c.select_font_face("Inter", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(9.5 * s)
+        e = c.text_extents("CONFETTI"); c.move_to(-e.x_advance / 2, 3.4 * s)
+        c.text_path("CONFETTI"); c.set_source_rgb(*INK); c.set_line_width(2.2 * s); c.stroke_preserve(); c.set_source_rgb(1, 1, 1); c.fill()
+        c.restore()
+        c.set_source_rgb(*INK); c.set_line_width(2.0 * s); c.move_to(0, 22 * s); c.curve_to(10 * s, 32 * s, 16 * s, 26 * s, 22 * s, 34 * s); c.stroke()
+        if fuse > 0:
+            for a in range(6):
+                aa = a * math.pi / 3 + fuse * 3
+                c.set_source_rgb(1.0, 0.78, 0.20); c.move_to(22 * s, 34 * s)
+                c.line_to(22 * s + 8 * s * math.cos(aa), 34 * s + 8 * s * math.sin(aa)); c.stroke()
     c.restore()
 
 

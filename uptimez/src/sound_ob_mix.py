@@ -1,4 +1,8 @@
-"""v6 (sound_ob_mix_v5.py = v5, kept): anim=7 is the mix for animation v10: everything of anim=6 without the rustle that
+"""v10 (18 Nov): anim=10, for The Onboarding v15. sound_ob_mix_v9.py is pinned.
+v9 (18 Nov): anim=9, for The Onboarding v14 (the loop). sound_ob_mix_v8.py is pinned.
+v8 (18 Nov): anim=8, for The Onboarding v12. sound_ob_mix_v7.py is pinned.
+v7 (sound_ob_mix_v6.py = v6, kept): music= picks another bed from sound_ob_music.py (sparse vibes A, B or C) in place
+of the bossa; without it every mix is as before. v6 (sound_ob_mix_v5.py = v5, kept): anim=7 is the mix for animation v10: everything of anim=6 without the rustle that
 followed Pam's line by a tenth of a second (speech recognition heard it as a last syllable: "scooper"). v5 (sound_ob_mix_v4.py = v4, kept): anim=6 is the mix for animation v8: everything of anim=5, and the office's music
 (the ceiling-speaker bossa of The Best Candidate), cut dead by the cannon and back with the stamp. v4 (sound_ob_mix_v3.py = v3, kept): anim=5 is the mix for animation v7: Pam's line in the hold of beat 09 with nothing
 under it, and the cues of the trimmed ending. v3 (sound_ob_mix_v2.py = v2, kept): anim=4 is the mix for animation v6: no emoji pops, the vest cue inside the one
@@ -85,10 +89,15 @@ def ticks(ts, f=4200):
     return out
 
 
-def main(out=None, timing=None, anim=False, takes="ob_voices/film"):
+def main(out=None, timing=None, anim=False, takes="ob_voices/film", music=None):
     """timing: another timing file of the same shape (the animation's, on the drawing grid). anim: the cues that only
     the animation has (the emoji pop) and the ones it moved (the vest, when his hands get there)."""
     out = out or "ob_mix_%s.wav" % V
+    v15 = anim == 10                                         # v10: anim=10 is anim=9 with v15's cues
+    v14 = anim in (9, 10)                                    # v9: anim=9 is anim=8 and the loop (10.5: he lost it again)
+    v12 = anim in (8, 9, 10)                                     # v8: anim=8 is anim=7 and the frame falling on him
+    if v12:
+        anim = 7
     T = json.load(open(timing or "ob_timing_%s.json" % V))
     S = {s["shot"]: s for s in T["shots"]}
     total = T["total"]
@@ -161,6 +170,24 @@ def main(out=None, timing=None, anim=False, takes="ob_voices/film"):
     put(fx(sx.whoosh(0.2), 0.14), at("10.4", 0.52), -0.3)
     put(fx(sx.thunk(0.3, 70), 0.50), at("10.4", 0.70), -0.3)                      # the stamp, on the glass
     put(fx(si.lock(), 0.18), at("10.4", 0.70), -0.3)
+    if v12:                                                                      # v8: the door's slam, the frame, the leaf, Pam
+        put(fx(sx.thunk(0.25, 90), 0.42), at("1.1", 0.72), -0.5)                  # the door hits its stop; the wall shakes
+        put(fx(si.servo(0.25, 700, 760), 0.05), at("1.1", 1.0), -0.4)             # the frame's wire, slipping
+        put(fx(sx.thunk(0.3, 140), 0.55), at("1.1", 1.67), -0.4)                  # it lands on him
+        put(fx(sx.rustle(0.3), 0.08), at("1.1", 1.75), -0.4)                      # the leaf
+        put(fx(sx.rustle(0.25), 0.07), at("1.5", 0.10), -0.2)                     # Pam lifts it off
+        put(fx(sx.thunk(0.15, 220), 0.25), at("1.5", 0.83 if v15 else 0.42), -0.2)  # and hangs it back (v15: later, the shot is longer)
+    if v14:                                                                      # v9: his pockets; then back to the door
+        for i, o_ in enumerate((0.05, 0.22, 0.39, 0.56)):
+            put(fx(sx.rustle(0.12), 0.07), at("10.5", o_), -0.3 + 0.1 * (i % 2))
+        put(fx(bm.steps(2, 0.30), 0.10), at("10.5", 0.62), -0.4)                  # into the film's first steps
+    if v15:                                                                      # v10: the welcome pack, the fuse, the strip
+        put(fx(sx.rustle(0.35), 0.09), at("6.8", 0.70), 0.1)                      # her CV slides into the pack
+        put(fx(sx.rustle(0.25), 0.08), at("6.8", 1.45), -0.3)                     # his hand takes it
+        tf = np.arange(int(0.5 * SR)) / SR
+        fz = np.random.default_rng(5).standard_normal(len(tf)) * (0.5 + 0.5 * np.sin(2 * np.pi * 30 * tf)) * np.minimum(1, tf / 0.05)
+        put(fx(fz, 0.025), at("8.2", -0.55), 0.3)                                  # the fuse
+        put(fx(sx.rustle(0.15), 0.08), at("10.5", 0.34), -0.3)                    # only the strip, out of his pocket
     tn = rng.standard_normal(L)                                                   # the room, all the way through
     tn = si.lp(tn, 60) * 0.5 + np.sin(2 * np.pi * 100 * np.arange(L) / SR) * 0.02
     fl += fx(tn, 0.012); fr += fx(np.roll(tn, 7919), 0.012)
@@ -169,16 +196,25 @@ def main(out=None, timing=None, anim=False, takes="ob_voices/film"):
         # The ceiling-speaker bossa of The Best Candidate (sound_bc_mix.bed), built the same way: whole four-bar phrases
         # over the film's length, so the loop has no musical join; ducked under every line. The cannon cuts it dead;
         # it is back with the stamp on the glass.
-        bars = 4 * max(1, int(round(total / 2.5 / 4)))
-        bl, br, bar = bm.bed(total, bars)
+        if music:                                                                 # v7: another bed (sound_ob_music), opt-in
+            import sound_ob_music as om
+            bars = 8 * max(1, int(round(total / 3.1 / 8)))
+            bl, br, bar = om.bed(total, bars, music)
+        else:
+            bars = 4 * max(1, int(round(total / 2.5 / 4)))
+            bl, br, bar = bm.bed(total, bars)
         env = si.lp(np.abs(vox), int(0.06 * SR))
         duck = si.lp(1 - 0.6 * np.clip(env / 0.05, 0, 1), int(0.08 * SR))
+        if music:                                                                 # the new beds duck BEFORE a line: the follower lags a
+            la = int(0.25 * SR)                                                   # voice by a tenth of a second, and "Oh..." (0.5 s) was
+            ahead = np.concatenate([duck[la:], np.ones(la)])                      # over before the bed had moved. Whisper heard "No".
+            duck = si.lp(np.minimum(duck, ahead), int(0.05 * SR))
         gate = np.ones(L)
         i0, i1 = int(at("8.2", 0.08) * SR), int(at("10.4", 0.70) * SR)
         gate[i0:i1] = 0.0
         n = int(0.012 * SR); gate[i0 - n:i0] = np.linspace(1, 0, n)
         m = int(0.12 * SR); gate[i1:i1 + m] = np.linspace(0, 1, m)
-        g = 0.105                                                                 # The Best Candidate's level
+        g = om.GAIN[music] if music else 0.105                                    # 0.105: The Best Candidate's level
         ml, mr = bl[:L] * duck * gate * g, br[:L] * duck * gate * g
         fl += ml; fr += mr
         talk = env > 0.02
