@@ -1,0 +1,26 @@
+[
+ {
+  "name": "drum",
+  "start": 1.65,
+  "dur": 2.0,
+  "text": "Play something we know."
+ },
+ {
+  "name": "ask",
+  "start": 10.5,
+  "dur": 1.6,
+  "text": "Make something completely original."
+ },
+ {
+  "name": "know",
+  "start": 14.35,
+  "dur": 1.1,
+  "text": "Play something we know."
+ },
+ {
+  "name": "orig",
+  "start": 17.15,
+  "dur": 1.2,
+  "text": "Now that's original!"
+ }
+]

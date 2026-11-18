@@ -4,6 +4,64 @@ In 1986 his drummer rejects Hoodyz's garage riff: "Play something we know." In 2
 
 Concept, locked decisions and the viewer test: the "Hoodyz Ep. 4 — Make It Original (concept)" doc in Claude Docs.
 
+## Status (18 Nov): v5.3, the master
+
+**`v53/make_it_original_v53.mp4`** (19.9 s, 598 frames) is v5.2 plus the punchline made visible:
+- His finger taps play on the cat clip.
+- After "Now THAT'S original!", MY AI's fact-check stamps **SOURCE: GARAGE DEMO '86** over the cat on his stage. It holds 1.3 s and is gone before the loop point.
+- The AI's tune shows as bigger glyph tiles on a bigger screen.
+- Old Hoody is bigger in the front row of the last shot.
+
+`./v53/build.sh` rebuilds it; v5.2, v5 and v4 are imported, not touched.
+
+**Checks:**
+- QA passes on every check, all four lines included: -14.0 LUFS, -2.0 dBTP.
+- Two cold viewers, no captions. Both read the stamp: "the cat is the face, but the song is his"; "the hit was really his".
+- With sound, "Now THAT'S original!" comes just before the stamp, so it also plays as MY AI fact-checking him.
+- Still open:
+  - Whose hand taps play: one viewer said "his, so he gives in", the other wasn't sure.
+  - The wave-off: this pair read it as air-drumming again, while the v5.2 pair read it as the drummer's rejection (same shots). Two viewers is a small sample.
+
+## Status (18 Nov): v5.2
+
+**`v52/make_it_original_v52.mp4`** (19.9 s, 598 frames) is v5.1 plus three changes:
+- The drummer has laid her sticks across the drum, so her wave reads as "stop", not as a flourish.
+- In 2026 his free hand turns MY AI's screen away while he waves its tune off.
+- The drummer's line is Tomas's 18 Nov take (`vo_rec/drum_takes_18nov.m4a`, take 3), sped up 1.2x to fit before the fast-forward and pitched down 0.75 semitone. At 1.0 semitone or more, the recognizer heard "play" as "place".
+
+`./v52/build.sh` rebuilds it; v5 and v4 are imported, not touched.
+
+**Checks:**
+- QA passes on every check, every line included: -14.0 LUFS, -1.9 dBTP.
+- Two cold viewers, no captions, both read all five beats.
+- Both read the reversal: "he has become the person who once rejected him"; "he passes on the rejection he once got".
+- Both would screenshot the flash cut from her wave to his.
+- Still unclear: whether MY AI or he picks the cat clip, and whether the opening stage is a fantasy before the garage cut (that one is intended).
+
+## Status (18 Nov): v5.1
+
+**v5.1** (same file, `v5/make_it_original_v5.mp4`) adds the fixes from the v5 mute test:
+- A 6-frame flash cut to the 1986 drummer's wave-off inside his 2026 one, at the same arm phase, with 1986 in the bar and her cymbal under it.
+- MY AI's tune drawn as strange glyphs on bright tiles: a spiral, a star, an eye, a zigzag.
+- The drummer's take pitched 1.5 semitones down instead of 2.5.
+- Years that jump straight to the next era instead of rolling through 2011.
+
+**Checks:**
+- QA: -14.1 LUFS, -2.2 dBTP.
+- The drummer's line is still heard as "Play something with now". Recognition gives the same with no pitch shift, so it's the delivery of "we know": re-record it with a clear "we KNOW".
+- Two new cold viewers both linked him to the drummer this time ("reminds me of the drummer from The Loud").
+- Both read the wave as drumming, not as a rejection. Her wave is made with the drumsticks in her hand, so silently it looks like a flourish. Without the caption the rejection doesn't read yet.
+
+## Status (18 Nov): v5, the loop
+
+**New master candidate: `v5/make_it_original_v5.mp4`** (19.9 s, 598 frames, same voices). The office tail is gone. After "Now THAT'S original!" the film ends on frame 0's exact stadium shot. The cat now plays the riff on his stage with one lazy paw and yawns into a big meow, while old Hoody air-guitars in the crowd. The cut lands on young Hoody playing the same riff on the same stage, and the year flips from 2026 to 1986. The caption holds for 1.2 s. `v5/keys/seam.png` shows the last frame beside frame 0. v5 imports v4's shots, and v4's files are unchanged.
+
+**Checks:**
+- QA (`hoodyz/qa.py`): -14.1 LUFS, -2.1 dBTP, 598 frames, BT.709.
+- Crowd level at the seam: -32.1 dB at the end, -32.8 dB at the start, so there is no gap. In v4 it was -46 dB at the end, then the crowd burst in.
+- Speech recognition: the drummer's pitched-down "Play something we know." is heard as "Play something with now". v4 does this too.
+- Two cold viewers watched without captions. Both read the loop: "the stage always belonged to the cat". Both missed the 2026 reversal: neither saw that his wave-off is the drummer's, and both asked what the robot made. That is v4 material and is listed for the next pass.
+
 ## Status (11 Nov)
 
 **Master: `v4/make_it_original_v4.mp4`** (19.9 s, 1080×1920, 30 fps, loops, **Tomas's recorded voices**). Waiting for your sign-off and the muted viewer test.

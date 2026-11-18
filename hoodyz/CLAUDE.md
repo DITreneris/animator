@@ -17,7 +17,7 @@ These rules apply to the episodes in this folder only, not to the rest of the re
 3. **Shot list before key poses:** an action shot and a reaction shot per beat, with size and eyelines. Every story turn is a physical action, never a glance.
 4. **Compose for the 9:16 frame:** faces just under the title bar, a foreground layer, eyelines that meet, consistent sizes, one real wide early, signs readable at 270 px.
 5. **Cold mute test on every rough** (`cold-viewer-mute-test` skill): two fresh viewers, both get 4 of 5 beats.
-6. **QA that fails the build:** 1080×1920, 30 fps, true peak ≤ −1 dBTP after AAC, −14 to −16 LUFS, speech recognition on every line in the mix, safe zones, loop seam.
+6. **QA that fails the build** (`python3 hoodyz/qa.py film.mp4 FRAMES lines.json`, exits 1 on any miss): 1080×1920, 30 fps, true peak ≤ −1 dBTP after AAC, −14 to −16 LUFS, speech recognition on every line in the mix, BT.709 tags. Safe zones and the loop seam are still checked by eye.
 7. **Audit triage:** ok / partial / fail table, what correlates, protect-list check, at most two rounds.
 
 ## Working with Tomas

@@ -578,6 +578,32 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 43. **A new idea can break an old rule.** The gang war added gunshots to a script that said "no gunshot sound", written so the pop would be the only bang. Check the "must not break" list before building a request, and say so when it conflicts.
 44. **A pinned rebuild can differ without anything changing.** Twice the last second or so of the picture came out slightly different (sound identical, PSNR 47–57 dB); other rebuilds matched exactly. Compare frame by frame (framemd5), not only the file's md5, so the difference can be located; find the cause before a final.
 
+## UptimeZ: First Search, concept v2 (17 Nov)
+
+- **Write the next episode against the finished film, not the plan.** Concept v1 of episode 10 assumed a transmission blueprint, strips left in the shredder bin, and a different room. Episode 9 changed all three in production: the plan of ten garages, strips fired from the cannon and scooped up by Pam, and the reception room with OUR FIRST CLIENT. Read the latest script and watch the release before writing what follows it.
+- **The finished film hands the next one free material:** its spoken promise ("you will never lose anything again"), its spoken condition ("I ask, you find it"), its visual language (the robot's red and green paddle) and its last image (his photograph on the wall). Throw them back; don't invent new ones.
+
+## UptimeZ: the 0:01 joke and the loop (18 Nov)
+
+- **Re-cutting a film moves everything that runs on absolute time.** Trimming 3 s from The Best Candidate shifted every breath and blink, and a bubble check that v3 passed failed on one frame. Keying breaths and blinks to the original's time, shot by shot, made every drawing pass again.
+- **A sound has to say what it is.** Reversing beeps read as an alarm, not as a car parking. An engine rolling closer, a handbrake, the engine cut and a car door tell the story without a word.
+- **Reframe before you hide.** A sign the camera only half catches can go fully in or fully out by zooming, shifting or moving it for that one shot, so nothing is deleted from the set.
+
+- **Two viewers making the same mistake is a staging fault.** Both took the stamp for what made the lip print (the lips never appeared), and both took the held-out glasses for "a spoon". Showing the lips on the tag and an insert of the lenses fixed both; the next two viewers read every beat.
+- **The payoff frame needs one thing to read.** A wide shot with eleven pieces of text hid the joke at phone size; a 2-second insert of just the two tags became both viewers' screenshot.
+- **Retime with the old clock.** Shifting a film by 0.3 s would have moved every lip shape, blink and breath off its line; passing the old film time to the drawing code kept them all in place while the shots moved.
+- **Check true peak after the encode, every time.** A 0.3 s shift moved a THUNK onto a different AAC frame and the same mix overshot to +0.4 dBTP; a 16 kHz low-pass and 256k brought it to −3.2.
+
+## UptimeZ: Happy Compliance v3–v6 (18 Nov)
+
+- **Hiding a problem leaves a hole.** v2 had hidden the PARTY sign and kept Don's fall off screen; cold viewers then could not read the ending at all (3/5). Putting the throw, the hit and the fall on screen took them to 5/5.
+- **A prop that has done its job should leave.** Once Don's legs were in the shot, his razor on the floor only read as "a blue limb"; removing it cleared the punchline.
+- **Spinning props keep their words upright.** A CENSORED bar that tumbled with its bauble read as a mistake.
+- **A fall has to be drawn falling.** Feet in the air under a tree read as "pretzels on the floor"; the hit, the plank tipping over and the body landing flat, in two shots, read at once. It needed 0.9 s cut in after a line, not squeezed into the 0.2 s left before the cut.
+- **Tails must not cross what sits on a bubble.** An emoji at the box's end where the tail leaves gets struck through; badges go on the outer corner and tails stay short.
+- **Never rescale one character to fit a shot.** Shrinking Don to 0.62 so he could lie in a close robot shot made the robot a giant; widen the camera instead, and keep every character at the film's own scale.
+- **Tag and convert the same matrix.** Piping RGB into yuv420p without `scale=out_color_matrix=bt709` encodes BT.601 while tagging BT.709: the colours come out flat. Every build line converts explicitly.
+
 ## UptimeZ: the Noir covers and the noir look (18 Nov)
 
 45. **A Shorts cover is read at 120 px, in a second.** Check every cover at feed size (120×213) as well as full size and inside the profile-grid crop. Both Noir covers passed the crop check and still failed in the feed: the title boxes were the first thing seen, the story the last.

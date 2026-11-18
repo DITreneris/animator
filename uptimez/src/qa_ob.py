@@ -1,4 +1,6 @@
-"""v2 (qa_ob_v1.py = v1, kept, for ob_anim_v5). Automatic checks for "The Onboarding" (the animation, ob_anim.py), by the series' render standard (uptimez/CLAUDE.md,
+"""v8 (18 Nov): the self-test plants its faults on 6.5 (from v12 the frame hangs over his badge in 1.3, so the badge
+faults had nothing to be planted on). qa_ob_v7.py is pinned.
+v2 (qa_ob_v1.py = v1, kept, for ob_anim_v5). Automatic checks for "The Onboarding" (the animation, ob_anim.py), by the series' render standard (uptimez/CLAUDE.md,
 G3 and G5) and the bubble rules of docs/lessons.md. Every drawing that has a bubble is checked at three moments of its
 line (after the pop-in, the middle, the end), drawn plain (no light, no grain) at 540 x 960.
   safe zone   the bubble's box is inside (20, 96, 475, 816): out of the title bar, the caption area and the button rail
@@ -165,7 +167,7 @@ def line_times():
 
 def self_test():
     """Each planted fault must be caught on a line that is clean without it."""
-    shot, t = next((sh, t) for sh, t in line_times() if sh == "1.3")
+    shot, t = next((sh, t) for sh, t in line_times() if sh == "6.5")     # v8: 1.3 has the frame over his badge since v12
     missed = []
     for fault, word in (("box", "safe zone"), ("tip", "tail")):
         A.OPT["fault"] = fault
