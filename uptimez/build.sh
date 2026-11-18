@@ -18,7 +18,7 @@
 #        ./build.sh xmas2               Happy Compliance v2 (Pam v4, curved tails, no cropped signs): 540 + 1080, cover v2
 #        ./build.sh bc                  The Best Candidate, animation v3: timing + mix from the kept takes, the bubble
 #                                       checks on the board and on every drawing, then 540x960 and the 1080 master
-#        ./build.sh ob                  The Onboarding, animation v18: timing + mix (sparse vibes) from the kept takes,
+#        ./build.sh ob                  The Onboarding, animation v19: timing + mix (sparse vibes) from the kept takes,
 #                                       the bubble, tail and badge checks, speech recognition on the final mix (needs
 #                                       sherpa-onnx and Whisper base.en, see src/qa_ob_speech.py), 540x960 and the 1080 master
 #        ./build.sh all             every episode
@@ -285,7 +285,7 @@ build_bc() {
 }
 
 build_ob() {
-  # The Onboarding, animation v18. The kept takes are in src/ob_voices/film_v10 (sound_ob.py records them with Kokoro;
+  # The Onboarding, animation v19. The kept takes are in src/ob_voices/film_v10 (sound_ob.py records them with Kokoro;
   # not needed to rebuild, though the model files must be present: the sound modules load them on import).
   # ob_anim.py qa: bubbles, tails beside the mouth and name badges on rendered pixels, with its self-test; a miss stops
   # the build before anything is rendered. ob_anim.py film: the mix at -14 LUFS and the 1080 master (not committed).
@@ -294,15 +294,15 @@ build_ob() {
   ( cd src
     python3 ob_anim.py timing >/dev/null
     python3 ob_anim.py qa
-    python3 ob_anim.py film "$out/uptimez_ob_anim_v18_1080.mp4"
+    python3 ob_anim.py film "$out/uptimez_ob_anim_v19_1080.mp4"
     python3 ob_anim.py render ob_anim_silent.tmp.mp4 540
     # no -shortest: with AAC it drops the last video frames, and the last frame is the loop's join
-    ffmpeg -y -v error -i ob_anim_silent.tmp.mp4 -i ob_anim_mix_v18.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k \
-      -movflags +faststart "$out/uptimez_ob_anim_v18.tmp.mp4"
-    mv "$out/uptimez_ob_anim_v18.tmp.mp4" "$out/uptimez_ob_anim_v18.mp4"
+    ffmpeg -y -v error -i ob_anim_silent.tmp.mp4 -i ob_anim_mix_v19.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k \
+      -movflags +faststart "$out/uptimez_ob_anim_v19.tmp.mp4"
+    mv "$out/uptimez_ob_anim_v19.tmp.mp4" "$out/uptimez_ob_anim_v19.mp4"
     rm -f ob_anim_silent.tmp.mp4
-    python3 qa_ob_speech.py "$out/uptimez_ob_anim_v18.mp4" ob_anim_timing_v18.json )
-  echo "Wrote $out/uptimez_ob_anim_v18.mp4 and _1080.mp4"
+    python3 qa_ob_speech.py "$out/uptimez_ob_anim_v19.mp4" ob_anim_timing_v19.json )
+  echo "Wrote $out/uptimez_ob_anim_v19.mp4 and _1080.mp4"
 }
 
 build_xmas2() {
@@ -350,6 +350,32 @@ build_ss() {
   echo "Wrote $out/uptimez_ss_anim_$1.mp4, _1080.mp4 and the cover"
 }
 
+build_xmas_final() {
+  # Happy Compliance, the final (v11): xmas_anim11.py (background life: tree twinkle, bunting sway, pompom bob, Sofía's hair, robot blinks; Don and Pam breathe) over xmas_anim10.py (the bar rides Don and leaves for the door, HR scans Don, Pam winds up, round robot mouth, breathing) over xmas_anim9.py over xmas_anim8.py over v7/v6/v5/v4/v3 (each kept) over v2 (xmas_anim2.py). Sound: v2's mix
+  # (sound_xmas.py mix -> xmas_mix_v1.wav), 0.8 s later, with the cold open's and the ending's effects
+  # (sound_xmas8.py -> xmas_mix_v8.wav: v2's mix rebuilt without its off-screen THUD, with new beats cut in; BT.709 encoded through scale). -t, not -shortest: the last frame is the loop's join.
+  local out=${OUT_DIR:-$HERE/happy-compliance}; mkdir -p "$out"
+  ( cd src
+    python3 sound_xmas.py mix
+    python3 xmas_visemes.py
+    python3 sound_xmas8.py
+    python3 sound_xmas10.py
+    local dur; dur=$(python3 -c "import xmas_anim11 as M; print(M.DURATION)")
+    for res in 540 1080; do
+      local eng=engine_v.py size=540x960 name=uptimez_xmas_anim_v11.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_xmas_anim_v11_1080.mp4
+      python3 $eng xmas_anim11 | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i xmas_mix_v10.wav \
+        -af "volume=1.3dB,alimiter=limit=0.5:attack=1:release=40:level=false,lowpass=f=16000" \
+        -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
+        -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+        -c:v libx264 -preset veryfast -crf 18 \
+        -c:a aac -b:a 256k -ar 48000 -t "$dur" -movflags +faststart "$out/$name.tmp.mp4"
+      mv "$out/$name.tmp.mp4" "$out/$name"
+    done )
+  echo "Wrote $out/uptimez_xmas_anim_v11.mp4 and _1080.mp4"
+}
+
 case "${1:-}" in
   ss)         build_ss v2 ;;
   ss_v1)      build_ss v1 ;;
@@ -358,6 +384,7 @@ case "${1:-}" in
   mf)         build_mf ;;
   xmas)       build_xmas ;;
   xmas2)      build_xmas2 ;;
+  xmas_final) build_xmas_final ;;
   bc)         build_bc ;;
   ob)         build_ob ;;
   on)         build_on ;;
