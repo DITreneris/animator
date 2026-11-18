@@ -32,3 +32,15 @@ Don't name the characters, the series or the joke.
 ## Limits
 
 Say what the test can't tell: whether it is funny, voice timing and the mix. Those need people with sound on.
+
+## Hook and loop variants
+
+- **Hook test:** the first 3 s at 10 fps on one sheet. Ask: at 1 s, what do you know and is anything funny, surprising or moving? When do you first understand it? Would you keep watching at 1 s and at 2 s? What one change to the first second would stop you scrolling?
+- **Loop test:** the final second, then the opening second, each frame labelled END or START. Ask whether the cut means something or feels like a restart.
+- **Motion:** silent grids show poses, not movement. Pair the test with `hoodyz/motion.py`; a viewer can't tell a 0.2 shot from a 3.0 shot on a contact sheet.
+
+## What the results are for
+
+- They are a smoke test, not a verdict. Two viewers disagreed on the same footage (Make It Original v5.2 vs v5.3), so read a pair as a signal and confirm with a second pair before acting on a single report.
+- They find faults inside the structure (who is speaking, what an object is, where someone went). They never replace a structure the person chose. If they keep pointing at the structure, put it to the person as an option.
+- Ask what they would screenshot: it tells you which image is the episode's iconic one.

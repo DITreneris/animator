@@ -593,3 +593,32 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 - **The payoff frame needs one thing to read.** A wide shot with eleven pieces of text hid the joke at phone size; a 2-second insert of just the two tags became both viewers' screenshot.
 - **Retime with the old clock.** Shifting a film by 0.3 s would have moved every lip shape, blink and breath off its line; passing the old film time to the drawing code kept them all in place while the shots moved.
 - **Check true peak after the encode, every time.** A 0.3 s shift moved a THUNK onto a different AAC frame and the same mix overshot to +0.4 dBTP; a 16 kHz low-pass and 256k brought it to −3.2.
+
+## Hoodyz: Make It Original v5 and Perfect Date v2 (18 Nov)
+
+**What happened.**
+- Make It Original went from v4 to v5.3 in six rounds and got better each time:
+  - a loop that lands on frame 0's stadium shot
+  - a flash cut from her wave-off to his
+  - Tomas's new drummer take
+  - MY AI's SOURCE stamp
+- Perfect Date went from v2 to v2.2 in three fast rounds, and Tomas called v2.2 worse than what came before. v2.3 went back to his bench opening, then fixed:
+  - composition: overlaps and crops
+  - sizes
+  - props: the pump the robot couldn't reach
+  - anatomy: a floating finger, a guitar with no arms
+  - motion: three frozen reactions
+
+**Lessons.**
+
+45. **Tomas is the final judge; cold viewers are a smoke test.** Two agent viewers said "open on the result", the recommendation followed them, and the bench opening Tomas had chosen was replaced. Viewer feedback finds faults inside a structure; it never replaces a structure the person chose. Two viewers also disagree on the same footage (Make It Original v5.2 vs v5.3), so a single pair is a signal, not a verdict.
+46. **Nothing merges before Tomas has watched it.** An agent's "yes, just barely" was taken as a pass and v2.2 was merged. A PR stays open until he says so.
+47. **One structural change per round, shown against the last version.** Three rebuilds in an hour (new opening, new ending, new bridge) each drew new shots fast and left them unchecked. Change one thing, show it next to the version before, then the next.
+48. **Check composition at full size, not as thumbnails.** At 216 px the overlaps were visible and were waved through: Hoody's head over MY AI, MY AI walking behind the bench, MY AI cut in half by the frame edge, the cat hidden behind Hoody. Look at every shot at 432 px or more and ask one question: does anything cover a face or a body, or cut a character at the edge?
+49. **One size rule for the whole film.** In v1 every shot set its own scales: MY AI ran from 0.52 to 0.93 of Eva's height, and Hoody was smaller than Eva in one shot. The rule: Hoody and Eva are the same height, and MY AI is 0.6 of it. Only distance from the camera changes size, and it changes everyone in that plane together. Measure it; don't eyeball it.
+50. **A held prop takes its position from the hands, not the other way round.** The pump handle hung in the air beside MY AI. Compute the hand positions (`hand_at`) and put the handle there; if the pose can't reach, change the pose. The same applies to a guitar: in two close-ups it floated in front of a torso with no arms.
+51. **A limb never floats.** A skin-coloured tube with a fingertip read as "a finger on its own". A hand comes out of a sleeve, and the sleeve comes from the body or the frame edge (lesson 38, again).
+52. **Measure motion, then animate the reactions.** `hoodyz/motion.py` showed the rose at 0.44, the "oh" at 0.20 and the cat at 0.24: frozen. Each was a face swap where the story needed a take. With a spin and bow, a lean and hearts, a squash-stretch take with a gust, and a flinch, they rose to 1.1-3.2. Add breathing to everyone.
+53. **The fix for one bad version is the last good one, not a new idea.** v2.3 restored v2.1's structure and fixed it, instead of inventing a v2.4. That got back what Tomas liked and kept the useful parts of v2.2 (the fall with speed lines, the bigger PFF!).
+54. **A strong loop ends on frame 0's exact shot.** Make It Original: the cat on his stage in frame 0's stadium framing, with the riff running across the cut. Perfect Date: MY AI and Eva walk back to their frame-0 marks. In both, the last frame is frame 0 minus one thing, so the cut reads as "again".
+55. **A fact-check beats a label.** Make It Original's punchline read silently only once MY AI stamped SOURCE: GARAGE DEMO '86 after his "Now THAT'S original!"; both viewers then said "the song was his". Show the irony with an object the film already planted (the cassette), not a caption.
