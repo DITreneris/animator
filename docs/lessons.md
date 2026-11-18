@@ -577,3 +577,14 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 42. **Let a line run on across a cut** instead of stretching the shot to hold it: the film got shorter while the voice got longer.
 43. **A new idea can break an old rule.** The gang war added gunshots to a script that said "no gunshot sound", written so the pop would be the only bang. Check the "must not break" list before building a request, and say so when it conflicts.
 44. **A pinned rebuild can differ without anything changing.** Twice the last second or so of the picture came out slightly different (sound identical, PSNR 47–57 dB); other rebuilds matched exactly. Compare frame by frame (framemd5), not only the file's md5, so the difference can be located; find the cause before a final.
+
+## UptimeZ: First Search, concept v2 (17 Nov)
+
+- **Write the next episode against the finished film, not the plan.** Concept v1 of episode 10 assumed a transmission blueprint, strips left in the shredder bin, and a different room. Episode 9 changed all three in production: the plan of ten garages, strips fired from the cannon and scooped up by Pam, and the reception room with OUR FIRST CLIENT. Read the latest script and watch the release before writing what follows it.
+- **The finished film hands the next one free material:** its spoken promise ("you will never lose anything again"), its spoken condition ("I ask, you find it"), its visual language (the robot's red and green paddle) and its last image (his photograph on the wall). Throw them back; don't invent new ones.
+
+## UptimeZ: the 0:01 joke and the loop (18 Nov)
+
+- **Re-cutting a film moves everything that runs on absolute time.** Trimming 3 s from The Best Candidate shifted every breath and blink, and a bubble check that v3 passed failed on one frame. Keying breaths and blinks to the original's time, shot by shot, made every drawing pass again.
+- **A sound has to say what it is.** Reversing beeps read as an alarm, not as a car parking. An engine rolling closer, a handbrake, the engine cut and a car door tell the story without a word.
+- **Reframe before you hide.** A sign the camera only half catches can go fully in or fully out by zooming, shifting or moving it for that one shot, so nothing is deleted from the set.

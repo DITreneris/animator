@@ -34,6 +34,7 @@ import props_sheet_on as psh
 import sofia_sheet_on as ssh
 import pam_sheet_on as pms
 import on_sb as sb
+import cat_on as ct
 
 FPS, DRAW = 30, 15
 FLASH_T = 2 / 15                     # v6: the lightning strikes on the third drawing; frame 0 is the thumbnail
@@ -255,6 +256,9 @@ class Film:
         d.MOUTH_SCALED = True                                         # v7: Don's talking mouth at his close-up size
         sb.SUSPECT_HUD = True                                         # v8: the robot's line as a CCTV readout
         sb.SUSPECT_TIP = (509, 929)                                   # v7: into the CCTV corner bracket
+        self.open = T.get("open", 0.0)                                  # v9: the cold open (the black cat)
+        self.flash_t = self.open + FLASH_T
+        self.loop = T.get("loop", 0.0)                                  # v9d: the true loop at the end
         self.P = sb.build()                                        # the static panels (captions on)
         d.FEDORA_BAND, d.FEDORA_RIM = (0.42, 0.42, 0.44), True
         base = surf(); sb.k2b_base(Ctx(cairo.Context(base), 0)); eng.accent_pass(base, sb.ACC)
@@ -302,11 +306,54 @@ class Film:
         self.qa.append((self.now, who, tip, mouth, (x, y, bw, bh), mw))
         return sb.say_curve(out, text, x, y, tip, head, size, mono)
 
+    def cold(self, t):
+        """v9 (18 Nov), the first joke by 0:01: a black cat walks along the top of the monitor, stops over the heart,
+        arches and hisses at Don; he jolts, his hat jumps off and lands crooked; the cat drops out of frame; he puts
+        the hat straight again with the cynic face, as if nothing happened."""
+        X, FEET, S = 150, 1180, 1.9
+        jolt = 0.0
+        if 0.58 <= t < 0.95:
+            jolt = 16 * (1 - ease((t - 0.62) / 0.3)) if t >= 0.62 else 16 * (t - 0.58) / 0.04
+        face = "frozen" if 0.58 <= t < 1.0 else "cynic"
+        look = (0.8, 0.55) if 0.3 <= t < 1.0 else (0, 0)
+        lift, tilt, hdx = 0.0, -0.06, 0.0
+        if 0.58 <= t < 0.92:
+            u = (t - 0.58) / 0.34
+            lift = 78 * math.sin(math.pi * u); tilt = -0.06 + 0.40 * ease(u); hdx = 12 * ease(u)
+        elif 0.92 <= t < 1.12:
+            tilt, hdx = 0.34, 12
+        elif t >= 1.12:
+            e = ease((t - 1.12) / 0.26)
+            tilt, hdx = 0.34 + (-0.06 - 0.34) * e, 12 * (1 - e)
+
+        def draw(kk):
+            st.office_back(kk, t=t, door_x=330, window_x=24)
+            feet = FEET - jolt
+            d.don_noir(kk, X, feet, S, face=face, look=look, brim=1.0, outline=True, hat=False)
+            d.fedora(kk, X + 2 * S + hdx, feet + (d.HY - 26) * S - lift, 1.0 * S, tilt=tilt, seed=505)
+            kit.cut(kk, [(-20, 1060), (560, 1060), (560, 980), (-20, 980)], (0.40, 0.32, 0.25))
+            pr.monitor(kk, *sb.MON1)
+            d.heart(kk.c, sb.HEART0[0], sb.HEART0[1], sb.HEART0[2])
+        out = sb.noir(draw, sb.l1)
+        if 0.18 <= t < 1.08:                                          # the cat, drawn after the noir pass: its eyes glow
+            kk = Ctx(cairo.Context(out), 0)
+            if t < 0.50:
+                e = ease((t - 0.18) / 0.32)
+                ct.black_cat(kk, 640 + (390 - 640) * e, 784, 1.6, "walk", t)
+            elif t < 0.86:
+                ct.black_cat(kk, 390, 784, 1.6, "arch")
+            else:
+                u = (t - 0.86) / 0.22
+                ct.black_cat(kk, 390 - 50 * u, 784 + 420 * u * u, 1.6, "fall")
+        return out
+
     def beat(self, i, t):
         """The drawing of beat i at film time t (captions and bubbles included)."""
         REC["mouths"].clear(); REC["heads"].clear(); REC["screen"] = None; self.now, self.cur_beat = t, i
         st_, d_ = self.st, self.d
         tl = t - st_[i]; u = tl / d_[i]
+        if i == 33 and self.loop:                                    # v9d: the bedroom keeps its 1.8 s; the loop follows
+            u = min(1.0, tl / (d_[i] - self.loop))
         for k in ANIM:
             ANIM[k] = {"breath": 0.006 * math.sin(2 * math.pi * t / 3.2 + PHASE[k])}
         for who in ("sofia", "pam", "don", "mom"):
@@ -314,7 +361,11 @@ class Film:
             if m:
                 ANIM[who]["kw"] = {"mouth": m}
         noir, say, two = sb.noir, sb.say, sb.two_cards
-        if i == 0 and t < FLASH_T:                                   # v6: frame 0 is the readable office, not the flash
+        if i == 0 and t < self.open:                                 # v9: the cold open
+            return self.cold(t)
+        if i == 0 and t < self.flash_t:                              # v6: frame 0 is the readable office, not the flash
+            if self.open:
+                return noir(lambda kk: sb.k1(kk, t), sb.l1)
             return two(noir(lambda kk: sb.k1(kk, t), sb.l1), "Monday. Somebody", "left Pam a heart.")
         if i == 0:
             return noir(lambda kk: sb.k1(kk, t), lambda c: (sb.l1(c), st.flash(c, 0.5),
@@ -443,6 +494,14 @@ class Film:
                 kit.ellipse(kk, hx, hy + 9 * s_, 8 * s_, 7 * s_, d.SKIN, 871, shadow=False, lw=2.2)
                 kit.cut(kk, [(hx - 2.2 * s_, hy + 5 * s_), (hx + 2.2 * s_, hy + 5 * s_), (hx + 2.2 * s_, hy - 1 * s_),
                              (hx - 2.2 * s_, hy - 1 * s_)], d.SKIN, shadow=False, lw=2.0)
+            if self.open:                                            # v9: the noir cat's twin, asleep on his chest
+                kc = Ctx(cairo.Context(out), 0)
+                if beat == 3 and u >= 0.76:                          # v9b: it leaps out to the right; frame 0 it walks in
+                    pl = min(1.0, (u - 0.76) / 0.24)                 # from the right: the move carries over the cut
+                    ct.black_cat(kc, 236 + 430 * pl, 942 - 150 * math.sin(math.pi * pl), 1.45, "fall", flip=False)
+                else:
+                    ct.black_cat(kc, 236, 942, 1.45, "curl", flip=False,
+                                 eyes="one" if beat == 3 and u > 0.6 else "closed")
             if int(t * 1.5) % 2:                                     # the baby monitor's light blinks
                 c = cairo.Context(out); c.set_source_rgb(0.10, 0.35, 0.16)
                 c.arc(455 + 15 * 1.5, 62 - 18 * 1.5, 3.2 * 1.5, 0, 2 * math.pi); c.fill()
@@ -453,6 +512,8 @@ class Film:
         """zoom, dx, dy for beat i at t: a slow push, the zoom punch on the SNAG, the jolts."""
         st_, d_ = self.st, self.d
         tl = t - st_[i]; u = tl / d_[i]
+        if i == 33 and self.loop:
+            u = min(1.0, tl / (d_[i] - self.loop))
         z = 1.0 + 0.035 * u if i not in (0, 1) else 1.0 + 0.05 * (t / (st_[1] + d_[1]))
         dx = dy = 0.0
         if i == 12:
@@ -506,6 +567,42 @@ def master(src="on_mix.wav", out="on_mix_master.wav", target=-15.0, limit=0.60):
     return out, I, g
 
 
+def draw_one(F, frame, n, t, scale):
+    """One drawing of the film into frame (device size): the beat, the camera, the flash, the weave and grain."""
+    i = max(k for k in range(len(F.st)) if F.st[k] <= t + 1e-9)
+    src = F.beat(i, t)
+    z, dx, dy = F.camera(i, t)
+    noirpart = t < F.st[30]
+    if noirpart:                                               # the gate weave
+        r = np.random.default_rng(n + 7)
+        dx += r.uniform(-0.8, 0.8); dy += r.uniform(-0.8, 0.8)
+    c = cairo.Context(frame)
+    c.set_source_rgb(0, 0, 0); c.paint()
+    c.scale(scale, scale)
+    c.translate(270 + dx, 480 + dy); c.scale(z, z); c.translate(-270, -480)
+    c.set_source_surface(src, 0, 0); c.get_source().set_filter(cairo.FILTER_GOOD); c.paint()
+    if i == 0 and t >= F.flash_t:                              # the flash: bright, then it decays (v6: 0.13 s after the open)
+        c2 = cairo.Context(frame)
+        a = 0.85 if t < F.flash_t + 1 / DRAW else 0.85 * math.exp(-(t - F.flash_t - 1 / DRAW) / 0.12)
+        c2.set_source_rgba(1, 1, 1, a); c2.paint()
+    if noirpart:
+        old_film(frame, n, scale)
+
+
+def desat(frame, k):
+    """v9d: fade the colour out of a frame (k 0..1), a little darker, as the dream comes back."""
+    frame.flush()
+    H, W = frame.get_height(), frame.get_width()
+    a = np.ndarray((H, W, 4), np.uint8, frame.get_data())
+    f = a[..., :3].astype(np.float32)
+    y = 0.0722 * f[..., 0] + 0.7152 * f[..., 1] + 0.2126 * f[..., 2]
+    out = f * (1 - k) + y[..., None] * k * (1 - 0.25 * k)
+    red = (f[..., 2] > 140) & (f[..., 1] < 90) & (f[..., 0] < 90)      # the heart stays red, as in the dream
+    out[red] = f[red]
+    a[..., :3] = np.clip(out, 0, 255).astype(np.uint8)
+    frame.mark_dirty()
+
+
 def render(mode="preview"):
     T = json.load(open("on_timing.json"))
     scale = 1 if mode == "preview" else 2
@@ -530,26 +627,29 @@ def render(mode="preview"):
             cmd[-1:-1] = ["-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709"]
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
         frame = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
+        f0 = None
+        if F.loop:                                                     # v9d: frame 0 exactly, for the last drawing
+            f0 = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
+            draw_one(F, f0, 0, 0.0, scale)
+        t_loop = F.st[33] + F.d[33] - F.loop if F.loop else None
         for n in range(n_draw):
             t = n / DRAW
-            i = max(k for k in range(len(F.st)) if F.st[k] <= t + 1e-9)
-            src = F.beat(i, t)
-            z, dx, dy = F.camera(i, t)
-            noirpart = t < F.st[30]
-            if noirpart:                                               # the gate weave
-                r = np.random.default_rng(n + 7)
-                dx += r.uniform(-0.8, 0.8); dy += r.uniform(-0.8, 0.8)
-            c = cairo.Context(frame)
-            c.set_source_rgb(0, 0, 0); c.paint()
-            c.scale(scale, scale)
-            c.translate(270 + dx, 480 + dy); c.scale(z, z); c.translate(-270, -480)
-            c.set_source_surface(src, 0, 0); c.get_source().set_filter(cairo.FILTER_GOOD); c.paint()
-            if i == 0 and t >= FLASH_T:                                # the flash: bright, then it decays (v6: from 0.13 s)
-                c2 = cairo.Context(frame)
-                a = 0.85 if t < FLASH_T + 1 / DRAW else 0.85 * math.exp(-(t - FLASH_T - 1 / DRAW) / 0.12)
-                c2.set_source_rgba(1, 1, 1, a); c2.paint()
-            if noirpart:
-                old_film(frame, n, scale)
+            if F.loop and t >= t_loop:                                 # v9d: grey, then the office of frame 0
+                draw_one(F, frame, n, t, scale)
+                v = (t - t_loop) / F.loop
+                last = n == n_draw - 1
+                if last:
+                    c = cairo.Context(frame); c.set_operator(cairo.OPERATOR_SOURCE); c.set_source_surface(f0); c.paint()
+                else:
+                    desat(frame, min(1.0, v / 0.45))
+                    a = max(0.0, min(1.0, (v - 0.45) / 0.45))
+                    if a > 0:
+                        c = cairo.Context(frame); c.set_source_surface(f0); c.paint_with_alpha(a)
+                frame.flush()
+                buf = bytes(frame.get_data())
+                p.stdin.write(buf); p.stdin.write(buf)
+                continue
+            draw_one(F, frame, n, t, scale)
             frame.flush()
             buf = bytes(frame.get_data())
             p.stdin.write(buf); p.stdin.write(buf)                     # each drawing held for 2 frames

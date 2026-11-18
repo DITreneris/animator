@@ -16,7 +16,7 @@ A map of every document in `uptimez/`, so a person, worker or agent can find the
 
 | Document | Contents |
 |---|---|
-| [`STORYLINE.md`](STORYLINE.md) | v3.1, current (17 Nov): v3 plus Act B rebuilt around the Client's blueprint |
+| [`STORYLINE.md`](STORYLINE.md) | v3.2, current (17 Nov): Act B around the blueprint, in line with episode 9 as built |
 | [`series/storyline-v3.md`](series/storyline-v3.md) | v3: after three outside showrunner reviews (character engines, relationships, world rules) |
 | [`series/storyline-v1.md`](series/storyline-v1.md) | v1: the first canon cleanup (early cast as prequel shorts; one promoted robot; Mom hired; Sofía flirts upward; calendar order; the one-client spine) |
 | [`series/storyline-v2.md`](series/storyline-v2.md) | v2: goals that collide, Don can sell, the robot's permission rule, episodes 9–11, *The Human Algorithm* finale planned |
@@ -39,8 +39,8 @@ Episodes in **story order** (STORYLINE.md, Season 1). Each folder holds its rend
 | 6 | *Happy Compliance* (Christmas Eve) | [`happy-compliance/`](happy-compliance/) | README section |
 | 7 | *Office Noir: The Secret of a Stolen Heart* | [`office-noir/`](office-noir/) | README section |
 | 8 | *The Best Candidate* | [`the-best-candidate/`](the-best-candidate/) | `the-best-candidate-interview-script-v1.md` … `v6.md` (v6 is current) |
-| 9 | *The Onboarding* | not in the repo yet | Concepts v1–v4 are in the claude.ai chat "The Onboarding". STORYLINE v3.1 keeps concept v4's blueprint ending, with one change: the Client pockets the strip without looking |
-| 10 | *First Search* | [`first-search/`](first-search/) | `first-search-premise-v2.md` (current, the blueprint); v1 (the van) kept |
+| 9 | *The Onboarding* | [`the-onboarding/`](the-onboarding/) | `the-onboarding-script-v10.md` (current, line by line with the shot list); concepts v1–v9; `storyline-proposal-act-b.md` (a proposal; STORYLINE v3.2 decides). Release: `uptimez_ob_anim_v10.mp4` |
+| 10 | *First Search* | [`first-search/`](first-search/) | `first-search-concept-v6.md` (current: the portrait falls on Don at 1.2 s; ends on the near-shred); concepts v1–v5 and premises v1–v3 kept |
 | — | *Saved Locally* (retired) | [`history/saved-locally/`](history/saved-locally/) | its own README |
 
 ## Characters and brand
@@ -67,9 +67,10 @@ Each episode has its own file prefix; earlier versions are kept as `_v1`, `_v2`�
 | `*_xmas*`, `xmas_*`, `santa_robot`, `sound_xmas` | Happy Compliance (v2: `xmas_anim2`, `xmas_pam3`) | `build.sh xmas`, `xmas2` |
 | `*_on`, `on_*`, `engine_on`, `sound_on*` | Office Noir | `build.sh on` |
 | `*_bc`, `bc_*`, `cand_bc`, `qa_bc*`, `sound_bc*` | The Best Candidate | `build.sh bc` |
+| `*_ob`, `ob_*`, `client_ob`, `qa_ob*`, `sound_ob*` | The Onboarding | `build.sh ob` |
 | `kit`, `charsheets`, `brand`, `engine`, `engine_hd`, `anim`, `emoji` | Shared: drawing kit, sheets, logo, frame engines | `build.sh sheets` |
 
-**QA workers** (each exits non-zero on a miss): `qa_dlx.py`, `qa_iwry.py`, `qa_bc.py`, and `on_qa.py` (Office Noir: the full G5 standard in [`CLAUDE.md`](CLAUDE.md), including speech recognition; `--selftest` runs every check on a known failure). Episode render checks live in each episode's README section.
+**QA workers** (each exits non-zero on a miss): `qa_dlx.py`, `qa_iwry.py`, `qa_bc.py`, `qa_ob.py` and `qa_ob_speech.py`, and `on_qa.py` (Office Noir: the full G5 standard in [`CLAUDE.md`](CLAUDE.md), including speech recognition; `--selftest` runs every check on a known failure). Episode render checks live in each episode's README section.
 
 ## Where things are *not*
 
