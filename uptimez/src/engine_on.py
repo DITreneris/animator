@@ -1,4 +1,5 @@
-"""Office Noir engine, v2 (engine_on_v1.py = v1, kept). v2 after the review ("a grey-coloured character, not
+"""v3 (18 Nov): TONE = "v3", opt-in: true blacks like v2, but faces lighter (gamma 0.88). engine_on_v2.py is pinned.
+Office Noir engine, v2 (engine_on_v1.py = v1, kept). v2 after the review ("a grey-coloured character, not
 black-and-white film"): TONE = "v2" is a harder curve with true blacks (luma under 0.10 goes to black) and
 faces pulled down toward mid-grey (gamma 1.6); TONE = "v1" keeps the old curve. side_light() darkens a frame
 or a box from one side, the stand-in for the light pass until the sets have their own lights.
@@ -44,6 +45,9 @@ TONE = "v2"
 
 def grey_curve(y):
     """Noir tone curve on luma 0..1. v1: deeper blacks, faces kept light. v2: true blacks, faces mid-grey."""
+    if TONE == "v3":                                       # v3, opt-in (Office Noir 2 look): true blacks, faces lighter
+        y = np.clip((y - 0.09) / 0.85, 0, 1)
+        return y ** 0.88
     if TONE == "v1":
         y = np.clip((y - 0.06) / 0.88, 0, 1)
         return y * y * (3 - 2 * y) * 0.92 + y * 0.08

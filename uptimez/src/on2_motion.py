@@ -1,4 +1,13 @@
-"""v24 + release (18 Nov): `python3 on2_motion.py A2 release` draws the same film at 1080x1920 (opt-in; the 540 test is
+"""v27 (18 Nov): 5.1, smoke lit behind the tables and black arms to the hands (on2_motion_b5 v13). on2_motion_v26.py is pinned.
+v26 (18 Nov): Tomas: "0:29 too dark, the money must read; 0:32 too dark, I can't see the glass or the pour; 0:47
+too dark, I can't see the office; the UptimeZ logo must be there": lit spots on the money, the pour and the logo; a
+lighter side light there; the pour earlier and longer and the coupe clear of her hair; the office lit, its glass door,
+no extra blinds on it. on2_motion_v25.py is pinned.
+v25 (18 Nov): the first Noir's look (Tomas: "why does Noir 1 still look better"; he chose): the blinds' shadow on
+the walls of the bar, the office and the wall (under the people), a side light with her face on the lit side, lighter
+faces with true blacks (engine_on TONE v3), the narration in typewriter on cream cards. LOOK3[0] = False draws v24.
+on2_motion_v24.py is pinned.
+v24 + release (18 Nov): `python3 on2_motion.py A2 release` draws the same film at 1080x1920 (opt-in; the 540 test is
 unchanged). on2_motion_v24.py is pinned.
 v24 (18 Nov): lip-sync from the takes, one drawing early (b5 v11, b68 v13); 4.1b, 5.1, 5.5 and 5.10 shorter (Tomas
 chose). on2_motion_v23.py is pinned.
@@ -39,7 +48,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v24"
+V = "v27"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -869,7 +878,43 @@ def _timing(kind):
 CAP = (30, 38)                                             # v21: the narration's size and line height (v20: 23, 30)
 
 
+LOOK3 = [True]                                             # v25 (False: v24's look)
+b.OFFICE_LIT[0] = True                                     # v26: the office readable, the UptimeZ mark on its wall: the first Noir's light (blinds, side light), lighter faces, typewriter cards
+SIDE = {"1.2": (False, 0.40), "5.2": (True, 0.20), "5.3": (True, 0.22), "5.9": (True, 0.45), "6.1": (True, 0.22), "7.1": (True, 0.35),
+        "7.2a": (True, 0.30), "7.2b": (True, 0.30)}
+KEY = {"5.2": (170, 640, 300, 0.22), "5.3": (410, 470, 260, 0.20), "6.1": (404, 500, 260, 0.16)}   # v26: lit spots: the money, the pour, the logo
+NO_BLINDS = {"6.1", "6.2", "6.2r", "6.4", "6.5", "6.6", "6.7", "6.7a"}    # v26: the office has its own bars of light                                # shot -> (light from the left?, how dark the far side): her face on the lit side
+
+
+def _blinds(k):
+    import on_set as ons
+    ons.blinds(k.c, -40, -40, W + 80, H + 80, -0.32, 30, 12, 0.34)
+
+
+def caption_card(cc, text):
+    """v25: the first Noir's narration: typewriter on cream cards with a black edge, at the top, two rows at most."""
+    cc.select_font_face("Special Elite", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL); cc.set_font_size(CAP[0])
+    rows, line = [], ""
+    for wd in text.split():
+        trial = (line + " " + wd).strip()
+        if cc.text_extents(trial).x_advance > SAFE[2] - SAFE[0] - 40 and line:
+            rows.append(line); line = wd
+        else:
+            line = trial
+    rows.append(line)
+    assert len(rows) <= 2, rows
+    y = SAFE[1] + 4
+    for ln in rows:
+        e = cc.text_extents(ln); w = e.x_advance + 24
+        cc.set_source_rgba(0, 0, 0, 0.45); cc.rectangle(SAFE[0] + 4, y + 4, w, 42); cc.fill()
+        cc.set_source_rgb(0.93, 0.90, 0.82); cc.rectangle(SAFE[0], y, w, 42); cc.fill()
+        cc.set_source_rgb(0.06, 0.06, 0.07); cc.set_line_width(2.6); cc.rectangle(SAFE[0], y, w, 42); cc.stroke()
+        cc.move_to(SAFE[0] + 12, y + 30); cc.show_text(ln); y += 48
+
+
 def caption(cc, text):
+    if LOOK3[0]:
+        return caption_card(cc, text)
     cc.select_font_face("Inter", cairo.FONT_SLANT_ITALIC, cairo.FONT_WEIGHT_BOLD); cc.set_font_size(CAP[0])   # v21: 30 px
     rows, line = [], ""
     for wd in text.split():
@@ -907,10 +952,22 @@ def frame(row, tl, t):
     if tilt:
         cc.translate(W / 2, H / 2); cc.rotate(tilt); cc.scale(1.10, 1.10); cc.translate(-W / 2, -H / 2)
     k = Ctx(cc, int(round(t * 12)) % 3)
-    if row["shot"] in ("2.1", "2.6", "3.2") or row["shot"] in b5.SHOTS or row["shot"] in b68.SHOTS:
-        fn(k, tl, row["len"])
-    else:
-        fn(k, tl)
+    saved = None
+    if LOOK3[0] and row["shot"] not in b68.COLOUR:          # v25: the blinds' shadow on the rooms' walls, under the people
+        saved = (b5.room, b.office, b.lit_wall)
+        r0, o0, w0 = saved
+        b5.room = lambda k_, *a, **kw: (r0(k_, *a, **kw), _blinds(k_))[0]
+        b.office = lambda k_, *a, **kw: (o0(k_, *a, **kw), None if row["shot"] in NO_BLINDS else _blinds(k_))[0]
+        b.lit_wall = lambda k_, *a, **kw: (w0(k_, *a, **kw), _blinds(k_))[0]
+        eng.TONE = "v3"
+    try:
+        if row["shot"] in ("2.1", "2.6", "3.2") or row["shot"] in b5.SHOTS or row["shot"] in b68.SHOTS:
+            fn(k, tl, row["len"])
+        else:
+            fn(k, tl)
+    finally:
+        if saved:
+            b5.room, b.office, b.lit_wall = saved
     if row["shot"] in b68.COLOUR:                                        # awake: colour, and no shade
         cc = cairo.Context(sf_)
     else:
@@ -919,6 +976,15 @@ def frame(row, tl, t):
         if post:
             post(cc)
         b.vignette(cc)
+        if LOOK3[0]:                                          # v25: a side light, and true black at the edges
+            fl, am = SIDE.get(row["shot"], (True, 0.38))
+            eng.side_light(cc, 0, 0, W, H, from_left=fl, amount=am)
+            if row["shot"] in KEY:                                        # v26: what the shot is about, in its own light
+                import on_set as ons
+                ons.key_light(cc, *KEY[row["shot"]])
+            g = cairo.RadialGradient(W / 2, H * 0.42, H * 0.30, W / 2, H * 0.42, H * 0.80)
+            g.add_color_stop_rgba(0, 0, 0, 0, 0.0); g.add_color_stop_rgba(1, 0, 0, 0, 0.40); cc.set_source(g); cc.paint()
+        eng.TONE = "v2"
     ln = row.get("line")
     if not (ln and ln["t0"] - 0.05 <= t <= ln["t1"] + 0.30):             # v15: her line may run on from the set-up before
         for r_ in timing.rows:
