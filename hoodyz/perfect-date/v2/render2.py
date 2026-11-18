@@ -32,7 +32,13 @@ _rescale('s5', [("ai(c, 400, 1780, 1.6,", "ai(c, 400, 1780, 1.08,"),
                 ("bubble(c, ['WATCH!'], r - 4, (400 + 14 * 1.6, 1780 - 420 * 1.6)", "bubble(c, ['WATCH!'], r - 4, (400 + 14 * 1.08, 1780 - 420 * 1.08 - 10)")])                       # Eva .95 -> MY AI 1.02, a step nearer the camera
 _rescale('s7', [("rx, rs = 770, 1.15", "rx, rs = 770, 1.07")])                              # Hoody 1.0
 _rescale('s10', [("hand = E.eva(c, 880, GY + 40, .9,", "hand = E.eva(c, 880, GY + 40, .8,"),   # Hoody .78
-                 ("ai(c, 100, GY + 70, .85,", "ai(c, 100, GY + 70, .84,")])
+                 ("ai(c, 100, GY + 70, .85,", "ai(c, 150, GY + 70, .84,"),            # and in from the left edge: it was cut in half
+                 ("ch = (100, GY + 70 - 130 * .85)", "ch = (150, GY + 70 - 130 * .84)"),
+                 ("txt(c, '!', 100, GY - 330", "txt(c, '!', 150, GY - 330"),
+                 ("ell(c, 290, GY + 60,", "ell(c, 345, GY + 60,"),                                 # Hoody one step right, so MY AI isn't behind him
+                 ("hd = guitar_points(290,", "hd = guitar_points(345,"),
+                 ("_, hd = hoody(c, 290, hgy,", "_, hd = hoody(c, 345, hgy,"),
+                 ("notes(c, 290, hgy - 520,", "notes(c, 345, hgy - 520,")])
 _rescale('s11', [("rs = 1.3; rx = 330;", "rs = 1.02; rx = 330;")])                         # Eva .95
 ZOOM, ZC = 1.14, (560, 1400)                                          # the bench shot, framed the same at both ends
 
@@ -118,8 +124,20 @@ def pluck_hand(c, tip):
     ell(c, 40, -60, 40, 26); fs(c, K.SKIN, 6)                          # the thumb
     c.restore()
 
+def guitar_arms(c):
+    """The close-ups in the sky (eyes open, the deadpan) drew a torso with the guitar floating in front of it: no arms.
+    His arms, from the hoodie's shoulders: one hand on the strings, the other on the neck."""
+    s = 2.4 * 1.1; cx, ny = 540, 1020 + 150 * 2.4
+    shl, shr = (cx - 82 * s, ny + 20 * s), (cx + 82 * s, ny + 20 * s)
+    body = (560, 1700); hs = (560 + 440 * 1.3 * math.cos(R.GROT), 1700 + 440 * 1.3 * math.sin(R.GROT))
+    strum = (body[0] - 20, body[1] + 10)
+    fret = (lerp(body[0], hs[0], .62), lerp(body[1], hs[1], .62) + 18)
+    K.arm(c, [shl, (shl[0] - 30, shl[1] + 210), strum], 1.6)
+    K.arm(c, [shr, (shr[0] + 70, shr[1] + 150), fret], 1.6)
+def s13_arms(c, f, r): R.s13(c, f, r); guitar_arms(c)
+
 def s_plonk(c, f, r):  # the insert, the string now snaps and curls back; then his deadpan face
-    if r >= 12: R.s15(c, f, r); return
+    if r >= 12: R.s15(c, f, r); guitar_arms(c); return
     g = cairo.LinearGradient(0, 0, 0, H); g.add_color_stop_rgb(0, *R.SKY0); g.add_color_stop_rgb(1, *R.SKY1); c.set_source(g); c.paint()
     c.save(); c.translate(540, 1100); c.rotate(-.5)
     rr(c, -900, -130, 1800, 260, 30); fs(c, hx('7a4a25'), 10)
@@ -178,7 +196,7 @@ def s_land(c, f, r):  # the fall, BOOM onto the bench, dizzy 0.5 s; then MY AI a
     c.restore()
 
 PLAN = [(s_ask, 36), (R.s5, 18), (s_rose, 27), (R.s7, 33), (R.s8, 24), (s_pump, 30), (R.s10, 52), (s_take, 30), (R.s12, 24),
-        (R.s13, 30), (R.s14, 30), (s_plonk, 30), (R.s16, 27), (R.s17, 27), (R.s18, 24), (R.s19, 12), (s_land, 45)]
+        (s13_arms, 30), (R.s14, 30), (s_plonk, 30), (R.s16, 27), (R.s17, 27), (R.s18, 24), (R.s19, 12), (s_land, 45)]
 SHOTS = []; _t = 0
 for fn, d in PLAN: SHOTS.append((fn, _t, _t + d)); _t += d
 NF = _t
