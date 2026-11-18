@@ -593,3 +593,13 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 - **The payoff frame needs one thing to read.** A wide shot with eleven pieces of text hid the joke at phone size; a 2-second insert of just the two tags became both viewers' screenshot.
 - **Retime with the old clock.** Shifting a film by 0.3 s would have moved every lip shape, blink and breath off its line; passing the old film time to the drawing code kept them all in place while the shots moved.
 - **Check true peak after the encode, every time.** A 0.3 s shift moved a THUNK onto a different AAC frame and the same mix overshot to +0.4 dBTP; a 16 kHz low-pass and 256k brought it to −3.2.
+
+## UptimeZ: Happy Compliance v3–v6 (18 Nov)
+
+- **Hiding a problem leaves a hole.** v2 had hidden the PARTY sign and kept Don's fall off screen; cold viewers then could not read the ending at all (3/5). Putting the throw, the hit and the fall on screen took them to 5/5.
+- **A prop that has done its job should leave.** Once Don's legs were in the shot, his razor on the floor only read as "a blue limb"; removing it cleared the punchline.
+- **Spinning props keep their words upright.** A CENSORED bar that tumbled with its bauble read as a mistake.
+- **A fall has to be drawn falling.** Feet in the air under a tree read as "pretzels on the floor"; the hit, the plank tipping over and the body landing flat, in two shots, read at once. It needed 0.9 s cut in after a line, not squeezed into the 0.2 s left before the cut.
+- **Tails must not cross what sits on a bubble.** An emoji at the box's end where the tail leaves gets struck through; badges go on the outer corner and tails stay short.
+- **Never rescale one character to fit a shot.** Shrinking Don to 0.62 so he could lie in a close robot shot made the robot a giant; widen the camera instead, and keep every character at the film's own scale.
+- **Tag and convert the same matrix.** Piping RGB into yuv420p without `scale=out_color_matrix=bt709` encodes BT.601 while tagging BT.709: the colours come out flat. Every build line converts explicitly.
