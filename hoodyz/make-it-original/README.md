@@ -4,6 +4,20 @@ In 1986 his drummer rejects Hoodyz's garage riff: "Play something we know." In 2
 
 Concept, locked decisions and the viewer test: the "Hoodyz Ep. 4 — Make It Original (concept)" doc in Claude Docs.
 
+## Status (18 Nov): v5.1
+
+**v5.1** (same file, `v5/make_it_original_v5.mp4`) adds the fixes from the v5 mute test:
+- A 6-frame flash cut to the 1986 drummer's wave-off inside his 2026 one, at the same arm phase, with 1986 in the bar and her cymbal under it.
+- MY AI's tune drawn as strange glyphs on bright tiles: a spiral, a star, an eye, a zigzag.
+- The drummer's take pitched 1.5 semitones down instead of 2.5.
+- Years that jump straight to the next era instead of rolling through 2011.
+
+**Checks:**
+- QA: -14.1 LUFS, -2.2 dBTP.
+- The drummer's line is still heard as "Play something with now". Recognition gives the same with no pitch shift, so it's the delivery of "we know": re-record it with a clear "we KNOW".
+- Two new cold viewers both linked him to the drummer this time ("reminds me of the drummer from The Loud").
+- Both read the wave as drumming, not as a rejection. Her wave is made with the drumsticks in her hand, so silently it looks like a flourish. Without the caption the rejection doesn't read yet.
+
 ## Status (18 Nov): v5, the loop
 
 **New master candidate: `v5/make_it_original_v5.mp4`** (19.9 s, 598 frames, same voices). The office tail is gone. After "Now THAT'S original!" the film ends on frame 0's exact stadium shot. The cat now plays the riff on his stage with one lazy paw and yawns into a big meow, while old Hoody air-guitars in the crowd. The cut lands on young Hoody playing the same riff on the same stage, and the year flips from 2026 to 1986. The caption holds for 1.2 s. `v5/keys/seam.png` shows the last frame beside frame 0. v5 imports v4's shots, and v4's files are unchanged.

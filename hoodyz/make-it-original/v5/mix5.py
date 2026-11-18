@@ -81,7 +81,11 @@ mix = at(servo(), G['glance'] + .08, mix); mix = at(servo(.25, .14), G['turn'], 
 ai, _ = S.tune(AI_TUNE, AI_CHORD, 'epiano'); ai = S.norm(ai, .55)
 mix += at(ai, G['ai'] - .02) * window(G['ai'] - .03, G['wave26'] + .05, .005, .04)
 mix = at(S.norm(S.swipe(.2), .25), G['recoil'], mix)
-for n, t, g in (('drum', G['drum'], 1.75), ('ask', G['ask'], 1.75), ('know', G['know'], 1.75), ('orig', G['orig'], 2.1)): mix = at(vo(n), t, mix, g)
+drum51, _ = sf.read(os.path.join(HERE, 'drum_v51.wav')); drum51 = drum51.mean(-1) if drum51.ndim > 1 else drum51
+mix = at(S.norm(drum51, .9), G['drum'], mix, 1.75)                     # v5.1: pitched 1.5 semitones down, not 2.5
+crash = S.onepole_lp(rng.normal(0, 1, int(.5 * SR)), 9000) - S.onepole_lp(rng.normal(0, 1, int(.5 * SR)), 3000)
+mix = at(crash * np.exp(-np.arange(len(crash)) / SR * 9) * .15, G['wave26'] + .49, mix)   # v5.1: her cymbal under the flash cut
+for n, t, g in ( ('ask', G['ask'], 1.75), ('know', G['know'], 1.75), ('orig', G['orig'], 2.1)): mix = at(vo(n), t, mix, g)
 mix += S.onepole_lp(rng.normal(0, 1, TOT), 400) * .003
 sf.write(os.path.join(HERE, 'mix.wav'), mix[:N].astype(np.float32), SR)     # clean downbeat cut at the loop point
 print('mix', round(N / SR, 2), 's')
