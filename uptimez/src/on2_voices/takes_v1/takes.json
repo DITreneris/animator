@@ -1,0 +1,219 @@
+{
+ "n1_A": {
+  "who": "N (A)",
+  "text": "New Year's Eve.",
+  "len": 1.052,
+  "heard": "New Year's Eve",
+  "score": 1.0
+ },
+ "n2_A": {
+  "who": "N (A)",
+  "text": "A woman like me doesn't walk alone.",
+  "len": 2.066,
+  "heard": "A woman like me doesn't walk alone.",
+  "score": 1.0
+ },
+ "n3_A": {
+  "who": "N (A)",
+  "text": "I don't run. I give them something to chase.",
+  "len": 2.78,
+  "heard": "I don't run. I give them something to chase.",
+  "score": 1.0
+ },
+ "n4_A": {
+  "who": "N (A)",
+  "text": "He sent a note. They always send a note.",
+  "len": 2.551,
+  "heard": "He sent a note. They always send a note.",
+  "score": 1.0
+ },
+ "n5_A": {
+  "who": "N (A)",
+  "text": "Everybody had lost it. I found it in one drawer.",
+  "len": 3.263,
+  "heard": "Everybody had lost it. I found it in one drawer.",
+  "score": 1.0
+ },
+ "n1_B": {
+  "who": "N (B)",
+  "text": "New Year's Eve.",
+  "len": 0.96,
+  "heard": "New Year's Eve.",
+  "score": 1.0
+ },
+ "n2_B": {
+  "who": "N (B)",
+  "text": "A woman like me doesn't walk alone.",
+  "len": 1.877,
+  "heard": "A woman like me doesn't walk alone.",
+  "score": 1.0
+ },
+ "n3_B": {
+  "who": "N (B)",
+  "text": "I don't run. I give them something to chase.",
+  "len": 2.511,
+  "heard": "I don't run. I give them something to chase.",
+  "score": 1.0
+ },
+ "n4_B": {
+  "who": "N (B)",
+  "text": "He sent a note. They always send a note.",
+  "len": 2.331,
+  "heard": "He sent a note. They always sent a note.",
+  "score": 0.89
+ },
+ "n5_B": {
+  "who": "N (B)",
+  "text": "Everybody had lost it. I found it in one drawer.",
+  "len": 3.002,
+  "heard": "Everybody had lost it. I found it in one drawer.",
+  "score": 1.0
+ },
+ "n1_C": {
+  "who": "N (C)",
+  "text": "New Year's Eve.",
+  "len": 1.215,
+  "heard": "New Year's Eve",
+  "score": 1.0
+ },
+ "n2_C": {
+  "who": "N (C)",
+  "text": "A woman like me doesn't walk alone.",
+  "len": 2.344,
+  "heard": "A woman like me doesn't walk alone.",
+  "score": 1.0
+ },
+ "n3_C": {
+  "who": "N (C)",
+  "text": "I don't run. I give them something to chase.",
+  "len": 2.932,
+  "heard": "I don't run. I give them something to chase.",
+  "score": 1.0
+ },
+ "n4_C": {
+  "who": "N (C)",
+  "text": "He sent a note. They always send a note.",
+  "len": 2.847,
+  "heard": "He sent a note. They always send a note.",
+  "score": 1.0
+ },
+ "n5_C": {
+  "who": "N (C)",
+  "text": "Everybody had lost it. I found it in one drawer.",
+  "len": 3.338,
+  "heard": "Everybody had lost it. I found it in one drawer.",
+  "score": 1.0
+ },
+ "s1": {
+  "who": "SOFÍA",
+  "text": "The usual.",
+  "len": 0.668,
+  "heard": "The usual.",
+  "score": 1.0
+ },
+ "m1": {
+  "who": "MOM",
+  "text": "You! Not near Donnie's desk!",
+  "len": 1.886,
+  "heard": "You not near Donny's desk",
+  "score": 0.8
+ },
+ "c1": {
+  "who": "THE SHADOW",
+  "text": "I only want my",
+  "len": 1.122,
+  "heard": "I only want my",
+  "score": 1.0
+ },
+ "m2": {
+  "who": "MOM",
+  "text": "Happy New Year, dear.",
+  "len": 1.646,
+  "heard": "Happy New Year, dear.",
+  "score": 1.0
+ },
+ "p1": {
+  "who": "PAM",
+  "text": "Some dream. Others sweep.",
+  "len": 1.669,
+  "heard": "Some dream others sweep.",
+  "score": 1.0
+ },
+ "n1_A2": {
+  "who": "N (A2)",
+  "text": "New Year's Eve.",
+  "len": 1.112,
+  "heard": "New Year's Eve",
+  "score": 1.0
+ },
+ "n2_A2": {
+  "who": "N (A2)",
+  "text": "A woman like me doesn't walk alone.",
+  "len": 2.126,
+  "heard": "A woman like me doesn't walk alone.",
+  "score": 1.0
+ },
+ "n3_A2": {
+  "who": "N (A2)",
+  "text": "I don't run. I give them something to chase.",
+  "len": 2.972,
+  "heard": "I don't run. I give them something to chase.",
+  "score": 1.0
+ },
+ "n4_A2": {
+  "who": "N (A2)",
+  "text": "He sent a note. They always send a note.",
+  "len": 2.693,
+  "heard": "He sent a note. They always sent a note.",
+  "score": 0.89
+ },
+ "n5_A2": {
+  "who": "N (A2)",
+  "text": "Everybody had lost it. I found it in one drawer.",
+  "len": 3.387,
+  "heard": "Everybody had lost it. I found it in one drawer.",
+  "score": 1.0
+ },
+ "n6_A2": {
+  "who": "N (A2)",
+  "text": "The whole city was celebrating.",
+  "len": 1.954,
+  "heard": "The whole city was celebrating.",
+  "score": 1.0
+ },
+ "n7_A2": {
+  "who": "N (A2)",
+  "text": "The law was always one step behind me.",
+  "len": 2.518,
+  "heard": "The law was always one step behind me.",
+  "score": 1.0
+ },
+ "n8_A2": {
+  "who": "N (A2)",
+  "text": "Every door in this town opens for me.",
+  "len": 2.334,
+  "heard": "Every door in this town opens for me.",
+  "score": 1.0
+ },
+ "n9_A2": {
+  "who": "N (A2)",
+  "text": "I never hide. I let them look.",
+  "len": 2.227,
+  "heard": "I never hide. I let them look.",
+  "score": 1.0
+ },
+ "n10_A2": {
+  "who": "N (A2)",
+  "text": "I gave him my number.",
+  "len": 1.38,
+  "heard": "I gave him my number.",
+  "score": 1.0
+ },
+ "n11_A2": {
+  "who": "N (A2)",
+  "text": "Let him come.",
+  "len": 0.966,
+  "heard": "Let him come.",
+  "score": 1.0
+ }
+}

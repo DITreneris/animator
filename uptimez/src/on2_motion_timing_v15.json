@@ -1,0 +1,328 @@
+{
+ "kind": "A2",
+ "total": 83.83333333333333,
+ "shots": [
+  {
+   "shot": "1.1",
+   "start": 0.0,
+   "len": 2.0,
+   "line": {
+    "who": "N",
+    "key": "n1",
+    "text": "New Year's Eve.",
+    "t0": 0.25,
+    "t1": 1.362
+   }
+  },
+  {
+   "shot": "1.2",
+   "start": 2.0,
+   "len": 2.5,
+   "line": {
+    "who": "N",
+    "key": "n6",
+    "text": "The whole city was celebrating.",
+    "t0": 2.25,
+    "t1": 4.204
+   }
+  },
+  {
+   "shot": "2.1",
+   "start": 4.5,
+   "len": 2.8333,
+   "line": {
+    "who": "N",
+    "key": "n2",
+    "text": "A woman like me doesn't walk alone.",
+    "t0": 4.75,
+    "t1": 6.876
+   }
+  },
+  {
+   "shot": "2.3a",
+   "start": 7.3333,
+   "len": 0.8333
+  },
+  {
+   "shot": "2.2",
+   "start": 8.1667,
+   "len": 1.0
+  },
+  {
+   "shot": "2.3b",
+   "start": 9.1667,
+   "len": 0.6667
+  },
+  {
+   "shot": "2.4",
+   "start": 9.8333,
+   "len": 1.5
+  },
+  {
+   "shot": "2.5",
+   "start": 11.3333,
+   "len": 1.0
+  },
+  {
+   "shot": "2.6",
+   "start": 12.3333,
+   "len": 3.6667,
+   "line": {
+    "who": "N",
+    "key": "n3",
+    "text": "I don't run. I give them something to chase.",
+    "t0": 12.583,
+    "t1": 15.555
+   }
+  },
+  {
+   "shot": "3.1",
+   "start": 16.0,
+   "len": 1.75
+  },
+  {
+   "shot": "3.2",
+   "start": 17.75,
+   "len": 2.5,
+   "line": {
+    "who": "N",
+    "key": "n7",
+    "text": "The law was always one step behind me.",
+    "t0": 18.0,
+    "t1": 20.518
+   }
+  },
+  {
+   "shot": "3.3",
+   "start": 20.25,
+   "len": 1.0
+  },
+  {
+   "shot": "3.4",
+   "start": 21.25,
+   "len": 2.5
+  },
+  {
+   "shot": "4.1a",
+   "start": 23.75,
+   "len": 1.5,
+   "line": {
+    "who": "N",
+    "key": "n8",
+    "text": "Every door in this town opens for me.",
+    "t0": 24.0,
+    "t1": 26.334
+   }
+  },
+  {
+   "shot": "4.1b",
+   "start": 25.25,
+   "len": 1.5833
+  },
+  {
+   "shot": "4.2",
+   "start": 26.8333,
+   "len": 1.5
+  },
+  {
+   "shot": "5.1",
+   "start": 28.3333,
+   "len": 2.0
+  },
+  {
+   "shot": "5.2",
+   "start": 30.3333,
+   "len": 2.5833,
+   "line": {
+    "who": "N",
+    "key": "n9",
+    "text": "I never hide. I let them look.",
+    "t0": 30.583,
+    "t1": 32.81
+   }
+  },
+  {
+   "shot": "5.3",
+   "start": 32.9167,
+   "len": 2.5,
+   "line": {
+    "who": "SOF\u00cdA",
+    "key": "s1",
+    "text": "The usual.",
+    "t0": 33.167,
+    "t1": 33.835
+   }
+  },
+  {
+   "shot": "5.4",
+   "start": 35.4167,
+   "len": 3.4167,
+   "line": {
+    "who": "N",
+    "key": "n4",
+    "text": "He sent a note. They always send a note.",
+    "t0": 35.667,
+    "t1": 38.36
+   }
+  },
+  {
+   "shot": "5.5",
+   "start": 38.8333,
+   "len": 2.25
+  },
+  {
+   "shot": "5.6",
+   "start": 41.0833,
+   "len": 2.5,
+   "line": {
+    "who": "N",
+    "key": "n10",
+    "text": "I gave him my number.",
+    "t0": 41.333,
+    "t1": 42.713
+   }
+  },
+  {
+   "shot": "5.7",
+   "start": 43.5833,
+   "len": 1.75
+  },
+  {
+   "shot": "5.9",
+   "start": 45.3333,
+   "len": 2.25
+  },
+  {
+   "shot": "5.10",
+   "start": 47.5833,
+   "len": 2.6667
+  },
+  {
+   "shot": "6.1",
+   "start": 50.25,
+   "len": 2.0
+  },
+  {
+   "shot": "6.2",
+   "start": 52.25,
+   "len": 4.0833,
+   "line": {
+    "who": "N",
+    "key": "n5",
+    "text": "Everybody had lost it. I found it in one drawer.",
+    "t0": 52.5,
+    "t1": 55.887
+   }
+  },
+  {
+   "shot": "6.4",
+   "start": 56.3333,
+   "len": 2.0,
+   "line": {
+    "who": "N",
+    "key": "n11",
+    "text": "Let him come.",
+    "t0": 56.583,
+    "t1": 57.549
+   }
+  },
+  {
+   "shot": "6.5",
+   "start": 58.3333,
+   "len": 1.1667
+  },
+  {
+   "shot": "6.6",
+   "start": 59.5,
+   "len": 1.6667
+  },
+  {
+   "shot": "6.7a",
+   "start": 61.1667,
+   "len": 1.0
+  },
+  {
+   "shot": "6.7",
+   "start": 62.1667,
+   "len": 2.0
+  },
+  {
+   "shot": "7.1",
+   "start": 64.1667,
+   "len": 1.9167
+  },
+  {
+   "shot": "7.2a",
+   "start": 66.0833,
+   "len": 2.75,
+   "line": {
+    "who": "MOM",
+    "key": "m1",
+    "text": "You! Not near Donnie's desk!",
+    "t0": 66.333,
+    "t1": 68.219
+   }
+  },
+  {
+   "shot": "7.2b",
+   "start": 68.8333,
+   "len": 1.5,
+   "line": {
+    "who": "THE SHADOW",
+    "key": "c1",
+    "text": "I only want my",
+    "t0": 69.083,
+    "t1": 70.205
+   }
+  },
+  {
+   "shot": "7.3",
+   "start": 70.3333,
+   "len": 1.5
+  },
+  {
+   "shot": "8.1",
+   "start": 71.8333,
+   "len": 2.5,
+   "line": {
+    "who": "MOM",
+    "key": "m2",
+    "text": "Happy New Year, dear.",
+    "t0": 72.083,
+    "t1": 73.729
+   }
+  },
+  {
+   "shot": "8.2",
+   "start": 74.3333,
+   "len": 1.4167
+  },
+  {
+   "shot": "8.3",
+   "start": 75.75,
+   "len": 1.5833
+  },
+  {
+   "shot": "8.4",
+   "start": 77.3333,
+   "len": 1.5
+  },
+  {
+   "shot": "8.5",
+   "start": 78.8333,
+   "len": 2.5,
+   "line": {
+    "who": "PAM",
+    "key": "p1",
+    "text": "Some dream. Others sweep.",
+    "t0": 79.083,
+    "t1": 80.752
+   }
+  },
+  {
+   "shot": "8.6",
+   "start": 81.3333,
+   "len": 2.5
+  }
+ ]
+}
