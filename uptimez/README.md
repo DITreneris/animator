@@ -19,7 +19,7 @@ The prequel shorts here are mostly **540×960 animatics** (30 fps, about 15 s): 
 | **PAM** | Project manager | Can't stop fixing things; loves Don, unrequited; strategic silence | British, picked per episode by audition |
 | **THE ROBOT** | One machine, reassigned: Don's desk robot (*Day One*) → cafeteria waiter (*I Will Replace You*) → HR (from *Raises for Everyone*) | Every statement and stamp technically true; needs human approval for money, access and commitments | Pitched and filtered per episode |
 | **MOM** | Don's mother; Assistant to Don since *The Best Candidate* | Curlers, an old shouting voice; Don shrinks when she enters | Voice F: `bf_alice` + `bm_lewis`, aged |
-| **THE CLIENT** | Owner of ten garages (from *The Onboarding*, in development) | The first real customer; not an idiot | not cast yet |
+| **THE CLIENT** | Owner of ten garages (from *The Onboarding*) | The first real customer; not an idiot. Olive work jacket, VISITOR badge, a head taller than Don | `am_fenrir` −4 semitones |
 | **FATHER** | The investor (from episode 14, planned) | Holds the majority share; can replace the CEO | not cast yet |
 
 ### Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*)
@@ -169,6 +169,8 @@ The HR robot runs a compulsory AI policy training. The MANDATORY FUN slide slams
 |---|---|---|
 | `uptimez_mf_anim_v2_1080.mp4` | **release (current)** | **1080×1920**, 37.3 s, −16 LUFS, BT.709. Lip-sync on Don, Sofía and Pam, blinks, Sofía's swinging hoops, red/amber/green verdict light spill, the robot's idle glow, camera punches (red verdict hit, "APPROVED!" jolt, DING push, the two clicks, a slow push on FUN DETECTED), cool vignette; v2 frames the final shot wider so Pam's and Don's faces stay whole |
 | `uptimez_mf_anim_v2.mp4` | release, 540 rough | Same animation, 540×960 |
+| `uptimez_mf_anim_v4.mp4` | **animation v4 (final, 18 Nov)**, 540 | 39.65 s, −15.9 LUFS. v3 plus the camera polish (`mf_anim4.py`): motivated creeps and pushes, a whip-pan, a crash zoom on the cuffs, handheld only in the two chaos shots, a punch-in on Pam, a calmer boil, cut signs pushed out of frame. The 1080 master is rebuilt, not committed |
+| `uptimez_mf_anim_v3.mp4` | animation v3, 540 | The joke at 0:01 (`mf_anim3.py`): MANDATROY gets zapped to MANDATORY and a party cone lands on the robot; a rewind tail ends on frame 0 |
 | `uptimez_mf_anim_v1.mp4` | animation v1, 540 | Before the payoff reframe |
 | `mf_animatic_v2.mp4` (v1 kept) | animatic | Storyboard re-timed to the real takes (33.0 → 37.3 s: shots held, never voices sped up), Don `am_onyx`, Sofía `af_bella`, Pam `bf_emma` (her "APPROVED!" pitched up and driven), robot B; an original corporate-training jingle, ducked; v2: the slide whole at frame 0, the cuff insert framed below the star, the scroll never reads "LICE", the final beam aimed at Pam's smile |
 | `mf_storyboard_silent_v2.mp4`, `_sheet_v2.png` | **storyboard v2** | Shot 4 from Sofía's side; Pam's 💗 as a cutaway on the word "arrest" |
@@ -187,6 +189,8 @@ Thanksgiving at the office. DON slaps down a form: "Raises for everyone! Sign he
 |---|---|---|
 | `uptimez_tg_anim_v2_1080.mp4` | **release (current)** | **1080×1920**, 36.6 s. v1 plus framing fixes: the banner reads THANKFUL whole in shot 1, the whole turkey leg reads over the hidden verdict in shot 11, the pilgrim hat's brim clears the screen, "OK. SIGNED." points at the screen |
 | `uptimez_tg_anim_v2.mp4` | release, 540 rough | Same, 540×960 |
+| `uptimez_tg_anim_v4.mp4` | **animation v4 (final, 18 Nov)**, 540 | 37.25 s, −15.9 LUFS. v3 plus `tg_anim4.py`: every sign fully in or out of frame (per-shot reframes and set cheats), the second form insert pushes to the Signature line, creeps and pushes, a crash zoom on "You failed.", handheld only in the HR standoff, screen-space bubbles, a calmer boil |
+| `uptimez_tg_anim_v3.mp4` | animation v3, 540 | The joke at 0:01 (`tg_anim3.py`): Don's hand slaps I AM HAPPY WITH MY CURRENT SALARY; a fresh blank form drops at the end, so the last frame is frame 0 |
 | `uptimez_tg_anim_v1_1080.mp4` | release v1 | **1080×1920**, 36.6 s, −16 LUFS, BT.709. Lip-sync on Don, Sofía and Pam, blinks, Don's laughing bounce, swinging star earrings, red/green verdict light spill, turkey steam, camera punches (slap jolt, verdict hit, "No." push, ACCURATE push, stamp shake), warm vignette |
 | `uptimez_tg_anim_v1.mp4` | release, 540 rough | Same animation, 540×960, for review |
 | `tg_animatic_v2.mp4` (v1 kept) | animatic | Storyboard v3 re-timed to the real takes (four shots held longer, 35.0 → 36.6 s), voices Don `am_onyx`, Sofía `af_bella`, Pam `bf_emma`, robot B (muffled "OK. Signed."); v2: a real laugh for Don; an original plucked-guitar bed that stops dead on "No." |
@@ -206,6 +210,7 @@ DON dreams he is a hard-boiled detective in a black-and-white rain-soaked office
 |---|---|---|
 | `uptimez_on_anim_1080.mp4` | **release v8 (current, 17 Nov)** | **1080×1920**, native 1080, 40.1 s, −15.7 LUFS, −1.2 dBTP. Passes the G5 QA worker `src/on_qa.py` (report: `on_qa_report.txt`). v8 fixes after four frame reviews: curved tails ending beside the mouth drawn in that frame; off-screen speakers without tails (Don's line to Sofía as a quoted card, "> SUSPECT IDENTIFIED." as a CCTV readout, the robot's "YOU." on his screen); one Sofía bubble (an older one was hidden underneath); Don's lip-sync mouth scaled to his close-up; every card, bubble and the DONNIE! shout moved under the app's top bar; a clearer "Whiskey" and "Donnie!", and the two stings moved off "Unsigned" and "boss". Previous release (v5) in git history |
 | `uptimez_on_anim.mp4` | release v8, 540 preview | Same film, 540×960 |
+| `uptimez_on_anim_v9.mp4` | **v9 (final, 18 Nov)**, 540 preview | 43.0 s. A black cat crosses at 0:01 and Don's hat jumps (`cat_on.py`); the narration starts after it, with a pause before "Unsigned."; softer thunder; the cat curled on the bed leaps out; the tail desaturates and dissolves into frame 0. QA report `on_qa_report_v9.txt` |
 | `on_tails_v8_check.png`, `on_qa_report.txt` | v8 checks | The ticketed moments; the G5 report |
 | `on_cover_v2.png` (v1 kept) | cover | Title cards "Office Noir: The Secret of a Stolen Heart" |
 | `on_animatic_silent.mp4`, `on_animatic_voiced.mp4` | animatics | Storyboard timed to the takes |
@@ -223,12 +228,38 @@ Three candidates for ASSISTANT TO DON, and an HR robot that rules on bias. DON o
 |---|---|---|
 | `uptimez_bc_anim_v3_1080.mp4` | **animation v3, 1080 master (current)** | **1080×1920**, drawn natively (not upscaled), 92.5 s, 46 MB, −14.0 LUFS, true peak −1.1 dB, BT.709. The same drawings as the 540 film below, frame for frame (bubble boxes included: their text is measured at 540 scale) |
 | `uptimez_bc_anim_v3.mp4` | animation v3, 540 | 540×960, 92.5 s, −14.0 LUFS, true peak −1.1 dB. The bubble pass after a frame audit of v2: every tail ends where the drawing says the speaker's cheek or crown is; 18 of the 32 bubbles sit beside the face at mouth height (Sofía, Pam and Mom have framings with clear wall for it), Don at the table and the robot keep theirs overhead, down onto bare scalp or the antenna; a bubble is on screen only while its line is spoken; Don's "smug" face is lip-synced; the chair insert sits under the macho's badge and YES stays whole while Don pushes the paddle. Clean on all 1,110 drawings under `qa_bc.py` v2. Animations v1 (101 s) and v2 (the tightening to 92.5 s, Don's missing lips) are not in the repo; `src/bc_anim_v2.py` still draws v2 |
+| `uptimez_bc_anim_v4.mp4` | **animation v4.1 (final, 18 Nov)**, 540 | 89.5 s, −14.1 LUFS. `bc_anim4.py` over v3: the CLIENT · 47 MISSED CALLS phone comes first and is turned face down at 1.0 s, then "First candidate." and one ignored buzz; 3 s off silent holds (breaths and blinks keep v3's phase, so the bubble checks pass on all 1,074 drawings). `sound_bc_mix4.py`: Father's car rolls in, handbrake, engine off and car door under the last shots, so the loop says he is the next candidate. The 1080 master is rebuilt, not committed |
 | `the-best-candidate-interview-script-v1..v6.md` | script | v6 is cut: "Good boy.", "Donnie. Father is parking.", the measured section times |
 | `bc_storyboard_v1..v3_1.png`, `_2.png`, `bc_storyboard_phone_v1..v3.png`, `bc_storyboard_silent_v1..v3.mp4` | storyboard | 64 panels. v3 is the first bubble pass (one speaker to a panel, signs whole or absent, inserts for what must be read). The animation's board has since moved on (`src/bc_sb.py`); no v4 pages have been drawn |
 | `bc_set_sheet_v1..v4.png`, `bc_set_phone_v1..v4.png` | set | The interview room: the door, the notice, the BIAS MONITOR and its states; v3 hangs the signs higher to leave wall for bubbles, v4 adds the ficus, a dado and window light |
 | `bc_cast_sheet_v1..v3.png`, `bc_cast_phone_v1..v3.png`, `mom_bc_*`, `sofia_bc_*`, `pam_bc_*`, `bc_tech_sheet_v3.png` | cast | The small one and the nice macho (new), Mom, Sofía and Pam dressed for the interview, the robot's rulings |
 
 Built from `src/`: `bc_set.py` (set v4; `_v1`…`_v3` kept), `cand_bc.py`, `don_bc.py`, `mom_bc.py`, `sofia_bc.py`, `pam_bc.py`, `props_bc.py` (characters and props, earlier versions kept), `bc_sb.py` (the board: cameras, the `SAY` table of every bubble, `measure()`), `qa_bc.py` (the checks), `sound_bc.py` (the takes, kept in `src/bc_voices/`), `sound_bc_mix.py` (effects, the looping bed, the master), `bc_anim.py` (timing, lip-sync, actions, light, the render). `./uptimez/build.sh bc` checks and rebuilds the animation from the kept takes: no voice is re-recorded, but the Kokoro model files must be in `src/models` or `KOKORO_DIR`, because the older sound modules the mix borrows its effects from load them on import.
+
+### The Onboarding — [`the-onboarding/`](the-onboarding/)
+
+Episode 9. A garage owner with ten garages walks in to sign up, because he keeps losing the plan of his garages. Don promises "you will never lose anything again", takes the plan ("We'll take care of it.") and, with his eyes on Sofía, sets it in the shredder. Sofía falls for the Client ("Oh...", the pearl). Pam sees the shredder, raises a finger and lowers it. The robot celebrates the first customer by firing the strips from a confetti cannon, and stamps ONBOARDING COMPLETE on the glass. Pam scoops the strips off the floor: "Some shit, others scoop." His photograph now hangs in OUR FIRST CLIENT.
+
+| File | Version | Notes |
+|---|---|---|
+| `uptimez_ob_anim_v10.mp4` | **animation v10 (current)** | 540×960, 74.3 s, 51 shots, 21 lines; after two cold mute tests and the director's notes |
+| `the-onboarding-script-v10.md` | script (current) | Line by line with the shot list; v1–v9 kept |
+| `the-onboarding-concept-v1.md` … `v9.md` | concepts | The development |
+| `ob_storyboard_v1..v3.png` (+ `_mute`), `ob_chain_v1..v2.png` | storyboard | The reaction chain and the mute versions |
+| `ob_cast_v1..v6.png`, `ob_client_looks_v1..v3.png`, `ob_sofia_v1..v3.png`, `ob_set_v1..v5.png` (+ phone checks) | sheets | The Client's looks, Sofía's pearls, the set |
+| `ob_animatic_v1..v2.mp4`, `ob_client_voices_v1.mp4`, `ob_sofia_oh_v1.mp4` | animatics, auditions | The Client's voice is B (`am_fenrir` −4 semitones); "Oh..." take A |
+| `storyline-proposal-act-b.md` | proposal | Act B around the blueprint; STORYLINE v3.2 decides |
+
+Built from `src/` (`*_ob`, `ob_anim.py`, `qa_ob*.py`); `./uptimez/build.sh ob`.
+
+### First Search — [`first-search/`](first-search/)
+
+Episode 10, **in development: concept only.** The Client comes back to the same room, under his own framed photograph: the bank needs his plan on Friday. Don sells him Premium, "Guaranteed by Friday"; the search returns 0 RESULTS; Sofía says the red looks bad, and Don has the zero turned green. "You said I'd never lose anything again." "We fixed the red." Pam, at the back, tapes his plan together and says nothing.
+
+| File | Notes |
+|---|---|
+| `first-search-concept-v6.md` | **Current.** Seven beats, nine lines, 42–44 s: opens on the red zero, the portrait falls on Don's head at 1.2 s, "It's the red. It looks bad.", the held shot of four looks, Mom's "Young man.", the near-shred |
+| `first-search-concept-v1..v5.md`, `first-search-premise-v1..v3.md` | Kept |
 
 ### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
 

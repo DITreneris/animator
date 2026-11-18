@@ -38,6 +38,7 @@ SCRIPT = {                                     # take -> the words as written
     "mom_F_donnie": "Donnie!",
     "mom_F_up": "Up. Time for work.",
 }
+ALIAS = {"vo1": "vo1p"}
 SAME = {"donny": "donnie", "danny": "donnie", "sophia": "sofia", "sofía": "sofia", "framed": "framed",
         "pan": "pam", "palm": "pam"}
 FAILS = []
@@ -121,6 +122,8 @@ def check_speech(path, T, shift=0.0):
     cues = {n: t0 for n, t0, g in T["cues"]}
     ok_all = True; rows = []
     for name, text in SCRIPT.items():
+        if name not in cues:                                     # v9c: the narration with its pause
+            lens[name] = lens[ALIAS[name]]; cues[name] = cues[ALIAS[name]]
         t0 = cues[name] + shift
         t1 = t0 + lens[name] + 0.45
         if name == "vo6":

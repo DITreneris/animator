@@ -1,0 +1,23 @@
+PASS  format     1080x1920 30/1 1290 frames (want 1290) tags ('bt709', 'bt709', 'bt709')
+PASS  loudness   -15.7 LUFS, true peak -2.6 dBTP
+PASS  speech     14/14 lines (1 borderline: 2 of 3 windows)
+    ok  vo1           3/3  97%  want "Monday. Somebody left Pam a heart. Unsigned."  heard "Monday somebody left Pamahart unsigned."
+    ok  vo_drink      3/3 100%  want "One drink."  heard "One drink. One..."
+    ok  vo_inf        3/3 100%  want "One informant."  heard "One drink, one informant, one..."
+    ok~ vo_boss       2/3 100%  want "One boss."  heard "One drink, one informant, one boss."
+    ok  don_sofia     3/3 100%  want "Sofia. Did you steal my heart?"  heard "Sophia, did you steal my heart?"
+    ok  sofia         3/3 100%  want "I sign my work... darling."  heard "I sign my work, darling."
+    ok  vo_partner    3/3 100%  want "My partner. Never blinks."  heard "My partner never blinks."
+    ok  robot         3/3 100%  want "Suspect identified."  heard "suspect identified."
+    ok  robot_you     3/3 100%  want "You."  heard "suspect identified. You are."
+    ok  pam           3/3 100%  want "You left me your heart."  heard "You left me your heart."
+    ok  don_framed    3/3 100%  want "I was framed!"  heard "I was framed."
+    ok  vo6           3/3  89%  want "Nobody tells me what to do. Whiskey. Money. Women."  heard "Nobody tells me what to do. Worski. Money. Women."
+    ok  mom_F_donnie  3/3 100%  want "Donnie!"  heard "Donny! Up!"
+    ok  mom_F_up      3/3 100%  want "Up. Time for work."  heard "Up time for work."
+PASS  frame 0    mean 0.18 (flash > 0.6), change to frame 2 0.016 (< 0.05), heart frame 0 (155, 412) last (155, 413) (<= 20 px at 270 wide)
+PASS  text       20 distinct boxes, 0 outside the safe area
+PASS  tails      116 bubble drawings; misses none
+INFO  grid       on_qa_grid.png: one frame every 2 s at 270 px (human legibility pass)
+
+G5 QA: PASS

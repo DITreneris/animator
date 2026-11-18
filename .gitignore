@@ -25,3 +25,9 @@ uptimez/**/*_1080.mp4
 uptimez/src/ob_anim_mix_v*.wav
 uptimez/src/ob_mix_v*.wav
 uptimez/src/ob_anim_beat3_v*.wav
+# 18 Nov polish: versioned mixes are rebuilt by their sound_*.py scripts
+uptimez/src/on_mix_v*.wav
+uptimez/src/mf_mix_v*.wav
+uptimez/src/tg_mix_v*.wav
+uptimez/src/bc_mix_v*.wav
+uptimez/src/bc_mix_master_v*.wav

@@ -309,6 +309,58 @@ def swish(d=0.45):
     return si.lp(rng.standard_normal(len(t)), 25) * np.sin(np.pi * t / d) ** 2 * 0.35
 
 
+def vo1_pause(split=1.79, gap=0.40, lift_db=2.5):
+    """v9c (18 Nov): "Monday. Somebody left Pam a heart." [0.4 s] "Unsigned." (2.5 dB up), from the kept vo1 take.
+    Writes vo1p.wav and its length in takes.json; vo1.wav is untouched (v8)."""
+    x = sf.read(f"{OUT}/vo1.wav")[0]; k = int(split * SR)
+    y = np.concatenate([x[:k], np.zeros(int(gap * SR)), x[k:] * 10 ** (lift_db / 20)])
+    sf.write(f"{OUT}/vo1p.wav", y, SR)
+    tk = json.load(open(f"{OUT}/takes.json")); tk["vo1p"] = round(len(y) / SR, 4)
+    json.dump(tk, open(f"{OUT}/takes.json", "w"), indent=1)
+    return y
+
+
+def rain_in(d=0.95):
+    """v9d: the rain fades back in as the bedroom turns into the office, so the loop point is seamless."""
+    r = rain(d) * 0.6
+    return r * np.linspace(0, 1, len(r)) ** 1.5
+
+
+def thunder_soft():
+    """v9b: the crack at full strength, then the rumble pulled down 20 dB before the first line, so the voice is
+    clear and the bus never saturates under it (v8's thunder ran 12 dB over the line for 3.4 s)."""
+    th = thunder()
+    t = np.arange(len(th)) / SR
+    env = np.where(t < 0.08, 1.0, np.maximum(0.1, 1.0 - (t - 0.08) / 0.06 * 0.9))
+    return th * env
+
+
+def hiss(d=0.55):
+    """v9: the cat. A band of noise, fast attack, a growl underneath."""
+    t = tt(d)
+    n = rng.standard_normal(len(t))
+    band = si.lp(n, 3) - si.lp(n, 9)
+    env = np.minimum(t / 0.02, 1) * np.exp(-np.maximum(t - 0.12, 0) / 0.18)
+    growl = np.sin(2 * np.pi * 95 * t + 0.6 * np.sin(2 * np.pi * 23 * t)) * 0.25
+    return (band * 1.6 + growl * np.exp(-t / 0.2)) * env * 0.5
+
+
+def paws():
+    """v9: four soft pads on the monitor."""
+    out = np.zeros(int(0.42 * SR))
+    for i, t0 in enumerate((0.0, 0.1, 0.22, 0.31)):
+        t = tt(0.05)
+        x = np.sin(2 * np.pi * 180 * t) * np.exp(-t / 0.012) * 0.25
+        a = int(t0 * SR); out[a:a + len(x)] += x
+    return out
+
+
+def thump():
+    """v9: the cat lands off screen."""
+    t = tt(0.18)
+    return np.sin(2 * np.pi * (90 - 120 * t) * t) * np.exp(-t / 0.04) * 0.5
+
+
 def chirp():
     t = tt(0.09)
     return np.sin(2 * np.pi * np.cumsum(3000 + 1500 * t / 0.09) / SR) * np.sin(np.pi * t / 0.09) * 0.05
@@ -331,7 +383,9 @@ def mix(T, mom, out="on_mix.wav", music=True):
         if name.startswith("sfx:"):
             fx = {"thunder": thunder, "sting": sting, "flask": lambda: metal_click(2800), "gun": gun_click,
                   "shutter": shutter, "snag": snag, "pop": pop, "dry": lambda: metal_click(4800, 0.03),
-                  "swish": swish, "chirp": chirp, "sting_low": lambda: sting(82.4)}[name[4:]]()
+                  "swish": swish, "chirp": chirp, "sting_low": lambda: sting(82.4),
+                  "hiss": hiss, "paws": paws, "thump": thump,
+                  "thunder_soft": thunder_soft, "rain_in": rain_in}[name[4:]]()
             si.add(buf, fx, t0, gain)
             continue
         a = load(name)
