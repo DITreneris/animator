@@ -1,0 +1,99 @@
+{
+ "kind": "A2",
+ "total": 27.25,
+ "shots": [
+  {
+   "shot": "1.1",
+   "start": 0.0,
+   "len": 2.0,
+   "line": {
+    "who": "N",
+    "text": "New Year's Eve.",
+    "t0": 0.25,
+    "t1": 1.362
+   }
+  },
+  {
+   "shot": "1.2",
+   "start": 2.0,
+   "len": 2.0
+  },
+  {
+   "shot": "2.1",
+   "start": 4.0,
+   "len": 2.8333,
+   "line": {
+    "who": "N",
+    "text": "A woman like me doesn't walk alone.",
+    "t0": 4.25,
+    "t1": 6.376
+   }
+  },
+  {
+   "shot": "2.2",
+   "start": 6.8333,
+   "len": 1.0
+  },
+  {
+   "shot": "2.3",
+   "start": 7.8333,
+   "len": 1.0
+  },
+  {
+   "shot": "2.4",
+   "start": 8.8333,
+   "len": 1.5
+  },
+  {
+   "shot": "2.5",
+   "start": 10.3333,
+   "len": 1.0
+  },
+  {
+   "shot": "2.6",
+   "start": 11.3333,
+   "len": 3.6667,
+   "line": {
+    "who": "N",
+    "text": "I don't run. I give them something to chase.",
+    "t0": 11.583,
+    "t1": 14.555
+   }
+  },
+  {
+   "shot": "3.1",
+   "start": 15.0,
+   "len": 1.75
+  },
+  {
+   "shot": "3.2",
+   "start": 16.75,
+   "len": 2.25
+  },
+  {
+   "shot": "3.3",
+   "start": 19.0,
+   "len": 1.25
+  },
+  {
+   "shot": "3.4",
+   "start": 20.25,
+   "len": 2.75
+  },
+  {
+   "shot": "4.1a",
+   "start": 23.0,
+   "len": 1.5
+  },
+  {
+   "shot": "4.1b",
+   "start": 24.5,
+   "len": 1.25
+  },
+  {
+   "shot": "4.2",
+   "start": 25.75,
+   "len": 1.5
+  }
+ ]
+}

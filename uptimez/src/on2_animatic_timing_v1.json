@@ -1,0 +1,417 @@
+[
+ {
+  "n": 1,
+  "shot": "1.1",
+  "start": 0.0,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": [
+   {
+    "who": "N",
+    "caption": "New Year's Eve.",
+    "take": "n1",
+    "at": 0.25,
+    "len": 0.943
+   }
+  ]
+ },
+ {
+  "n": 2,
+  "shot": "1.2",
+  "start": 2.0,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 3,
+  "shot": "2.1",
+  "start": 4.0,
+  "len": 2.5833,
+  "planned": 1.5,
+  "cues": [
+   {
+    "who": "N",
+    "caption": "A woman like me doesn't walk alone.",
+    "take": "n2",
+    "at": 0.25,
+    "len": 1.85
+   }
+  ]
+ },
+ {
+  "n": 4,
+  "shot": "2.2",
+  "start": 6.5833,
+  "len": 1.0,
+  "planned": 1.0,
+  "cues": []
+ },
+ {
+  "n": 5,
+  "shot": "2.3",
+  "start": 7.5833,
+  "len": 1.0,
+  "planned": 1.0,
+  "cues": []
+ },
+ {
+  "n": 6,
+  "shot": "2.4",
+  "start": 8.5833,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 7,
+  "shot": "2.5",
+  "start": 10.0833,
+  "len": 1.0,
+  "planned": 1.0,
+  "cues": []
+ },
+ {
+  "n": 8,
+  "shot": "2.6",
+  "start": 11.0833,
+  "len": 3.5,
+  "planned": 2.0,
+  "cues": [
+   {
+    "who": "N",
+    "caption": "I don't run. I give them something to chase.",
+    "take": "n3",
+    "at": 0.25,
+    "len": 2.778
+   }
+  ]
+ },
+ {
+  "n": 9,
+  "shot": "3.1",
+  "start": 14.5833,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 10,
+  "shot": "3.2",
+  "start": 16.0833,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 11,
+  "shot": "3.3",
+  "start": 17.5833,
+  "len": 1.0,
+  "planned": 1.0,
+  "cues": []
+ },
+ {
+  "n": 12,
+  "shot": "3.4",
+  "start": 18.5833,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 13,
+  "shot": "4.1",
+  "start": 20.5833,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 14,
+  "shot": "4.1",
+  "start": 22.0833,
+  "len": 1.0,
+  "planned": 1.0,
+  "cues": []
+ },
+ {
+  "n": 15,
+  "shot": "4.2",
+  "start": 23.0833,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 16,
+  "shot": "5.1",
+  "start": 24.5833,
+  "len": 2.5,
+  "planned": 2.5,
+  "cues": []
+ },
+ {
+  "n": 17,
+  "shot": "5.2",
+  "start": 27.0833,
+  "len": 2.5,
+  "planned": 2.5,
+  "cues": []
+ },
+ {
+  "n": 18,
+  "shot": "5.3",
+  "start": 29.5833,
+  "len": 2.5,
+  "planned": 2.5,
+  "cues": [
+   {
+    "who": "SOF\u00cdA",
+    "caption": "The usual.",
+    "take": "s1",
+    "at": 0.25,
+    "len": 0.668
+   }
+  ]
+ },
+ {
+  "n": 19,
+  "shot": "5.4",
+  "start": 32.0833,
+  "len": 3.25,
+  "planned": 2.5,
+  "cues": [
+   {
+    "who": "N",
+    "caption": "He sent a note. They always send a note.",
+    "take": "n4",
+    "at": 0.25,
+    "len": 2.503
+   }
+  ]
+ },
+ {
+  "n": 20,
+  "shot": "5.5",
+  "start": 35.3333,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 21,
+  "shot": "5.6",
+  "start": 37.3333,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 22,
+  "shot": "5.7",
+  "start": 39.3333,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 23,
+  "shot": "5.8",
+  "start": 41.3333,
+  "len": 1.0,
+  "planned": 1.0,
+  "cues": []
+ },
+ {
+  "n": 24,
+  "shot": "5.9",
+  "start": 42.3333,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 25,
+  "shot": "5.10",
+  "start": 44.3333,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 26,
+  "shot": "6.1",
+  "start": 46.3333,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 27,
+  "shot": "6.2",
+  "start": 48.3333,
+  "len": 3.9167,
+  "planned": 2.5,
+  "cues": [
+   {
+    "who": "N",
+    "caption": "Everybody had lost it. I found it in one drawer.",
+    "take": "n5",
+    "at": 0.25,
+    "len": 3.206
+   }
+  ]
+ },
+ {
+  "n": 28,
+  "shot": "6.3",
+  "start": 52.25,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 29,
+  "shot": "6.4",
+  "start": 53.75,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 30,
+  "shot": "6.5",
+  "start": 55.75,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 31,
+  "shot": "6.6",
+  "start": 57.25,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 32,
+  "shot": "6.7",
+  "start": 58.75,
+  "len": 1.0,
+  "planned": 1.0,
+  "cues": []
+ },
+ {
+  "n": 33,
+  "shot": "6.7",
+  "start": 59.75,
+  "len": 1.0,
+  "planned": 1.0,
+  "cues": []
+ },
+ {
+  "n": 34,
+  "shot": "7.1",
+  "start": 60.75,
+  "len": 2.5,
+  "planned": 2.5,
+  "cues": []
+ },
+ {
+  "n": 35,
+  "shot": "7.2",
+  "start": 63.25,
+  "len": 4.0,
+  "planned": 4.0,
+  "cues": [
+   {
+    "who": "MOM",
+    "caption": "You! Not near Donnie's desk!",
+    "take": "m1",
+    "at": 0.25,
+    "len": 1.886
+   },
+   {
+    "who": "THE SHADOW",
+    "caption": "I only want my\u2014",
+    "take": "c1",
+    "at": 2.286,
+    "len": 0.983
+   }
+  ]
+ },
+ {
+  "n": 36,
+  "shot": "7.3",
+  "start": 67.25,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 37,
+  "shot": "8.1",
+  "start": 68.75,
+  "len": 2.1667,
+  "planned": 2.0,
+  "cues": [
+   {
+    "who": "MOM",
+    "caption": "Happy New Year, dear.",
+    "take": "m2",
+    "at": 0.25,
+    "len": 1.494
+   }
+  ]
+ },
+ {
+  "n": 38,
+  "shot": "8.2",
+  "start": 70.9167,
+  "len": 1.5,
+  "planned": 1.5,
+  "cues": []
+ },
+ {
+  "n": 39,
+  "shot": "8.3",
+  "start": 72.4167,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 40,
+  "shot": "8.4",
+  "start": 74.4167,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ },
+ {
+  "n": 41,
+  "shot": "8.5",
+  "start": 76.4167,
+  "len": 2.3333,
+  "planned": 2.0,
+  "cues": [
+   {
+    "who": "PAM",
+    "caption": "Some dream. Others sweep.",
+    "take": "p1",
+    "at": 0.25,
+    "len": 1.582
+   }
+  ]
+ },
+ {
+  "n": 42,
+  "shot": "8.6",
+  "start": 78.75,
+  "len": 2.0,
+  "planned": 2.0,
+  "cues": []
+ }
+]
