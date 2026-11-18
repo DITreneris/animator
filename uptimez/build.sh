@@ -351,26 +351,28 @@ build_ss() {
 }
 
 build_xmas_final() {
-  # Happy Compliance, the final (v7): xmas_anim7.py over v6/v5/v4/v3 (each kept) over v2 (xmas_anim2.py). Sound: v2's mix
+  # Happy Compliance, the final (v8): xmas_anim8.py over v7/v6/v5/v4/v3 (each kept) over v2 (xmas_anim2.py). Sound: v2's mix
   # (sound_xmas.py mix -> xmas_mix_v1.wav), 0.8 s later, with the cold open's and the ending's effects
-  # (sound_xmas7.py -> xmas_mix_v7.wav, with a 0.9 s beat cut in after v2's 26.9 s). -t, not -shortest: the last frame is the loop's join.
+  # (sound_xmas8.py -> xmas_mix_v8.wav: v2's mix rebuilt without its off-screen THUD, with new beats cut in; BT.709 encoded through scale). -t, not -shortest: the last frame is the loop's join.
   local out=${OUT_DIR:-$HERE/happy-compliance}; mkdir -p "$out"
   ( cd src
     python3 sound_xmas.py mix
     python3 xmas_visemes.py
-    python3 sound_xmas7.py
-    local dur; dur=$(python3 -c "import xmas_anim7 as M; print(M.DURATION)")
+    python3 sound_xmas8.py
+    local dur; dur=$(python3 -c "import xmas_anim8 as M; print(M.DURATION)")
     for res in 540 1080; do
-      local eng=engine_v.py size=540x960 name=uptimez_xmas_anim_v7.mp4
-      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_xmas_anim_v7_1080.mp4
-      python3 $eng xmas_anim7 | ffmpeg -y -v error \
-        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i xmas_mix_v7.wav \
-        -af "volume=0.9dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
-        -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+      local eng=engine_v.py size=540x960 name=uptimez_xmas_anim_v8.mp4
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_xmas_anim_v8_1080.mp4
+      python3 $eng xmas_anim8 | ffmpeg -y -v error \
+        -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i xmas_mix_v8.wav \
+        -af "volume=1.3dB,alimiter=limit=0.5:attack=1:release=40:level=false" \
+        -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
+        -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
+        -c:v libx264 -preset veryfast -crf 18 \
         -c:a aac -b:a 192k -ar 48000 -t "$dur" -movflags +faststart "$out/$name.tmp.mp4"
       mv "$out/$name.tmp.mp4" "$out/$name"
     done )
-  echo "Wrote $out/uptimez_xmas_anim_v7.mp4 and _1080.mp4"
+  echo "Wrote $out/uptimez_xmas_anim_v8.mp4 and _1080.mp4"
 }
 
 case "${1:-}" in

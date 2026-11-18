@@ -601,3 +601,5 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 - **Spinning props keep their words upright.** A CENSORED bar that tumbled with its bauble read as a mistake.
 - **A fall has to be drawn falling.** Feet in the air under a tree read as "pretzels on the floor"; the hit, the plank tipping over and the body landing flat, in two shots, read at once. It needed 0.9 s cut in after a line, not squeezed into the 0.2 s left before the cut.
 - **Tails must not cross what sits on a bubble.** An emoji at the box's end where the tail leaves gets struck through; badges go on the outer corner and tails stay short.
+- **Never rescale one character to fit a shot.** Shrinking Don to 0.62 so he could lie in a close robot shot made the robot a giant; widen the camera instead, and keep every character at the film's own scale.
+- **Tag and convert the same matrix.** Piping RGB into yuv420p without `scale=out_color_matrix=bt709` encodes BT.601 while tagging BT.709: the colours come out flat. Every build line converts explicitly.
