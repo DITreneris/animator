@@ -102,6 +102,22 @@ def s_rose(c, f, r):  # the rose, with Hoody in the shot: he watches it work
 
 def s_take(c, f, r): R.s11(c, f, min(r, 29))                          # she takes its hand -> ITS DATE (the top-down half is cut)
 
+def pluck_hand(c, tip):
+    """His whole hand, not a floating finger: the hoodie sleeve comes in from the bottom-right corner of the frame,
+    a palm with three curled fingers and the thumb, and the index finger out to the string."""
+    wx, wy = tip[0] + 125, tip[1] + 200                                # the wrist, down and right of the fingertip (a short finger)
+    limb(c, [(1260, 2160), (1040, 1800), (wx + 30, wy + 40)], 170, NAVY)  # sleeve, from outside the frame
+    ell(c, wx + 30, wy + 40, 92, 70); fs(c, hx('2b3550'), 8)            # the cuff
+    a = math.atan2(tip[1] - wy, tip[0] - wx)
+    c.save(); c.translate(wx, wy); c.rotate(a)
+    d = math.hypot(tip[0] - wx, tip[1] - wy)
+    rr(c, 60, -26, d - 60 + 26, 52, 26); fs(c, K.SKIN, 7)               # the index finger, out to the tip
+    for i, (dx, dy) in enumerate(((70, 34), (52, 66), (30, 92))):        # three curled fingers under it
+        ell(c, dx, dy, 34, 26); fs(c, K.SKIN, 6)
+    ell(c, 10, 10, 96, 80); fs(c, K.SKIN, 8)                           # the palm
+    ell(c, 40, -60, 40, 26); fs(c, K.SKIN, 6)                          # the thumb
+    c.restore()
+
 def s_plonk(c, f, r):  # the insert, the string now snaps and curls back; then his deadpan face
     if r >= 12: R.s15(c, f, r); return
     g = cairo.LinearGradient(0, 0, 0, H); g.add_color_stop_rgb(0, *R.SKY0); g.add_color_stop_rgb(1, *R.SKY1); c.set_source(g); c.paint()
@@ -129,8 +145,8 @@ def s_plonk(c, f, r):  # the insert, the string now snaps and curls back; then h
         else: c.move_to(-900, yy); c.line_to(900, yy)
         c.set_source_rgb(*hx('f2f2f2')); c.set_line_width(7 if j < 3 else 5); c.stroke()
     c.restore()
-    fx_, fy_ = (600, 1050 - 26) if r < 4 else (700, 1250)
-    limb(c, [(820, 1500), (740, 1350), (fx_, fy_)], 90, K.SKIN); ell(c, fx_, fy_, 50, 44); fs(c, K.SKIN, 8)
+    tip = (600, 1024) if r < 4 else (lerp(600, 690, oe((r - 4) / 4)), lerp(1024, 1180, oe((r - 4) / 4)))   # recoils off the snapped string
+    pluck_hand(c, tip)
     if r >= 4: txt(c, 'plonk.', 540, 640, 110, NAVY, lw=0)
 
 def s_land(c, f, r):  # the fall, BOOM onto the bench, dizzy 0.5 s; then MY AI and Eva walk back to their frame-0 places
