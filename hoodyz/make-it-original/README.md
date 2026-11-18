@@ -4,6 +4,22 @@ In 1986 his drummer rejects Hoodyz's garage riff: "Play something we know." In 2
 
 Concept, locked decisions and the viewer test: the "Hoodyz Ep. 4 — Make It Original (concept)" doc in Claude Docs.
 
+## Status (18 Nov): v5.2, candidate master
+
+**`v52/make_it_original_v52.mp4`** (19.9 s, 598 frames) is v5.1 plus three changes:
+- The drummer has laid her sticks across the drum, so her wave reads as "stop", not as a flourish.
+- In 2026 his free hand turns MY AI's screen away while he waves its tune off.
+- The drummer's line is Tomas's 18 Nov take (`vo_rec/drum_takes_18nov.m4a`, take 3), sped up 1.2x to fit before the fast-forward and pitched down 0.75 semitone. At 1.0 semitone or more, the recognizer heard "play" as "place".
+
+`./v52/build.sh` rebuilds it; v5 and v4 are imported, not touched.
+
+**Checks:**
+- QA passes on every check, every line included: -14.0 LUFS, -1.9 dBTP.
+- Two cold viewers, no captions, both read all five beats.
+- Both read the reversal: "he has become the person who once rejected him"; "he passes on the rejection he once got".
+- Both would screenshot the flash cut from her wave to his.
+- Still unclear: whether MY AI or he picks the cat clip, and whether the opening stage is a fantasy before the garage cut (that one is intended).
+
 ## Status (18 Nov): v5.1
 
 **v5.1** (same file, `v5/make_it_original_v5.mp4`) adds the fixes from the v5 mute test:
