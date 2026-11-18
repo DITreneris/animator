@@ -1,4 +1,7 @@
-"""THE ONBOARDING: acting, v5 (acts_ob_v4.py = v4, kept): Don "tug_low" / "tug_low_down", the same fists on the front
+"""v7 (18 Nov): pam(hands=...) for her hands on the frame; TITLE: MY GARAGES over the plan. Both opt-in. acts_ob_v6.py is pinned.
+v6 (18 Nov): GARAGES, opt-in: the plan's bays drawn as garages (a gable roof, a roll-up door), no. 7 ringed in red;
+the strip in his palm is a slice of garage 7 (two cold viewers read the bays as a punch card). acts_ob_v5.py is pinned.
+THE ONBOARDING: acting, v5 (acts_ob_v4.py = v4, kept): Don "tug_low" / "tug_low_down", the same fists on the front
 edges of his vest, but below his name badge ("tug" covered half of DON); Pam "empty_low", her empty hands below her badge ("empty" covered
 PAM). Opt-in: every older act draws as before.
 v4 (acts_ob_v3.py = v3, kept), 17 Nov:
@@ -160,6 +163,27 @@ def _bays():
     return [(i + 1 + 5 * r, -52 + i * 21.25, (-35, 8)[r], 19, 26) for r in (0, 1) for i in range(5)]
 
 
+TITLE = [False]                                            # v7, opt-in: MY GARAGES over the plan
+GARAGES = [False]                                          # v6, opt-in: the bays drawn as garages (roof, roll-up door), no. 7 ringed
+
+
+def _garage(c, bx, by, bw, bh, up):
+    """One bay as a little garage: a gable roof over a roll-up door. up: the roof is at the top (row 1) or not."""
+    rh = bh * 0.32
+    if up:
+        top, base = by + rh, by + bh
+        c.move_to(bx, base); c.line_to(bx, top); c.line_to(bx + bw / 2, by); c.line_to(bx + bw, top); c.line_to(bx + bw, base)
+    else:
+        top, base = by, by + bh - rh
+        c.move_to(bx, top); c.line_to(bx, base); c.line_to(bx + bw / 2, by + bh); c.line_to(bx + bw, base); c.line_to(bx + bw, top)
+    c.stroke()
+    d0, d1 = (top + 3, base) if up else (top, base - 3)
+    c.rectangle(bx + 3, d0, bw - 6, d1 - d0); c.stroke()
+    for i in range(1, 4):                                                   # the door's slats
+        yy = d0 + (d1 - d0) * i / 4.0
+        c.move_to(bx + 3, yy); c.line_to(bx + bw - 3, yy); c.stroke()
+
+
 def plan_open(k, x, y, s=1.0, seed=60):
     """His drawing, open: the plan of his ten garages. Two rows of five numbered bays, each open to the yard between
     them, white on blue."""
@@ -168,6 +192,22 @@ def plan_open(k, x, y, s=1.0, seed=60):
     rect(k, -62, -42, 124, 84, BLUE, seed, lw=2.2)
     c.set_source_rgb(1, 1, 1); c.set_line_width(1.9); c.set_line_join(1)
     c.select_font_face("Inter", 0, 1); c.set_font_size(12.5)
+    if GARAGES[0]:
+        if TITLE[0]:                                                        # v7: what it is, in its title block
+            rect(k, -62, -60, 124, 20, BLUE, seed + 5, lw=2.2)
+            c.set_source_rgb(1, 1, 1); c.set_font_size(11.5); e = c.text_extents("MY GARAGES")
+            c.move_to(-e.x_advance / 2, -46); c.show_text("MY GARAGES")
+        c.set_line_width(1.5)
+        for n, bx, by, bw, bh in _bays():
+            c.set_source_rgb(1, 1, 1); _garage(c, bx, by, bw, bh, by < 0)
+            c.set_font_size(8.5); t = str(n); e = c.text_extents(t)
+            ny = by - 2.5 if by < 0 else by + bh + 9
+            c.move_to(bx + bw / 2 - e.x_advance / 2, ny); c.show_text(t)
+            if n == 7:                                                      # the one he keeps losing, ringed in red marker
+                c.set_source_rgb(0.90, 0.18, 0.20); c.set_line_width(2.4)
+                c.save(); c.translate(bx + bw / 2, by + bh / 2); c.scale(1.0, 1.25); c.arc(0, 0, 14, 0, 2 * math.pi); c.restore(); c.stroke()
+        c.restore()
+        return
     for n, bx, by, bw, bh in _bays():                                       # a bay is open to the yard
         if by < 0:
             c.move_to(bx, by + bh); c.line_to(bx, by); c.line_to(bx + bw, by); c.line_to(bx + bw, by + bh)
@@ -187,6 +227,17 @@ def plan_strip(k, x, y, s=1.0, n=7, ang=0.35, seed=66):
     rect(k, -13, -62, 26, 124, STRIP, seed, lw=2)
     c.save(); c.rectangle(-12, -61, 24, 122); c.clip()
     c.set_source_rgb(1, 1, 1); c.set_line_width(3.2)
+    if GARAGES[0]:                                                          # v6: a slice of garage no. 7: roof, slats, the red ring
+        c.move_to(-30, -20); c.line_to(-4, -44); c.line_to(22, -20); c.stroke()
+        for yy in (-12, 2, 16, 30):
+            c.move_to(-30, yy); c.line_to(22, yy); c.stroke()
+        c.set_source_rgb(0.90, 0.18, 0.20); c.set_line_width(4.5)
+        c.save(); c.scale(1.0, 1.25); c.arc(-4, 2, 38, 0, 2 * math.pi); c.restore(); c.stroke()
+        c.set_source_rgb(1, 1, 1)
+        c.select_font_face("Inter", 0, 1); c.set_font_size(34)
+        e = c.text_extents(str(n)); c.move_to(-e.x_advance / 2 - 3, 58); c.show_text(str(n))
+        c.restore(); c.restore()
+        return
     c.rectangle(-30, -34, 52, 72); c.stroke()                               # the bay, most of it on other strips
     c.select_font_face("Inter", 0, 1); c.set_font_size(40)
     e = c.text_extents(str(n)); c.move_to(-e.x_advance / 2 - 3, 16); c.show_text(str(n))
@@ -372,7 +423,8 @@ def HEAD_OF(x, floor, s, ox, oy, th):
     return (x + (ox - pm.HY * math.sin(th)) * s, floor + (oy + pm.HY * math.cos(th)) * s)
 
 
-def pam(k, x, feet, s=1.0, act="stand", look=None, floor=None, seed=40):
+def pam(k, x, feet, s=1.0, act="stand", look=None, floor=None, seed=40, hands=None):
+    """hands (v7, opt-in): ((lx, ly), (rx, ry)) in her own units from (x, feet), for her hands on a thing she carries."""
     if act in ("floor", "floor_up"):
         return pam_floor(k, x, feet, s, act == "floor_up", look, seed)
     H = kit.PEOPLE["PAM"]["h"]
@@ -389,6 +441,8 @@ def pam(k, x, feet, s=1.0, act="stand", look=None, floor=None, seed=40):
         "crouch": (_pose(H, left=(-70, sy + 84), right=(30, sy + 70)), (-0.7, 1.0)),   # on her way down to the strips
     }
     pose, lk = acts[act]
+    if hands:
+        pose = _pose(H, left=hands[0], right=hands[1])
     c = k.c
     drop = 106 * s if act == "kneel" else 46 * s if act == "crouch" else 0
     if act in ("kneel", "crouch"):

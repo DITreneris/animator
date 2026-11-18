@@ -18,7 +18,7 @@
 #        ./build.sh xmas2               Happy Compliance v2 (Pam v4, curved tails, no cropped signs): 540 + 1080, cover v2
 #        ./build.sh bc                  The Best Candidate, animation v3: timing + mix from the kept takes, the bubble
 #                                       checks on the board and on every drawing, then 540x960 and the 1080 master
-#        ./build.sh ob                  The Onboarding, animation v10: timing + mix (the office bossa) from the kept takes,
+#        ./build.sh ob                  The Onboarding, animation v17: timing + mix (sparse vibes) from the kept takes,
 #                                       the bubble, tail and badge checks, speech recognition on the final mix (needs
 #                                       sherpa-onnx and Whisper base.en, see src/qa_ob_speech.py), 540x960 and the 1080 master
 #        ./build.sh all             every episode
@@ -285,7 +285,7 @@ build_bc() {
 }
 
 build_ob() {
-  # The Onboarding, animation v10. The kept takes are in src/ob_voices/film_v10 (sound_ob.py records them with Kokoro;
+  # The Onboarding, animation v17. The kept takes are in src/ob_voices/film_v10 (sound_ob.py records them with Kokoro;
   # not needed to rebuild, though the model files must be present: the sound modules load them on import).
   # ob_anim.py qa: bubbles, tails beside the mouth and name badges on rendered pixels, with its self-test; a miss stops
   # the build before anything is rendered. ob_anim.py film: the mix at -14 LUFS and the 1080 master (not committed).
@@ -294,15 +294,15 @@ build_ob() {
   ( cd src
     python3 ob_anim.py timing >/dev/null
     python3 ob_anim.py qa
-    python3 ob_anim.py film "$out/uptimez_ob_anim_v10_1080.mp4"
+    python3 ob_anim.py film "$out/uptimez_ob_anim_v17_1080.mp4"
     python3 ob_anim.py render ob_anim_silent.tmp.mp4 540
     # no -shortest: with AAC it drops the last video frames, and the last frame is the loop's join
-    ffmpeg -y -v error -i ob_anim_silent.tmp.mp4 -i ob_anim_mix_v10.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k \
-      -movflags +faststart "$out/uptimez_ob_anim_v10.tmp.mp4"
-    mv "$out/uptimez_ob_anim_v10.tmp.mp4" "$out/uptimez_ob_anim_v10.mp4"
+    ffmpeg -y -v error -i ob_anim_silent.tmp.mp4 -i ob_anim_mix_v17.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k \
+      -movflags +faststart "$out/uptimez_ob_anim_v17.tmp.mp4"
+    mv "$out/uptimez_ob_anim_v17.tmp.mp4" "$out/uptimez_ob_anim_v17.mp4"
     rm -f ob_anim_silent.tmp.mp4
-    python3 qa_ob_speech.py "$out/uptimez_ob_anim_v10.mp4" ob_anim_timing_v10.json )
-  echo "Wrote $out/uptimez_ob_anim_v10.mp4 and _1080.mp4"
+    python3 qa_ob_speech.py "$out/uptimez_ob_anim_v17.mp4" ob_anim_timing_v17.json )
+  echo "Wrote $out/uptimez_ob_anim_v17.mp4 and _1080.mp4"
 }
 
 build_xmas2() {
