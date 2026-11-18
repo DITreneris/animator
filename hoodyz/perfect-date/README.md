@@ -7,6 +7,26 @@ Hoody asks his AI to help him impress Eva. MY AI shows him how (a rose: "Watch!"
 - `perfect_date.mp4`: the final (x264 crf 14 slow, AAC 256k, faststart)
 - `cover.png`: the gap wide with the title (`cover.py`)
 
+## v2 (18 Nov): the hook and the loop
+
+**`v2/perfect_date_v2.mp4`** (17.5 s, 526 frames). `bash v2/build.sh` rebuilds it; v1 is imported, not touched.
+
+**What changed:**
+- Frame 0 is the ask: on the bench, "HELP ME IMPRESS HER!" already on screen, MY AI leaning in, Eva right there.
+- The film ends in the same bench shot: he crashes down, dizzy and alone, held 0.8 s. The loop lands on him asking MY AI again, and the label resets ITS -> HIS.
+- Cut: the opening close-up, the park wide, the cat-and-dog cutaway and the top-down shot. Shortened: "Your turn!" and the float.
+- A real hand pump with PFF puffs, ITS DATE popped at twice the size and held 0.8 s, and the string snapping on PLONK.
+
+**Checks:**
+
+| Check | v1 | v2 |
+|---|---|---|
+| Premise readable | at 2.2 s | **at 0.0 s** (hook test: "I know the setup at tile 1") |
+| Still at 1 s? | "I'd swipe" | "Probably swipe": the opening barely moves for 1.5 s |
+| Loop | "more like a restart" | "reads as *he never learns*, a nice gag", but nothing bridges the cut |
+| Biggest laugh | HIS -> ITS DATE (~12 s) | HIS -> ITS DATE (~9 s) |
+| QA | pass | pass: -14.1 LUFS, -1.1 dBTP; "Your turn!" reads as "your time" in 2 of 3 recognition windows (the bubble carries it) |
+
 ## Build
 
 ```bash
