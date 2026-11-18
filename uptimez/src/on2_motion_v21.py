@@ -1,4 +1,4 @@
-"""v21, pinned: on2_motion_test_v21.mp4, from on2_board_v7, b5_v10, b68_v11 and noir2_cast_v17. on2_motion.py is current.
+"""v21, pinned: on2_motion_test_v21.mp4, from on2_board_v7, b5_v10, b68_v11 and noir2_cast_v18. on2_motion.py is current.
 v21 (18 Nov): from the second cold viewer's notes (Tomas chose): three reaction closes, Pam's sweep pays off, the end
 is a joke and not a lamp, and the narration is 30 px (two rows at most). Beats 06-08: on2_motion_b68 v11; sound:
 on2_sound.motion_mix13. on2_motion_v20.py is pinned.
@@ -25,7 +25,8 @@ import on2_sound as snd
 import on2_motion_b5_v10 as b5
 import on2_motion_b68_v11 as b68
 import engine_on as eng
-import noir2_cast_v17 as n
+import noir2_cast_v18 as n
+n.LOOK[0] = b.n.LOOK[0]                                  # the board sets the look on the current cast; the pin takes it
 n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut

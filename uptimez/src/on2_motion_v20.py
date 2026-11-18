@@ -1,4 +1,4 @@
-"""v20, pinned: on2_motion_test_v20.mp4, from on2_board_v7, b5_v10, b68_v10 and noir2_cast_v17. on2_motion.py is current.
+"""v20, pinned: on2_motion_test_v20.mp4, from on2_board_v7, b5_v10, b68_v10 and noir2_cast_v18. on2_motion.py is current.
 OFFICE NOIR 2: the motion test, v20. 18 Nov. on2_motion_v19.py to _v1.py are pinned.
 v20 is v19 with less New Year in the street (Tomas: "too many lights and HAPPY NEW YEAR"; he chose): the banner only
 in the first two shots (the cab, the gang war); lights in one window only, and over the bar's door; the clocks stay.
@@ -22,7 +22,8 @@ import on2_sound as snd
 import on2_motion_b5_v10 as b5
 import on2_motion_b68_v10 as b68
 import engine_on as eng
-import noir2_cast_v17 as n
+import noir2_cast_v18 as n
+n.LOOK[0] = b.n.LOOK[0]                                  # the board sets the look on the current cast; the pin takes it
 n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut

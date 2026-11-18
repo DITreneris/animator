@@ -1,4 +1,6 @@
-"""v24 (18 Nov): lip-sync from the takes, one drawing early (b5 v11, b68 v13); 4.1b, 5.1, 5.5 and 5.10 shorter (Tomas
+"""v24 + release (18 Nov): `python3 on2_motion.py A2 release` draws the same film at 1080x1920 (opt-in; the 540 test is
+unchanged). on2_motion_v24.py is pinned.
+v24 (18 Nov): lip-sync from the takes, one drawing early (b5 v11, b68 v13); 4.1b, 5.1, 5.5 and 5.10 shorter (Tomas
 chose). on2_motion_v23.py is pinned.
 v23 (18 Nov): Tomas: the banner in the first shot takes the eye from TAXI, and the shooting can't be heard. HAPPY NEW
 YEAR is gone from 1.1 and hangs over the alley's mouth in 1.2, above the gang war; the shots are louder and brighter,
@@ -936,12 +938,31 @@ def frame(row, tl, t):
     return sf_
 
 
-def main(kind="A2", folder="../office-noir-2"):
+class _Hi:
+    """Release: every 540x960 surface is made at 1080x1920 with a device scale of 2 (as on_film.py does), so lines,
+    text and the noir pass are native 1080, not an enlarged 540 picture."""
+    def __init__(self, orig):
+        self._orig = orig
+
+    def __call__(self, fmt, w, h):
+        if (w, h) == (W, H):
+            s = self._orig(fmt, 2 * W, 2 * H); s.set_device_scale(2, 2); return s
+        return self._orig(fmt, w, h)
+
+    def __getattr__(self, a):
+        return getattr(self._orig, a)
+
+
+def main(kind="A2", folder="../office-noir-2", hi=False):
+    """hi: the 1080 release, on2_film_<V>_1080.mp4 (not committed); otherwise the 540 motion test."""
+    if hi and not isinstance(cairo.ImageSurface, _Hi):
+        cairo.ImageSurface = _Hi(cairo.ImageSurface)
+    SW, SH = (2 * W, 2 * H) if hi else (W, H)
     rows, total = timing(kind)
     json.dump({"kind": kind, "total": total, "shots": rows}, open("on2_motion_timing_%s.json" % V, "w"), indent=1)
     tmp = "/tmp/on2/motion"; os.makedirs(tmp, exist_ok=True)
     nfr = int(round(total * FPS))
-    enc = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", "%dx%d" % (W, H), "-r", str(FPS),
+    enc = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", "%dx%d" % (SW, SH), "-r", str(FPS),
                             "-i", "-", "-c:v", "libx264", "-crf", "17", "-preset", "medium", "-pix_fmt", "yuv420p", "-colorspace", "bt709",
                             "-color_primaries", "bt709", "-color_trc", "bt709", tmp + "/video.part.mp4"], stdin=subprocess.PIPE)
     last, buf = None, None
@@ -956,7 +977,7 @@ def main(kind="A2", folder="../office-noir-2"):
     enc.stdin.close(); enc.wait()
     os.replace(tmp + "/video.part.mp4", tmp + "/video.mp4")
     wav, spans = snd.motion_mix15([(r["shot"], r["start"], r["len"]) for r in rows], total, kind, tmp + "/mix.wav")
-    out = "%s/on2_motion_test_%s.mp4" % (folder, V)
+    out = ("%s/on2_film_%s_1080.mp4" if hi else "%s/on2_motion_test_%s.mp4") % (folder, V)
     # one constant gain to about -14.5 LUFS, then the final file is measured
     r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", wav, "-af", "ebur128", "-f", "null", "-"], capture_output=True, text=True)
     cur = float([x for x in r.stderr.split("\n") if "I:" in x][-1].split("I:")[1].split("LUFS")[0])
@@ -969,5 +990,7 @@ def main(kind="A2", folder="../office-noir-2"):
 
 
 if __name__ == "__main__":
-    out, rows, total, nfr = main(sys.argv[1] if len(sys.argv) > 1 else "A2")
+    hi = "release" in sys.argv[1:]
+    args = [a for a in sys.argv[1:] if a != "release"]
+    out, rows, total, nfr = main(args[0] if args else "A2", hi=hi)
     print("wrote", out, "%.2f s" % total, nfr, "frames")

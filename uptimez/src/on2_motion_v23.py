@@ -1,4 +1,4 @@
-"""v23, pinned: on2_motion_test_v23.mp4, from on2_board_v7, b5_v10, b68_v12 and noir2_cast_v17. on2_motion.py is current.
+"""v23, pinned: on2_motion_test_v23.mp4, from on2_board_v7, b5_v10, b68_v12 and noir2_cast_v18. on2_motion.py is current.
 v23 (18 Nov): Tomas: the banner in the first shot takes the eye from TAXI, and the shooting can't be heard. HAPPY NEW
 YEAR is gone from 1.1 and hangs over the alley's mouth in 1.2, above the gang war; the shots are louder and brighter,
 with a slap off the walls (motion_mix15). on2_motion_v22.py is pinned.
@@ -31,7 +31,8 @@ import on2_sound as snd
 import on2_motion_b5_v10 as b5
 import on2_motion_b68_v12 as b68
 import engine_on as eng
-import noir2_cast_v17 as n
+import noir2_cast_v18 as n
+n.LOOK[0] = b.n.LOOK[0]                                  # the board sets the look on the current cast; the pin takes it
 n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut

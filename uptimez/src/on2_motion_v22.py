@@ -1,4 +1,4 @@
-"""v22, pinned: on2_motion_test_v22.mp4, from on2_board_v7, b5_v10, b68_v12 and noir2_cast_v17. on2_motion.py is current.
+"""v22, pinned: on2_motion_test_v22.mp4, from on2_board_v7, b5_v10, b68_v12 and noir2_cast_v18. on2_motion.py is current.
 v22 (18 Nov): the loop: the film ends in the window, on the first drawing of the taxi (Tomas chose: she falls asleep,
 into the window; rain and the taxi's brakes over the seam). Beats 06-08: b68 v12; sound: motion_mix14. on2_motion_v21.py
 is pinned.
@@ -28,7 +28,8 @@ import on2_sound as snd
 import on2_motion_b5_v10 as b5
 import on2_motion_b68_v12 as b68
 import engine_on as eng
-import noir2_cast_v17 as n
+import noir2_cast_v18 as n
+n.LOOK[0] = b.n.LOOK[0]                                  # the board sets the look on the current cast; the pin takes it
 n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
