@@ -40,6 +40,21 @@ _rescale('s10', [("hand = E.eva(c, 880, GY + 40, .9,", "hand = E.eva(c, 880, GY 
                  ("_, hd = hoody(c, 290, hgy,", "_, hd = hoody(c, 345, hgy,"),
                  ("notes(c, 290, hgy - 520,", "notes(c, 345, hgy - 520,")])
 _rescale('s11', [("rs = 1.3; rx = 330;", "rs = 1.02; rx = 330;")])                         # Eva .95
+# ---- v2.3 polish: everyone breathes (1-2 %), and the wind moves Eva a touch. The frame being drawn sets the phase.
+_F = [0]
+_hoody0, _myai0, _eva0 = R.hoody, A.myai, E.eva
+def _breathe(c, x, gy, k, rot=0.0):
+    c.translate(x, gy); c.rotate(rot); c.scale(1, 1 + k); c.translate(-x, -gy)
+def _hoody(c, x, gy, s, *a, **k):
+    c.save(); _breathe(c, x, gy, .012 * math.sin(_F[0] * .21)); out = _hoody0(c, x, gy, s, *a, **k); c.restore(); return out
+def _myai(c, x, gy, s, *a, **k):
+    c.save(); _breathe(c, x, gy, .015 * math.sin(_F[0] * .26 + 1.3)); out = _myai0(c, x, gy, s, *a, **k); c.restore(); return out
+def _eva(c, x, gy, s, *a, **k):
+    if k.get('hand_to') is not None: return _eva0(c, x, gy, s, *a, **k)          # holding a hand: keep the hands joined exactly
+    c.save(); _breathe(c, x, gy, .012 * math.sin(_F[0] * .19 + 2.1), rot=.012 * math.sin(_F[0] * .11)); out = _eva0(c, x, gy, s, *a, **k); c.restore(); return out
+R.hoody, A.myai, E.eva = _hoody, _myai, _eva
+hoody = _hoody
+
 ZOOM, ZC = 1.14, (560, 1400)                                          # the bench shot, framed the same at both ends
 
 def bench_shot(c, f):
@@ -99,12 +114,35 @@ def s_pump(c, f, r):  # MY AI on a floor pump: both mitts on the T-handle, it pu
         txt(c, 'PFF!', tip[0] - 250, tip[1] - 60, 130, NAVY, lw=10)
     if r >= 6: sparkles(c, tip[0], tip[1] + 20, r)
 
-def s_rose(c, f, r):  # the rose, with Hoody in the shot: he watches it work
+def s_watch(c, f, r):  # "Watch!": MY AI spins on the spot and bows to her, then the line
+    park(c, f, zoom=1.3, cy=1400)
+    E.eva(c, 870, 1700, .95, 'evacalm', sip=.2, blink=K.blinking(f, 7))
+    spin = abs(math.cos(math.pi * cl(r / 8))) if r < 8 else 1           # a turn: it narrows to its edge and back
+    bow = .28 * math.sin(math.pi * cl((r - 7) / 7)) if 7 <= r < 14 else 0
+    c.save(); c.translate(400, 1780); c.rotate(bow); c.scale(max(.12, spin), 1); c.translate(-400, -1780)
+    ai(c, 400, 1780, 1.08, eye='happy' if r < 14 else 'focus', arms=('down', 'wait' if r < 10 else 'down'), turn=.35, talk=talk(f, 'ai_watch'), f=f)
+    c.restore()
+    bubble(c, ['WATCH!'], r - 4, (400 + 14 * 1.08, 1780 - 420 * 1.08 - 10), cy=560, cx=440)
+
+def s_rose(c, f, r):  # the rose: Eva melts (a lean, three hearts); Hoody's thumbs-up, then it sinks as he gets it
     park(c, f, zoom=1.2, cy=1450)
-    hoody(c, 140, 1800, .9, expr='hopeful', gaze=20, f=f)
+    up = r < 14
+    hands, _ = hoody(c, 140, 1800, .9, expr='happy' if r < 12 else ('hopeful' if r < 18 else 'deadpan'), gaze=20,
+                     arms=('rest', 'up' if up else 'rest'), f=f)
+    if up and len(hands) > 1:                                          # the thumb on the raised fist
+        hx2, hy2 = hands[1]; ell(c, hx2, hy2, 38, 32); fs(c, K.SKIN, 6)
+        c.save(); c.translate(hx2 - 14, hy2 - 22); c.rotate(-.45); rr(c, -13, -52, 26, 56, 13); fs(c, K.SKIN, 5); c.restore()   # the thumb, tilted up off the fist
     k = oe((r - 2) / 8)
     ai(c, 470, 1760, .96, eye='focus', arms=('down', 'offer'), props=(None, A.rose), rot=-.12 * k, f=f)
-    E.eva(c, 850, 1760, .9, 'impressed' if r >= 8 else 'evacalm', sip=.1, blink=K.blinking(f, 7))
+    lean = -.07 * oe(cl((r - 8) / 6))                                   # she leans toward the rose
+    c.save(); c.translate(850, 1760); c.rotate(lean); c.translate(-850, -1760)
+    E.eva(c, 850, 1760, .9, 'impressed' if r < 8 else 'charmed', sip=.1, blink=K.blinking(f, 7))
+    c.restore()
+    for i in range(3):                                                  # hearts rise off her
+        t = (r - 9 - i * 5) / 16
+        if 0 <= t < 1:
+            c.save(); c.translate(820 + 50 * math.sin(t * 6 + i), 1010 - 300 * t); sc = 1.1 * (1 - t * .4); c.scale(sc, sc)
+            c.move_to(0, 18); c.curve_to(-30, -2, -18, -30, 0, -12); c.curve_to(18, -30, 30, -2, 0, 18); c.close_path(); fs(c, A.PINK, 5); c.restore()
 
 def s_take(c, f, r): R.s11(c, f, min(r, 29))                          # she takes its hand -> ITS DATE (the top-down half is cut)
 
@@ -124,17 +162,47 @@ def pluck_hand(c, tip):
     ell(c, 40, -60, 40, 26); fs(c, K.SKIN, 6)                          # the thumb
     c.restore()
 
-def guitar_arms(c):
+def guitar_arms(c, strum=0.0):
     """The close-ups in the sky (eyes open, the deadpan) drew a torso with the guitar floating in front of it: no arms.
     His arms, from the hoodie's shoulders: one hand on the strings, the other on the neck."""
     s = 2.4 * 1.1; cx, ny = 540, 1020 + 150 * 2.4
     shl, shr = (cx - 82 * s, ny + 20 * s), (cx + 82 * s, ny + 20 * s)
     body = (560, 1700); hs = (560 + 440 * 1.3 * math.cos(R.GROT), 1700 + 440 * 1.3 * math.sin(R.GROT))
-    strum = (body[0] - 20, body[1] + 10)
+    strum = (body[0] - 20, body[1] + 10 + strum)
     fret = (lerp(body[0], hs[0], .62), lerp(body[1], hs[1], .62) + 18)
     K.arm(c, [shl, (shl[0] - 30, shl[1] + 210), strum], 1.6)
     K.arm(c, [shr, (shr[0] + 70, shr[1] + 150), fret], 1.6)
-def s13_arms(c, f, r): R.s13(c, f, r); guitar_arms(c)
+def s_oh(c, f, r):  # eyes open, "oh": a take, not a face swap
+    R.sky(c, f, trees=False)
+    if r >= 6:                                                           # a gust: three wind lines behind him
+        for i in range(3):
+            u = cl((r - 6 - i * 2) / 10)
+            if 0 < u < 1:
+                y = 760 + i * 70; x0 = lerp(-200, 1100, u)
+                c.move_to(x0, y); c.curve_to(x0 + 100, y - 30, x0 + 200, y + 30, x0 + 300, y); c.set_source_rgba(1, 1, 1, .85); c.set_line_width(8); c.stroke()
+    sq = (-.04 * cl((r - 4) / 2)) if r < 6 else (.06 * math.exp(-(r - 6) * .35) * math.cos((r - 6) * .9))   # squash, then the stretch settles
+    c.save(); c.translate(540, 1900); c.scale(1 - sq * .5, 1 + sq); c.translate(-540, -1900)
+    K.hoodie(c, 540, 1020 + 150 * 2.4, 2.4 * 1.1)
+    K.guitar(c, 560, 1700, 1.3, rot=R.GROT)
+    hs = (560 + 440 * 1.3 * math.cos(R.GROT), 1700 + 440 * 1.3 * math.sin(R.GROT))
+    sh = 30 * math.sin(r * 1.7) * math.exp(-max(0, r - 6) * .25) if r >= 6 else 8 * math.sin(r * .5)   # the string shivers when he jolts
+    c.move_to(*hs); c.curve_to(hs[0] - 40 + sh, hs[1] - 400, hs[0] - 120 - sh, 600, hs[0] - 140, -10); c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
+    guitar_arms(c, strum=(0 if r >= 6 else 26 * math.sin(r * 1.6)))     # strumming until his eyes open, then frozen mid-stroke
+    rot = .05 * math.sin(r * .9) * math.exp(-max(0, r - 6) * .2) if r >= 6 else 0
+    K.hoodyz_head(c, 540, 1020 - 30 * max(0, sq) * 10, 2.4, era='young', expr='bliss' if r < 6 else 'shock', blink=False, gaze=0, rot=rot,
+                  op=.2 + .8 * talk(f, 'h_oh'))
+    c.restore()
+
+
+def s_cat(c, f, r):  # the cat covers her ears; on each echo of the plonk she flinches and squints the open eye
+    fl = any(0 <= r - t < 3 for t in (9, 18))
+    c.save()
+    if fl: c.translate(540, 1500); c.scale(1.03, .96); c.translate(-540, -1500)
+    R.s16(c, f, r)
+    if fl or any(0 <= r - t < 5 for t in (9, 18)):                     # the eyelid drops halfway
+        ex, ey = 540 + 30 * 3.2, 1180 - 4 * 3.2
+        c.save(); c.rectangle(ex - 45, ey - 60, 90, 62); c.clip(); ell(c, ex, ey, 40, 48); fs(c, R.TABBY, 5); c.restore()
+    c.restore()
 
 def s_plonk(c, f, r):  # the insert, the string now snaps and curls back; then his deadpan face
     if r >= 12: R.s15(c, f, r); guitar_arms(c); return
@@ -195,8 +263,8 @@ def s_land(c, f, r):  # the fall, BOOM onto the bench, dizzy 0.5 s; then MY AI a
                      ai_walk=q * .5 if moving else None, eva_walk=q * .55 if moving else None, bounce=not moving)
     c.restore()
 
-PLAN = [(s_ask, 36), (R.s5, 18), (s_rose, 27), (R.s7, 33), (R.s8, 24), (s_pump, 30), (R.s10, 52), (s_take, 30), (R.s12, 24),
-        (s13_arms, 30), (R.s14, 30), (s_plonk, 30), (R.s16, 27), (R.s17, 27), (R.s18, 24), (R.s19, 12), (s_land, 45)]
+PLAN = [(s_ask, 36), (s_watch, 18), (s_rose, 27), (R.s7, 33), (R.s8, 24), (s_pump, 30), (R.s10, 52), (s_take, 30), (R.s12, 24),
+        (s_oh, 30), (R.s14, 30), (s_plonk, 30), (s_cat, 27), (R.s17, 27), (R.s18, 24), (R.s19, 12), (s_land, 45)]
 SHOTS = []; _t = 0
 for fn, d in PLAN: SHOTS.append((fn, _t, _t + d)); _t += d
 NF = _t
@@ -214,7 +282,7 @@ def pulse(c, f):                                                      # twice th
     c.save(); c.translate(px - 120 * (k - 1), iy + 90 * (k - 1)); c.scale(k, k)
     rr(c, -w / 2, -44, w, 88, 44); fs(c, YEL, 7); txt(c, 'ITS DATE', 0, 0, 58, INK, lw=0); c.restore()
 R.pill, R.pulse = pill, pulse
-def draw(f): return R.draw(f)
+def draw(f): _F[0] = f; return R.draw(f)
 
 if __name__ == '__main__':
     if sys.argv[1:2] == ['frames']:
