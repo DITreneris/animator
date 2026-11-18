@@ -37,7 +37,19 @@ Hoody asks his AI to help him impress Eva. MY AI shows him how (a rose: "Watch!"
 
 QA passes: -14.4 LUFS, -3.6 dBTP. Both fresh testers still swipe at 1 s: the motion is too small in a wide shot. Both independently said to open on the result, the robot handing her the rose. The loop "half works": the dazed hold drags, and the robot and Eva pop in.
 
-**v2.2, the new master** (same file, 15.6 s, 469 frames): result first.
+**v2.3 (candidate, replaces v2.2):** back to the bench opening Tomas chose. The structure is v2.1's, now with a full-size composition pass on every shot.
+- **Frame 0:** MY AI stands on the path in front of the bench, fully in frame. The cat sits between Hoody and Eva, and Eva isn't cropped.
+- **Ending:** after the BOOM and 0.5 s dizzy, MY AI and Eva walk back to their exact frame-0 places in front of the bench. The last frame is frame 0 without the bubble.
+- **Rose shot:** Hoody, MY AI and Eva no longer overlap.
+- **Kept from v2.2:** him falling with speed lines, and the bigger PFF!.
+- **QA passes:** -14.4 LUFS, -3.8 dBTP, both lines recognized. 16.6 s, 499 frames.
+
+**Why v2.2 failed** (Tomas: "worse than earlier"):
+- I replaced the chosen bench opening on the advice of two cold-viewer agents.
+- I checked the new shots only as small thumbnails, which missed Hoody's head covering MY AI and the bench covering MY AI.
+- I merged before Tomas had watched it.
+
+**v2.2, superseded** (same file, 15.6 s, 469 frames): result first.
 - Frame 0 is a close-up: MY AI hands Eva the rose ("Watch!") and she melts into hearts, with Hoody's shocked face in the foreground.
 - At 0.5 s his "HELP ME IMPRESS HER!" pops.
 - The ending: dizzy for 0.4 s, then MY AI walks back in with a fresh rose and he turns, shocked, as the loop lands on frame 0.
