@@ -37,7 +37,29 @@ Hoody asks his AI to help him impress Eva. MY AI shows him how (a rose: "Watch!"
 
 QA passes: -14.4 LUFS, -3.6 dBTP. Both fresh testers still swipe at 1 s: the motion is too small in a wide shot. Both independently said to open on the result, the robot handing her the rose. The loop "half works": the dazed hold drags, and the robot and Eva pop in.
 
-**v2.2, the new master** (same file, 15.6 s, 469 frames): result first.
+**v2.3 (candidate, replaces v2.2):** back to the bench opening Tomas chose. The structure is v2.1's, now with a full-size composition pass on every shot.
+- **Frame 0:** MY AI stands on the path in front of the bench, fully in frame. The cat sits between Hoody and Eva, and Eva isn't cropped.
+- **Ending:** after the BOOM and 0.5 s dizzy, MY AI and Eva walk back to their exact frame-0 places in front of the bench. The last frame is frame 0 without the bubble.
+- **Rose shot:** Hoody, MY AI and Eva no longer overlap.
+- **One size rule:** Hoody and Eva are the same height, and MY AI is 0.6 of it in every shot. Only distance from the camera changes size, for everyone in that plane together.
+  In v1 every shot set its own sizes: MY AI ran from 0.52 to 0.93 of Eva's height, and Hoody was smaller than Eva in the rose shot.
+  The v1 shots are re-scaled from their own source in `render2.py` (`_rescale`).
+- **Animation polish** (measured motion between frames, before -> after):
+  - "Watch!": MY AI spins and bows before its line (0.78 -> 3.22).
+  - The rose: Eva leans and hearts rise; Hoody's thumbs-up sinks as he gets it (0.44 -> 1.30).
+  - "oh": a real take. A squash, then eyes pop with a stretch; the strumming hand freezes; a gust; the string shivers (0.20 -> 3.24).
+  - The cat: a flinch and a squint on each echo of the plonk (0.24 -> 1.07).
+  - Everyone breathes (1-2 %), and Eva sways in the wind.
+- **Anatomy and props:** his arms on the guitar in the sky close-ups, his whole hand (with the sleeve) on the pluck, MY AI's mitts on the pump handle, and MY AI in frame in the lift shot.
+- **Kept from v2.2:** him falling with speed lines, and the bigger PFF!.
+- **QA passes:** -14.4 LUFS, -3.8 dBTP, both lines recognized. 16.6 s, 499 frames.
+
+**Why v2.2 failed** (Tomas: "worse than earlier"):
+- I replaced the chosen bench opening on the advice of two cold-viewer agents.
+- I checked the new shots only as small thumbnails, which missed Hoody's head covering MY AI and the bench covering MY AI.
+- I merged before Tomas had watched it.
+
+**v2.2, superseded** (same file, 15.6 s, 469 frames): result first.
 - Frame 0 is a close-up: MY AI hands Eva the rose ("Watch!") and she melts into hearts, with Hoody's shocked face in the foreground.
 - At 0.5 s his "HELP ME IMPRESS HER!" pops.
 - The ending: dizzy for 0.4 s, then MY AI walks back in with a fresh rose and he turns, shocked, as the loop lands on frame 0.
