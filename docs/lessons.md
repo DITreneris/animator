@@ -593,3 +593,4 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 - **The payoff frame needs one thing to read.** A wide shot with eleven pieces of text hid the joke at phone size; a 2-second insert of just the two tags became both viewers' screenshot.
 - **Retime with the old clock.** Shifting a film by 0.3 s would have moved every lip shape, blink and breath off its line; passing the old film time to the drawing code kept them all in place while the shots moved.
 - **Check true peak after the encode, every time.** A 0.3 s shift moved a THUNK onto a different AAC frame and the same mix overshot to +0.4 dBTP; a 16 kHz low-pass and 256k brought it to −3.2.
+- **Frame 0 has one face.** A big, barely soft second face behind the hero's hand took the eye and confused whose hand it was; a warm, empty background made the hand, the tag and the kiss the subject.
