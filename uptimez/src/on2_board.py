@@ -1,4 +1,6 @@
-"""OFFICE NOIR 2: the storyboard, v7. Script v2 (17 Nov), noir2_cast with LOOK = 9. on2_board_v6.py to _v1.py are pinned.
+"""v9 (18 Nov): OFFICE_LIT, opt-in: the office readable at night (Tomas: "0:47 too dark, I can't see the office; the
+UptimeZ logo must be there"). on2_board_v8.py is pinned.
+OFFICE NOIR 2: the storyboard, v7. Script v2 (17 Nov), noir2_cast with LOOK = 9. on2_board_v6.py to _v1.py are pinned.
 v7 is v6 with frame 1.1 made simpler, as Tomas chose ("only the leg and the shoe; cut the squirming"): the knee, the
 gown and the shin come out of the dark doorway and the shoe is on the stones. No glove on the pillar, no leaning out.
 One film frame (540 x 960) per set-up; 4.1 and 6.7 are two frames each. The dream goes through engine_on's noir pass;
@@ -124,13 +126,22 @@ def bar_room(k, counter=None):
         cc.set_source_rgb(0.60, 0.56, 0.50); cc.rectangle(-20, counter, 600, 9); cc.fill()
 
 
+OFFICE_LIT = [False]                                       # v9, opt-in: the office readable at night: a lighter wall, brighter bars, the logo
+
+
 def office(k, lamp_on=False, desk=None, frame=True):
     """The UptimeZ office at night: light through the blinds, OUR FIRST CLIENT on the wall."""
     cc = k.c
-    cc.set_source_rgb(0.15, 0.15, 0.17); cc.paint()
+    lit = OFFICE_LIT[0]
+    cc.set_source_rgb(*((0.30, 0.30, 0.32) if lit else (0.15, 0.15, 0.17))); cc.paint()
+    if lit:                                                                                       # v9: whose office: the UptimeZ mark
+        import brand
+        brand.mark(cc, 344, 440, 120, zzz=False)
+        cc.select_font_face("Inter", 0, 1); cc.set_font_size(34); cc.set_source_rgb(0.92, 0.92, 0.92)
+        e = cc.text_extents("UptimeZ"); cc.move_to(404 - e.x_advance / 2, 604); cc.show_text("UptimeZ")
     cc.save(); cc.rotate(-0.10)
     for i in range(8):                                                                            # hard bars of light
-        cc.set_source_rgba(1, 1, 1, 0.15); cc.rectangle(-60, 110 + i * 46, 430, 20); cc.fill()
+        cc.set_source_rgba(1, 1, 1, 0.24 if lit else 0.15); cc.rectangle(-60, 110 + i * 46, 430 if not lit else 640, 20); cc.fill()
     cc.restore()
     if frame:
         photo(k, 420, 250, 1.25)

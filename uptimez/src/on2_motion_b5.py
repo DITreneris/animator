@@ -1,4 +1,8 @@
-"""v11 (18 Nov): lip-sync from the take, drawing by drawing, one drawing ahead of the sound; 5.1, 5.5 and 5.10 shorter
+"""v13 (18 Nov): with on2_motion's LOOK3, 5.1: smoke lit from behind the tables and black arms to the hands, so the hands
+read as people (Tomas: "0:28 too dark, the arms' silhouettes can't be seen"). on2_motion_b5_v12.py is pinned.
+v12 (18 Nov): with on2_motion's LOOK3: the pour earlier and longer, the coupe set down where her hair does not cover it.
+on2_motion_b5_v11.py is pinned.
+v11 (18 Nov): lip-sync from the take, drawing by drawing, one drawing ahead of the sound; 5.1, 5.5 and 5.10 shorter
 (each still ends after its last beat: the last hand, the caught look, the eyebrow). on2_motion_b5_v10.py is pinned.
 v10 (18 Nov): the stamp lands where it can be seen. on2_motion_b5_v9.py is pinned.
 v9 (18 Nov): the detective's back in 5.2 and 5.10. on2_motion_b5_v8.py is pinned.
@@ -80,6 +84,15 @@ def m5_1(k, tl, dur):
     n = m.n
     d = d12_(tl)
     room(k, m.lerp(1.14, 1.0, tl / dur))                                  # the camera backs away in front of her
+    if m.LOOK3[0]:                                                        # v13: smoke lit from behind the tables, so the arms
+        cc = k.c                                                          # read as black silhouettes against it
+        for sx in (0, m.W):
+            g = cairo.RadialGradient(sx, 760, 40, sx, 760, 380)
+            g.add_color_stop_rgba(0, 0.78, 0.78, 0.76, 0.85); g.add_color_stop_rgba(1, 0.78, 0.78, 0.76, 0.0)
+            cc.set_source(g); cc.rectangle(-20, 300, m.W + 40, 700); cc.fill()
+        for i, (px, py, pr) in enumerate(((40, 900, 46), (120, 940, 40), (430, 930, 44), (512, 890, 48))):   # the people at the tables
+            cc.set_source_rgb(*n.BLACK); cc.new_path(); cc.arc(px, py - pr * 1.6, pr * 0.62, 0, 2 * math.pi); cc.fill()
+            cc.rectangle(px - pr, py - pr, 2 * pr, 200); cc.fill()
     ph = d % 6
     swayed(k, 270, 1080, (1.0, 0.4, -0.4, -1.0, -0.4, 0.4)[ph],
            lambda: n.star(k, 270, 1080 + (0, -5, -2, 0, -5, -2)[ph], 2.4, "g_stand", "interested", (0.0, -0.2), wrap=False,
@@ -89,6 +102,9 @@ def m5_1(k, tl, dur):
         if e < 0:
             continue
         out = (1 - m.ease(e / 3.0)) * 190 - 4 * math.sin(e * 1.3)
+        if m.LOOK3[0]:                                                    # v13: the arm, from the dark at the edge of the frame
+            hx_, hy_ = x - flip * out, y + 3.2 * e
+            n._seg(k, -60 if flip > 0 else m.W + 60, hy_ + 120, hx_ - flip * 40, hy_ + 10, 46, 40, n.BLACK, 2.4)
         n.rich_hand(k, x - flip * out, y + 3.2 * e, 1.9, ang, what, flip=flip)
 
 
@@ -127,17 +143,19 @@ def m5_3(k, tl, dur):
     cc = k.c
     d = d12_(tl)
     room(k)
-    pour = 21 <= d < 27                                                   # v8: he polishes the glass; one eyebrow; he pours
-    act = ("polish", d * 0.9) if d < 16 else ("pour",) if pour else None
-    ob = n.bartender(k, 390, 700, 1.55, brow=d >= 16, look=(-0.8, 0.2) if not pour else (-0.5, 0.8), act=act, clean=True)
+    v12 = m.LOOK3[0]                                                      # v12: the pour earlier and longer, the coupe clear of her hair
+    pour = (15 <= d < 28) if v12 else (21 <= d < 27)                      # v8: he polishes the glass; one eyebrow; he pours
+    act = ("polish", d * 0.9) if d < (11 if v12 else 16) else ("pour",) if pour else None
+    ob = n.bartender(k, 390, 700, 1.55, brow=d >= (11 if v12 else 16), look=(-0.8, 0.2) if not pour else (-0.5, 0.8), act=act, clean=True)
     cc.set_source_rgb(0.24, 0.21, 0.18); cc.rectangle(-20, 640, 600, 340); cc.fill()
     cc.set_source_rgb(0.60, 0.56, 0.50); cc.rectangle(-20, 640, 600, 9); cc.fill()
-    if d >= 20:                                                           # a coupe, set down and filled
-        n.coupe(k, 306, 640 - (8 if d == 20 else 0), 2.0)
-    if pour and d >= 22:                                                  # from the bottle in his hand, a long way down
+    cx_ = 420 if v12 else 306
+    if d >= (14 if v12 else 20):                                          # a coupe, set down and filled
+        n.coupe(k, cx_, 640 - (8 if d == (14 if v12 else 20) else 0), 2.0)
+    if pour and d >= (16 if v12 else 22):                                 # from the bottle in his hand, a long way down
         mx, my = ob["mouth"]
-        cc.set_source_rgba(0.96, 0.93, 0.78, 0.9); cc.set_line_width(5); cc.set_line_cap(1)
-        cc.move_to(mx, my); cc.curve_to(mx - 16, my + 20, 314, 540, 310, 592); cc.stroke()
+        cc.set_source_rgba(0.96, 0.93, 0.78, 0.9); cc.set_line_width(5 if not v12 else 7); cc.set_line_cap(1)
+        cc.move_to(mx, my); cc.curve_to(mx - 16, my + 20, cx_ + 8, 540, cx_ + 4, 592); cc.stroke()
     sit = (-34, -10, 5, 0)[d] if d < 4 else 0                             # she sits as if she owned the room
     o = n.star(k, 130, 1060 + sit, 2.2, "g_down", "interested", (0.8, -0.1), wrap=False, bag=False,
                mouth=m.said("5.3", tl, "EUUCOEEM", lead=m.LEAD - 1 / 12.0))                         # v8: "The usual."
