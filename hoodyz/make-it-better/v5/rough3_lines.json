@@ -1,0 +1,62 @@
+[
+ {
+  "name": "h_first",
+  "start": 0.1,
+  "dur": 1.3903333333333334,
+  "text": "Actually, the first one was better."
+ },
+ {
+  "name": "h_more",
+  "start": 2.3000000000000003,
+  "dur": 0.7644897959183673,
+  "text": "More professional."
+ },
+ {
+  "name": "h_less",
+  "start": 2.97,
+  "dur": 0.8339909297052154,
+  "text": "Less professional."
+ },
+ {
+  "name": "h_best",
+  "start": 5.17,
+  "dur": 1.0244166666666668,
+  "text": "Best birthday ever!"
+ },
+ {
+  "name": "h_better",
+  "start": 6.97,
+  "dur": 0.576,
+  "text": "Better!"
+ },
+ {
+  "name": "e_tada",
+  "start": 9.17,
+  "dur": 0.8106666666666666,
+  "text": "Ta-da!"
+ },
+ {
+  "name": "h_mmm",
+  "start": 10.75,
+  "dur": 0.8106666666666666,
+  "text": "Mmm!"
+ },
+ {
+  "name": "h_ask",
+  "start": 12.200000000000001,
+  "dur": 0.9933333333333333,
+  "text": "Could you just make it better?"
+ },
+ {
+  "name": "h_energy",
+  "start": 19.65,
+  "dur": 1.536,
+  "text": "Love the energy! Make it better?"
+ },
+ {
+  "name": "h_bigger",
+  "start": 24.669999999999998,
+  "dur": 0.6613333333333333,
+  "text": "Bigger?"
+ }
+]
