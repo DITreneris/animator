@@ -1,4 +1,5 @@
-"""v15 (18 Nov): polish (Tomas chose, after the cold mute test of v14): mouths one drawing ahead of the sound, 3.1 two
+"""v18 (18 Nov): his watch held out to the side (5.4, 10.3), clear of the VISITOR badge. ob_anim_v17.py is pinned.
+v15 (18 Nov): polish (Tomas chose, after the cold mute test of v14): mouths one drawing ahead of the sound, 3.1 two
 more (measured on its take); bubble text 30 px; v16: Pam carries the frame in both hands (1.5), MY GARAGES over the plan,
 and the loop is in the wide shot (10.5); v17: 3.5 out, 3.12 and 4.1 tighter, 4.1 wider with Don sliding in between
 them, 9.1 pushes in on Pam, 10.4 pushes in on his photo and the stamp; the plan's bays are garages, no. 7 ringed, and the strip in his palm is a
@@ -116,7 +117,7 @@ import set_ob as st
 import hands_ob as hd
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v17"
+V = "v18"
 W, H, FPS = 540, 960, 30
 HERE = os.path.dirname(os.path.abspath(__file__))
 TK = json.load(open(os.path.join(HERE, "ob_voices", "film_v10", "takes.json")))
@@ -236,8 +237,11 @@ def code():
     if not ln:
         return None
     vis = TK[CUR["shot"]].get("vis") or []
-    i = int(round((CUR["t"] - ln["t0"]) * 12)) + LIP[0] + LIPSHIFT.get(CUR["shot"], 0)   # v15: a drawing ahead of the sound
-    return vis[i] if 0 <= i < len(vis) else ""
+    i0 = int(round((CUR["t"] - ln["t0"]) * 12))
+    i = i0 + LIP[0] + LIPSHIFT.get(CUR["shot"], 0)          # v15: a drawing ahead of the sound
+    if 0 <= i < len(vis):
+        return vis[i]
+    return vis[-1] if 0 <= i0 < len(vis) else ""            # v18: ahead to open, but not shut before the sound ends
 
 
 def speaking(pad=0.0):
@@ -918,7 +922,7 @@ def s3_1(k):
         ellipse(k, hx, hy, 9, 9, co.SKIN, 931, shadow=False, lw=1.6)
     c.restore(); c.restore()
     light(k)
-    speak(k, "A", 24, 262, at=(20, 348), side=1)
+    speak(k, "A", 24, 262, at=(20, 348), side=-1)                         # v18: the tail to the near cheek
 
 
 def s3_2(k):
@@ -1139,7 +1143,7 @@ def s5_1(k):
 def s5_4(k):
     """The watch. His terms."""
     wall(k); push(k, 0.03, (200, 430))
-    pose = co.POSES["open"][:2] + co._ik(1, 52, co.BT + 74)
+    pose = co.POSES["open"][:2] + co._ik(1, 92, co.BT + 46)
     up = after(lead() - 1 / 12.0)
     client(k, 140, 430, 2.3, pose, "confident", (0.8, 0.0) if up else (0.9, 2.2), shut=blink(g12(said() + 0.08)), mouth=code(),
            roll=False)
@@ -1483,7 +1487,7 @@ def s10_3(k):
         pose = co.POSES["open"][:2] + co._ik(1, 62, co.BT + 118)                # into his jacket pocket: clear of the sticker
         client(k, 236, 400, 1.7, pose, "warm", (0.8, -0.1), shut=blink(0.08), roll=False)
     else:
-        pose = co.POSES["open"][:2] + co._ik(1, 52, co.BT + 74)
+        pose = co.POSES["open"][:2] + co._ik(1, 92, co.BT + 46)
         client(k, 236, 400, 1.7, pose, "confident", (0.9, 2.2) if CUR["tl"] < 10 / 12.0 - 1e-6 else (-0.8, 0.0), roll=False)
     k.c.restore()
     falling(k, 3, 13); light(k)
