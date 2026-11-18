@@ -62,28 +62,35 @@ def s_ask(c, f, r):   # frame 0: on the bench, the ask already on screen; MY AI 
     c.restore()
     bubble(c, ['HELP ME', 'IMPRESS HER!'], 20, (600, 975), cy=560, cx=600)          # full size on frame 0
 
-def s_pump(c, f, r):  # MY AI, the proud stage tech, on a real hand pump: handle down, PFF, the balloon swells
-    park(c, f, zoom=1.4, cy=1500)
-    rs = 1.25; rx, gy = 330, 1830
-    p = max(0, math.sin((r - 6) * math.pi / 6)) if r >= 6 else 0      # one stroke every 12 frames
-    px, base = 560, 1900                                               # the pump: a cylinder on a foot plate, T-handle on a rod
-    rr(c, px - 110, base - 24, 220, 30, 12); fs(c, hx('3a4152'), 6)
-    rr(c, px - 46, base - 430, 92, 410, 30); fs(c, hx('ff8a3d'), 8)
-    rr(c, px - 46, base - 300, 92, 34, 10); c.set_source_rgba(1, 1, 1, .3); c.fill()
-    hy = base - 560 + 120 * p
-    c.rectangle(px - 9, hy, 18, base - 430 - hy); c.set_source_rgb(*hx('c9ced8')); c.fill()
-    rr(c, px - 150, hy - 26, 300, 52, 24); fs(c, INK, 6)
-    ai(c, rx + 40 * p, gy + 30 * p, rs, eye='happy', arms=('hold', 'hold'), tilt=18, f=f)
-    for q in (-1, 1): ell(c, px + q * 110, hy, 34, 30); fs(c, WHITE, 6)                     # its mitts on the handle
+def s_pump(c, f, r):  # MY AI on a floor pump: both mitts on the T-handle, it pushes down with its whole body; PFF, the balloon swells
+    park(c, f, zoom=1.2, cy=1450)
+    rs = 1.25; rx, gy = 380, 1580
+    p = max(0, math.sin((r - 6) * math.pi / 6)) if r >= 6 else 0      # one stroke every 12 frames: 0 = handle up, 1 = pushed down
+    dy = 40 * p                                                        # it sinks with the stroke, the hands take the handle down
+    GRIP = (94, -140)                                                  # both hands in front of its chest (the reachable pose closest to a pump grip)
+    hands = [A.hand_at(rx, gy + dy, rs, q, GRIP) for q in (-1, 1)]
+    hx_ = (hands[0][0] + hands[1][0]) / 2; hy_ = (hands[0][1] + hands[1][1]) / 2
+    base = gy + 70                                                     # the pump stands on the path right in front of it
+    top = hy_ - dy + 40 + 22                                           # the cylinder ends just below the handle's lowest point
+    c.save(); c.translate(rx, gy + dy); c.scale(1 + .05 * p, 1 - .08 * p); c.translate(-rx, -(gy + dy))
+    ai(c, rx, gy + dy, rs, eye='happy', arms=(GRIP, GRIP), f=f)
+    c.restore()
+    rr(c, hx_ - 120, base - 26, 240, 32, 12); fs(c, hx('3a4152'), 6)                       # foot plate
+    rr(c, hx_ - 62, top, 124, base - 20 - top, 30); fs(c, hx('ff8a3d'), 8)                # cylinder, in front of its legs
+    rr(c, hx_ - 62, top + 30, 124, 26, 10); c.set_source_rgba(1, 1, 1, .3); c.fill()
+    c.rectangle(hx_ - 9, hy_, 18, top - hy_); c.set_source_rgb(*hx('c9ced8')); c.fill()     # the rod, from the cylinder up to the handle
+    half = abs(hands[1][0] - hands[0][0]) / 2 + 50
+    rr(c, hx_ - half, hy_ - 24, 2 * half, 48, 24); fs(c, INK, 6)                           # the T-handle, exactly where its hands are
+    for hx2, hy2 in hands: ell(c, hx2, hy2, 36, 32); fs(c, WHITE, 6)                       # its mitts gripping the handle
     k = cl((r - 6) / 18); bk = 1.4 + 1.2 * k + .06 * math.sin(r * 1.4) * k
-    tip = (830, 1000)
-    c.move_to(px + 46, base - 60); c.curve_to(px + 200, base - 20, tip[0] + 40, tip[1] + 420, tip[0], tip[1] + 30)   # the hose, pump to balloon
+    tip = (840, 860)
+    c.move_to(hx_ + 44, base - 60); c.curve_to(hx_ + 220, base - 10, tip[0] + 40, tip[1] + 420, tip[0], tip[1] + 30)   # the hose, pump to balloon
     c.set_source_rgb(*INK); c.set_line_width(30); c.stroke_preserve(); c.set_source_rgb(*hx('ff8a3d')); c.set_line_width(18); c.stroke()
-    string(c, tip, (930, 1960)); heart(c, *tip, bk)
+    string(c, tip, (hx_ + 30, base - 30)); heart(c, *tip, bk)            # tied to the pump's foot
     if p > .3:
         for i in range(4):
             a_ = -.5 + i * .8; ell(c, tip[0] + math.cos(a_) * 70 * p, tip[1] + 40 + math.sin(a_) * 40 * p, 16 * p, 16 * p); c.set_source_rgba(1, 1, 1, .9); c.fill()
-        txt(c, 'PFF!', tip[0] - 60, tip[1] + 330, 130, NAVY, lw=10)
+        txt(c, 'PFF!', tip[0] - 250, tip[1] - 60, 130, NAVY, lw=10)
     if r >= 6: sparkles(c, tip[0], tip[1] + 20, r)
 
 def s_rose(c, f, r):  # the rose, with Hoody in the shot: he watches it work
