@@ -37,6 +37,22 @@ Hoody asks his AI to help him impress Eva. MY AI shows him how (a rose: "Watch!"
 
 QA passes: -14.4 LUFS, -3.6 dBTP. Both fresh testers still swipe at 1 s: the motion is too small in a wide shot. Both independently said to open on the result, the robot handing her the rose. The loop "half works": the dazed hold drags, and the robot and Eva pop in.
 
+**v2.2, the new master** (same file, 15.6 s, 469 frames): result first.
+- Frame 0 is a close-up: MY AI hands Eva the rose ("Watch!") and she melts into hearts, with Hoody's shocked face in the foreground.
+- At 0.5 s his "HELP ME IMPRESS HER!" pops.
+- The ending: dizzy for 0.4 s, then MY AI walks back in with a fresh rose and he turns, shocked, as the loop lands on frame 0.
+- The fall is now him with speed lines, and PFF! is bigger.
+
+**Checks:**
+- QA passes: -14.3 LUFS, -3.2 dBTP, "Watch!" and "Your turn!" both recognized.
+- Hook test: **keeps watching at 1 s** ("yes, just barely: the hearts for the robot are a hook"); the first pass that met the bar.
+- It would still drop at 2 s: 1.0-1.9 s is near-still while the whisper plays.
+- Loop: "almost reads as *here we go again*", but the jump from the bench to the close-up still feels like a restart.
+
+**Next if revisited:**
+- Cut the still second, so "Your turn!" comes at 1.2 s.
+- Make the last bench frame mirror the opening framing, so the loop reads as a continuation rather than a restart.
+
 ## Build
 
 ```bash

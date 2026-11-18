@@ -1,4 +1,8 @@
-"""Perfect Date v2.1: the hook and the loop.
+"""Perfect Date v2.2: result first.
+v2.2: frame 0 is a close-up of MY AI handing Eva the rose ("Watch!"), her melting, Hoody's shocked face in the
+foreground; at 0.5 s his "HELP ME IMPRESS HER!" pops. The ending bridges into it: dizzy 0.4 s, then MY AI walks back
+in with a fresh rose and he turns, shocked, to watch it. The falling streak is now him with speed lines; PFF! is bigger.
+v2.1:
 v2.1: motion in the first second (MY AI bounces and rubs its mitts, he fidgets), the ask 1.2 s, the rose by ~2 s with
 Hoody in the shot, a head-shake bridge into the loop, the pink close-up and the rose trimmed.
 v2: Built on render.py (imported, not touched).
@@ -58,7 +62,7 @@ def s_pump(c, f, r):  # MY AI, the proud stage tech, on a real hand pump: handle
     if p > .3:
         for i in range(4):
             a_ = -.5 + i * .8; ell(c, tip[0] + math.cos(a_) * 70 * p, tip[1] + 40 + math.sin(a_) * 40 * p, 16 * p, 16 * p); c.set_source_rgba(1, 1, 1, .9); c.fill()
-        txt(c, 'PFF!', tip[0] - 40, tip[1] + 330, 76, NAVY, lw=0)
+        txt(c, 'PFF!', tip[0] - 60, tip[1] + 330, 130, NAVY, lw=10)
     if r >= 6: sparkles(c, tip[0], tip[1] + 20, r)
 
 def s_rose(c, f, r):  # the rose, with Hoody in the shot: he watches it work
@@ -67,6 +71,22 @@ def s_rose(c, f, r):  # the rose, with Hoody in the shot: he watches it work
     k = oe((r - 2) / 8)
     ai(c, 380, 1720, 1.15, eye='focus', arms=('down', 'offer'), props=(None, A.rose), rot=-.12 * k, f=f)
     E.eva(c, 800, 1760, 1.0, 'impressed' if r >= 8 else 'evacalm', sip=.1, blink=K.blinking(f, 7))
+
+def s_open(c, f, r):  # frame 0: the result first. MY AI hands Eva the rose, she melts; Hoody, shocked, in the foreground
+    park(c, f, zoom=1.7, cx=640, cy=1350)
+    k = oe(cl((r + 4) / 10))                                          # already mid-offer on frame 0
+    ai(c, 380, 1640, 1.25, eye='focus' if r < 10 else 'happy', arms=('down', 'offer'), props=(None, A.rose), rot=-.14 * k,
+       talk=talk(f, 'ai_watch'), f=f)
+    E.eva(c, 920, 1700, 1.15, 'impressed' if r < 8 else 'charmed', sip=.1, blink=K.blinking(f, 7))
+    for i in range(3):                                                # little hearts rise off her
+        t = (r - 6 - i * 7) / 24
+        if 0 <= t < 1:
+            c.save(); c.translate(940 + 50 * math.sin(t * 6 + i), 860 - 260 * t); c.scale(.9 * (1 - t * .4), .9 * (1 - t * .4))
+            c.move_to(0, 18); c.curve_to(-30, -2, -18, -30, 0, -12); c.curve_to(18, -30, 30, -2, 0, 18); c.close_path(); fs(c, A.PINK, 5); c.restore()
+    jolt = 14 * math.exp(-r * .3) * math.sin(r * 2.2)                  # his double-take, close, bottom left
+    K.hoodie(c, 210, 1600 + 150 * 1.55 + jolt, 1.55 * 1.1)
+    K.hoodyz_head(c, 210 + jolt, 1600 + jolt, 1.55, era='young', expr='shock', blink=False, gaze=24, op=.2 + .7 * talk(f, 'h_whisper'))
+    bubble(c, ['HELP ME', 'IMPRESS HER!'], r - 15, (250, 1360), cy=600, cx=330)
 
 def s_take(c, f, r): R.s11(c, f, min(r, 29))                          # she takes its hand -> ITS DATE (the top-down half is cut)
 
@@ -102,14 +122,22 @@ def s_plonk(c, f, r):  # the insert, the string now snaps and curls back; then h
     if r >= 4: txt(c, 'plonk.', 540, 640, 110, NAVY, lw=0)
 
 def s_land(c, f, r):  # BOOM onto the bench (as v1), then the same bench shot as frame 0: dizzy, alone, held
+    if r < R.IMPACT:                                                  # v2.2: him, falling, with speed lines (the old streak read as 'a dark bar')
+        park(c, f); bench(c, 220, 780, SEAT, GY); Sh.cat_one_eye(c, 700, SEAT - 6, .62, open_eye=False)
+        y = SEAT - 900 + r * 300
+        for i in range(5): c.move_to(330 + i * 45, y - 520 - i * 20); c.line_to(330 + i * 45, y - 900 - i * 20); c.set_source_rgba(1, 1, 1, .95); c.set_line_width(9); c.stroke()
+        hoody(c, 420, y, .82, expr='shock', pose='float', arms=('flail', 'flail'), legs='pedal', f=f, blink=False); return
     if r < 9: R.s20(c, f, r); return
     q = r - 9
     bench_shot(c, f)
     Sh.cat_one_eye(c, 700, SEAT - 6, .62, open_eye=q > 12)
-    shake = q >= 24                                                   # the bridge: he shakes it off, the stars fly away, he turns to MY AI
-    u = (q - 24) / 5 if shake else 0
-    gz = (-20 if u >= .8 else 34 * math.sin(u * 3 * math.pi)) if shake else 0     # rot would tilt the seat plank too: shake with the eyes
-    hoody(c, 420, SEAT, .82, expr='spiral' if not shake or u < .35 else 'hopeful', pose='sit', seat=(220, 780),
+    shake = q >= 12                                                   # the bridge: he shakes it off and turns to watch MY AI walk by with a rose
+    u = (q - 12) / 6 if shake else 0
+    if q >= 8:                                                        # MY AI walks back in from the left, a fresh rose held out
+        ax = lerp(-120, 640, cl((q - 8) / 22))
+        ai(c, ax, GY + 50, .9, eye='happy', arms=('down', 'offer'), props=(None, A.rose), walk=q * .5, f=f)
+    gz = (24 if u >= .8 else 34 * math.sin(u * 3 * math.pi)) if shake else 0
+    hoody(c, 420, SEAT, .82, expr='spiral' if not shake or u < .35 else 'shock', pose='sit', seat=(220, 780),
           gaze=gz, f=f, blink=False)
     hy = SEAT - 520
     for i in range(3):                                                # stars circling his head, flung off on the shake
@@ -122,14 +150,14 @@ def s_land(c, f, r):  # BOOM onto the bench (as v1), then the same bench shot as
         ell(c, 260 + i * 90, GY - 10, 60, 30); c.set_source_rgba(.88, .80, .64, max(0, .5 - q * .03)); c.fill()
     c.restore()
 
-PLAN = [(s_ask, 36), (R.s5, 18), (s_rose, 27), (R.s7, 33), (R.s8, 24), (s_pump, 30), (R.s10, 52), (s_take, 30), (R.s12, 24),
+PLAN = [(s_open, 57), (R.s7, 33), (R.s8, 24), (s_pump, 30), (R.s10, 52), (s_take, 30), (R.s12, 24),
         (R.s13, 30), (R.s14, 30), (s_plonk, 30), (R.s16, 27), (R.s17, 27), (R.s18, 24), (R.s19, 12), (s_land, 39)]
 SHOTS = []; _t = 0
 for fn, d in PLAN: SHOTS.append((fn, _t, _t + d)); _t += d
 NF = _t
 IMPACT, STEPS = R.IMPACT, R.STEPS                                    # audio2.py reads these
-TAKE = 7                                                              # index of the hand-take shot
-VO = [('h_whisper', 0, .07, .7), ('ai_watch', 1, .2, .6), ('ai_turn', 3, .25, .6), ('h_oh', 9, .35, .55), ('h_whoa', 14, .25, .55)]
+TAKE = 5                                                              # index of the hand-take shot
+VO = [('ai_watch', 0, .05, .6), ('h_whisper', 0, .55, .7), ('ai_turn', 1, .25, .6), ('h_oh', 7, .35, .55), ('h_whoa', 12, .25, .55)]
 R.SHOTS, R.NF, R.VO = SHOTS, NF, VO                                   # talk() reads these
 def pill(f): return 'ITS DATE' if f >= SHOTS[TAKE][1] + 8 else 'HIS DATE'
 def pulse(c, f):                                                      # twice the size of v1, held 0.8 s
