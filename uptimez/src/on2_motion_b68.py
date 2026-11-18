@@ -1,4 +1,5 @@
-"""v13 (18 Nov): lip-sync for Mom and Pam from their takes, drawing by drawing, one drawing ahead of the sound.
+"""v14 (18 Nov): with on2_motion's LOOK3, the office door is glass. on2_motion_b68_v13.py is pinned.
+v13 (18 Nov): lip-sync for Mom and Pam from their takes, drawing by drawing, one drawing ahead of the sound.
 on2_motion_b68_v12.py is pinned.
 v12 (18 Nov): the loop (Tomas: back through the window to the taxi; he chose): 8.6 ends on the toot, without the black;
 8.7, she is asleep again and the camera goes into the window behind her, where a taxi pulls up in the rain, until the
@@ -103,7 +104,13 @@ def m6_1(k, tl, dur):
     b.office(k)
     m.clock(k, 470, 132, 28)                                              # v4: 11:59
     shut = d >= 4
-    cc.set_source_rgb(*((0.08, 0.08, 0.09) if shut else (0.46, 0.45, 0.42))); cc.rectangle(40, 120, 250, 760); cc.fill()     # the door
+    glass = m.LOOK3[0]                                                    # v14: the office's glass door, not a black slab
+    cc.set_source_rgb(*((0.20, 0.22, 0.26) if glass and shut else (0.08, 0.08, 0.09) if shut else (0.46, 0.45, 0.42)))
+    cc.rectangle(40, 120, 250, 760); cc.fill()                                                                             # the door
+    if glass and shut:
+        cc.set_source_rgba(1, 1, 1, 0.16); cc.set_line_width(16)
+        for gx in (70, 120):
+            cc.move_to(gx, 120); cc.line_to(gx + 150, 880); cc.stroke()
     cc.set_source_rgb(0.34, 0.33, 0.31); cc.set_line_width(6); cc.rectangle(40, 120, 250, 760); cc.stroke()
     ellipse(k, 262, 520, 9, 9, n.SILVER, 9, shadow=False, lw=2)
     cc.set_source_rgb(0.24, 0.24, 0.27); cc.rectangle(-20, 880, 600, 100); cc.fill()
