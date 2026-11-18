@@ -41,6 +41,9 @@ QA passes: -14.4 LUFS, -3.6 dBTP. Both fresh testers still swipe at 1 s: the mot
 - **Frame 0:** MY AI stands on the path in front of the bench, fully in frame. The cat sits between Hoody and Eva, and Eva isn't cropped.
 - **Ending:** after the BOOM and 0.5 s dizzy, MY AI and Eva walk back to their exact frame-0 places in front of the bench. The last frame is frame 0 without the bubble.
 - **Rose shot:** Hoody, MY AI and Eva no longer overlap.
+- **One size rule:** Hoody and Eva are the same height, and MY AI is 0.6 of it in every shot. Only distance from the camera changes size, for everyone in that plane together.
+  In v1 every shot set its own sizes: MY AI ran from 0.52 to 0.93 of Eva's height, and Hoody was smaller than Eva in the rose shot.
+  The v1 shots are re-scaled from their own source in `render2.py` (`_rescale`).
 - **Kept from v2.2:** him falling with speed lines, and the bigger PFF!.
 - **QA passes:** -14.4 LUFS, -3.8 dBTP, both lines recognized. 16.6 s, 499 frames.
 

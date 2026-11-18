@@ -19,6 +19,21 @@ import render as R
 os.chdir(_cwd)
 from render import (K, A, E, Sh, W, H, GY, SEAT, park, bench, hoody, ai, bubble, talk, heart, string, sparkles, notes, txt, rr, fs, ell,
                     limb, hx, lerp, cl, ss, oe, NAVY, INK, YEL, WHITE, RED)
+# ---- v2.3: one size rule for the whole film. Hoody and Eva are the same height; MY AI is 0.6 of it (1.07 x their scale).
+# Only distance from the camera changes a character's size, and it changes everyone in that plane together.
+# The v1 shots below each set their own scales (MY AI from 0.52 to 0.93 of Eva); they are re-scaled from their own source.
+import inspect as _insp
+def _rescale(name, pairs):
+    src = _insp.getsource(getattr(R, name))
+    for a, b in pairs:
+        assert src.count(a) == 1, (name, a); src = src.replace(a, b)
+    exec(compile(src, f'render.py:{name}', 'exec'), R.__dict__)
+_rescale('s5', [("ai(c, 400, 1780, 1.6,", "ai(c, 400, 1780, 1.08,"),
+                ("bubble(c, ['WATCH!'], r - 4, (400 + 14 * 1.6, 1780 - 420 * 1.6)", "bubble(c, ['WATCH!'], r - 4, (400 + 14 * 1.08, 1780 - 420 * 1.08 - 10)")])                       # Eva .95 -> MY AI 1.02, a step nearer the camera
+_rescale('s7', [("rx, rs = 770, 1.15", "rx, rs = 770, 1.07")])                              # Hoody 1.0
+_rescale('s10', [("hand = E.eva(c, 880, GY + 40, .9,", "hand = E.eva(c, 880, GY + 40, .8,"),   # Hoody .78
+                 ("ai(c, 100, GY + 70, .85,", "ai(c, 100, GY + 70, .84,")])
+_rescale('s11', [("rs = 1.3; rx = 330;", "rs = 1.02; rx = 330;")])                         # Eva .95
 ZOOM, ZC = 1.14, (560, 1400)                                          # the bench shot, framed the same at both ends
 
 def bench_shot(c, f):
@@ -32,7 +47,7 @@ def bench_people(c, f, ai_x=AI_X, eva_x=EVA_X, ai_walk=None, eva_walk=None, boun
     E.leash(c, hand, col, sag=40)
     b = abs(math.sin(f * .55)) if bounce else 0; sq = .06 * b         # MY AI bounces on its toes, eager, rubbing its mitts
     c.save(); c.translate(ai_x, GY + 70); c.scale(1 + sq * .5, 1 - sq); c.translate(-ai_x, -(GY + 70) - 26 * b)
-    ai(c, ai_x, GY + 70, .9, eye='happy', tilt=10 if bounce else 0, look=(12, -4), arms=('hold', 'hold') if bounce else ('down', 'down'), walk=ai_walk, f=f)
+    ai(c, ai_x, GY + 70, .88, eye='happy', tilt=10 if bounce else 0, look=(12, -4), arms=('hold', 'hold') if bounce else ('down', 'down'), walk=ai_walk, f=f)
     if bounce:
         mx, my = ai_x + 70 * .9, GY + 70 - 150 * .9
         for q in (-1, 1): ell(c, mx + q * (14 + 10 * math.sin(f * 1.3)), my + q * 4, 22, 20); fs(c, WHITE, 5)
@@ -73,10 +88,10 @@ def s_pump(c, f, r):  # MY AI, the proud stage tech, on a real hand pump: handle
 
 def s_rose(c, f, r):  # the rose, with Hoody in the shot: he watches it work
     park(c, f, zoom=1.2, cy=1450)
-    hoody(c, 135, 1830, .78, expr='hopeful', gaze=20, f=f)
+    hoody(c, 140, 1800, .9, expr='hopeful', gaze=20, f=f)
     k = oe((r - 2) / 8)
-    ai(c, 465, 1720, 1.15, eye='focus', arms=('down', 'offer'), props=(None, A.rose), rot=-.12 * k, f=f)
-    E.eva(c, 850, 1760, 1.0, 'impressed' if r >= 8 else 'evacalm', sip=.1, blink=K.blinking(f, 7))
+    ai(c, 470, 1760, .96, eye='focus', arms=('down', 'offer'), props=(None, A.rose), rot=-.12 * k, f=f)
+    E.eva(c, 850, 1760, .9, 'impressed' if r >= 8 else 'evacalm', sip=.1, blink=K.blinking(f, 7))
 
 def s_take(c, f, r): R.s11(c, f, min(r, 29))                          # she takes its hand -> ITS DATE (the top-down half is cut)
 
