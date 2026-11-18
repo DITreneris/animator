@@ -11,7 +11,7 @@
 #        ./build.sh tg                  Raises for Everyone (Thanksgiving) v2: mix, lip-sync, 540 + 1080, cover
 #        ./build.sh tg_v1               the same, animation v1 (before the framing fixes)
 #        ./build.sh mf                  Mandatory Fun: mix, lip-sync, 540 + 1080 (animation v2), cover
-#        ./build.sh ss                  Secret Santa final (v7, Pam kisses the camera): mix, 540 + 1080, cover v2
+#        ./build.sh ss                  Secret Santa final (v8, Pam kisses the camera): mix, 540 + 1080, cover v2
 #        ./build.sh ss_v2               Secret Santa v2 (Don lip-synced): mix, lip-sync, 540 + 1080, cover
 #        ./build.sh ss_v1               the same, animation v1 (Don's lines on his fixed face)
 #        ./build.sh on                  Office Noir: The Secret of a Stolen Heart: timing + mix (jazz-noir cue) from the
@@ -352,20 +352,20 @@ build_ss() {
 }
 
 build_ss_final() {
-  # Secret Santa, the final (v7, ss_anim7.py: Pam kisses the camera, the robot bars the kiss on the glass; v2's film
-  # with the cold-viewer fixes, retimed on v4's clock). Sound ss_sound_v5.py -> ss_mix_v5.wav. The AAC goes through a
+  # Secret Santa, the final (v8, ss_anim8.py: the lipstick open from frame 0; Pam kisses the camera, the robot bars the kiss on the glass; v2's film
+  # with the cold-viewer fixes, retimed on v4's clock). Sound ss_sound_v8.py -> ss_mix_v8.wav. The AAC goes through a
   # 16 kHz low-pass at 256k: plain 192k overshot to +0.4 dBTP on the kiss THUNK. -t, not -shortest (that drops the
   # last frames, and the last frame is the loop's join). Cover: thumb_ss2.py (the tags insert).
   local out=${OUT_DIR:-$HERE/secret-santa}; mkdir -p "$out"
   ( cd src
-    python3 ss_sound_v5.py
-    ffmpeg -y -v error -i ss_mix_v5.wav -af "volume=2.2dB,lowpass=f=16000,alimiter=limit=0.5:level=disabled" \
+    python3 ss_sound_v8.py
+    ffmpeg -y -v error -i ss_mix_v8.wav -af "volume=2.2dB,lowpass=f=16000,alimiter=limit=0.5:level=disabled" \
       -c:a aac -b:a 256k ss_audio.tmp.m4a
-    local dur; dur=$(python3 -c "import ss_anim7 as M; print(M.DURATION)")
+    local dur; dur=$(python3 -c "import ss_anim8 as M; print(M.DURATION)")
     for res in 540 1080; do
-      local eng=engine_v.py size=540x960 name=uptimez_ss_anim_v7.mp4 crf="-preset veryfast -crf 20"
-      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_ss_anim_v7_1080.mp4 crf="-preset medium -crf 18"
-      python3 $eng ss_anim7 | ffmpeg -y -v error \
+      local eng=engine_v.py size=540x960 name=uptimez_ss_anim_v8.mp4 crf="-preset veryfast -crf 20"
+      [ $res = 1080 ] && eng=engine_hd.py size=1080x1920 name=uptimez_ss_anim_v8_1080.mp4 crf="-preset medium -crf 18"
+      python3 $eng ss_anim8 | ffmpeg -y -v error \
         -f rawvideo -pix_fmt bgra -s $size -r 30 -i - -i ss_audio.tmp.m4a -map 0:v -map 1:a \
         -vf scale=out_color_matrix=bt709:out_range=tv,format=yuv420p \
         -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv \
@@ -374,7 +374,7 @@ build_ss_final() {
     done
     rm -f ss_audio.tmp.m4a
     python3 thumb_ss2.py "$out/ss_thumbnail_v2.png" )
-  echo "Wrote $out/uptimez_ss_anim_v7.mp4, _1080.mp4 and ss_thumbnail_v2.png"
+  echo "Wrote $out/uptimez_ss_anim_v8.mp4, _1080.mp4 and ss_thumbnail_v2.png"
 }
 
 case "${1:-}" in
