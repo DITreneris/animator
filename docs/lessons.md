@@ -588,3 +588,6 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 - **Re-cutting a film moves everything that runs on absolute time.** Trimming 3 s from The Best Candidate shifted every breath and blink, and a bubble check that v3 passed failed on one frame. Keying breaths and blinks to the original's time, shot by shot, made every drawing pass again.
 - **A sound has to say what it is.** Reversing beeps read as an alarm, not as a car parking. An engine rolling closer, a handbrake, the engine cut and a car door tell the story without a word.
 - **Reframe before you hide.** A sign the camera only half catches can go fully in or fully out by zooming, shifting or moving it for that one shot, so nothing is deleted from the set.
+
+- **Two viewers making the same mistake is a staging fault.** Both took the stamp for what made the lip print (the lips never appeared), and both took the held-out glasses for "a spoon". Showing the lips on the tag and an insert of the lenses fixed both; the next two viewers read every beat.
+- **The payoff frame needs one thing to read.** A wide shot with eleven pieces of text hid the joke at phone size; a 2-second insert of just the two tags became both viewers' screenshot.
