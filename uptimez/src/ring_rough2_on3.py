@@ -1,8 +1,11 @@
-"""OFFICE NOIR 3: a moving rough of beats 06 and 07 (6.1 to 7.5), mute, for the cold test (19 Nov). v1.
+"""OFFICE NOIR 3: a moving rough of beats 06 and 07 (6.1 to 7.5), mute, for the cold test (19 Nov). v2; ring_rough2_on3_v1.py
+is v1. v2, after cold test 8 and /grill-me: 6.2's right half is Mom from the front, seated, her hand on the open cash
+box, and the oil can is big; 6.4 has a closer shot for his pointing, Don's back leaving in it; in 7.3 he claps the sheet
+between two gloves and it slides up and out. v1:
 On the ring (ring_on3), with ring_rough_on3's helpers. A rough: poses change and figures slide. Mom's desk is the
 stand-in of 5.4 (she sits); Don is Office Noir 2's detective, unchanged (Tomas, /grill-me); in 7.3 the paper slides off
 the glove (Tomas).
-Usage: python3 ring_rough2_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat0607_rough_v1.mp4)"""
+Usage: python3 ring_rough2_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat0607_rough_v2.mp4)"""
 import sys
 import math
 import cairo
@@ -74,41 +77,49 @@ def shot_61(t):
     return rg.frame(CORNER, [client, pam], [], near=False, hats=False)
 
 
-def _desk(c, k, t, card=None, hand="box"):
-    """Mom's desk, close, from above her hands: the cash box, the coupe; her ringed hand flat on the box."""
-    g = cairo.RadialGradient(270, 300, 40, 270, 300, 700)
-    g.add_color_stop_rgba(0, 0.86, 0.86, 0.84, 1); g.add_color_stop_rgba(1, 0.34, 0.34, 0.36, 1); c.set_source(g); c.paint()
-    c.set_source_rgb(0.16, 0.16, 0.18); c.rectangle(0, 0, 540, 250); c.fill()                    # her coat, behind the desk
-    c.set_source_rgb(0.86, 0.86, 0.88)
-    for i in range(7):                                       # the fur of her collar, at the frame's top
-        c.arc(40 + i * 78, 60, 46, 0, 2 * math.pi); c.fill()
-    rect(k, -20, 250, 580, 730, (0.46, 0.44, 0.42), 5, shadow=False, lw=3)
-    q.cash_box(k, 300, 640, 3.4)
-    q.coupe(k, 90, 620, 2.6)
-    hy = 520 + 6 * math.sin(t * 3)                           # her hand, flat on the lid's edge, the rings up
-    rect(k, 250, 250, 120, hy - 330, (0.10, 0.10, 0.11), 8, shadow=False, lw=2.6)               # the sleeve
-    rect(k, 240, hy - 96, 140, 34, (0.84, 0.84, 0.86), 9, shadow=False, lw=2.2)                  # the fur cuff
-    ellipse(k, 310, hy, 64, 50, (0.90, 0.76, 0.66), 10, shadow=False, lw=2.6)
-    for i, dx in enumerate((-40, -14, 12, 38)):
-        rect(k, 310 + dx - 9, hy + 30, 18, 46, (0.90, 0.76, 0.66), 11 + i, shadow=False, lw=2.2)
-        if i in (1, 2):
-            rect(k, 310 + dx - 11, hy + 42, 22, 12, (0.86, 0.87, 0.90), 15 + i, shadow=False, lw=1.6)
+def mom_box(t):
+    """Mom from the front, seated in her high chair, her ringed hand flat on the open cash box; the coupe at her elbow."""
+    s, c, k = _blank()
+    g = cairo.RadialGradient(270, 420, 40, 270, 420, 560)
+    g.add_color_stop_rgba(0, 0.86, 0.86, 0.84, 1); g.add_color_stop_rgba(1, 0.30, 0.30, 0.32, 1); c.set_source(g); c.paint()
+    cut(k, [(116, 800), (124, 500), (160, 462), (380, 462), (416, 500), (424, 800)], (0.33, 0.31, 0.30), shadow=False, lw=3)
+    sc = 1.55
+    feet = 400 + 294 * sc + 112
+    P = q._body.__globals__["POSES"]
+    old = P["q_stand"]
+    P["q_stand"] = old[:2] + q.mo.ik(1, 26, -136 + 2 * math.sin(t * 3))
+    try:
+        o = q.queen(k, 270, feet, sc, "q_stand", "bored", look=(0.2, 0.9))
+    finally:
+        P["q_stand"] = old
+    rect(k, -20, 790, 580, 200, (0.46, 0.44, 0.42), 5, shadow=False, lw=3)
+    q.cash_box(k, 300, 880, 2.6)
+    q.coupe(k, 190, 850, 1.7)
+    hx, hy = o["hands"][1]
+    ellipse(k, hx, hy + 14, 34, 22, (0.90, 0.76, 0.66), 10, shadow=False, lw=2.6)             # her hand, flat on the lid
+    for i in range(2):
+        rect(k, hx - 16 + i * 18, hy + 4, 12, 20, (0.86, 0.87, 0.90), 11 + i, shadow=False, lw=1.6)
+    csh.noir(s)
+    return s
 
 
 def shot_62(t):
-    """One frame, split in two. Left: the robot in its corner, proud, a small arm tipping an oil can over its elbow.
-    Right: her ringed hand flat on the cash box, the coupe beside it."""
+    """One frame, split in two. Left: the robot in its corner, proud, an oil can tipped over its elbow. Right: Mom at
+    her desk, her ringed hand flat on the open cash box."""
     def robot(k):
         x, f = 590, F - 40
         rg.shadow(k, x, f, 40)
         r.robot(k, x, f, SC * r.REL, "r_oil", "proud", side=-1, oil=True)
-    left = rg.frame((590, F - 150, 2.3), [robot], [], near=False, hats=False)
-    s, c, k = _blank()
-    _desk(c, k, t)
-    csh.noir(s)
+        r.oil_can(k, x - 58, f - 150 + 3 * math.sin(t * 5), 1.5, -0.7)                           # big, and it drips
+        c = k.c; c.set_source_rgb(0.05, 0.05, 0.06)
+        for i in range(3):
+            y = f - 122 + ((t * 70 + i * 16) % 46)
+            c.save(); c.translate(x - 84, y); c.scale(3.2, 5); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    left = rg.frame((570, F - 150, 2.3), [robot], [], near=False, hats=False)
+    s = mom_box(t)
     out = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); oc = cairo.Context(out)
     oc.save(); oc.rectangle(0, 0, 267, 960); oc.clip(); oc.set_source_surface(left, -136, 0); oc.paint(); oc.restore()
-    oc.save(); oc.rectangle(273, 0, 267, 960); oc.clip(); oc.set_source_surface(s, 273 - 170, 0); oc.paint(); oc.restore()
+    oc.save(); oc.rectangle(273, 0, 267, 960); oc.clip(); oc.set_source_surface(s, 273 - 136, 0); oc.paint(); oc.restore()
     oc.set_source_rgb(0, 0, 0); oc.rectangle(267, 0, 6, 960); oc.fill()
     return out
 
@@ -175,18 +186,21 @@ def shot_64(t):
         csh.noir(s)
         return s
     if t < 2.4:
+        close = t >= 1.5                                    # v2: then closer: his glove up at the plan, Don's back leaving
         u = (t - 0.8) / 1.6
         dx_ = lerp(250.0, 566.0, u); df = lerp(F - 30.0, rg.FAR + 6.0, u); ds = SC * lerp(1.0, 0.78, u)
         under = abs(dx_ - 360) < 40
         sw = 0.10 * math.sin((t - 1.45) * 9) * math.exp(-(t - 1.45) * 1.2) if t > 1.45 else 0.0
 
         def client(k):
-            rg.shadow(k, 150, F - 30, 44)
+            cx_ = 236 if close else 150
+            rg.shadow(k, cx_, F - 30, 44)
             with rc.head_back(-0.2):
-                b.boxer(k, 150, F - 30, Q, rr.UP if t > 1.2 else rr.WALK, "hard", (0.8, -0.8), tape=True)
+                b.boxer(k, cx_, F - 30, Q, b.POSES["b_reach"] if close else rr.WALK, "shock" if close else "hard", (0.8, -0.8), tape=True)
 
         def pam(k):
-            rg.shadow(k, 232, F - 14, 34); ca.pam_corner(k, 232, F - 14, SC, "p_stand", "neutral", (-0.9, 0.0))
+            px_ = 150 if close else 232
+            rg.shadow(k, px_, F - 14, 34); ca.pam_corner(k, px_, F - 14, SC, "p_stand", "neutral", (0.9, 0.0))
 
         def ref(k):
             rg.shadow(k, 470, F - 96, 36); ca.referee(k, 470, F - 96, SC * ca.REL_REF, "ref_stand", look=(-0.6, 0), waistcoat=True)
@@ -199,7 +213,7 @@ def shot_64(t):
             st = math.sin(t * 11)
             _n2(n2.detective_back, k, dx_, df, ds, steps=((-14, 7 * max(st, 0)), (14, 7 * max(-st, 0))))
         order = [ref, don, robot, client, pam] if df < F - 60 else [ref, robot, client, pam, don]
-        return rg.frame("R1", order, [], door=True, swing=sw)
+        return rg.frame((360, 1105, 1.3) if close else "R1", order, [], door=True, swing=sw, near=not close, hats=not close)
     def ref(k):
         ca.referee(k, 470, F - 96, SC * ca.REL_REF, "ref_stand", look=((-0.8, 0) if t < 2.75 else (0.9, 0)), brow=2.5 <= t < 2.85,
                    waistcoat=True)
@@ -305,15 +319,14 @@ def shot_73(t):
                 b.boxer(k, 322, F - 40, Q, lerp(rr.WALK, b.POSES["b_reach"], t / 0.5), "dawning", (0.3, -1), tape=True)
         return rg.frame((335, 1130, 1.5), [client], [], near=False, hats=False, swing=0.03 * math.sin(t * 6))
     u = t - 0.9
-    if u < 0.5:                                              # up to it, onto it
-        rise, sw = lerp(260.0, -150.0, u / 0.4), 0.0
-    elif u < 0.9:                                            # the paper slides over the leather
-        v = (u - 0.5) / 0.4
-        rise, sw = -150 + 40 * v, -0.20 * lerp(0.0, 1.0, v)
-    else:                                                    # it swings away; the glove comes down with nothing
-        v = u - 0.9
-        rise, sw = -110 + 380 * lerp(0.0, 1.0, v / 0.5), -0.20 * math.cos(v * 7) * math.exp(-v * 1.2)
-    return rg.plan_pov(glove=True, swing=sw, rise=rise)
+    if u < 0.35:                                             # both gloves up, and onto the hung end
+        return rg.plan_pov(two=True, rise=lerp(300.0, -170.0, u / 0.3))
+    if u < 0.85:                                             # he has it, between them: it shakes
+        return rg.plan_pov(two=True, rise=-170 + 2 * math.sin(u * 60), squeeze=46)
+    v = u - 0.85                                             # it slides up and out; the gloves meet on nothing; down
+    up = lerp(0.0, 1.0, v / 0.3)
+    return rg.plan_pov(two=True, rise=-170 + (360 * lerp(0.0, 1.0, (v - 0.35) / 0.3) if v > 0.35 else 0), squeeze=46 + 44 * up,
+                       lift=150 * up, swing=-0.16 * math.sin(v * 7) * math.exp(-v * 1.5))
 
 
 def shot_74(t):
@@ -369,4 +382,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         rr.sheets(sys.argv[2], fast=("7.2", "7.5"))
     else:
-        rr.render(sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat0607_rough_v1.mp4")
+        rr.render(sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat0607_rough_v2.mp4")

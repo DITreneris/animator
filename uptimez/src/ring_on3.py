@@ -204,7 +204,7 @@ def frame(cam, mid=(), front=(), noir=True, **kw):
     return s
 
 
-def plan_pov(glove=True, swing=0.0, rise=0.0):
+def plan_pov(glove=True, swing=0.0, rise=0.0, two=False, lift=0.0, squeeze=0.0):
     """5.1b, his view: the plan from below, the lamp behind it, and one red glove coming up into the frame toward it.
     Its own drawing (not a framing of the set). Returns a 540x960 surface in the dream's look."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -220,17 +220,16 @@ def plan_pov(glove=True, swing=0.0, rise=0.0):
         c.move_to(sx_ - 110, sy_); c.curve_to(sx_ - 30, sy_ - 50, sx_ + 50, sy_ + 40, sx_ + 150, sy_ - 20); c.stroke()
     c.set_line_cap(0)
     c.save(); c.translate(270, 170); c.rotate(swing); c.translate(-270, -170)
-    pr.plan_hung(k, 150, 420, 3.0, top=170, title=True)                                               # big: the ten bays can be counted
+    pr.plan_hung(k, 150, 420 - lift, 3.0, top=170, title=True)       # lift: the sheet drawn up out of his gloves (7.3)                                               # big: the ten bays can be counted
     c.restore()
-    if glove:                                                                             # his glove, up toward it, short of it
-        ang = -1.36
+    for hx0, ang, side in (((372, -1.36, 1),) + (((168, -1.78, -1),) if two else ())) if glove else ():   # his glove(s), up toward it
         ux, uy = math.cos(ang), math.sin(ang)
-        hx, hy = 372, 820 + rise                             # rise > 0: the glove is still on its way up (the rough)
+        hx, hy = hx0 - side * squeeze, 820 + rise           # rise > 0: still on its way up; squeeze: the two close on each other
         c.save(); c.translate(hx, hy); c.scale(2.3, 2.3); c.translate(-hx, -hy)
         px_, py_ = -uy, ux
         cut(k, [(hx - ux * 30 + px_ * 22, hy - uy * 30 + py_ * 22), (hx - ux * 30 - px_ * 22, hy - uy * 30 - py_ * 22),
                 (hx - ux * 160 - px_ * 26, hy - uy * 160 - py_ * 26), (hx - ux * 160 + px_ * 26, hy - uy * 160 + py_ * 26)], b.KEY, shadow=False, lw=2.4)
-        b._glove(k, hx, hy, ux, uy, 1, 77)
+        b._glove(k, hx, hy, ux, uy, side, 77 + side)
         c.restore()
     csh.noir(s)
     return s

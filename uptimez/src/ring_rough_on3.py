@@ -1,5 +1,8 @@
 """OFFICE NOIR 3: a moving rough of beat 05, whole (5.1a to 5.6), mute, for the cold test (19 Nov). v2; ring_rough_on3_v1.py
-is v1 (5.1a to 5.2). v7 (ring_rough_on3_v6.py is v6): the watch gag is out of 5.6; sheets(fast=...) names the shots shown at 8 a second.
+is v1 (5.1a to 5.2). v8 (ring_rough_on3_v7.py is v7; Tomas, /grill-me): first-person views and four cuts round the ring. 5.2a: at the bell,
+four fast cuts (front, his view of it, its view of him, from above). 5.3 is the robot's view: his glove stopped at the
+lens, the words over his face. 5.5: the jab through his eyes: the grey glove fills the frame, black; then he is down.
+v7 (ring_rough_on3_v6.py is v6): the watch gag is out of 5.6; sheets(fast=...) names the shots shown at 8 a second.
 v6 (ring_rough_on3_v5.py is v5): the screen is blank for three frames between the face and the words (it showed a smile).
 v5 (ring_rough_on3_v4.py is v4): in 5.4 Mom sits behind her desk, in a high-backed chair (Tomas).
 v4 (ring_rough_on3_v3.py is v3), four changes and no more: the gap at the stopped glove is open again (5.2, 5.5); the
@@ -12,7 +15,7 @@ v1:
 Four cold tests of stills left two things a still cannot show: which way the robe is going, and a punch that stops.
 This is a rough: poses change, figures slide, nobody's legs walk. 540x960, 30 fps, one encoded file per shot, joined
 with the concat demuxer. In 5.2 the Referee is behind the robot again (script v15).
-Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v7.mp4)"""
+Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v8.mp4)"""
 import os
 import sys
 import math
@@ -32,7 +35,7 @@ from kit import cut
 
 F, SC, Q = rg.F, rg.SC, rc.Q
 FPS = 30
-SHOTS = (("5.1a", 2.0), ("5.1b", 1.0), ("5.1c", 3.2), ("5.2", 1.9), ("5.3", 1.0), ("5.4", 2.0), ("5.5", 1.6), ("5.6", 2.0))
+SHOTS = (("5.1a", 2.0), ("5.1b", 1.0), ("5.1c", 3.2), ("5.2a", 1.0), ("5.2", 1.9), ("5.3", 1.3), ("5.4", 2.0), ("5.5", 1.8), ("5.6", 2.0))
 
 
 def lerp(a, b_, t):
@@ -220,9 +223,106 @@ def _insert_screen(state, crack=False):
     return s
 
 
+def _hall(c):
+    g = cairo.RadialGradient(270, 380, 40, 270, 380, 760)
+    g.add_color_stop_rgba(0, 0.78, 0.78, 0.80, 1); g.add_color_stop_rgba(1, 0.12, 0.12, 0.14, 1); c.set_source(g); c.paint()
+    c.set_source_rgb(0.05, 0.05, 0.06); c.rectangle(0, 700, 540, 80); c.fill()               # the far crowd
+    for i in range(9):
+        c.arc(20 + i * 66, 700 - (i % 3) * 5, 16, 0, 2 * math.pi); c.fill()
+    c.set_source_rgb(0.50, 0.50, 0.54)
+    for y in (640, 690, 740):
+        c.rectangle(0, y, 540, 5); c.fill()
+    c.set_source_rgb(0.64, 0.64, 0.66); c.rectangle(0, 780, 540, 180); c.fill()
+
+
+def _hud(c, words=0, crack=False):
+    """Its screen from the inside: the rim, scan lines, a frame round the target, and the rows of the ask."""
+    c.set_source_rgba(0.75, 0.90, 1.0, 0.07)
+    for y in range(0, 960, 8):
+        c.rectangle(0, y, 540, 2); c.fill()
+    c.set_source_rgb(0.02, 0.02, 0.03); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+    c.rectangle(0, 0, 540, 960); c.save(); c.translate(270, 480); c.scale(262, 440); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    c.set_fill_rule(cairo.FILL_RULE_WINDING)
+    c.set_source_rgb(*r.INKW); c.set_line_width(4)
+    for sx, sy in ((-1, -1), (1, -1), (-1, 1), (1, 1)):     # the corners of a target frame
+        x, y = 250 + sx * 130, 560 + sy * 130
+        c.move_to(x, y - sy * 36); c.line_to(x, y); c.line_to(x - sx * 36, y); c.stroke()
+    if words:
+        c.set_source_rgba(0.02, 0.02, 0.03, 0.72); c.rectangle(40, 200, 460, 60 * words + 26); c.fill()
+        c.select_font_face("Inter", 0, 1); c.set_font_size(58); c.set_source_rgb(*r.INKW)
+        for i, w_ in enumerate(("HUMAN", "APPROVAL", "REQUIRED")[:words]):
+            c.move_to(270 - c.text_extents(w_).x_advance / 2, 260 + i * 60); c.show_text(w_)
+
+
+def pov_robot(t=0.0, words=0, glove=True, far=False):
+    """What the robot sees: him, square on, and (glove=True) his red glove stopped a hand from the lens."""
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    _hall(c)
+    sc = (1.5 if far else 2.5) * b.REL
+    x, f = 250, 930 + (0 if far else 250)
+    b.boxer(k, x, f + 2 * math.sin(t * 60), sc, "b_walk", "hard", (0, 0.1))
+    if glove:
+        gx, gy = 404 + 2 * math.sin(t * 60), 812
+        c.save(); c.translate(gx, gy); c.scale(3.6, 3.6); c.translate(-gx, -gy)
+        cut(k, [(gx - 60, gy + 20), (gx - 20, gy + 26), (gx - 30, gy + 80), (gx - 80, gy + 70)], b.KEY, shadow=False, lw=1.2)
+        b._glove(k, gx, gy, 0.5, -0.87, 1, 91)
+        c.restore()
+    csh.noir(s)
+    _hud(c, words)
+    return s
+
+
+def pov_client(t=0.0, state="furious", jab=0.0):
+    """What he sees: the robot, square on, small under the lamp. jab 0..1: its grey glove comes at the lens."""
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    _hall(c)
+    r.robot(k, 270, 900, 2.3 * r.REL, "r_guard" if jab == 0 and state == "tick" else "r_wait", state, side=-1)
+    if jab > 0:
+        b.robot_glove(k, 270, 560, 1.2 + 9.0 * jab * jab, ang=-math.pi / 2)
+    csh.noir(s)
+    return s
+
+
+def top_view():
+    """The ring from straight above, at the bell: the two of them, the Referee, Pam at the ropes, the plan's bar."""
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    c.set_source_rgb(0.10, 0.10, 0.12); c.paint()
+    rect(k, 50, 230, 440, 500, (0.66, 0.66, 0.68), 3, shadow=False, lw=3)
+    g = cairo.RadialGradient(270, 480, 20, 270, 480, 300)
+    g.add_color_stop_rgba(0, 1, 1, 1, 0.5); g.add_color_stop_rgba(1, 1, 1, 1, 0); c.set_source(g); c.rectangle(50, 230, 440, 500); c.fill()
+    c.set_source_rgb(0.90, 0.90, 0.92); c.set_line_width(5)
+    for d in (0, 14, 28):
+        c.rectangle(50 - d, 230 - d, 440 + 2 * d, 500 + 2 * d); c.stroke()
+    for px_, py_ in ((22, 202), (518, 202), (22, 758), (518, 758)):
+        ellipse(k, px_, py_, 16, 16, (0.34, 0.34, 0.37), 5, shadow=False, lw=2.4)
+    ellipse(k, 190, 500, 50, 40, b.KEY, 6, shadow=False, lw=3); ellipse(k, 190, 500, 24, 22, (0.24, 0.18, 0.15), 7, shadow=False, lw=2)   # him
+    ellipse(k, 250, 470, 20, 20, b.KEY, 8, shadow=False, lw=2.4); ellipse(k, 240, 540, 20, 20, b.KEY, 9, shadow=False, lw=2.4)
+    ellipse(k, 350, 500, 34, 34, (0.10, 0.10, 0.12), 10, shadow=False, lw=3)                                                              # it
+    ellipse(k, 320, 452, 20, 20, (0.30, 0.30, 0.33), 11, shadow=False, lw=2.4); ellipse(k, 320, 548, 20, 20, (0.30, 0.30, 0.33), 12, shadow=False, lw=2.4)
+    ellipse(k, 420, 360, 36, 26, (0.09, 0.09, 0.10), 13, shadow=False, lw=3); ellipse(k, 420, 360, 17, 16, (0.05, 0.05, 0.06), 14, shadow=False, lw=2)  # the Referee
+    ellipse(k, 84, 690, 28, 22, (0.40, 0.40, 0.44), 15, shadow=False, lw=3)                                                               # Pam's cap
+    rect(k, 150, 410, 240, 20, (0.96, 0.96, 0.93), 16, shadow=True, lw=2.4)                                                               # the plan's roll
+    rect(k, 300, 430, 86, 70, (0.96, 0.96, 0.93), 17, shadow=True, lw=2.2)
+    csh.noir(s)
+    return s
+
+
+def shot_52a(t):
+    """The bell: four cuts round the ring, a quarter of a second each: from the front, his view of it, its view of
+    him, from above."""
+    i = min(int(t / 0.25), 3)
+    if i == 0:
+        return shot_52(0.0)
+    if i == 1:
+        return pov_client(t)
+    if i == 2:
+        return pov_robot(t, glove=False, far=True)
+    return top_view()
+
+
 def shot_53(t):
-    """Its screen, filling the frame: the furious face goes; three rows come up."""
-    return _insert_screen("furious" if t < 0.3 else "off" if t < 0.4 else "ask")
+    """The robot's view: his glove, stopped a hand from the lens, shaking; over his face the three rows come up."""
+    return pov_robot(t, words=0 if t < 0.3 else 1 if t < 0.45 else 2 if t < 0.6 else 3)
 
 
 def shot_54(t):
@@ -275,7 +375,12 @@ def shot_55(t):
     """The screen: a tick. Then, wider than 5.2: one jab, straight, like a piston; he goes over backwards."""
     if t < 0.4:
         return _insert_screen("tick")
-    u = t - 0.4
+    if t < 0.75:                                             # v8: through his eyes: the grey glove, at the lens
+        return pov_client(t, "tick", jab=(t - 0.4) / 0.35)
+    if t < 0.9:
+        s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); cairo.Context(s).paint()
+        return s
+    u = t - 0.9 + 0.34                                       # then, from outside, he is already going over
     hit = 0.34
 
     def ref(k):
@@ -347,7 +452,7 @@ def shot_56(t):
     return s
 
 
-FN = {"5.1a": shot_51a, "5.1b": shot_51b, "5.1c": shot_51c, "5.2": shot_52, "5.3": shot_53, "5.4": shot_54, "5.5": shot_55, "5.6": shot_56}
+FN = {"5.2a": shot_52a, "5.1a": shot_51a, "5.1b": shot_51b, "5.1c": shot_51c, "5.2": shot_52, "5.3": shot_53, "5.4": shot_54, "5.5": shot_55, "5.6": shot_56}
 
 
 def frames():
@@ -405,7 +510,7 @@ def sheets(d, prefix="sheet", fast=("5.2", "5.5")):
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v7.mp4"
+    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v8.mp4"
     if len(sys.argv) > 2:
         sheets(sys.argv[2])
     else:
