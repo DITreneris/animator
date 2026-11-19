@@ -1,11 +1,12 @@
 """OFFICE NOIR 3: a moving rough of beat 05, whole (5.1a to 5.6), mute, for the cold test (19 Nov). v2; ring_rough_on3_v1.py
-is v1 (5.1a to 5.2). v2: a harder swing with a second shove; the robe wiped back on, not cut; and 5.3 (the screen asks),
+is v1 (5.1a to 5.2). v3 (ring_rough_on3_v2.py is v2): 5.4 is lit: a pale wall behind Mom's black coat (Tomas: too dark).
+v2: a harder swing with a second shove; the robe wiped back on, not cut; and 5.3 (the screen asks),
 5.4 (Mom, a stand-in office: her set is not built), 5.5 (the tick, the jab, he goes over), 5.6 (from above: the count).
 v1:
 Four cold tests of stills left two things a still cannot show: which way the robe is going, and a punch that stops.
 This is a rough: poses change, figures slide, nobody's legs walk. 540x960, 30 fps, one encoded file per shot, joined
 with the concat demuxer. In 5.2 the Referee is behind the robot again (script v15).
-Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v2.mp4)"""
+Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v3.mp4)"""
 import os
 import sys
 import math
@@ -211,8 +212,12 @@ def shot_54(t):
     """Mom, in her office (a stand-in set): she reads the hundred beside her eyes; her eyes go to the desk; one ringed
     finger comes down on the button; her mouth opens a crack."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
-    c.set_source_rgb(0.13, 0.13, 0.15); c.paint()
-    c.set_source_rgb(0.62, 0.62, 0.60)                       # the blinds behind her, lit from the ring she does not watch
+    c.set_source_rgb(0.30, 0.30, 0.32); c.paint()            # v3: a lit wall behind her: a black coat needs a pale ground
+    g = cairo.RadialGradient(230, 420, 40, 230, 420, 560)   # the desk lamp throws up onto the wall
+    g.add_color_stop_rgba(0, 0.86, 0.86, 0.84, 1); g.add_color_stop_rgba(0.6, 0.58, 0.58, 0.58, 1); g.add_color_stop_rgba(1, 0.30, 0.30, 0.32, 1)
+    c.set_source(g); c.paint()
+    c.set_source_rgb(0.16, 0.16, 0.18); c.rectangle(296, 100, 228, 396); c.fill()          # the window: night outside
+    c.set_source_rgb(0.96, 0.96, 0.92)                       # the blinds behind her, lit from the ring she does not watch
     for i in range(13):
         c.rectangle(300, 110 + i * 30, 220, 17); c.fill()
     c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(5); c.rectangle(296, 100, 228, 396); c.stroke()
@@ -220,7 +225,7 @@ def shot_54(t):
     sc = 1.55
     q.queen(k, 250, 400 + 294 * sc, sc, "q_read", "bored", look=((-0.9, -0.1) if t < 1.0 else (0.7, 0.8)), note=True,
             mouth=("dry" if 1.3 <= t < 1.75 else None))
-    rect(k, -20, 770, 580, 220, (0.22, 0.20, 0.19), 5, shadow=False, lw=3)                 # her desk
+    rect(k, -20, 770, 580, 220, (0.46, 0.44, 0.42), 5, shadow=False, lw=3)                 # her desk
     g = cairo.RadialGradient(400, 790, 10, 400, 790, 240)
     g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0); c.set_source(g); c.rectangle(0, 770, 540, 190); c.fill()
     rect(k, 352, 800, 96, 26, (0.10, 0.10, 0.11), 6, shadow=False, lw=2.4)                 # the button's plate
@@ -367,7 +372,7 @@ def sheets(d, prefix="sheet"):
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v2.mp4"
+    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v3.mp4"
     if len(sys.argv) > 2:
         sheets(sys.argv[2])
     else:
