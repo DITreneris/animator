@@ -1,0 +1,178 @@
+{
+ "1.2": {
+  "who": "CLIENT",
+  "text": "Friday, the bank. I need my blueprint.",
+  "len": 2.446,
+  "f0": 110,
+  "rms": 0.112,
+  "peak": 0.881,
+  "asr": [
+   "Friday the bank I need my blueprint.",
+   "Friday Friday Friday Friday Friday Friday Friday Friday Friday Friday Friday Friday Friday Friday Friday Friday",
+   "Friday the bank I need my blueprint."
+  ],
+  "asr_ok": 2
+ },
+ "2.2": {
+  "who": "DON",
+  "text": "Garage eleven. Guaranteed by Friday.",
+  "len": 2.544,
+  "f0": 91,
+  "rms": 0.111,
+  "peak": 0.82,
+  "asr": [
+   "Garage 11 guaranteed by Friday.",
+   "Garaz 11 guaranteed by Friday.",
+   "Garage 11 guaranteed by Friday."
+  ],
+  "asr_ok": 3
+ },
+ "3.3": {
+  "who": "SOFIA",
+  "text": "It found nothing.",
+  "len": 0.852,
+  "f0": 210,
+  "rms": 0.102,
+  "peak": 0.589,
+  "asr": [
+   "It found nothing.",
+   "It found nothing.",
+   "It found nothing."
+  ],
+  "asr_ok": 3
+ },
+ "4.1": {
+  "who": "DON",
+  "text": "Can you make the zero green?",
+  "len": 1.766,
+  "f0": 93,
+  "rms": 0.111,
+  "peak": 0.623,
+  "asr": [
+   "Can you make the zero green?",
+   "Can you make the zero green?",
+   "Can you make the zero green?"
+  ],
+  "asr_ok": 3
+ },
+ "4.2": {
+  "who": "ROBOT",
+  "text": "Interface change. Human approval required.",
+  "len": 2.296,
+  "f0": 145,
+  "rms": 0.111,
+  "peak": 1.296,
+  "asr": [
+   "Interface change, human approval required.",
+   "Interface change, human approval required.",
+   "Interface change, human approval required."
+  ],
+  "asr_ok": 3
+ },
+ "4.3": {
+  "who": "DON",
+  "text": "Approved.",
+  "len": 0.718,
+  "f0": 93,
+  "rms": 0.112,
+  "peak": 0.584,
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "asr_ok": 3
+ },
+ "5.2": {
+  "who": "CLIENT",
+  "text": "Where's my blueprint?",
+  "len": 1.39,
+  "f0": 121,
+  "rms": 0.113,
+  "peak": 0.91,
+  "asr": [
+   "Where's my blueprint?",
+   "Where's my blueprint?",
+   "Where's my blueprint?"
+  ],
+  "asr_ok": 3
+ },
+ "5.3": {
+  "who": "DON",
+  "text": "The zero's green.",
+  "len": 1.364,
+  "f0": 88,
+  "rms": 0.111,
+  "peak": 0.571,
+  "asr": [
+   "The zeros green.",
+   "The zeros green",
+   "The zero's green."
+  ],
+  "asr_ok": 3
+ },
+ "7.1": {
+  "who": "MOM",
+  "text": "Young man.",
+  "len": 0.86,
+  "f0": 196,
+  "rms": 0.128,
+  "peak": 0.691,
+  "asr": [
+   "Young man",
+   "Young man",
+   "young man"
+  ],
+  "asr_ok": 3
+ },
+ "7.4": {
+  "who": "PAM+SOFIA",
+  "text": "Eww.",
+  "len": 0.986,
+  "f0": 189,
+  "rms": 0.09,
+  "peak": 0.506
+ },
+ "6.1b": {
+  "who": "MOM",
+  "text": "Machines.",
+  "len": 1.044,
+  "f0": 212,
+  "rms": 0.092,
+  "peak": 0.654,
+  "asr": [
+   "machines",
+   "machines",
+   "machines"
+  ],
+  "asr_ok": 3
+ },
+ "7.5": {
+  "who": "MOM",
+  "text": "That hussy.",
+  "len": 1.045,
+  "f0": 203,
+  "rms": 0.096,
+  "peak": 0.66,
+  "asr": [
+   "that hussy.",
+   "That hussy",
+   "that hussy."
+  ],
+  "asr_ok": 3
+ },
+ "8.1": {
+  "who": "MOM",
+  "text": "Pam has a plan.",
+  "len": 1.311,
+  "f0": 195,
+  "rms": 0.118,
+  "peak": 0.618,
+  "asr": [
+   "Pam has a plan.",
+   "Pam has a plan",
+   "The palm has a plan."
+  ],
+  "asr_ok": 2
+ }
+}
