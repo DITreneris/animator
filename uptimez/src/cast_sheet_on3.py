@@ -1,8 +1,8 @@
-"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v1).
+"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v2; cast_sheet_on3_v1.py draws v1).
 Sheet: each beside the Office Noir 2 figure it comes from, their poses, faces close, the silhouette check (the Referee
 beside the Client, as black shapes), the corner as the dream shows it, the whole cast at its relative sizes, the rules.
 Phone: each figure alone at three sizes, in the dream's look (the rule from the robot's sheet v2 on).
-Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v1-sheet.png, uptimez-corner-on3-v1-phone.png"""
+Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v2-sheet.png, uptimez-corner-on3-v2-phone.png"""
 import sys
 import math
 import cairo
@@ -61,9 +61,9 @@ def sheet(out):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
     k = Ctx(c, 0)
     c.select_font_face("Inter", 0, 1); c.set_font_size(40); c.set_source_rgb(*INK)
-    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v1 · the corner and the ring")
+    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v2 · the corner and the ring")
     c.select_font_face("Inter", 0, 0); c.set_font_size(22)
-    c.move_to(50, 106); c.show_text("PAM, his cutman: the flat cap and apron of Office Noir 2 · a towel on her shoulder · a cotton bud behind her ear · a stopwatch on a cord · tape, a bucket, a sponge")
+    c.move_to(50, 106); c.show_text("PAM, his cutman: the flat cap and apron of Office Noir 2 · a towel on her shoulder · a cotton bud behind her ear · a stopwatch on a cord, held up for the count · tape, a bucket, a sponge")
     c.move_to(50, 136); c.show_text("THE REFEREE: the Bartender of Office Noir 2 without his glass · white shirt, black bow tie, bare forearms · the only bare hands in the ring")
     F, SP, SR = 740, 1.16, 0.72
     n2.LOOK[0], old = 9, n2.LOOK[0]
@@ -74,10 +74,11 @@ def sheet(out):
     label(c, "Noir 2", 120, F + 42, 22)
     ca.pam_corner(k, 320, F, SP, "p_stand", "neutral", (0.4, 0)); label(c, "the corner", 320, F + 42, 22)
     c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(425, 170); c.line_to(425, F + 50); c.stroke()
-    ca.pam_corner(k, 560, F, SP, "p_tape", "neutral", (-0.8, 0)); label(c, "p_tape (6.1)", 550, F + 42, 22)
-    ca.pam_corner(k, 770, F, SP, "p_pull", "curious", (-0.8, 0.2)); label(c, "p_pull (5.1)", 760, F + 42, 22)
-    ca.pam_corner(k, 990, F, SP, "p_sponge", "knowing", (-0.6, 0)); label(c, "p_sponge", 980, F + 42, 22)
-    ca.bucket(k, 1100, F - 2, 1.1)
+    ca.pam_corner(k, 510, F, SP, "p_tape", "neutral", (-0.8, 0)); label(c, "p_tape (6.1)", 500, F + 42, 20)
+    ca.pam_corner(k, 665, F, SP, "p_pull", "curious", (-0.8, 0.2)); label(c, "p_pull (5.1)", 655, F + 42, 20)
+    ca.pam_corner(k, 855, F, SP, "p_sponge", "knowing", (-0.6, 0)); label(c, "p_sponge (6.1)", 845, F + 42, 20)
+    ca.pam_corner(k, 1055, F, SP, "p_watch", "neutral", (-0.7, 0.2)); label(c, "p_watch (5.2, 5.6)", 1040, F + 42, 20)
+    ca.bucket(k, 1142, F - 2, 0.7)
     c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(1175, 170); c.line_to(1175, F + 50); c.stroke()
     n2.bartender(k, 1290, F, SR, look=(-0.6, 0), clean=True); label(c, "Noir 2", 1290, F + 42, 22)
     for x, p, kw, t in ((1490, "ref_stand", dict(), "ref_stand"), (1675, "ref_bell", dict(), "ref_bell (5.2)"),
@@ -114,13 +115,14 @@ def sheet(out):
              "· Pam is on his side and says one line. She fixes him;",
              "  she never looks at the plan over the ring.",
              "· Her tape is the tape that mends his plan in episode 11.",
-             "· The towel, the stopwatch and the cotton bud are hers in",
-             "  every corner shot. The bucket stands by the post.",
+             "· The towel and the cotton bud are hers in every corner",
+             "  shot. The stopwatch: started on the bell, held up for",
+             "  the count. The bucket stands by the post.",
              "· The Referee sees everything and does nothing. His face",
              "  is plain; the one eyebrow is his only reaction (6.4).",
              "· His hands are bare: fingers to count, a flat palm for",
              "  \"Break!\". He never touches the robot.",
-             "· Panel, middle: the cast at its sizes. Left: 5.1."]
+             "· Left: 5.1. Middle: the cast at its sizes."]
     for i, t in enumerate(notes):
         c.select_font_face("Inter", 0, 1 if i == 0 else 0)
         c.move_to(1520, 1362 + 30 * i); c.show_text(t)
@@ -131,7 +133,7 @@ def phone(out):
     rows = []
     specs = ((lambda k, x, f, sc, **kw: ca.pam_corner(k, x, f, sc, **kw), ca.HY, 1.0,
               (("wide", "Pam, full figure", dict(pose="p_stand", face="neutral", look=(-0.5, 0))),
-               ("medium", "Pam, taping", dict(pose="p_tape", face="neutral", look=(-0.8, 0))),
+               ("medium", "Pam, the count", dict(pose="p_watch", face="neutral", look=(-0.7, 0.2))),
                ("close", "Pam, her one line", dict(pose="p_stand", face="knowing", look=(-0.8, 0))))),
              (lambda k, x, f, sc, **kw: ca.referee(k, x, f, sc, **kw), cb.M_HY, ca.REL_REF,
               (("wide", "the Referee, full figure", dict(pose="ref_stand")),
@@ -165,5 +167,5 @@ def phone(out):
 
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else "../characters"
-    sheet(d + "/uptimez-corner-on3-v1-sheet.png")
-    phone(d + "/uptimez-corner-on3-v1-phone.png")
+    sheet(d + "/uptimez-corner-on3-v2-sheet.png")
+    phone(d + "/uptimez-corner-on3-v2-phone.png")

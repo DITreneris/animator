@@ -1,4 +1,12 @@
-"""OFFICE NOIR 3: the corner and the ring, v1 (Tomas, 19 Nov, /grill-me).
+"""OFFICE NOIR 3: the corner and the ring, v2 (Tomas, 19 Nov, /grill-me; v2 after the outside review, "Proceed").
+v2 (cast_on3_v1.py is v1, pinned):
+  - the Referee: a grey shade where each sleeve meets the chest (they were one white shape in the dream's look);
+    his eyebrow is thicker and arched, and the other brow comes down flat, so the pair reads as one cocked
+    brow; his idle hands are open, with fingers (a ball fist is the shape of the Client's gloves).
+  - Pam: her frames are dark for this special (FRAME; gold frames went pale grey on her skin in the dream's look);
+    watch="hand" and the pose "p_watch": the stopwatch held up in her hand, thumb on the crown, the cord still
+    round her neck. That is its job: she starts it on the bell (5.2) and holds it up through the count (5.6).
+    Her eyes, her cap and the cord's length are as in v1.
   pam_corner()  Pam as the Client's cutman. Office Noir 2's sweeper (pam_on's figure, the pale apron, the flat cap)
                 without the broom, and what Tomas picked: a towel on her shoulder, a cotton bud behind her ear, a
                 stopwatch on a cord, a bucket and a sponge; the roll of tape is the script's. Nothing on her is red.
@@ -25,6 +33,8 @@ STEEL = (0.52, 0.54, 0.60)
 TAPE = (0.98, 0.97, 0.94)
 SPONGE = (0.88, 0.80, 0.52)
 APRON, APRON_D = (0.93, 0.92, 0.88), (0.70, 0.69, 0.66)
+FRAME = (0.30, 0.27, 0.24)                                 # v2: her frames, dark in the dream's look
+REF_SHADE = (0.70, 0.70, 0.72)                             # v2: under the Referee's sleeves
 BT, HY, HEM = pn.BT, pn.HY, pn.HEM
 _ik = pn.pm.ik
 P_POSES = {
@@ -32,6 +42,7 @@ P_POSES = {
     "p_tape": _ik(-1, -88, BT + 6) + _ik(1, -46, BT + 34),     # both hands out to him, below her own chin
     "p_pull": _ik(-1, -84, BT + 34) + _ik(1, -40, BT + 46),
     "p_sponge": _ik(-1, -74, HY - 30) + _ik(1, 30, BT + 92),
+    "p_watch": _ik(-1, -94, BT + 30) + _ik(1, 30, BT + 92),    # v2: the stopwatch held up, beside her shoulder
 }
 cb.POSES_MACHO.update({                                    # new names only
     "ref_stand": (-11, 4, 11, -4),
@@ -86,8 +97,11 @@ def bucket(k, x, y, s=1.0, seed=0):
 
 
 def pam_corner(k, x, feet, s=1.0, pose="p_stand", face="neutral", look=(0, 0), seed=40, towel=True, tape=None,
-               sponge_=None):
-    """tape / sponge_: None = by pose ("p_tape" holds the roll, "p_sponge" the sponge)."""
+               sponge_=None, watch=None):
+    """tape / sponge_: None = by pose ("p_tape" holds the roll, "p_sponge" the sponge).
+    watch: "chest" (hanging on its cord), "hand" (held up in her screen-left hand); None = by pose ("p_watch": hand)."""
+    if watch is None:
+        watch = "hand" if pose == "p_watch" else "chest"
     a = P_POSES[pose] if isinstance(pose, str) else pose
     orig = pn._costume
 
@@ -105,21 +119,25 @@ def pam_corner(k, x, feet, s=1.0, pose="p_stand", face="neutral", look=(0, 0), s
             c.set_source_rgb(*APRON_D); c.set_line_width(1.6)
             c.move_to(-44, HEM - 8); c.line_to(44, HEM - 8); c.stroke()
             c.rectangle(-17, HEM + 6, 34, 24); c.stroke()
-            c.set_source_rgb(*INK); c.set_line_width(1.8)                                # the stopwatch, on its cord
-            c.new_path(); c.move_to(-13, bt + 2); c.line_to(-2, bt + 62); c.move_to(13, bt + 2); c.line_to(2, bt + 62); c.stroke()
-            rect(k_, -3, bt + 56, 6, 8, STEEL, seed_ + 70, shadow=False, lw=1.2)
-            ellipse(k_, 0, bt + 76, 12.5, 12.5, CHROME, seed_ + 71, shadow=False, lw=2)
-            ellipse(k_, 0, bt + 76, 8.5, 8.5, (0.98, 0.98, 0.96), seed_ + 72, shadow=False, lw=1.2)
-            c.set_source_rgb(*INK); c.set_line_width(1.6); c.set_line_cap(1)
-            c.new_path(); c.move_to(0, bt + 76); c.line_to(0, bt + 69); c.move_to(0, bt + 76); c.line_to(5, bt + 78); c.stroke()
-            c.set_line_cap(0)
+            if watch == "chest":
+                c.set_source_rgb(*INK); c.set_line_width(1.8)                                # the stopwatch, on its cord
+                c.new_path(); c.move_to(-13, bt + 2); c.line_to(-2, bt + 62); c.move_to(13, bt + 2); c.line_to(2, bt + 62); c.stroke()
+                rect(k_, -3, bt + 56, 6, 8, STEEL, seed_ + 70, shadow=False, lw=1.2)
+                ellipse(k_, 0, bt + 76, 12.5, 12.5, CHROME, seed_ + 71, shadow=False, lw=2)
+                ellipse(k_, 0, bt + 76, 8.5, 8.5, (0.98, 0.98, 0.96), seed_ + 72, shadow=False, lw=1.2)
+                c.set_source_rgb(*INK); c.set_line_width(1.6); c.set_line_cap(1)
+                c.new_path(); c.move_to(0, bt + 76); c.line_to(0, bt + 69); c.move_to(0, bt + 76); c.line_to(5, bt + 78); c.stroke()
+                c.set_line_cap(0)
+            else:                                                                        # only the cord, round her neck
+                c.set_source_rgb(*INK); c.set_line_width(1.8)
+                c.new_path(); c.move_to(-13, bt + 2); c.line_to(-17, bt + 20); c.move_to(13, bt + 2); c.line_to(-10, bt + 26); c.stroke()
             if towel:                                                                    # over her screen-right shoulder
                 cut(k_, [(14, bt - 8), (48, bt - 4), (54, bt + 74), (40, bt + 82), (22, bt + 72)], TOWEL, shadow=False, lw=2.2)
                 c.set_source_rgb(*TOWEL_SHADE); c.set_line_width(2.0)
                 c.new_path(); c.move_to(25, bt + 56); c.line_to(51, bt + 60); c.stroke()
                 c.new_path(); c.move_to(26, bt + 64); c.line_to(51, bt + 68); c.stroke()
         return hook
-    with n2._swap((pn, "_costume", costume)):
+    with n2._swap((pn, "_costume", costume), (pn, "HOOP_GOLD", FRAME)):
         o = pn.pam_noir(k, x, feet, s, a, face, look, roll=False, seed=seed)
     hx, hy = o["head"]
     n2.flat_cap(k, hx, hy - 30 * s, s * 1.02, seed + 60)
@@ -134,8 +152,24 @@ def pam_corner(k, x, feet, s=1.0, pose="p_stand", face="neutral", look=(0, 0), s
         tape_roll(k, rx + 4 * s, ry - 2 * s, s, strip=40, ang=math.pi + 0.15, seed=seed + 64)
     if sponge_ if sponge_ is not None else pose == "p_sponge":
         sponge(k, lx, ly - 4 * s, s * 1.15, seed=seed + 66)
+    if watch == "hand":                                                                  # v2: held up, face to us
+        wx, wy = lx, ly - 23 * s
+        c.set_source_rgb(*INK); c.set_line_width(1.8 * s); c.new_path()
+        c.move_to(x - 17 * s, feet + (BT + 20) * s); c.curve_to(x - 30 * s, feet + (BT + 52) * s, wx + 20 * s, wy + 44 * s, wx + 3 * s, wy + 16 * s)
+        c.move_to(x - 10 * s, feet + (BT + 26) * s); c.curve_to(x - 22 * s, feet + (BT + 60) * s, wx + 30 * s, wy + 50 * s, wx + 8 * s, wy + 14 * s)
+        c.stroke()
+        rect(k, wx - 4 * s, wy - 26 * s, 8 * s, 10 * s, STEEL, seed + 70, shadow=False, lw=1.4 * s)
+        ellipse(k, wx, wy, 17 * s, 17 * s, CHROME, seed + 71, shadow=False, lw=2.2 * s)
+        ellipse(k, wx, wy, 12 * s, 12 * s, (0.98, 0.98, 0.96), seed + 72, shadow=False, lw=1.4 * s)
+        c.set_source_rgb(*INK); c.set_line_width(2.2 * s); c.set_line_cap(1); c.new_path()
+        c.move_to(wx, wy); c.line_to(wx, wy - 9.5 * s); c.move_to(wx, wy); c.line_to(wx + 7 * s, wy + 3 * s); c.stroke(); c.set_line_cap(0)
     for hx_, hy_ in ((lx, ly), (rx, ry)):
         ellipse(k, hx_, hy_, 9 * s, 9 * s, pn.ps.SKIN, seed + 62 + int(hx_), shadow=False, lw=1.8 * s)
+    if watch == "hand":                                                                  # the click, off the crown
+        c.set_source_rgb(*INK); c.set_line_width(1.8 * s); c.set_line_cap(1); c.new_path()
+        for dx, dy in ((-13, -9), (0, -13), (13, -9)):
+            c.move_to(wx + dx * 0.9 * s, wy - 29 * s + dy * 0.5 * s); c.line_to(wx + dx * 1.5 * s, wy - 29 * s + dy * 1.1 * s)
+        c.stroke(); c.set_line_cap(0)
     return o
 
 
@@ -164,17 +198,30 @@ def referee(k, x, feet, s=1.0, pose="ref_stand", look=(-0.6, 0.0), brow=False, c
         o = cb.macho(k, x, feet, s, pose, "plain", look=look, badge=False, seed=seed)
     c = k.c
     c.save(); c.translate(x, feet); c.scale(s, s)
+    bt = cb.M_BT                                           # v2: shade where sleeve meets chest, and under the chest
+    for sx in (-1, 1):
+        c.new_path(); c.move_to(sx * 61, bt + 4); c.curve_to(sx * 54, bt + 30, sx * 58, bt + 56, sx * 78, bt + 62)
+        c.line_to(sx * 70, bt + 84); c.curve_to(sx * 46, bt + 70, sx * 44, bt + 30, sx * 52, bt + 2); c.close_path()
+        c.set_source_rgb(*REF_SHADE); c.fill()
+        c.set_source_rgb(*INK); c.set_line_width(2.2); c.set_line_cap(1); c.new_path()
+        c.move_to(sx * 61, bt + 4); c.curve_to(sx * 54, bt + 30, sx * 58, bt + 56, sx * 78, bt + 62); c.stroke()
+        c.set_source_rgb(*REF_SHADE); c.set_line_width(5.0); c.new_path()
+        c.move_to(sx * 8, bt + 86); c.curve_to(sx * 26, bt + 103, sx * 62, bt + 99, sx * 77, bt + 68); c.stroke(); c.set_line_cap(0)
     by = cb.M_BT + 6                                       # the bow tie
     for sx in (-1, 1):
         cut(k, [(0, by), (sx * 15, by - 8), (sx * 15, by + 8)], (0.07, 0.07, 0.08), shadow=False, lw=1.6)
     ellipse(k, 0, by, 3.6, 4.4, (0.07, 0.07, 0.08), seed + 40, shadow=False, lw=1.2)
     c.restore()
     hx, hy = o["head"]
-    if brow:
+    if brow:                                               # v2: one up and arched, the other down flat
         c.save(); c.translate(hx, hy); c.scale(s, s)
-        ellipse(k, 20, n2.BROW_Y, 15, 6.5, cb.M_SKIN, seed + 41, shadow=False, outline=False)
-        c.set_source_rgb(*cb.M_HAIR); c.set_line_width(5.6); c.set_line_cap(1)
-        c.new_path(); c.move_to(9, n2.BROW_Y - 7); c.curve_to(16, n2.BROW_Y - 15, 26, n2.BROW_Y - 14, 32, n2.BROW_Y - 8); c.stroke()
+        ellipse(k, 20, n2.BROW_Y - 1, 17, 8, cb.M_SKIN, seed + 41, shadow=False, outline=False)
+        ellipse(k, -20, n2.BROW_Y - 1, 17, 8, cb.M_SKIN, seed + 42, shadow=False, outline=False)
+        ellipse(k, 33, n2.BROW_Y + 2, 7, 5, cb.M_SKIN, seed + 43, shadow=False, outline=False)
+        c.set_source_rgb(*cb.M_HAIR); c.set_line_width(6.6); c.set_line_cap(1)        # the forehead is short: it stays under the hair
+        c.new_path(); c.move_to(8, n2.BROW_Y - 3); c.curve_to(13, n2.BROW_Y - 9.5, 23, n2.BROW_Y - 9.5, 30, n2.BROW_Y - 4); c.stroke()
+        c.set_line_width(6.4)
+        c.new_path(); c.move_to(-33, n2.BROW_Y + 4); c.line_to(-9, n2.BROW_Y + 4.5); c.stroke()
         c.set_line_cap(0)
         c.restore()
     (lx, ly), (rx, ry) = o["hands"]
@@ -184,6 +231,10 @@ def referee(k, x, feet, s=1.0, pose="ref_stand", look=(-0.6, 0.0), brow=False, c
         _open_hand(k, lx, ly, s, math.pi - 1.35, 4, seed + 51)
     elif pose == "ref_bell":
         _open_hand(k, rx, ry, s, -math.pi / 2, 4, seed + 52)
+    if pose != "ref_break":                                # v2: the idle hands hang open
+        _open_hand(k, lx, ly, s, math.pi / 2 + 0.12, 4, seed + 53, thumb=False)
+    if pose in ("ref_stand", "ref_break"):
+        _open_hand(k, rx, ry, s, math.pi / 2 - 0.12, 4, seed + 54, thumb=False)
     return o
 
 
