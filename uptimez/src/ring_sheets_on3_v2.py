@@ -11,7 +11,7 @@ import cairo
 import kit
 import ring_on3_v2 as rg
 import ring_casts_on3_v2 as rc
-import cast_on3 as ca
+import cast_on3_v6 as ca
 import client_on3 as b
 import robot_on3 as r
 import sofia_on3 as so3

@@ -1,4 +1,6 @@
-"""OFFICE NOIR 3: the ring, set v3 (19 Nov; ring_on3_v1.py and _v2.py are pinned). After cold test 2 and /grill-me:
+"""OFFICE NOIR 3: the ring, set v4 (19 Nov; ring_on3_v1.py to _v3.py are pinned). After cold test 3 and /grill-me: the
+plan carries its title block, 10 GARAGES (props_on3 v2, title=True).
+v3 (ring_on3_v1.py and _v2.py are pinned). After cold test 2 and /grill-me:
 far_ropes=False leaves the far ropes to the cast (the Client comes through them, Pam holding two up);
 side_a=False does the same for A's side ropes; plan_pov() is
 the plan as he sees it from below, a shot of its own (5.1b), because a look at it was not read.
@@ -158,7 +160,7 @@ def draw_ring(k, mid=(), front=(), near=True, money=False, swing=0.0, folder=Tru
     c.set_source_rgb(0.22, 0.22, 0.25); c.set_line_width(3); c.move_to(lx, ly - 34); c.line_to(lx, ly - 900); c.stroke()
     px_, py_, ps_ = PLAN                                                                   # his plan, on its two cords
     c.save(); c.translate(px_ + 46 * ps_, ly); c.rotate(swing); c.translate(-(px_ + 46 * ps_), -ly)
-    pr.plan_hung(k, px_, py_, ps_, top=ly - 40)
+    pr.plan_hung(k, px_, py_, ps_, top=ly - 40, title=True)
     c.restore()
     c.set_source_rgb(*ROPE_FAR)                                                            # the side ropes, far post to near
     for (fx, nx) in ((POST_F[0], POST_N[0]), (POST_F[1], POST_N[1]))[0 if side_a else 1:]:
@@ -218,7 +220,7 @@ def plan_pov(glove=True, swing=0.0):
         c.move_to(sx_ - 110, sy_); c.curve_to(sx_ - 30, sy_ - 50, sx_ + 50, sy_ + 40, sx_ + 150, sy_ - 20); c.stroke()
     c.set_line_cap(0)
     c.save(); c.translate(270, 170); c.rotate(swing); c.translate(-270, -170)
-    pr.plan_hung(k, 150, 420, 3.0, top=170)                                               # big: the ten bays can be counted
+    pr.plan_hung(k, 150, 420, 3.0, top=170, title=True)                                               # big: the ten bays can be counted
     c.restore()
     if glove:                                                                             # his glove, up toward it, short of it
         ang = -1.36

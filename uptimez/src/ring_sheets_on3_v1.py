@@ -8,7 +8,7 @@ import math
 import cairo
 import kit
 import ring_on3_v1 as rg
-import cast_on3 as ca
+import cast_on3_v6 as ca
 import client_on3 as b
 import robot_on3 as r
 import sofia_on3 as so3

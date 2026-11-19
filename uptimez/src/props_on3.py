@@ -4,6 +4,7 @@
                           one solid (Office Noir 2's drawing, noir2_cast.bays). (x, y): the middle of the roll.
                           Pale paper and dark lines, so it reads in the lamp; no words on it."""
 import math
+import kit
 import noir2_cast as n2
 from kit import INK, cut, ellipse
 
@@ -12,7 +13,7 @@ PAPER_SHADE = (0.74, 0.76, 0.80)
 LINE = (0.10, 0.12, 0.20)
 
 
-def plan_hung(k, x, y, s=1.0, seed=0, top=None):
+def plan_hung(k, x, y, s=1.0, seed=0, top=None, title=False):
     c = k.c
     c.save(); c.translate(x, y); c.scale(s, s)
     yt = -400 if top is None else (top - y) / s
@@ -28,6 +29,10 @@ def plan_hung(k, x, y, s=1.0, seed=0, top=None):
         n2.bays(c, 8, 42, 13.5, 1.9)
     finally:
         n2.LOOK[0] = old
+    if title:                                              # v2, opt-in: the drawing's title block, as plans have
+        c.set_source_rgb(*LINE); c.set_line_width(1.2); c.rectangle(6, 80, 84, 18); c.stroke()
+        kit.text(k, "10", 21, 89.5, 17, LINE, bold=True)
+        kit.text(k, "GARAGES", 60, 89.5, 10.5, LINE, bold=True)
     cut(k, [(-104, -11), (104, -11), (104, 11), (-104, 11)], PAPER, lw=2.2)   # the roll itself
     c.set_source_rgb(*PAPER_SHADE); c.set_line_width(1.6)
     c.new_path(); c.move_to(-100, 5); c.line_to(100, 5); c.stroke()

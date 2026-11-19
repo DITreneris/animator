@@ -14,8 +14,8 @@ Nothing here changes an earlier module."""
 import math
 import cairo
 import kit
-import props_on3 as pr
-import cast_on3 as ca
+import props_on3_v1 as pr
+import cast_on3_v6 as ca
 import client_on3 as b
 import robot_on3 as r
 import client_sheet_on3 as csh

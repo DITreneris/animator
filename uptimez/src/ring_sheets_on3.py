@@ -1,11 +1,13 @@
-"""OFFICE NOIR 3: the ring, the three planning sheets of gate G2b (set v3, 19 Nov; ring_sheets_on3_v1.py and _v2.py draw v1 and v2).
+"""OFFICE NOIR 3: the ring, the three planning sheets of gate G2b (set v4, 19 Nov; ring_sheets_on3_v1.py to _v3.py draw v1 to v3).
+v4: after the second /grill-me and cold test 4: the plan says 10 GARAGES, the Referee wears a waistcoat, the robe is
+shown going back on, the Client's entrance is dropped; the blocking sheet shows the five tested frames and four results.
 v3: after /grill-me and cold test 3: 5.1 is three shots (the master, his view of the plan, the robe); the blocking
 sheet shows the four frames of cold test 3 and all three results.
 v2: the blocking sheet shows the frames of the second cold test (ring_casts_on3.py) and both tests' results; the set
 sheet has the dark doorway and the lower hats; the plan sheet has 5.1 split, as script v12.
-  on3_ring_set_v3.png       the clean set: zones, depth, home positions, ways in and out
-  on3_ring_plan_v3.png      the ring from above: camera setups, and every shot of beats 05-07 by zone, setup, size, time
-  on3_ring_blocking_v3.png  the hardest beat (5.1, 5.2) as real camera frames on the set, eyelines and moves marked
+  on3_ring_set_v4.png       the clean set: zones, depth, home positions, ways in and out
+  on3_ring_plan_v4.png      the ring from above: camera setups, and every shot of beats 05-07 by zone, setup, size, time
+  on3_ring_blocking_v4.png  the hardest beat (5.1, 5.2) as real camera frames on the set, eyelines and moves marked
 Usage: python3 ring_sheets_on3.py [out_dir]   (default ../office-noir-3)"""
 import sys
 import math
@@ -55,7 +57,7 @@ def cast_home():
             x, y, s = H[name]
             rg.shadow(k, x, y, 34); fn(k, x, y, s)
         return d
-    mid = [fig("referee", lambda k, x, y, s: ca.referee(k, x, y, s, "ref_stand", look=(-0.6, 0))),
+    mid = [fig("referee", lambda k, x, y, s: ca.referee(k, x, y, s, "ref_stand", look=(-0.6, 0), waistcoat=True)),
            fig("robot_corner", lambda k, x, y, s: r.robot(k, x, y, s, "r_wait", "proud", side=-1)),
            fig("robot", lambda k, x, y, s: r.robot(k, x, y, s, "r_wait", "furious", side=-1)),
            fig("client", lambda k, x, y, s: b.boxer(k, x, y, s, "b_walk", "hard", (0.8, 0))),
@@ -118,7 +120,7 @@ def sheet_set(out):
     S = 1.25
     W, H = 2200, 1700
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint(); k = Ctx(c, 0)
-    T(c, "THE RING · Office Noir 3: The Last Round · set v3 · the room of beats 05 to 07", 50, 70, 40, True)
+    T(c, "THE RING · Office Noir 3: The Last Round · set v4 · the room of beats 05 to 07", 50, 70, 40, True)
     T(c, "One lamp, his plan under it, two corners. Everyone at home; the robot is drawn twice (centre for the fight, its corner between rounds).", 50, 106, 22)
     X0, Y0 = 50, 150
     y_top = 660                                            # the world's rows shown: 660 .. 1650
@@ -185,7 +187,7 @@ def sheet_set(out):
 
 
 # ------------------------------------------------------------------ sheet 2: from above, and the shot table
-SHOTS = [("5.1a", "A B C", "R1", "wide, the master", "", 2.0, "the ring; he comes in; Sofía walks ROUND 1"),
+SHOTS = [("5.1a", "A B C", "R1", "wide, the master", "", 2.0, "the ring; he is in his corner; Sofía walks ROUND 1"),
          ("5.1b", "B", "R7", "his view, from below", "", 1.0, "the plan over the ring; his glove comes up toward it"),
          ("5.1c", "A", "R3", "medium", "", 2.0, "the robe off his shoulders; the sleeve stops at the glove"),
          ("5.2", "B", "R2", "two-shot", "0:38.5", 1.5, "the bell; he swings; the glove stops short; Pam's thumb"),
@@ -213,7 +215,7 @@ for _i, _s in enumerate(SHOTS):                            # each shot starts wh
 def sheet_plan(out):
     W, H = 2200, 1700
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
-    T(c, "THE RING FROM ABOVE · camera setups and the shot plan · beats 05 to 07 · set v3", 50, 70, 40, True)
+    T(c, "THE RING FROM ABOVE · camera setups and the shot plan · beats 05 to 07 · set v4", 50, 70, 40, True)
     T(c, "Every shot gets one zone and one setup. Times follow script v13 (about 31.5 s); 5.1 is three shots.", 50, 106, 22)
     # the plan view: the ring 720 wide maps to 560 px; depth (far to near) to 420 px
     X0, Y0, RW, RH = 150, 230, 560, 380
@@ -312,34 +314,36 @@ def sheet_plan(out):
 def sheet_blocking(out):
     W, H = 2200, 1700
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
-    T(c, "THE RING · 5.1a, 5.1b, 5.1c, 5.2 · the frames of the third cold test · set v3", 50, 70, 40, True)
-    T(c, "These are the four frames two fresh viewers saw, with nothing added.", 50, 106, 22)
-    Z = 0.94
+    T(c, "THE RING · 5.1a, 5.1b, 5.1c (two drawings), 5.2 · the frames of the fourth cold test · set v4", 50, 70, 38, True)
+    T(c, "These are the five frames two fresh viewers saw, with nothing added.", 50, 106, 22)
+    Z = 0.76
     FW, FH = 540 * Z, 960 * Z
-    titles = ("5.1a · R1, the master · 2.0 s", "5.1b · R7, his view · 1.0 s", "5.1c · R3, his corner · 2.0 s", "5.2 · R2, centre · 1.5 s")
+    titles = ("5.1a · R1 · 2.0 s", "5.1b · R7, his view · 1.0 s", "5.1c · R3: off, stuck", "5.1c · its end: back on", "5.2 · R2 · 1.5 s")
     for i, (f, title) in enumerate(zip(rc.frames(), titles)):
-        x0, y0 = 50 + i * (FW + 22), 140
+        x0, y0 = 50 + i * (FW + 14), 140
         c.save(); c.translate(x0, y0); c.scale(Z, Z); c.set_source_surface(f, 0, 0); c.paint(); c.restore()
         c.set_source_rgb(*INK); c.set_line_width(3); c.rectangle(x0, y0, FW, FH); c.stroke()
-        T(c, title, x0, y0 + FH + 34, 23, True)
-    cols = [[("Three cold tests, two new viewers each", True), ("Test 1 (set v1): 2 of 5, 2 of 5", False), ("Test 2 (set v2): 4 of 5, 3 of 5", False), ("Test 3 (these frames): 4 of 5, 3 of 5", False),
-             ("Pass is 4 of 5 for both: FAIL", True)],
-            [("Now read by both", True), ("· the ring, the corners, ROUND 1", False), ("· the plan matters and he wants it (5.1b did it)", False), ("· the Referee is neutral (centred, at the far ropes)", False),
+        T(c, title, x0, y0 + FH + 32, 21, True)
+    cols = [[("Four cold tests, two new viewers each", True), ("Test 1 (set v1): 2 of 5, 2 of 5", False), ("Test 2 (set v2): 4 of 5, 3 of 5", False), ("Test 3 (set v3): 4 of 5, 3 of 5", False),
+             ("Test 4 (these frames): 3 of 5, 2 of 5", False), ("Pass is 4 of 5 for both: FAIL", True)],
+            [("Settled: read in tests 3 and 4", True), ("· the ring, the corners, ROUND 1", False), ("· the plan: 5.1b made all four say it matters to", False), ("  him; with 10 GARAGES both viewers name it", False),
              ("· Pam is his corner", False)],
-            [("Read by one", True), ("· the robe sticks at the glove. The other saw it come", False), ("  off, then back on, and took that for a slip", False),
-             ("Broken by my own fix", True), ("· the punch. Lowered to clear the Referee, it reads", False), ("  as an offered glove or pointing, to both", False)],
-            [("Never read, in three tries", True), ("· him arriving: nobody sees him come through the ropes", False), ("Lost at phone size, every time", True), ("· HR, the stopwatch, the car in the plan, the sleeve", False)]]
+            [("The punch: read 4 of 4, then 0 of 4", True), ("· tests 1 and 2, the Referee behind the robot:", False), ("  everyone saw a punch that stops short", False),
+             ("· tests 3 and 4, the Referee between them:", False), ("  an offered glove, then a jab at the Referee.", False), ("  The waistcoat did not help", False)],
+            [("The robe: 3 clear reads in 8", True), ("· a still cannot show which way a robe is going", False), ("· the extra drawing made two viewers ask", False), ("  whether she is dressing him", False),
+             ("Never read: him arriving (dropped)", True)]]
     for j, col in enumerate(cols):
-        y = 1140
+        y = 950
         for t_, bold in col:
             T(c, t_, 50 + j * 530, y, 21 if bold else 18, bold, (0.6, 0.15, 0.12) if "FAIL" in t_ else INK); y += 34 if bold else 28
-    T(c, "Next: the punch back at shoulder height; one frame of the robe going back on; his arrival left to 4.1 (the arena door). Then one more test, on these and no others.", 50, 1400, 21, True)
-    T(c, "The test cannot tell whether any of this is funny, or anything that needs sound (the bell, the click of the stopwatch).", 50, 1436, 20)
+    T(c, "What it means: a stopped punch needs empty space behind the gap; a person there becomes the target. And the robe gag needs movement: stills cannot judge it.", 50, 1250, 21, True)
+    T(c, "Stills have told us what they can. The next test of beat 05 should be a moving rough.", 50, 1286, 21, True)
+    T(c, "The tests cannot tell whether any of this is funny, or anything that needs sound (the bell, the click of the stopwatch).", 50, 1322, 20)
     s.write_to_png(out)
 
 
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3"
-    sheet_set(d + "/on3_ring_set_v3.png")
-    sheet_plan(d + "/on3_ring_plan_v3.png")
-    sheet_blocking(d + "/on3_ring_blocking_v3.png")
+    sheet_set(d + "/on3_ring_set_v4.png")
+    sheet_plan(d + "/on3_ring_plan_v4.png")
+    sheet_blocking(d + "/on3_ring_blocking_v4.png")

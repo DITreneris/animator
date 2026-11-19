@@ -1,4 +1,6 @@
 """OFFICE NOIR 3: the corner and the ring, v2 (Tomas, 19 Nov, /grill-me; v2 after the outside review, "Proceed").
+v7 (Tomas, /grill-me after cold test 3; cast_on3_v6.py is v6, pinned): referee(waistcoat=True) puts a black
+waistcoat over his shirt, under his arms, so a red glove stopped in front of him is clear of white. Default as v6.
 v6 (Tomas, "Improve", on the weak points of v5; cast_on3_v5.py is v5, pinned):
   - Pam's apron has a pale hem band and pale pocket stitching, so it parts from her dark skirt in the dream's look.
   - the Referee's sleeves and shoulder caps are a light grey, his chest white: two tones, so the arm parts from the body.
@@ -306,11 +308,27 @@ def _open_hand(k, x, y, s, ang, fingers, seed, thumb=True, relax=False):
     c.restore()
 
 
+WAISTCOAT = [False]
+VEST = (0.09, 0.09, 0.10)
+
+
+def _vest(k, bt):
+    """v7: a black waistcoat, drawn on the torso before the arms: a deep V showing the shirt and its buttons."""
+    c = k.c
+    hip = cb.M_HIP
+    cut(k, [(-66, bt + 12), (-26, bt - 6), (-3, bt + 78), (-3, hip - 10), (-31, hip - 10), (-72, bt + 92)], VEST, shadow=False, lw=2)
+    cut(k, [(66, bt + 12), (26, bt - 6), (3, bt + 78), (3, hip - 10), (31, hip - 10), (72, bt + 92)], VEST, shadow=False, lw=2)
+    c.set_source_rgb(0.80, 0.80, 0.82)
+    for i in range(3):
+        c.new_path(); c.arc(9, bt + 92 + i * 16, 2.6, 0, 2 * math.pi); c.fill()
+
+
 def _macho_ref():
     """cand_bc.macho, its source changed in two places and run in a copy of cand_bc's names (cand_bc itself draws as
     before): the shoulder is a small cap, not a ball, and the arm is a shirt sleeve to the elbow with a rolled cuff."""
     src = inspect.getsource(cb.macho)
-    for old, new in (("bulge=1.34, sleeve=0.42", "bulge=1.08, cuff=(M_SHIRT_DARK, 11)"),
+    for old, new in (("    if badge:\n", "    if WAISTCOAT[0]:\n        _vest(k, bt)\n    if badge:\n"),
+                     ("bulge=1.34, sleeve=0.42", "bulge=1.08, cuff=(M_SHIRT_DARK, 11)"),
                      ("bt + 22, 27, 24, M_SHIRT", "bt + 24, 19, 15, M_SLEEVE"),
                      ("M_LN1, M_LN2, 46, 31, M_SHIRT", "M_LN1, M_LN2, 40, 31, M_SLEEVE"),
                      ("c.set_source_rgb(*M_SHIRT); c.rectangle(min(side * 58, side * 86), bt + 12, 28, 34); c.fill()",
@@ -318,7 +336,7 @@ def _macho_ref():
         assert src.count(old) == 1, old
         src = src.replace(old, new)
     ns = dict(vars(cb))
-    ns.update(M_SLEEVE=SLEEVE, M_SHIRT=n2.WHITE_JACKET, M_SHIRT_DARK=(0.66, 0.66, 0.69), M_JEANS=(0.10, 0.10, 0.12), M_JEANS_DARK=(0.05, 0.05, 0.06),
+    ns.update(WAISTCOAT=WAISTCOAT, _vest=_vest, M_SLEEVE=SLEEVE, M_SHIRT=n2.WHITE_JACKET, M_SHIRT_DARK=(0.66, 0.66, 0.69), M_JEANS=(0.10, 0.10, 0.12), M_JEANS_DARK=(0.05, 0.05, 0.06),
               M_BELT=(0.08, 0.08, 0.09), M_BOOT=(0.07, 0.07, 0.08), _macho_face=n2._clean_face(cb._macho_face))
     exec(src, ns)
     return ns["macho"]
@@ -327,12 +345,18 @@ def _macho_ref():
 _MACHO = _macho_ref()
 
 
-def referee(k, x, feet, s=1.0, pose="ref_stand", look=(-0.6, 0.0), brow=False, count=3, seed=700):
-    o = _MACHO(k, x, feet, s, pose, "plain", look=look, badge=False, seed=seed)
+def referee(k, x, feet, s=1.0, pose="ref_stand", look=(-0.6, 0.0), brow=False, count=3, seed=700, waistcoat=False):
+    WAISTCOAT[0] = waistcoat
+    try:
+        o = _MACHO(k, x, feet, s, pose, "plain", look=look, badge=False, seed=seed)
+    finally:
+        WAISTCOAT[0] = False
     c = k.c
     c.save(); c.translate(x, feet); c.scale(s, s)
     bt = cb.M_BT                                           # v2: shade where sleeve meets chest, and under the chest
     for sx in (-1, 1):
+        if waistcoat:
+            continue
         c.set_source_rgb(*REF_SHADE); c.set_line_width(3.0); c.set_line_cap(1); c.new_path()     # v5: one fold under the chest
         c.move_to(sx * 66, bt + 30); c.curve_to(sx * 62, bt + 44, sx * 64, bt + 56, sx * 72, bt + 64)        # and one at the armpit
         c.move_to(sx * 8, bt + 86); c.curve_to(sx * 26, bt + 103, sx * 62, bt + 99, sx * 77, bt + 68); c.stroke(); c.set_line_cap(0)

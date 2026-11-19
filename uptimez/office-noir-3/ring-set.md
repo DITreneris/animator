@@ -1,6 +1,6 @@
-# The ring (set v3)
+# The ring (set v4)
 
-The room of beats 05 to 07 of *Office Noir 3: The Last Round*. Built by `src/ring_on3.py` (draws it, holds the cameras) and `src/ring_sheets_on3.py` (the three planning sheets). Sheets: `on3_ring_set_v3.png`, `on3_ring_plan_v3.png`, `on3_ring_blocking_v3.png` (v1 and v2 kept; `src/ring_on3_v1.py`, `_v2.py` draw them). The frames' casts are in `src/ring_casts_on3.py`.
+The room of beats 05 to 07 of *Office Noir 3: The Last Round*. Built by `src/ring_on3.py` (draws it, holds the cameras) and `src/ring_sheets_on3.py` (the three planning sheets). Sheets: `on3_ring_set_v4.png`, `on3_ring_plan_v4.png`, `on3_ring_blocking_v4.png` (v1 to v3 kept; `src/ring_on3_v1.py` to `_v3.py` draw them). The frames' casts are in `src/ring_casts_on3.py`.
 
 ## Zones: each with one job
 
@@ -43,6 +43,8 @@ Test 1 (set v1): 2 of 5 and 2 of 5. Test 2 (set v2): 4 of 5 and 3 of 5. Test 3 (
 - **Test 3 broke:** the punch. Lowered to clear the Referee, it read as an offered glove to both viewers.
 - **Never read in three tests:** the Client arriving. Leave it to 4.1.
 
+Test 4 (set v4, five frames): 3 of 5 and 2 of 5. The plan with its title, 10 GARAGES, is named by both. The punch is now read as aimed at the Referee, who stands between them; the waistcoat did not help. The robe's direction cannot be told from stills. Record: `cold_test_ring_v4/result.md`. Stills testing of beat 05 stops here; the next test is a moving rough.
+
 - **Fixed:** the robe gag reads (the sleeve drawn stretched from his glove to Pam's hands); the robot's face is clear of Sofía's card.
 - **Failed twice, the same way:** nobody sees him look at the plan. Eyes turned up read as weariness in this style. The plan needs a shot of its own or a reach.
 - **Open:** the Referee behind the robot reads as the robot's man to one viewer in two; the stop marks at the glove read as a hit on nothing; the ropes across him do not read as arriving.
@@ -53,6 +55,8 @@ Test 1 (set v1): 2 of 5 and 2 of 5. Test 2 (set v2): 4 of 5 and 3 of 5. Test 3 (
 - A costume change inside a scene must be seen starting: show the robe on before it comes off.
 - Marks in the air at a stopped glove read as an impact.
 - A punch is thrown at shoulder height or it is not a punch.
+- A stopped punch needs empty space behind the gap. A person standing there becomes the target.
+- A change of clothes cannot be judged from stills.
 - Fixing one reading can break another: retest the whole run of frames, not the one changed.
 
 ## Not done
