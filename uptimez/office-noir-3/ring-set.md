@@ -31,8 +31,8 @@ R1 the master (post to post, the lamp, the plan, the lane) · R2 centre, the two
 
 ## What the first frames showed
 
-- **5.1 does not work as one shot.** In the master the Client is about 140 px tall and the robe gag will not read. The plan sheet splits it: 5.1a (R1, the room and Sofía) and 5.1b (R3, the robe). The script still has it as one shot.
-- **In 5.2 the Referee stands behind the robot,** not between them: with him between, the stopped glove read as landing on his shirt.
+- **5.1 does not work as one shot.** In the master the Client is about 140 px tall and the robe gag will not read. The plan sheet splits it: 5.1a (R1, the room and Sofía) and 5.1b (R3, the robe). Script v12 has the split.
+- **In 5.2 the Referee stands behind the robot,** not between them: with him between, the stopped glove read as landing on his shirt. Script v12 has it so.
 - **C is visited once** (6.2, half a frame). If 6.2 is cut, the socket and the oil can go with it.
 
 ## Not done
