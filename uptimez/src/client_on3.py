@@ -1,4 +1,6 @@
 """v2 (client_on3_v1.py = v1, kept), after the outside review of sheet v1 and Tomas's answers (19 Nov, 1A 2A 3A):
+v3 (19 Nov, cast sheet v6): strip=True, the robe pulled off his shoulders and stopped at the gloves (5.1). Default
+draws exactly as v2; client_on3_v2.py is v2, pinned.
 - TWO OUTFITS. outfit="street": a charcoal hooded tracksuit, hood up, the garages' gear small on the chest (a symbol,
   never words), dark trainers. On the street the gloves are the only red. outfit="ring" (default): the red robe, as v1,
   from the arena on. The gloves never come off in either.
@@ -182,6 +184,32 @@ def _torso_ring(k, seed, R, RS, awake, hood):
         c.move_to(-80, bt + 40); c.curve_to(-76, bt + 70, -74, bt + 96, -70, HIP - 22); c.stroke()
 
 
+def _torso_strip(k, seed, R, RS):
+    """v3, strip=True (5.1): the robe pulled back off his shoulders and down to the belt. His chest is bare; the robe
+    hangs behind him from his elbows, its ivory collar turned out."""
+    c = k.c
+    bt = BT
+    cut(k, [(-124, bt + 74), (-100, bt + 56), (100, bt + 56), (124, bt + 74), (108, HIP + 4), (-108, HIP + 4)], R, lw=2.4)
+    for sx in (-1, 1):
+        cut(k, [(sx * 124, bt + 74), (sx * 100, bt + 56), (sx * 92, bt + 70), (sx * 114, bt + 90)], IVORY, shadow=False, lw=1.8)
+    rect(k, -27, bt - 22, 54, 30, co.SKIN, seed + 5, shadow=False, lw=2)
+    cut(k, [(-98, bt + 32), (-82, bt + 3), (-38, bt - 9), (38, bt - 9), (82, bt + 3), (98, bt + 32), (94, bt + 96),
+            (72, HIP + 4), (-72, HIP + 4), (-94, bt + 96)], co.SKIN, lw=2.4)
+    c.set_source_rgba(*co.SKIN_DARK, 0.95); c.set_line_width(2.4); c.set_line_cap(1)
+    for sx in (-1, 1):                                                                            # the chest, the belly
+        c.move_to(sx * 6, bt + 74); c.curve_to(sx * 26, bt + 90, sx * 62, bt + 86, sx * 76, bt + 54); c.stroke()
+    c.move_to(-46, HIP - 30); c.curve_to(-20, HIP - 20, 20, HIP - 20, 46, HIP - 30); c.stroke()
+    c.set_source_rgba(*co.HAIR, 0.55); c.set_line_width(1.5)
+    for dx, dy in ((-7, 22), (5, 26), (-2, 38), (8, 44), (-6, 52), (2, 62), (-24, 40), (22, 38), (-34, 54), (32, 56),
+                   (-18, 62), (16, 66), (-2, 84), (4, 100)):
+        c.move_to(dx, bt + dy); c.curve_to(dx + 2, bt + dy - 4, dx + 5, bt + dy - 4, dx + 6, bt + dy + 1); c.stroke()
+    rect(k, -73, HIP - 15, 146, 17, IVORY, seed + 46, shadow=False, lw=1.8)                       # the belt holds
+    for dx, ln in ((-8, 44), (9, 52)):
+        cut(k, [(12, HIP - 6), (22, HIP - 6), (22 + dx + 6, HIP - 6 + ln), (22 + dx - 6, HIP - 8 + ln)], IVORY,
+            shadow=False, lw=1.6)
+    ellipse(k, 17, HIP - 6, 9.5, 9, IVORY, seed + 47, shadow=False, lw=1.8)
+
+
 def _torso_street(k, seed, hood):
     """A pullover hoodie: a ribbed hem, a pouch pocket, two cords, the garages' gear small on the chest."""
     c = k.c
@@ -242,10 +270,13 @@ def _harden(k, c, face, mouth, seed, awake):
 
 
 def boxer(k, x, feet, s=1.0, pose="b_walk", face="confident", look=(0, 0), seed=900, mouth=None, hood=None,
-          tape=False, cig=False, note=False, awake=False, outfit="ring"):
+          tape=False, cig=False, note=False, awake=False, outfit="ring", strip=False):
     c = k.c
     a = POSES[pose] if isinstance(pose, str) else pose
     street = outfit == "street" and not awake
+    strip = strip and not street and not awake              # v3: the robe half off, in the ring only
+    if strip:
+        hood = False
     if hood is None:
         hood = street                                      # up on the street, down in the ring
     R, RS = (GOWN, GOWN_SHADE) if awake else (CHAR, CHAR_LINE) if street else (KEY, SHADE)
@@ -261,6 +292,8 @@ def boxer(k, x, feet, s=1.0, pose="b_walk", face="confident", look=(0, 0), seed=
         cut(k, HOOD, R, lw=2.4)
     if street:
         _torso_street(k, seed, hood)
+    elif strip:
+        _torso_strip(k, seed, R, RS)
     else:
         _torso_ring(k, seed, R, RS, awake, hood)
     hands = []
@@ -268,10 +301,16 @@ def boxer(k, x, feet, s=1.0, pose="b_walk", face="confident", look=(0, 0), seed=
         sy_ = bt + 26 + (5 if side < 0 else 0)
         sx_ = side * SH[0]
         ex, ey = sx_ + _d(u)[0] * LN1, sy_ + _d(u)[1] * LN1
-        hx, hy_ = limb(k, sx_, sy_, u, f_, LN1, LN2, 50, 43, R, R, co.SKIN if awake else R, co.HAND if awake else 4,
+        UP = co.SKIN if strip else R                         # v3: bare to the elbow when the robe is half off
+        hx, hy_ = limb(k, sx_, sy_, u, f_, LN1, LN2, 50, 43, UP, R, co.SKIN if awake else R, co.HAND if awake else 4,
                        seed + 10 + side)
-        ellipse(k, side * (SH[0] - 1), sy_ - 1, 24, 21, R, seed + 14 + side, shadow=False, lw=2)   # the shoulder
-        c.set_source_rgb(*R); c.rectangle(min(side * 60, side * 86), sy_ - 12, 26, 32); c.fill()
+        ellipse(k, side * (SH[0] - 1), sy_ - 1, 24, 21, UP, seed + 14 + side, shadow=False, lw=2)   # the shoulder
+        c.set_source_rgb(*UP); c.rectangle(min(side * 60, side * 86), sy_ - 12, 26, 32); c.fill()
+        if strip:                                            # the sleeve, bunched at the elbow: it stops at the glove
+            ellipse(k, ex, ey, 34, 27, R, seed + 16 + side, shadow=False, lw=2.2)
+            c.set_source_rgb(*RS); c.set_line_width(2.2); c.set_line_cap(1)
+            for d_ in (-12, 0, 12):
+                c.move_to(ex + d_ - 5, ey - 15); c.curve_to(ex + d_ + 3, ey - 5, ex + d_ - 7, ey + 5, ex + d_ + 2, ey + 16); c.stroke()
         ux, uy = (hx - ex) / LN2, (hy_ - ey) / LN2
         px, py = -uy, ux
         if awake:

@@ -1,11 +1,14 @@
-"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v4, sheet v5; cast_sheet_on3_v1.py to _v4.py draw the sheets v1 to v4).
+"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v5, sheet v6; cast_sheet_on3_v1.py to _v5.py draw the sheets v1 to v5).
+Sheet v6: what Tomas picked in /grill-me: Pam as a corner hand (rolled sleeves, work apron, towel round her neck, no
+cotton bud or chain, eyes clear of her glasses, a working stance), the Referee without balloon shoulders, and the
+Client with his robe half off in 5.1 (client_on3 v3, strip=True).
 Sheet v5: Pam at work on him. Two panels in the dream's look, her hands placed on the Client: 5.1 (she pulls the robe
 off his shoulder; the sleeve stops at the glove) and 6.1 (medium, he sits, she tapes his brow). Her poses alone on a
 sheet reached at nothing. The phone check is unchanged, so v4's stands and no v5 is written..
 Sheet: each beside the Office Noir 2 figure it comes from, their poses, faces close, the silhouette check (the Referee
 beside the Client, as black shapes), the corner as the dream shows it, the whole cast at its relative sizes, the rules.
 Phone: each figure alone at three sizes, in the dream's look (the rule from the robot's sheet v2 on).
-Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v5-sheet.png"""
+Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v6-sheet.png, uptimez-corner-on3-v6-phone.png"""
 import sys
 import math
 import cairo
@@ -60,23 +63,19 @@ def silhouette(c, w, h, draw):
     c.set_source_rgb(0.03, 0.03, 0.04); c.mask_surface(f, 0, 0)
 
 
-def _reach(px_, feet, s, left, right):
-    """Pam's arms as a pose, her hands at two points of the frame (left: her screen-left hand)."""
-    (ax, ay), (bx, by) = left, right
-    return ca._ik(-1, (ax - px_) / s, (ay - feet) / s) + ca._ik(1, (bx - px_) / s, (by - feet) / s)
-
-
 def panel_51(w, h):
-    """5.1: she pulls the robe back off his shoulder; the sleeve stops at the glove."""
+    """5.1: she has the robe off his shoulders and down; the sleeves stop at the gloves. She pulls at one."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, w, h); c = cairo.Context(s); k = Ctx(c, 0)
     ring(c, w, h, h - 24, lamp_x=w * 0.45)
     sc, F = 0.92, h - 12
-    cx, px_ = w * 0.36, w * 0.36 + 118 * sc
-    ca.bucket(k, w * 0.90, F - 2, 0.7)
-    o = b.boxer(k, cx, F, sc * b.REL, "b_walk", "hard", (0.2, -0.6))
-    sy = F + (b.BT + 26) * sc * b.REL                                     # his shoulder line
-    sx = cx + (b.SH[0] - 6) * sc * b.REL
-    ca.pam_corner(k, px_, F, sc, _reach(px_, F, sc, (sx - 6 * sc, sy + 2 * sc), (sx + 16 * sc, sy + 34 * sc)), "curious", (-0.9, 0.3))
+    cx = w * 0.34
+    px_ = cx + 150 * sc
+    ca.bucket(k, w * 0.92, F - 2, 0.6)
+    o = b.boxer(k, cx, F, sc * b.REL, "b_walk", "hard", (0.2, -0.6), strip=True)
+    gx, gy = o["hands"][1]                                                # his screen-right glove
+    q = sc * b.REL
+    ca.pam_corner(k, px_, F, sc, ca.reach(px_, F, sc, (gx + 2 * q, gy - 62 * q), (gx + 30 * q, gy - 34 * q)), "curious", (-0.9, 0.5),
+                  stance="work")
     noir(s)
     return s
 
@@ -92,7 +91,8 @@ def panel_61(w, h):
     o = b.boxer(k, cx, cf, sc * b.REL, "b_walk", "hard", (0.6, 0.2), tape=True)
     hx, hy = o["head"]
     bx, by = hx + 34 * sc * b.REL, hy - 34 * sc * b.REL                   # the end of the tape, on his brow
-    ca.pam_corner(k, px_, F, sc, _reach(px_, F, sc, (bx + 4 * sc, by + 2 * sc), (bx + 40 * sc, by + 20 * sc)), "neutral", (-0.9, 0.2), tape=True)
+    ca.pam_corner(k, px_, F, sc, ca.reach(px_, F, sc, (bx + 4 * sc, by + 2 * sc), (bx + 40 * sc, by + 20 * sc)), "neutral", (-0.9, 0.3), tape=True,
+                  stance="work")
     noir(s)
     return s
 
@@ -116,10 +116,10 @@ def sheet(out):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
     k = Ctx(c, 0)
     c.select_font_face("Inter", 0, 1); c.set_font_size(40); c.set_source_rgb(*INK)
-    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v5 · the corner and the ring")
+    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v6 · the corner and the ring")
     c.select_font_face("Inter", 0, 0); c.set_font_size(22)
-    c.move_to(50, 106); c.show_text("PAM, his cutman: the flat cap and apron of Office Noir 2 · a towel on her shoulder · a cotton bud behind her ear · a stopwatch on a cord, held up for the count · tape, a bucket, a sponge")
-    c.move_to(50, 136); c.show_text("THE REFEREE: the Bartender of Office Noir 2 without his glass · white shirt, black bow tie, bare forearms · the only bare hands in the ring")
+    c.move_to(50, 106); c.show_text("PAM, his cutman: the flat cap of Office Noir 2 · sleeves rolled, a stained work apron · a towel round her neck · a stopwatch on a cord, held up for the count · tape, a bucket, a sponge")
+    c.move_to(50, 136); c.show_text("THE REFEREE: the Bartender of Office Noir 2 without his glass · white shirt, sleeves rolled to the elbow, black bow tie · the only bare hands in the ring")
     F, SP, SR = 740, 1.0, 0.64
     n2.LOOK[0], old = 9, n2.LOOK[0]
     try:
@@ -170,14 +170,14 @@ def sheet(out):
              "· Pam is on his side and says one line. She fixes him;",
              "  she never looks at the plan over the ring.",
              "· Her tape is the tape that mends his plan in episode 11.",
-             "· The towel and the cotton bud are hers in every corner",
-             "  shot. The stopwatch: started on the bell, held up for",
-             "  the count. The bucket stands by the post.",
+             "· The towel is round her neck in every corner shot. The",
+             "  stopwatch: started on the bell, held up for the count.",
+             "  The bucket stands by the post. No cotton bud, no chain.",
              "· The Referee sees everything and does nothing. His face",
              "  is plain; the one eyebrow is his only reaction (6.4).",
              "· His hands are bare: fingers to count, a flat palm for",
              "  \"Break!\". He never touches the robot.",
-             "· Panels: 5.1, 6.1 (her hands on him), the cast at its sizes."]
+             "· Panels: 5.1 (the robe half off), 6.1, the cast at its sizes."]
     for i, t in enumerate(notes):
         c.select_font_face("Inter", 0, 1 if i == 0 else 0)
         c.move_to(1520, 1362 + 30 * i); c.show_text(t)
@@ -222,4 +222,5 @@ def phone(out):
 
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else "../characters"
-    sheet(d + "/uptimez-corner-on3-v5-sheet.png")
+    sheet(d + "/uptimez-corner-on3-v6-sheet.png")
+    phone(d + "/uptimez-corner-on3-v6-phone.png")
