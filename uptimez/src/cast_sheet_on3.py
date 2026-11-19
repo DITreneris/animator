@@ -1,8 +1,11 @@
-"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v4; cast_sheet_on3_v1.py, _v2.py and _v3.py draw v1 to v3).
+"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v4, sheet v5; cast_sheet_on3_v1.py to _v4.py draw the sheets v1 to v4).
+Sheet v5: Pam at work on him. Two panels in the dream's look, her hands placed on the Client: 5.1 (she pulls the robe
+off his shoulder; the sleeve stops at the glove) and 6.1 (medium, he sits, she tapes his brow). Her poses alone on a
+sheet reached at nothing. The phone check is unchanged, so v4's stands and no v5 is written..
 Sheet: each beside the Office Noir 2 figure it comes from, their poses, faces close, the silhouette check (the Referee
 beside the Client, as black shapes), the corner as the dream shows it, the whole cast at its relative sizes, the rules.
 Phone: each figure alone at three sizes, in the dream's look (the rule from the robot's sheet v2 on).
-Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v4-sheet.png, uptimez-corner-on3-v4-phone.png"""
+Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v5-sheet.png"""
 import sys
 import math
 import cairo
@@ -57,14 +60,39 @@ def silhouette(c, w, h, draw):
     c.set_source_rgb(0.03, 0.03, 0.04); c.mask_surface(f, 0, 0)
 
 
-def dream_panel(w, h):
+def _reach(px_, feet, s, left, right):
+    """Pam's arms as a pose, her hands at two points of the frame (left: her screen-left hand)."""
+    (ax, ay), (bx, by) = left, right
+    return ca._ik(-1, (ax - px_) / s, (ay - feet) / s) + ca._ik(1, (bx - px_) / s, (by - feet) / s)
+
+
+def panel_51(w, h):
+    """5.1: she pulls the robe back off his shoulder; the sleeve stops at the glove."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, w, h); c = cairo.Context(s); k = Ctx(c, 0)
-    ring(c, w, h, h - 24, lamp_x=w * 0.42)
-    sc = 0.86
-    ca.referee(k, w * 0.84, h - 12, sc * ca.REL_REF, "ref_bell", look=(-0.8, 0.2))
-    b.boxer(k, w * 0.30, h - 12, sc * b.REL, "b_walk", "hard", (0.8, 0))
-    ca.pam_corner(k, w * 0.53, h - 12, sc, "p_pull", "curious", (-0.9, 0.1))
-    ca.bucket(k, w * 0.10, h - 14, 0.8)
+    ring(c, w, h, h - 24, lamp_x=w * 0.45)
+    sc, F = 0.92, h - 12
+    cx, px_ = w * 0.36, w * 0.36 + 118 * sc
+    ca.bucket(k, w * 0.90, F - 2, 0.7)
+    o = b.boxer(k, cx, F, sc * b.REL, "b_walk", "hard", (0.2, -0.6))
+    sy = F + (b.BT + 26) * sc * b.REL                                     # his shoulder line
+    sx = cx + (b.SH[0] - 6) * sc * b.REL
+    ca.pam_corner(k, px_, F, sc, _reach(px_, F, sc, (sx - 6 * sc, sy + 2 * sc), (sx + 16 * sc, sy + 34 * sc)), "curious", (-0.9, 0.3))
+    noir(s)
+    return s
+
+
+def panel_61(w, h):
+    """6.1, medium, square on: he sits (the frame cuts at his chest), she tapes his brow."""
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, w, h); c = cairo.Context(s); k = Ctx(c, 0)
+    ring(c, w, h, h + 300, lamp_x=w * 0.4, lamp_y=h * 0.55)
+    sc = 1.25
+    F = h + 120                                                           # her feet, far below the frame
+    cx, cf = w * 0.30, F + 92 * sc                                        # he is on the stool: lower by a seat
+    px_ = cx + 120 * sc
+    o = b.boxer(k, cx, cf, sc * b.REL, "b_walk", "hard", (0.6, 0.2), tape=True)
+    hx, hy = o["head"]
+    bx, by = hx + 34 * sc * b.REL, hy - 34 * sc * b.REL                   # the end of the tape, on his brow
+    ca.pam_corner(k, px_, F, sc, _reach(px_, F, sc, (bx + 4 * sc, by + 2 * sc), (bx + 40 * sc, by + 20 * sc)), "neutral", (-0.9, 0.2), tape=True)
     noir(s)
     return s
 
@@ -88,7 +116,7 @@ def sheet(out):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
     k = Ctx(c, 0)
     c.select_font_face("Inter", 0, 1); c.set_font_size(40); c.set_source_rgb(*INK)
-    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v4 · the corner and the ring")
+    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v5 · the corner and the ring")
     c.select_font_face("Inter", 0, 0); c.set_font_size(22)
     c.move_to(50, 106); c.show_text("PAM, his cutman: the flat cap and apron of Office Noir 2 · a towel on her shoulder · a cotton bud behind her ear · a stopwatch on a cord, held up for the count · tape, a bucket, a sponge")
     c.move_to(50, 136); c.show_text("THE REFEREE: the Bartender of Office Noir 2 without his glass · white shirt, black bow tie, bare forearms · the only bare hands in the ring")
@@ -133,9 +161,9 @@ def sheet(out):
     silhouette(c, W, H, lambda kk: ca.referee(kk, x0 + 470, y0 + 360, S2 * ca.REL_REF, "ref_stand"))
     c.restore(); c.set_source_rgb(*INK); c.set_line_width(3); c.rectangle(x0, y0, w, h); c.stroke()
     label(c, "silhouettes: the Client, the Referee", x0 + w / 2, y0 + 415, 22)
-    dp = dream_panel(700, 340)
-    c.set_source_surface(dp, 60, 1330); c.paint()
-    c.set_source_rgb(*INK); c.set_line_width(3); c.rectangle(60, 1330, 700, 340); c.stroke()
+    for x0, fn in ((60, panel_51), (415, panel_61)):
+        c.set_source_surface(fn(345, 340), x0, 1330); c.paint()
+        c.set_source_rgb(*INK); c.set_line_width(3); c.rectangle(x0, 1330, 345, 340); c.stroke()
     lineup(c, k, 790, 1330, 700, 340)
     c.select_font_face("Inter", 0, 0); c.set_font_size(20); c.set_source_rgb(*INK)
     notes = ["Rules",
@@ -149,7 +177,7 @@ def sheet(out):
              "  is plain; the one eyebrow is his only reaction (6.4).",
              "· His hands are bare: fingers to count, a flat palm for",
              "  \"Break!\". He never touches the robot.",
-             "· Left: 5.1. Middle: the cast at its sizes."]
+             "· Panels: 5.1, 6.1 (her hands on him), the cast at its sizes."]
     for i, t in enumerate(notes):
         c.select_font_face("Inter", 0, 1 if i == 0 else 0)
         c.move_to(1520, 1362 + 30 * i); c.show_text(t)
@@ -194,5 +222,4 @@ def phone(out):
 
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else "../characters"
-    sheet(d + "/uptimez-corner-on3-v4-sheet.png")
-    phone(d + "/uptimez-corner-on3-v4-phone.png")
+    sheet(d + "/uptimez-corner-on3-v5-sheet.png")
