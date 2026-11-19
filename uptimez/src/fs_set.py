@@ -191,9 +191,52 @@ def mom_desk(k, x=None, floor=None, s=1.0, seed=720):
     c.restore()
 
 
+PLAN_V2 = [False]                                          # opt-in (board v15): the plan visibly patched together
+
+
+def plan_patched(k, x, y, s=1.0, seed=740):
+    """v2 of the taped plan: five shredder strips taped back crooked, each a little off; the first one upside down,
+    so its 6 reads as a second 9; bay 7 a hole (that piece is in the Client's pocket since episode 9); tape across
+    every seam; blue confetti dots still stuck on it from the cannon."""
+    c = k.c
+    edges = [-62, -31.9, -10.6, 10.6, 31.9, 62]
+    jit = [(1.5, 3.0, -0.025), (-1.0, -2.0, 0.02), (0.5, 1.5, -0.012), (1.0, -2.5, 0.03), (-1.5, 2.0, -0.02)]
+    old = ac.GARAGES[0], ac.TITLE[0]
+    ac.GARAGES[0], ac.TITLE[0] = True, True
+    c.save(); c.translate(x, y); c.scale(s, s)
+    try:
+        for i in range(5):
+            x0, x1 = edges[i], edges[i + 1]
+            cx_ = (x0 + x1) / 2
+            dx, dy, a = jit[i]
+            c.save()
+            c.translate(dx, dy); c.translate(cx_, -9); c.rotate(a + (math.pi if i == 0 else 0)); c.translate(-cx_, 9)
+            c.rectangle(x0, -61, x1 - x0, 104 if i != 1 else 58); c.clip()
+            ac.plan_open(k, 0, 0, 1.0, seed)
+            c.restore()
+    finally:
+        ac.GARAGES[0], ac.TITLE[0] = old
+    n, bx, by, bw, bh = [b for b in ac._bays() if b[0] == 7][0]                                  # no. 7: a hole
+    c.set_source_rgb(*INK); c.set_line_width(1.0); c.set_dash([3, 2])
+    c.rectangle(bx - 2, by - 3, bw + 4, bh + 16); c.stroke(); c.set_dash([])
+    for i, ex in enumerate(edges[1:-1]):                                                         # tape on the seams
+        for ty in (-48, -14, 22):
+            c.save(); c.translate(ex, ty + (i % 2) * 6); c.rotate(-0.25 + 0.18 * i)
+            c.set_source_rgba(0.98, 0.96, 0.86, 0.72); c.rectangle(-7, -3.5, 14, 7); c.fill()
+            c.set_source_rgba(0.6, 0.55, 0.4, 0.5); c.set_line_width(0.6); c.rectangle(-7, -3.5, 14, 7); c.stroke()
+            c.restore()
+    for (px, py, col) in ((-44, -20, (0.55, 0.75, 1.0)), (26, 30, (0.95, 0.85, 0.3)), (48, -30, (0.55, 0.75, 1.0)),
+                          (-6, 34, (0.9, 0.4, 0.6))):                                            # confetti, stuck
+        c.save(); c.translate(px, py); c.rotate(px * 0.05)
+        c.set_source_rgb(*col); c.rectangle(-2.5, -1.2, 5, 2.4); c.fill(); c.restore()
+    c.restore()
+
+
 def plan_taped(k, x, y, s=1.0, seed=740):
     """The plan of his ten garages, taped back from strips: every bay but 7, which is a gap."""
     c = k.c
+    if PLAN_V2[0]:
+        return plan_patched(k, x, y, s, seed)
     old = ac.GARAGES[0], ac.TITLE[0]
     ac.GARAGES[0], ac.TITLE[0] = True, True
     try:
@@ -303,7 +346,7 @@ def robot_finger(k, x, feet, s, state="eager", aim=1.0):
 SOFIA_FS = [False]                                         # opt-in: Sofía in her episode-10 look (sofia_fs)
 
 
-MASTER_HOOKS = {"mom": None, "counter": None, "don": None}   # opt-in (board v12): frame 0 drawn with the episode's
+MASTER_HOOKS = {"mom": None, "counter": None, "don": None, "pam": None, "client": None}   # opt-in (board v12): frame 0 drawn with the episode's
                                                                 # current Mom, her desk, Don's signs; None = as before
 
 
@@ -317,14 +360,16 @@ def master(k, screen_state="query", door_open=0.85):
     st.stage(k, open_=door_open, decor=False)
     screen(k, screen_state)
     portrait(k)
-    ac.pam(k, *P["pam"], "typing")                                                              # behind the counter
+    (MASTER_HOOKS["pam"] or (lambda k_, x_, f_, s_: ac.pam(k_, x_, f_, s_, "typing")))(k, *P["pam"])  # behind the counter
     (MASTER_HOOKS["mom"] or mom_bc.mom)(k, P["mom"][0], P["mom"][1], P["mom"][2], "bag", "sweet", look=(-0.8, 0))
     st.desk(k, terminal=False, shred=None)
     plan_taped(k, *((356, F - 186, 0.30) if v2 else (404, F - 186, 0.32)))                     # on the counter
     counter_plate(k, *((398, F - 176) if v2 else (452, F - 176)))
     if MASTER_HOOKS["counter"]:
         MASTER_HOOKS["counter"](k)
-    co.client(k, P["client"][0], P["client"][1], P["client"][2], "stand", "confident", look=(0.9, 0.0))
+    oc = co.client(k, P["client"][0], P["client"][1], P["client"][2], "stand", "confident", look=(0.9, 0.0))
+    if MASTER_HOOKS["client"]:
+        MASTER_HOOKS["client"](k, oc, P["client"][2])
     robot_finger(k, *P["robot"])
     if SOFIA_FS[0] or v2:                                  # True = the current sofia_fs; or a module name
         import importlib
@@ -391,6 +436,71 @@ def phone2(k, x, y, s=1.0, kind="bank", seed=760):
         c.move_to(-8, -28); c.line_to(-2, -21); c.line_to(9, -35); c.stroke()
         _text(c, "100%", 0, 16, 24, col=INK)
         _text(c, "COMPLETE", 0, 36, 13, col=INK)
+    elif kind == "post3a":                                 # board v17: the post alone, in LinkedIn's manner (no logo)
+        c.set_source_rgb(*brand.NAVY); c.rectangle(sx0, sy0, sw, 14); c.fill()
+        _text(c, "DON TAGGED YOU", 0, sy0 + 10.5, 8.5)
+        ellipse(k, sx0 + 9, sy0 + 23, 6.5, 6.5, SKIN_DON, seed + 1, shadow=False, lw=1)
+        _text(c, "DON · 1st", sx0 + 19, sy0 + 22, 7.5, col=INK, center=False)
+        _text(c, "CEO · Head of Talent", sx0 + 19, sy0 + 30, 5.6, col=(0.4, 0.42, 0.48), bold=False, center=False)
+        _text(c, "Thrilled to announce:", sx0 + 4, sy0 + 42, 6.8, col=INK, bold=False, center=False)
+        c.set_source_rgb(*GRN); c.rectangle(sx0 + 4, sy0 + 46, sw - 8, 44); c.fill()
+        _text(c, "0", sx0 + 24, sy0 + 81, 34)
+        ellipse(k, sx0 + 58, sy0 + 62, 9, 9, SKIN_DON, seed + 2, shadow=False, lw=1)
+        rect(k, sx0 + 50, sy0 + 71, 16, 17, (0.16, 0.20, 0.34), seed + 3, shadow=False, lw=1)
+        _text(c, "0 RESULTS.", 0, sy0 + 104, 11.5, col=INK)
+        _text(c, "NOW IN GREEN.", 0, sy0 + 118, 10.5, col=GRN)
+        _text(c, "#CustomerSuccess", 0, sy0 + 129, 7, col=(0.20, 0.40, 0.75), bold=False)
+        for i, col_ in enumerate(((0.95, 0.55, 0.20), (0.95, 0.80, 0.25), (0.90, 0.30, 0.40))):     # the reactions
+            c.set_source_rgb(*col_); c.arc(sx0 + 8 + i * 6, sy0 + 136, 3.4, 0, 6.3); c.fill()
+        _text(c, "1,204", sx0 + 28, sy0 + 138.5, 6.5, col=(0.4, 0.42, 0.48), bold=False, center=False)
+        c.set_source_rgb(0.85, 0.86, 0.9); c.rectangle(sx0 + 2, sy0 + 141, sw - 4, 0.8); c.fill()
+        _text(c, "Like   Comment   Repost", 0, sy0 + 148, 6.2, col=(0.35, 0.37, 0.42), bold=False)
+    elif kind == "post2a":                                 # board v16: the post alone, big (the comments come after)
+        c.set_source_rgb(*brand.NAVY); c.rectangle(sx0, sy0, sw, 16); c.fill()
+        _text(c, "DON TAGGED YOU", 0, sy0 + 11.5, 9)
+        c.set_source_rgb(*GRN); c.rectangle(sx0 + 4, sy0 + 22, sw - 8, 60); c.fill()
+        _text(c, "0", sx0 + 26, sy0 + 68, 40)
+        ellipse(k, sx0 + 58, sy0 + 44, 11, 11, SKIN_DON, seed + 2, shadow=False, lw=1)
+        rect(k, sx0 + 48, sy0 + 55, 20, 20, (0.16, 0.20, 0.34), seed + 3, shadow=False, lw=1)
+        _text(c, "0 RESULTS.", 0, sy0 + 104, 13.5, col=INK)
+        _text(c, "NOW IN", 0, sy0 + 124, 13.5, col=GRN)
+        _text(c, "GREEN.", 0, sy0 + 142, 13.5, col=GRN)
+    elif kind == "post2b":                                 # board v16: scrolled down to the comments, big
+        _text(c, "NOW IN GREEN.", 0, sy0 + 10, 9.5, col=GRN)
+        c.set_source_rgb(0.86, 0.88, 0.92); c.rectangle(sx0 + 2, sy0 + 18, sw - 4, 62); c.fill()          # Pam
+        ellipse(k, sx0 + 13, sy0 + 32, 9, 9, (0.40, 0.26, 0.20), seed + 4, shadow=False, lw=1)
+        ellipse(k, sx0 + 13, sy0 + 35, 6, 6, (0.96, 0.82, 0.70), seed + 5, shadow=False, outline=False)
+        _text(c, "PAM", sx0 + 27, sy0 + 37, 11, col=INK, center=False)
+        _text(c, "Some post.", sx0 + 6, sy0 + 56, 12, col=INK, bold=False, center=False)
+        _text(c, "Others tape.", sx0 + 6, sy0 + 72, 12, col=INK, bold=False, center=False)
+        c.set_source_rgb(0.86, 0.88, 0.92); c.rectangle(sx0 + 2, sy0 + 86, sw - 4, 60); c.fill()          # Sofía
+        c.set_source_rgb(0.20, 0.62, 0.30); c.new_path(); c.arc(sx0 + 13, sy0 + 101, 11.5, 0, 6.3); c.fill()
+        ellipse(k, sx0 + 13, sy0 + 101, 8, 8, (0.96, 0.84, 0.30), seed + 6, shadow=False, lw=0.8)
+        ellipse(k, sx0 + 13, sy0 + 103, 5.6, 5.6, (0.97, 0.84, 0.74), seed + 7, shadow=False, outline=False)
+        _text(c, "SOFÍA", sx0 + 28, sy0 + 106, 11, col=INK, center=False)
+        _text(c, "Congrats", sx0 + 6, sy0 + 124, 12, col=INK, bold=False, center=False)
+        _text(c, "Don!!", sx0 + 6, sy0 + 140, 12, col=INK, bold=False, center=False)
+    elif kind == "post2":                                  # v2 (board v15): Sofía comments too, #OPENTOWORK ring
+        c.set_source_rgb(*brand.NAVY); c.rectangle(sx0, sy0, sw, 15); c.fill()
+        _text(c, "DON TAGGED YOU", 0, sy0 + 11, 9)
+        c.set_source_rgb(*GRN); c.rectangle(sx0 + 4, sy0 + 18, sw - 8, 34); c.fill()
+        _text(c, "0", sx0 + 24, sy0 + 46, 26)
+        ellipse(k, sx0 + 56, sy0 + 31, 8, 8, SKIN_DON, seed + 2, shadow=False, lw=1)
+        rect(k, sx0 + 49, sy0 + 39, 14, 12, (0.16, 0.20, 0.34), seed + 3, shadow=False, lw=1)
+        _text(c, "0 RESULTS.", 0, sy0 + 63, 9.5, col=INK)
+        _text(c, "NOW IN GREEN.", 0, sy0 + 74, 9.5, col=GRN)
+        c.set_source_rgb(0.86, 0.88, 0.92); c.rectangle(sx0 + 2, sy0 + 79, sw - 4, 34); c.fill()        # Pam
+        ellipse(k, sx0 + 10, sy0 + 89, 6.5, 6.5, (0.40, 0.26, 0.20), seed + 4, shadow=False, lw=1)
+        ellipse(k, sx0 + 10, sy0 + 91, 4.5, 4.5, (0.96, 0.82, 0.70), seed + 5, shadow=False, outline=False)
+        _text(c, "PAM", sx0 + 20, sy0 + 92, 9, col=INK, center=False)
+        _text(c, "Some post.", sx0 + 5, sy0 + 102, 9, col=INK, bold=False, center=False)
+        _text(c, "Others tape.", sx0 + 5, sy0 + 111, 9, col=INK, bold=False, center=False)
+        c.set_source_rgb(0.86, 0.88, 0.92); c.rectangle(sx0 + 2, sy0 + 116, sw - 4, 32); c.fill()       # Sofía
+        c.set_source_rgb(0.20, 0.62, 0.30); c.new_path(); c.arc(sx0 + 10, sy0 + 127, 8.5, 0, 6.3); c.fill()  # the ring
+        ellipse(k, sx0 + 10, sy0 + 127, 6, 6, (0.96, 0.84, 0.30), seed + 6, shadow=False, lw=0.8)       # her hair
+        ellipse(k, sx0 + 10, sy0 + 128.5, 4.2, 4.2, (0.97, 0.84, 0.74), seed + 7, shadow=False, outline=False)
+        _text(c, "SOFÍA", sx0 + 21, sy0 + 130, 9, col=INK, center=False)
+        _text(c, "Congrats Don!!", sx0 + 5, sy0 + 143, 9, col=INK, bold=False, center=False)
     elif kind == "post":
         c.set_source_rgb(*brand.NAVY); c.rectangle(sx0, sy0, sw, 16); c.fill()
         _text(c, "DON TAGGED YOU", 0, sy0 + 11.5, 9)                                       # line 1

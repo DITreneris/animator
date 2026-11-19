@@ -17,6 +17,7 @@ A map of every document in `uptimez/`, so a person, worker or agent can find the
 | Document | Contents |
 |---|---|
 | [`STORYLINE.md`](STORYLINE.md) | v3.2, current (17 Nov): Act B around the blueprint, in line with episode 9 as built |
+| [`series/front-desk-set.md`](series/front-desk-set.md) | The front desk set v4: zones A/B/C, depth, home positions, the way out from behind the counter, camera setups S1–S6; the room from episode 10 on |
 | [`series/storyline-v3.md`](series/storyline-v3.md) | v3: after three outside showrunner reviews (character engines, relationships, world rules) |
 | [`series/storyline-v1.md`](series/storyline-v1.md) | v1: the first canon cleanup (early cast as prequel shorts; one promoted robot; Mom hired; Sofía flirts upward; calendar order; the one-client spine) |
 | [`series/storyline-v2.md`](series/storyline-v2.md) | v2: goals that collide, Don can sell, the robot's permission rule, episodes 9–11, *The Human Algorithm* finale planned |

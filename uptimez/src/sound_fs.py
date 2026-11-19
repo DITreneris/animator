@@ -178,6 +178,42 @@ def takes_v8():
     print("spoken in all %.2f s" % sum(m["len"] for m in meta.values()))
 
 
+# animatic v13 (19 Nov): Mom's deliveries picked by Tomas by ear (fs_mom_voices_v1.mp4): "Young... man." C (slow, low,
+# stern), "Machines!" D (spat); "That hussy!" spat to match. The Client's first line with a stop after Friday, and
+# "Pam has a plan." slower: both were 2/3 with Whisper. The rest: film_v8. python3 sound_fs.py takes_v9 / check_v9
+OUT_V9 = "fs_voices/film_v9"
+
+
+def _mom_cut(a):
+    a = np.asarray(a, dtype=np.float64)
+    i = np.where(np.abs(a) > 0.18 * np.abs(a).max())[0]
+    b = a[max(0, i[0] - 960):i[-1] + 960].copy(); b[-960:] *= np.linspace(1, 0, 960)
+    return b
+
+
+V9 = [("7.1", "MOM", "Young man.", lambda: _mom_cut(bc.mom("Young... man.", 0.80, semis=-1.5))),
+      ("6.1b", "MOM", "Machines.", lambda: _mom_cut(bc.mom("Machines!", 0.95)) * 0.8),
+      ("7.5", "MOM", "That hussy.", lambda: _mom_cut(bc.mom("That hussy!", 0.95)) * 0.8),
+      ("8.1", "MOM", "Pam has a plan.", lambda: _mom_cut(bc.mom("Pam has a plan.", 0.85))),
+      ("1.2", "CLIENT", "Friday, the bank. I need my blueprint.", lambda: ob.client_line("Friday. The bank. I need my blueprint."))]
+
+
+def takes_v9():
+    import shutil
+    os.makedirs(OUT_V9, exist_ok=True)
+    meta = json.load(open(OUT_V8 + "/takes.json"))
+    for shot in meta:
+        shutil.copy("%s/%s.wav" % (OUT_V8, shot), "%s/%s.wav" % (OUT_V9, shot))
+    for shot, who, line, gen in V9:
+        a = ob.trim(np.asarray(gen(), dtype=np.float64))
+        sf.write("%s/%s.wav" % (OUT_V9, shot), a.astype(np.float32), SR)
+        meta[shot] = dict(who=who, text=line, len=round(len(a) / float(SR), 3), f0=round(float(bc.f0(a))),
+                          rms=round(float(np.sqrt(np.mean(a ** 2))), 3), peak=round(float(np.abs(a).max()), 3))
+        print("%-5s %-6s %5.2f s  %s" % (shot, who, meta[shot]["len"], line))
+    json.dump(meta, open(OUT_V9 + "/takes.json", "w"), indent=1)
+    print("spoken in all %.2f s" % sum(m["len"] for m in meta.values()))
+
+
 def takes_v6():
     import shutil
     os.makedirs(OUT_V6, exist_ok=True)
@@ -199,6 +235,12 @@ def takes_v6():
 
 
 if __name__ == "__main__":
+    if sys.argv[1] == "takes_v9":
+        takes_v9(); sys.exit(0)
+    if sys.argv[1] == "check_v9":
+        OUT, FILM = OUT_V9, [(sh, who, ln, None, None) for sh, who, ln, g in V9]
+        KEY.update({"8.1": "plan", "7.5": "hussy", "6.1b": "machines"})
+        check(); sys.exit(0)
     if sys.argv[1] == "takes_v8":
         takes_v8(); sys.exit(0)
     if sys.argv[1] == "check_v8":

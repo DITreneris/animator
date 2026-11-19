@@ -1,4 +1,23 @@
-"""FIRST SEARCH (episode 10): storyboard v13 (fs_storyboard_v12.py = v12, kept): 3.1b cut (Mom's candy for Pam read
+"""FIRST SEARCH (episode 10): storyboard v17 (fs_storyboard_v16.py = v16, kept): the guilt and the memory. After
+"Where's my blueprint?" (5.2): 5.2b, Don's smile cracks, his eyes dart to the shredder, a drop of sweat; 5.2c, a micro
+flashback, half a second of episode 9 (the roll going into the shredder, its bin filling: a frame of the episode itself,
+fs_ep9_shred.png), washed out, scan lines, a rewind mark. Then he recovers: "The zero's green." 6.2a in LinkedIn's
+manner without its name or logo: "Thrilled to announce:", his headline and "1st", #CustomerSuccess, the reactions and
+Like · Comment · Repost.
+FIRST SEARCH (episode 10): storyboard v16 (fs_storyboard_v15.py = v15, kept): 6.2 in two beats (both reviews and
+the cold tests: the comments competed with the punchline): 6.2a the post alone, big; 6.2b scrolled down to the
+comments, Pam's and Sofía's, big.
+FIRST SEARCH (episode 10): storyboard v15 (fs_storyboard_v14.py = v14, kept): the blueprint's line, true to
+episode 9 and ready for 11. The taped plan is visibly patched (fs_set.PLAN_V2: five strips, crooked, the first upside
+down so its 6 reads as a second 9, tape on every seam, confetti stuck to it, bay 7 a hole). 4.4: Pam tapes a seam, not
+bay 7 (that piece is in the Client's pocket). The Client: a blue strip with a 7 peeks out of his jacket pocket in
+every shot (the plant for episode 11). Pam behind the counter tapes strips in every shot, frame 0 included. 6.2: Sofía
+comments too, her avatar in a green open-to-work ring: "Congrats Don!!" (her CV from episode 9).
+FIRST SEARCH (episode 10): storyboard v14 (fs_storyboard_v13.py = v13, kept): the three thumbs get their owners'
+sleeves (cold viewers only ever saw "a finger taps"): 2.3 the Client (his olive jacket, the white shirt cuff, oil in
+the creases); 4.3 Don (his white shirt sleeve, the stain on the cuff); 4.4 Pam (the purple sleeve shoved up, the bare
+forearm: her sleeves go up here).
+FIRST SEARCH (episode 10): storyboard v13 (fs_storyboard_v12.py = v12, kept): 3.1b cut (Mom's candy for Pam read
 as "the desk women celebrating with a fruit basket" in three versions and four cold reads). Mom's warmth to Pam is
 carried by her hand in 7.5 and "Pam has a plan." (8.1). Pam's sleeves now go up when she starts taping (4.4): the
 work itself.
@@ -76,7 +95,7 @@ import pam_bc as pb
 from kit import Ctx, INK, ellipse, rect, cut
 from charsheets import corp, wrap
 
-V = "v13"
+V = "v17"
 F = fs.F
 P = fs.POS2
 SKIN_DON = kit.PEOPLE["DON"]["skin"]
@@ -153,7 +172,34 @@ def don_signs(k, head, s, mic, hair):
 
 
 def client(k, x, feet, s, pose="stand", face="confident", look=(0.9, 0)):
-    return co.client(k, x, feet, s, pose, face, look)
+    o = co.client(k, x, feet, s, pose, face, look)
+    pocket_strip(k, o, s, x, feet)
+    return o
+
+
+def pocket_strip(k, o, s, x=None, feet=None):
+    """v15: bay 7's strip, peeking out of his jacket pocket (episode 9's, for episode 11)."""
+    if x is None:
+        x, feet = o["head"][0] + 4 * s, None
+    hx, hy = o["hands"][-1]
+    c = k.c
+    c.save(); c.translate(hx - 4 * s, hy - 26 * s); c.rotate(-0.35); c.scale(s, s)
+    rect(k, -5, -22, 10, 26, (0.18, 0.42, 0.85), 771, shadow=False, lw=1.4)
+    c.set_source_rgb(1, 1, 1); c.select_font_face("Inter", 0, 1); c.set_font_size(9)
+    c.move_to(-3, -10); c.show_text("7")
+    c.restore()
+
+
+def pam_taping(k, x, feet, s, act=None):
+    """v15: Pam behind the counter, taping a blue strip back onto the plan."""
+    o = ac.pam(k, x, feet, s, "empty")
+    (lx, ly), (rx, ry) = o["hands"][0], o["hands"][1]
+    c = k.c
+    c.save(); c.translate((lx + rx) / 2, (ly + ry) / 2 - 8 * s); c.rotate(0.2); c.scale(s, s)
+    rect(k, -5, -26, 10, 40, (0.18, 0.42, 0.85), 772, shadow=False, lw=1.4)
+    c.set_source_rgba(0.98, 0.96, 0.86, 0.85); c.rectangle(-9, -6, 18, 7); c.fill()
+    c.restore()
+    return o
 
 
 def scene(k, cam=WIDE, screen="query", portrait="hang", door=0.85, cl=None, rb=None, sf=None, dn=None, pm=None, mm=None,
@@ -168,8 +214,11 @@ def scene(k, cam=WIDE, screen="query", portrait="hang", door=0.85, cl=None, rb=N
     elif isinstance(portrait, dict):
         fs.portrait(k, **portrait)
     if pm is not False and counter:
-        d = dict(x=P["pam"][0], feet=P["pam"][1], s=P["pam"][2], act="typing"); d.update(pm or {})
-        ac.pam(k, d["x"], d["feet"], d["s"], d["act"])
+        d = dict(x=P["pam"][0], feet=P["pam"][1], s=P["pam"][2], act="_taping"); d.update(pm or {})
+        if d["act"] == "_taping":
+            pam_taping(k, d["x"], d["feet"], d["s"])
+        else:
+            ac.pam(k, d["x"], d["feet"], d["s"], d["act"])
     if mm is not False and counter:
         d = dict(x=P["mom"][0], feet=P["mom"][1], s=P["mom"][2], pose="bag", face="sweet", look=(-0.8, 0)); d.update(mm or {})
         kw = {q: d[q] for q in ("chin", "candy_dish", "candy_s", "tilt", "lean") if q in d}
@@ -182,7 +231,7 @@ def scene(k, cam=WIDE, screen="query", portrait="hang", door=0.85, cl=None, rb=N
         back(k)
     st.desk(k, terminal=False, shred=None)
     if counter and counter_plan:
-        fs.plan_taped(k, 356, F - 186, 0.30)
+        fs.plan_taped(k, 352, F - 190, 0.36)
         fs.counter_plate(k, 398, F - 176)
     if pre:
         pre(k)
@@ -218,13 +267,52 @@ def lines(c, x, y, n=7, r0=30, r1=50, a0=0, a1=360):
         c.move_to(x + r0 * math.cos(a), y + r0 * math.sin(a)); c.line_to(x + r1 * math.cos(a), y + r1 * math.sin(a)); c.stroke()
 
 
-def thumb(k, x, y, s=1.0, skin=SKIN_DON, oil=False, nail=False, ang=0.0):
-    """A thumb pressing down from above: the thumb pad, its nail, the hand behind it."""
+CUFFS = {                                                  # v14: whose thumb it is, by the sleeve coming into frame
+    "client": dict(sleeve=(0.42, 0.44, 0.24), cuff=(0.98, 0.97, 0.94)),
+    "don": dict(sleeve=(0.98, 0.97, 0.94), cuff=(0.98, 0.97, 0.94), stain=True),
+    "pam": dict(sleeve=(0.40, 0.26, 0.55), bare=True),
+    "mom": dict(noarm=True),                               # v15: her own arm is drawn: the pad-side hand only
+}
+
+
+def thumb(k, x, y, s=1.0, skin=SKIN_DON, oil=False, nail=False, ang=0.0, who=None):
+    """A thumb pressing down from above: the thumb pad, its nail, the hand behind it. who (v14): the owner's arm and
+    sleeve, coming in from the top of the frame."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
-    ellipse(k, 0, -70, 46, 60, skin, 1, shadow=False, lw=2.4)
-    ellipse(k, 0, -6, 20, 30, skin, 2, shadow=False, lw=2.4)
-    ellipse(k, 0, -18, 11, 14, (0.95, 0.80, 0.75) if not nail else (0.86, 0.05, 0.12), 3, shadow=False, lw=1.6)
+    if who:
+        w = CUFFS[who]
+        if w.get("noarm"):
+            pass
+        elif w.get("bare"):                                  # the forearm bare, the sleeve shoved up and bunched
+            rect(k, -34, -240, 68, 140, skin, 61, shadow=False, lw=2.4)
+            rect(k, -42, -700, 84, 440, w["sleeve"], 65, shadow=False, lw=2.4)
+            for i, yy in enumerate((-292, -270, -248)):
+                ellipse(k, 0, yy, 48, 17, w["sleeve"], 62 + i, shadow=False, lw=2.2)
+        else:
+            rect(k, -42, -700, 84, 540, w["sleeve"], 61, shadow=False, lw=2.4)
+            rect(k, -38, -190, 76, 70, w["cuff"], 62, shadow=False, lw=2.4)          # the cuff
+            c.set_source_rgb(*INK); c.new_path(); c.arc(16, -156, 3.5, 0, 6.3); c.fill()  # its button
+            if w.get("stain"):
+                c.set_source_rgba(0.55, 0.12, 0.10, 0.75); c.new_path(); c.arc(-12, -150, 9, 0, 6.3); c.fill()
+    if who:                                                # v14: the pad side, no nail: a closed hand, the thumb
+        dark = tuple(max(0, q - 0.10) for q in skin)       # pressing down along the card
+        ellipse(k, 0, -78, 48, 58, skin, 1, shadow=False, lw=2.4)                        # the back of the hand
+        c.set_source_rgb(*INK); c.set_line_width(2.0); c.set_line_cap(1)
+        for i, xx in enumerate((-30, -10, 10)):                                          # the curled fingers' knuckles
+            c.new_path(); c.arc(xx + 8, -44, 11, 0.2, math.pi - 0.2); c.stroke()
+        c.new_path()                                                                      # the thumb, pad towards us
+        c.move_to(-18, -62); c.line_to(-18, -6); c.curve_to(-18, 18, 18, 18, 18, -6); c.line_to(18, -52)
+        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()
+        c.set_source_rgb(*dark); c.set_line_width(1.8)                                    # its joint crease
+        c.new_path(); c.move_to(-12, -26); c.curve_to(-4, -22, 4, -22, 12, -26); c.stroke()
+        c.set_source_rgba(*dark, 0.35); c.new_path(); c.save(); c.translate(0, -2); c.scale(11, 12)
+        c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()                             # the pad, pressing
+        c.set_line_cap(0)
+    else:
+        ellipse(k, 0, -70, 46, 60, skin, 1, shadow=False, lw=2.4)
+        ellipse(k, 0, -6, 20, 30, skin, 2, shadow=False, lw=2.4)
+        ellipse(k, 0, -18, 11, 14, (0.95, 0.80, 0.75) if not nail else (0.86, 0.05, 0.12), 3, shadow=False, lw=1.6)
     if oil:
         c.set_source_rgba(*OIL, 0.6); c.arc(6, 10, 9, 0, 6.3); c.fill()
     c.restore()
@@ -315,7 +403,7 @@ def f_2_2(k):                                              # the tablet turned t
 def f_2_3(k):                                              # thumb 1: oily
     bg(k.c, (0.93, 0.92, 0.89))
     fs.tablet_upgrade(k, 270, 470, 3.0)
-    thumb(k, 270, 560, 1.4, SKIN_CL, oil=True, ang=-0.2)
+    thumb(k, 250, 600, 1.4, SKIN_CL, oil=True, ang=2.55, who="client")
 
 
 DESK = [True]                                              # v9: Mom's desk things on the counter
@@ -383,15 +471,18 @@ def f_4_3(k):                                              # thumb 2: APPROVED
     c = k.c
     c.set_source_rgb(*fs.GRN); c.rectangle(110, 410, 320, 140); c.fill()
     fs._text(c, "APPROVED", 270, 500, 52)
-    thumb(k, 300, 560, 1.4, SKIN_DON, ang=0.15)
+    thumb(k, 340, 540, 1.4, SKIN_DON, ang=2.45, who="don")
 
 
 def f_4_4(k):                                              # thumb 3: the tape
     bg(k.c, st.DESK)
     fs.plan_taped(k, 270, 470, 3.4)
-    c = k.c
-    c.set_source_rgba(0.97, 0.97, 0.90, 0.7); c.rectangle(210, 300, 60, 340); c.fill()
-    thumb(k, 236, 560, 1.4, (0.94, 0.80, 0.68), nail=False, ang=-0.1)
+    c = k.c                                                # v15: a fresh piece of tape on a seam (not bay 7: a hole)
+    c.save(); c.translate(234, 395); c.rotate(-0.15)
+    c.set_source_rgba(0.98, 0.96, 0.86, 0.85); c.rectangle(-40, -14, 80, 28); c.fill()
+    c.set_source_rgba(0.6, 0.55, 0.4, 0.6); c.set_line_width(1.6); c.rectangle(-40, -14, 80, 28); c.stroke()
+    c.restore()
+    thumb(k, 240, 404, 1.4, (0.94, 0.80, 0.68), nail=False, ang=2.6, who="pam")
 
 
 def f_4_5(k):                                              # the sweep
@@ -415,15 +506,73 @@ def f_4_6(k):                                              # the photo
           sf=False, cl=False, extra=ex)
 
 
+def f_m62a(k):                                             # v16: the post alone
+    bg(k.c, (0.86, 0.84, 0.80))
+    fs.phone2(k, 270, 470, 3.0, "post3a")
+    thumb(k, 400, 760, 1.3, SKIN_CL, oil=True, ang=2.7, who="client")
+
+
+def f_m62b(k):                                             # v16: scrolled to the comments
+    bg(k.c, (0.86, 0.84, 0.80))
+    fs.phone2(k, 270, 470, 3.0, "post2b")
+    thumb(k, 400, 700, 1.3, SKIN_CL, oil=True, ang=2.7, who="client")
+    c = k.c
+    c.set_source_rgb(*INK); c.set_line_width(3); c.set_line_cap(1)                     # the scroll
+    for dx in (-14, 0, 14):
+        c.move_to(470 + dx, 620); c.line_to(470 + dx, 560); c.stroke()
+
+
 def f_4_7(k):                                              # the post, Pam's comment
     bg(k.c, (0.86, 0.84, 0.80))
-    fs.phone2(k, 270, 470, 3.0, "post")
-    thumb(k, 420, 760, 1.3, SKIN_CL, oil=True, ang=0.5)
+    fs.phone2(k, 270, 470, 3.0, "post2")
+    thumb(k, 400, 760, 1.3, SKIN_CL, oil=True, ang=2.7, who="client")       # v15: pad side, no nail
 
 
 def f_5_1(k):                                              # he looks for his plan in the green zero: nothing
     scene(k, cam=(185, 540, 1.6), screen="green", cl=dict(x=120, pose="stand", face="puzzled", look=(-1, -1)),
           sf=dict(x=230, face="drop", look=(-1, 0)), dn=dict(x=300, feet=F + 40, s=0.82, face="grin", look=(-1, -0.2)), rb=False)
+
+
+def f_m52b(k):                                             # v17: the guilt: his eyes dart to the shredder
+    def ex(k, o):
+        hx, hy = o["don"]["head"]
+        c = k.c                                                                         # a drop of sweat
+        c.save(); c.translate(hx - 30, hy - 30)
+        c.move_to(0, -14); c.curve_to(7, -2, 8, 6, 0, 8); c.curve_to(-8, 6, -7, -2, 0, -14); c.close_path()
+        c.set_source_rgb(0.75, 0.88, 1.0); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+        c.restore()
+    scene(k, cam=(292, 560, 3.6), cl=False, sf=False, rb=False, pm=False, mm=False,
+          dn=dict(face="shock", look=(1.6, 0.5)), extra=ex)
+
+
+_FB = [None]
+
+
+def f_m52c(k):                                             # v17: the micro flashback, episode 9
+    from PIL import Image, ImageEnhance, ImageFilter
+    c = k.c
+    if _FB[0] is None:
+        here = os.path.dirname(os.path.abspath(__file__))
+        im = Image.open(os.path.join(here, "../first-search/fs_ep9_shred.png")).convert("RGB").resize((540, 960))
+        im = ImageEnhance.Color(im).enhance(0.65)                                      # washed out, the blue kept
+        im = ImageEnhance.Contrast(im).enhance(0.85)
+        im = Image.blend(im, Image.new("RGB", im.size, (235, 225, 205)), 0.15)        # a faded memory
+        im = im.filter(ImageFilter.GaussianBlur(0.6))
+        import io
+        buf = io.BytesIO(); im.save(buf, "PNG"); buf.seek(0)
+        _FB[0] = cairo.ImageSurface.create_from_png(buf)
+    c.set_source_surface(_FB[0], 0, 0); c.paint()
+    c.set_source_rgba(0, 0, 0, 0.18)                                                    # scan lines
+    for yy in range(0, 960, 6):
+        c.rectangle(0, yy, 540, 2)
+    c.fill()
+    g = cairo.RadialGradient(270, 480, 200, 270, 480, 620)                              # vignette
+    g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0, 0, 0, 0.6)
+    c.set_source(g); c.paint()
+    c.set_source_rgb(1, 1, 1)                                                           # the rewind mark
+    for dx in (0, 26):
+        c.move_to(60 + dx, 120); c.line_to(86 + dx, 104); c.line_to(86 + dx, 136); c.close_path()
+    c.fill()
 
 
 def f_5_2(k):                                              # "Where's my blueprint?" from above
@@ -482,9 +631,8 @@ def f_m73(k):                                              # v7: the lick, close
     c.save(); c.translate(470, 640); c.rotate(-0.62)                                  # the thumb, pulled off the tongue
     c.new_path(); c.move_to(-58, 260); c.line_to(-58, 0); c.curve_to(-58, -80, 58, -80, 58, 0); c.line_to(58, 260)
     c.close_path(); c.set_source_rgb(*SK); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
-    c.new_path(); c.move_to(-30, -10); c.line_to(-30, -32); c.curve_to(-30, -58, 30, -58, 30, -32); c.line_to(30, -10)
-    c.curve_to(10, -2, -10, -2, -30, -10); c.close_path()
-    c.set_source_rgb(0.97, 0.88, 0.84); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3); c.stroke()
+    c.set_source_rgba(0.80, 0.55, 0.50, 0.30)               # v15: the pad side, wet; no nail
+    c.new_path(); c.save(); c.translate(0, -18); c.scale(40, 46); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
     c.set_source_rgb(*INK); c.set_line_width(2.5)
     for yy in (90, 104):
         c.move_to(-36, yy); c.curve_to(-12, yy + 8, 12, yy + 8, 36, yy); c.stroke()
@@ -509,7 +657,7 @@ def f_m74(k):                                              # v7: she scrubs his 
         mfs.mom(k, hx + 70, F + 16, 0.62, "thread", "sweet", look=(-1, -0.4))
         c = k.c                                                                         # v11: smoothing his one hair
         sd = P["don"][2]
-        thumb(k, hx + 14 * sd, hy - 46 * sd, 0.26, skin=(0.96, 0.80, 0.70), ang=-2.4)
+        thumb(k, hx + 14 * sd, hy - 46 * sd, 0.26, skin=(0.96, 0.80, 0.70), ang=-2.4, who="mom")   # v15: no nail
         c.set_source_rgb(*INK); c.set_line_width(2.4)
         for d in (0, 9):
             c.new_path(); c.arc(hx + 4 * sd, hy - 50 * sd, (22 + d) * sd, -2.6, -0.5); c.stroke()
@@ -530,7 +678,7 @@ def f_7_1(k):                                              # he goes; Pam brings
         ac.pam(k, 360, F + 10, 0.66, "stand", look=(-1, -0.3))                                             # out from the counter
         fs.plan_taped(k, 346, F - 116, 0.72)
     scene(k, cl=dict(x=110, pose="arrive", face="plain", look=(-1, 0)), sf=dict(face="charm", look=(1, 0)),
-          dn=dict(face="happy", look=(-1, 0)), pm=False, extra=ex, mm=MM_81[0])
+          dn=dict(face="happy", look=(-1, 0)), pm=False, extra=ex, mm=MM_81[0], counter_plan=False)
 
 
 MM_81 = [dict(pose="thread", face="sweet", look=(-1, 0.2))]    # v8: Mom points at Pam: "Pam has a plan."
@@ -644,7 +792,8 @@ def f_8_3(k):                                              # frame 0
         if DON_STATE[0]:
             don_signs(k, o["head"], s_, *DON_STATE[0])
     old = dict(fs.MASTER_HOOKS)
-    fs.MASTER_HOOKS.update(mom=mfs.mom, counter=counter, don=don_post)       # v12: frame 0 = frame 1's people
+    fs.MASTER_HOOKS.update(mom=mfs.mom, counter=counter, don=don_post,       # v12: frame 0 = frame 1's people
+                           pam=pam_taping, client=lambda k_, o_, s_: pocket_strip(k_, o_, s_))
     try:
         c.save(); fs.cam2(c); fs.master(k); c.restore()
     finally:
@@ -664,9 +813,11 @@ SHOTS = [  # shot, length (s), drawing, the line (or the beat): script v6's orde
     ("4.3", 0.8, f_4_3, "DON: \"Approved.\" thumb 2"), ("4.4", 0.4, f_4_4, "thumb 3: Pam's tape"),
     ("4.5", 1.0, f_4_5, "the sweep to green; the chime"),
     ("5.1", 2.0, f_5_1, "he finds nothing; her smile drops; he beams"), ("5.2", 1.6, f_5_2, "CLIENT: \"Where's my blueprint?\""),
+    ("5.2b", 0.4, f_m52b, "his eyes dart to the shredder; sweat"), ("5.2c", 0.5, f_m52c, "flashback: episode 9, the shredder"),
     ("5.3", 1.7, f_5_3, "DON: \"The zero's green.\" Pam's plan up; his puffed-up self blocks it"),
     ("6.1", 0.7, f_4_6, "the photo: flash"),
-    ("6.1b", 0.7, f_m61b, "MOM, at the robot: \"Machines.\""), ("6.2", 1.5, f_4_7, "the post he is tagged in; Pam's comment"),
+    ("6.1b", 0.7, f_m61b, "MOM, at the robot: \"Machines.\""), ("6.2a", 0.8, f_m62a, "the post he is tagged in"),
+    ("6.2b", 1.2, f_m62b, "scrolled: Pam's and Sofía's comments"),
     ("7.1", 1.2, f_6_1, "his post on her phone, proud. MOM: \"Young man.\""),
     ("7.2", 0.9, f_m72, "two men step back; her thumb to her tongue"), ("7.3", 0.6, f_m73, "the lick, close"),
     ("7.4", 1.2, f_m74, "she smooths his one hair flat. SOFÍA and PAM: \"Eww.\""),
@@ -701,12 +852,12 @@ def _don_state(shot):
 
 def _with_state(shot, fn):
     def f(k):
-        fs.PSTATE[0] = _pstate(shot); DON_STATE[0] = _don_state(shot)
+        fs.PSTATE[0] = _pstate(shot); DON_STATE[0] = _don_state(shot); fs.PLAN_V2[0] = True
         try:
             with pam_fs.look(_sleeves(shot)):
                 fn(k)
         finally:
-            fs.PSTATE[0] = None; DON_STATE[0] = None
+            fs.PSTATE[0] = None; DON_STATE[0] = None; fs.PLAN_V2[0] = False
     return f
 
 

@@ -1,4 +1,11 @@
-"""FIRST SEARCH (episode 10): the animatic v12 (fs_animatic_v11.py = v11, kept): storyboard v13 (3.1b cut).
+"""FIRST SEARCH (episode 10): the animatic v16 (fs_animatic_v15.py = v15, kept): storyboard v17 (Don's guilty glance,
+the micro flashback to episode 9, a rewind zip on it; the post in LinkedIn's manner).
+FIRST SEARCH (episode 10): the animatic v15 (fs_animatic_v14.py = v14, kept): storyboard v16 (6.2 in two beats).
+FIRST SEARCH (episode 10): the animatic v14 (fs_animatic_v13.py = v13, kept): storyboard v15 (the blueprint's
+line true to episodes 9 and 11; Sofía's comment; no nail on any thumb).
+FIRST SEARCH (episode 10): the animatic v13 (fs_animatic_v12.py = v12, kept): storyboard v14 (the thumbs' owners,
+pad side, no nail); fs_voices/film_v9 (Mom's deliveries picked by ear; every line 3/3 with Whisper).
+FIRST SEARCH (episode 10): the animatic v12 (fs_animatic_v11.py = v11, kept): storyboard v13 (3.1b cut).
 FIRST SEARCH (episode 10): the animatic v11 (fs_animatic_v10.py = v10, kept): storyboard v12 (the full cold
 test's fixes; frame 0 matches frame 1).
 FIRST SEARCH (episode 10): the animatic v10 (fs_animatic_v9.py = v9, kept): storyboard v11, Don's signs.
@@ -36,10 +43,10 @@ import sound_xmas as sx
 import sound_iwry as si
 from kit import Ctx, INK
 
-V = "v12"
+V = "v16"
 W, H, FPS, SR = 540, 960, 30, 48000
 HERE = os.path.dirname(os.path.abspath(__file__))
-VOICES = "fs_voices/film_v8"
+VOICES = "fs_voices/film_v9"
 TAKES = json.load(open(os.path.join(HERE, VOICES, "takes.json")))
 LEAD, TAIL = 0.15, 0.30
 LINE_OF = {"1.2": "1.2", "2.2": "2.2", "3.3": "3.3", "4.1": "4.1", "4.2": "4.2", "4.3": "4.3", "5.2": "5.2",
@@ -158,7 +165,7 @@ def mix(rows, total):
         (at["2.3"] + 0.15, bm.chime([1568, 2093], 0.08, 0.5), 0.16),
         (at["3.1"] + 0.3, buzz(), 0.30), (at["3.4"] + 0.3, sx.thunk(0.08, 300), 0.15),
         (at["4.3"] + 0.4, sx.thunk(0.05, 900), 0.20), (at["4.5"] + 0.6, bm.chime([1047, 1319, 1568], 0.09, 0.7), 0.20),
-        (at["6.1"] + 0.4, sx.whoosh(0.08), 0.45), (at["6.2"] + 0.3, bm.chime([1760, 2349], 0.07, 0.3), 0.14),
+        (at["6.1"] + 0.4, sx.whoosh(0.08), 0.45), (at["6.2a"] + 0.3, bm.chime([1760, 2349], 0.07, 0.3), 0.14),
         (at["8.2"] + 0.2, buzz(0.35) * 0.4, 0.4), (at["9.1"] + 0.3, bm.chime([1047, 1319, 1568], 0.09, 0.7), 0.20),
     ]
     for t, a, g in fx:
@@ -166,6 +173,7 @@ def mix(rows, total):
     for i in range(9):                                     # the robot's keys
         _at(m, sx.thunk(0.03, 1400), at["9.2"] + 0.9 + i * 0.09, 0.08)
     _at(m, sx.whoosh(0.05), at["9.3"] + 0.15, 0.25)                   # the plaster flutters down
+    _at(m, sx.whoosh(0.08)[::-1].copy(), at["5.2c"], 0.35)              # the rewind zip into the memory
     _at(m, slurp(), at["7.3"] + 0.05, 0.35)                            # the lick
     _at(m, squeak(), at["7.4"] + 0.05, 0.10)                           # the scrub, twice
     _at(m, squeak(), at["7.4"] + 0.30, 0.10)

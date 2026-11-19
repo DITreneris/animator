@@ -54,6 +54,12 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 
 Validate every new check on a known failure first; a check that always passes is worse than none.
 
+## The set
+
+- **The front desk v4** (`src/fs_set4.py`, [`series/front-desk-set.md`](series/front-desk-set.md)) is the room from episode 10 on: zones A/B/C, home positions, the way out from behind the counter, camera setups S1–S6. Start an episode's staging from it; change it only with a reason written into that doc.
+- **Plan in three sheets:** the clean set, a top-down shot plan (setups + table), a blocking sheet for the hardest beat. Before redrawing a board on a set, test the hardest shot as real camera frames with two cold viewers.
+- **Reactions face their target; the same cast on both sides of a cut; entrances caught mid-step.**
+
 ## Look and voices
 
 - **Shared kit:** `src/kit.py`, paper cut-out style. Holiday looks are costumes on the existing characters, never redesigns.
