@@ -49,6 +49,8 @@ Test 4 (set v4, five frames): 3 of 5 and 2 of 5. The plan with its title, 10 GAR
 - **Failed twice, the same way:** nobody sees him look at the plan. Eyes turned up read as weariness in this style. The plan needs a shot of its own or a reach.
 - **Open:** the Referee behind the robot reads as the robot's man to one viewer in two; the stop marks at the glove read as a hit on nothing; the ropes across him do not read as arriving.
 
+Test 5 (the moving rough `on3_beat05_rough_v1.mp4`, `src/ring_rough_on3.py`): 3 of 5 and 4 of 5, one short of a pass. The robe gag reads for both viewers for the first time; the plan reads; the swing is too soft for one viewer; the Referee behind the robot is still taken for its handler by some. Record: `cold_test_beat05_rough_v1/result.md`.
+
 ## Staging rules learned on this set
 
 - A look is not an action here: what matters gets its own shot or a hand on it.

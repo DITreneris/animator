@@ -204,7 +204,7 @@ def frame(cam, mid=(), front=(), noir=True, **kw):
     return s
 
 
-def plan_pov(glove=True, swing=0.0):
+def plan_pov(glove=True, swing=0.0, rise=0.0):
     """5.1b, his view: the plan from below, the lamp behind it, and one red glove coming up into the frame toward it.
     Its own drawing (not a framing of the set). Returns a 540x960 surface in the dream's look."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -225,7 +225,7 @@ def plan_pov(glove=True, swing=0.0):
     if glove:                                                                             # his glove, up toward it, short of it
         ang = -1.36
         ux, uy = math.cos(ang), math.sin(ang)
-        hx, hy = 372, 820
+        hx, hy = 372, 820 + rise                             # rise > 0: the glove is still on its way up (the rough)
         c.save(); c.translate(hx, hy); c.scale(2.3, 2.3); c.translate(-hx, -hy)
         px_, py_ = -uy, ux
         cut(k, [(hx - ux * 30 + px_ * 22, hy - uy * 30 + py_ * 22), (hx - ux * 30 - px_ * 22, hy - uy * 30 - py_ * 22),
