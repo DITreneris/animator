@@ -629,3 +629,52 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 62. **The blocking test.** "Can an animator stage 7.2 without asking where Mom came from, where she stands or what the camera sees?" Then check it with two real camera frames on the set and two cold viewers before redrawing the board.
 63. **A wide set needs zones the camera actually visits.** The timeline by zone showed the camera never went to the counter until 29 s, which is why Pam and Mom's threads didn't read: their zone was off screen for half the film.
 64. **Reuse the set.** The front desk v4 (`src/fs_set4.py`, documented in `series/front-desk-set.md`) is the room for episodes 9–11 and onwards: same zones, home positions and camera setups, so each episode starts from staging, not set design.
+
+## Hoodyz: Make It Original v5 and Perfect Date v2 (18 Nov)
+
+**What happened.**
+- Make It Original went from v4 to v5.3 in six rounds and got better each time:
+  - a loop that lands on frame 0's stadium shot
+  - a flash cut from her wave-off to his
+  - Tomas's new drummer take
+  - MY AI's SOURCE stamp
+- Perfect Date went from v2 to v2.2 in three fast rounds, and Tomas called v2.2 worse than what came before. v2.3 went back to his bench opening, then fixed:
+  - composition: overlaps and crops
+  - sizes
+  - props: the pump the robot couldn't reach
+  - anatomy: a floating finger, a guitar with no arms
+  - motion: three frozen reactions
+
+**Lessons.**
+
+65. **Tomas is the final judge; cold viewers are a smoke test.** Two agent viewers said "open on the result", the recommendation followed them, and the bench opening Tomas had chosen was replaced. Viewer feedback finds faults inside a structure; it never replaces a structure the person chose. Two viewers also disagree on the same footage (Make It Original v5.2 vs v5.3), so a single pair is a signal, not a verdict.
+66. **Nothing merges before Tomas has watched it.** An agent's "yes, just barely" was taken as a pass and v2.2 was merged. A PR stays open until he says so.
+67. **One structural change per round, shown against the last version.** Three rebuilds in an hour (new opening, new ending, new bridge) each drew new shots fast and left them unchecked. Change one thing, show it next to the version before, then the next.
+68. **Check composition at full size, not as thumbnails.** At 216 px the overlaps were visible and were waved through: Hoody's head over MY AI, MY AI walking behind the bench, MY AI cut in half by the frame edge, the cat hidden behind Hoody. Look at every shot at 432 px or more and ask one question: does anything cover a face or a body, or cut a character at the edge?
+69. **One size rule for the whole film.** In v1 every shot set its own scales: MY AI ran from 0.52 to 0.93 of Eva's height, and Hoody was smaller than Eva in one shot. The rule: Hoody and Eva are the same height, and MY AI is 0.6 of it. Only distance from the camera changes size, and it changes everyone in that plane together. Measure it; don't eyeball it.
+70. **A held prop takes its position from the hands, not the other way round.** The pump handle hung in the air beside MY AI. Compute the hand positions (`hand_at`) and put the handle there; if the pose can't reach, change the pose. The same applies to a guitar: in two close-ups it floated in front of a torso with no arms.
+71. **A limb never floats.** A skin-coloured tube with a fingertip read as "a finger on its own". A hand comes out of a sleeve, and the sleeve comes from the body or the frame edge (lesson 38, again).
+72. **Measure motion, then animate the reactions.** `hoodyz/motion.py` showed the rose at 0.44, the "oh" at 0.20 and the cat at 0.24: frozen. Each was a face swap where the story needed a take. With a spin and bow, a lean and hearts, a squash-stretch take with a gust, and a flinch, they rose to 1.1-3.2. Add breathing to everyone.
+73. **The fix for one bad version is the last good one, not a new idea.** v2.3 restored v2.1's structure and fixed it, instead of inventing a v2.4. That got back what Tomas liked and kept the useful parts of v2.2 (the fall with speed lines, the bigger PFF!).
+74. **A strong loop ends on frame 0's exact shot.** Make It Original: the cat on his stage in frame 0's stadium framing, with the riff running across the cut. Perfect Date: MY AI and Eva walk back to their frame-0 marks. In both, the last frame is frame 0 minus one thing, so the cut reads as "again".
+75. **A fact-check beats a label.** Make It Original's punchline read silently only once MY AI stamped SOURCE: GARAGE DEMO '86 after his "Now THAT'S original!"; both viewers then said "the song was his". Show the irony with an object the film already planted (the cassette), not a caption.
+
+## Hoodyz: Untitled (19 Nov)
+
+**What happened.** A new episode from a caricature (an AI calls a poop "A MASTERPIECE! 10/10" after "Be brutally honest"):
+- MY AI learns in a modern art museum that a brown bronze swirl is art, then matches the shape to Eva's dog's poop and labels it.
+- Concept doc, then key frames, then seven roughs and a final in one day: 21.1 s, QA pass, cold viewers 5 of 5.
+- Tomas caught six faults the checks did not: a museum that looked like a kitchen, art that didn't resemble the payoff, the
+  poop low in one shot, the card missing in another, the card present at 0:00 against his own loop, text spilling off the card.
+
+**Lessons.**
+76. **Say his idea back in one line before writing it down.** The first concept had Hoody decide the poop was art; Tomas meant MY AI. One sentence back ("MY AI, trained in the museum, finds the poop and decides it's art") would have caught it before a doc was built on it.
+77. **The lesson must look like the payoff.** The museum first held pastel blobs, a dot and a stripe, so nothing linked it to the park. Once the star piece was a brown bronze swirl, the viewer saw the match before MY AI did, and the logic (MATCH 99% = ART) needed no explaining.
+78. **Every prop gets a timeline: which shots it is in, and where.** Moving the poop up fixed frame 0 but not shot 11, which drew its own copy. The card was missing in shot 14 and still present at 0:00 after the loop changed. Write "card: shots 11-15, at 640/1714" in the shot list and check it by measuring: wrap the prop's draw call, render every frame, and print its position per shot. Each of these took Tomas one look and the measurement one run.
+79. **The bottom of a 9:16 frame belongs to the app.** Caption, likes and buttons cover roughly the bottom 250 px on a phone. The poop at y 1880 was under them. Keep the story above ~1700 and anchor a camera push-in at the ground line, so the zoom grows the characters without pushing the payoff down.
+80. **Fit text by measuring it, never by eye.** "UNTITLED" in a marker font ran past both edges of its card; stickers and a sculpture covered three museum labels. Measure each string against its box (`fit()`), keep 30 px margins, and crop every label at full size to check.
+81. **A rule of three on a beat holds the viewer.** Three "This is art." lines (Hoody, Hoody, then MY AI in its own voice) on a 120 BPM grid, the 10/10 stickers landing on the next beat, MY AI hopping on every beat, the beat cut dead on the museum exit. The third line, from the student, shows the lesson landed and plants the park.
+82. **Show the action whole, then pause, then the punchline.** "VANDALISM!" came straight after a cut to Eva already holding the bag. Eva walking in, squatting and the bag swallowing the art, then 0.6 s of MY AI's heart eyes flickering out in silence, gave the line its laugh.
+83. **A louder bed can mask a line; QA catches it.** Raising the park ambience 6 dB turned "ten out of ten" into "10 or 10" for the recognizer. A duck with a held envelope (-90 % under voices) fixed it. Re-run the speech check after every mix change, not only after new lines.
+84. **Cold viewers' shared misreads are cheap fixes.** Both read all five beats of rough 7, and both misread the same eight details: the dog's puff as blossom, the phone as "a blue rectangle", Eva's lean as a fall, the red X eyes as death, the card text as a blank at phone size. Each was a few lines of staging.
+85. **Check a review against the series' own canon.** A review asked for "ITS ART" to become "IT'S ART"; in this series ITS is the possessive pair of HIS (HIS DATE / ITS DATE). It also asked to bring back the plinth rule Tomas had just replaced. Refuse both and say why.
