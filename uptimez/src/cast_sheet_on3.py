@@ -1,8 +1,8 @@
-"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v3; cast_sheet_on3_v1.py and _v2.py draw v1 and v2).
+"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v4; cast_sheet_on3_v1.py, _v2.py and _v3.py draw v1 to v3).
 Sheet: each beside the Office Noir 2 figure it comes from, their poses, faces close, the silhouette check (the Referee
 beside the Client, as black shapes), the corner as the dream shows it, the whole cast at its relative sizes, the rules.
 Phone: each figure alone at three sizes, in the dream's look (the rule from the robot's sheet v2 on).
-Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v3-sheet.png, uptimez-corner-on3-v3-phone.png"""
+Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v4-sheet.png, uptimez-corner-on3-v4-phone.png"""
 import sys
 import math
 import cairo
@@ -24,6 +24,33 @@ label = ssh.label
 noir = csh.noir
 
 
+def ring(c, w, h, floor, lamp_x=None, lamp_y=None):
+    """v4: the placeholder ring for this sheet (sofia_sheet_on3.ring draws as before). The ringside is one low dark
+    mass with a few uneven hats, not a row of equal boxes, and the three ropes are plain bright lines in front of it.
+    The real ring is the set's job."""
+    lamp_x = w / 2 if lamp_x is None else lamp_x
+    c.set_source_rgb(0.13, 0.13, 0.15); c.rectangle(0, 0, w, h); c.fill()
+    ly = floor - h * 0.45 if lamp_y is None else lamp_y
+    g = cairo.RadialGradient(lamp_x, ly, 10, lamp_x, ly, h * 0.75)
+    g.add_color_stop_rgba(0, 0.74, 0.74, 0.76, 1); g.add_color_stop_rgba(0.55, 0.42, 0.42, 0.45, 1)
+    g.add_color_stop_rgba(1, 0.13, 0.13, 0.15, 1)
+    c.set_source(g); c.rectangle(0, 0, w, floor); c.fill()
+    c.set_source_rgb(0.10, 0.10, 0.12)
+    c.rectangle(0, floor - 40, w, 40); c.fill()
+    x, i = -10.0, 0
+    while x < w + 30:
+        r = (13, 17, 11, 15, 19, 12)[i % 6]; top = floor - 40 - (4, 12, 0, 9, 5, 14)[i % 6]
+        c.arc(x, top, r, 0, 6.2832); c.fill()
+        if i % 3 != 1:
+            c.rectangle(x - r * 1.5, top - r * 0.7, r * 3, 4); c.fill(); c.rectangle(x - r * 0.9, top - r * 1.6, r * 1.8, r); c.fill()
+        x += (52, 78, 44, 96, 60, 70)[i % 6]; i += 1
+    c.set_source_rgb(0.62, 0.62, 0.64); c.rectangle(0, floor - 8, w, h - floor + 8); c.fill()
+    c.set_source_rgb(0.90, 0.90, 0.92)
+    for ry in (floor - 96, floor - 64, floor - 32):
+        c.rectangle(0, ry, w, 6); c.fill()
+    c.set_source_rgba(0, 0, 0, 0.25); c.rectangle(0, floor - 8, w, 4); c.fill()
+
+
 def silhouette(c, w, h, draw):
     """draw(k) on a clear surface; its shape is laid down in black."""
     f = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h); cc = cairo.Context(f); draw(Ctx(cc, 0))
@@ -32,7 +59,7 @@ def silhouette(c, w, h, draw):
 
 def dream_panel(w, h):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, w, h); c = cairo.Context(s); k = Ctx(c, 0)
-    ssh.ring(c, w, h, h - 24, lamp_x=w * 0.42)
+    ring(c, w, h, h - 24, lamp_x=w * 0.42)
     sc = 0.86
     ca.referee(k, w * 0.84, h - 12, sc * ca.REL_REF, "ref_bell", look=(-0.8, 0.2))
     b.boxer(k, w * 0.30, h - 12, sc * b.REL, "b_walk", "hard", (0.8, 0))
@@ -61,7 +88,7 @@ def sheet(out):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
     k = Ctx(c, 0)
     c.select_font_face("Inter", 0, 1); c.set_font_size(40); c.set_source_rgb(*INK)
-    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v3 · the corner and the ring")
+    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v4 · the corner and the ring")
     c.select_font_face("Inter", 0, 0); c.set_font_size(22)
     c.move_to(50, 106); c.show_text("PAM, his cutman: the flat cap and apron of Office Noir 2 · a towel on her shoulder · a cotton bud behind her ear · a stopwatch on a cord, held up for the count · tape, a bucket, a sponge")
     c.move_to(50, 136); c.show_text("THE REFEREE: the Bartender of Office Noir 2 without his glass · white shirt, black bow tie, bare forearms · the only bare hands in the ring")
@@ -150,7 +177,7 @@ def phone(out):
             else:
                 feet = 440 - hy * sc
             x = 300 if (name == "medium" and rel == 1.0) else (230 if name == "medium" else 270)
-            ssh.ring(c, 540, 960, 860 if name == "wide" else 1500, lamp_x=270, lamp_y=feet + hy * sc)
+            ring(c, 540, 960, 860 if name == "wide" else 1500, lamp_x=270, lamp_y=feet + hy * sc)
             fn(k, x, feet, sc, **kw)
             noir(f)
             rows.append((name, txt, f))
@@ -167,5 +194,5 @@ def phone(out):
 
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else "../characters"
-    sheet(d + "/uptimez-corner-on3-v3-sheet.png")
-    phone(d + "/uptimez-corner-on3-v3-phone.png")
+    sheet(d + "/uptimez-corner-on3-v4-sheet.png")
+    phone(d + "/uptimez-corner-on3-v4-phone.png")

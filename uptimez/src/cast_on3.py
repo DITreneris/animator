@@ -1,4 +1,7 @@
 """OFFICE NOIR 3: the corner and the ring, v2 (Tomas, 19 Nov, /grill-me; v2 after the outside review, "Proceed").
+v4 (Tomas, "Improve", on the weak points of v3; cast_on3_v3.py is v3, pinned):
+  - the Referee's hairline is higher in every drawing (one smooth line, a taller forehead), so his hair no longer
+    moves when the eyebrow does. brow=True moves the brow and nothing else.
 v3 (Tomas, "Improve", on the weak points of v2; cast_on3_v2.py is v2, pinned):
   - the Referee's eyebrow has room: with brow=True his hairline lifts over that eye, so the brow goes about twice
     as high as in v2, and the other brow is left alone again (one eyebrow, as the rule says).
@@ -219,21 +222,24 @@ def referee(k, x, feet, s=1.0, pose="ref_stand", look=(-0.6, 0.0), brow=False, c
     ellipse(k, 0, by, 3.6, 4.4, (0.07, 0.07, 0.08), seed + 40, shadow=False, lw=1.2)
     c.restore()
     hx, hy = o["head"]
-    if brow:                                               # v3: the hairline lifts over that eye, and the brow with it
-        c.save(); c.translate(hx, hy); c.scale(s, s)
-        B = n2.BROW_Y
-        c.new_path(); c.move_to(-10, B - 7); c.line_to(-11, B - 16.5); c.curve_to(-3, B - 21, 8, B - 27, 20, B - 27); c.curve_to(30, B - 26.5, 35, B - 22, 38, B - 15); c.line_to(41, B - 2); c.close_path()
-        c.set_source_rgb(*cb.M_SKIN); c.fill()
+    B = n2.BROW_Y                                          # v4: his hairline, higher, the same in every drawing
+    c.save(); c.translate(hx, hy); c.scale(s, s)
+
+    def hairline():
+        c.new_path(); c.move_to(-40, B - 9); c.curve_to(-35, B - 21, -23, B - 27, -9, B - 27)
+        c.curve_to(1, B - 26.5, 10, B - 27, 20, B - 27); c.curve_to(30, B - 26.5, 35, B - 22, 38, B - 15)
+    hairline(); c.line_to(41, B - 7); c.line_to(30, B - 8); c.line_to(-30, B - 8); c.close_path()
+    c.set_source_rgb(*cb.M_SKIN); c.fill()
+    c.set_source_rgb(*INK); c.set_line_width(2.4); c.set_line_cap(1); hairline(); c.stroke(); c.set_line_cap(0)
+    if brow:                                               # his screen-right brow, up; nothing else moves
         ellipse(k, 20, B - 1, 17, 8, cb.M_SKIN, seed + 41, shadow=False, outline=False)
         ellipse(k, 33, B + 2, 7, 5, cb.M_SKIN, seed + 43, shadow=False, outline=False)
-        c.set_source_rgb(*INK); c.set_line_width(2.4); c.set_line_cap(1); c.new_path()
-        c.move_to(-11, B - 16.5); c.curve_to(-3, B - 21, 8, B - 27, 20, B - 27); c.curve_to(30, B - 26.5, 35, B - 22, 38, B - 15); c.stroke()
-        c.set_source_rgb(*cb.M_HAIR); c.set_line_width(7.0)
+        c.set_source_rgb(*cb.M_HAIR); c.set_line_width(7.0); c.set_line_cap(1)
         c.new_path(); c.move_to(8, B - 7); c.curve_to(13, B - 19, 25, B - 19, 32, B - 8); c.stroke()
         c.set_source_rgb(*cb.M_SKIN_DARK); c.set_line_width(1.8)                  # one crease, where it was
         c.new_path(); c.move_to(11, B - 1); c.curve_to(17, B - 4, 23, B - 4, 29, B - 1); c.stroke()
         c.set_line_cap(0)
-        c.restore()
+    c.restore()
     (lx, ly), (rx, ry) = o["hands"]
     if pose == "ref_count":                                # fingers up, over the man on the canvas
         _open_hand(k, rx, ry, s, -math.pi / 2 + 0.25, min(count, 4), seed + 50, thumb=count >= 5)
