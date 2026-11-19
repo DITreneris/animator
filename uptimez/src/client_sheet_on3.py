@@ -1,4 +1,5 @@
 """v2 (client_sheet_on3_v1.py = v1, kept): the street tracksuit, the hard face, the darker stubble of the dream.
+Sheet v3 (19 Nov): the robe half off (client_on3 v3, strip=True) added to the pose row; client_sheet_on3_v2.py draws v2.
 Model sheet and phone check for the Client as the boxer in Office Noir 3: The Last Round (client_on3 v2).
 Sheet: the boxer beside the Client of episodes 9-11 (what changed), six poses, six faces close, his waking twin, the
 look as the dream shows it, his size beside Sofia, the rules.
@@ -71,7 +72,7 @@ def sheet(out):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
     k = Ctx(c, 0)
     c.select_font_face("Inter", 0, 1); c.set_font_size(40); c.set_source_rgb(*INK)
-    c.move_to(50, 70); c.show_text("THE CLIENT · Office Noir 3: The Last Round · v2 · the boxer")
+    c.move_to(50, 70); c.show_text("THE CLIENT · Office Noir 3: The Last Round · v3 · the boxer")
     c.select_font_face("Inter", 0, 0); c.set_font_size(22)
     c.move_to(50, 106); c.show_text("STREET: a charcoal hooded tracksuit, the garages' gear small on the chest · RING: the red hooded robe, ivory trim · red gloves he never takes off")
     c.move_to(50, 136); c.show_text("HARD is his face in the dream: low brows, narrow eyes, a pressed mouth, darker stubble · the same head as episodes 9–11 · wide eyes only for SHOCK")
@@ -81,13 +82,14 @@ def sheet(out):
     b.boxer(k, 670, F, S, "b_walk", "hard", (0.3, 0)); label(c, "RING (beats 05–07)", 670, F + 42, 22)
     c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(815, 170); c.line_to(815, F + 50); c.stroke()
     st = dict(outfit="street")
-    row = ((960, "b_fist", "hard", (0.8, 0), st, "b_fist: his finger"),
-           (1225, "b_ask", "hard", (0.6, 0), dict(outfit="street", cig=True), "b_ask: a light?"),
-           (1480, "b_pay", "hard", (0.9, 0.3), dict(outfit="street", note=True), "b_pay: the hundred"),
-           (1765, "b_swing", "hard", (0.9, 0), dict(), "b_swing"),
-           (2050, "b_reach", "dawning", (0.3, -1), dict(tape=True), "b_reach: the roll"))
+    row = ((925, "b_fist", "hard", (0.8, 0), st, "b_fist: his finger"),           # v3: six, a little smaller
+           (1160, "b_ask", "hard", (0.6, 0), dict(outfit="street", cig=True), "b_ask: a light?"),
+           (1365, "b_pay", "hard", (0.9, 0.3), dict(outfit="street", note=True), "b_pay: the hundred"),
+           (1577, "b_walk", "hard", (0.2, -0.6), dict(strip=True), "strip: robe off (5.1)"),
+           (1792, "b_swing", "hard", (0.9, 0), dict(), "b_swing"),
+           (2070, "b_reach", "dawning", (0.3, -1), dict(tape=True), "b_reach: the roll"))
     for x, p, f, lk, kw, t in row:
-        b.boxer(k, x, F, S, p, f, lk, **kw); label(c, t, x, F + 42, 22)
+        b.boxer(k, x, F, 0.78, p, f, lk, **kw); label(c, t, x, F + 42, 20)
     faces = (("hard", dict(outfit="street"), "hard · street"), ("hard", dict(outfit="street", cig=True), "hard · cigarette"),
              ("hard", dict(), "hard · ring"), ("dawning", dict(), "dawning: the roll"), ("shock", dict(tape=True), "shock · taped"),
              ("tired", dict(tape=True), "tired · taped"))
@@ -119,6 +121,7 @@ def sheet(out):
              "· The gloves are larger than his hands and have no fingers: every glove gag reads from that.",
              "· The gear on the chest is his garages' mark, the same as the pin in episode 9. Never words.",
              "· Tape: Pam's strip over the nicked brow, from the corner (6.1) to the end.",
+             "· 5.1: the robe comes off his shoulders, down to the belt; the sleeves stop at the gloves.",
              "· Awake: a duller red towelling gown, his watch, his everyday stubble: the robe's twin.",
              "· Beside the others he is drawn at 0.70 of their scale, as in episode 9 (panel, left)."]
     for i, t in enumerate(notes):
@@ -155,5 +158,4 @@ def phone(out):
 
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else "../characters"
-    sheet(d + "/uptimez-client-on3-v2-sheet.png")
-    phone(d + "/uptimez-client-on3-v2-phone.png")
+    sheet(d + "/uptimez-client-on3-v3-sheet.png")              # the phone check is unchanged: v2's stands

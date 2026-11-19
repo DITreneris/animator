@@ -1,4 +1,7 @@
 """OFFICE NOIR 3: the corner and the ring, v2 (Tomas, 19 Nov, /grill-me; v2 after the outside review, "Proceed").
+v6 (Tomas, "Improve", on the weak points of v5; cast_on3_v5.py is v5, pinned):
+  - Pam's apron has a pale hem band and pale pocket stitching, so it parts from her dark skirt in the dream's look.
+  - the Referee's sleeves and shoulder caps are a light grey, his chest white: two tones, so the arm parts from the body.
 v5 (Tomas, /grill-me, 19 Nov; cast_on3_v4.py is v4, pinned). What he picked, nothing else:
   - Pam reads as corner, not office: sleeves rolled to the elbow, a darker work apron with stains, the towel round
     her neck. The cotton bud and the bead chain are gone (cap, towel, stopwatch stay). Her glasses sit lower and her
@@ -51,6 +54,8 @@ TAPE = (0.98, 0.97, 0.94)
 SPONGE = (0.88, 0.80, 0.52)
 APRON, APRON_D = (0.31, 0.30, 0.28), (0.17, 0.17, 0.17)     # v5: a work apron, darker than the hall behind her
 STAIN = (0.21, 0.20, 0.19)
+HEM_BAND = (0.74, 0.72, 0.66)                              # v6
+SLEEVE = (0.84, 0.84, 0.86)                                # v6: the Referee's sleeves, a tone under his chest
 WORK = (-6.0, 12)                                          # v5: the working stance: lean (degrees), drop (units)
 FRAME = (0.30, 0.27, 0.24)                                 # v2: her frames, dark in the dream's look
 REF_SHADE = (0.70, 0.70, 0.72)                             # v2: under the Referee's sleeves
@@ -209,7 +214,9 @@ def pam_corner(k, x, feet, s=1.0, pose="p_stand", face="neutral", look=(0, 0), s
                 c.move_to(sx * 21, bt + 40); c.line_to(sx * 30, bt + 4); c.stroke()
             c.set_source_rgb(*APRON_D); c.set_line_width(1.6)
             c.move_to(-44, HEM - 8); c.line_to(44, HEM - 8); c.stroke()
-            c.rectangle(-17, HEM + 6, 34, 24); c.stroke()
+            cut(k_, [(-44, HEM - 19), (44, HEM - 19), (44, HEM - 9), (-44, HEM - 9)], HEM_BAND, shadow=False, lw=1.8)   # v6: a pale hem
+            c.set_source_rgb(*HEM_BAND); c.set_line_width(2.0); c.set_dash([5, 3])
+            c.rectangle(-15, HEM - 50, 30, 22); c.stroke(); c.set_dash([])
             c.set_source_rgb(*STAIN)                                                     # stains: it has been used
             for sx_, sy_, rx_, ry_, rot in ((-14, bt + 62, 7, 4, 0.5), (15, bt + 96, 9, 5, -0.4), (-26, HEM + 22, 8, 5, 0.2),
                                             (27, HEM + 44, 6, 9, 0.1)):
@@ -304,12 +311,14 @@ def _macho_ref():
     before): the shoulder is a small cap, not a ball, and the arm is a shirt sleeve to the elbow with a rolled cuff."""
     src = inspect.getsource(cb.macho)
     for old, new in (("bulge=1.34, sleeve=0.42", "bulge=1.08, cuff=(M_SHIRT_DARK, 11)"),
-                     ("bt + 22, 27, 24, M_SHIRT", "bt + 24, 19, 15, M_SHIRT"),
-                     ("M_LN1, M_LN2, 46, 31, M_SHIRT", "M_LN1, M_LN2, 40, 31, M_SHIRT")):
+                     ("bt + 22, 27, 24, M_SHIRT", "bt + 24, 19, 15, M_SLEEVE"),
+                     ("M_LN1, M_LN2, 46, 31, M_SHIRT", "M_LN1, M_LN2, 40, 31, M_SLEEVE"),
+                     ("c.set_source_rgb(*M_SHIRT); c.rectangle(min(side * 58, side * 86), bt + 12, 28, 34); c.fill()",
+                      "pass")):                               # v6: the seam between sleeve and chest stays drawn
         assert src.count(old) == 1, old
         src = src.replace(old, new)
     ns = dict(vars(cb))
-    ns.update(M_SHIRT=n2.WHITE_JACKET, M_SHIRT_DARK=(0.74, 0.74, 0.76), M_JEANS=(0.10, 0.10, 0.12), M_JEANS_DARK=(0.05, 0.05, 0.06),
+    ns.update(M_SLEEVE=SLEEVE, M_SHIRT=n2.WHITE_JACKET, M_SHIRT_DARK=(0.66, 0.66, 0.69), M_JEANS=(0.10, 0.10, 0.12), M_JEANS_DARK=(0.05, 0.05, 0.06),
               M_BELT=(0.08, 0.08, 0.09), M_BOOT=(0.07, 0.07, 0.08), _macho_face=n2._clean_face(cb._macho_face))
     exec(src, ns)
     return ns["macho"]

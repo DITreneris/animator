@@ -1,4 +1,4 @@
-"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v5, sheet v6; cast_sheet_on3_v1.py to _v5.py draw the sheets v1 to v5).
+"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v6, sheet v7; cast_sheet_on3_v1.py to _v6.py draw the sheets v1 to v6).
 Sheet v6: what Tomas picked in /grill-me: Pam as a corner hand (rolled sleeves, work apron, towel round her neck, no
 cotton bud or chain, eyes clear of her glasses, a working stance), the Referee without balloon shoulders, and the
 Client with his robe half off in 5.1 (client_on3 v3, strip=True).
@@ -8,7 +8,7 @@ sheet reached at nothing. The phone check is unchanged, so v4's stands and no v5
 Sheet: each beside the Office Noir 2 figure it comes from, their poses, faces close, the silhouette check (the Referee
 beside the Client, as black shapes), the corner as the dream shows it, the whole cast at its relative sizes, the rules.
 Phone: each figure alone at three sizes, in the dream's look (the rule from the robot's sheet v2 on).
-Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v6-sheet.png, uptimez-corner-on3-v6-phone.png"""
+Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v7-sheet.png, uptimez-corner-on3-v7-phone.png"""
 import sys
 import math
 import cairo
@@ -116,7 +116,7 @@ def sheet(out):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
     k = Ctx(c, 0)
     c.select_font_face("Inter", 0, 1); c.set_font_size(40); c.set_source_rgb(*INK)
-    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v6 · the corner and the ring")
+    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v7 · the corner and the ring")
     c.select_font_face("Inter", 0, 0); c.set_font_size(22)
     c.move_to(50, 106); c.show_text("PAM, his cutman: the flat cap of Office Noir 2 · sleeves rolled, a stained work apron · a towel round her neck · a stopwatch on a cord, held up for the count · tape, a bucket, a sponge")
     c.move_to(50, 136); c.show_text("THE REFEREE: the Bartender of Office Noir 2 without his glass · white shirt, sleeves rolled to the elbow, black bow tie · the only bare hands in the ring")
@@ -222,5 +222,5 @@ def phone(out):
 
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else "../characters"
-    sheet(d + "/uptimez-corner-on3-v6-sheet.png")
-    phone(d + "/uptimez-corner-on3-v6-phone.png")
+    sheet(d + "/uptimez-corner-on3-v7-sheet.png")
+    phone(d + "/uptimez-corner-on3-v7-phone.png")
