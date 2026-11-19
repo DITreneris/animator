@@ -26,7 +26,7 @@ import brand
 import set_ob as st
 import acts_ob as ac
 import fs_set as fs
-import fs_storyboard as sb
+import fs_storyboard_v17 as sb                                # pinned: drawn with board v17
 import mom_fs as mfs
 import sofia_fs as sfs
 import pam_fs

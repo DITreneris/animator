@@ -1,4 +1,10 @@
-"""FIRST SEARCH (episode 10): the animatic v16 (fs_animatic_v15.py = v15, kept): storyboard v17 (Don's guilty glance,
+"""FIRST SEARCH (episode 10): the animatic v19 (fs_animatic_v18.py = v18, kept): storyboard v20 (the healed portrait
+smiles under gold glints; Mom's arm round Pam; Pam's avatar).
+FIRST SEARCH (episode 10): the animatic v18 (fs_animatic_v17.py = v17, kept): storyboard v19 (the v18 cold test's
+fixes: 6.1 cut, the whoosh now on the hard cut to Mom; 9.5, the shake into frame 0).
+FIRST SEARCH (episode 10): the animatic v17 (fs_animatic_v16.py = v16, kept): storyboard v18 (every shot on set v4:
+the wider room, the counter's left end, Mom's way out round it; Don's hair bigger).
+FIRST SEARCH (episode 10): the animatic v16 (fs_animatic_v15.py = v15, kept): storyboard v17 (Don's guilty glance,
 the micro flashback to episode 9, a rewind zip on it; the post in LinkedIn's manner).
 FIRST SEARCH (episode 10): the animatic v15 (fs_animatic_v14.py = v14, kept): storyboard v16 (6.2 in two beats).
 FIRST SEARCH (episode 10): the animatic v14 (fs_animatic_v13.py = v13, kept): storyboard v15 (the blueprint's
@@ -43,7 +49,7 @@ import sound_xmas as sx
 import sound_iwry as si
 from kit import Ctx, INK
 
-V = "v16"
+V = "v19"
 W, H, FPS, SR = 540, 960, 30, 48000
 HERE = os.path.dirname(os.path.abspath(__file__))
 VOICES = "fs_voices/film_v9"
@@ -165,7 +171,7 @@ def mix(rows, total):
         (at["2.3"] + 0.15, bm.chime([1568, 2093], 0.08, 0.5), 0.16),
         (at["3.1"] + 0.3, buzz(), 0.30), (at["3.4"] + 0.3, sx.thunk(0.08, 300), 0.15),
         (at["4.3"] + 0.4, sx.thunk(0.05, 900), 0.20), (at["4.5"] + 0.6, bm.chime([1047, 1319, 1568], 0.09, 0.7), 0.20),
-        (at["6.1"] + 0.4, sx.whoosh(0.08), 0.45), (at["6.2a"] + 0.3, bm.chime([1760, 2349], 0.07, 0.3), 0.14),
+        (at["6.1b"] if "6.1" not in at else at["6.1"] + 0.4, sx.whoosh(0.08), 0.45), (at["6.2a"] + 0.3, bm.chime([1760, 2349], 0.07, 0.3), 0.14),
         (at["8.2"] + 0.2, buzz(0.35) * 0.4, 0.4), (at["9.1"] + 0.3, bm.chime([1047, 1319, 1568], 0.09, 0.7), 0.20),
     ]
     for t, a, g in fx:
