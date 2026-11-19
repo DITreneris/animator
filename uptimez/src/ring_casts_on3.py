@@ -4,6 +4,7 @@ import ring_on3 as rg
 import cast_on3 as ca
 import client_on3 as b
 import client_ob as co
+import cand_bc as cb
 import robot_on3 as r
 import sofia_on3 as so3
 from kit import Ctx, cut, INK
@@ -27,33 +28,56 @@ def probe(fn):
 
 
 def cast51a():
-    """5.1a: he is still coming through the ropes, in the robe, his head back and one glove half up toward the plan;
-    Pam waits inside with the towel; the robot and the Referee are clear of Sofia's card."""
+    """5.1a: he is caught mid-step coming through the far ropes on his side, in the robe, toward us: Pam holds the top
+    two ropes up in one hand, the low one still crosses his trailing shin. The robot and the Referee wait."""
+    cx, cf = 168, rg.FAR + 14
+    peak = (222, rg.FAR - 126)
+    x0, x1 = rg.POST_F
+
+    def ropes(k, which):
+        c = k.c
+        c.set_source_rgb(0.84, 0.84, 0.86); c.set_line_width(5); c.set_line_cap(1); c.set_line_join(1)
+        if which == "back":                                 # the top two, gathered up in her hand
+            for t_, dy in ((92, 0), (62, 9)):
+                c.move_to(x0, rg.FAR - t_); c.line_to(peak[0] - 70, rg.FAR - t_ - 4); c.line_to(peak[0], peak[1] + dy)
+                c.line_to(peak[0] + 80, rg.FAR - t_ - 2); c.line_to(x1, rg.FAR - t_); c.stroke()
+        else:                                               # the low one: in front of his trailing leg only
+            c.move_to(x0, rg.FAR - 32); c.line_to(cx - 4, rg.FAR - 32); c.stroke()
+            c.move_to(cx + 44, rg.FAR - 32); c.line_to(x1, rg.FAR - 32); c.stroke()
+        c.set_line_cap(0)
+
     def client(k):
-        rg.shadow(k, 112, F - 44, 44)
-        with head_back():
-            b.boxer(k, 112, F - 44, Q, (-9, 6, 150, 22), "hard", (0.7, -0.9))
-        rg.side_rope(k, 0)                                  # the ropes, still across him
+        ropes(k, "back")
+        rg.shadow(k, cx + 8, cf, 46)
+        c = k.c
+        c.save(); c.translate(cx, cf); c.rotate(0.16); c.translate(-cx, -cf)                      # ducking in under them
+        with head_back(-0.06):
+            b.boxer(k, cx, cf, Q, (-9, 6, 24, 10), "hard", (0.8, -0.5))
+        c.restore()
+        ropes(k, "front")
 
     def pam(k):
-        rg.shadow(k, 222, F - 14, 34); ca.pam_corner(k, 222, F - 14, SC, "p_stand", "neutral", (-0.9, 0.0))
+        px_, pf = 262, rg.FAR + 30
+        rg.shadow(k, px_, pf, 34)
+        ca.pam_corner(k, px_, pf, SC, ca.reach(px_, pf, SC, (peak[0] + 4, peak[1] + 6), (px_ + 30, pf - 96), stance="stand"), "neutral",
+                      (-0.9, 0.2), stance="stand")
 
     def ref(k):
-        rg.shadow(k, 316, F - 92, 36); ca.referee(k, 316, F - 92, SC * ca.REL_REF, "ref_stand", look=(-0.8, 0))
+        rg.shadow(k, 336, F - 84, 36); ca.referee(k, 336, F - 84, SC * ca.REL_REF, "ref_stand", look=(-0.8, 0))
 
     def robot(k):
-        rg.shadow(k, 388, F - 46, 40); r.robot(k, 388, F - 46, SC * r.REL, "r_wait", "furious", side=-1)
+        rg.shadow(k, 408, F - 40, 40); r.robot(k, 408, F - 40, SC * r.REL, "r_wait", "furious", side=-1)
 
     def sofia(k):
-        so3.sofia(k, 584, F + 108, 0.92, "r_card", "spotted", (-1, 0), card_="ROUND 1")
-    return [ref, robot, client, pam], [sofia]
+        so3.sofia(k, 580, F + 108, 0.92, "r_card", "spotted", (-1, -0.2), card_="ROUND 1")
+    return [client, pam, ref, robot], [sofia]
 
 
 CL, PAM = (128, F - 28), (292, F - 14)
 
 
 def cast51b():
-    """5.1b: the robe is off his shoulders; one sleeve is stretched, inside out, from his glove to Pam's two hands; she
+    """5.1c: the robe is off his shoulders; one sleeve is stretched, inside out, from his glove to Pam's two hands; she
     leans back on it and watches it; his head is back, his eyes on the plan's end above them."""
     pose = (-9, 6, 56, 2)
     cl = lambda k: b.boxer(k, *CL, Q, pose, "hard", (0.7, -0.9), strip=True)
@@ -80,30 +104,43 @@ def cast51b():
     return [client, pam], []
 
 
-def cast52():
-    """5.2: he is robed again; he swings; the glove stops a clear gap short, two stop marks in front of it; the Referee
-    behind the robot with his arm up; Pam's stopwatch at the frame's edge."""
-    cl = lambda k: b.boxer(k, 288, F - 40, Q, "b_swing", "hard", (0.9, 0))
-    gx, gy = probe(cl)["hands"][1]
+@contextlib.contextmanager
+def bell_pose():
+    """ "ref_bell" with his other hand at his belt, not hanging where the glove stops, for one drawing."""
+    old = cb.POSES_MACHO["ref_bell"]
+    cb.POSES_MACHO["ref_bell"] = cb._m_ik(-1, -30, cb.M_BT + 122) + old[2:]
+    try:
+        yield
+    finally:
+        cb.POSES_MACHO["ref_bell"] = old
 
+
+def cast52():
+    """5.2: he is robed again; he swings, a little low; the glove stops a clear gap short; the Referee is at the far
+    ropes, halfway between them, one arm up, his dark trousers behind the gap; Pam's stopwatch at the frame's edge."""
     def ref(k):
-        rg.shadow(k, 542, F - 96, 36); ca.referee(k, 542, F - 96, SC * ca.REL_REF, "ref_bell", look=(-0.8, 0.2))
+        rg.shadow(k, 420, F - 110, 36)
+        with bell_pose():
+            ca.referee(k, 420, F - 110, SC * ca.REL_REF, "ref_bell", look=(-0.5, 0.4))
 
     def robot(k):
-        rg.shadow(k, 492, F - 46, 40); r.robot(k, 492, F - 46, SC * r.REL, "r_wait", "furious", side=-1)
+        rg.shadow(k, 500, F - 46, 40); r.robot(k, 500, F - 46, SC * r.REL, "r_wait", "furious", side=-1)
 
     def client(k):
-        rg.shadow(k, 288, F - 40, 44); cl(k)
-        c = k.c
-        c.set_source_rgb(0.96, 0.96, 0.94); c.set_line_width(3.2); c.set_line_cap(1)
-        for dy in (-14, 0, 14):                             # it stopped here
-            c.move_to(gx + 26, gy + dy); c.line_to(gx + 38 - abs(dy) * 0.3, gy + dy * 1.25); c.stroke()
+        rg.shadow(k, 286, F - 40, 44); b.boxer(k, 286, F - 40, Q, (-9, 6, 70, -2), "hard", (0.9, 0.1))
 
     def pam(k):
-        x, f = 196, F - 6
-        ca.pam_corner(k, x, f, SC, ca.reach(x, f, SC, (246, F - 204), (216, F - 84), stance="stand"), "neutral", (0.9, 0.1),
+        x, f = 174, F - 6
+        ca.pam_corner(k, x, f, SC, ca.reach(x, f, SC, (224, F - 204), (194, F - 84), stance="stand"), "neutral", (0.9, 0.1),
                       watch="hand", stance="stand")
     return [ref, robot, pam, client], []
 
 
-SPECS = (("R1", cast51a, dict(money=True)), ("R3", cast51b, dict(near=False, hats=False)), ("R2", cast52, dict(near=False, hats=False)))
+def frames():
+    """The four frames of beat 05's opening, in order: 5.1a, 5.1b (his view of the plan), 5.1c (the robe), 5.2."""
+    out = []
+    m, f = cast51a(); out.append(rg.frame("R1", m, f, money=True, far_ropes=False))
+    out.append(rg.plan_pov())
+    m, f = cast51b(); out.append(rg.frame("R3", m, f, near=False, hats=False))
+    m, f = cast52(); out.append(rg.frame("R2", m, f, near=False, hats=False))
+    return out

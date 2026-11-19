@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the ring, set v2 (19 Nov; ring_on3_v1.py is v1, pinned). After the cold test of v1's frames (2 of 5):
+"""OFFICE NOIR 3: the ring, set v3 (19 Nov; ring_on3_v1.py and _v2.py are pinned). After cold test 2 and /grill-me:
+far_ropes=False leaves the far ropes to the cast (the Client comes through them, Pam holding two up);
+side_a=False does the same for A's side ropes; plan_pov() is
+the plan as he sees it from below, a shot of its own (5.1b), because a look at it was not read.
+v2 (after cold test 1): After the cold test of v1's frames (2 of 5):
 the doorway is dark unless door=True (Don's shots); the ringside hats sit lower, clear of Sofia's legs; side_rope() draws
 one side's ropes again, over a figure who is still coming through them; R2 and R3 are re-aimed.
 v1: The room of beats 05 to 07, drawn once and framed by camera setups.
@@ -36,8 +40,8 @@ HOME = {"pam": (88, F - 16, SC), "client_stool": (152, F - 36, SC * b.REL), "cli
         "referee": (368, F - 88, SC * ca.REL_REF), "robot": (452, F - 46, SC * r.REL), "robot_corner": (600, F - 52, SC * r.REL),
         "sofia": (585, F + 108, 0.92)}
 STOOL = (152, F - 36)
-CAMS = {"R1": (322, 1140, 0.9),                            # the master: the ring post to post, the lamp, the plan, the lane
-        "R2": (416, 1108, 1.34),                           # centre: the two of them and the plan's end over them
+CAMS = {"R1": (332, 1140, 0.9),                            # the master: the ring post to post, the lamp, the plan, the lane
+        "R2": (392, 1108, 1.34),                           # centre: the two of them and the plan's end over them
         "R3": (200, 1160, 1.70),                           # his corner, square on
         "R4": (578, 1178, 1.80),                           # its corner
         "R6": (340, 1050, 1.60)}                           # low, looking up at the plan (the canvas at the frame's foot)
@@ -103,7 +107,7 @@ def side_rope(k, side=0):
         c.set_line_width(5); c.move_to(fx, FAR - t); c.line_to(nx, NEAR - t * 1.25); c.stroke()
 
 
-def draw_ring(k, mid=(), front=(), near=True, money=False, swing=0.0, folder=True, hats=True, door=False):
+def draw_ring(k, mid=(), front=(), near=True, money=False, swing=0.0, folder=True, hats=True, door=False, side_a=True, far_ropes=True):
     """The whole set in world coordinates. mid: the cast on the canvas, back to front. front: on the apron (Sofia).
     near: the three near ropes and their posts (the masters; a camera inside the ropes leaves them out).
     money: cuffs waving notes in the far crowd (5.1). swing: the plan's swing, radians (6.4, 7.3)."""
@@ -133,7 +137,7 @@ def draw_ring(k, mid=(), front=(), near=True, money=False, swing=0.0, folder=Tru
     for px_ in POST_F:                                                                     # the far posts and ropes
         _post(k, px_, FAR - 104, FAR + 4, 14)
     c.set_source_rgb(*ROPE_FAR)
-    for ry in (FAR - 92, FAR - 62, FAR - 32):
+    for ry in (FAR - 92, FAR - 62, FAR - 32) if far_ropes else ():       # far_ropes=False: the cast draws them (5.1a)
         c.rectangle(POST_F[0], ry, POST_F[1] - POST_F[0], 3.5); c.fill()
     cut(k, [(POST_F[0] - 26, FAR), (POST_F[1] + 26, FAR), (POST_N[1] + 34, NEAR), (POST_N[0] - 34, NEAR)], CANVAS, shadow=False, lw=2.4)
     g = cairo.RadialGradient(LAMP[0], F - 40, 20, LAMP[0], F - 40, 330)                    # the lamp's pool on the canvas
@@ -157,7 +161,7 @@ def draw_ring(k, mid=(), front=(), near=True, money=False, swing=0.0, folder=Tru
     pr.plan_hung(k, px_, py_, ps_, top=ly - 40)
     c.restore()
     c.set_source_rgb(*ROPE_FAR)                                                            # the side ropes, far post to near
-    for (fx, nx) in ((POST_F[0], POST_N[0]), (POST_F[1], POST_N[1])):
+    for (fx, nx) in ((POST_F[0], POST_N[0]), (POST_F[1], POST_N[1]))[0 if side_a else 1:]:
         for t in (92, 62, 32):
             c.set_line_width(3.5 + 1.5); c.move_to(fx, FAR - t); c.line_to(nx, NEAR - t * 1.25); c.stroke()
     _post(k, POST_N[0], NEAR - 128, NEAR + 6, 22, pad=(0.82, 0.82, 0.80))                  # his post: a pale pad
@@ -195,4 +199,36 @@ def frame(cam, mid=(), front=(), noir=True, **kw):
     c.restore()
     if noir:
         csh.noir(s)
+    return s
+
+
+def plan_pov(glove=True, swing=0.0):
+    """5.1b, his view: the plan from below, the lamp behind it, and one red glove coming up into the frame toward it.
+    Its own drawing (not a framing of the set). Returns a 540x960 surface in the dream's look."""
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    c.set_source_rgb(*HALL); c.paint()
+    g = cairo.RadialGradient(270, 170, 20, 270, 170, 620)                                 # the lamp, straight overhead
+    g.add_color_stop_rgba(0, 1, 1, 1, 1); g.add_color_stop_rgba(0.12, 0.86, 0.86, 0.88, 1)
+    g.add_color_stop_rgba(0.5, 0.40, 0.40, 0.43, 1); g.add_color_stop_rgba(1, *HALL, 1)
+    c.set_source(g); c.paint()
+    c.set_source_rgb(0.20, 0.20, 0.23); c.set_line_width(22)                              # the shade's rim, seen from under it
+    c.save(); c.translate(270, 170); c.scale(1, 0.62); c.arc(0, 0, 150, 0, 2 * math.pi); c.restore(); c.stroke()
+    c.set_source_rgba(1, 1, 1, 0.10); c.set_line_width(26); c.set_line_cap(1)
+    for sx_, sy_ in ((150, 330), (380, 620)):
+        c.move_to(sx_ - 110, sy_); c.curve_to(sx_ - 30, sy_ - 50, sx_ + 50, sy_ + 40, sx_ + 150, sy_ - 20); c.stroke()
+    c.set_line_cap(0)
+    c.save(); c.translate(270, 170); c.rotate(swing); c.translate(-270, -170)
+    pr.plan_hung(k, 150, 420, 3.0, top=170)                                               # big: the ten bays can be counted
+    c.restore()
+    if glove:                                                                             # his glove, up toward it, short of it
+        ang = -1.36
+        ux, uy = math.cos(ang), math.sin(ang)
+        hx, hy = 372, 820
+        c.save(); c.translate(hx, hy); c.scale(2.3, 2.3); c.translate(-hx, -hy)
+        px_, py_ = -uy, ux
+        cut(k, [(hx - ux * 30 + px_ * 22, hy - uy * 30 + py_ * 22), (hx - ux * 30 - px_ * 22, hy - uy * 30 - py_ * 22),
+                (hx - ux * 160 - px_ * 26, hy - uy * 160 - py_ * 26), (hx - ux * 160 + px_ * 26, hy - uy * 160 + py_ * 26)], b.KEY, shadow=False, lw=2.4)
+        b._glove(k, hx, hy, ux, uy, 1, 77)
+        c.restore()
+    csh.noir(s)
     return s

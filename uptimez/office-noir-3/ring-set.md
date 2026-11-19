@@ -1,6 +1,6 @@
-# The ring (set v2)
+# The ring (set v3)
 
-The room of beats 05 to 07 of *Office Noir 3: The Last Round*. Built by `src/ring_on3.py` (draws it, holds the cameras) and `src/ring_sheets_on3.py` (the three planning sheets). Sheets: `on3_ring_set_v2.png`, `on3_ring_plan_v2.png`, `on3_ring_blocking_v2.png` (v1 kept; `src/ring_on3_v1.py` draws it). The frames' casts are in `src/ring_casts_on3.py`.
+The room of beats 05 to 07 of *Office Noir 3: The Last Round*. Built by `src/ring_on3.py` (draws it, holds the cameras) and `src/ring_sheets_on3.py` (the three planning sheets). Sheets: `on3_ring_set_v3.png`, `on3_ring_plan_v3.png`, `on3_ring_blocking_v3.png` (v1 and v2 kept; `src/ring_on3_v1.py`, `_v2.py` draw them). The frames' casts are in `src/ring_casts_on3.py`.
 
 ## Zones: each with one job
 
@@ -27,7 +27,7 @@ Pam 88, F−16, 0.70 · the Client on the stool 152, F−36 · the Client fighti
 
 ## Camera setups
 
-R1 the master (post to post, the lamp, the plan, the lane) · R2 centre, the two of them with the plan's end over them · R3 his corner, square on · R4 its corner · R5 straight down (its own drawing) · R6 low, looking up at the plan. Inserts and the closes of 7.2 and 7.5 are their own drawings.
+R1 the master (post to post, the lamp, the plan, the lane) · R7 his view of the plan from below (its own drawing, `ring_on3.plan_pov`) · R2 centre, the two of them with the plan's end over them · R3 his corner, square on · R4 its corner · R5 straight down (its own drawing) · R6 low, looking up at the plan. Inserts and the closes of 7.2 and 7.5 are their own drawings.
 
 ## What the first frames showed
 
@@ -37,7 +37,11 @@ R1 the master (post to post, the lamp, the plan, the lane) · R2 centre, the two
 
 ## Cold tests (19 Nov)
 
-Test 1 (set v1): 2 of 5 and 2 of 5. Test 2 (set v2): 4 of 5 and 3 of 5. Pass is 4 of 5 for both, so the gate is not passed. Records: `cold_test_ring_v1/result.md`, `cold_test_ring_v2/result.md`.
+Test 1 (set v1): 2 of 5 and 2 of 5. Test 2 (set v2): 4 of 5 and 3 of 5. Test 3 (set v3, four frames): 4 of 5 and 3 of 5. Pass is 4 of 5 for both, so the gate is not passed. Records: `cold_test_ring_v1/`, `_v2/`, `_v3/result.md`.
+
+- **Test 3 fixed:** the plan (its own shot, 5.1b) and the Referee's neutrality (centred, at the far ropes).
+- **Test 3 broke:** the punch. Lowered to clear the Referee, it read as an offered glove to both viewers.
+- **Never read in three tests:** the Client arriving. Leave it to 4.1.
 
 - **Fixed:** the robe gag reads (the sleeve drawn stretched from his glove to Pam's hands); the robot's face is clear of Sofía's card.
 - **Failed twice, the same way:** nobody sees him look at the plan. Eyes turned up read as weariness in this style. The plan needs a shot of its own or a reach.
@@ -48,6 +52,8 @@ Test 1 (set v1): 2 of 5 and 2 of 5. Test 2 (set v2): 4 of 5 and 3 of 5. Pass is 
 - A look is not an action here: what matters gets its own shot or a hand on it.
 - A costume change inside a scene must be seen starting: show the robe on before it comes off.
 - Marks in the air at a stopped glove read as an impact.
+- A punch is thrown at shoulder height or it is not a punch.
+- Fixing one reading can break another: retest the whole run of frames, not the one changed.
 
 ## Not done
 
