@@ -1,4 +1,10 @@
-"""THE ROBOT, "Office Noir 3: The Last Round", v1: the other corner (Tomas, 19 Nov, /grill-me).
+"""v2 (robot_on3_v1.py = v1, kept), after the outside review of sheet v1 (19 Nov). The design is kept. In the dream
+every part of it landed in the same middle grey, so each part now has its own value:
+  the screen black · the shell white · the gloves dark, with a pale rim · the yoke and pistons mid-grey ·
+  the belt's strap dark, its plate light.
+And in "r_wait" the elbows are out, so the gloves hang clear of the belt and the outriggers. The crack runs along
+the screen's rim, top left and bottom right, so the three words stay whole under it.
+THE ROBOT, "Office Noir 3: The Last Round", v1: the other corner (Tomas, 19 Nov, /grill-me).
 The same small HR robot (waiter_kit's body, the HR badge of robot_tg), in the Client's dream:
 - BIG GREY GLOVES, bigger than its own screen. Grey, because the film's red is the Client's;
 - an EXTRA FRAME (Tomas): a steel yoke over its shoulders that carries two piston arms, since its own thin arms
@@ -22,8 +28,9 @@ import robot_tg as rt
 import client_on3 as b
 from kit import INK, cut, rect, ellipse
 
-GLOVE_COL = (0.36, 0.37, 0.40)
-GLOVE_SHADE = (0.18, 0.18, 0.20)
+GLOVE_COL = (0.20, 0.20, 0.23)                            # v2: dark
+GLOVE_SHADE = (0.46, 0.46, 0.52)                          # the seam, lighter than the leather
+RIM = (0.82, 0.83, 0.88)
 STEEL, STEEL_DARK = w.STEEL, w.STEEL_DARK
 CHROME = (0.86, 0.87, 0.90)
 INKW = (0.86, 0.95, 1.0)                                   # the screen's ink: a cold white
@@ -34,7 +41,7 @@ REL = 0.82
 GS = 0.92                                                  # the gloves, against the Client's (33 units)
 LN = 44
 POSES = {
-    "r_wait": (0.00, 0, 0, (-14, 4), (14, -4)),
+    "r_wait": (0.00, 0, 0, (-44, 22), (44, -22)),          # v2: elbows out, the gloves clear of the belt
     "r_guard": (0.00, -4, -2, (-52, -112), (52, 112)),
     "r_jab": (0.10, 0, 0, (-52, -112), (96, -4)),
     "r_oil": (0.00, 0, 0, (-14, 4), (30, 40)),             # the front elbow out, under the service arm's oil can
@@ -87,9 +94,10 @@ def screen(k, state, look=(0, 0), crack=False, seed=0):
         c.save(); c.new_path(); c.save(); c.scale(RX, RY); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.clip()
         for col, lw in (((0.02, 0.04, 0.08), 4.2), ((1, 1, 1), 1.8)):
             c.set_source_rgb(*col); c.set_line_width(lw)
-            c.new_path(); c.move_to(-RX, -8); c.line_to(-14, -2); c.line_to(-4, -16); c.line_to(12, 6); c.line_to(RX, -2); c.stroke()
-            c.new_path(); c.move_to(-14, -2); c.line_to(-22, 22); c.stroke()
-            c.new_path(); c.move_to(12, 6); c.line_to(20, RY); c.stroke()
+            c.new_path(); c.move_to(-RX, -4); c.line_to(-38, -17); c.line_to(-26, -RY); c.stroke()     # v2: at the rim, clear of the words
+            c.new_path(); c.move_to(-38, -17); c.line_to(-31, -27); c.stroke()
+            c.new_path(); c.move_to(RX, 6); c.line_to(37, 15); c.line_to(27, RY); c.stroke()
+            c.new_path(); c.move_to(37, 15); c.line_to(41, 27); c.stroke()
         c.restore()
 
 
@@ -185,6 +193,9 @@ def robot(k, x, feet, s=1.0, pose="r_wait", state="furious", look=(0, 0), side=1
             ux, uy = (hx - ex) / LN, (hy - ey) / LN
             c.save(); c.translate(hx + ux * 12, hy + uy * 12); c.scale(GS, GS)
             b._glove(k, 0, 0, ux, uy, sgn, seed + 90 + sgn, col=GLOVE_COL, shade=GLOVE_SHADE)
+            c.set_source_rgb(*RIM); c.set_line_width(2.4); c.set_line_cap(1)          # v2: a pale rim on the outside
+            a0 = math.atan2(uy, ux) + (math.pi * 0.5 if sgn > 0 else -math.pi * 0.5)
+            c.new_path(); c.arc(ux * 4, uy * 4, b.GLOVE - 5, a0 - 0.75, a0 + 0.75); c.stroke(); c.set_line_cap(0)
             c.restore()
             hands.append((hx + ux * 12, hy + uy * 12))
             if oil and sgn > 0:                            # the service arm, and the can over that elbow

@@ -1,15 +1,18 @@
-"""Model sheet and phone check for the robot in Office Noir 3: The Last Round (robot_on3 v1).
+"""v2 (robot_sheet_on3_v1.py = v1, kept), after the outside review and Tomas (19 Nov, 1A 2A 3A): the grey values, the
+plan hung level over the ring, the confrontation with a clear gap, and a phone check that shows the figure alone at
+three sizes (shots are staged once, at the board, on the set).
+Model sheet and phone check for the robot in Office Noir 3: The Last Round (robot_on3 v2).
 Sheet: the ring robot beside the office robot (what changed), four poses, five screens close, its corner, the look as
 the dream shows it, its size beside the Client, the rules.
 Phone: three 540x960 frames in the dream's look (the two in the ring, the words on its screen, frame 0), at 270 px.
-Usage: python3 robot_sheet_on3.py [out_dir]  ->  uptimez-robot-on3-v1-sheet.png, uptimez-robot-on3-v1-phone.png"""
+Usage: python3 robot_sheet_on3.py [out_dir]  ->  uptimez-robot-on3-v2-sheet.png, uptimez-robot-on3-v2-phone.png"""
 import sys
 import math
 import cairo
 import kit
 import robot_on3 as r
 import client_on3 as b
-import acts_ob as ac
+import props_on3 as pr
 import sofia_sheet_on3 as ssh
 import client_sheet_on3 as csh
 from kit import Ctx, INK, cut, rect
@@ -19,12 +22,6 @@ WALL = kit.WALL
 label = ssh.label
 noir = csh.noir
 HEAD = r.w.HEAD_Y
-
-
-def roll_on_rope(k, x, y, s=1.0):
-    c = k.c
-    c.set_source_rgb(0.86, 0.86, 0.88); c.set_line_width(2.4 * s); c.move_to(x, 0); c.line_to(x, y - 10 * s); c.stroke()
-    ac.roll(k, x - 4 * s, y, s * 0.7, 0.10, ln=150)
 
 
 def corner(k, x, feet, s):
@@ -38,11 +35,12 @@ def corner(k, x, feet, s):
 
 
 def dream_panel(w, h):
+    """5.2 as it must read: his swing stops a clear hand short; it waits, asking; his plan hangs over them both."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, w, h); c = cairo.Context(s); k = Ctx(c, 0)
     ssh.ring(c, w, h, h - 24, lamp_x=w * 0.5)
-    roll_on_rope(k, w * 0.5, 62, 0.8)
-    b.boxer(k, w * 0.26, h - 12, 0.62, "b_guard", "hard", (0.9, 0), tape=True)
-    r.robot(k, w * 0.72, h - 12, 0.62 / b.REL * r.REL, "r_jab", "furious", side=-1)
+    pr.plan_hung(k, w * 0.5, 52, 0.62, top=0)
+    b.boxer(k, w * 0.22, h - 12, 0.62, "b_swing", "hard", (0.9, 0))
+    r.robot(k, w * 0.75, h - 12, 0.62 / b.REL * r.REL, "r_wait", "ask", side=-1)
     noir(s)
     return s
 
@@ -52,7 +50,7 @@ def sheet(out):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
     k = Ctx(c, 0)
     c.select_font_face("Inter", 0, 1); c.set_font_size(40); c.set_source_rgb(*INK)
-    c.move_to(50, 70); c.show_text("THE ROBOT · Office Noir 3: The Last Round · v1 · the other corner")
+    c.move_to(50, 70); c.show_text("THE ROBOT · Office Noir 3: The Last Round · v2 · the other corner")
     c.select_font_face("Inter", 0, 0); c.set_font_size(22)
     c.move_to(50, 106); c.show_text("The same small HR robot · big grey gloves on two piston arms, carried by a steel yoke over its shoulders · two outriggers with casters beside its wheel")
     c.move_to(50, 136); c.show_text("A champion's belt under the HR badge · a FURIOUS screen · the words, the tick and the crack are all on its face · nothing on it is red")
@@ -89,13 +87,15 @@ def sheet(out):
     c.select_font_face("Inter", 0, 0); c.set_font_size(21); c.set_source_rgb(*INK)
     notes = ["Rules for this look",
              "· It is the office robot, small: drawn at 0.82 of the others' scale. The joke is the size.",
-             "· The gloves are grey and bigger than its screen. Red is the Client's.",
+             "· The gloves are bigger than its screen. Red is the Client's.",
+             "· Values in the dream: screen black, shell white, gloves dark with a pale rim, yoke mid, plate light.",
+             "· The fight's rule: it asks, everything stops, the tick, one punch, it asks again.",
              "· The yoke carries the pistons; the outriggers are training wheels. Both come off at work.",
              "· Its face is the screen: FURIOUS, the three words when it asks, the tick, PROUD between rounds.",
              "· It never hits without the tick. The words fill an insert so they read on a phone.",
-             "· The crack stays from 7.2 to the end. It still asks, through the crack.",
+             "· The crack is one drawing, the same from 7.2 to the last frame. It still asks, through the crack.",
              "· No trainer: a cable and a service arm with an oil can. With gloves on, it cannot hold the can.",
-             "· It does not speak. The antenna flashes when it is furious."]
+             "· Panel, left: 5.2. His swing stops a clear hand short of it; the plan hangs level, one end open."]
     for i, t in enumerate(notes):
         c.select_font_face("Inter", 0, 1 if i == 0 else 0)
         c.move_to(1215, 1362 + 32 * i); c.show_text(t)
@@ -103,22 +103,15 @@ def sheet(out):
 
 
 def phone(out):
+    """v2: the figure alone at three sizes, on the ring's light. Shots are staged at the board."""
     frames = []
-    for name, txt in (("wide", "5.2: the two of them, under the roll"), ("medium", "5.3: the words, filling the frame"),
-                      ("close", "1.1: frame 0, its glove an inch away")):
+    for name, txt, (x, feet, sc), pose, st, kw in (
+            ("wide", "full figure, as small as it gets", (270, 800, 0.98 / b.REL * r.REL), "r_wait", "ask", dict()),
+            ("medium", "to the belt: the face it fights with", (270, 470 - HEAD * 2.5 + 170, 2.5), "r_guard", "furious", dict()),
+            ("close", "the screen, cracked, still asking", (270, 470 - HEAD * 4.6, 4.6), "r_wait", "ask", dict(crack=True))):
         f = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(f); k = Ctx(c, 0)
-        if name == "wide":
-            ssh.ring(c, 540, 960, 860, lamp_x=270, lamp_y=420)
-            roll_on_rope(k, 270, 250, 1.3)
-            b.boxer(k, 150, 884, 0.98, "b_swing", "hard", (0.9, 0))
-            r.robot(k, 415, 884, 0.98 / b.REL * r.REL, "r_wait", "ask", side=-1)
-        elif name == "medium":
-            ssh.ring(c, 540, 960, 1500, lamp_x=270, lamp_y=420)
-            r.robot(k, 270, 470 - HEAD * 4.6, 4.6, "r_wait", "ask")
-        else:
-            ssh.ring(c, 540, 960, 1500, lamp_x=250, lamp_y=380)
-            b.boxer(k, 190, 470 - b.HY * 3.0, 3.0, "b_walk", "dawning", (1.6, 0.1))
-            b.robot_glove(k, 452, 500, 3.0 * 0.8, math.pi + 0.06)
+        ssh.ring(c, 540, 960, 800 if name == "wide" else 1500, lamp_x=270, lamp_y=feet + HEAD * sc)
+        r.robot(k, x, feet, sc, pose, st, **kw)
         noir(f)
         frames.append((name, txt, f))
     W = 3 * 270 + 4 * 20
@@ -133,5 +126,5 @@ def phone(out):
 
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else "../characters"
-    sheet(d + "/uptimez-robot-on3-v1-sheet.png")
-    phone(d + "/uptimez-robot-on3-v1-phone.png")
+    sheet(d + "/uptimez-robot-on3-v2-sheet.png")
+    phone(d + "/uptimez-robot-on3-v2-phone.png")
