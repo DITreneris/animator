@@ -1,4 +1,11 @@
-"""FIRST SEARCH (episode 10): the animatic v19 (fs_animatic_v18.py = v18, kept): storyboard v20 (the healed portrait
+"""FIRST SEARCH (episode 10): the animatic v22 (fs_animatic_v21.py = v21, kept): storyboard v23 (the low angles pushed;
+8.1 a medium shot).
+FIRST SEARCH (episode 10): the animatic v21 (fs_animatic_v20.py = v20, kept): storyboard v22 (shot design v1: angles,
+over-the-shoulders, the bank card as an insert, Pam behind Don, over Mom's shoulder).
+FIRST SEARCH (episode 10): the animatic v20 (fs_animatic_v19.py = v19, kept): storyboard v21 (canon proportions, feet
+on the floor) and the lines in speech bubbles again, as in every episode: each tail ends beside the speaker's mouth,
+outside the head; an off-screen speaker gets a bubble with no tail; no bubble covers a face.
+FIRST SEARCH (episode 10): the animatic v19 (fs_animatic_v18.py = v18, kept): storyboard v20 (the healed portrait
 smiles under gold glints; Mom's arm round Pam; Pam's avatar).
 FIRST SEARCH (episode 10): the animatic v18 (fs_animatic_v17.py = v17, kept): storyboard v19 (the v18 cold test's
 fixes: 6.1 cut, the whoosh now on the hard cut to Mom; 9.5, the shake into frame 0).
@@ -49,7 +56,7 @@ import sound_xmas as sx
 import sound_iwry as si
 from kit import Ctx, INK
 
-V = "v19"
+V = "v22"
 W, H, FPS, SR = 540, 960, 30, 48000
 HERE = os.path.dirname(os.path.abspath(__file__))
 VOICES = "fs_voices/film_v9"
@@ -102,6 +109,127 @@ def caption(c, who, text):
         c.move_to(48, 152 + i * 30); c.show_text(l_)
 
 
+BUBBLES = [True]                                           # v20: speech bubbles (canon); False = v19's caption boxes
+SPEAKER = {"CLIENT": ["client"], "DON": ["don"], "SOFIA": ["sofia"], "ROBOT": ["robot"], "MOM": ["mom"],
+           "PAM+SOFIA": ["sofia", "pam"]}
+SAFE = (18, 96, 522, 720)                                  # bubbles stay out of the bottom quarter (the platforms' captions)
+
+
+def _rows(c, text, width):
+    words, rows, cur = text.split(), [], ""
+    for w_ in words:
+        t_ = (cur + " " + w_).strip()
+        if c.text_extents(t_).x_advance > width and cur:
+            rows.append(cur); cur = w_
+        else:
+            cur = t_
+    rows.append(cur)
+    return rows
+
+
+def _hits(box, heads):
+    x0, y0, x1, y1 = box
+    for hx, hy, r in heads:
+        if x0 < hx + r * 0.9 and x1 > hx - r * 0.9 and y0 < hy + r * 1.15 and y1 > hy - r:
+            return True
+    return False
+
+
+def speech(c, k, text, head, others, mono=False, size=30, taken=()):
+    """A canon speech bubble (episode 9's): white, rough-edged, Lilita One (the robot in mono caps). head (x, y, r) on
+    the canvas or None (off screen: no tail). Placed just above the speaker if it fits, else beside, else below;
+    never over a face or another bubble; inside the safe area."""
+    face = kit.MONO if mono else kit.FONT
+    c.select_font_face(face, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD if mono else cairo.FONT_WEIGHT_NORMAL)
+    c.set_font_size(size)
+    rows = _rows(c, text, 360)
+    ws = [c.text_extents(r_).x_advance for r_ in rows]
+    lh = size * 1.14
+    bw, bh = max(ws) + 44, len(rows) * lh + 26
+    on = head is not None and 0 <= head[0] <= 540 and 60 <= head[1] <= 960
+    heads = [h for h in others if 0 <= h[0] <= 540]
+    if on:
+        heads.append(head)
+    L, T, R, B = SAFE
+
+    def free(bx, by):
+        box = (bx, by, bx + bw, by + bh)
+        if _hits(box, heads):
+            return False
+        return not any(bx < q[2] and bx + bw > q[0] and by < q[3] and by + bh > q[1] for q in list(taken) + list(sb.AVOID))
+
+    place = None
+    if on:
+        hx, hy, r = head
+        side = 1 if hx < 270 else -1
+        bx = max(L, min(R - bw, hx + side * r * 0.9 - bw / 2))
+        xs = [bx] + [max(L, min(R - bw, bx + d_)) for d_ in (-40, 40, -80, 80, -120, 120, -160, 160, -220, 220)]
+        for by in range(int(hy - r - bh - 30), T + 7, -8):                          # just above, then higher
+            for bx_ in xs:                                                          # ... sliding sideways if needed
+                if free(bx_, by):
+                    place = (bx_, by); break
+            if place:
+                break
+        if place is None:                                                           # beside, at head height
+            for bx_ in (hx + r + 20, hx - r - 20 - bw):
+                bx_ = max(L, min(R - bw, bx_))
+                by = max(T + 8, min(B - bh, hy - r * 0.8))
+                if free(bx_, by):
+                    place = (bx_, by); break
+        if place is None:                                                           # below
+            for by in range(int(hy + r * 1.3 + 24), int(B - bh), 8):
+                if free(bx, by):
+                    place = (bx, by); break
+    if place is None:                                                               # off screen: toward where they are
+        ax = 270 if head is None else (L if head[0] < 0 else R - bw if head[0] > 540 else head[0] - bw / 2)
+        bx = max(L, min(R - bw, ax))
+        for by in range(T + 8, int(B - bh), 8):
+            if free(bx, by):
+                place = (bx, by); break
+        if place is None:
+            place = (bx, T + 8)
+    bx, by = place
+    tail = None
+    if on:
+        hx, hy, r = head
+        mx_ = bx + bw / 2
+        side = 1 if mx_ >= hx else -1
+        tip = (hx + side * (r * 0.95 + 8), hy + r * 0.35)                             # beside the mouth, outside the head
+        if tip[1] > by + bh:                                                         # the speaker below
+            cx = max(bx + 30, min(bx + bw - 30, tip[0]))
+            tail = [(cx - 13, by + bh - 3), tip, (cx + 13, by + bh - 3)]
+        elif tip[1] < by:
+            cx = max(bx + 30, min(bx + bw - 30, tip[0]))
+            tail = [(cx - 13, by + 3), tip, (cx + 13, by + 3)]
+        else:
+            ex = bx + 3 if tip[0] < bx else bx + bw - 3
+            yy = max(by + 16, min(by + bh - 16, tip[1]))
+            tail = [(ex, yy - 11), tip, (ex, yy + 11)]
+        kit.cut(k, tail, (1, 1, 1))
+    kit.cut(k, kit.rough_rect_pts(k, bx, by, bw, bh, 900 + len(text), j=1.6), (1, 1, 1))
+    if tail:
+        c.set_source_rgb(1, 1, 1); c.move_to(*tail[0]); c.line_to(*tail[1]); c.line_to(*tail[2]); c.close_path(); c.fill()
+    c.select_font_face(face, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD if mono else cairo.FONT_WEIGHT_NORMAL)
+    c.set_font_size(size); c.set_source_rgb(*INK)
+    for i, (r_, w_) in enumerate(zip(rows, ws)):
+        c.move_to(bx + (bw - w_) / 2, by + 13 + lh * (i + 0.80)); c.show_text(r_)
+    return bx, by, bx + bw, by + bh
+
+
+def say(c, k, who, text, heads):
+    names = SPEAKER.get(who, [])
+    if len(names) == 2:                                    # both of them: one "Eww." each
+        taken = []
+        for n in names:
+            others = [h for m, h in heads.items() if m != n]
+            taken.append(speech(c, k, text, heads.get(n), others, size=30, taken=taken))
+        return
+    n = names[0] if names else None
+    others = [h for m, h in heads.items() if m != n]
+    mono = who == "ROBOT"
+    speech(c, k, text.upper() if mono else text, heads.get(n), others, mono=mono, size=24 if mono else 30)
+
+
 def stills(d):
     os.makedirs(d, exist_ok=True)
     fs.LAYOUT[0] = "v2"; fs.REMOTE_BIG[0] = True; fs.BABY_DON[0] = True
@@ -113,11 +241,17 @@ def stills(d):
                     continue
                 s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
                 c = cairo.Context(s); k = Ctx(c, 0)
-                sb.bg(c); fn(k)
+                sb.bg(c)
+                sb.HEADS.clear(); sb.AVOID.clear()
+                with sb._norm(record_only=True):
+                    fn(k)
                 if cap:
                     key = "1.2" if shot == "1.3" else LINE_OF[shot]
                     m = TAKES[key]
-                    caption(c, WHO[m["who"]], m["text"].upper() if m["who"] == "ROBOT" else m["text"])
+                    if BUBBLES[0]:
+                        say(c, k, m["who"], m["text"], dict(sb.HEADS))
+                    else:
+                        caption(c, WHO[m["who"]], m["text"].upper() if m["who"] == "ROBOT" else m["text"])
                 p = "%s/%s%s.png" % (d, shot, "_cap" if cap else "")
                 s.write_to_png(p)
                 out[(shot, cap)] = p

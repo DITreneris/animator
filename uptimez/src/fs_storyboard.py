@@ -1,4 +1,16 @@
-"""FIRST SEARCH (episode 10): storyboard v20 (fs_storyboard_v19.py = v19, kept): the v19 cold test's fixes, as picked:
+"""FIRST SEARCH (episode 10): storyboard v23 (fs_storyboard_v22.py = v22, kept): from the v22 cold test: the three low
+angles pushed (the camera dropped near the floor, the subject rising up through the frame, the top closed in harder);
+8.1 a medium shot on Pam bringing the plan (the wide lost its beat on a phone).
+FIRST SEARCH (episode 10): storyboard v22 (fs_storyboard_v21.py = v21, kept): shot design v1
+(first-search/fs_shot_design_v1.md), as picked: low angles on Don selling (2.2) and claiming (5.3) and on Mom's entrance
+(7.2), a high-angle extreme close-up on his guilt with the shredder near the lens (5.2b); over the Client's shoulder onto
+the tablet (2.3) and onto Don (5.2); FRIDAY · BANK MEETING a full-screen insert (1.3); Pam taping behind Don in his own
+shot (4.4); over Mom's shoulder onto her phone (7.1).
+FIRST SEARCH (episode 10): storyboard v21 (fs_storyboard_v20.py = v20, kept): canon again. Everyone at the series'
+proportions (set_ob's ratios: Don 0.60, Sofía 0.56, Pam and Mom 0.54, the Client 0.52, the robot 0.40) and everyone's
+feet on the floor, not on the wall (set v4 had put the middle row's feet above the floor line); the heads recorded for the
+animatic's speech bubbles.
+FIRST SEARCH (episode 10): storyboard v20 (fs_storyboard_v19.py = v19, kept): the v19 cold test's fixes, as picked:
 9.3 the healed glass is clear, he smiles in the photo, gold glints off the frame (no white crosses that read as cracks);
 7.5 Mom's arm round Pam's shoulder, both facing Sofía, Pam beaming; 6.2b Pam's avatar: her bob, round glasses, purple
 cardigan.
@@ -112,13 +124,16 @@ import pam_bc as pb
 from kit import Ctx, INK, ellipse, rect, cut
 from charsheets import corp, wrap
 
-V = "v20"
+V = "v23"
 F = fs.F
 P = fs.POS2
 SET4 = [True]                                              # v18: the board drawn on the front desk set v4
 BIG_PROPS = [False]                                        # v19: Mom's plate and mug, legible at phone size (6.1b, 7.1)
 V19 = [True]
-V20 = [True]                                               # v20: the v19 cold test's fixes (off: board v19 exactly)                                               # v19: the v18 cold test's fixes (off: board v18 exactly)
+V20 = [True]
+NORM = [True]
+V22 = [True]
+V23 = [True]                                               # v23: the low angles pushed (the camera dropped), 8.1 a medium shot (off: board v22 exactly)                                               # v22: shot design v1 (angles, over-the-shoulders, inserts) (off: board v21 exactly)                                              # v21: canon proportions, everyone's feet on the floor (off: board v20 exactly)                                               # v20: the v19 cold test's fixes (off: board v19 exactly)                                               # v19: the v18 cold test's fixes (off: board v18 exactly)
 P_OLD = dict(fs.POS2)
 if SET4[0]:
     P = dict(fd.HOME)
@@ -392,7 +407,67 @@ def _xmap(d):
     return d
 
 
+
+# ---------------------------------------------------------------- v21: canon proportions, feet on the floor; who is where
+SC = {"client": 0.52, "robot": 0.40, "sofia": 0.56, "don": 0.60, "pam": 0.54, "mom": 0.54}   # set_ob's ratios (Don = 0.60)
+FOOT = {"client": F + 2, "robot": F + 4, "sofia": F + 4, "don": F + 16, "pam": F + 6, "mom": F + 8}   # on the floor, not the wall
+HEADS = {}                                                 # name -> (x, y, r) on the canvas, for the animatic's bubbles
+AVOID = []                                                 # v22: boxes (x0, y0, x1, y1) a bubble must not cover (a phone's text)
+
+
+def _S(name, s):
+    """The scale a shot's own drawing should assume for `name` (its IK, its props)."""
+    return SC[name] if NORM[0] and 0.38 <= s <= 0.8 else s
+
+
+class _norm:
+    """Inside scene4: every character at its canon scale, a front foot on the floor; heads recorded."""
+    TABLE = (("mom", mfs, "mom"), ("pam", pb, "pam"), ("sofia", sfs, "sofia"), ("don", dv, "don"),
+             ("client", co, "client"), ("robot", rm, "robot"))
+
+    def __init__(self, record_only=False):
+        self.record_only = record_only
+
+    def __enter__(self):
+        self.old = []
+        if not NORM[0]:
+            return self
+        for name, mod, attr in self.TABLE:
+            fn = getattr(mod, attr)
+            self.old.append((mod, attr, fn))
+            setattr(mod, attr, self._wrap(name, fn, self.record_only))
+        return self
+
+    def __exit__(self, *e):
+        for mod, attr, fn in self.old:
+            setattr(mod, attr, fn)
+
+    @staticmethod
+    def _wrap(name, fn, record_only=False):
+        def w(k, x, feet, s=1.0, *a, **kw):
+            if not record_only and 0.38 <= s <= 0.8:
+                s = SC[name]
+                if F - 50 < feet < F + 4:
+                    feet = FOOT[name]
+            o = fn(k, x, feet, s, *a, **kw)
+            try:
+                hx, hy = o["head"]
+                c = k.c
+                dx, dy = c.user_to_device(hx, hy)
+                z = abs(c.user_to_device_distance(1, 0)[0])
+                if c.get_target().get_width() > 8:
+                    HEADS[name] = (dx, dy, 50 * s * z)
+            except Exception:
+                pass
+            return o
+        return w
+
 def scene4(k, cam, screen, portrait, door, cl, rb, sf, dn, pm, mm, extra, counter, pre, back, counter_plan):
+    with _norm():
+        return _scene4(k, cam, screen, portrait, door, cl, rb, sf, dn, pm, mm, extra, counter, pre, back, counter_plan)
+
+
+def _scene4(k, cam, screen, portrait, door, cl, rb, sf, dn, pm, mm, extra, counter, pre, back, counter_plan):
     """v18: scene() on the front desk v4. Old x overrides go through M; the counter, its things, Pam and Mom are set
     v4's own (fd); everyone stands on a contact shadow."""
     c = k.c
@@ -1081,7 +1156,7 @@ def f4_7_4(k):                                             # the thumb on his on
     def ex(k, o):
         import mom_on as mo
         hx, hy = o["don"]["head"]
-        mx, mf, ms = 508, F + 34, 0.62
+        mx, mf, ms = 508, F + 34, _S("mom", 0.62)
         tx, ty = hx + 6, hy - 30
         fd.shadow(k, mx, mf + 4, 40)
         pose = mo.ik(-1, (tx - mx) / ms, (ty - mf) / ms) + mo.ik(1, 30, mo.SASH + 2)
@@ -1123,7 +1198,7 @@ def f4_8_1(k):                                             # Pam comes round wit
         fd.shadow(k, 548, F + 12, 40)
         ac.pam(k, 548, F + 10, 0.62, "stand", look=(-1, -0.3))
         fs.plan_taped(k, 516, F - 66, 0.56)
-    CAM4[0] = (440, 560, 1.15)
+    CAM4[0] = (520, 640, 1.9) if V23[0] else (440, 560, 1.15)
     try:
         scene(k, cl=dict(x4=True, x=250, pose="arrive", face="plain", look=(-1, 0)),
               sf=dict(x4=True, x=372, face="charm", look=(1, 0)), dn=dict(x4=True, x=450, face="happy", look=(-1, 0)),
@@ -1181,7 +1256,6 @@ def _chair(k, x, seat, s=1.0, seed=960):
 def f5_3_4(k):                                             # Sofía, on tiptoe on a rolling chair, sticks the plaster on
     c = k.c
     bg(c)
-    rect(k, -20, 862, 580, 120, kit.FLOOR, 961, shadow=False)
     S, PS = 1.3, 2.3
     o = sfs.sofia(Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0), 0, 0, S, "plaster", "fake")
     hx, hy = o["hands"][1]
@@ -1189,6 +1263,9 @@ def f5_3_4(k):                                             # Sofía, on tiptoe o
     tx, ty = px, py - 19 * PS
     sx, feet = tx - hx - 6, ty - hy + 8
     fs.portrait(k, px, py, PS, ang=fs.CROOK, patch=True)
+    floor_y = feet + 6 + 104 if NORM[0] else 862                                             # v21: the chair on the floor
+    rect(k, -20, floor_y, 580, 960 - floor_y + 20, kit.FLOOR, 961, shadow=False)
+    c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(0, floor_y); c.line_to(540, floor_y); c.stroke()
     _chair(k, sx + 6, feet + 6, 1.0)
     c.set_source_rgb(*INK); c.set_line_width(3); c.set_line_cap(1)                           # it rolls: wobble
     for dy in (0, 14):
@@ -1279,7 +1356,7 @@ def f5_8_2(k):                                             # the near-shred: Don
         for dx in (-28, 28):                                                                 # it bites: shake
             c.move_to(sx_ + dx, slot + 6); c.line_to(sx_ + dx * 1.4, slot + 14); c.stroke()
         ellipse(k, hx, hy, 6, 6, SKIN_DON, 964, shadow=False, lw=1.6)                        # his hand, on the plan's edge
-        px, pf, ps = sx_ + 104, F + 10, 0.64                                                 # Pam: grabs the top corner
+        px, pf, ps = sx_ + 104, F + 10, _S("pam", 0.64)                                      # Pam: grabs the top corner
         gx, gy = sx_ + 22, slot - 56
         fd.shadow(k, px, pf + 2, 40)
         H = kit.PEOPLE["PAM"]["h"]
@@ -1459,8 +1536,8 @@ def f6_7_5(k):                                             # Mom's arm round Pam
     def ex(k, o):
         import mom_on as mo
         c = k.c
-        mx, mf, ms = 680, F + 6, 0.62
-        px, pf, ps = 606, F + 12, 0.60
+        mx, mf, ms = 680, F + 6, _S("mom", 0.62)
+        px, pf, ps = 606, F + 12, _S("pam", 0.60)
         fd.shadow(k, mx, mf + 2, 40)
         fd.shadow(k, px, pf + 2, 40)
         with ac.arms():                                                                 # a dry run: where her shoulders are
@@ -1507,6 +1584,188 @@ def _pam_avatar(k, x, y, r=28):
     c.set_source_rgb(*INK); c.set_line_width(2); c.new_path(); c.arc(x, y, r, 0, 2 * math.pi); c.stroke()
 
 
+
+# ---------------------------------------------------------------- v22: shot design v1 (first-search/fs_shot_design_v1.md)
+def _warp(k, draw, mode, pad=96, drop=None):
+    """A camera angle in a paper world: draw the shot wider than the frame, then keystone it. "low" (looking up: the
+    verticals close in at the top), "high" (looking down: they close in at the bottom). The heads drawn inside are
+    moved with the picture, so the bubbles still find the mouths."""
+    from PIL import Image
+    W_, H_ = 540, 960
+    tmp = cairo.ImageSurface(cairo.FORMAT_ARGB32, W_ + 2 * pad, H_)
+    tc = cairo.Context(tmp)
+    bg(tc)
+    tc.translate(pad, 0)
+    if drop:                                               # v23: the camera dropped near the floor: the subject rises up
+        z_, py_ = drop                                     # through the frame from the bottom
+        tc.translate(270, py_); tc.scale(z_, z_); tc.translate(-270, -py_)
+    HEADS.clear()
+    draw(Ctx(tc, 0))
+    heads = dict(HEADS)
+    tmp.flush()
+    img = Image.frombuffer("RGBA", (W_ + 2 * pad, H_), bytes(tmp.get_data()), "raw", "BGRA", tmp.get_stride(), 1)
+    Wt = W_ + 2 * pad
+    if mode == "low":
+        quad = (0, 0, pad, H_, W_ + pad, H_, Wt, 0)            # UL, LL, LR, UR of the source
+        edge = lambda v: (pad * v, Wt - pad * v)
+    else:
+        quad = (pad, 0, 0, H_, Wt, H_, W_ + pad, 0)
+        edge = lambda v: (pad * (1 - v), Wt - pad * (1 - v))
+    out = img.transform((W_, H_), Image.QUAD, quad, resample=Image.BICUBIC)
+    data = bytearray(out.tobytes("raw", "BGRA"))
+    surf = cairo.ImageSurface.create_for_data(data, cairo.FORMAT_ARGB32, W_, H_, W_ * 4)
+    c = k.c
+    c.save(); c.identity_matrix(); c.set_source_surface(surf, 0, 0); c.paint(); c.restore()
+    HEADS.clear()
+    for n, (x, y, r) in heads.items():
+        v = max(0.0, min(1.0, y / H_))
+        xl, xr = edge(v)
+        HEADS[n] = ((x - xl) / (xr - xl) * W_, y, r * W_ / (xr - xl))
+
+
+def _client_back(k, x, y, s=1.0):
+    """The Client from behind, over his shoulder: the back of his head (dark, grey at the sides), the green jacket."""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(s, s)
+    cut(k, [(-150, 120), (-120, 40), (-40, 10), (40, 10), (120, 40), (150, 120), (150, 400), (-150, 400)],
+        (0.42, 0.44, 0.24), shadow=False, lw=3)                                              # the jacket's shoulders
+    cut(k, [(-46, 14), (46, 14), (40, 40), (-40, 40)], (0.45, 0.30, 0.18), shadow=False, lw=2.5)   # the collar
+    ellipse(k, 0, -40, 64, 74, (0.94, 0.76, 0.62), 1201, shadow=False, lw=3)                  # neck and head
+    cut(k, [(-64, -40), (-60, -90), (-30, -116), (30, -116), (60, -90), (64, -40), (50, 10), (-50, 10)],
+        (0.26, 0.18, 0.12), shadow=False, lw=3)                                              # his hair, from behind
+    for sx in (-1, 1):
+        cut(k, [(sx * 64, -50), (sx * 58, -10), (sx * 46, 8), (sx * 52, -40)], (0.62, 0.62, 0.64), shadow=False, lw=2)
+    ellipse(k, -66, -36, 9, 16, (0.94, 0.76, 0.62), 1202, shadow=False, lw=2.4)               # an ear
+    c.restore()
+    return (x, y - 40 * s, 70 * s)                                                           # where his voice comes from
+
+
+def f7_1_3(k):                                             # insert: the card fills the frame, in his hand
+    c = k.c
+    bg(c, (0.93, 0.92, 0.89))
+    c.save(); c.translate(270, 440); c.rotate(-0.05)
+    fs.phone2(k, 0, 0, 2.9, "cal")
+    c.restore()
+    thumb(k, 196, 672, 1.2, SKIN_CL, ang=2.9, who="client")
+    AVOID.append((70, 200, 470, 700))
+
+
+LOW = [{}]                                                 # v23: how hard the low angles push
+
+
+def f7_2_2(k):                                             # low angle: Don sells
+    _warp(k, lambda k_: _BASE["2.2"](k_), "low", **LOW[0])
+
+
+def f7_2_3(k):                                             # over the Client's shoulder: the tablet big, Don behind it
+    def ex(k, o):
+        hx, hy = o["don"]["hands"][0]
+        fs.tablet_upgrade(k, hx + 2, hy + 6, 0.62)
+    CAM4[0] = (310, 660, 2.4)
+    try:
+        scene(k, cl=False, sf=False, rb=False, pm=False, mm=False,
+              dn=dict(x4=True, x=318, pose="tablet", face="smug", look=(-0.6, 0.3)), extra=ex)
+    finally:
+        CAM4[0] = None
+    HEADS["client"] = _client_back(k, 70, 860, 1.25)
+    thumb(k, 236, 676, 0.9, SKIN_CL, oil=True, ang=2.55, who="client")
+
+
+def f7_4_4(k):                                             # Don in front, pleased; behind him Pam tapes the plan, in focus
+    def back(k):
+        pam_taping(k, 672, F - 118, 0.54)
+    def pre(k):
+        c = k.c
+        c.save(); c.translate(622, F - 236); c.rotate(-0.08); fs.plan_taped(k, 0, 0, 0.56)
+        c.set_source_rgba(0.98, 0.96, 0.86, 0.95); c.rectangle(-14, -30, 28, 9); c.fill()        # the fresh tape
+        c.restore()
+    CAM4[0] = (606, 650, 2.0)
+    try:
+        scene(k, cl=False, sf=False, rb=False, pm=False, mm=False, back=back, pre=pre, counter_plan=False,
+              dn=dict(x4=True, x=500, face="smug", look=(-1, 0.1), pose="vest"))
+    finally:
+        CAM4[0] = None
+
+
+def f7_5_2(k):                                             # over the Client's shoulder onto Don: "Where's my blueprint?"
+    CAM4[0] = (440, 600, 2.3)
+    try:
+        scene(k, cl=False, sf=False, rb=False, pm=False, mm=False,
+              dn=dict(x4=True, x=456, face="smug", look=(-1, 0.4)))
+    finally:
+        CAM4[0] = None
+    HEADS["client"] = _client_back(k, 120, 820, 1.35)
+
+
+def f7_5_2b(k):                                            # ECU, high angle: his eyes dart to the shredder in front
+    def draw(k_):
+        def ex(k2, o):
+            hx, hy = o["don"]["head"]
+            c = k2.c
+            c.save(); c.translate(hx - 30, hy - 26)                                        # a drop of sweat
+            c.move_to(0, -14); c.curve_to(7, -2, 8, 6, 0, 8); c.curve_to(-8, 6, -7, -2, 0, -14); c.close_path()
+            c.set_source_rgb(0.75, 0.88, 1.0); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+            c.restore()
+        CAM4[0] = (446, F - 166, 6.4)
+        try:
+            scene(k_, cl=False, sf=False, rb=False, pm=False, mm=False,
+                  dn=dict(x4=True, x=440, face="shock", look=(1.8, 1.2)), extra=ex)
+        finally:
+            CAM4[0] = None
+        c = k_.c                                                                            # the shredder, near the lens
+        c.save(); c.translate(420, 1060); c.scale(3.2, 3.2)
+        ac.shredder(k_, 0, 0, 1.0, fill=0.9)
+        rect(k_, -20, -40, 40, 14, (0.86, 0.10, 0.12), 41, shadow=False, lw=1.4)
+        c.restore()
+    _warp(k, draw, "high")
+
+
+def f7_5_3(k):                                             # low angle: "The zero's green."
+    _warp(k, lambda k_: _BASE["5.3"](k_), "low", **LOW[0])
+
+
+def f7_7_1(k):                                             # over Mom's shoulder: her phone, the post; her cheek, melting
+    c = k.c
+    bg(c)
+    c.set_source_rgb(0.75, 0.70, 0.62); c.rectangle(0, 700, 540, 260); c.fill()                # the counter top, near
+    c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(0, 700); c.line_to(540, 700); c.stroke()
+    c.save(); c.translate(318, 430); c.rotate(-0.06)
+    fs.phone2(k, 0, 0, 2.7, "post3a")
+    c.restore()
+    for hx_, hy_ in ((214, 640), (420, 650)):                                                 # her hands on it
+        ellipse(k, hx_, hy_, 26, 30, (0.96, 0.80, 0.70), 1210 + hx_, shadow=False, lw=2.4)
+    cut(k, [(-40, 960), (-40, 600), (60, 560), (170, 640), (200, 960)], mfs.TEAL, shadow=False, lw=3)   # her shoulder
+    ellipse(k, 40, 470, 118, 132, (0.96, 0.80, 0.70), 1220, shadow=False, lw=3)              # her cheek, from behind-left
+    c.set_source_rgba(0.95, 0.45, 0.50, 0.75)                                                 # the blush
+    c.save(); c.translate(118, 500); c.scale(30, 18); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    c.set_source_rgb(*INK); c.set_line_width(4); c.set_line_cap(1)                            # the corner of her smile
+    c.new_path(); c.arc(120, 548, 34, 0.2, 1.1); c.stroke()
+    c.new_path(); c.arc(126, 430, 16, math.pi * 1.1, math.pi * 1.8); c.stroke()             # an eye, closed, happy
+    c.set_source_rgb(*INK); c.set_line_width(5)                                              # her glasses: the rim, the arm
+    c.new_path(); c.arc(140, 432, 30, math.pi * 0.55, math.pi * 1.6); c.stroke()
+    c.move_to(112, 420); c.line_to(20, 404); c.stroke()
+    for i, (cx, cy) in enumerate(((-40, 350), (8, 326), (58, 330), (104, 352), (138, 380), (-70, 400), (-30, 300),
+                                  (30, 290), (84, 300))):                                     # her curls
+        ellipse(k, cx, cy, 36, 36, (0.62, 0.62, 0.64), 1230 + i, shadow=False, lw=2.4)
+    for i in range(7):                                                                        # her pearls
+        ellipse(k, 40 + i * 22, 612 + (i - 3) ** 2 * 3, 11, 11, (0.98, 0.97, 0.94), 1250 + i, shadow=False, lw=1.8)
+    c.save(); c.translate(10, 318); c.rotate(-0.5)                                            # the curler
+    rect(k, -40, -16, 80, 32, (0.72, 0.62, 0.90), 1240, shadow=False, lw=2.4)
+    c.restore()
+    for hx_, hy_, r_ in ((210, 300, 14), (240, 262, 10)):                                     # it melts her: hearts
+        c.save(); c.translate(hx_, hy_)
+        c.move_to(0, r_); c.curve_to(-r_ * 1.6, -r_ * 0.2, -r_ * 0.6, -r_ * 1.4, 0, -r_ * 0.5)
+        c.curve_to(r_ * 0.6, -r_ * 1.4, r_ * 1.6, -r_ * 0.2, 0, r_); c.close_path()
+        c.set_source_rgb(0.90, 0.25, 0.35); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
+        c.restore()
+    HEADS["mom"] = (40, 470, 120)
+    AVOID.append((214, 150, 450, 720))
+
+
+def f7_7_2(k):                                             # low angle: she comes round the counter's end
+    _warp(k, lambda k_: _BASE["7.2"](k_), "low", **LOW[0])
+
+
 OVERRIDE4 = {"3.1": f4_3_1, "5.1": f4_5_1, "5.3": f4_5_3, "6.1b": f4_6_1b, "7.1": f4_7_1, "7.2": f4_7_2, "7.4": f4_7_4,
              "7.5": f4_7_5, "8.1": f4_8_1, "8.2": f4_8_2}
 if V19[0]:                                                 # v19: the cold test's fixes
@@ -1514,6 +1773,12 @@ if V19[0]:                                                 # v19: the cold test'
                       "9.1": f5_9_1})
 if V20[0]:                                                 # v20: the v19 cold test's fixes
     OVERRIDE4.update({"7.5": f6_7_5, "9.3": f6_9_3})
+_BASE = {"2.2": f_2_2, "5.3": OVERRIDE4.get("5.3"), "7.2": OVERRIDE4.get("7.2")}
+if V23[0]:
+    LOW[0] = dict(pad=170, drop=(1.32, 900))
+if V22[0]:                                                 # v22: shot design v1
+    OVERRIDE4.update({"1.3": f7_1_3, "2.2": f7_2_2, "2.3": f7_2_3, "4.4": f7_4_4, "5.2": f7_5_2, "5.2b": f7_5_2b,
+                      "5.3": f7_5_3, "7.1": f7_7_1, "7.2": f7_7_2})
 
 
 def _pstate(shot):
@@ -1567,6 +1832,7 @@ def frames(d):
         s = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960)
         c = cairo.Context(s); k = Ctx(c, 0)
         bg(c)
+        HEADS.clear(); AVOID.clear()
         fn(k)
         p = "%s/fs_board_%s.png" % (d, shot)
         s.write_to_png(p)
