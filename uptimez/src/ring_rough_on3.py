@@ -1,12 +1,16 @@
 """OFFICE NOIR 3: a moving rough of beat 05, whole (5.1a to 5.6), mute, for the cold test (19 Nov). v2; ring_rough_on3_v1.py
-is v1 (5.1a to 5.2). v3 (ring_rough_on3_v2.py is v2): 5.4 is lit: a pale wall behind Mom's black coat (Tomas: too dark).
+is v1 (5.1a to 5.2). v5 (ring_rough_on3_v4.py is v4): in 5.4 Mom sits behind her desk, in a high-backed chair (Tomas).
+v4 (ring_rough_on3_v3.py is v3), four changes and no more: the gap at the stopped glove is open again (5.2, 5.5); the
+stretched sleeve is held longer, with a closer cut on it (5.1c); Mom's own arm comes down on the button (5.4); the
+robot's jab is three drawings (5.5).
+v3 (ring_rough_on3_v2.py is v2): 5.4 is lit: a pale wall behind Mom's black coat (Tomas: too dark).
 v2: a harder swing with a second shove; the robe wiped back on, not cut; and 5.3 (the screen asks),
 5.4 (Mom, a stand-in office: her set is not built), 5.5 (the tick, the jab, he goes over), 5.6 (from above: the count).
 v1:
 Four cold tests of stills left two things a still cannot show: which way the robe is going, and a punch that stops.
 This is a rough: poses change, figures slide, nobody's legs walk. 540x960, 30 fps, one encoded file per shot, joined
 with the concat demuxer. In 5.2 the Referee is behind the robot again (script v15).
-Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v3.mp4)"""
+Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v5.mp4)"""
 import os
 import sys
 import math
@@ -26,7 +30,7 @@ from kit import cut
 
 F, SC, Q = rg.F, rg.SC, rc.Q
 FPS = 30
-SHOTS = (("5.1a", 2.0), ("5.1b", 1.0), ("5.1c", 2.6), ("5.2", 1.9), ("5.3", 1.0), ("5.4", 2.0), ("5.5", 1.6), ("5.6", 2.0))
+SHOTS = (("5.1a", 2.0), ("5.1b", 1.0), ("5.1c", 3.2), ("5.2", 1.9), ("5.3", 1.0), ("5.4", 2.0), ("5.5", 1.6), ("5.6", 2.0))
 
 
 def lerp(a, b_, t):
@@ -75,11 +79,11 @@ def shot_51c(t):
     """The robe is on; Pam takes the collar and pulls it down off his shoulders; one sleeve comes with her, stretches,
     and stops at the glove; she pulls twice more; she lets go; she shoves it back up over his shoulders, crooked."""
     cx, cf = rc.CL
-    off = 0.35 <= t < 1.75
+    off = 0.35 <= t < 2.35
     if off:
         pull = lerp(0.0, 1.0, (t - 0.35) / 0.25)
-        tug = 7 * math.sin((t - 0.6) * math.pi * 3.2) if 0.6 < t < 1.5 else 0
-        slack = lerp(0.0, 1.0, (t - 1.5) / 0.25)
+        tug = 7 * math.sin((t - 0.6) * math.pi * 3.2) if 0.6 < t < 2.1 else 0
+        slack = lerp(0.0, 1.0, (t - 2.1) / 0.25)
         pose = (-9, 6, lerp(20.0, 56.0, pull) + tug * 0.5, 2)
         cl = lambda k: b.boxer(k, cx, cf, Q, pose, "hard", (0.7, -0.9), strip=True)
         gx, gy = rc.probe(cl)["hands"][1]
@@ -104,23 +108,24 @@ def shot_51c(t):
             rg.shadow(k, px_, pf, 34)
             ca.pam_corner(k, px_, pf, SC, ca.reach(px_, pf, SC, (ex + 4, ey - 6), (ex + 12, ey + 8), stance=lean), "neutral",
                           (-0.9, 0.7), stance=lean)
-        return rg.frame("R3", [client, pam], [], near=False, hats=False)
-    back = lerp(0.0, 1.0, (t - 1.75) / 0.3) if t >= 1.75 else 0.0
+        cam = (gx + 52, gy - 44, 2.3) if 0.85 <= t < 1.95 else "R3"        # v4: a closer cut on the sleeve and her hands
+        return rg.frame(cam, [client, pam], [], near=False, hats=False)
+    back = lerp(0.0, 1.0, (t - 2.35) / 0.3) if t >= 2.35 else 0.0
     grab = lerp(0.0, 1.0, t / 0.3) if t < 0.35 else 1.0
 
     def client(k):
         rg.shadow(k, cx, cf, 44)
-        up = (t - 1.75) / 0.22 if t >= 1.75 else 1.0             # she drags it back up over him, from the belt
+        up = (t - 2.35) / 0.22 if t >= 2.35 else 1.0             # she drags it back up over him, from the belt
         c = k.c
         if up < 1.0:
             with rc.head_back():
                 b.boxer(k, cx, cf, Q, "b_walk", "hard", (0.7, -0.9), strip=True)
-            c.save(); c.rectangle(cx - 200, cf + (b.HIP - (b.HIP - b.HY + 40) * -up) * Q - 400 * 0 , 400, 2000); c.clip()
+            c.save(); c.rectangle(cx - 200, cf + (b.HIP - (b.HIP - b.HY + 40) * up) * Q, 400, 2000); c.clip()
         with rc.head_back():
-            b.boxer(k, cx, cf - (5 * math.sin(back * math.pi) if t >= 1.75 else 0), Q, "b_walk", "hard", (0.7, -0.9))
+            b.boxer(k, cx, cf - (5 * math.sin(back * math.pi) if t >= 2.35 else 0), Q, "b_walk", "hard", (0.7, -0.9))
         if up < 1.0:
             c.restore()
-        if t >= 1.75:                                       # the collar, shoved up on her side: it sits crooked
+        if t >= 2.35:                                       # the collar, shoved up on her side: it sits crooked
             c = k.c
             sx, sy = cx + 34 * Q, cf + (b.BT - 6) * Q
             cut(k, [(sx, sy + 26 * Q), (sx + 16 * Q, sy - 40 * Q * back), (sx + 62 * Q, sy - 22 * Q * back), (sx + 74 * Q, sy + 34 * Q)],
@@ -130,8 +135,8 @@ def shot_51c(t):
 
     def pam(k):
         tx, ty = cx + 62 * Q, cf + (b.BT - 14) * Q
-        if t >= 1.75:
-            away = lerp(0.0, 1.0, (t - 2.15) / 0.3)         # she steps back, hands off
+        if t >= 2.35:
+            away = lerp(0.0, 1.0, (t - 2.75) / 0.3)         # she steps back, hands off
             px_, pf = cx + 118 + 40 * away, F - 14
             rg.shadow(k, px_, pf, 34)
             if away > 0.5:
@@ -147,6 +152,13 @@ def shot_51c(t):
     return rg.frame("R3", [client, pam], [], near=False, hats=False)
 
 
+def _stop_x(gap=62):
+    """Where he stands so that his glove, at full reach, ends `gap` short of the robot's head (the robot at 466)."""
+    reach = rc.probe(lambda k: b.boxer(k, 0, 0, Q, SWING, "hard"))["hands"][1][0] + (b.GLOVE + 4) * Q + 8
+    return 466 - r.RX * SC * r.REL - gap - reach
+
+
+STOP = _stop_x()
 BELL, STAND = cb.POSES_MACHO["ref_bell"], cb.POSES_MACHO["ref_stand"]
 
 
@@ -169,10 +181,10 @@ def shot_52(t):
             pose, dx, lean = lerp(WALK, WIND, u), -20 * lerp(0.0, 1.0, u), -0.16 * lerp(0.0, 1.0, u)
         elif t < 0.80:                                      # everything he has, in two drawings
             u = (t - 0.72) / 0.08
-            pose, dx, lean = lerp(WIND, SWING, u), -20 + 44 * lerp(0.0, 1.0, u), -0.16 + 0.30 * lerp(0.0, 1.0, u)
+            pose, dx, lean = lerp(WIND, SWING, u), -20 + (STOP - 270) * lerp(0.0, 1.0, u), -0.16 + 0.22 * lerp(0.0, 1.0, u)
         else:                                               # it stops. He leans on it; he shoves again; it does not go
             shove = 7 * math.sin((t - 1.25) / 0.2 * math.pi) if 1.25 < t < 1.45 else 0
-            pose, dx, lean = SWING, 24 + shove + 1.5 * math.sin(t * 70), 0.14 + shove * 0.004
+            pose, dx, lean = SWING, STOP - 290 + shove + 1.5 * math.sin(t * 70), 0.06 + shove * 0.004
         x, f = 290 + dx, F - 40
         rg.shadow(k, x, f, 44)
         c = k.c
@@ -223,22 +235,33 @@ def shot_54(t):
     c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(5); c.rectangle(296, 100, 228, 396); c.stroke()
     press = lerp(0.0, 1.0, (t - 1.15) / 0.12)
     sc = 1.55
-    q.queen(k, 250, 400 + 294 * sc, sc, "q_read", "bored", look=((-0.9, -0.1) if t < 1.0 else (0.7, 0.8)), note=True,
-            mouth=("dry" if 1.3 <= t < 1.75 else None))
-    rect(k, -20, 770, 580, 220, (0.46, 0.44, 0.42), 5, shadow=False, lw=3)                 # her desk
-    g = cairo.RadialGradient(400, 790, 10, 400, 790, 240)
-    g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0); c.set_source(g); c.rectangle(0, 770, 540, 190); c.fill()
-    rect(k, 352, 800, 96, 26, (0.10, 0.10, 0.11), 6, shadow=False, lw=2.4)                 # the button's plate
+    feet = 400 + 294 * sc + 112                              # v5: she sits: lower, the desk across her, a high chair behind
+    cut(k, [(96, 800), (104, 500), (140, 462), (360, 462), (396, 500), (404, 800)], (0.33, 0.31, 0.30), shadow=False, lw=3)   # the chair's back, wide, to her ears
+    for bx_ in (150, 250, 350):                              # its buttons
+        ellipse(k, bx_, 520, 6, 6, (0.20, 0.19, 0.19), 20 + bx_, shadow=False, lw=1.6)
+    down = lerp(0.0, 1.0, (t - 0.9) / 0.25)                  # v4: her own screen-right arm comes down onto the button
+    P = q._body.__globals__["POSES"]
+    old = P["q_read"]
+    P["q_read"] = old[:2] + lerp(old[2:], q.mo.ik(1, 92, -124), down)
+    try:
+        o = q.queen(k, 250, feet, sc, "q_read", "bored", look=((-0.9, -0.1) if t < 0.9 else (0.8, 0.9)), note=True,
+                    mouth=("dry" if 1.3 <= t < 1.75 else None))
+    finally:
+        P["q_read"] = old
+    hx, hy = o["hands"][1]
+    rect(k, -20, 790, 580, 200, (0.46, 0.44, 0.42), 5, shadow=False, lw=3)                 # her desk
+    g = cairo.RadialGradient(400, 800, 10, 400, 800, 240)
+    g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0); c.set_source(g); c.rectangle(0, 790, 540, 170); c.fill()
+    bx, by = 250 + 92 * sc, 806
+    rect(k, bx - 50, by - 2, 100, 26, (0.10, 0.10, 0.11), 6, shadow=False, lw=2.4)         # the button's plate
     lit = press > 0.9
-    ellipse(k, 400, 800 + 6 * press, 30, 15 - 5 * press, (0.98, 0.98, 0.94) if lit else (0.55, 0.55, 0.56), 7, shadow=False, lw=2.6)
-    if t >= 1.0:                                              # her hand comes down on it
-        hy = 640 + 140 * lerp(0.0, 1.0, (t - 1.0) / 0.25)
-        rect(k, 470, hy - 150, 110, 120, (0.10, 0.10, 0.11), 8, shadow=False, lw=2.4)     # the coat's sleeve
-        rect(k, 462, hy - 44, 120, 26, (0.82, 0.82, 0.84), 9, shadow=False, lw=2)          # the fur cuff
-        c.save(); c.translate(408, hy + 4); c.rotate(-0.5)
-        rect(k, 0, -13, 92, 26, q.mo.SKIN if hasattr(q.mo, "SKIN") else (0.86, 0.70, 0.60), 10, shadow=False, lw=2.2)
-        rect(k, 34, -15, 13, 30, (0.86, 0.87, 0.90), 11, shadow=False, lw=1.6)             # a ring
-        c.restore()
+    ellipse(k, bx, by + 5 * press, 30, 14 - 5 * press, (0.98, 0.98, 0.94) if lit else (0.55, 0.55, 0.56), 7, shadow=False, lw=2.6)
+    if down > 0.6:                                            # one ringed finger, from her hand, on it
+        fy = by - 4 + 5 * press
+        c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(19); c.set_line_cap(1); c.move_to(hx, hy); c.line_to(bx, fy); c.stroke()
+        c.set_source_rgb(0.90, 0.76, 0.66); c.set_line_width(14); c.move_to(hx, hy); c.line_to(bx, fy); c.stroke(); c.set_line_cap(0)
+        ellipse(k, hx, hy, 17, 17, (0.90, 0.76, 0.66), 10, shadow=False, lw=2.4)
+        rect(k, (hx + bx) / 2 - 11, (hy + fy) / 2 - 6, 22, 12, (0.86, 0.87, 0.90), 11, shadow=False, lw=1.6)   # her ring
     csh.noir(s)
     return s
 
@@ -248,25 +271,31 @@ def shot_55(t):
     if t < 0.4:
         return _insert_screen("tick")
     u = t - 0.4
-    hit = 0.22
+    hit = 0.34
 
     def ref(k):
         rg.shadow(k, 546, F - 96, 36); ca.referee(k, 546, F - 96, SC * ca.REL_REF, "ref_stand", look=(-0.8, 0.2), waistcoat=True)
 
     def robot(k):
-        jab = hit - 0.07 <= u < hit + 0.22
-        dx = -46 * lerp(0.0, 1.0, (u - (hit - 0.07)) / 0.07) if jab else 0
-        rg.shadow(k, 466 + dx * 0.4, F - 46, 40)
-        r.robot(k, 466 + dx * 0.4, F - 46, SC * r.REL, "r_jab" if jab else "r_wait", "tick", side=-1)
+        if u < hit - 0.2:
+            pose, dx = "r_wait", 0
+        elif u < hit - 0.07:                                # one: both gloves come up
+            pose, dx = "r_guard", 0
+        elif u < hit + 0.3:                                 # two, three: it rolls in and the piston goes out, and holds
+            pose, dx = "r_jab", -34 * lerp(0.0, 1.0, (u - (hit - 0.07)) / 0.07)
+        else:
+            pose, dx = "r_wait", -34 + 34 * lerp(0.0, 1.0, (u - hit - 0.3) / 0.2)
+        rg.shadow(k, 466 + dx, F - 46, 40)
+        r.robot(k, 466 + dx, F - 46, SC * r.REL, pose, "tick", side=-1)
 
     def client(k):
         c = k.c
         if u < hit:
-            x, f, a, face, pose = 314, F - 40, 0.14, "hard", SWING
+            x, f, a, face, pose = STOP, F - 40, 0.06, "hard", SWING
         else:
             v = lerp(0.0, 1.0, (u - hit) / 0.3)
-            x, f, a, face, pose = 314 - 44 * v, F - 40 + 6 * v, 0.14 - 1.66 * v, "shock", lerp(SWING, (-70, -20, 70, 20), v)
-        rg.shadow(k, x - 60 * (0.14 - a), F - 36, 44 + 30 * (0.14 - a))
+            x, f, a, face, pose = STOP - 44 * v, F - 40 + 6 * v, 0.06 - 1.58 * v, "shock", lerp(SWING, (-70, -20, 70, 20), v)
+        rg.shadow(k, x - 60 * (0.06 - a), F - 36, 44 + 30 * (0.06 - a))
         c.save(); c.translate(x, f); c.rotate(a); c.translate(-x, -f)
         b.boxer(k, x, f, Q, pose, face, (0.9, 0))
         c.restore()
@@ -274,7 +303,7 @@ def shot_55(t):
             c.set_source_rgb(1, 1, 1); c.set_line_width(5); c.set_line_cap(1)
             for i in range(8):
                 an = i * math.pi / 4
-                c.move_to(352 + 16 * math.cos(an), F - 232 + 16 * math.sin(an)); c.line_to(352 + 40 * math.cos(an), F - 232 + 40 * math.sin(an)); c.stroke()
+                c.move_to(STOP + 30 + 16 * math.cos(an), F - 226 + 16 * math.sin(an)); c.line_to(STOP + 30 + 40 * math.cos(an), F - 226 + 40 * math.sin(an)); c.stroke()
     return rg.frame((318, 1130, 1.0), [ref, robot, client], [], near=False, hats=False)
 
 
@@ -365,14 +394,14 @@ def sheets(d, prefix="sheet"):
     four = [fr[i] for i in range(0, len(fr), 7)]              # about 4 a second
     third = (len(four) + 2) // 3
     for j, tag in enumerate("abc"):
-        grid(four[j * third:(j + 1) * third], 6, 330, prefix + "_4fps_%s.png" % tag, start=j * third)
+        grid(four[j * third:(j + 1) * third], 5, 400, prefix + "_4fps_%s.png" % tag, start=j * third)
     fast = [x for x in fr if x[0] in ("5.2", "5.5")][::4]
     grid(fast, 7, 280, prefix + "_8fps_punches.png")
     grid(four, 10, 200, prefix + "_phone.png")
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v3.mp4"
+    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v5.mp4"
     if len(sys.argv) > 2:
         sheets(sys.argv[2])
     else:
