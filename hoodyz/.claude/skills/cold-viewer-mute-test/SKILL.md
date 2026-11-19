@@ -18,9 +18,9 @@ The test only works if the viewer has never seen the script, the concept or the 
 
 Start two fresh general-purpose agents, each given only the sheet paths and this prompt:
 
-> These are frames from a short silent cartoon, in order. Describe what happens, beat by beat, as if telling a friend. Then answer: Whose situation is it? What changes between the start and the end? Who sides with whom, and how could you tell? What is the last image? Which moment would you screenshot? Which frames were confusing, and what did you think they meant?
+> These are frames from a short silent cartoon, in order. Describe what happens, beat by beat, as if telling a friend. Then answer: Whose situation is it? What changes between the start and the end? Who sides with whom, and how could you tell? What is the last image? Which moment would you screenshot? Which frames were confusing, and what did you think they meant? The video loops; does the end lead back into the beginning? On the phone-size sheet only: what can you still read or recognise, and what is lost?
 
-Don't name the characters, the series or the joke.
+Don't name the characters, the series or the joke. Give the sheet files and their folder neutral names; render with speech bubbles switched off.
 
 ## Score
 
@@ -28,6 +28,7 @@ Don't name the characters, the series or the joke.
 - Pass: both viewers read at least 4 of 5 beats.
 - A beat both viewers misread the same way is a staging fault, not a viewer fault. Typical causes: the turn was a glance, not an action; the sign was too small; two things moved at once; the cut came before the reaction.
 - Report a table of beat, intended, viewer A, viewer B, verdict and fix. Fixes go into the shot list, not straight into the code.
+- List the details both viewers misread the same way even when every beat passed. They are usually cheap staging fixes: in Untitled, both read 5 of 5 beats and still shared eight misreads (a puff taken for blossom, a phone for "a blue rectangle", a squat for a fall, red X eyes for death, the card text lost at phone size).
 
 ## Limits
 
