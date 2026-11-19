@@ -1,6 +1,6 @@
-# The ring (set v1)
+# The ring (set v2)
 
-The room of beats 05 to 07 of *Office Noir 3: The Last Round*. Built by `src/ring_on3.py` (draws it, holds the cameras) and `src/ring_sheets_on3.py` (the three planning sheets). Sheets: `on3_ring_set_v1.png`, `on3_ring_plan_v1.png`, `on3_ring_blocking_v1.png`.
+The room of beats 05 to 07 of *Office Noir 3: The Last Round*. Built by `src/ring_on3.py` (draws it, holds the cameras) and `src/ring_sheets_on3.py` (the three planning sheets). Sheets: `on3_ring_set_v2.png`, `on3_ring_plan_v2.png`, `on3_ring_blocking_v2.png` (v1 kept; `src/ring_on3_v1.py` draws it). The frames' casts are in `src/ring_casts_on3.py`.
 
 ## Zones: each with one job
 
@@ -35,6 +35,20 @@ R1 the master (post to post, the lamp, the plan, the lane) · R2 centre, the two
 - **In 5.2 the Referee stands behind the robot,** not between them: with him between, the stopped glove read as landing on his shirt. Script v12 has it so.
 - **C is visited once** (6.2, half a frame). If 6.2 is cut, the socket and the oil can go with it.
 
+## Cold tests (19 Nov)
+
+Test 1 (set v1): 2 of 5 and 2 of 5. Test 2 (set v2): 4 of 5 and 3 of 5. Pass is 4 of 5 for both, so the gate is not passed. Records: `cold_test_ring_v1/result.md`, `cold_test_ring_v2/result.md`.
+
+- **Fixed:** the robe gag reads (the sleeve drawn stretched from his glove to Pam's hands); the robot's face is clear of Sofía's card.
+- **Failed twice, the same way:** nobody sees him look at the plan. Eyes turned up read as weariness in this style. The plan needs a shot of its own or a reach.
+- **Open:** the Referee behind the robot reads as the robot's man to one viewer in two; the stop marks at the glove read as a hit on nothing; the ropes across him do not read as arriving.
+
+## Staging rules learned on this set
+
+- A look is not an action here: what matters gets its own shot or a hand on it.
+- A costume change inside a scene must be seen starting: show the robe on before it comes off.
+- Marks in the air at a stopped glove read as an impact.
+
 ## Not done
 
-No cold viewer has seen the frames. 5.6 (from above), 7.3 (low) and Don's walk out are not staged.
+5.6 (from above), 7.3 (low) and Don's walk out are not staged. The gate is open until the plan's thread reads.

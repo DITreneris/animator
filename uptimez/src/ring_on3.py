@@ -1,4 +1,7 @@
-"""OFFICE NOIR 3: the ring, set v1 (19 Nov). The room of beats 05 to 07, drawn once and framed by camera setups.
+"""OFFICE NOIR 3: the ring, set v2 (19 Nov; ring_on3_v1.py is v1, pinned). After the cold test of v1's frames (2 of 5):
+the doorway is dark unless door=True (Don's shots); the ringside hats sit lower, clear of Sofia's legs; side_rope() draws
+one side's ropes again, over a figure who is still coming through them; R2 and R3 are re-aimed.
+v1: The room of beats 05 to 07, drawn once and framed by camera setups.
 World: 720 wide; the canvas' front edge is at F. Three zones, each with one job:
   A (0-250)    his corner: the post with a pale pad, the stool with the folder, the bucket. Repair and the glove gags.
   B (250-480)  centre, under the lamp and his plan on its two cords. The fight, the ask, the punch.
@@ -33,9 +36,9 @@ HOME = {"pam": (88, F - 16, SC), "client_stool": (152, F - 36, SC * b.REL), "cli
         "referee": (368, F - 88, SC * ca.REL_REF), "robot": (452, F - 46, SC * r.REL), "robot_corner": (600, F - 52, SC * r.REL),
         "sofia": (585, F + 108, 0.92)}
 STOOL = (152, F - 36)
-CAMS = {"R1": (350, 1140, 0.9),                            # the master: the ring post to post, the lamp, the plan, the lane
-        "R2": (390, 1108, 1.34),                           # centre: the two of them and the plan's end over them
-        "R3": (150, 1178, 1.80),                           # his corner, square on
+CAMS = {"R1": (322, 1140, 0.9),                            # the master: the ring post to post, the lamp, the plan, the lane
+        "R2": (416, 1108, 1.34),                           # centre: the two of them and the plan's end over them
+        "R3": (200, 1160, 1.70),                           # his corner, square on
         "R4": (578, 1178, 1.80),                           # its corner
         "R6": (340, 1050, 1.60)}                           # low, looking up at the plan (the canvas at the frame's foot)
 HALL = (0.10, 0.10, 0.12)
@@ -90,7 +93,17 @@ def _post(k, x, top, base, w, pad=None, socket=False):
             c.rectangle(x - 4, top + dy, 8, 2.4); c.fill()
 
 
-def draw_ring(k, mid=(), front=(), near=True, money=False, swing=0.0, folder=True, hats=True):
+def side_rope(k, side=0):
+    """One side's three ropes (0: A's side, 1: C's), far post to near post. A mid callable can draw them again over a
+    figure who is coming through them."""
+    c = k.c
+    fx, nx = POST_F[side], POST_N[side]
+    c.set_source_rgb(*ROPE_FAR)
+    for t in (92, 62, 32):
+        c.set_line_width(5); c.move_to(fx, FAR - t); c.line_to(nx, NEAR - t * 1.25); c.stroke()
+
+
+def draw_ring(k, mid=(), front=(), near=True, money=False, swing=0.0, folder=True, hats=True, door=False):
     """The whole set in world coordinates. mid: the cast on the canvas, back to front. front: on the apron (Sofia).
     near: the three near ropes and their posts (the masters; a camera inside the ropes leaves them out).
     money: cuffs waving notes in the far crowd (5.1). swing: the plan's swing, radians (6.4, 7.3)."""
@@ -101,7 +114,7 @@ def draw_ring(k, mid=(), front=(), near=True, money=False, swing=0.0, folder=Tru
     g.add_color_stop_rgba(1, *HALL, 1)
     c.set_source(g); c.rectangle(-400, -200, WW + 800, FAR + 200); c.fill()
     dx, dy, dw, dh = DOOR                                                                  # the way out: a lit doorway
-    c.set_source_rgb(0.50, 0.50, 0.50); c.rectangle(dx, dy, dw, dh); c.fill()
+    c.set_source_rgb(*((0.50, 0.50, 0.50) if door else (0.15, 0.15, 0.17))); c.rectangle(dx, dy, dw, dh); c.fill()
     c.set_source_rgb(*HALL); c.set_line_width(5); c.rectangle(dx, dy, dw, dh); c.stroke()
     c.set_source_rgb(0.05, 0.05, 0.06)                                                     # the far crowd: one dark mass
     c.rectangle(-400, FAR - 62, WW + 800, 66); c.fill()
@@ -165,11 +178,11 @@ def draw_ring(k, mid=(), front=(), near=True, money=False, swing=0.0, folder=Tru
         fn(k)
     if hats:                                                                               # ringside: big, dark, nearest us
         c.set_source_rgb(0.03, 0.03, 0.04)
-        c.rectangle(-400, F + 190, WW + 800, 400); c.fill()
+        c.rectangle(-400, F + 236, WW + 800, 400); c.fill()
         x, i = -30.0, 0
         while x < WW + 60:
             rr = (30, 38, 26, 34)[i % 4]
-            _hat(c, x, F + 186 - (0, 16, 6, 22)[i % 4], rr, i % 3 != 2)
+            _hat(c, x, F + 232 - (0, 12, 5, 16)[i % 4], rr * 0.8, i % 3 != 2)
             x += (120, 150, 104, 136)[i % 4]; i += 1
 
 
