@@ -1,4 +1,10 @@
 """OFFICE NOIR 3: the corner and the ring, v2 (Tomas, 19 Nov, /grill-me; v2 after the outside review, "Proceed").
+v3 (Tomas, "Improve", on the weak points of v2; cast_on3_v2.py is v2, pinned):
+  - the Referee's eyebrow has room: with brow=True his hairline lifts over that eye, so the brow goes about twice
+    as high as in v2, and the other brow is left alone again (one eyebrow, as the rule says).
+  - his idle hands hang relaxed: shorter fingers, close together (they looked like rakes).
+  - Pam's stopwatch on her chest is a fifth larger, same centre, same cord.
+  - "ref_break": the palm is up, fingers to the ceiling (it drooped).
 v2 (cast_on3_v1.py is v1, pinned):
   - the Referee: a grey shade where each sleeve meets the chest (they were one white shape in the dream's look);
     his eyebrow is thicker and arched, and the other brow comes down flat, so the pair reads as one cocked
@@ -123,10 +129,10 @@ def pam_corner(k, x, feet, s=1.0, pose="p_stand", face="neutral", look=(0, 0), s
                 c.set_source_rgb(*INK); c.set_line_width(1.8)                                # the stopwatch, on its cord
                 c.new_path(); c.move_to(-13, bt + 2); c.line_to(-2, bt + 62); c.move_to(13, bt + 2); c.line_to(2, bt + 62); c.stroke()
                 rect(k_, -3, bt + 56, 6, 8, STEEL, seed_ + 70, shadow=False, lw=1.2)
-                ellipse(k_, 0, bt + 76, 12.5, 12.5, CHROME, seed_ + 71, shadow=False, lw=2)
-                ellipse(k_, 0, bt + 76, 8.5, 8.5, (0.98, 0.98, 0.96), seed_ + 72, shadow=False, lw=1.2)
+                ellipse(k_, 0, bt + 76, 15, 15, CHROME, seed_ + 71, shadow=False, lw=2)
+                ellipse(k_, 0, bt + 76, 10.5, 10.5, (0.98, 0.98, 0.96), seed_ + 72, shadow=False, lw=1.2)
                 c.set_source_rgb(*INK); c.set_line_width(1.6); c.set_line_cap(1)
-                c.new_path(); c.move_to(0, bt + 76); c.line_to(0, bt + 69); c.move_to(0, bt + 76); c.line_to(5, bt + 78); c.stroke()
+                c.new_path(); c.move_to(0, bt + 76); c.line_to(0, bt + 67.5); c.move_to(0, bt + 76); c.line_to(6, bt + 78.5); c.stroke()
                 c.set_line_cap(0)
             else:                                                                        # only the cord, round her neck
                 c.set_source_rgb(*INK); c.set_line_width(1.8)
@@ -173,13 +179,13 @@ def pam_corner(k, x, feet, s=1.0, pose="p_stand", face="neutral", look=(0, 0), s
     return o
 
 
-def _open_hand(k, x, y, s, ang, fingers, seed, thumb=True):
+def _open_hand(k, x, y, s, ang, fingers, seed, thumb=True, relax=False):
     """A bare hand at (x, y), its fingers along ang; fingers: how many are up (0..4), the rest curled."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
     for i in range(4):
-        fy = -10.5 + i * 7
-        ln = 24 if i < fingers else 7
+        fy = (-7.5 + i * 5) if relax else (-10.5 + i * 7)
+        ln = (13 + (2 if i in (1, 2) else 0) if relax else 24) if i < fingers else 7
         c.set_source_rgb(*INK); c.set_line_width(8.6); c.set_line_cap(1)
         c.new_path(); c.move_to(6, fy); c.line_to(6 + ln, fy); c.stroke()
         c.set_source_rgb(*cb.M_SKIN); c.set_line_width(5.6); c.new_path(); c.move_to(6, fy); c.line_to(6 + ln, fy); c.stroke()
@@ -213,28 +219,32 @@ def referee(k, x, feet, s=1.0, pose="ref_stand", look=(-0.6, 0.0), brow=False, c
     ellipse(k, 0, by, 3.6, 4.4, (0.07, 0.07, 0.08), seed + 40, shadow=False, lw=1.2)
     c.restore()
     hx, hy = o["head"]
-    if brow:                                               # v2: one up and arched, the other down flat
+    if brow:                                               # v3: the hairline lifts over that eye, and the brow with it
         c.save(); c.translate(hx, hy); c.scale(s, s)
-        ellipse(k, 20, n2.BROW_Y - 1, 17, 8, cb.M_SKIN, seed + 41, shadow=False, outline=False)
-        ellipse(k, -20, n2.BROW_Y - 1, 17, 8, cb.M_SKIN, seed + 42, shadow=False, outline=False)
-        ellipse(k, 33, n2.BROW_Y + 2, 7, 5, cb.M_SKIN, seed + 43, shadow=False, outline=False)
-        c.set_source_rgb(*cb.M_HAIR); c.set_line_width(6.6); c.set_line_cap(1)        # the forehead is short: it stays under the hair
-        c.new_path(); c.move_to(8, n2.BROW_Y - 3); c.curve_to(13, n2.BROW_Y - 9.5, 23, n2.BROW_Y - 9.5, 30, n2.BROW_Y - 4); c.stroke()
-        c.set_line_width(6.4)
-        c.new_path(); c.move_to(-33, n2.BROW_Y + 4); c.line_to(-9, n2.BROW_Y + 4.5); c.stroke()
+        B = n2.BROW_Y
+        c.new_path(); c.move_to(-10, B - 7); c.line_to(-11, B - 16.5); c.curve_to(-3, B - 21, 8, B - 27, 20, B - 27); c.curve_to(30, B - 26.5, 35, B - 22, 38, B - 15); c.line_to(41, B - 2); c.close_path()
+        c.set_source_rgb(*cb.M_SKIN); c.fill()
+        ellipse(k, 20, B - 1, 17, 8, cb.M_SKIN, seed + 41, shadow=False, outline=False)
+        ellipse(k, 33, B + 2, 7, 5, cb.M_SKIN, seed + 43, shadow=False, outline=False)
+        c.set_source_rgb(*INK); c.set_line_width(2.4); c.set_line_cap(1); c.new_path()
+        c.move_to(-11, B - 16.5); c.curve_to(-3, B - 21, 8, B - 27, 20, B - 27); c.curve_to(30, B - 26.5, 35, B - 22, 38, B - 15); c.stroke()
+        c.set_source_rgb(*cb.M_HAIR); c.set_line_width(7.0)
+        c.new_path(); c.move_to(8, B - 7); c.curve_to(13, B - 19, 25, B - 19, 32, B - 8); c.stroke()
+        c.set_source_rgb(*cb.M_SKIN_DARK); c.set_line_width(1.8)                  # one crease, where it was
+        c.new_path(); c.move_to(11, B - 1); c.curve_to(17, B - 4, 23, B - 4, 29, B - 1); c.stroke()
         c.set_line_cap(0)
         c.restore()
     (lx, ly), (rx, ry) = o["hands"]
     if pose == "ref_count":                                # fingers up, over the man on the canvas
         _open_hand(k, rx, ry, s, -math.pi / 2 + 0.25, min(count, 4), seed + 50, thumb=count >= 5)
     elif pose == "ref_break":                              # a flat palm, toward screen left
-        _open_hand(k, lx, ly, s, math.pi - 1.35, 4, seed + 51)
+        _open_hand(k, lx, ly, s, -math.pi / 2 - 0.35, 4, seed + 51)       # v3: fingers up, a palm that stops
     elif pose == "ref_bell":
         _open_hand(k, rx, ry, s, -math.pi / 2, 4, seed + 52)
     if pose != "ref_break":                                # v2: the idle hands hang open
-        _open_hand(k, lx, ly, s, math.pi / 2 + 0.12, 4, seed + 53, thumb=False)
+        _open_hand(k, lx, ly, s, math.pi / 2 + 0.12, 4, seed + 53, thumb=False, relax=True)
     if pose in ("ref_stand", "ref_break"):
-        _open_hand(k, rx, ry, s, math.pi / 2 - 0.12, 4, seed + 54, thumb=False)
+        _open_hand(k, rx, ry, s, math.pi / 2 - 0.12, 4, seed + 54, thumb=False, relax=True)
     return o
 
 

@@ -1,8 +1,8 @@
-"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v2; cast_sheet_on3_v1.py draws v1).
+"""Model sheet and phone check for Pam (the corner) and the Referee in Office Noir 3: The Last Round (cast_on3 v3; cast_sheet_on3_v1.py and _v2.py draw v1 and v2).
 Sheet: each beside the Office Noir 2 figure it comes from, their poses, faces close, the silhouette check (the Referee
 beside the Client, as black shapes), the corner as the dream shows it, the whole cast at its relative sizes, the rules.
 Phone: each figure alone at three sizes, in the dream's look (the rule from the robot's sheet v2 on).
-Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v2-sheet.png, uptimez-corner-on3-v2-phone.png"""
+Usage: python3 cast_sheet_on3.py [out_dir]  ->  uptimez-corner-on3-v3-sheet.png, uptimez-corner-on3-v3-phone.png"""
 import sys
 import math
 import cairo
@@ -61,11 +61,11 @@ def sheet(out):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(s); c.set_source_rgb(*PAPER); c.paint()
     k = Ctx(c, 0)
     c.select_font_face("Inter", 0, 1); c.set_font_size(40); c.set_source_rgb(*INK)
-    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v2 · the corner and the ring")
+    c.move_to(50, 70); c.show_text("PAM AND THE REFEREE · Office Noir 3: The Last Round · v3 · the corner and the ring")
     c.select_font_face("Inter", 0, 0); c.set_font_size(22)
     c.move_to(50, 106); c.show_text("PAM, his cutman: the flat cap and apron of Office Noir 2 · a towel on her shoulder · a cotton bud behind her ear · a stopwatch on a cord, held up for the count · tape, a bucket, a sponge")
     c.move_to(50, 136); c.show_text("THE REFEREE: the Bartender of Office Noir 2 without his glass · white shirt, black bow tie, bare forearms · the only bare hands in the ring")
-    F, SP, SR = 740, 1.16, 0.72
+    F, SP, SR = 740, 1.0, 0.64
     n2.LOOK[0], old = 9, n2.LOOK[0]
     try:
         n2.sweeper(k, 120, F, SP, "lean", "neutral", (0.6, 0.1))
@@ -74,15 +74,15 @@ def sheet(out):
     label(c, "Noir 2", 120, F + 42, 22)
     ca.pam_corner(k, 320, F, SP, "p_stand", "neutral", (0.4, 0)); label(c, "the corner", 320, F + 42, 22)
     c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(425, 170); c.line_to(425, F + 50); c.stroke()
-    ca.pam_corner(k, 510, F, SP, "p_tape", "neutral", (-0.8, 0)); label(c, "p_tape (6.1)", 500, F + 42, 20)
-    ca.pam_corner(k, 665, F, SP, "p_pull", "curious", (-0.8, 0.2)); label(c, "p_pull (5.1)", 655, F + 42, 20)
-    ca.pam_corner(k, 855, F, SP, "p_sponge", "knowing", (-0.6, 0)); label(c, "p_sponge (6.1)", 845, F + 42, 20)
-    ca.pam_corner(k, 1055, F, SP, "p_watch", "neutral", (-0.7, 0.2)); label(c, "p_watch (5.2, 5.6)", 1040, F + 42, 20)
-    ca.bucket(k, 1142, F - 2, 0.7)
+    ca.pam_corner(k, 570, F, SP, "p_tape", "neutral", (-0.8, 0)); label(c, "p_tape (6.1)", 560, F + 42, 20)
+    ca.pam_corner(k, 730, F, SP, "p_pull", "curious", (-0.8, 0.2)); label(c, "p_pull (5.1)", 722, F + 42, 20)
+    ca.pam_corner(k, 895, F, SP, "p_sponge", "knowing", (-0.6, 0)); label(c, "p_sponge (6.1)", 890, F + 42, 20)
+    ca.pam_corner(k, 1070, F, SP, "p_watch", "neutral", (-0.7, 0.2)); label(c, "p_watch (5.2, 5.6)", 1062, F + 42, 20)
+    ca.bucket(k, 1150, F - 2, 0.6)
     c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(1175, 170); c.line_to(1175, F + 50); c.stroke()
-    n2.bartender(k, 1290, F, SR, look=(-0.6, 0), clean=True); label(c, "Noir 2", 1290, F + 42, 22)
-    for x, p, kw, t in ((1490, "ref_stand", dict(), "ref_stand"), (1675, "ref_bell", dict(), "ref_bell (5.2)"),
-                        (1870, "ref_count", dict(count=3), "ref_count (5.6)"), (2085, "ref_break", dict(brow=True), "ref_break (7.2b)")):
+    n2.bartender(k, 1265, F, SR, look=(-0.6, 0), clean=True); label(c, "Noir 2", 1265, F + 42, 22)
+    for x, p, kw, t in ((1437, "ref_stand", dict(), "ref_stand"), (1607, "ref_bell", dict(), "ref_bell (5.2)"),
+                        (1790, "ref_count", dict(count=3), "ref_count (5.6)"), (2085, "ref_break", dict(brow=True), "ref_break (7.2b)")):
         ca.referee(k, x, F, SR, p, **kw); label(c, t, x, F + 42, 22)
     for i, (f, lk, t) in enumerate((("neutral", (-0.6, 0), "neutral"), ("curious", (-0.8, 0.2), "curious"), ("knowing", (-0.8, 0), "knowing"))):
         x = 150 + 270 * i; y0 = 880
@@ -167,5 +167,5 @@ def phone(out):
 
 if __name__ == "__main__":
     d = sys.argv[1] if len(sys.argv) > 1 else "../characters"
-    sheet(d + "/uptimez-corner-on3-v2-sheet.png")
-    phone(d + "/uptimez-corner-on3-v2-phone.png")
+    sheet(d + "/uptimez-corner-on3-v3-sheet.png")
+    phone(d + "/uptimez-corner-on3-v3-phone.png")
