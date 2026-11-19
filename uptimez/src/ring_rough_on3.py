@@ -1,5 +1,6 @@
 """OFFICE NOIR 3: a moving rough of beat 05, whole (5.1a to 5.6), mute, for the cold test (19 Nov). v2; ring_rough_on3_v1.py
-is v1 (5.1a to 5.2). v6 (ring_rough_on3_v5.py is v5): the screen is blank for three frames between the face and the words (it showed a smile).
+is v1 (5.1a to 5.2). v7 (ring_rough_on3_v6.py is v6): the watch gag is out of 5.6; sheets(fast=...) names the shots shown at 8 a second.
+v6 (ring_rough_on3_v5.py is v5): the screen is blank for three frames between the face and the words (it showed a smile).
 v5 (ring_rough_on3_v4.py is v4): in 5.4 Mom sits behind her desk, in a high-backed chair (Tomas).
 v4 (ring_rough_on3_v3.py is v3), four changes and no more: the gap at the stopped glove is open again (5.2, 5.5); the
 stretched sleeve is held longer, with a closer cut on it (5.1c); Mom's own arm comes down on the button (5.4); the
@@ -11,7 +12,7 @@ v1:
 Four cold tests of stills left two things a still cannot show: which way the robe is going, and a punch that stops.
 This is a rough: poses change, figures slide, nobody's legs walk. 540x960, 30 fps, one encoded file per shot, joined
 with the concat demuxer. In 5.2 the Referee is behind the robot again (script v15).
-Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v6.mp4)"""
+Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v7.mp4)"""
 import os
 import sys
 import math
@@ -321,7 +322,7 @@ def shot_56(t):
     c.set_source_rgb(0.90, 0.90, 0.92)                       # the ropes, seen from over them, at the frame's edges
     for d in (22, 40, 58):
         c.rectangle(d, 0, 6, 960); c.fill(); c.rectangle(540 - d - 6, 0, 6, 960); c.fill()
-    lift = math.sin(lerp(0.0, 1.0, (t - 0.9) / 0.6) * math.pi) if 0.9 < t < 1.5 else 0.0
+    lift = 0.0                                               # v7: the watch gag is cut (unread in three tests; Tomas)
     pose = (-84, -4, lerp(84.0, 150.0, lift), lerp(4.0, 148.0, lift))
     x, f, sc = 262, 800, 1.5 * b.REL
     c.set_source_rgba(0, 0, 0, 0.28)                         # he is on the floor: a shadow all round him
@@ -378,7 +379,7 @@ def render(out):
         os.remove(p_)
 
 
-def sheets(d, prefix="sheet"):
+def sheets(d, prefix="sheet", fast=("5.2", "5.5")):
     """Contact sheets for the cold test: every 4th of a second, numbered and timed; the punch at 8 a second; and the
     4-a-second sheet again at phone size."""
     os.makedirs(d, exist_ok=True)
@@ -399,13 +400,12 @@ def sheets(d, prefix="sheet"):
     third = (len(four) + 2) // 3
     for j, tag in enumerate("abc"):
         grid(four[j * third:(j + 1) * third], 5, 400, prefix + "_4fps_%s.png" % tag, start=j * third)
-    fast = [x for x in fr if x[0] in ("5.2", "5.5")][::4]
-    grid(fast, 7, 280, prefix + "_8fps_punches.png")
+    grid([x for x in fr if x[0] in fast][::4], 7, 280, prefix + "_8fps_punches.png")
     grid(four, 10, 200, prefix + "_phone.png")
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v6.mp4"
+    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v7.mp4"
     if len(sys.argv) > 2:
         sheets(sys.argv[2])
     else:
