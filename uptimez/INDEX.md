@@ -39,8 +39,9 @@ Episodes in **story order** (STORYLINE.md, Season 1). Each folder holds its rend
 | 5 | *Secret Santa* | [`secret-santa/`](secret-santa/) | README section |
 | 6 | *Happy Compliance* (Christmas Eve) | [`happy-compliance/`](happy-compliance/) | README section |
 | 7 | *Office Noir: The Secret of a Stolen Heart* | [`office-noir/`](office-noir/) | README section |
+| — | *Office Noir 2: The Shadow of Fate* (New Year special) | [`office-noir-2/`](office-noir-2/) | `office-noir-2-script-v5.md` (current); concepts v1–v4; README section |
 | 8 | *The Best Candidate* | [`the-best-candidate/`](the-best-candidate/) | `the-best-candidate-interview-script-v1.md` … `v6.md` (v6 is current) |
-| 9 | *The Onboarding* | [`the-onboarding/`](the-onboarding/) | `the-onboarding-script-v10.md` (current, line by line with the shot list); concepts v1–v9; `storyline-proposal-act-b.md` (a proposal; STORYLINE v3.2 decides). Release: `uptimez_ob_anim_v10.mp4` |
+| 9 | *The Onboarding* | [`the-onboarding/`](the-onboarding/) | `the-onboarding-script-v11.md` (current, line by line with the shot list; animation v19 changes are in `src/ob_anim.py`); concepts v1–v9; `storyline-proposal-act-b.md` (a proposal; STORYLINE v3.2 decides). Release: `uptimez_ob_anim_v10.mp4` |
 | 10 | *First Search* | [`first-search/`](first-search/) | `first-search-concept-v6.md` (current: the portrait falls on Don at 1.2 s; ends on the near-shred); concepts v1–v5 and premises v1–v3 kept |
 | — | *Saved Locally* (retired) | [`history/saved-locally/`](history/saved-locally/) | its own README |
 
@@ -66,9 +67,10 @@ Each episode has its own file prefix; earlier versions are kept as `_v1`, `_v2`�
 | `*_mf`, `mf_*`, `sound_mf*` | Mandatory Fun | `build.sh mf` |
 | `*_ss`, `ss_*` | Secret Santa | `build.sh ss` |
 | `*_xmas*`, `xmas_*`, `santa_robot`, `sound_xmas` | Happy Compliance (v2: `xmas_anim2`, `xmas_pam3`) | `build.sh xmas`, `xmas2` |
-| `*_on`, `on_*`, `engine_on`, `sound_on*` | Office Noir | `build.sh on` |
+| `*_on`, `on_*`, `engine_on`, `sound_on*`, `thumb_on` | Office Noir | `build.sh on` |
+| `on2_*`, `noir2_cast`, `thumb_on2` | Office Noir 2 | `build.sh on2` |
 | `*_bc`, `bc_*`, `cand_bc`, `qa_bc*`, `sound_bc*` | The Best Candidate | `build.sh bc` |
-| `*_ob`, `ob_*`, `client_ob`, `qa_ob*`, `sound_ob*` | The Onboarding | `build.sh ob` |
+| `*_ob`, `ob_*`, `client_ob`, `qa_ob*`, `sound_ob*`, `thumb_ob` | The Onboarding | `build.sh ob` |
 | `kit`, `charsheets`, `brand`, `engine`, `engine_hd`, `anim`, `emoji` | Shared: drawing kit, sheets, logo, frame engines | `build.sh sheets` |
 
 **QA workers** (each exits non-zero on a miss): `qa_dlx.py`, `qa_iwry.py`, `qa_bc.py`, `qa_ob.py` and `qa_ob_speech.py`, and `on_qa.py` (Office Noir: the full G5 standard in [`CLAUDE.md`](CLAUDE.md), including speech recognition; `--selftest` runs every check on a known failure). Episode render checks live in each episode's README section.
