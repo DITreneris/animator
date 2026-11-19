@@ -1,4 +1,6 @@
-"""SOFIA, "Secret Santa", v1. Office v4 on the newer figure (sofia_mf v2: long hair, teal wrap blouse, block heels),
+"""v2 (18 Nov): SWEPT, opt-in: her hair swept over one shoulder in waves, the other ear showing (Customer Success).
+sofia_ss_v1.py is pinned; with SWEPT off she draws exactly as before.
+SOFIA, "Secret Santa", v1. Office v4 on the newer figure (sofia_mf v2: long hair, teal wrap blouse, block heels),
 with this episode's touches (grill, 15 Nov):
 - the earrings of the episode: original crystal teardrop drops (no logos), a small gold stud, a short link and a
   faceted teardrop about the size of her hoops, so the sparkle reads in a two-shot; they swing with `lag`, and
@@ -20,6 +22,8 @@ from kit import INK, cut, rect, ellipse, rough_ellipse_pts, text
 from sofia_v4 import SKIN, HAIR, HAIR_SHINE, HAIR_SHADE, RED, GOLD, GOLD_LIGHT, BLOUSE, BLOUSE_SHADE, BELT, H
 
 SKIRT, TIGHTS, PUMPS = sm.SKIRT, sm.TIGHTS, sm.PUMPS
+SWEPT = [False]                                            # v2, opt-in: all her hair swept over her right shoulder (screen-left)
+                                                           # in Hollywood waves; her left ear (screen-right) shows
 NOTE_COVER = sm.NOTE_COVER
 CRYSTAL = (0.86, 0.94, 1.0)
 CRYSTAL_DARK = (0.55, 0.70, 0.86)
@@ -55,6 +59,24 @@ def teardrop(k, x, y, lgx=0.0, spark=0.0, seed=0):
     c.restore()
 
 
+def _swept(k, hy, body_top, lgx, lgy, seed):
+    """v2: the waves over her right shoulder (screen-left), in three scallops; on the other side the hair is tucked
+    behind her ear, and the ear shows."""
+    c = k.c
+    w = lgx * 0.6
+    pts = [(-30, hy - 34), (-58, hy - 22), (-64 + w, hy + 14), (-54 + w, hy + 36), (-68 + w, hy + 58), (-58 + w, hy + 80),
+           (-70 + w, hy + 100), (-58 + w, hy + 120 + lgy), (-40 + w, hy + 124 + lgy), (-36 + w, hy + 104), (-30 + w, hy + 86),
+           (-40 + w, hy + 66), (-34 + w, hy + 46), (-44, hy + 24), (-44, hy - 6)]
+    cut(k, pts, HAIR, shadow=False, lw=2)
+    c.set_source_rgb(*HAIR_SHADE); c.set_line_width(2.2); c.set_line_cap(1)             # the wave lines
+    for y0 in (hy + 30, hy + 70, hy + 106):
+        c.move_to(-58 + w, y0); c.curve_to(-48 + w, y0 - 8, -40 + w, y0 + 8, -32 + w, y0); c.stroke()
+    c.set_source_rgb(*HAIR_SHINE); c.set_line_width(3.2)
+    c.move_to(-54 + w, hy + 8); c.curve_to(-48 + w, hy + 22, -56 + w, hy + 40, -50 + w, hy + 54); c.stroke()
+    ellipse(k, 50, hy + 8, 8, 12, SKIN, seed + 25, shadow=False, lw=1.8)                  # her left ear, the hair behind it
+    c.set_source_rgb(*INK); c.set_line_width(1.6); c.move_to(48, hy - 18); c.curve_to(58, hy - 10, 58, hy, 54, hy + 6); c.stroke()
+
+
 def sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", look=(0, 0), lag=(0, 0), seed=7, badge=True,
           lean=0.0, step=None, carry=False, mouth=None, sparkle=0.0, compact_open=None):
     """Returns {"head", "hands"} in canvas coordinates (lean not applied to the returned points)."""
@@ -70,10 +92,15 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", look=(0, 0), lag
             (-46 + lgx * 1.8, body_top + 108 + lgy), (-18 + lgx * 1.8, body_top + 102 + lgy),
             (18 + lgx * 1.8, body_top + 102 + lgy), (46 + lgx * 1.8, body_top + 108 + lgy),
             (66 + lgx * 1.8, body_top + 96 + lgy), (72 + lgx * 1.4, body_top + 30), (52 + lgx, hy - 30)]
+    if SWEPT[0]:                                           # v2: the mass goes to one side, behind her right shoulder
+        back = [(-52 + lgx, hy - 30), (-80 + lgx * 1.4, body_top + 20), (-84 + lgx * 1.8, body_top + 120 + lgy),
+                (-58 + lgx * 1.8, body_top + 142 + lgy), (-30 + lgx * 1.8, body_top + 110 + lgy), (20 + lgx, body_top + 10),
+                (50 + lgx, hy + 6), (54 + lgx, hy - 30)]
     cut(k, back, HAIR, lw=2.2)
-    cut(k, [(-40 + lgx, hy + 10), (-50 + lgx * 1.5, body_top + 80 + lgy), (-24 + lgx * 1.7, body_top + 96 + lgy),
-            (24 + lgx * 1.7, body_top + 96 + lgy), (50 + lgx * 1.5, body_top + 80 + lgy), (40 + lgx, hy + 10)],
-        HAIR_SHADE, shadow=False, outline=False)
+    if not SWEPT[0]:
+        cut(k, [(-40 + lgx, hy + 10), (-50 + lgx * 1.5, body_top + 80 + lgy), (-24 + lgx * 1.7, body_top + 96 + lgy),
+                (24 + lgx * 1.7, body_top + 96 + lgy), (50 + lgx * 1.5, body_top + 80 + lgy), (40 + lgx, hy + 10)],
+            HAIR_SHADE, shadow=False, outline=False)
     # legs: shaped, dark tights, black pumps; a stride when walking
     for i, sx_ in enumerate((-14, 14)):
         o = 1 if sx_ > 0 else -1
@@ -143,11 +170,14 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", look=(0, 0), lag
     c.move_to(-22, hy - 64); c.curve_to(-26, hy - 54, -30, hy - 44, -26, hy - 34); c.stroke()
     c.set_source_rgb(*HAIR_SHINE); c.set_line_width(4.5); c.set_line_cap(1)
     c.move_to(-34, hy - 48); c.curve_to(-18, hy - 56, 2, hy - 56, 18, hy - 50); c.stroke()
-    for sx_ in (-1, 1):
-        lx0 = sx_ * 50
-        cut(k, [(lx0 - 8 * sx_, hy - 20), (lx0 + 12 * sx_, hy - 24), (lx0 + 17 * sx_ + lgx * 0.6, hy + 56 + lgy),
-                (lx0 + 6 * sx_ + lgx * 0.6, hy + 70 + lgy), (lx0 - 6 * sx_ + lgx * 0.6, hy + 62 + lgy)],
-            HAIR, shadow=False, lw=2)
+    if SWEPT[0]:
+        _swept(k, hy, body_top, lgx, lgy, seed)
+    else:
+        for sx_ in (-1, 1):
+            lx0 = sx_ * 50
+            cut(k, [(lx0 - 8 * sx_, hy - 20), (lx0 + 12 * sx_, hy - 24), (lx0 + 17 * sx_ + lgx * 0.6, hy + 56 + lgy),
+                    (lx0 + 6 * sx_ + lgx * 0.6, hy + 70 + lgy), (lx0 - 6 * sx_ + lgx * 0.6, hy + 62 + lgy)],
+                HAIR, shadow=False, lw=2)
     for sx_ in (-1, 1):                                   # the crystal teardrops, swinging with lag
         teardrop(k, sx_ * 53 + lgx * 0.6, hy + 22, lgx, sparkle if sx_ > 0 else sparkle * 0.55, seed + 30 + sx_)
     face(k, 0, hy + 4, face_kind, look, seed + 60)
