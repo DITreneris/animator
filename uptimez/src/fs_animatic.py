@@ -1,4 +1,10 @@
-"""FIRST SEARCH (episode 10): the animatic v22 (fs_animatic_v21.py = v21, kept): storyboard v23 (the low angles pushed;
+"""FIRST SEARCH (episode 10): the animatic v25 (fs_animatic_v24.py = v24, kept): storyboard v27 (frame 0 and the loop:
+Don under the portrait, which smiles whenever it is whole).
+FIRST SEARCH (episode 10): the animatic v24 (fs_animatic_v23.py = v23, kept): storyboard v26 (frame 0 closer, Pam out
+front, 8.2 the rescue).
+FIRST SEARCH (episode 10): the animatic v23 (fs_animatic_v22.py = v22, kept): storyboard v25 (staged for 9:16: groups
+in depth, the faces bigger, frame 0 a medium-wide).
+FIRST SEARCH (episode 10): the animatic v22 (fs_animatic_v21.py = v21, kept): storyboard v23 (the low angles pushed;
 8.1 a medium shot).
 FIRST SEARCH (episode 10): the animatic v21 (fs_animatic_v20.py = v20, kept): storyboard v22 (shot design v1: angles,
 over-the-shoulders, the bank card as an insert, Pam behind Don, over Mom's shoulder).
@@ -56,7 +62,7 @@ import sound_xmas as sx
 import sound_iwry as si
 from kit import Ctx, INK
 
-V = "v22"
+V = "v25"
 W, H, FPS, SR = 540, 960, 30, 48000
 HERE = os.path.dirname(os.path.abspath(__file__))
 VOICES = "fs_voices/film_v9"
