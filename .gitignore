@@ -37,3 +37,6 @@ uptimez/src/ss_lips_v4.json
 uptimez/src/ss_lips_v5.json
 uptimez/src/xmas_mix_v*.wav
 uptimez/src/xmas_mix_v8base.wav
+# First Search: regenerated each build
+uptimez/first-search/fs_board/
+uptimez/first-search/fs_animatic_mix_v*.wav
