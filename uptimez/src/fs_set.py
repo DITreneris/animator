@@ -303,6 +303,10 @@ def robot_finger(k, x, feet, s, state="eager", aim=1.0):
 SOFIA_FS = [False]                                         # opt-in: Sofía in her episode-10 look (sofia_fs)
 
 
+MASTER_HOOKS = {"mom": None, "counter": None, "don": None}   # opt-in (board v12): frame 0 drawn with the episode's
+                                                                # current Mom, her desk, Don's signs; None = as before
+
+
 def master(k, screen_state="query", door_open=0.85):
     """Frame 0: the master wide (call inside set_ob.cam()). Pam and Mom stand behind the counter at the back."""
     import mom_bc
@@ -314,10 +318,12 @@ def master(k, screen_state="query", door_open=0.85):
     screen(k, screen_state)
     portrait(k)
     ac.pam(k, *P["pam"], "typing")                                                              # behind the counter
-    mom_bc.mom(k, P["mom"][0], P["mom"][1], P["mom"][2], "bag", "sweet", look=(-0.8, 0))
+    (MASTER_HOOKS["mom"] or mom_bc.mom)(k, P["mom"][0], P["mom"][1], P["mom"][2], "bag", "sweet", look=(-0.8, 0))
     st.desk(k, terminal=False, shred=None)
     plan_taped(k, *((356, F - 186, 0.30) if v2 else (404, F - 186, 0.32)))                     # on the counter
     counter_plate(k, *((398, F - 176) if v2 else (452, F - 176)))
+    if MASTER_HOOKS["counter"]:
+        MASTER_HOOKS["counter"](k)
     co.client(k, P["client"][0], P["client"][1], P["client"][2], "stand", "confident", look=(0.9, 0.0))
     robot_finger(k, *P["robot"])
     if SOFIA_FS[0] or v2:                                  # True = the current sofia_fs; or a module name
@@ -325,7 +331,9 @@ def master(k, screen_state="query", door_open=0.85):
         mod = importlib.import_module(SOFIA_FS[0] if isinstance(SOFIA_FS[0], str) else "sofia_fs")
         if v2:
             mod.sofia(k, *P["sofia"], "hold", "charm", look=(-0.9, -0.2), lag=(-2, 0))
-            ac.don(k, *P["don"], "stand", look=(-1, 0))
+            o = ac.don(k, *P["don"], "stand", look=(-1, 0))
+            if MASTER_HOOKS["don"]:
+                MASTER_HOOKS["don"](k, o, P["don"][2])
             return
         mod.sofia(k, *P["sofia"], "hold", "smile", look=(-0.9, -0.2))
     else:

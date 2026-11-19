@@ -1,4 +1,14 @@
-"""FIRST SEARCH (episode 10): storyboard v11 (fs_storyboard_v10.py = v10, kept): Don's small signs, all reversible
+"""FIRST SEARCH (episode 10): storyboard v13 (fs_storyboard_v12.py = v12, kept): 3.1b cut (Mom's candy for Pam read
+as "the desk women celebrating with a fruit basket" in three versions and four cold reads). Mom's warmth to Pam is
+carried by her hand in 7.5 and "Pam has a plan." (8.1). Pam's sleeves now go up when she starts taping (4.4): the
+work itself.
+FIRST SEARCH (episode 10): storyboard v12 (fs_storyboard_v11.py = v11, kept), after the full cold test of v11
+(both viewers ~3.5/5: the spine and the loop read, the side threads didn't). Frame 0 (9.4) drawn with the episode's
+Mom, her desk and Don's signs, so it matches frame 1 (it had the old Mom's hat). Eyelines: 3.1b Pam turns to Mom and
+takes a sweet; 7.5 Mom leans in on Sofía, Sofía leans back; 5.3 Pam holds the plan out at Don, bigger. Props: the
+shredder spills strips and says SHRED; the sweets are wrapped; 6.1 the robot's face is a camera, a white click flash
+over the frame. 2.2 the tablet in Don's hand, Sofía behind him. 9.3 holds longer, the healed glass glints.
+FIRST SEARCH (episode 10): storyboard v11 (fs_storyboard_v10.py = v10, kept): Don's small signs, all reversible
 (19 Nov). His headset mic: up at rest; flicked down to his mouth for the sale (2.2), like a shopping-channel host, and
 up again when Mom calls him (7.2). His one hair on the bald head: curled up; Mom licks her thumb and smooths it flat
 (7.4, was his cheek); it springs up again for frame 0 (9.4). His pride: chest out, thumbs hooked in the vest, elbows
@@ -66,7 +76,7 @@ import pam_bc as pb
 from kit import Ctx, INK, ellipse, rect, cut
 from charsheets import corp, wrap
 
-V = "v11"
+V = "v13"
 F = fs.F
 P = fs.POS2
 SKIN_DON = kit.PEOPLE["DON"]["skin"]
@@ -186,8 +196,12 @@ def scene(k, cam=WIDE, screen="query", portrait="hang", door=0.85, cl=None, rb=N
     if sf is not False:
         d = dict(x=P["sofia"][0], feet=P["sofia"][1], s=P["sofia"][2], pose="hold", face="charm", look=(-0.9, -0.2), lag=(-2, 0),
                  slide=None, plaster=None); d.update(sf or {})
+        if d.get("lean"):                                  # v12, opt-in: leaning (about her feet)
+            c.save(); c.translate(d["x"], d["feet"]); c.rotate(math.radians(d["lean"])); c.translate(-d["x"], -d["feet"])
         out["sofia"] = sfs.sofia(k, d["x"], d["feet"], d["s"], d["pose"], d["face"], look=d["look"], lag=d["lag"],
                                  slide=d["slide"], plaster=d["plaster"])
+        if d.get("lean"):
+            c.restore()
     if dn is not False:
         d = dict(x=P["don"][0], feet=P["don"][1], s=P["don"][2], pose="stand", face="neutral", look=(-1, 0)); d.update(dn or {})
         out["don"] = don(k, d["x"], d["feet"], d["s"], d["pose"], d["face"], d["look"])
@@ -293,8 +307,9 @@ def f_2_2(k):                                              # the tablet turned t
     def ex(k, o):
         hx, hy = o["don"]["hands"][0]
         fs.tablet_upgrade(k, hx - 14, hy - 30, 0.55)
-    scene(k, cam=(220, 600, 1.9), cl=dict(x=150, pose="stand", face="relief", look=(1, 0)),
-          dn=dict(pose="tablet", face="smug", look=(-0.6, 0.5)), sf=dict(pose="stand", face="fake", look=(-1, 0)), rb=False, extra=ex)
+    scene(k, cam=(232, 600, 1.9), cl=dict(x=150, pose="stand", face="relief", look=(1, 0)),
+          dn=dict(x=262, pose="tablet", face="smug", look=(-0.6, 0.5)), sf=dict(x=330, pose="stand", face="fake", look=(-1, 0)),
+          rb=False, extra=ex)
 
 
 def f_2_3(k):                                              # thumb 1: oily
@@ -389,13 +404,13 @@ def f_4_6(k):                                              # the photo
     def ex(k, o):
         c = k.c
         sx_, sy_ = o["robot"]["screen"]
-        rect(k, sx_ - 16, sy_ - 12, 32, 24, (0.15, 0.15, 0.18), 9, shadow=False, lw=1.6)              # its face: a camera
-        c.set_source_rgb(0.8, 0.9, 1.0); c.arc(sx_, sy_, 8, 0, 6.3); c.fill()
-        c.set_source_rgba(1, 1, 1, 0.85)
-        for a in range(0, 360, 30):
-            r_ = 70 if a % 60 == 0 else 46
-            c.move_to(sx_, sy_); c.line_to(sx_ + r_ * math.cos(math.radians(a)), sy_ + r_ * math.sin(math.radians(a)))
-        c.set_line_width(5); c.stroke()
+        rect(k, sx_ - 24, sy_ - 16, 48, 32, (0.15, 0.15, 0.18), 9, shadow=False, lw=2)                # v12: its face, a camera
+        rect(k, sx_ - 18, sy_ - 24, 14, 8, (0.15, 0.15, 0.18), 10, shadow=False, lw=1.6)              # the flash unit
+        ellipse(k, sx_ + 2, sy_, 12, 12, (0.35, 0.40, 0.48), 11, shadow=False, lw=2)                  # the lens
+        c.set_source_rgb(0.8, 0.9, 1.0); c.arc(sx_ + 2, sy_, 6, 0, 6.3); c.fill()
+        c.restore()                                                                     # the click: white over the frame
+        c.set_source_rgba(1, 1, 1, 0.55); c.paint()
+        c.save(); view(c, 170, 560, 1.45)
     scene(k, cam=(170, 560, 1.45), screen="green", rb=dict(x=200, feet=F + 70, arm="none"), dn=dict(x=150, pose="vest", face="grin", look=(1, 0)),
           sf=False, cl=False, extra=ex)
 
@@ -427,8 +442,8 @@ def f_5_2(k):                                              # "Where's my bluepri
 def f_5_3(k):                                              # "The zero's green."; the paddle agrees; the tablet goes;
     def back(k):                                           # Pam, behind the counter, holds the real answer up high:
         px, pf, ps = P["pam"]                              # his elbow, in front, blocks it
-        ac.pam(k, px, pf, ps, "stand", look=(-1, -0.6), hands=((-96, -250), (-36, -250)))   # v11: lower, at his elbow
-        fs.plan_taped(k, px - 38, pf - 152, 0.5)
+        ac.pam(k, px, pf, ps, "stand", look=(-1, -0.6), hands=((-110, -270), (-30, -270)))  # v12: bigger, out at him
+        fs.plan_taped(k, px - 46, pf - 166, 0.64)
     scene(k, cam=(250, 600, 2.0), screen="green", rb=dict(x=150, arm="paddle", paddle="green"), pm=False, back=back, counter_plan=False,
           sf=dict(x=232, face="contempt", look=(1, 0), slide=0.6, pose="stand"), dn=dict(pose="vest", face="smug", look=(-1, 0.2)), cl=False)
 
@@ -524,10 +539,12 @@ MM_81 = [dict(pose="thread", face="sweet", look=(-1, 0.2))]    # v8: Mom points 
 def f_m31b(k):                                             # v9: she holds the candy dish out to Pam
     def back(k):
         px, pf, ps = P["pam"]
-        pb.pam(k, px, pf, ps, "stand", "happy", look=(1, 0.3))
+        pb.pam(k, px, pf, ps, "stand", "pleased", look=(1, 0.2))      # v12: eyes on Mom, touched
     def ex(k, o):                                          # the dish pushed across the counter to her
-        mfs.candy(k, 392, F - 186, 1.0)
+        mfs.candy(k, 392, F - 186, 1.3)
         c = k.c
+        ellipse(k, 378, F - 196, 7, 7, (0.96, 0.82, 0.70), 31, shadow=False, lw=1.6)        # Pam's hand, taking one
+        cut(k, [(358, F - 172), (366, F - 158), (380, F - 194), (372, F - 200)], (0.40, 0.26, 0.55), shadow=False, lw=1.6)
         c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
         for dy in (-12, 0, 12):
             c.move_to(424, F - 192 + dy); c.line_to(446, F - 192 + dy); c.stroke()
@@ -552,9 +569,15 @@ def f_m75(k):                                              # v8: she glares at S
         px, pf, ps = P["pam"]
         pb.pam(k, px, pf, ps, "stand", "pleased", look=(-1, 0.5))
     def ex(k, o):
-        mfs.mom(k, 330, F + 16, 0.62, "fists", "glare", look=(-1.4, 0.5), chin=True)
-    scene(k, cam=(290, 600, 2.0), cl=False, dn=False, pm=False, back=back, mm=False, rb=False,
-          sf=dict(x=205, face="freeze", pose="stand", look=(1, 0)), extra=ex)
+        mfs.mom(k, 300, F + 16, 0.62, "fists", "glare", look=(-1.4, 0.5), chin=True, lean=-8)   # v12: leaning in on her
+        c = k.c                                                                         # the glare, a line of tension
+        c.set_source_rgb(*INK); c.set_line_width(2.4); c.set_line_cap(1)
+        for dy in (-8, 0, 8):
+            c.move_to(258, F - 236 + dy); c.line_to(236, F - 240 + dy); c.stroke()
+    def pre(k):
+        pass
+    scene(k, cam=(270, 600, 2.0), cl=False, dn=False, pm=False, back=back, mm=False, rb=False,
+          sf=dict(x=196, face="freeze", pose="freeze", look=(1, 0), lean=-7), extra=ex)
 
 
 def f_7_2(k):                                              # the near-shred: the end in the slot, Pam pulls it back
@@ -565,7 +588,15 @@ def f_7_2(k):                                              # the near-shred: the
         c.save(); c.translate(214, F - 150); c.rotate(-0.06)
         fs.plan_taped(k, 0, 0, 0.62)                                                 # its lower end goes in...
         c.restore()
-        ac.shredder(k, 214, F, 1.25, fill=0.0)                                       # ...behind the shredder's top
+        ac.shredder(k, 214, F, 1.25, fill=0.7)                                       # ...behind the shredder's top
+        rect(k, 186, F - 196, 56, 18, (0.86, 0.10, 0.12), 41, shadow=False, lw=1.6)  # v12: SHRED, and its strips
+        c.set_source_rgb(1, 1, 1); c.select_font_face("Inter", 0, 1); c.set_font_size(13)
+        c.move_to(193, F - 182); c.show_text("SHRED")
+        c.set_line_cap(1)
+        for i in range(7):
+            x0 = 170 + i * 13
+            c.set_source_rgb(*INK); c.set_line_width(6); c.move_to(x0, F - 4); c.curve_to(x0 + 6, F + 6, x0 - 4, F + 14, x0 + 8, F + 22)
+            c.stroke_preserve(); c.set_source_rgb(0.55, 0.75, 1.0); c.set_line_width(3.4); c.stroke()
         c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
         for dx in (-30, 0, 30):
             c.move_to(214 + dx, F - 222); c.line_to(214 + dx, F - 196); c.stroke()     # pushed down
@@ -600,11 +631,24 @@ def f_9_3(k):                                              # the plaster drops; 
     c.set_source_rgb(*INK); c.set_line_width(3); c.set_line_cap(1)
     for dx in (-70, 0, 70):                                                            # falling
         c.move_to(250 + dx, 640); c.line_to(250 + dx, 690); c.stroke()
+    c.set_source_rgb(1, 1, 1); c.set_line_width(6)                                     # v12: the healed glass glints
+    for gx, gy, r_ in ((190, 300, 26), (330, 470, 18)):
+        c.move_to(gx - r_, gy); c.line_to(gx + r_, gy); c.move_to(gx, gy - r_); c.line_to(gx, gy + r_); c.stroke()
 
 
 def f_8_3(k):                                              # frame 0
     c = k.c
-    c.save(); fs.cam2(c); fs.master(k); c.restore()
+    def counter(k):
+        mfs.knitting(k, 452, F - 160, 0.36); mfs.mug(k, 502, F - 192, 0.5); mfs.candy(k, 410, F - 170, 0.55)
+    def don_post(k, o, s_):
+        if DON_STATE[0]:
+            don_signs(k, o["head"], s_, *DON_STATE[0])
+    old = dict(fs.MASTER_HOOKS)
+    fs.MASTER_HOOKS.update(mom=mfs.mom, counter=counter, don=don_post)       # v12: frame 0 = frame 1's people
+    try:
+        c.save(); fs.cam2(c); fs.master(k); c.restore()
+    finally:
+        fs.MASTER_HOOKS.update(old)
 
 
 TAKES = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "fs_voices/film/takes.json")))
@@ -614,7 +658,7 @@ SHOTS = [  # shot, length (s), drawing, the line (or the beat): script v6's orde
     ("1.3", 2.0, f_1_3, "(his line ends) FRIDAY · BANK MEETING"), ("2.1", 0.5, f_2_1, "the calendar; his eyes light up"),
     ("2.2", 2.9, f_2_2, "DON: \"Garage eleven. Guaranteed by Friday.\""), ("2.3", 0.5, f_2_3, "thumb 1, oily: ka-ching"),
     ("3.1", 1.6, f_3_1, "red again; he ducks; it holds"),
-    ("3.1b", 0.7, f_m31b, "Mom pushes the candy dish to Pam"), ("3.2", 0.9, f_3_2, "PREMIUM · PAID $999; up at Don"),
+    ("3.2", 0.9, f_3_2, "PREMIUM · PAID $999; up at Don"),
     ("3.3", 1.4, f_3_3, "SOFÍA: \"It found nothing.\""), ("3.4", 0.9, f_3_4, "the plaster on his face"),
     ("4.1", 1.8, f_4_1, "DON: \"Can you make the zero green?\""), ("4.2", 2.4, f_4_2, "ROBOT: \"Interface change. Human approval required.\""),
     ("4.3", 0.8, f_4_3, "DON: \"Approved.\" thumb 2"), ("4.4", 0.4, f_4_4, "thumb 3: Pam's tape"),
@@ -629,7 +673,7 @@ SHOTS = [  # shot, length (s), drawing, the line (or the beat): script v6's orde
     ("7.5", 0.8, f_m75, "at Sofía: MOM: \"That hussy.\" Her hand on Pam's"),
     ("8.1", 1.0, f_7_1, "Pam brings the plan. MOM: \"Pam has a plan.\" His eyes: Sofía"), ("8.2", 1.1, f_7_2, "the near-shred; pulled back"),
     ("9.1", 1.2, f_8_1, "100% COMPLETE stops him"), ("9.2", 2.0, f_8_2, "RETRY UNTIL FRIDAY"),
-    ("9.3", 0.9, f_9_3, "the plaster drops: healed; nobody notices"), ("9.4", 1.4, f_8_3, "= frame 0: the loop"),
+    ("9.3", 1.2, f_9_3, "the plaster drops: healed; nobody notices"), ("9.4", 1.4, f_8_3, "= frame 0: the loop"),
 ]
 
 
@@ -644,7 +688,7 @@ def _pstate(shot):
 def _sleeves(shot):
     order = [x[0] for x in SHOTS]
     i = order.index(shot)
-    return order.index("3.2") <= i < order.index("9.4")
+    return order.index("4.4") <= i < order.index("9.4")
 
 
 def _don_state(shot):

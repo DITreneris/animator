@@ -1,4 +1,7 @@
-"""FIRST SEARCH (episode 10): the animatic v10 (fs_animatic_v9.py = v9, kept): storyboard v11, Don's signs.
+"""FIRST SEARCH (episode 10): the animatic v12 (fs_animatic_v11.py = v11, kept): storyboard v13 (3.1b cut).
+FIRST SEARCH (episode 10): the animatic v11 (fs_animatic_v10.py = v10, kept): storyboard v12 (the full cold
+test's fixes; frame 0 matches frame 1).
+FIRST SEARCH (episode 10): the animatic v10 (fs_animatic_v9.py = v9, kept): storyboard v11, Don's signs.
 FIRST SEARCH (episode 10): the animatic v9 (fs_animatic_v8.py = v8, kept): storyboard v10, Pam's look.
 FIRST SEARCH (episode 10): the animatic v8 (fs_animatic_v7.py = v7, kept): storyboard v9, Mom in her look v2.
 FIRST SEARCH (episode 10): the animatic v7 (fs_animatic_v6.py = v6, kept): storyboard v8, Mom's three remarks
@@ -33,7 +36,7 @@ import sound_xmas as sx
 import sound_iwry as si
 from kit import Ctx, INK
 
-V = "v10"
+V = "v12"
 W, H, FPS, SR = 540, 960, 30, 48000
 HERE = os.path.dirname(os.path.abspath(__file__))
 VOICES = "fs_voices/film_v8"
