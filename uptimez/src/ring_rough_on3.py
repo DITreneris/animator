@@ -1,5 +1,6 @@
 """OFFICE NOIR 3: a moving rough of beat 05, whole (5.1a to 5.6), mute, for the cold test (19 Nov). v2; ring_rough_on3_v1.py
-is v1 (5.1a to 5.2). v5 (ring_rough_on3_v4.py is v4): in 5.4 Mom sits behind her desk, in a high-backed chair (Tomas).
+is v1 (5.1a to 5.2). v6 (ring_rough_on3_v5.py is v5): the screen is blank for three frames between the face and the words (it showed a smile).
+v5 (ring_rough_on3_v4.py is v4): in 5.4 Mom sits behind her desk, in a high-backed chair (Tomas).
 v4 (ring_rough_on3_v3.py is v3), four changes and no more: the gap at the stopped glove is open again (5.2, 5.5); the
 stretched sleeve is held longer, with a closer cut on it (5.1c); Mom's own arm comes down on the button (5.4); the
 robot's jab is three drawings (5.5).
@@ -10,7 +11,7 @@ v1:
 Four cold tests of stills left two things a still cannot show: which way the robe is going, and a punch that stops.
 This is a rough: poses change, figures slide, nobody's legs walk. 540x960, 30 fps, one encoded file per shot, joined
 with the concat demuxer. In 5.2 the Referee is behind the robot again (script v15).
-Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v5.mp4)"""
+Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v6.mp4)"""
 import os
 import sys
 import math
@@ -209,7 +210,10 @@ def _insert_screen(state, crack=False):
     g.add_color_stop_rgba(0, 0.30, 0.34, 0.38, 1); g.add_color_stop_rgba(1, 0.04, 0.04, 0.05, 1); c.set_source(g); c.paint()
     c.save(); c.translate(270, 470); c.scale(5.0, 5.0)
     ellipse(k, 0, 0, r.RX + 7, r.RY + 7, (0.30, 0.31, 0.34), 3, shadow=False, lw=2)       # the head's rim
-    r.screen(k, state, crack=crack)
+    if state == "off":                                     # v6: blank between the face and the words (it drew a smile)
+        ellipse(k, 0, 0, r.RX, r.RY, r.w.SCREEN, 0, shadow=False, lw=2)
+    else:
+        r.screen(k, state, crack=crack)
     c.restore()
     csh.noir(s)
     return s
@@ -401,7 +405,7 @@ def sheets(d, prefix="sheet"):
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v5.mp4"
+    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v6.mp4"
     if len(sys.argv) > 2:
         sheets(sys.argv[2])
     else:

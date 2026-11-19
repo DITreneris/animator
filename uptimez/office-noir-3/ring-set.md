@@ -53,6 +53,8 @@ Test 5 (the moving rough `on3_beat05_rough_v1.mp4`, `src/ring_rough_on3.py`): 3 
 
 Test 6 (the whole beat, `on3_beat05_rough_v2.mp4`, 14.1 s): about 3 of 5 for both. The approval mechanism (5.3 to 5.5) is read in full by both, at phone size too. The robe's snag and the gap at the stopped glove were lost again; the watch gag in 5.6 is not read. Record: `cold_test_beat05_rough_v2/result.md`.
 
+Test 7 (`on3_beat05_rough_v4.mp4`): **4 of 5 and 4 of 5, a pass.** The robe, the stopped punch and the approval mechanism are read by both. The watch gag in 5.6 is not. v5 (Mom seated) and v6 (a blank screen before the words) came after the test. Record: `cold_test_beat05_rough_v4/result.md`.
+
 ## Staging rules learned on this set
 
 - A look is not an action here: what matters gets its own shot or a hand on it.
