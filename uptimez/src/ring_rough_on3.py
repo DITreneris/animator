@@ -1,5 +1,6 @@
 """OFFICE NOIR 3: a moving rough of beat 05, whole (5.1a to 5.6), mute, for the cold test (19 Nov). v2; ring_rough_on3_v1.py
-is v1 (5.1a to 5.2). v8 (ring_rough_on3_v7.py is v7; Tomas, /grill-me): first-person views and four cuts round the ring. 5.2a: at the bell,
+is v1 (5.1a to 5.2). v9 (ring_rough_on3_v8.py is v8): 5.4 is on Mom's real office (office_on3), not the stand-in.
+v8 (ring_rough_on3_v7.py is v7; Tomas, /grill-me): first-person views and four cuts round the ring. 5.2a: at the bell,
 four fast cuts (front, his view of it, its view of him, from above). 5.3 is the robot's view: his glove stopped at the
 lens, the words over his face. 5.5: the jab through his eyes: the grey glove fills the frame, black; then he is down.
 v7 (ring_rough_on3_v6.py is v6): the watch gag is out of 5.6; sheets(fast=...) names the shots shown at 8 a second.
@@ -15,7 +16,7 @@ v1:
 Four cold tests of stills left two things a still cannot show: which way the robe is going, and a punch that stops.
 This is a rough: poses change, figures slide, nobody's legs walk. 540x960, 30 fps, one encoded file per shot, joined
 with the concat demuxer. In 5.2 the Referee is behind the robot again (script v15).
-Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v8.mp4)"""
+Usage: python3 ring_rough_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat05_rough_v9.mp4)"""
 import os
 import sys
 import math
@@ -29,6 +30,7 @@ import cand_bc as cb
 import robot_on3 as r
 import sofia_on3 as so3
 import mom_on3 as q
+import office_on3 as of
 import client_sheet_on3 as csh
 from kit import Ctx, rect, ellipse
 from kit import cut
@@ -326,49 +328,10 @@ def shot_53(t):
 
 
 def shot_54(t):
-    """Mom, in her office (a stand-in set): she reads the hundred beside her eyes; her eyes go to the desk; one ringed
-    finger comes down on the button; her mouth opens a crack."""
-    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
-    c.set_source_rgb(0.30, 0.30, 0.32); c.paint()            # v3: a lit wall behind her: a black coat needs a pale ground
-    g = cairo.RadialGradient(230, 420, 40, 230, 420, 560)   # the desk lamp throws up onto the wall
-    g.add_color_stop_rgba(0, 0.86, 0.86, 0.84, 1); g.add_color_stop_rgba(0.6, 0.58, 0.58, 0.58, 1); g.add_color_stop_rgba(1, 0.30, 0.30, 0.32, 1)
-    c.set_source(g); c.paint()
-    c.set_source_rgb(0.16, 0.16, 0.18); c.rectangle(296, 100, 228, 396); c.fill()          # the window: night outside
-    c.set_source_rgb(0.96, 0.96, 0.92)                       # the blinds behind her, lit from the ring she does not watch
-    for i in range(13):
-        c.rectangle(300, 110 + i * 30, 220, 17); c.fill()
-    c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(5); c.rectangle(296, 100, 228, 396); c.stroke()
-    press = lerp(0.0, 1.0, (t - 1.15) / 0.12)
-    sc = 1.55
-    feet = 400 + 294 * sc + 112                              # v5: she sits: lower, the desk across her, a high chair behind
-    cut(k, [(96, 800), (104, 500), (140, 462), (360, 462), (396, 500), (404, 800)], (0.33, 0.31, 0.30), shadow=False, lw=3)   # the chair's back, wide, to her ears
-    for bx_ in (150, 250, 350):                              # its buttons
-        ellipse(k, bx_, 520, 6, 6, (0.20, 0.19, 0.19), 20 + bx_, shadow=False, lw=1.6)
-    down = lerp(0.0, 1.0, (t - 0.9) / 0.25)                  # v4: her own screen-right arm comes down onto the button
-    P = q._body.__globals__["POSES"]
-    old = P["q_read"]
-    P["q_read"] = old[:2] + lerp(old[2:], q.mo.ik(1, 92, -124), down)
-    try:
-        o = q.queen(k, 250, feet, sc, "q_read", "bored", look=((-0.9, -0.1) if t < 0.9 else (0.8, 0.9)), note=True,
-                    mouth=("dry" if 1.3 <= t < 1.75 else None))
-    finally:
-        P["q_read"] = old
-    hx, hy = o["hands"][1]
-    rect(k, -20, 790, 580, 200, (0.46, 0.44, 0.42), 5, shadow=False, lw=3)                 # her desk
-    g = cairo.RadialGradient(400, 800, 10, 400, 800, 240)
-    g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0); c.set_source(g); c.rectangle(0, 790, 540, 170); c.fill()
-    bx, by = 250 + 92 * sc, 806
-    rect(k, bx - 50, by - 2, 100, 26, (0.10, 0.10, 0.11), 6, shadow=False, lw=2.4)         # the button's plate
-    lit = press > 0.9
-    ellipse(k, bx, by + 5 * press, 30, 14 - 5 * press, (0.98, 0.98, 0.94) if lit else (0.55, 0.55, 0.56), 7, shadow=False, lw=2.6)
-    if down > 0.6:                                            # one ringed finger, from her hand, on it
-        fy = by - 4 + 5 * press
-        c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(19); c.set_line_cap(1); c.move_to(hx, hy); c.line_to(bx, fy); c.stroke()
-        c.set_source_rgb(0.90, 0.76, 0.66); c.set_line_width(14); c.move_to(hx, hy); c.line_to(bx, fy); c.stroke(); c.set_line_cap(0)
-        ellipse(k, hx, hy, 17, 17, (0.90, 0.76, 0.66), 10, shadow=False, lw=2.4)
-        rect(k, (hx + bx) / 2 - 11, (hy + fy) / 2 - 6, 22, 12, (0.86, 0.87, 0.90), 11, shadow=False, lw=1.6)   # her ring
-    csh.noir(s)
-    return s
+    """Mom, in her office (office_on3, M1): seated, she reads the hundred beside her eyes; her eyes go to the desk; her
+    own arm comes down onto the button; her mouth opens a crack."""
+    return of.front(down=lerp(0.0, 1.0, (t - 0.9) / 0.25), press=lerp(0.0, 1.0, (t - 1.15) / 0.12),
+                    look=((-0.9, -0.1) if t < 0.9 else (0.8, 0.9)), mouth=("dry" if 1.3 <= t < 1.75 else None))
 
 
 def shot_55(t):
@@ -510,7 +473,7 @@ def sheets(d, prefix="sheet", fast=("5.2", "5.5")):
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v8.mp4"
+    out = sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat05_rough_v9.mp4"
     if len(sys.argv) > 2:
         sheets(sys.argv[2])
     else:

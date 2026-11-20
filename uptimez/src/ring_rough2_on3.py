@@ -1,11 +1,12 @@
 """OFFICE NOIR 3: a moving rough of beats 06 and 07 (6.1 to 7.5), mute, for the cold test (19 Nov). v2; ring_rough2_on3_v1.py
-is v1. v2, after cold test 8 and /grill-me: 6.2's right half is Mom from the front, seated, her hand on the open cash
+is v1. v3 (ring_rough2_on3_v2.py is v2): Mom's shots are on her real office (office_on3); no cash box and no card.
+v2, after cold test 8 and /grill-me: 6.2's right half is Mom from the front, seated, her hand on the open cash
 box, and the oil can is big; 6.4 has a closer shot for his pointing, Don's back leaving in it; in 7.3 he claps the sheet
 between two gloves and it slides up and out. v1:
 On the ring (ring_on3), with ring_rough_on3's helpers. A rough: poses change and figures slide. Mom's desk is the
 stand-in of 5.4 (she sits); Don is Office Noir 2's detective, unchanged (Tomas, /grill-me); in 7.3 the paper slides off
 the glove (Tomas).
-Usage: python3 ring_rough2_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat0607_rough_v2.mp4)"""
+Usage: python3 ring_rough2_on3.py [out.mp4] [sheets_dir]   (default ../office-noir-3/on3_beat0607_rough_v3.mp4)"""
 import sys
 import math
 import cairo
@@ -18,6 +19,7 @@ import client_on3 as b
 import robot_on3 as r
 import sofia_on3 as so3
 import mom_on3 as q
+import office_on3 as of
 import noir2_cast as n2
 import client_sheet_on3 as csh
 from kit import Ctx, cut, rect, ellipse, INK
@@ -78,29 +80,9 @@ def shot_61(t):
 
 
 def mom_box(t):
-    """Mom from the front, seated in her high chair, her ringed hand flat on the open cash box; the coupe at her elbow."""
-    s, c, k = _blank()
-    g = cairo.RadialGradient(270, 420, 40, 270, 420, 560)
-    g.add_color_stop_rgba(0, 0.86, 0.86, 0.84, 1); g.add_color_stop_rgba(1, 0.30, 0.30, 0.32, 1); c.set_source(g); c.paint()
-    cut(k, [(116, 800), (124, 500), (160, 462), (380, 462), (416, 500), (424, 800)], (0.33, 0.31, 0.30), shadow=False, lw=3)
-    sc = 1.55
-    feet = 400 + 294 * sc + 112
-    P = q._body.__globals__["POSES"]
-    old = P["q_stand"]
-    P["q_stand"] = old[:2] + q.mo.ik(1, 26, -136 + 2 * math.sin(t * 3))
-    try:
-        o = q.queen(k, 270, feet, sc, "q_stand", "bored", look=(0.2, 0.9))
-    finally:
-        P["q_stand"] = old
-    rect(k, -20, 790, 580, 200, (0.46, 0.44, 0.42), 5, shadow=False, lw=3)
-    q.cash_box(k, 300, 880, 2.6)
-    q.coupe(k, 190, 850, 1.7)
-    hx, hy = o["hands"][1]
-    ellipse(k, hx, hy + 14, 34, 22, (0.90, 0.76, 0.66), 10, shadow=False, lw=2.6)             # her hand, flat on the lid
-    for i in range(2):
-        rect(k, hx - 16 + i * 18, hy + 4, 12, 20, (0.86, 0.87, 0.90), 11 + i, shadow=False, lw=1.6)
-    csh.noir(s)
-    return s
+    """6.2, right half, on her real office: seated, the hundred held up, counted again; her eyes on it. (No cash box:
+    Tomas, /grill-me.)"""
+    return of.front(look=(-0.9, -0.1 + 0.2 * math.sin(t * 3)))
 
 
 def shot_62(t):
@@ -330,26 +312,12 @@ def shot_73(t):
 
 
 def shot_74(t):
-    """The cracked screen asks again. Her desk: a card, his gear, turned face down; her finger on the button. The tick."""
+    """The cracked screen asks again. Her office: she does not look; her arm comes down on the button. The tick."""
     if t < 0.5:
         return rr._insert_screen("ask", crack=True)
     if t >= 1.45:
         return rr._insert_screen("tick", crack=True)
-    u = t - 0.5
-    s = rr.shot_54(0.6 + u * 1.0)                            # she sits; her arm comes down on the button
-    c = cairo.Context(s); k = Ctx(c, 0)
-    f = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); fc = cairo.Context(f); fk = Ctx(fc, 0)
-    fc.set_source_surface(s, 0, 0); fc.paint()
-    flip = lerp(0.0, 1.0, (u - 0.15) / 0.25)                 # the card on the desk: his gear, then its back
-    w = 74 * abs(math.cos(flip * math.pi))
-    rect(fk, 120 - w / 2, 812, max(w, 4), 104, (0.96, 0.96, 0.93) if flip < 0.5 else (0.20, 0.20, 0.24), 3, shadow=False, lw=2.6)
-    if flip < 0.5 and w > 30:
-        b.co.gear(fk, 120, 864, 22, col=(0.12, 0.12, 0.14), seed=4)
-    elif flip >= 0.5 and w > 30:
-        fc.set_source_rgb(0.80, 0.80, 0.84); fc.set_line_width(2); fc.rectangle(120 - w / 2 + 8, 822, w - 16, 84); fc.stroke()
-    csh.noir(f)
-    c.rectangle(60, 800, 130, 130); c.clip(); c.set_source_surface(f, 0, 0); c.paint()
-    return s
+    return rr.shot_54(0.6 + (t - 0.5))
 
 
 def shot_75(t):
@@ -382,4 +350,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         rr.sheets(sys.argv[2], fast=("7.2", "7.5"))
     else:
-        rr.render(sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat0607_rough_v2.mp4")
+        rr.render(sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_beat0607_rough_v3.mp4")
