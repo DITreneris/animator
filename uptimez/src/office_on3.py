@@ -141,7 +141,7 @@ def front(note=True, down=0.0, press=0.0, look=(-0.9, -0.1), mouth=None, cards=F
     return s
 
 
-def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False):
+def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False, v4=False):
     """M2, 4.3: over his shoulder. His hood and back fill the near left; one red glove, lower right, comes up with the
     note in it (glove_up 0..1). Across a deep desk she is small, and does not look up."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -170,23 +170,26 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False):
     b._glove(k, gx, gy, 0.1, -1.0, 1, 71)
     c.restore()
     if show:                                                 # v2, opt-in: the hundred, whole, held out past the glove (v1 hid it behind the glove)
-        b.banknote(k, gx - 96, gy - 64, 2.1, -0.16, 3)
+        (money if v4 else lambda *a: b.banknote(*a, 3))(k, gx - 96, gy - 64, 2.1 * (0.9 if v4 else 1), -0.16)
     csh.noir(s)
     return s
 
 
-def reverse(pay=0.0, take=0.0, cards=False, turn=None):
+def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None):
     """M3, 4.4: her view. He is small, in his tracksuit, in front of the desk, the door behind him. pay 0..1: the note
     crosses the desk toward us. take 0..1: her ringed hand comes in from the near edge and covers it."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
     g = cairo.RadialGradient(270, 300, 30, 270, 300, 620)
     g.add_color_stop_rgba(0, 0.62, 0.62, 0.62, 1); g.add_color_stop_rgba(1, 0.24, 0.24, 0.26, 1); c.set_source(g); c.paint()
-    rect(k, 190, 110, 160, 400, (0.20, 0.20, 0.22), 3, shadow=False, lw=4)                 # the door he came in by
-    rect(k, 206, 126, 128, 170, (0.74, 0.74, 0.72), 4, shadow=False, lw=2.4)               # its glass, lit from the stairs
-    ellipse(k, 326, 330, 7, 7, (0.80, 0.80, 0.82), 5, shadow=False, lw=1.6)
+    if v4:
+        _door2(k)
+    else:
+        rect(k, 190, 110, 160, 400, (0.20, 0.20, 0.22), 3, shadow=False, lw=4)                 # the door he came in by
+        rect(k, 206, 126, 128, 170, (0.74, 0.74, 0.72), 4, shadow=False, lw=2.4)               # its glass, lit from the stairs
+        ellipse(k, 326, 330, 7, 7, (0.80, 0.80, 0.82), 5, shadow=False, lw=1.6)
     sc = 1.15 * b.REL
     c.save(); c.set_source_rgba(0, 0, 0, 0.3); c.translate(270, 560); c.scale(70, 12); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
-    b.boxer(k, 270, 560, sc, "b_pay" if pay < 0.3 else "b_walk", "hard", (0, 0.5), outfit="street", note=pay < 0.3)
+    b.boxer(k, 270 - (40 if v4 else 0), 560, sc, "b_pay" if pay < 0.3 else "b_walk", "hard", eyes or (0, 0.5), outfit="street", note=pay < 0.3)
     cut(k, [(120, 560), (420, 560), (660, 960), (-120, 960)], DESK, shadow=False, lw=3)    # the desk, from her side
     g = cairo.LinearGradient(0, 560, 0, 960); g.add_color_stop_rgba(0, 0, 0, 0, 0.2); g.add_color_stop_rgba(1, 1, 1, 1, 0.25)
     c.set_source(g); c.rectangle(-120, 560, 780, 400); c.fill()
@@ -196,11 +199,16 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None):
         spread(k, 250, 700, 1.7, 1, 0.5, faces=("back", "back", None))
     if pay >= 0.3:                                           # the hundred, on the desk, coming to her
         u = (pay - 0.3) / 0.7
-        b.banknote(k, 270, _lerp(600.0, 800.0, u), _lerp(0.9, 2.2, u), 0.08, 3)
+        if v4 and take <= 0:
+            money(k, 270, _lerp(600.0, 800.0, u), _lerp(0.9, 2.2, u) * 0.92, 0.08)
+        elif not v4:
+            b.banknote(k, 270, _lerp(600.0, 800.0, u), _lerp(0.9, 2.2, u), 0.08, 3)
     q.coupe(k, 460, 880, 2.0)                                # from her side the two change places: the coupe at her right hand
     rect(k, 36, 852, 124, 30, (0.10, 0.10, 0.11), 6, shadow=False, lw=2.6)                 # the button, at her left
     ellipse(k, 98, 850, 38, 17, (0.55, 0.55, 0.56), 7, shadow=False, lw=2.8)
-    if take > 0:                                             # her hand, rings up, over the note
+    if take > 0 and v4:
+        _take(k)
+    elif take > 0:                                           # her hand, rings up, over the note
         hy = _lerp(1040.0, 820.0, take)
         rect(k, 200, hy + 50, 150, 200, (0.10, 0.10, 0.11), 8, shadow=False, lw=3)
         rect(k, 190, hy + 30, 170, 36, (0.84, 0.84, 0.86), 9, shadow=False, lw=2.4)
@@ -213,6 +221,50 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None):
         _turn(c, k, turn)
     csh.noir(s)
     return s
+
+
+def money(k, x, y, s=1.0, ang=0.0):
+    """v4, opt-in: the hundred drawn as money: a frame, a head in an oval, 100, a mark in each corner."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    cut(k, [(-40, -19), (40, -19), (40, 19), (-40, 19)], b.NOTE, lw=2)
+    c.set_source_rgb(*INK); c.set_line_width(1.3); c.rectangle(-35, -14, 70, 28); c.stroke()
+    c.save(); c.translate(-18, 0); c.scale(9, 11); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.stroke()
+    c.arc(-18, -3, 3.4, 0, 2 * math.pi); c.fill(); c.rectangle(-23, 2, 10, 7); c.fill()
+    kit.text(k, "100", 12, 0, 17, INK, bold=True)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            kit.text(k, "$", sx * 30 + (12 if sx < 0 else 0) * 0, sy * 9, 6.5, INK, bold=True)
+    c.restore()
+
+
+def _take(k, x=270, y=838):
+    """v4, opt-in: her hand has the note: fingers bent over its far edge, the thumb at its side, and it has come toward her."""
+    c = k.c
+    c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(4); c.set_line_cap(1)                  # two marks where it was: it has moved
+    for dx in (-50, 46):
+        c.move_to(x + dx, y - 104); c.line_to(x + dx + 2, y - 76); c.stroke()
+    c.set_line_cap(0)
+    money(k, x, y - 8, 2.5, 0.05)
+    rect(k, x - 70, y + 62, 150, 200, (0.10, 0.10, 0.11), 8, shadow=False, lw=3)                # her sleeve, her cuff
+    rect(k, x - 80, y + 44, 170, 34, (0.84, 0.84, 0.86), 9, shadow=False, lw=2.4)
+    ellipse(k, x + 4, y + 18, 66, 44, SKIN, 10, shadow=False, lw=3)                             # the back of her hand
+    for i, dx in enumerate((-42, -14, 14, 42)):                                                 # fingers, bent: short, a knuckle, the tip gone over the edge
+        rect(k, x + 4 + dx - 11, y - 54, 22, 44, SKIN, 11 + i, shadow=False, lw=2.4)
+        c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(x + 4 + dx - 9, y - 38); c.line_to(x + 4 + dx + 9, y - 38); c.stroke()
+        if i in (1, 2):
+            rect(k, x + 4 + dx - 13, y - 30, 26, 12, (0.86, 0.87, 0.90), 15 + i, shadow=False, lw=1.6)
+    cut(k, [(x - 58, y + 10), (x - 96, y - 14), (x - 104, y + 6), (x - 66, y + 36)], SKIN, shadow=False, lw=2.6)   # the thumb, on the note's side
+
+
+def _door2(k):
+    """v4, opt-in: the door he came in by, to one side of him and ajar: a frame, the stairs' light in the gap and on the floor."""
+    c = k.c
+    rect(k, 330, 96, 150, 420, (0.14, 0.14, 0.16), 3, shadow=False, lw=4)                       # the frame
+    rect(k, 342, 108, 126, 408, (0.90, 0.90, 0.86), 4, shadow=False, lw=2)                      # the stairs' light
+    cut(k, [(380, 108), (474, 96), (478, 528), (380, 516)], (0.30, 0.30, 0.33), shadow=False, lw=3.4)   # the door, ajar
+    ellipse(k, 394, 320, 7, 7, (0.80, 0.80, 0.82), 5, shadow=False, lw=1.6)
+    c.set_source_rgba(1, 1, 1, 0.22); c.new_path(); c.move_to(342, 516); c.line_to(380, 516); c.line_to(330, 566); c.line_to(250, 566); c.close_path(); c.fill()
 
 
 def _turn(c, k, t):
@@ -247,7 +299,7 @@ def tower_insert(t=1.0):
     g = cairo.RadialGradient(270, 380, 60, 270, 380, 760); g.add_color_stop_rgba(0, 1, 1, 1, 0.34); g.add_color_stop_rgba(1, 0, 0, 0, 0.42); c.set_source(g); c.paint()
     card(k, 96, 150, 5.2, -0.12, "back", 1.0); card(k, -40, 420, 5.2, 0.08, "back", 1.0)       # the two still face down
     card(k, 286, 400, 9.4, 0.05, "tower2", 1.0)
-    b.banknote(k, 150, 880, 4.2, 0.10, 3)                                                    # the hundred, under her hand
+    money(k, 150, 880, 3.8, 0.10)                                                            # the hundred, under her hand
     rect(k, 250, 880, 330, 150, (0.10, 0.10, 0.11), 30, shadow=False, lw=3)
     rect(k, 214, 868, 60, 120, (0.84, 0.84, 0.86), 31, shadow=False, lw=2.6)
     ellipse(k, 150, 930, 96, 66, SKIN, 32, shadow=False, lw=3.4)

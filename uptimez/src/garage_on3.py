@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: his garage office, awake, beat 08 (20 Nov), set v1. In colour: the only colour in the film.
+"""OFFICE NOIR 3: his garage office, awake, beat 08 (20 Nov), set v2 (v1 is garage_on3_v1.py). v2, after an outside
+review and cold tests 20-21: he is drawn lying (knees up, his head against the sofa's arm, one arm hanging to the phone
+on the floor), not a standing figure turned over; in 8.4 the gown comes down over his eyes and his other arm lays the
+phone on the CV; her photograph is clipped to the CV; on the wall the plan has left its ghost (ten bays, 10 GARAGES);
+the tube, the hook and the cap are out. v1: In colour: the only colour in the film.
 The office of one of his garages at night: a low sofa, a side table with a lamp, his watch and the UptimeZ welcome
 pack (a CV sticks out of it: 555 0142, circled); on the wall a hook, an empty tube and the pale rectangle where a
 plan was pinned; through the window, the workshop: a car up on a lift. He is the twin of the boxer: a red dressing
@@ -9,6 +13,7 @@ import cairo
 import kit
 import client_on3 as b
 import ring_rough2_on3 as rr2
+import street_on3 as st
 from kit import Ctx, cut, rect, ellipse, INK
 
 WALL, FLOOR = (0.80, 0.77, 0.68), (0.46, 0.45, 0.46)
@@ -37,8 +42,8 @@ def phone(k, x, y, s=1.0, ang=0.0, screen="done", back=False):
             kit.text(k, "100%", 0, 46, 15, GREEN, bold=True)
             kit.text(k, "COMPLETE", 0, 62, 10.5, GREEN, bold=True)
         elif screen == "ring":
-            kit.text(k, "INCOMING", 0, -52, 10, (0.45, 0.45, 0.48), bold=True); kit.text(k, "CALL", 0, -40, 10, (0.45, 0.45, 0.48), bold=True)
-            kit.text(k, "555", 0, -12, 24, INK, bold=True); kit.text(k, "0142", 0, 16, 24, INK, bold=True)
+            kit.text(k, "INCOMING CALL", 0, -56, 7.5, (0.45, 0.45, 0.48), bold=True)
+            kit.text(k, "555", 0, -22, 30, INK, bold=True); kit.text(k, "0142", 0, 12, 30, INK, bold=True)
             c.set_source_rgb(*GREEN); c.arc(-18, 50, 11, 0, 2 * math.pi); c.fill()
             c.set_source_rgb(*b.KEY); c.arc(18, 50, 11, 0, 2 * math.pi); c.fill()
     c.restore()
@@ -53,18 +58,25 @@ def buzz(k, x, y, r=70, n=3):
     c.set_line_cap(0)
 
 
-def cv(k, x, y, s=1.0, ang=0.0):
+def cv(k, x, y, s=1.0, ang=0.0, photo=True):
     """The Onboarding's sheet: CV, lines, her number, circled in red."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
     rect(k, -70, -100, 140, 200, PAPER, 5, shadow=True, lw=2.2)
-    kit.text(k, "CV", 0, -62, 34, INK, bold=True)
+    kit.text(k, "CV", -22 if photo else 0, -62, 34, INK, bold=True)
     c.set_source_rgb(0.62, 0.62, 0.64); c.set_line_width(4); c.set_line_cap(1)
     for i, w in enumerate((100, 84, 96, 70)):
         c.move_to(-50, -30 + i * 14); c.line_to(-50 + w, -31 + i * 14); c.stroke()
     c.set_line_cap(0)
     kit.text(k, "555 0142", 0, 56, 19, INK, bold=True)
     c.set_source_rgb(*b.KEY); c.set_line_width(3.4); c.save(); c.translate(0, 55); c.scale(60, 19); c.arc(0, 0, 1, 0.3, 6.6); c.restore(); c.stroke()
+    if photo:                                                # her photograph, clipped to the corner: it is her CV, not his
+        c.save(); c.translate(44, -78); c.rotate(0.10)
+        rect(k, -27, -34, 54, 68, (0.98, 0.98, 0.96), 6, shadow=True, lw=1.8)
+        c.save(); c.rectangle(-23, -30, 46, 56); c.clip(); c.set_source_rgb(0.70, 0.72, 0.76); c.paint()
+        st.star(k, 0, -30 + 118, 0.44, "g_stand", "interested", (-0.6, 0.0)); c.restore()
+        rect(k, -6, -40, 12, 14, (0.70, 0.70, 0.74), 7, shadow=False, lw=1.4)
+        c.restore()
     c.restore()
 
 
@@ -107,7 +119,12 @@ def gone(k, x, y, w, h):
     """Where the plan was pinned: a paler rectangle, four pin holes, one pin left with a torn corner."""
     c = k.c
     c.set_source_rgb(0.88, 0.86, 0.79); c.rectangle(x, y, w, h); c.fill()
-    c.set_source_rgba(0, 0, 0, 0.18); c.set_line_width(2); c.set_dash([8, 6]); c.rectangle(x, y, w, h); c.stroke(); c.set_dash([])
+    c.set_source_rgba(0.35, 0.32, 0.25, 0.30); c.set_line_width(2)                                    # its ghost: ten bays, the title
+    bw = (w - 44) / 5
+    for r_ in range(2):
+        for i in range(5):
+            c.rectangle(x + 22 + i * bw + 3, y + 18 + r_ * 36, bw - 6, 30); c.stroke()
+    kit.text(k, "10 GARAGES", x + w / 2, y + h - 22, 17, (0.62, 0.58, 0.48), bold=True)
     for i, (px, py, sx, sy) in enumerate(((x, y, 1, 1), (x + w, y, -1, 1), (x, y + h, 1, -1), (x + w, y + h, -1, -1))):
         cut(k, [(px + sx * 2, py + sy * 2), (px + sx * 40, py + sy * 5), (px + sx * 22, py + sy * 16), (px + sx * 9, py + sy * 34)], (0.80, 0.88, 0.96), shadow=False, lw=1.8)
         c.set_source_rgb(0.25, 0.40, 0.62); c.set_line_width(1.6)
@@ -160,6 +177,54 @@ def sleeper(k, x, y, face="exhausted", look=(0, 0.4), cover=0.0):
     return o
 
 
+SKIN = (0.90, 0.69, 0.55)
+CREAM = (0.93, 0.89, 0.78)
+
+
+def _seg(k, a, bb, w0, w1, col, lw=3):
+    (x0, y0), (x1, y1) = a, bb
+    d = math.hypot(x1 - x0, y1 - y0) or 1; nx, ny = -(y1 - y0) / d, (x1 - x0) / d
+    cut(k, [(x0 + nx * w0, y0 + ny * w0), (x1 + nx * w1, y1 + ny * w1), (x1 - nx * w1, y1 - ny * w1), (x0 - nx * w0, y0 - ny * w0)], col, shadow=False, lw=lw)
+
+
+def lying(k, face="exhausted", look=(-0.2, 0.6), hide=False, reach=False):
+    """v2: him on the sofa, drawn lying: his head against the sofa's arm at screen right, his back on the seat, knees
+    up. One arm hangs over the front of the seat to the floor. hide: the gown pulled up over his eyes. reach: his other
+    arm goes out over the sofa's arm to the side table."""
+    c = k.c
+    for dx, dy, col in ((-16, -8, b.GOWN_SHADE), (0, 0, b.GOWN)):                                    # legs: the far one, then the near one
+        hip, knee, ank = (204 + dx, 684 + dy), (150 + dx, 612 + dy), (116 + dx, 690 + dy)
+        _seg(k, knee, ank, 13, 11, SKIN)
+        cut(k, [(ank[0] + 6, ank[1] - 8), (ank[0] - 30, ank[1] - 2), (ank[0] - 32, ank[1] + 10), (ank[0] + 8, ank[1] + 10)], SKIN, shadow=False, lw=3)
+        _seg(k, hip, knee, 26, 19, col)
+    cut(k, [(322, 648), (316, 704), (200, 706), (190, 668), (236, 644), (286, 640)], b.GOWN, shadow=False, lw=3.4)    # his back and belly
+    cut(k, [(318, 652), (262, 672), (300, 690)], CREAM, shadow=False, lw=2.4)                        # the lapel
+    cut(k, [(310, 660), (276, 672), (300, 682)], SKIN, shadow=False, lw=2)
+    _seg(k, (222, 648), (216, 706), 7, 7, CREAM, 2.4)                                                # the belt
+    hx, hy = 342, 632
+    c.save(); c.arc(hx + 6, hy - 4, 62, 0, 2 * math.pi); c.clip()                                    # his own head, tipped back on the arm
+    c.translate(hx, hy); c.rotate(1.02); c.translate(4 * Q, -b.HY * Q)
+    b.boxer(k, 0, 0, Q, "b_walk", face, look, awake=True)
+    c.restore()
+    cut(k, [(326, 650), (300, 664), (318, 688), (336, 676)], b.GOWN, shadow=False, lw=3)             # the collar, over his neck
+    if hide:                                                 # the gown, pulled up over the top of his head, down to his nose
+        cut(k, [(316, 598), (350, 564), (404, 578), (414, 640), (388, 680), (356, 652), (334, 624)], b.GOWN, shadow=False, lw=3.4)
+        c.set_source_rgb(*b.GOWN_SHADE); c.set_line_width(3); c.set_line_cap(1)
+        for (x0, y0, x1, y1) in ((346, 590, 392, 600), (352, 616, 398, 628), (372, 646, 392, 658)):
+            c.move_to(x0, y0); c.line_to(x1, y1); c.stroke()
+        c.set_line_cap(0)
+    if reach:                                                # out over the sofa's arm, to the table: shoulder, elbow, wrist, hand
+        _seg(k, (310, 664), (392, 598), 17, 14, b.GOWN); _seg(k, (392, 598), (448, 616), 14, 12, b.GOWN)
+        _seg(k, (446, 616), (454, 618), 12, 12, CREAM, 2)
+        ellipse(k, 466, 620, 15, 12, SKIN, 14, shadow=False, lw=2.6)
+    else:                                                    # on his belly
+        _seg(k, (304, 660), (262, 632), 16, 13, b.GOWN); _seg(k, (262, 632), (236, 664), 13, 11, b.GOWN)
+        ellipse(k, 232, 668, 14, 11, SKIN, 15, shadow=False, lw=2.6)
+    _seg(k, (296, 690), (282, 744), 16, 13, b.GOWN); _seg(k, (282, 744), (286, 772), 12, 11, SKIN)   # the other arm, over the edge
+    rect(k, 276, 754, 20, 8, (0.85, 0.70, 0.20), 16, shadow=False, lw=1.6)                           # his watch
+    ellipse(k, 288, 784, 14, 12, SKIN, 17, shadow=False, lw=2.6)
+
+
 def room(k, phone_at="floor", cover=0.0, face="exhausted", ringing=False):
     """8.2 / 8.4, the wide."""
     c = k.c
@@ -170,26 +235,25 @@ def room(k, phone_at="floor", cover=0.0, face="exhausted", ringing=False):
     cut(k, [(-20, 742), (560, 742), (560, 980), (-20, 980)], FLOOR, shadow=False, lw=3)
     window(k, 296, 170, 210, 250)
     gone(k, 74, 250, 170, 130)
-    c.set_source_rgb(*INK); c.set_line_width(3.4); c.arc(262, 236, 9, 0.2, math.pi + 0.6); c.stroke(); c.arc(262, 222, 4, 0, 2 * math.pi); c.fill()   # the hook, bare
     rect(k, 14, 600, 400, 150, SOFA_D, 5, shadow=False, lw=3.4)                                           # the sofa: back, arm, seat
     rect(k, 8, 664, 410, 96, SOFA, 6, shadow=False, lw=3.4)
     rect(k, 364, 618, 60, 142, SOFA, 7, shadow=False, lw=3.4)
-    rect(k, 318, 632, 64, 44, (0.84, 0.80, 0.66), 8, shadow=False, lw=2.6)                                # a cushion, under his head
-    o = sleeper(k, 344, 648, face, cover=cover)
+    rect(k, 318, 626, 60, 40, (0.84, 0.80, 0.66), 8, shadow=False, lw=2.6)                                # a cushion, under his head
+    lying(k, face, hide=cover > 0, reach=phone_at == "pack")
+    o = None
     rect(k, 434, 668, 100, 12, (0.42, 0.30, 0.20), 9, shadow=False, lw=3)                                 # the side table
     rect(k, 444, 680, 10, 70, (0.36, 0.26, 0.18), 10, shadow=False, lw=2.4); rect(k, 514, 680, 10, 70, (0.36, 0.26, 0.18), 11, shadow=False, lw=2.4)
     lamp(k, 512, 668)
     pack(k, 474, 640, 0.52)
-    floor_tube(k, 150, 818)
-    if phone_at == "floor":                                 # it has buzzed itself off the edge
-        phone(k, 440, 800, 0.42, 1.2, "done")
-        buzz(k, 440, 800, 34, 2)
-    elif phone_at == "pack":                                # face down on the CV
-        cut(k, [(372, 636), (452, 606), (458, 624), (378, 660)], b.GOWN, shadow=False, lw=3)        # his arm, out from under the gown
-        phone(k, 478, 612, 0.40, 1.45, back=True)
-        ellipse(k, 462, 614, 13, 11, (0.90, 0.76, 0.66), 14, shadow=False, lw=2.4)
+    if phone_at == "floor":                                 # it has buzzed itself off the edge, under his hanging hand
+        g = cairo.RadialGradient(336, 822, 6, 336, 822, 90); g.add_color_stop_rgba(0, 0.5, 1, 0.6, 0.45); g.add_color_stop_rgba(1, 0.5, 1, 0.6, 0); c.set_source(g); c.paint()
+        phone(k, 336, 822, 0.58, 1.25, "done")
+        buzz(k, 336, 822, 50, 2)
+    elif phone_at == "pack":                                # face down on the CV, under his hand
+        phone(k, 480, 612, 0.40, 1.45, back=True)
+        ellipse(k, 466, 620, 15, 12, SKIN, 18, shadow=False, lw=2.6)
         if ringing:
-            buzz(k, 482, 606, 32, 2)
+            buzz(k, 484, 606, 34, 2)
     return o
 
 

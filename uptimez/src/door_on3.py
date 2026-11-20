@@ -1,4 +1,6 @@
-"""OFFICE NOIR 3: the arena's back door, 4.1 and 4.2 (20 Nov). From behind him: a doorway in a black wall; through
+"""OFFICE NOIR 3: the arena's back door, 4.1 and 4.2 (20 Nov). v2 (v1 is door_on3_v1.py): in 4.2 the look is an action:
+one glove pushes the folder down out of the frame as his eyes go up to the roll. react(): 4.4c, his face over the card.
+v1: From behind him: a doorway in a black wall; through
 it, small and far, the ring under its lamp, his plan hung over it, the robot under the plan. Then his face: up at
 the roll, down at the folder, up again. The ring in the doorway is the ring set itself (ring_on3), drawn small.
 frames() -> 4.1, 4.2 (up), 4.2 (down), 4.2 (up, the glove half raised)."""
@@ -47,24 +49,42 @@ def behind(tip=1.0, door_light=True):
     return s
 
 
-def face(look=(0.2, -0.9), glove=0.0):
+def face(look=(0.2, -0.9), glove=0.0, push=0.0, expr="hard", folder=True):
     """4.2: his face, the ring's lamp on it; the folder under his arm at the bottom of the frame."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
     g = cairo.RadialGradient(270, 60, 40, 270, 300, 900)
     g.add_color_stop_rgba(0, 0.74, 0.74, 0.76, 1); g.add_color_stop_rgba(1, 0.08, 0.08, 0.10, 1); c.set_source(g); c.paint()
     sc = 3.0 * b.REL
     pose = "b_walk" if glove < 0.5 else (-9, 6, 150, 22)
-    b.boxer(k, 262, 500 - b.HY * sc + 30, sc, pose, "hard", look, outfit="street")
-    c.save(); c.translate(120, 800); c.rotate(-0.16)                                            # the folder under his arm, her photograph out of the top of it
+    b.boxer(k, 262, 500 - b.HY * sc + 30, sc, pose, expr, look, outfit="street")
+    if not folder:
+        csh.noir(s)
+        return s
+    c.save(); c.translate(120 - 30 * push, 800 + 250 * push); c.rotate(-0.16 - 0.5 * push)                                            # the folder under his arm, her photograph out of the top of it
     rect(k, -84, -150, 150, 200, (0.98, 0.98, 0.96), 3, shadow=True, lw=3)
     c.save(); c.rectangle(-76, -142, 134, 150); c.clip(); c.set_source_rgb(0.62, 0.62, 0.64); c.paint()
     st.star(k, -6, -142 + 300, 1.15, "g_stand", "interested", (0.6, 0.0)); c.restore()
     cut(k, [(-120, -40), (110, -40), (110, 190), (-120, 190)], (0.86, 0.80, 0.62), shadow=True, lw=3.4)
     cut(k, [(30, -66), (104, -66), (110, -40), (30, -40)], (0.86, 0.80, 0.62), shadow=False, lw=3)
     c.restore()
+    if push > 0:                                             # his glove, flat on top of it, shoving it down; marks where it was
+        gx, gy = 150 - 10 * push, 640 + 250 * push
+        c.set_source_rgb(0.92, 0.92, 0.92); c.set_line_width(6); c.set_line_cap(1)
+        for dx in (-70, -20, 34):
+            c.move_to(120 + dx, 640); c.line_to(120 + dx - 6, 740); c.stroke()
+        c.set_line_cap(0)
+        cut(k, [(gx + 150, gy - 190), (gx + 40, gy - 30), (gx + 96, gy + 20), (gx + 230, gy - 150)], TRACK, shadow=False, lw=4)
+        c.save(); c.translate(gx, gy); c.scale(3.0, 3.0); c.translate(-gx, -gy)
+        b._glove(k, gx, gy, -0.5, 0.86, -1, 73)
+        c.restore()
     csh.noir(s)
     return s
 
 
+def react(up=False):
+    """4.4c: his face over her desk. He looks down at the card (suspicious: one long squint); then up, as before."""
+    return face((0.2, -0.2) if up else (-0.3, 0.95), expr="hard" if up else "suspicious", folder=False)
+
+
 def frames():
-    return [behind(1.0), face((0.2, -0.9)), face((-0.7, 0.9)), face((0.2, -0.9), glove=1.0)]
+    return [behind(1.0), face((0.2, -0.9)), face((-0.7, 0.9)), face((0.2, -0.9), glove=1.0, push=0.45)]
