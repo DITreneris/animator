@@ -1,4 +1,6 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v15 (v1 to v14 pinned). v15 (Tomas, /grill-me): he lies
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v16 (v1 to v15 pinned). v16: what cold test 44 left:
+his stopped glove in 5.2 shakes and shows it; the robot's jab in 7.2 is drawn over him (its glove was behind him) and
+its dent is small; the two shadows behind in the alley are paler than the one in front. v15 (Tomas, /grill-me): he lies
 on the sofa on his side, face to us; smoke, flame and the sponge's water move; the fight has a feint, footwork, a body
 hook, a duck and an uppercut; a matchbox that reads, an edge of light at the door and round the alley's shadows. v14: the film is lit as Office
 Noir 1 and 2 were (light_on3.auto, on the finished frame, round the tracked figures); the Client's back at her desk is
@@ -668,6 +670,8 @@ _r.robot = mo.alive(_r.robot, "ROBOT", None, breathe=0.0, blinks=False, tween_po
 # an edge round each shadow in the alley.
 ga.SIDE[0] = True
 al.RIM[0] = al.BOX2[0] = True
+_gang0 = al.gang
+al.gang = lambda *a_, **k_: [dict(m_, alpha=m_["alpha"] * (1.0 if m_["kind"] == "gun" else 0.66)) for m_ in _gang0(*a_, **k_)]   # v16: the two behind paler, so three men, not a mass
 dr.RIM[0] = True
 al.SMOKE[0] = lambda c, x, y, s_: mo.smoke(c, x, y, s_, seed=0.7, h=140)
 al.FLAME[0] = mo.flame
@@ -691,6 +695,31 @@ def _open52(t):
 
 def _bob52(t):
     return 7 * abs(math.sin(t * 20)) if t < 0.35 else 0.0
+
+
+def _effort52(k, t, o):
+    """5.2, after his glove stops a hand short: it shakes, and it shows: marks either side of the glove, the gap between
+    glove and robot marked, sweat off his head. (Held still it read as a freeze.)"""
+    if t < 0.82:
+        return
+    c = k.c
+    gx, gy = max(o["hands"], key=lambda h: h[0])
+    hx, hy = o["head"]
+    fl = int(t * 12) % 2
+    c.set_source_rgb(1, 1, 1); c.set_line_width(2.6); c.set_line_cap(1)
+    for sgn in (-1, 1):                                      # the glove shaking
+        for i in range(2):
+            yy = gy + sgn * (26 + 9 * i) + (2 if fl else -2)
+            c.move_to(gx - 14 + 6 * i, yy); c.curve_to(gx - 4, yy + sgn * 4, gx + 6, yy - sgn * 4, gx + 16 - 6 * i, yy); c.stroke()
+    for i in range(3):                                       # the hand's breadth it cannot cross
+        xx = gx + 30 + i * 9 + (2 if fl else 0)
+        c.move_to(xx, gy - 9); c.line_to(xx, gy + 9); c.stroke()
+    for i in range(3):                                       # sweat, flying back off him
+        u = ((t - 0.82) * 1.9 + i * 0.33) % 1.0
+        px, py = hx - 30 - 46 * u, hy - 40 - 30 * u + 60 * u * u
+        c.new_path(); c.move_to(px, py - 7); c.curve_to(px + 4, py - 1, px + 3, py + 4, px, py + 4); c.curve_to(px - 3, py + 4, px - 4, py - 1, px, py - 7)
+        c.set_source_rgba(1, 1, 1, 1 - u); c.fill()
+    c.set_line_cap(0)
 
 
 def _pose72(t):
@@ -767,10 +796,12 @@ def _surgery():
 
     src = inspect.getsource(rr.shot_52)
     for old, new in (("            pose, dx, lean = WALK, 0, 0.0\n", "            pose, dx, lean = _open52(t), 0, 0.0\n"),
-                     ("        x, f = 290 + dx, F - 40\n", "        x, f = 290 + dx, F - 40 - _bob52(t)\n")):
+                     ("        x, f = 290 + dx, F - 40\n", "        x, f = 290 + dx, F - 40 - _bob52(t)\n"),
+                     ("shove + 1.5 * math.sin(t * 70), 0.06 + shove * 0.004\n", "shove + 4.5 * math.sin(t * 44), 0.06 + shove * 0.004 + 0.012 * math.sin(t * 44)\n"),
+                     ('        b.boxer(k, x, f, Q, pose, "hard", (0.9, 0))\n', '        _o52 = b.boxer(k, x, f, Q, pose, "hard", (0.9, 0)); _effort52(k, t, _o52)\n')):
         assert old in src, old
         src = src.replace(old, new)
-    ns = dict(rr.__dict__); ns.update(_open52=_open52, _bob52=_bob52)
+    ns = dict(rr.__dict__); ns.update(_open52=_open52, _bob52=_bob52, _effort52=_effort52)
     exec(src, ns); rr.shot_52 = ns["shot_52"]
 
     src = inspect.getsource(rr2.shot_72)
@@ -779,6 +810,12 @@ def _surgery():
     for old, new in (('        r.robot(k, x, f, SC * r.REL, "r_wait", "furious", side=-1, crack=cracked)\n', '        r.robot(k, x, f, SC * r.REL, _rpose72(t), "furious", side=-1, crack=cracked)\n'),
                      ('        b.boxer(k, HITX, F - 40, Q, pose, "hard", (0.9, 0.1), tape=True)\n',
                       '        _draw72(k, t, HITX, F - 40, lambda: b.boxer(k, HITX + 22 * ramp(t, 0.80, 0.10), F - 40, Q, pose, "hard", (0.9, 0.1), tape=True))\n')):
+        assert old in src, old
+        src = src.replace(old, new)
+    for old, new in (("    return rg.frame(cam, [robot, client], [], near=False, hats=False)\n",
+                      "    return rg.frame(cam, [client, robot] if _rpose72(t) == 'r_jab' else [robot, client], [], near=False, hats=False)\n"),
+                     ("ellipse(k, x - 16, f - 86, 13, 10, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)", "ellipse(k, x - 16, f - 86, 8, 6, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)"),
+                     ("c.line_to(sx + 30 * math.cos(an), sy + 30 * math.sin(an)); c.stroke()", "c.line_to(sx + 22 * math.cos(an), sy + 22 * math.sin(an)); c.stroke()")):   # the star's rays ran through HR and made it read wrong
         assert old in src, old
         src = src.replace(old, new)
     ns = dict(rr2.__dict__); ns.update(_pose72=_pose72, _rpose72=_rpose72, _draw72=_draw72, ramp=ramp)
