@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v2"
+V = "v3"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -85,6 +85,20 @@ def takes():
     return meta
 
 
+SEEN = ("CLIENT", "PAM", "REFEREE")                      # their mouths are on the screen: the shot waits for the line
+_ENV = {}
+
+
+def _mouth(key, tl):
+    """The mouth shape for a drawing of this take, on twos: by how loud the take is there."""
+    if key not in _ENV:
+        a, _ = sf.read("%s/%s.wav" % (VOICES, key)); n = SR // 12
+        e = np.array([np.sqrt(np.mean(a[i:i + n] ** 2)) for i in range(0, len(a), n)]); _ENV[key] = e / (e.max() + 1e-9)
+    i = int(tl * 12); e = _ENV[key]
+    v = e[i] if 0 <= i < len(e) else 0.0
+    return "A" if v > 0.55 else "E" if v > 0.28 else "U" if v > 0.10 else None
+
+
 def schedule(meta):
     """-> shots [(name, start, dur, fn, base dur)], lines [(start, end, who, text, key)], and what was held and by how much."""
     shots, lines, held = [], [], []
@@ -96,7 +110,7 @@ def schedule(meta):
             en = st + meta[key]
             lines.append((round(st, 3), round(en, 3), who, text, key))
             prev_end = en
-            need = max(need, (en + 0.2 - T) if who != "N" else (st + min(meta[key], 0.8) - T))
+            need = max(need, (en + 0.2 - T) if who in SEEN else (st + min(meta[key], 0.8) - T))      # v3: a line whose speaker is not seen talking runs on over the next shot
         need = math.ceil(need * FPS - 1e-6) / FPS
         if need > dur + 1e-6:
             held.append((name, round(need - dur, 2)))
@@ -174,8 +188,10 @@ def build(out):
         key = "%02d_%s" % (i, name)
 
         def f(t, fn=fn, base=base, st=st):
-            s = fn(min(t, base - 1.0 / FPS))
             T = st + t
+            fm.mo.CLOCK["T_ext"] = T                                    # the clock runs on through a held drawing: they breathe
+            fm.mo.CLOCK["say"] = {who: _mouth(key_, T - a) for a, b_, who, text, key_ in lines if a <= T < b_ and who in SEEN}
+            s = fn(min(t, base - 1.0 / FPS))
             for a, b_, who, text, _ in lines:
                 if a - 0.05 <= T < b_ + 0.15:
                     return _caption(s, who, text)

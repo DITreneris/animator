@@ -242,3 +242,97 @@ def her(fn, x, feet, s, dir_=-1, a=20.0, up=11.0, on=True):
         finally:
             c.restore(); c.restore()
     return dr
+
+
+# ---- v2: life: in-betweens when a pose or a place jumps, breath, blinks, lips -----------------------------------------
+# A film sets the clock for every drawing (timed); a figure wrapped in alive() then
+#   moves from its last pose and place to the new one over four drawings, with a small overshoot, when they jump;
+#   breathes (a slow rise and fall about its feet); blinks; and, while CLOCK["say"][who] holds a mouth shape, talks.
+# Without a clock (CLOCK["shot"] is None) a wrapped figure draws exactly as the figure it wraps.
+CLOCK = {"shot": None, "t": 0.0, "T": 0.0, "say": {}}
+_ST, _CNT = {}, {}
+TWEEN = 4.0 / 30.0
+
+
+def timed(name, fn, start):
+    def f(t):
+        CLOCK["shot"], CLOCK["t"] = name, t
+        CLOCK["T"] = CLOCK.pop("T_ext", start + t)
+        _CNT.clear()
+        return fn(t)
+    return f
+
+
+def _back(p):
+    p = max(0.0, min(1.0, p)) - 1.0
+    return 1.0 + p * p * (2.2 * p + 1.2)
+
+
+def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True, tween_pose=True, mouth_kw=False):
+    import inspect
+    default_pose = inspect.signature(orig).parameters["pose"].default
+    ph = (sum(ord(ch) for ch in who) % 17) / 17.0
+
+    def fig(k, x, feet, s=1.0, pose=None, *a, **kw):
+        pose = default_pose if pose is None else pose
+        if CLOCK["shot"] is None:
+            return orig(k, x, feet, s, pose, *a, **kw)
+        T = CLOCK["T"]
+        try:
+            tup = (poses(pose) if callable(poses) else poses[pose]) if (poses is not None and isinstance(pose, str)) else pose
+        except KeyError:
+            tup = pose
+        num = tween_pose and isinstance(tup, (tuple, list)) and all(isinstance(q, (int, float)) for q in tup)
+        n = _CNT[who] = _CNT.get(who, 0) + 1
+        key = (who, n)
+        tgt = (list(tup) if num else []) + [x, feet]
+        st = _ST.get(key)
+        moving = False
+        if (st is None or st["shot"] != CLOCK["shot"] or not (0 < T - st["T"] < 0.09) or len(st["tgt"]) != len(tgt)
+                or abs(s - st["s"]) > 0.04 * s):
+            cur, st = tgt, {"from": tgt, "t0": -9.0}
+        else:
+            dp = max([abs(p - q) for p, q in zip(tgt[:-2], st["tgt"][:-2])] or [0.0])
+            dx = max(abs(tgt[-1] - st["tgt"][-1]), abs(tgt[-2] - st["tgt"][-2])) / s
+            if dx > 130:                                     # a cut inside the shot: no sliding across it
+                st["from"], st["t0"] = tgt, -9.0
+            elif dp > 16 or dx > 16:                         # a jump: start from what is on the screen now
+                st["from"], st["t0"] = st["cur"], T - 1.0 / 30
+            p = (T - st["t0"]) / TWEEN
+            moving = p < 1.0
+            e = _back(p)
+            cur = [f + (g - f) * e for f, g in zip(st["from"], tgt)] if moving else tgt
+        st.update(shot=CLOCK["shot"], T=T, tgt=tgt, cur=cur, s=s)
+        _ST[key] = st
+        px, pf = cur[-2], cur[-1]
+        ppose = tuple(cur[:-2]) if (num and moving) else pose
+        code = CLOCK["say"].get(who)
+        if code and mouth_kw:
+            kw = dict(kw); kw["mouth"] = code
+        shut = blinks and ((T + ph * 5.0) % (2.9 + ph * 1.3)) < 0.1
+        c = k.c
+        c.save()
+        if breathe and not moving:
+            sy = 1.0 + breathe * math.sin(2 * math.pi * (T / 3.4 + ph))
+            c.translate(px, pf); c.scale(1.0, sy); c.translate(-px, -pf)
+        old = kit.face_draw
+
+        def face_draw(k_, fx, fy, face, look, glasses=False, seed=0):
+            old(k_, fx, fy, face, look, glasses=glasses, seed=seed)
+            if shut and skin and face not in ("squint", "happy", "pleased", "smug"):
+                r_ = 14.5 if face in ("shock", "panic") else 11.5
+                for sx in (-17, 17):
+                    ellipse(k_, sx, fy, r_, r_, skin, seed + sx + 71, shadow=False, outline=False)
+                    k_.c.set_source_rgb(*INK); k_.c.set_line_width(3.2); k_.c.set_line_cap(1)
+                    k_.c.move_to(sx - 9, fy + 2); k_.c.curve_to(sx - 3, fy + 5, sx + 3, fy + 5, sx + 9, fy + 2); k_.c.stroke()
+            if code and skin and not mouth_kw:
+                import iwry_mouths as im
+                im.mouth(k_, fx, fy + 28, code, skin, lip_col=lip, erase=(18, 10), seed=seed + 67)
+        kit.face_draw = face_draw
+        try:
+            return orig(k, px, pf, s, ppose, *a, **kw)
+        finally:
+            kit.face_draw = old
+            c.restore()
+    fig.plain = orig
+    return fig
