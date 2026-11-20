@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v1"
+V = "v2"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30

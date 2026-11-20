@@ -1,4 +1,6 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v7 (v1 to v6 pinned). v7 (Tomas): Don wears his hat
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v8 (v1 to v7 pinned). v8 (Tomas: "Don is redrawn; everyone's
+walking has to be put right"): Don has legs, shoes, sleeves in one piece, ears (motion_on3.don); the Client, the woman
+under the umbrella and Don walk in steps that hold the ground (2.1, 2.6, 3.1, 3.4, 3.4b, 6.2b, 6.2c). v7 (Tomas): Don wears his hat
 (a fedora over the headset: bald, he was taken for the machine); Sofia on the street is there: she comes after the CV
 (2.5 photograph, 2.7 CV, 2.6 her), looks at him as she passes, and he lifts a glove to her. v6: v6 (Tomas, /grill-me): Pam in a
 dark sweater's sleeves, hands with fingers; Don's face when he sees the gun's shadow (3.4c), then his hands up and
@@ -54,25 +56,9 @@ ca.DARK[0] = True
 import inspect
 
 
-def _hatted(orig, back=False):
-    """Don with his hat on, wherever this film draws him: a grey fedora over the head the cast module returns."""
-    def f(k, x, feet, s_=1.0, *a, **kw):
-        o = orig(k, x, feet, s_, *a, **kw)
-        hx, hy = o["head"]; c = k.c
-        c.save(); c.translate(hx, hy); c.scale(s_, s_)
-        felt, band = (0.34, 0.34, 0.38), (0.08, 0.08, 0.10)
-        c.new_path(); c.move_to(-34, -30); c.curve_to(-36, -78, -10, -84, -2, -70); c.curve_to(8, -86, 36, -78, 34, -30); c.close_path()
-        c.set_source_rgb(*felt); c.fill_preserve(); c.set_source_rgb(0.05, 0.05, 0.06); c.set_line_width(2.6); c.stroke()
-        c.set_source_rgb(*band); c.rectangle(-34, -42, 68, 11); c.fill()
-        c.new_path(); c.move_to(-58, -30); c.curve_to(-40, -40, 40, -40, 58, -30); c.curve_to(40, -20, -40, -20, -58, -30); c.close_path()
-        c.set_source_rgb(*felt); c.fill_preserve(); c.set_source_rgb(0.05, 0.05, 0.06); c.set_line_width(2.6); c.stroke()
-        c.restore()
-        return o
-    return f
-
-
-n2.detective = _hatted(n2.detective)
-n2.detective_back = _hatted(n2.detective_back, True)
+import motion_on3 as mo
+n2.detective = mo.don                                        # v8: Don with legs, sleeves, ears, his hat
+n2.detective_back = mo.don_back
 K = dict(cards="deck", v4=True, v6=True)
 
 
@@ -124,7 +110,8 @@ def s20(t):
 
 
 def s21(t):
-    return st.frame("S1", [stc.client(lerp(250.0, 400.0, t / 1.1))], rain=_rain(t))
+    x = lerp(250.0, 400.0, t / 1.1)
+    return st.frame("S1", [mo.walk(stc.client(x), x, stc.Q, on=t < 1.1)], rain=_rain(t))
 
 
 def s22(t):
@@ -147,22 +134,22 @@ def s26(t):
     """She is there. She comes along the wall under her umbrella and stops beside him; they look at each other; he knows
     the face from the photograph and lifts a glove; she nods and walks on behind him, out to the street. The camera is
     wide enough to see her go."""
-    if t < 0.7:
-        sx = lerp(790.0, 575.0, t / 0.7)
-    elif t < 1.5:
+    if t < 1.0:                                              # v8: she walks, at a walk: steps, not a glide
+        sx = 575.0 + 150.0 * (1 - t / 1.0) ** 1.4
+    elif t < 1.8:
         sx = 575.0
     else:
-        sx = lerp(575.0, 250.0, (t - 1.5) / 0.9)
-    stopped = 0.7 <= t < 1.5
-    wave = 0.95 <= t < 1.75
+        sx = 575.0 - 250.0 * min(1.0, (t - 1.8) / 1.2) ** 1.25
+    stopped = 1.0 <= t < 1.8
+    wave = 1.2 <= t < 2.1
 
     def him(k):
         stc.client(450, "b_fist" if wave else "b_pay", (0.9 if sx > 460 else -0.9, 0.0))(k)
         st.folder(k, 452 - (30 if wave else 0), stc.G - 30 - 176 * stc.Q, 0.62 * stc.SC, -0.06)
 
     def her(k):
-        k.c.save(); k.c.translate(0, 6 * math.sin((t - 1.1) * math.pi / 0.3) if 1.1 <= t < 1.4 else 0)       # her nod
-        stc.sofia(sx, (-0.9, 0.2) if (stopped or sx > 575) else (-1, 0.1))(k)
+        k.c.save(); k.c.translate(0, 6 * math.sin((t - 1.4) * math.pi / 0.3) if 1.4 <= t < 1.7 else 0)       # her nod
+        mo.her(stc.sofia(sx, (-0.9, 0.2) if (stopped or sx > 575) else (-1, 0.1)), sx, stc.G - 30, stc.SC * 0.86, on=not stopped)(k)
         k.c.restore()
     return st.frame((470, 1190, 1.12), [her, him], rain=_rain(t))
 
@@ -173,7 +160,8 @@ def s27(t):
 
 # ---- 03 the alley -------------------------------------------------------------------------------------------------
 def s31(t):
-    return al.frame2("A1", [al.client(lerp(-30.0, 70.0, t / 1.0))], al.gang("aim", ramp(t, 0.5, 0.8) * 0.5))
+    x = lerp(-30.0, 70.0, t / 1.0)
+    return al.frame2("A1", [mo.walk(al.client(x), x, al.Q, on=t < 1.0)], al.gang("aim", ramp(t, 0.5, 0.8) * 0.5))
 
 
 def s32(t):
@@ -206,15 +194,20 @@ def s33b(t):
 
 
 def s34(t):
-    x = lerp(180.0, 700.0, t / 1.3)
-    return al.frame2("A1", [al.client(x, "b_walk", (0.9, 0), cig=x < 300)], al.gang("down", 0, True), cig=300 if x >= 300 else None)
+    x = 210.0 + 200.0 * t                            # v8: a hurried walk, in steps; he is still in the frame at the cut
+    return al.frame2("A1", [mo.walk(al.client(x, "b_walk", (0.9, 0), cig=x < 300), x, al.Q, a=30.0)], al.gang("down", 0, True), cig=300 if x >= 300 else None)
 
 
 def s34b(t):
     """Don, bent over the cigarette end. On the wall beside his head the gun's shadow comes down and stops."""
-    if t < 0.5:
-        return al.frame2("A3w", [al.don_caught(lerp(60.0, 215.0, t / 0.45), 0.0)], al.gang("down", 0, True), cig=300)
-    return al.frame2("A3w", [al.barrel(ramp(t, 0.5, 0.45)), al.don_caught(215, 0.0)], al.gang("down", 0, True), cig=300)
+    if t < 0.8:                                              # v8: he walks in on his own two feet
+        x = 215.0 - 110.0 * (1 - t / 0.8) ** 1.3
+        mo.NOW["walk"] = (x, 1)
+        try:
+            return al.frame2("A3w", [al.don_caught(x, 0.0)], al.gang("down", 0, True), cig=300)
+        finally:
+            mo.NOW.clear()
+    return al.frame2("A3w", [al.barrel(ramp(t, 0.8, 0.45)), al.don_caught(215, 0.0)], al.gang("down", 0, True), cig=300)
 
 
 def s34c(t):
@@ -367,7 +360,7 @@ def _aisle(t):
     on his stool, and the robot both turn to look."""
     dx0, dy0, dw, dh = rg.DOOR
     u = ramp(t, 0.0, 1.5)
-    px, pf, ps = lerp(dx0 + dw / 2.0, 372.0, u), lerp(rg.FAR + 6.0, rg.FAR + 2.0, u) - bob(t, 3.4, 5.0), rg.SC * lerp(0.74, 0.86, u)
+    px, pf, ps = lerp(dx0 + dw / 2.0, 372.0, u), lerp(rg.FAR + 6.0, rg.FAR + 2.0, u), rg.SC * lerp(0.74, 0.86, u)
     hy = pf - 330 * ps
 
     def lights(k):                                           # behind everything in the ring: the door, white; fireworks; the two beams
@@ -402,7 +395,11 @@ def _aisle(t):
         rg.shadow(k, px, pf, 36 * ps / rg.SC)
         old = n2.LOOK[0]; n2.LOOK[0] = 9
         try:
-            n2.detective(k, px, pf, ps, "up", "squint", (-0.5, 0.2), lean=4 * math.sin(t * math.pi * 3.4))
+            w_ = t * 1.9 if u < 1 else 0.0                    # v8: steps toward us, one foot and then the other
+            f0, f1 = mo.stride(w_, 0.0, 30.0), mo.stride(w_ + 0.5, 0.0, 30.0)
+            up_ = mo.rise(w_, 7.0) if u < 1 else 0.0
+            n2.detective(k, px, pf - up_ * ps, ps, "up", "squint", (-0.5, 0.2), lean=5 * math.sin(w_ * 2 * math.pi) if u < 1 else 0,
+                         steps=((-16, f0[1] - up_, 0), (16, f1[1] - up_, 0)))
         finally:
             n2.LOOK[0] = old
 
@@ -461,7 +458,8 @@ def s62c(t):
         rg.shadow(k, px, rg.F - 14, 36)
         old = n2.LOOK[0]; n2.LOOK[0] = 9
         try:
-            n2.detective(k, px, pf, rg.SC, "up", "squint", (-0.6, 0.1), lean=-16 * math.sin(math.pi * u))
+            n2.detective(k, px, pf, rg.SC, "up", "squint", (-0.6, 0.1), lean=-16 * math.sin(math.pi * u),
+                         steps=((-14 - 16 * math.sin(math.pi * u), 34 * math.sin(math.pi * u), -1 if 0 < u < 1 else 0), (14, 0, 0)))
         finally:
             n2.LOOK[0] = old
         if u < 1:                                            # the rope he comes over, pressed down under him
@@ -569,9 +567,9 @@ def s85(t):
 
 FILM = [("1.1", 0.6, s11),
         ("2.0", 0.9, s20), ("2.1", 0.8, quick(s21, 1.35)), ("2.2", 1.2, quick(s22, 1.2)), ("2.4", 1.8, quick(s24, 2.8 / 1.8)), ("2.4b", 0.9, quick(s24b, 1.4)),
-        ("2.5", 1.1, s25), ("2.7", 1.7, s27), ("2.6", 2.4, s26),
+        ("2.5", 1.1, s25), ("2.7", 1.7, s27), ("2.6", 3.0, s26),
         ("3.1", 0.8, quick(s31, 1.6)), ("3.2", 0.6, s32), ("3.2b", 0.9, quick(s32b, 1.1)), ("3.2c", 0.8, quick(s32c, 1.1)), ("3.3", 0.7, quick(s33, 1.25)),
-        ("3.3b", 1.1, quick(s33b, 1.45)), ("3.4", 0.7, quick(s34, 1.85)), ("3.4b", 1.2, s34b), ("3.4c", 0.7, s34c), ("3.4d", 0.8, s34d),
+        ("3.3b", 1.1, quick(s33b, 1.45)), ("3.4", 1.0, s34), ("3.4b", 1.5, s34b), ("3.4c", 0.7, s34c), ("3.4d", 0.8, s34d),
         ("4.1", 1.3, s41), ("4.2", 1.9, s42), ("4.3", 1.0, quick(s43, 1.4)), ("4.4", 2.4, quick(s44, 2.9 / 2.4)), ("4.4a", 0.9, s44a),
         ("4.4t", 1.2, quick(s44t, 1.25)), ("4.4b", 1.0, quick(s44b, 1.2)), ("4.4c", 1.0, quick(s44c, 1.4))]
 for name, dur in R5:
