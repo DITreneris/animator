@@ -1,0 +1,506 @@
+[
+ {
+  "shot": "1.1a",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don"
+  ],
+  "things": [
+   "portrait + OUR FIRST CLIENT",
+   "shredder"
+  ],
+  "line": false
+ },
+ {
+  "shot": "1.1b",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don"
+  ],
+  "things": [
+   "portrait + OUR FIRST CLIENT",
+   "shredder"
+  ],
+  "line": false
+ },
+ {
+  "shot": "1.2",
+  "size": "medium",
+  "count": 4,
+  "limit": 6,
+  "over": false,
+  "people": [
+   "client",
+   "don",
+   "sofia"
+  ],
+  "things": [],
+  "line": true
+ },
+ {
+  "shot": "1.3",
+  "size": "insert",
+  "count": 2,
+  "limit": 4,
+  "over": false,
+  "people": [],
+  "things": [
+   "hand / thumb",
+   "phone"
+  ],
+  "line": false
+ },
+ {
+  "shot": "2.1",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don"
+  ],
+  "things": [
+   "phone",
+   "portrait + OUR FIRST CLIENT"
+  ],
+  "line": false
+ },
+ {
+  "shot": "2.2",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don"
+  ],
+  "things": [
+   "portrait + OUR FIRST CLIENT"
+  ],
+  "line": true
+ },
+ {
+  "shot": "2.3",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "client",
+   "don"
+  ],
+  "things": [
+   "hand / thumb"
+  ],
+  "line": false
+ },
+ {
+  "shot": "3.1",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don",
+   "sofia"
+  ],
+  "things": [
+   "portrait + OUR FIRST CLIENT"
+  ],
+  "line": false
+ },
+ {
+  "shot": "3.2",
+  "size": "close",
+  "count": 2,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "client"
+  ],
+  "things": [
+   "phone"
+  ],
+  "line": false
+ },
+ {
+  "shot": "3.3",
+  "size": "close",
+  "count": 4,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don",
+   "sofia"
+  ],
+  "things": [
+   "portrait + OUR FIRST CLIENT"
+  ],
+  "line": true
+ },
+ {
+  "shot": "3.4",
+  "size": "medium",
+  "count": 2,
+  "limit": 6,
+  "over": false,
+  "people": [
+   "sofia"
+  ],
+  "things": [
+   "portrait + OUR FIRST CLIENT"
+  ],
+  "line": false
+ },
+ {
+  "shot": "4.1",
+  "size": "close",
+  "count": 4,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don",
+   "robot"
+  ],
+  "things": [
+   "remote"
+  ],
+  "line": true
+ },
+ {
+  "shot": "4.2",
+  "size": "close",
+  "count": 2,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "robot"
+  ],
+  "things": [],
+  "line": true
+ },
+ {
+  "shot": "4.3",
+  "size": "insert",
+  "count": 2,
+  "limit": 4,
+  "over": false,
+  "people": [],
+  "things": [
+   "hand / thumb"
+  ],
+  "line": true
+ },
+ {
+  "shot": "4.4",
+  "size": "close",
+  "count": 4,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don",
+   "pam"
+  ],
+  "things": [
+   "counter",
+   "taped plan"
+  ],
+  "line": false
+ },
+ {
+  "shot": "4.5",
+  "size": "insert",
+  "count": 1,
+  "limit": 4,
+  "over": false,
+  "people": [],
+  "things": [
+   "UPTIMEZ FIND screen"
+  ],
+  "line": false
+ },
+ {
+  "shot": "5.1",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "client",
+   "don",
+   "sofia"
+  ],
+  "things": [],
+  "line": false
+ },
+ {
+  "shot": "5.2",
+  "size": "close",
+  "count": 4,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "client",
+   "don"
+  ],
+  "things": [
+   "shredder"
+  ],
+  "line": true
+ },
+ {
+  "shot": "5.2b",
+  "size": "close",
+  "count": 1,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don"
+  ],
+  "things": [],
+  "line": false
+ },
+ {
+  "shot": "5.2c",
+  "size": "insert",
+  "count": 0,
+  "limit": 4,
+  "over": false,
+  "people": [],
+  "things": [],
+  "line": false
+ },
+ {
+  "shot": "5.3",
+  "size": "close",
+  "count": 5,
+  "limit": 4,
+  "over": true,
+  "people": [
+   "don",
+   "pam"
+  ],
+  "things": [
+   "counter",
+   "taped plan"
+  ],
+  "line": true
+ },
+ {
+  "shot": "6.1b",
+  "size": "close",
+  "count": 4,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "mom"
+  ],
+  "things": [
+   "counter",
+   "taped plan"
+  ],
+  "line": true
+ },
+ {
+  "shot": "6.2a",
+  "size": "medium",
+  "count": 1,
+  "limit": 6,
+  "over": false,
+  "people": [
+   "don"
+  ],
+  "things": [],
+  "line": false
+ },
+ {
+  "shot": "6.2b",
+  "size": "insert",
+  "count": 0,
+  "limit": 4,
+  "over": false,
+  "people": [],
+  "things": [],
+  "line": false
+ },
+ {
+  "shot": "7.1",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "mom"
+  ],
+  "things": [
+   "phone"
+  ],
+  "line": true
+ },
+ {
+  "shot": "7.2",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "client",
+   "don",
+   "mom"
+  ],
+  "things": [],
+  "line": false
+ },
+ {
+  "shot": "7.3",
+  "size": "close",
+  "count": 2,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don",
+   "mom"
+  ],
+  "things": [],
+  "line": false
+ },
+ {
+  "shot": "7.4",
+  "size": "close",
+  "count": 5,
+  "limit": 4,
+  "over": true,
+  "people": [
+   "don",
+   "mom",
+   "sofia"
+  ],
+  "things": [
+   "hand / thumb"
+  ],
+  "line": true
+ },
+ {
+  "shot": "7.5",
+  "size": "close",
+  "count": 4,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "mom",
+   "pam",
+   "sofia"
+  ],
+  "things": [],
+  "line": true
+ },
+ {
+  "shot": "8.1",
+  "size": "close",
+  "count": 5,
+  "limit": 4,
+  "over": true,
+  "people": [
+   "mom",
+   "pam"
+  ],
+  "things": [
+   "counter",
+   "taped plan"
+  ],
+  "line": true
+ },
+ {
+  "shot": "8.2",
+  "size": "medium",
+  "count": 4,
+  "limit": 6,
+  "over": false,
+  "people": [
+   "don",
+   "pam"
+  ],
+  "things": [
+   "shredder",
+   "taped plan"
+  ],
+  "line": false
+ },
+ {
+  "shot": "9.1",
+  "size": "close",
+  "count": 2,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "client"
+  ],
+  "things": [
+   "phone"
+  ],
+  "line": false
+ },
+ {
+  "shot": "9.2",
+  "size": "medium",
+  "count": 3,
+  "limit": 6,
+  "over": false,
+  "people": [
+   "robot"
+  ],
+  "things": [
+   "UPTIMEZ FIND screen",
+   "remote"
+  ],
+  "line": false
+ },
+ {
+  "shot": "9.3",
+  "size": "close",
+  "count": 1,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "client"
+  ],
+  "things": [],
+  "line": false
+ },
+ {
+  "shot": "9.4",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don"
+  ],
+  "things": [
+   "portrait + OUR FIRST CLIENT",
+   "shredder"
+  ],
+  "line": false
+ },
+ {
+  "shot": "9.5",
+  "size": "close",
+  "count": 3,
+  "limit": 4,
+  "over": false,
+  "people": [
+   "don"
+  ],
+  "things": [
+   "portrait + OUR FIRST CLIENT",
+   "shredder"
+  ],
+  "line": false
+ }
+]

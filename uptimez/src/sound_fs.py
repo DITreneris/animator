@@ -260,3 +260,94 @@ if __name__ == "__main__":
         takes(sys.argv[2:] or None)
     elif sys.argv[1] == "check":
         sys.exit(1 if check() else 0)
+
+
+# board v33 (19 Nov): 7.4 "Eww." taken straight from Happy Compliance (sound_xmas: Pam voice A and Sofía af_bella 0.95,
+# Sofía 0.02 s after Pam, each at 0.75: the unison of the Christmas episode). The rest: film_v9, copied.
+# python3 sound_fs.py takes_v10
+OUT_V10 = "fs_voices/film_v10"
+
+
+def takes_v10():
+    import shutil
+    import sound_xmas as sx_
+    os.makedirs(OUT_V10, exist_ok=True)
+    src = "fs_voices/film_v9"
+    meta = json.load(open(src + "/takes.json"))
+    for shot in meta:
+        shutil.copy("%s/%s.wav" % (src, shot), "%s/%s.wav" % (OUT_V10, shot))
+    p_ = np.asarray(sx_.pam_line("Eww.", "A"), dtype=np.float64)
+    s_ = np.asarray(sx_.best_take("Eww.", "af_bella", 0.95, "en-us"), dtype=np.float64)
+    off = int(0.02 * SR)
+    a = np.zeros(max(len(p_), off + len(s_)))
+    a[:len(p_)] += p_ * 0.75; a[off:off + len(s_)] += s_ * 0.75
+    sf.write(OUT_V10 + "/7.4.wav", a.astype(np.float32), SR)
+    meta["7.4"] = dict(who="PAM+SOFIA", text="Eww.", len=round(len(a) / float(SR), 3),
+                       rms=round(float(np.sqrt(np.mean(a ** 2))), 3), peak=round(float(np.abs(a).max()), 3),
+                       source="happy-compliance (sound_xmas LINES: SOF/PAM Eww.)")
+    json.dump(meta, open(OUT_V10 + "/takes.json", "w"), indent=1)
+    print("7.4 PAM+SOFIA %.2f s  Eww.  (Happy Compliance's unison)" % meta["7.4"]["len"])
+
+
+# film v5 (19 Nov): the Friday discussion, three new lines in the film's own voices. The rest: film_v10, copied.
+# python3 -c "import sound_fs; sound_fs.takes_v11()"
+OUT_V11 = "fs_voices/film_v11"
+V11 = [("x1", "DON", "Where is his blueprint?", None), ("x2", "SOFIA", "Ask the machine.", None),
+       ("x3", "ROBOT", "Zero results.", None)]
+
+
+def takes_v11():
+    import shutil
+    os.makedirs(OUT_V11, exist_ok=True)
+    meta = json.load(open(OUT_V10 + "/takes.json"))
+    for shot in meta:
+        shutil.copy("%s/%s.wav" % (OUT_V10, shot), "%s/%s.wav" % (OUT_V11, shot))
+    for shot, who, line, how in V11:
+        a = ob.trim(np.asarray(take(shot, who, line, how), dtype=np.float64))
+        sf.write("%s/%s.wav" % (OUT_V11, shot), a.astype(np.float32), SR)
+        meta[shot] = dict(who=who, text=line, len=round(len(a) / float(SR), 3),
+                          rms=round(float(np.sqrt(np.mean(a ** 2))), 3), peak=round(float(np.abs(a).max()), 3))
+        print("%-3s %-6s %.2f s  rms %.3f  %s" % (shot, who, meta[shot]["len"], meta[shot]["rms"], line), flush=True)
+    json.dump(meta, open(OUT_V11 + "/takes.json", "w"), indent=1)
+
+
+# ---- film v6 (19 Nov): the Client threatens, twice (the director: "klientas turi pagrasinti")
+OUT_V12 = "fs_voices/film_v12"
+V12 = [("t1", "CLIENT", "Friday. Or I sue.", "slow"), ("t2", "CLIENT", "See you in court.", "slow")]
+
+
+def takes_v12():
+    import shutil
+    os.makedirs(OUT_V12, exist_ok=True)
+    meta = json.load(open(OUT_V11 + "/takes.json"))
+    for shot in meta:
+        shutil.copy("%s/%s.wav" % (OUT_V11, shot), "%s/%s.wav" % (OUT_V12, shot))
+    for shot, who, line, how in V12:
+        a = ob.trim(np.asarray(take(shot, who, line, how), dtype=np.float64))
+        sf.write("%s/%s.wav" % (OUT_V12, shot), a.astype(np.float32), SR)
+        meta[shot] = dict(who=who, text=line, len=round(len(a) / float(SR), 3),
+                          rms=round(float(np.sqrt(np.mean(a ** 2))), 3), peak=round(float(np.abs(a).max()), 3))
+        print("%-3s %-6s %.2f s  rms %.3f  %s" % (shot, who, meta[shot]["len"], meta[shot]["rms"], line), flush=True)
+    json.dump(meta, open(OUT_V12 + "/takes.json", "w"), indent=1)
+
+
+# ---- film v15 (19 Nov): Pam reads her own comment aloud (the director: "it will be epic")
+OUT_V13 = "fs_voices/film_v13"
+
+
+def takes_v13():
+    import shutil
+    import sound_xmas as sx_
+    os.makedirs(OUT_V13, exist_ok=True)
+    meta = json.load(open(OUT_V12 + "/takes.json"))
+    for shot in meta:
+        shutil.copy("%s/%s.wav" % (OUT_V12, shot), "%s/%s.wav" % (OUT_V13, shot))
+    line = "Some post. Others tape."
+    a = ob.trim(np.asarray(sx_.pam_line(line, "A"), dtype=np.float64))
+    a = a * (0.11 / max(1e-6, float(np.sqrt(np.mean(a ** 2)))))
+    a = np.clip(a, -0.95, 0.95)
+    sf.write("%s/p1.wav" % OUT_V13, a.astype(np.float32), SR)
+    meta["p1"] = dict(who="PAM", text=line, len=round(len(a) / float(SR), 3), rms=round(float(np.sqrt(np.mean(a ** 2))), 3),
+                      peak=round(float(np.abs(a).max()), 3))
+    print("p1 PAM %.2f s  rms %.3f  %s" % (meta["p1"]["len"], meta["p1"]["rms"], line))
+    json.dump(meta, open(OUT_V13 + "/takes.json", "w"), indent=1)

@@ -1,0 +1,386 @@
+[
+ {
+  "shot": "open",
+  "start": 0.0,
+  "len": 3.7,
+  "of": "A",
+  "drawing": "open",
+  "take": null
+ },
+ {
+  "shot": "flirt",
+  "start": 3.7,
+  "len": 0.9,
+  "of": "S",
+  "drawing": "flirt",
+  "take": null
+ },
+ {
+  "shot": "b",
+  "start": 4.6,
+  "len": 2.792,
+  "of": "B",
+  "drawing": "bshot",
+  "take": "1.2"
+ },
+ {
+  "shot": "c1",
+  "start": 7.392,
+  "len": 0.2,
+  "of": "C",
+  "drawing": "2.2",
+  "take": null
+ },
+ {
+  "shot": "c2",
+  "start": 7.592,
+  "len": 2.844,
+  "of": "C",
+  "drawing": "2.2",
+  "take": "2.2"
+ },
+ {
+  "shot": "c3",
+  "start": 10.436,
+  "len": 0.3,
+  "of": "C",
+  "drawing": "2.2",
+  "take": null
+ },
+ {
+  "shot": "tap",
+  "start": 10.736,
+  "len": 1.0,
+  "of": "D0",
+  "drawing": "tap",
+  "take": null
+ },
+ {
+  "shot": "payok",
+  "start": 11.736,
+  "len": 0.8,
+  "of": "D1",
+  "drawing": "payok",
+  "take": null
+ },
+ {
+  "shot": "photo",
+  "start": 12.536,
+  "len": 1.7,
+  "of": "PH",
+  "drawing": "photo",
+  "take": null
+ },
+ {
+  "shot": "post",
+  "start": 14.236,
+  "len": 1.0,
+  "of": "M1",
+  "drawing": "6.2a",
+  "take": null
+ },
+ {
+  "shot": "paid",
+  "start": 15.236,
+  "len": 1.886,
+  "of": "D",
+  "drawing": "paid",
+  "take": "t1"
+ },
+ {
+  "shot": "red",
+  "start": 17.122,
+  "len": 1.5,
+  "of": "E0",
+  "drawing": "term",
+  "take": null
+ },
+ {
+  "shot": "fright",
+  "start": 18.622,
+  "len": 0.6,
+  "of": "E",
+  "drawing": "fright",
+  "take": null
+ },
+ {
+  "shot": "nothing",
+  "start": 19.222,
+  "len": 1.152,
+  "of": "E",
+  "drawing": "3.3",
+  "take": "3.3"
+ },
+ {
+  "shot": "f1",
+  "start": 20.374,
+  "len": 2.066,
+  "of": "F",
+  "drawing": "4.1",
+  "take": "4.1"
+ },
+ {
+  "shot": "f2",
+  "start": 22.44,
+  "len": 2.596,
+  "of": "F",
+  "drawing": "4.1",
+  "take": "4.2"
+ },
+ {
+  "shot": "f3",
+  "start": 25.036,
+  "len": 1.018,
+  "of": "F",
+  "drawing": "4.1",
+  "take": "4.3"
+ },
+ {
+  "shot": "wipe",
+  "start": 26.054,
+  "len": 0.8,
+  "of": "G",
+  "drawing": "4.5",
+  "take": null
+ },
+ {
+  "shot": "machines",
+  "start": 26.854,
+  "len": 1.316,
+  "of": "L",
+  "drawing": "momdesk",
+  "take": "6.1b"
+ },
+ {
+  "shot": "plaster",
+  "start": 28.17,
+  "len": 1.1,
+  "of": "E2",
+  "drawing": "3.4",
+  "take": null
+ },
+ {
+  "shot": "like",
+  "start": 29.27,
+  "len": 0.8,
+  "of": "N",
+  "drawing": "7.1",
+  "take": null
+ },
+ {
+  "shot": "comments",
+  "start": 30.07,
+  "len": 2.9,
+  "of": "M",
+  "drawing": "6.2b",
+  "take": "p1"
+ },
+ {
+  "shot": "hussy",
+  "start": 32.97,
+  "len": 1.247,
+  "of": "L2",
+  "drawing": "momdesk",
+  "take": "7.5"
+ },
+ {
+  "shot": "zoom",
+  "start": 34.217,
+  "len": 0.8,
+  "of": "N3",
+  "drawing": "mzoom",
+  "take": null
+ },
+ {
+  "shot": "youngman",
+  "start": 35.017,
+  "len": 1.595,
+  "of": "N3",
+  "drawing": "mzoom2",
+  "take": "7.1"
+ },
+ {
+  "shot": "round",
+  "start": 36.612,
+  "len": 0.7,
+  "of": "O",
+  "drawing": "7.2",
+  "take": null
+ },
+ {
+  "shot": "lick",
+  "start": 37.312,
+  "len": 0.6,
+  "of": "O2",
+  "drawing": "tlick",
+  "take": null
+ },
+ {
+  "shot": "mouth",
+  "start": 37.912,
+  "len": 0.9,
+  "of": "O3",
+  "drawing": "tmouth",
+  "take": null
+ },
+ {
+  "shot": "travel",
+  "start": 38.812,
+  "len": 0.6,
+  "of": "O4",
+  "drawing": "ttravel",
+  "take": null
+ },
+ {
+  "shot": "scrub",
+  "start": 39.412,
+  "len": 1.1,
+  "of": "O5",
+  "drawing": "tbald",
+  "take": null
+ },
+ {
+  "shot": "eww",
+  "start": 40.512,
+  "len": 1.316,
+  "of": "P",
+  "drawing": "7.4",
+  "take": "7.4"
+ },
+ {
+  "shot": "week",
+  "start": 41.828,
+  "len": 0.6,
+  "of": "T",
+  "drawing": "week",
+  "take": null
+ },
+ {
+  "shot": "write",
+  "start": 42.428,
+  "len": 2.3,
+  "of": "T2",
+  "drawing": "stupidcu",
+  "take": null
+ },
+ {
+  "shot": "ret",
+  "start": 44.728,
+  "len": 0.9,
+  "of": "RET",
+  "drawing": "ret",
+  "take": null
+ },
+ {
+  "shot": "h1",
+  "start": 45.628,
+  "len": 0.4,
+  "of": "H",
+  "drawing": "h51",
+  "take": null
+ },
+ {
+  "shot": "h2",
+  "start": 46.028,
+  "len": 1.69,
+  "of": "H",
+  "drawing": "h51",
+  "take": "5.2"
+ },
+ {
+  "shot": "glance",
+  "start": 47.718,
+  "len": 0.5,
+  "of": "I",
+  "drawing": "5.2b",
+  "take": null
+ },
+ {
+  "shot": "memory",
+  "start": 48.218,
+  "len": 1.3,
+  "of": "J",
+  "drawing": "memory",
+  "take": null
+ },
+ {
+  "shot": "x1",
+  "start": 49.518,
+  "len": 1.576,
+  "of": "X",
+  "drawing": "huddle",
+  "take": "x1"
+ },
+ {
+  "shot": "x2",
+  "start": 51.094,
+  "len": 1.168,
+  "of": "X",
+  "drawing": "huddle2",
+  "take": "x2"
+ },
+ {
+  "shot": "x3",
+  "start": 52.262,
+  "len": 1.342,
+  "of": "X3",
+  "drawing": "robot",
+  "take": "x3"
+ },
+ {
+  "shot": "hug",
+  "start": 53.604,
+  "len": 1.712,
+  "of": "Q",
+  "drawing": "hug",
+  "take": "8.1"
+ },
+ {
+  "shot": "show",
+  "start": 55.316,
+  "len": 1.5,
+  "of": "R",
+  "drawing": "show",
+  "take": null
+ },
+ {
+  "shot": "fury",
+  "start": 56.816,
+  "len": 1.407,
+  "of": "R",
+  "drawing": "fury",
+  "take": "t2"
+ },
+ {
+  "shot": "leave",
+  "start": 58.223,
+  "len": 1.2,
+  "of": "OUT",
+  "drawing": "leave",
+  "take": null
+ },
+ {
+  "shot": "heal",
+  "start": 59.423,
+  "len": 1.2,
+  "of": "U",
+  "drawing": "9.3",
+  "take": null
+ },
+ {
+  "shot": "zero",
+  "start": 60.623,
+  "len": 1.6,
+  "of": "U",
+  "drawing": "9.4",
+  "take": null
+ },
+ {
+  "shot": "shake",
+  "start": 62.223,
+  "len": 0.35,
+  "of": "U",
+  "drawing": "9.5",
+  "take": null
+ }
+]

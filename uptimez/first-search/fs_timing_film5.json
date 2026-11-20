@@ -1,0 +1,306 @@
+[
+ {
+  "shot": "open",
+  "start": 0.0,
+  "len": 4.6,
+  "of": "A",
+  "drawing": "open",
+  "take": null
+ },
+ {
+  "shot": "b",
+  "start": 4.6,
+  "len": 2.942,
+  "of": "B",
+  "drawing": "1.2",
+  "take": "1.2"
+ },
+ {
+  "shot": "c1",
+  "start": 7.542,
+  "len": 0.5,
+  "of": "C",
+  "drawing": "2.2",
+  "take": null
+ },
+ {
+  "shot": "c2",
+  "start": 8.042,
+  "len": 2.994,
+  "of": "C",
+  "drawing": "2.2",
+  "take": "2.2"
+ },
+ {
+  "shot": "c3",
+  "start": 11.036,
+  "len": 0.5,
+  "of": "C",
+  "drawing": "2.2",
+  "take": null
+ },
+ {
+  "shot": "paid",
+  "start": 11.536,
+  "len": 0.9,
+  "of": "D",
+  "drawing": "3.2",
+  "take": null
+ },
+ {
+  "shot": "red",
+  "start": 12.436,
+  "len": 0.8,
+  "of": "E0",
+  "drawing": "red",
+  "take": null
+ },
+ {
+  "shot": "fright",
+  "start": 13.236,
+  "len": 0.8,
+  "of": "E",
+  "drawing": "fright",
+  "take": null
+ },
+ {
+  "shot": "nothing",
+  "start": 14.036,
+  "len": 1.302,
+  "of": "E",
+  "drawing": "3.3",
+  "take": "3.3"
+ },
+ {
+  "shot": "f1",
+  "start": 15.338,
+  "len": 2.216,
+  "of": "F",
+  "drawing": "4.1",
+  "take": "4.1"
+ },
+ {
+  "shot": "f2",
+  "start": 17.554,
+  "len": 2.746,
+  "of": "F",
+  "drawing": "4.1",
+  "take": "4.2"
+ },
+ {
+  "shot": "f3",
+  "start": 20.3,
+  "len": 1.3,
+  "of": "F",
+  "drawing": "4.1",
+  "take": "4.3"
+ },
+ {
+  "shot": "wipe",
+  "start": 21.6,
+  "len": 1.0,
+  "of": "G",
+  "drawing": "4.5",
+  "take": null
+ },
+ {
+  "shot": "machines",
+  "start": 22.6,
+  "len": 1.466,
+  "of": "L",
+  "drawing": "momdesk",
+  "take": "6.1b"
+ },
+ {
+  "shot": "plaster",
+  "start": 24.066,
+  "len": 0.9,
+  "of": "E2",
+  "drawing": "3.4",
+  "take": null
+ },
+ {
+  "shot": "post",
+  "start": 24.966,
+  "len": 1.0,
+  "of": "M",
+  "drawing": "6.2a",
+  "take": null
+ },
+ {
+  "shot": "comments",
+  "start": 25.966,
+  "len": 1.2,
+  "of": "M",
+  "drawing": "6.2b",
+  "take": null
+ },
+ {
+  "shot": "hussy",
+  "start": 27.166,
+  "len": 1.397,
+  "of": "L2",
+  "drawing": "momdesk",
+  "take": "7.5"
+ },
+ {
+  "shot": "youngman",
+  "start": 28.563,
+  "len": 1.745,
+  "of": "N",
+  "drawing": "7.1",
+  "take": "7.1"
+ },
+ {
+  "shot": "round",
+  "start": 30.308,
+  "len": 0.9,
+  "of": "O",
+  "drawing": "7.2",
+  "take": null
+ },
+ {
+  "shot": "lick",
+  "start": 31.208,
+  "len": 0.6,
+  "of": "O",
+  "drawing": "7.3",
+  "take": null
+ },
+ {
+  "shot": "eww",
+  "start": 31.808,
+  "len": 1.466,
+  "of": "P",
+  "drawing": "7.4",
+  "take": "7.4"
+ },
+ {
+  "shot": "week",
+  "start": 33.274,
+  "len": 2.4,
+  "of": "T",
+  "drawing": "week",
+  "take": null
+ },
+ {
+  "shot": "ret",
+  "start": 35.674,
+  "len": 1.0,
+  "of": "RET",
+  "drawing": "ret",
+  "take": null
+ },
+ {
+  "shot": "h1",
+  "start": 36.674,
+  "len": 0.7,
+  "of": "H",
+  "drawing": "5.1",
+  "take": null
+ },
+ {
+  "shot": "h2",
+  "start": 37.374,
+  "len": 1.84,
+  "of": "H",
+  "drawing": "5.1",
+  "take": "5.2"
+ },
+ {
+  "shot": "glance",
+  "start": 39.214,
+  "len": 0.5,
+  "of": "I",
+  "drawing": "5.2b",
+  "take": null
+ },
+ {
+  "shot": "memory",
+  "start": 39.714,
+  "len": 1.0,
+  "of": "J",
+  "drawing": "memory",
+  "take": null
+ },
+ {
+  "shot": "x1",
+  "start": 40.714,
+  "len": 1.726,
+  "of": "X",
+  "drawing": "huddle",
+  "take": "x1"
+ },
+ {
+  "shot": "x2",
+  "start": 42.44,
+  "len": 1.318,
+  "of": "X",
+  "drawing": "huddle2",
+  "take": "x2"
+ },
+ {
+  "shot": "x3",
+  "start": 43.758,
+  "len": 1.492,
+  "of": "X3",
+  "drawing": "robot",
+  "take": "x3"
+ },
+ {
+  "shot": "hug",
+  "start": 45.25,
+  "len": 1.862,
+  "of": "Q",
+  "drawing": "hug",
+  "take": "8.1"
+ },
+ {
+  "shot": "show",
+  "start": 47.112,
+  "len": 1.1,
+  "of": "R",
+  "drawing": "show",
+  "take": null
+ },
+ {
+  "shot": "fury",
+  "start": 48.212,
+  "len": 1.0,
+  "of": "R",
+  "drawing": "fury",
+  "take": null
+ },
+ {
+  "shot": "leave",
+  "start": 49.212,
+  "len": 1.3,
+  "of": "OUT",
+  "drawing": "leave",
+  "take": null
+ },
+ {
+  "shot": "heal",
+  "start": 50.512,
+  "len": 1.2,
+  "of": "U",
+  "drawing": "9.3",
+  "take": null
+ },
+ {
+  "shot": "zero",
+  "start": 51.712,
+  "len": 1.6,
+  "of": "U",
+  "drawing": "9.4",
+  "take": null
+ },
+ {
+  "shot": "shake",
+  "start": 53.312,
+  "len": 0.35,
+  "of": "U",
+  "drawing": "9.5",
+  "take": null
+ }
+]
