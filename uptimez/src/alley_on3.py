@@ -325,6 +325,53 @@ CAMS["A2w"] = (228, 1128, 1.5)                             # him, and the shadow
 CAMS["A3w"] = (330, 1130, 1.12)
 
 
+def barrel(u):
+    """v4 (Tomas, /grill-me): on the wall beside Don's bent head, the tommy gun's shadow comes down and stops. u 0..1."""
+    def d(k):
+        c = k.c
+        c.save(); c.rectangle(-40, G - 640, WW + 80, 600); c.clip()
+        x, y, a = 640 - 60 * u, G - 560 + 250 * u, 0.55 - 0.42 * u
+        c.translate(x, y); c.scale(1.7, 1.7); c.translate(-x, -y)
+        c.push_group(); c.set_source_rgb(*SHADE); _tommy(c, x, y, a)
+        _limb(c, [(x + 6, y + 14), (x + 70, y + 30), (x + 150, y - 30)], 30, 0)                      # the arm it is on, away into the dark
+        c.pop_group_to_source(); c.paint_with_alpha(0.94)
+        c.restore()
+    return d
+
+
+def great_match(u):
+    """3.2c, insert (v4; for a phone): two gloves and one match as wide as the frame between them. It bends (u to 0.55);
+    it snaps: two halves, and the gloves hit each other."""
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    g = cairo.RadialGradient(270, 420, 40, 270, 480, 760); g.add_color_stop_rgba(0, 0.34, 0.34, 0.37, 1); g.add_color_stop_rgba(1, 0.05, 0.05, 0.06, 1); c.set_source(g); c.paint()
+    snapped = u >= 0.55
+    sq = 34 * min(u / 0.55, 1.0) if not snapped else 74
+    for side, gx in ((-1, 104 + sq), (1, 436 - sq)):
+        gy = 500 if side < 0 else 482
+        c.save(); c.translate(gx, gy); c.scale(3.5, 3.5); c.translate(-gx, -gy)
+        b._glove(k, gx, gy, -side * 0.96, -0.12, side, 91 + side)
+        c.restore()
+    def stick(x0, y0, x1, y1, head):
+        c.set_source_rgb(*INK); c.set_line_width(26); c.set_line_cap(1); c.move_to(x0, y0); c.line_to(x1, y1); c.stroke()
+        c.set_source_rgb(0.93, 0.90, 0.78); c.set_line_width(19); c.move_to(x0, y0); c.line_to(x1, y1); c.stroke(); c.set_line_cap(0)
+        if head:
+            ellipse(k, x1, y1, 24, 19, b.KEY, 7, shadow=False, lw=3.4)
+    if not snapped:
+        bend = 60 * (u / 0.55) ** 2
+        c.set_source_rgb(*INK); c.set_line_width(26); c.set_line_cap(1); c.move_to(150 + sq, 500); c.curve_to(240, 500 - bend, 300, 500 - bend, 390 - sq, 480); c.stroke()
+        c.set_source_rgb(0.93, 0.90, 0.78); c.set_line_width(19); c.move_to(150 + sq, 500); c.curve_to(240, 500 - bend, 300, 500 - bend, 390 - sq, 480); c.stroke(); c.set_line_cap(0)
+        ellipse(k, 390 - sq, 480, 24, 19, b.KEY, 7, shadow=False, lw=3.4)
+    else:
+        v = (u - 0.55) / 0.45
+        stick(196, 520 + 240 * v, 262, 440 + 200 * v * v, False); stick(300, 430 + 260 * v * v, 352, 520 + 300 * v, True)
+        c.set_source_rgb(0.97, 0.97, 0.97); c.set_line_width(7); c.set_line_cap(1)
+        for a in (-2.5, -2.0, -1.57, -1.1, -0.6):
+            c.move_to(270 + 70 * math.cos(a), 420 + 70 * math.sin(a)); c.line_to(270 + (120 + 40 * v) * math.cos(a), 420 + (120 + 40 * v) * math.sin(a)); c.stroke()
+        c.set_line_cap(0)
+    csh.noir(s)
+    return s
+
+
 def don_caught(x, up=0.0):
     """v3 (Tomas, /grill-me): the shadows he did not notice turn their weapons on Don. up 0: bent over his glass and the
     cigarette end. up 1: straight, both hands as high as they go; the glass and the tweezers on the ground."""

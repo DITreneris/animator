@@ -204,7 +204,7 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False, v4=False):
     return s
 
 
-def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None, v6=False, ticket=None):
+def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None, v6=False, ticket=None, one=None):
     """M3, 4.4: her view. He is small, in his tracksuit, in front of the desk, the door behind him. pay 0..1: the note
     crosses the desk toward us. take 0..1: her ringed hand comes in from the near edge and covers it."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -230,14 +230,16 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None, v6=F
         spread(k, 250, 700, 1.7, 1, 0.5, faces=("back", "back", None))
     if pay >= 0.3:                                           # the hundred, on the desk, coming to her
         u = (pay - 0.3) / 0.7
-        if v4 and take <= 0:
+        if v4 and take <= 0 and one is None:
             money(k, 270, _lerp(600.0, 800.0, u), _lerp(0.9, 2.2, u) * 0.92, 0.08)
         elif not v4:
             b.banknote(k, 270, _lerp(600.0, 800.0, u), _lerp(0.9, 2.2, u), 0.08, 3)
     q.coupe(k, 460, 880, 2.0)                                # from her side the two change places: the coupe at her right hand
     rect(k, 36, 852, 124, 30, (0.10, 0.10, 0.11), 6, shadow=False, lw=2.6)                 # the button, at her left
     ellipse(k, 98, 850, 38, 17, (0.55, 0.55, 0.56), 7, shadow=False, lw=2.8)
-    if take > 0 and v4:
+    if one is not None:
+        _one(c, k, one)
+    elif take > 0 and v4:
         _take(k, soft=cards == "deck")
     elif take > 0:                                           # her hand, rings up, over the note
         hy = _lerp(1040.0, 820.0, take)
@@ -250,7 +252,7 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None, v6=F
                 rect(k, 275 + dx - 12, hy - 62, 24, 13, (0.86, 0.87, 0.90), 15 + i, shadow=False, lw=1.6)
     if ticket is not None:                                   # v7 (Tomas: proceed): for the hundred she slides a fight ticket back across the desk to him
         fight_ticket(k, 150 - 10 * ticket, _lerp(880.0, 640.0, ticket), _lerp(2.3, 1.05, ticket), -0.10 + 0.04 * ticket)
-    if cards == "deck" and turn is not None:
+    if cards == "deck" and turn is not None and one is None:
         _deal(c, k, turn, v6)
     elif cards and turn is not None:
         _turn(c, k, turn)
@@ -340,6 +342,61 @@ def ticket_insert(t=1.0):
     return s
 
 
+def _her_hand(k, x, y, grip=False):
+    """v8: her one hand, up from her edge of the desk to (x, y): the sleeve, the wide cuff, the back of the hand, round
+    fingers, two rings."""
+    c = k.c
+    ax, ay = 300 + (x - 270) * 0.35, 1000
+    d = math.hypot(x - ax, y - ay); ux, uy = (x - ax) / d, (y - ay) / d
+    c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(128); c.set_line_cap(0); c.move_to(ax, ay); c.line_to(x - ux * 92, y - uy * 92); c.stroke()
+    c.set_source_rgb(0.84, 0.84, 0.86); c.set_line_width(142); c.move_to(x - ux * 94, y - uy * 94); c.line_to(x - ux * 60, y - uy * 60); c.stroke()
+    ellipse(k, x - ux * 6, y - uy * 6, 62, 46, SKIN, 22, shadow=False, lw=3)
+    for i, off in enumerate((-40, -13, 13, 40)):
+        fx, fy = x + ux * (30 if grip else 44) - uy * off, y + uy * (30 if grip else 44) + ux * off
+        c.save(); c.translate(fx, fy); c.rotate(math.atan2(uy, ux)); ellipse(k, 0, 0, 17 if grip else 25, 12, SKIN, 23 + i, shadow=False, lw=2.6)
+        if i in (1, 2):
+            rect(k, -15, -13, 12, 26, (0.86, 0.87, 0.90), 28 + i, shadow=False, lw=1.6)
+        c.restore()
+
+
+def _one(c, k, u):
+    """v8 (Tomas, /grill-me): one hand does all of it, so nobody asks whose the second is. u 0..1: it comes down on the
+    hundred. 1..2: it pushes the hundred under the foot of her coupe and lets go. 2..3: to the deck; the top card to the
+    middle of the desk, face down. 3..4: it turns the card: the Tower; the hand lies beside it."""
+    N0, N1 = (270, 800), (438, 906)                          # the note: where he left it; under the coupe
+    D, M = (400, 716), (250, 716)                            # the deck; the middle of the desk
+    f = lambda a, b_, t: (_lerp(float(a[0]), float(b_[0]), t), _lerp(float(a[1]), float(b_[1]), t))
+    if u < 2:
+        t = max(0.0, u - 1)
+        nx, ny = f(N0, N1, t)
+        money(k, nx, ny, _lerp(2.02, 1.5, t), 0.08 + 0.3 * t)
+    else:
+        money(k, N1[0], N1[1], 1.5, 0.38)
+    if u >= 1.6:                                             # the coupe stands on it
+        q.coupe(k, 460, 880, 2.0)
+    if u < 1:
+        hx, hy = f((300, 1010), (N0[0] + 6, N0[1] + 52), u); grip = False
+    elif u < 2:
+        hx, hy = f((N0[0] + 6, N0[1] + 52), (N1[0] - 30, N1[1] + 30), u - 1); grip = True
+    elif u < 3:
+        t = u - 2
+        if t < 0.4:
+            hx, hy = f((N1[0] - 30, N1[1] + 30), (D[0] + 20, D[1] + 60), t / 0.4)
+        else:
+            hx, hy = f((D[0] + 20, D[1] + 60), (M[0] + 30, M[1] + 62), (t - 0.4) / 0.6)
+            card(k, hx - 30, hy - 62, 1.7, 0.15, "back", 0.5)
+        grip = True
+    else:
+        t = u - 3
+        if t < 0.5:
+            card(k, M[0], M[1] - 10 * t, 1.7, 0.10, "back", 0.5 * (1 - 1.6 * t))
+        else:
+            v = (t - 0.5) / 0.5
+            card(k, M[0], M[1], 1.9 + 0.5 * math.sin(math.pi * v), 0.04, "tower3", 0.5 * (0.25 + 0.75 * v))
+        hx, hy = f((M[0] + 30, M[1] + 62), (M[0] + 120, M[1] + 110), max(0.0, t - 0.6) / 0.4); grip = False
+    _her_hand(k, hx, hy, grip)
+
+
 def _deal(c, k, t, hers=False):
     """v5: the hundred is hers; now her other hand takes the top card off the deck, lays it in the middle of the desk
     (t 0..0.5, face down) and turns it (0.5..1): the Tower."""
@@ -400,7 +457,7 @@ def _turn(c, k, t):
         rect(k, hx - 30, hy - 4, 12, 17, (0.86, 0.87, 0.90), 27, shadow=False, lw=1.6)
 
 
-def tower_insert(t=1.0, v5=False):
+def tower_insert(t=1.0, v5=False, one=False):
     """4.4b, insert (v3): the turned card, close, from above her hands. The Tower, struck. t < 1: her fingers still on
     its edge. Below it, the corner of the hundred under her other hand."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -411,10 +468,15 @@ def tower_insert(t=1.0, v5=False):
     else:
         card(k, 96, 150, 5.2, -0.12, "back", 1.0); card(k, -40, 420, 5.2, 0.08, "back", 1.0)       # the two still face down
         card(k, 286, 400, 9.4, 0.05, "tower2", 1.0)
-    money(k, 150, 880, 3.8, 0.10)                                                            # the hundred, under her hand
-    rect(k, 250, 880, 330, 150, (0.10, 0.10, 0.11), 30, shadow=False, lw=3)
-    rect(k, 214, 868, 60, 120, (0.84, 0.84, 0.86), 31, shadow=False, lw=2.6)
-    ellipse(k, 150, 930, 96, 66, SKIN, 32, shadow=False, lw=3.4)
+    if one:                                                  # v8: the hundred under the foot of her coupe; her one hand beside the card
+        money(k, 120, 870, 3.6, 0.3)
+        ellipse(k, 150, 838, 84, 20, (0.92, 0.92, 0.94), 30, shadow=True, lw=3)
+        c.set_source_rgb(*INK); c.set_line_width(7); c.move_to(150, 838); c.line_to(150, 700); c.stroke()
+    else:
+        money(k, 150, 880, 3.8, 0.10)                                                        # the hundred, under her hand
+        rect(k, 250, 880, 330, 150, (0.10, 0.10, 0.11), 30, shadow=False, lw=3)
+        rect(k, 214, 868, 60, 120, (0.84, 0.84, 0.86), 31, shadow=False, lw=2.6)
+        ellipse(k, 150, 930, 96, 66, SKIN, 32, shadow=False, lw=3.4)
     hx = _lerp(452.0, 520.0, t)                                                              # her other hand, leaving the card
     rect(k, hx + 54, 470, 120, 110, (0.10, 0.10, 0.11), 33, shadow=False, lw=3)
     rect(k, hx + 30, 462, 44, 124, (0.84, 0.84, 0.86), 34, shadow=False, lw=2.6)

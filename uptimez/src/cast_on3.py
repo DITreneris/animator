@@ -127,6 +127,18 @@ def _arm_rolled(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
     d = lambda a_: (math.sin(math.radians(a_)), math.cos(math.radians(a_)))
     ex, ey = sx + d(a1)[0] * ln, sy + d(a1)[1] * ln
     hx, hy = ex + d(a1 + a2)[0] * ln, ey + d(a1 + a2)[1] * ln
+    if LONG[0]:                                            # v9 (Tomas, /grill-me): her arms as the Referee's: a bare forearm that runs into the hand, a sleeve that bends, one soft roll; no boxes, no joint
+        c = k.c
+        for (ax, ay, bx, by, cl, ww) in ((ex, ey, hx, hy, skin, w - 4), (sx, sy, ex, ey, col, w + 1)):
+            for cc, extra in ((INK, 4.4), (cl, 0)):
+                c.set_source_rgb(*cc); c.set_line_width(ww + extra); c.set_line_cap(1)
+                c.new_path(); c.move_to(ax, ay); c.line_to(bx, by); c.stroke()
+        c.set_source_rgb(*tuple(max(0, v - 0.12) for v in col)); c.set_line_width(2.4)
+        ang = math.atan2(hy - ey, hx - ex)
+        c.new_path(); c.arc(ex, ey, (w + 1) / 2 - 1, ang - 1.1, ang + 1.1); c.stroke(); c.set_line_cap(0)       # the roll, a fold
+        ellipse(k, hx + math.cos(ang) * 3, hy + math.sin(ang) * 3, w * 0.62, w * 0.56, skin, seed, shadow=False, lw=2)
+        c.set_source_rgb(*skin); c.set_line_width(w - 6.5); c.set_line_cap(1); c.new_path(); c.move_to(hx - math.cos(ang) * 8, hy - math.sin(ang) * 8); c.line_to(hx, hy); c.stroke(); c.set_line_cap(0)   # no line at the wrist
+        return hx, hy
     for (ax, ay, bx, by, cl, ww) in ((ex, ey, hx, hy, skin, w - 3), (sx, sy, ex, ey, col, w)):
         ang = math.atan2(by - ay, bx - ax)
         nx, ny = -math.sin(ang) * ww / 2, math.cos(ang) * ww / 2

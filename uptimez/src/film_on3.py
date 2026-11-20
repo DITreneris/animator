@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v3 (v1, v2: film_on3_v1.py, _v2.py). v3 (Tomas,
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v4 (v1 to v3: film_on3_v1.py, _v2.py, _v3.py). v4 (Tomas,
+/grill-me): Don's entrance is three cuts (his outline in the white door, the aisle, over the ropes); in the alley the
+gun's shadow comes down beside his head before he looks up; her one hand does everything at the desk; Pam's arms
+as the Referee's; one great match for a phone (3.2c); shorter: the street, the alley, the split screen, the count and
+the plaster. v3: v3 (Tomas,
 /grill-me): Don comes into the ring as a fighter does, through the FIGHTERS door, crossed lights, fountains of sparks,
 fireworks (6.2b); the folder goes into the hoodie's pocket (4.2); the Referee's sleeves reach his wrists; one close
 shot each for what a phone loses: the bill (2.0), the matches (3.2b, closer), the ring girl's face (5.1a2), the
@@ -36,6 +40,11 @@ import client_sheet_on3 as csh
 from kit import Ctx, rect
 ca.LONG[0] = True
 K = dict(cards="deck", v4=True, v6=True)
+
+
+def quick(fn, k_):
+    """The same shot, k_ times faster."""
+    return lambda t: fn(t * k_)
 T0 = 0.45                                                   # ring_rough2's 7.5 at this time is the film's first drawing: the glove an inch away
 
 
@@ -123,11 +132,13 @@ def s32b(t):
     cam = ((lx + rx) / 2 + 4, (ly + ry) / 2 + 14, 5.4)        # v3: closer: two gloves and what is between them, nothing else
     if t < 0.45:
         f = al.fumble(130, stage=0, shake=math.sin(t * 40) * 2.0)
-    elif t < 1.05:
-        f = al.fumble(130, stage=1, shake=(t - 0.45) / 0.5)
     else:
-        f = al.fumble(130, stage=2, shake=(t - 1.05) / 0.6)
+        f = al.fumble(130, stage=1, shake=(t - 0.45) / 0.5)
     return al.frame2(cam, [f], al.gang("aim", 1))
+
+
+def s32c(t):
+    return al.great_match(ramp(t, 0.0, 0.42) * 0.55 if t < 0.45 else 0.55 + 0.45 * ramp(t, 0.45, 0.35))
 
 
 def s33(t):
@@ -146,10 +157,11 @@ def s34(t):
 
 
 def s34b(t):
-    """Don, bent over the cigarette end. Behind him the three turn back and everything comes up at him. His hands go up."""
-    if t < 0.9:
-        return al.frame2("A3w", [al.don_caught(lerp(60.0, 215.0, t / 0.7), 0.0)], al.gang("down", 0, True), cig=300)
-    return al.frame2("A3w", [al.don_caught(215, 0.0 if t < 1.35 else 1.0)], al.gang("aim", ramp(t, 0.9, 0.5)), cig=300)
+    """Don, bent over the cigarette end. On the wall beside his head the gun's shadow comes down and stops. He looks up.
+    His hands go up."""
+    if t < 0.7:
+        return al.frame2("A3w", [al.don_caught(lerp(60.0, 215.0, t / 0.6), 0.0)], al.gang("down", 0, True), cig=300)
+    return al.frame2("A3w", [al.barrel(ramp(t, 0.7, 0.5)), al.don_caught(215, 0.0 if t < 1.45 else 1.0)], al.gang("down", 0, True), cig=300)
 
 
 # ---- 04 the price -------------------------------------------------------------------------------------------------
@@ -172,10 +184,11 @@ def s43(t):
 
 
 def s44(t):
-    pay = 0.0 if t < 0.5 else 0.3 + 0.7 * ramp(t, 0.5, 0.45)
-    take = 1.0 if t >= 1.2 else 0.0
-    tk = ramp(t, 1.6, 0.5) if t >= 1.6 else None
-    return of.reverse(pay, take, turn=0 if take else None, ticket=tk, **K)
+    if t < 1.2:
+        pay = 0.0 if t < 0.5 else 0.3 + 0.7 * ramp(t, 0.5, 0.45)
+        return of.reverse(pay, 0.0, **K)
+    tk = ramp(t, 1.9, 0.5) if t >= 1.9 else None
+    return of.reverse(1.0, 0.0, one=ramp(t, 1.2, 0.35) + ramp(t, 1.6, 0.5), ticket=tk, **K)
 
 
 def s44a(t):
@@ -183,11 +196,11 @@ def s44a(t):
 
 
 def s44t(t):
-    return of.reverse(1.0, 1.0, turn=ramp(t, 0.1, 1.0), ticket=1.0, eyes=(0.3, 0.9) if t > 0.9 else None, **K)
+    return of.reverse(1.0, 0.0, one=2.0 + ramp(t, 0.05, 0.6) + ramp(t, 0.7, 0.5), ticket=1.0, eyes=(0.3, 0.9) if t > 1.0 else None, **K)
 
 
 def s44b(t):
-    return of.tower_insert(ramp(t, 0.3, 0.5), v5=True)
+    return of.tower_insert(ramp(t, 0.3, 0.5), v5=True, one=True)
 
 
 def s44c(t):
@@ -258,13 +271,13 @@ def s51a2(t):
     return s_
 
 
-def s62b(t):
+def _aisle(t):
     """Don comes in as a fighter does: the door at the back opens white, two lights cross on him, fountains of sparks
     go up either side of the aisle, fireworks over the hats. He walks it with his glass held up like a belt. The Client,
     on his stool, and the robot both turn to look."""
     dx0, dy0, dw, dh = rg.DOOR
-    u = ramp(t, 0.5, 1.7)
-    px, pf, ps = lerp(dx0 + dw / 2.0, 330.0, u), lerp(rg.FAR + 6.0, rg.F - 8.0, u), rg.SC * lerp(0.74, 1.0, u)
+    u = ramp(t, 0.0, 1.5)
+    px, pf, ps = lerp(dx0 + dw / 2.0, 372.0, u), lerp(rg.FAR + 6.0, rg.FAR + 2.0, u) - bob(t, 3.4, 5.0), rg.SC * lerp(0.74, 0.86, u)
     hy = pf - 330 * ps
 
     def lights(k):                                           # behind everything in the ring: the door, white; fireworks; the two beams
@@ -299,7 +312,7 @@ def s62b(t):
         rg.shadow(k, px, pf, 36 * ps / rg.SC)
         old = n2.LOOK[0]; n2.LOOK[0] = 9
         try:
-            n2.detective(k, px, pf, ps, "up", "squint", (-0.5, 0.2), lean=0)
+            n2.detective(k, px, pf, ps, "up", "squint", (-0.5, 0.2), lean=4 * math.sin(t * math.pi * 3.4))
         finally:
             n2.LOOK[0] = old
 
@@ -310,6 +323,74 @@ def s62b(t):
         x, y, s_ = rg.HOME["robot_corner"]
         rg.shadow(k, x + 84, y, 40); r.robot(k, x + 84, y, s_, "r_wait", "ask", side=-1)
     return rg.frame((lerp(470.0, 372.0, u), lerp(rg.F - 300.0, rg.F - 250.0, u), lerp(1.5, 1.28, u)), [lights, fountains, don, client, robot], [], door=True)
+
+
+def s62a(t):
+    """Cut 1: the FIGHTERS door, close, white. In it a black outline: a coat, a glass held up. Fireworks either side."""
+    s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_); k = Ctx(c, 0)
+    c.set_source_rgb(0.04, 0.04, 0.05); c.paint()
+    op = ramp(t, 0.0, 0.25)
+    c.set_source_rgb(0.98, 0.98, 0.94); c.rectangle(270 - 150 * op, 170, 300 * op, 650); c.fill()
+    rect(k, 150, 96, 240, 54, (0.86, 0.86, 0.82), 3, shadow=False, lw=3)
+    import kit as _kit
+    _kit.text(k, "FIGHTERS", 270, 124, 34, (0.07, 0.07, 0.08), bold=True)
+    if op > 0.6:
+        c.save(); c.rectangle(120, 170, 300, 650); c.clip()
+        c.push_group()
+        old = n2.LOOK[0]; n2.LOOK[0] = 9
+        try:
+            n2.detective(k, 270, 830 - bob(t, 3.0, 6.0), 2.1, "up", "squint", (0, 0))
+        finally:
+            n2.LOOK[0] = old
+        pat = c.pop_group()
+        c.set_source_rgb(0.03, 0.03, 0.04); c.mask(pat)                                              # only his outline
+        c.restore()
+    c.set_source_rgb(0.98, 0.98, 0.94); c.set_line_width(4); c.set_line_cap(1)
+    for i, (fx, fy, t0) in enumerate(((70, 300, 0.15), (470, 260, 0.35), (60, 620, 0.5))):
+        a = (t - t0) / 0.5
+        if 0 < a < 1.2:
+            for j in range(12):
+                an = j * math.pi / 6 + i
+                c.move_to(fx + math.cos(an) * 34 * a, fy + math.sin(an) * 34 * a); c.line_to(fx + math.cos(an) * (20 + 60 * a), fy + math.sin(an) * (20 + 60 * a)); c.stroke()
+    c.set_line_cap(0)
+    csh.noir(s_)
+    return s_
+
+
+def s62b(t):
+    """Cut 2: the aisle. He walks it between the hats, the lights crossed on him, sparks either side."""
+    return _aisle(t)
+
+
+def s62c(t):
+    """Cut 3: the ropes. One leg over, a duck under the top rope, and he is in the ring, his glass up."""
+    u = ramp(t, 0.0, 0.7)
+    px, pf = lerp(430.0, 340.0, u), rg.F - 14 - 26 * math.sin(math.pi * u)
+
+    def don(k):
+        rg.shadow(k, px, rg.F - 14, 36)
+        old = n2.LOOK[0]; n2.LOOK[0] = 9
+        try:
+            n2.detective(k, px, pf, rg.SC, "up", "squint", (-0.6, 0.1), lean=-16 * math.sin(math.pi * u))
+        finally:
+            n2.LOOK[0] = old
+        if u < 1:                                            # the rope he comes over, pressed down under him
+            c = k.c; c.set_source_rgb(0.96, 0.96, 0.92); c.set_line_width(5)
+            c.move_to(px - 150, rg.F - 150); c.curve_to(px - 40, rg.F - 150 + 60 * math.sin(math.pi * u), px + 40, rg.F - 150 + 60 * math.sin(math.pi * u), px + 150, rg.F - 150); c.stroke()
+
+    def client(k):
+        rr2._seated(k, True, look=(0.9, -0.1), face="tired")
+    return rg.frame((300, rg.F - 210, 1.7), [client, don], [], near=False, hats=False)
+
+
+def s64(t):
+    """6.4 in 2.5 s, but the stamped words are held: the stamp at its own speed (to 0.55), CASE CLOSED held clear for
+    0.6 s, then Don's walk out and the Referee's eyebrow, quicker."""
+    if t < 0.55:
+        return rr2.shot_64(t)
+    if t < 1.15:
+        return rr2.shot_64(0.7)
+    return rr2.shot_64(0.8 + (t - 1.15) * (2.2 / 1.35))
 
 
 def s54b(t):
@@ -370,9 +451,11 @@ def s85(t):
 
 
 FILM = [("1.1", 0.6, s11),
-        ("2.0", 0.9, s20), ("2.1", 1.1, s21), ("2.2", 1.5, s22), ("2.4", 2.8, s24), ("2.4b", 1.3, s24b), ("2.5", 1.4, s25), ("2.6", 1.5, s26), ("2.7", 2.0, s27),
-        ("3.1", 1.3, s31), ("3.2", 1.0, s32), ("3.2b", 1.8, s32b), ("3.3", 1.1, s33), ("3.3b", 1.6, s33b), ("3.4", 1.3, s34), ("3.4b", 2.3, s34b),
-        ("4.1", 1.6, s41), ("4.2", 1.9, s42), ("4.3", 1.5, s43), ("4.4", 2.2, s44), ("4.4a", 0.9, s44a), ("4.4t", 1.4, s44t), ("4.4b", 1.3, s44b), ("4.4c", 1.4, s44c)]
+        ("2.0", 0.9, s20), ("2.1", 0.8, quick(s21, 1.35)), ("2.2", 1.2, quick(s22, 1.2)), ("2.4", 2.8, s24), ("2.4b", 0.9, quick(s24b, 1.4)),
+        ("2.5", 1.1, s25), ("2.6", 1.2, quick(s26, 1.2)), ("2.7", 1.7, s27),
+        ("3.1", 1.0, quick(s31, 1.3)), ("3.2", 0.8, s32), ("3.2b", 1.0, s32b), ("3.2c", 0.9, s32c), ("3.3", 0.9, s33), ("3.3b", 1.4, quick(s33b, 1.15)),
+        ("3.4", 1.0, quick(s34, 1.3)), ("3.4b", 2.2, s34b),
+        ("4.1", 1.3, s41), ("4.2", 1.9, s42), ("4.3", 1.4, s43), ("4.4", 2.5, s44), ("4.4a", 0.9, s44a), ("4.4t", 1.5, s44t), ("4.4b", 1.2, s44b), ("4.4c", 1.2, quick(s44c, 1.15))]
 for name, dur in R5:
     if name == "5.4":
         FILM += [("5.4", 1.3, F5["5.4"]), ("5.4b", 0.5, s54b)]
@@ -380,16 +463,24 @@ for name, dur in R5:
         FILM.append(("5.1c", 3.4, s51c))
     elif name == "5.1a":
         FILM += [("5.1a", dur, F5["5.1a"]), ("5.1a2", 0.9, s51a2)]
+    elif name == "5.6":
+        FILM.append(("5.6", 1.3, quick(F5["5.6"], dur / 1.3)))           # the count, quicker
     else:
         FILM.append((name, dur, F5[name]))
 for name, dur in rr2.SHOTS:
     if name == "7.4":
         FILM += [("7.4", 1.1, s74a), ("7.4b", 0.45, s54b), ("7.4c", 0.7, s74c)]
     elif name == "6.3":
-        FILM += [("6.2b", 2.4, s62b), ("6.3", 3.1, s63)]
+        FILM += [("6.2a", 0.8, s62a), ("6.2b", 1.5, s62b), ("6.2c", 0.9, s62c), ("6.3", 3.1, s63)]
+    elif name == "6.1":
+        FILM.append(("6.1", 2.2, quick(rr2.FN["6.1"], dur / 2.2)))       # the sponge and the plaster, quicker
+    elif name == "6.2":
+        FILM.append(("6.2", 1.1, quick(rr2.FN["6.2"], dur / 1.1)))       # the split screen: half as long
+    elif name == "6.4":
+        FILM.append(("6.4", 2.5, s64))
     else:
         FILM.append((name, dur, rr2.FN[name]))
-FILM += [("8.1", 1.6, s81), ("8.2", 1.6, s82), ("8.2b", 1.0, lambda t: ga.f82b()), ("8.3", 2.2, s83), ("8.4", 2.2, s84), ("8.5", 1.0, s85)]
+FILM += [("8.1", 1.6, s81), ("8.2", 1.3, s82), ("8.2b", 1.0, lambda t: ga.f82b()), ("8.3", 2.2, s83), ("8.4", 2.2, s84), ("8.5", 1.0, s85)]
 
 
 def _use():
