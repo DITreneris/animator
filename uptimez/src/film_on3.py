@@ -1,4 +1,6 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v13 (v1 to v12 pinned). v13: three things both cold
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v14 (v1 to v13 pinned). v14: the film is lit as Office
+Noir 1 and 2 were (light_on3.auto, on the finished frame, round the tracked figures); the Client's back at her desk is
+redrawn (office_on3.BACK2). v13: three things both cold
 viewers took for mistakes: the doorway is a doorway (a frame, a FIGHTERS plate, a passage behind, dark or lit); the
 smoke is soft and drifts; the hall behind the robot in his view of it has the same people. v12 (an outside review: FAIL,
 "blobs and rectangles, not a crowd"): the spectators are people: three tiers behind the far ropes, paler and smaller
@@ -864,9 +866,32 @@ def _drift(fn, start, focus, rate=0.03, most=0.08):
     return f
 
 
+# v14: the film is lit (light_on3.auto): a pool round the tracked figures, faces lifted from above, a vignette, grain.
+# Not the waking scene (in colour, plain: the dream is the dark one), not the split frame, not Don's outline in the door.
+# The first shot and the last have no grain and the last fades the light in, so the last frame is still the first.
+import light_on3 as lt
+UNLIT = ("8.1", "8.2", "8.2b", "8.3", "8.3b", "8.4", "6.2", "6.2a")
+CLOSE = ("1.1", "3.4c", "4.2", "4.4c", "5.1a2", "7.5", "8.5")
+of.BACK2[0] = True                                           # his back at her desk, redrawn
+mo.FROZEN.update(("1.1", "8.5"))                             # the loop's two ends: no breath, no blink (they had made the last frame differ from the first)
+
+
+def _lit(fn, name):
+    if name in UNLIT:
+        return fn
+
+    def f(t):
+        s_ = fn(t)
+        heads = [v for who, v in (mo.CLOCK.get("heads") or {}).items() if who != "ROBOT"]      # the robot's black head is not a face to lift
+        k_ = ramp(t, 0.55, 0.4) if name == "8.5" else 1.0
+        seed = None if name in ("1.1", "8.5") else int(round(mo.CLOCK["T"] * 15))            # grain on twos
+        return lt.auto(s_, heads, k_, seed, name in CLOSE, glow=name not in ("1.1", "7.5", "8.5"), pool=name not in ("5.6",))
+    return f
+
+
 _T0, _F = 0.0, []
 for _n, _d, _f in FILM:
-    _f = mo.timed(_n, _f, _T0)
+    _f = _lit(mo.timed(_n, _f, _T0), _n)
     _F.append((_n, _d, _drift(_f, _T0, DRIFT[_n]) if _n in DRIFT else _f)); _T0 += _d
 FILM = _F
 

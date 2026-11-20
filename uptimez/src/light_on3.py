@@ -104,6 +104,41 @@ def light(surf, scene, heads=(), kind="B", seed=0):
     return out
 
 
+def auto(surf, heads=(), strength=1.0, seed=None, close=False, glow=True, pool=True):
+    """v2, the film's light (Tomas: "I think it is good"; an outside audit: A the base, B's depth, faces lighter, the
+    vignette a quarter less, no shadow ovals). On a finished frame:
+      a pool of light round the tracked figures (their heads decide where; no figures: no pool), the rest sinks;
+      each face lifted a little, from above (the top of the head and the shoulders most), never darkened;
+      in a close shot only: the hood's or brim's shadow over the brow, light;
+      a vignette (0.25), and grain when seed is given.
+    strength 0..1 scales all of it (the last shot fades it in, so the last frame is the first)."""
+    out = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(out)
+    c.set_source_surface(surf, 0, 0); c.paint()
+    k_ = max(0.0, min(1.0, strength))
+    if np.frombuffer(surf.get_data(), np.uint8)[::97].mean() > 205:                           # a white flash is not lit: it is the light
+        return out
+    heads = [h for h in heads if -80 < h[0] < W + 80 and -80 < h[1] < H + 80]
+    if heads and k_ > 0 and pool:
+        rs = [62 * sc for _, _, sc in heads]; rm = max(rs)
+        xs, ys = [h[0] for h in heads], [h[1] for h in heads]
+        cx, cy = sum(xs) / len(xs), sum(ys) / len(ys) + 1.5 * rm
+        rx = max(190.0, (max(xs) - min(xs)) / 2 + 2.6 * rm); ry = max(320.0, (max(ys) - min(ys)) / 2 + 4.8 * rm)
+        _pool(c, cx, cy, rx, ry, 0.48 * k_)                                                   # v2b: 0.56 sank the car and the far figures
+        for (hx, hy, sc), r in zip(heads if glow else (), rs):                                                # the face, lifted from above
+            g = cairo.RadialGradient(hx, hy - r * 0.35, r * 0.15, hx, hy - r * 0.2, r * 1.45)
+            g.add_color_stop_rgba(0, 1, 1, 1, 0.17 * k_); g.add_color_stop_rgba(0.6, 1, 1, 1, 0.08 * k_); g.add_color_stop_rgba(1, 1, 1, 1, 0)
+            c.set_source(g); c.paint()
+            if close and r > 110:                                                             # a big face under a hood or a brim
+                g = cairo.LinearGradient(0, hy - r * 1.0, 0, hy - r * 0.05)
+                g.add_color_stop_rgba(0, 0, 0, 0, 0.30 * k_); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+                c.save(); c.translate(hx, hy - r * 0.5); c.scale(r * 0.95, r * 0.6); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+                c.set_source(g); c.fill()
+    _vignette(c, 0.25 * k_)
+    if seed is not None and k_ > 0:
+        out.flush(); _grain(out, a=7.0 * k_, seed=seed)
+    return out
+
+
 def trial(out="../office-noir-3/on3_light_trial_v1.png"):
     import film_on3 as f
     from PIL import Image, ImageDraw

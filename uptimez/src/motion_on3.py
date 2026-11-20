@@ -251,6 +251,7 @@ def her(fn, x, feet, s, dir_=-1, a=20.0, up=11.0, on=True):
 # Without a clock (CLOCK["shot"] is None) a wrapped figure draws exactly as the figure it wraps.
 CLOCK = {"shot": None, "t": 0.0, "T": 0.0, "say": {}}
 _ST, _CNT = {}, {}
+FROZEN = set()                                               # shots whose figures do not breathe or blink (the loop's two ends: frame 0 is the last frame)
 TWEEN = 4.0 / 30.0
 
 
@@ -310,10 +311,11 @@ def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True
         code = CLOCK["say"].get(who)
         if code and mouth_kw:
             kw = dict(kw); kw["mouth"] = code
-        shut = blinks and ((T + ph * 5.0) % (2.9 + ph * 1.3)) < 0.1
+        still_ = CLOCK["shot"] in FROZEN
+        shut = blinks and not still_ and ((T + ph * 5.0) % (2.9 + ph * 1.3)) < 0.1
         c = k.c
         c.save()
-        if breathe and not moving:
+        if breathe and not moving and not still_:
             sy = 1.0 + breathe * math.sin(2 * math.pi * (T / 3.4 + ph))
             c.translate(px, pf); c.scale(1.0, sy); c.translate(-px, -pf)
         old = kit.face_draw
