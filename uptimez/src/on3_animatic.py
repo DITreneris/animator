@@ -27,11 +27,12 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v4"
+V = "v5"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
-GAP = 0.15
+GAP = 0.30                                                  # v5: air between lines, as in Office Noir 2
+LEAD = 0.25                                                 # a narration line never starts on the cut
 
 # shot -> [(who, line, take key, offset into the shot)]
 LINES = {
@@ -70,18 +71,57 @@ def trim(a, thr=0.012):
     return a[max(0, idx[0] - int(0.02 * SR)):min(len(a), idx[-1] + int(0.10 * SR))]
 
 
+_ASR = []
+
+
+def heard(a):
+    """What a speech recogniser hears in a take (Whisper base.en, through sherpa-onnx), lower case, letters only."""
+    import sherpa_onnx, re
+    if not _ASR:
+        d = os.environ.get("ASR_DIR", "/tmp/asr/sherpa-onnx-whisper-base.en")
+        _ASR.append(sherpa_onnx.OfflineRecognizer.from_whisper(encoder=d + "/base.en-encoder.int8.onnx", decoder=d + "/base.en-decoder.int8.onnx",
+                                                               tokens=d + "/base.en-tokens.txt", num_threads=2))
+    st = _ASR[0].create_stream()
+    x = np.concatenate([np.zeros(SR // 4), a / (np.max(np.abs(a)) + 1e-9) * 0.7, np.zeros(SR // 4)]).astype(np.float32)
+    st.accept_waveform(SR, x); _ASR[0].decode_stream(st)
+    return re.sub(r"[^a-z' ]", "", st.result.text.lower().replace("-", " ").replace("$100", "one hundred").replace("100", "one hundred")).split()
+
+
+def _words(t):
+    import re
+    return re.sub(r"[^a-z' ]", "", t.lower().replace("-", " ")).split()
+
+
 def takes():
+    """v5: up to five takes of every line (as written, then 6% and 12% slower, 7% and 13% quicker); the first one a
+    speech recogniser hears word for word is the take; if none is, the one with the fewest words wrong, and the line is
+    listed in speech_check.json to be re-voiced."""
     os.makedirs(VOICES, exist_ok=True)
     pv, psp, _ = sx.PAMS["A"]
-    say = {"N": sob.client_line, "CLIENT": sob.client_line, "MOM": bc.mom,
-           "PAM": lambda t: bc.norm(so.dry(t, pv, 1.0)), "REFEREE": lambda t: bc.norm(so.dry(t, "bm_george", 1.05))}
-    meta = {}
+    cv, csp, csem, _ = sob.CANDS[sob.CLIENT]
+    client = lambda t, f: bc.norm(sob.warm(so.pitch(so.dry(t, cv, csp * f), csem)))
+    say = {"N": client, "CLIENT": client, "MOM": lambda t, f: bc.mom(t, f),
+           "PAM": lambda t, f: bc.norm(so.dry(t, pv, 1.0 * f)), "REFEREE": lambda t, f: bc.norm(so.dry(t, "bm_george", 1.05 * f))}
+    meta, log = {}, {}
     for shot, ls in LINES.items():
         for who, text, key, _ in ls:
-            a = trim(np.asarray(say[who](text), dtype=np.float64))
+            tried, best = [], None
+            for f in (1.0, 0.94, 1.07, 0.88, 1.13):
+                a = trim(np.asarray(say[who](text, f), dtype=np.float64)); h = heard(a)
+                want = _words(text)
+                import difflib
+                miss = len(want) + len(h) - 2 * sum(m_.size for m_ in difflib.SequenceMatcher(None, want, h).get_matching_blocks())
+                tried.append((f, " ".join(h), miss))
+                if best is None or miss < best[2]:
+                    best = (a, f, miss)
+                if miss == 0:
+                    break
+            a, f, miss = best
+            ok = miss == 0
             sf.write("%s/%s.wav" % (VOICES, key), a.astype(np.float32), SR)
-            meta[key] = round(len(a) / SR, 3)
+            meta[key] = round(len(a) / SR, 3); log[key] = {"who": who, "line": text, "speed": f, "heard_ok": ok, "tried": tried}
     json.dump(meta, open(VOICES + "/takes.json", "w"), indent=1)
+    json.dump(log, open(VOICES + "/speech_check.json", "w"), indent=1)
     return meta
 
 
@@ -106,7 +146,7 @@ def schedule(meta):
     for name, dur, fn in fm.FILM:
         need = dur
         for who, text, key, off in LINES.get(name, []):
-            st = max(T + off, prev_end + GAP)
+            st = max(T + (max(off, LEAD) if who == "N" and name != "2.0" else off), prev_end + GAP)
             en = st + meta[key]
             lines.append((round(st, 3), round(en, 3), who, text, key))
             prev_end = en
@@ -143,40 +183,149 @@ def _fx(kind):
     raise KeyError(kind)
 
 
+OUTSIDE = ("2.", "3.")                                       # the street and the alley: rain
+RING = ("5.", "6.", "7.")                                    # the hall: a crowd
+AWAKE = ("8.",)
+
+
+def _noise(n, lo, hi, seed):
+    rng = np.random.default_rng(seed); x = rng.standard_normal(n)
+    X = np.fft.rfft(x); f = np.fft.rfftfreq(n, 1.0 / SR); X[(f < lo) | (f > hi)] = 0
+    y = np.fft.irfft(X, n); return y / (np.max(np.abs(y)) + 1e-9)
+
+
 def mix(shots, lines, total):
-    out = np.zeros(int((total + 0.5) * SR))
-    start = {}
+    """v5: scratch music and rooms under the lines. The first Noir's band (sound_on_jazz) from the bill to the white
+    flash, ducked under every voice; rain on the street and in the alley, through the wall at the desk; a crowd's murmur
+    in the hall; a quiet room when he is awake, and no music there. A scratch mix: the final one is iteration 4."""
+    import sound_on_jazz as oj
+    n = int(total * SR)
+    start, zone = {}, np.zeros((4, n))                       # rain, through the wall, hall, room
     for name, st, dur, fn, base in shots:
         start.setdefault(name, st)
+        i, j = int(st * SR), min(n, int((st + dur) * SR))
+        z = 0 if name.startswith(OUTSIDE) else 2 if name.startswith(RING) else 3 if name.startswith(AWAKE) and name != "8.5" else 1 if name.startswith("4.") else None
+        if z is not None:
+            zone[z, i:j] = 1.0
+    k = int(0.25 * SR); win = np.hanning(k) / np.hanning(k).sum()
+    zone = np.array([np.convolve(z, win, "same") for z in zone])           # a quarter second across each change of place
+    wake = start.get("8.1", total)
+    voice = np.zeros(n + SR)
     for st, en, who, text, key in lines:
         a, sr = sf.read("%s/%s.wav" % (VOICES, key)); i = int(st * SR)
-        out[i:i + len(a)] += a[:len(out) - i]
-    fx = []
+        voice[i:i + len(a)] += a
+    voice = voice[:n]
+    music = np.zeros(n + SR); oj.groove(music, 0.6, wake, level=0.85); music = music[:n]
+    music[int(wake * SR):] = 0.0
+    m0 = int((wake - 0.12) * SR); music[m0:int(wake * SR)] *= np.linspace(1, 0, int(wake * SR) - m0)   # cut off by the flash
+    env = np.convolve((np.abs(voice) > 0.01).astype(float), np.ones(int(0.3 * SR)) / int(0.3 * SR), "same")
+    rain = so.rain(total + 0.5)[:n]
+    hall = _noise(n, 180, 900, 11) * (0.75 + 0.25 * np.sin(2 * np.pi * 0.23 * np.arange(n) / SR)) * 0.5
+    room = _noise(n, 60, 400, 12) * 0.25
+    fxb, fx = np.zeros(n + 3 * SR), []
     for kind, shot, off in FX:
+        if shot not in start:
+            continue
         a = _fx(kind); i = int((start[shot] + off) * SR); fx.append((kind, shot, round(start[shot] + off, 3)))
-        out[i:i + len(a)] += a[:len(out) - i] * 0.6
-    out = out[:int(total * SR)]
+        fxb[i:i + len(a)] += a
+    out = (voice * 1.0 + music * (0.24 - 0.14 * env) + rain * (0.50 * zone[0] + 0.10 * zone[1]) + hall * 0.10 * zone[2] * (1 - 0.4 * env)
+           + room * 0.05 * zone[3] + fxb[:n] * 0.55)
     return np.tanh(out * 1.6) / 1.6, fx
 
 
-def _caption(surf, who, text):
-    """The line, at the top under the bar (y 96 on), inside the safe area: never in the bottom quarter."""
+MOM_AT = {"4.3": (322, 338), "5.4": (268, 562), "7.4": (268, 562),       # her cheek, level with her mouth, where she is on the screen
+          "2.2": (330, 600), "2.4": (536, 420), "4.4a": (536, 330)}       # out of sight: the tail goes to the car, or off the edge she is at
+CLIENT_AT = {"4.3": (96, 302)}                              # he speaks with his back to us: the tail goes to his hood
+
+
+def _card(c, text, y0=100):
+    """Narration: typewriter on cream cards with a black edge, at the top under the bar, two rows at most (Office Noir 2)."""
+    c.select_font_face("Special Elite", 0, 0); c.set_font_size(30)
+    rows, line = [], ""
+    for wd in text.split():
+        trial = (line + " " + wd).strip()
+        if c.text_extents(trial).x_advance > 522 - 18 - 40 and line:
+            rows.append(line); line = wd
+        else:
+            line = trial
+    rows.append(line)
+    assert len(rows) <= 2, rows
+    y = y0
+    for ln in rows:
+        w = c.text_extents(ln).x_advance + 24
+        c.set_source_rgba(0, 0, 0, 0.45); c.rectangle(22, y + 4, w, 42); c.fill()
+        c.set_source_rgb(0.93, 0.90, 0.82); c.rectangle(18, y, w, 42); c.fill()
+        c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(2.6); c.rectangle(18, y, w, 42); c.stroke()
+        c.move_to(30, y + 30); c.show_text(ln); y += 48
+    return y
+
+
+def _bubble(c, text, tip, top=100):
+    """A spoken line: a white bubble, black edge; its tail to the speaker's cheek, level with the mouth. tip None: the
+    speaker is out of the frame, and the bubble has no tail and sits at the edge she speaks from."""
+    c.select_font_face("Inter", 0, 1); c.set_font_size(24)
+    rows, line = [], ""
+    for wd in text.split():
+        trial = (line + " " + wd).strip()
+        if c.text_extents(trial).x_advance > 270 and line:
+            rows.append(line); line = wd
+        else:
+            line = trial
+    rows.append(line)
+    w = max(c.text_extents(r_).x_advance for r_ in rows) + 36; h = 30 * len(rows) + 26
+    if tip is None:
+        bx, by = 522 - w - 6, top + 10
+    else:
+        side = 1 if tip[0] < 270 else -1                     # toward the middle of the frame
+        bx = min(522 - w, max(18, tip[0] + side * 46 - (0 if side > 0 else w)))
+        by = max(top, tip[1] - 130 - h)
+        tx = bx + (w * 0.22 if side > 0 else w * 0.78)
+        c.new_path(); c.move_to(tx - 13, by + h - 4); c.line_to(tip[0], tip[1]); c.line_to(tx + 13, by + h - 4); c.close_path()
+        c.set_source_rgb(1, 1, 1); c.fill_preserve(); c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(3); c.set_line_join(1); c.stroke()
+    r_ = 16
+    def box():
+        c.new_path(); c.arc(bx + r_, by + r_, r_, math.pi, 1.5 * math.pi); c.arc(bx + w - r_, by + r_, r_, 1.5 * math.pi, 0)
+        c.arc(bx + w - r_, by + h - r_, r_, 0, 0.5 * math.pi); c.arc(bx + r_, by + h - r_, r_, 0.5 * math.pi, math.pi); c.close_path()
+    box(); c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(6); c.stroke()
+    box(); c.set_source_rgb(1, 1, 1); c.fill()
+    if tip is not None:                                      # the tail's root, open into the bubble
+        c.new_path(); c.move_to(tx - 11.5, by + h - 5); c.line_to(tx + 11.5, by + h - 5); c.line_to(tx + 10.5, by + h + 2.5); c.line_to(tx - 10.5, by + h + 2.5); c.close_path()
+        c.set_source_rgb(1, 1, 1); c.fill()
+    c.set_source_rgb(0.06, 0.06, 0.07)
+    for i, r2 in enumerate(rows):
+        c.move_to(bx + 18, by + 36 + 30 * i); c.show_text(r2)
+
+
+def _tip(who, shot):
+    heads, zoom = fm.mo.CLOCK.get("heads") or {}, fm.mo.CLOCK.get("zoom")
+    if who in heads and not (who == "CLIENT" and shot in CLIENT_AT):
+        hx, hy, sc = heads[who]
+        side = 1 if hx < 270 else -1
+        p = (hx + side * 30 * sc, hy + 30 * sc)
+    else:
+        p = {"MOM": MOM_AT, "CLIENT": CLIENT_AT}.get(who, {}).get(shot)
+        if p is None:
+            return None
+    if zoom:
+        (fx_, fy_), z = zoom
+        p = (fx_ + (p[0] - fx_) * z, fy_ + (p[1] - fy_) * z)
+    return p
+
+
+def _text(surf, shot, now):
+    """now: [(who, text)] being spoken on this drawing. Cards for the narration, bubbles for the spoken lines; on the
+    screen only while the line is heard."""
+    if not now:
+        return surf
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s)
     c.set_source_surface(surf, 0, 0); c.paint()
-    c.select_font_face("sans", 0, 1); c.set_font_size(21)
-    words, rows, row = text.split(), [], ""
-    for w in words:
-        if c.text_extents((row + " " + w).strip())[2] > 440:
-            rows.append(row); row = w
-        else:
-            row = (row + " " + w).strip()
-    rows.append(row)
-    h = 34 + 28 * len(rows)
-    c.set_source_rgba(0, 0, 0, 0.72); c.rectangle(30, 100, 480, h); c.fill()
-    c.set_font_size(13); c.set_source_rgb(0.75, 0.75, 0.78); c.move_to(44, 120); c.show_text("NARRATION" if who == "N" else who)
-    c.set_font_size(21); c.set_source_rgb(1, 1, 1)
-    for i, r_ in enumerate(rows):
-        c.move_to(44, 146 + 28 * i); c.show_text(r_)
+    top = 100
+    for who, text in now:
+        if who == "N":
+            top = _card(c, text) + 6
+    for who, text in now:
+        if who != "N":
+            _bubble(c, text, _tip(who, shot), top)
     return s
 
 
@@ -187,15 +336,12 @@ def build(out):
     for i, (name, st, dur, fn, base) in enumerate(shots):
         key = "%02d_%s" % (i, name)
 
-        def f(t, fn=fn, base=base, st=st):
+        def f(t, fn=fn, base=base, st=st, name=name):
             T = st + t
             fm.mo.CLOCK["T_ext"] = T                                    # the clock runs on through a held drawing: they breathe
             fm.mo.CLOCK["say"] = {who: _mouth(key_, T - a) for a, b_, who, text, key_ in lines if a <= T < b_ and who in SEEN}
             s = fn(min(t, base - 1.0 / FPS))
-            for a, b_, who, text, _ in lines:
-                if a - 0.05 <= T < b_ + 0.15:
-                    return _caption(s, who, text)
-            return s
+            return _text(s, name, [(who, text) for a, b_, who, text, _ in lines if a - 0.05 <= T < b_ + 0.15])
         FN[key] = f; SH.append((key, dur))
     audio, fx = mix(shots, lines, total)
     d = os.path.dirname(os.path.abspath(out))
@@ -203,8 +349,13 @@ def build(out):
     sf.write(wav, audio.astype(np.float32), SR)
     rr.SHOTS, rr.FN = tuple(SH), FN
     rr.render(silent)
+    ln = "loudnorm=I=-15:TP=-1.5:LRA=11"                         # v5: two passes: measure, then set, so the level lands on -15
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-i", wav, "-af", ln + ":print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
+    j = json.loads(r[r.rindex("{"):r.rindex("}") + 1])
+    ln2 = ln + ":measured_I=%s:measured_TP=%s:measured_LRA=%s:measured_thresh=%s:offset=%s:linear=true" % (
+        j["input_i"], j["input_tp"], j["input_lra"], j["input_thresh"], j["target_offset"])
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", silent, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
-                           "-af", "loudnorm=I=-15:TP=-1.5:LRA=11", "-ar", "48000", "-c:a", "aac", "-b:a", "160k", out])
+                           "-af", ln2, "-ar", "48000", "-c:a", "aac", "-b:a", "160k", out])
     os.remove(silent); os.remove(wav)
     json.dump({"length": round(total, 3), "shots": [(n, s_, round(d_, 3), round(b_, 3)) for n, s_, d_, _, b_ in shots],
                "lines": lines, "effects": fx, "held": held}, open("on3_animatic_timing_%s.json" % V, "w"), indent=1)

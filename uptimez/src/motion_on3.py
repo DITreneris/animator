@@ -258,6 +258,7 @@ def timed(name, fn, start):
     def f(t):
         CLOCK["shot"], CLOCK["t"] = name, t
         CLOCK["T"] = CLOCK.pop("T_ext", start + t)
+        CLOCK["heads"], CLOCK["zoom"] = {}, None             # v3: where each speaker's head is on the finished frame, for bubbles
         _CNT.clear()
         return fn(t)
     return f
@@ -330,7 +331,13 @@ def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True
                 im.mouth(k_, fx, fy + 28, code, skin, lip_col=lip, erase=(18, 10), seed=seed + 67)
         kit.face_draw = face_draw
         try:
-            return orig(k, px, pf, s, ppose, *a, **kw)
+            o = orig(k, px, pf, s, ppose, *a, **kw)
+            try:
+                hx_, hy_ = c.user_to_device(*o["head"])
+                CLOCK.setdefault("heads", {}).setdefault(who, (hx_, hy_, abs(c.get_matrix().xx) * s))
+            except Exception:
+                pass
+            return o
         finally:
             kit.face_draw = old
             c.restore()

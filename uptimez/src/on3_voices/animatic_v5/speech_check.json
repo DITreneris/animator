@@ -1,0 +1,358 @@
+{
+ "n1": {
+  "who": "N",
+  "line": "They say I know how business is done.",
+  "speed": 1.0,
+  "heard_ok": false,
+  "tried": [
+   [
+    1.0,
+    "they see i know how business is done",
+    2
+   ],
+   [
+    0.94,
+    "they say they say",
+    8
+   ],
+   [
+    1.07,
+    "they see i know how business is done",
+    2
+   ],
+   [
+    0.88,
+    "they say they say",
+    8
+   ],
+   [
+    1.13,
+    "see",
+    9
+   ]
+  ]
+ },
+ "n2": {
+  "who": "N",
+  "line": "One fight.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "one fight",
+    0
+   ]
+  ]
+ },
+ "m1": {
+  "who": "MOM",
+  "line": "Where are you going, skunk?",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "where are you going skunk",
+    0
+   ]
+  ]
+ },
+ "m2": {
+  "who": "MOM",
+  "line": "Everything you need is in there.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "everything you need is in there",
+    0
+   ]
+  ]
+ },
+ "n3": {
+  "who": "N",
+  "line": "A lot of money.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "a lot of money",
+    0
+   ]
+  ]
+ },
+ "n4": {
+  "who": "N",
+  "line": "One woman.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "one woman",
+    0
+   ]
+  ]
+ },
+ "n5": {
+  "who": "N",
+  "line": "I don't ask.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i don't ask",
+    0
+   ]
+  ]
+ },
+ "n6": {
+  "who": "N",
+  "line": "I'm the one who asks the questions.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i'm the one who asks the questions",
+    0
+   ]
+  ]
+ },
+ "c1": {
+  "who": "CLIENT",
+  "line": "How much?",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "how much",
+    0
+   ]
+  ]
+ },
+ "m3": {
+  "who": "MOM",
+  "line": "One hundred bucks.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "one hundred bucks",
+    0
+   ]
+  ]
+ },
+ "n7": {
+  "who": "N",
+  "line": "I name my price.",
+  "speed": 0.94,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i need my price",
+    2
+   ],
+   [
+    0.94,
+    "i name my price",
+    0
+   ]
+  ]
+ },
+ "m4": {
+  "who": "MOM",
+  "line": "For the fight.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "for the fight",
+    0
+   ]
+  ]
+ },
+ "p1": {
+  "who": "PAM",
+  "line": "I'll help you undress.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i'll help you undress",
+    0
+   ]
+  ]
+ },
+ "p2": {
+  "who": "PAM",
+  "line": "Ah. Too late. The bell.",
+  "speed": 1.0,
+  "heard_ok": false,
+  "tried": [
+   [
+    1.0,
+    "are too late to the bell",
+    3
+   ],
+   [
+    0.94,
+    "are too late to the bell",
+    3
+   ],
+   [
+    1.07,
+    "are too late to the bell",
+    3
+   ],
+   [
+    0.88,
+    "are too late to the bell",
+    3
+   ],
+   [
+    1.13,
+    "are too late to the bell",
+    3
+   ]
+  ]
+ },
+ "m5": {
+  "who": "MOM",
+  "line": "Approved.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "approved",
+    0
+   ]
+  ]
+ },
+ "n8": {
+  "who": "N",
+  "line": "I don't break. I break even.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i don't break i break even",
+    0
+   ]
+  ]
+ },
+ "p3": {
+  "who": "PAM",
+  "line": "Some punch. Others patch.",
+  "speed": 1.07,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "some punch others patch you",
+    1
+   ],
+   [
+    0.94,
+    "some punch others patchy",
+    2
+   ],
+   [
+    1.07,
+    "some punch others patch",
+    0
+   ]
+  ]
+ },
+ "n9": {
+  "who": "N",
+  "line": "They beat me. They cheated me.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "they beat me they cheated me",
+    0
+   ]
+  ]
+ },
+ "n10": {
+  "who": "N",
+  "line": "They robbed me.",
+  "speed": 0.88,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "they robbed and they robbed and they robbed",
+    7
+   ],
+   [
+    0.94,
+    "they robbed and they robbed and they robbed",
+    7
+   ],
+   [
+    1.07,
+    "they they they they they they they they",
+    9
+   ],
+   [
+    0.88,
+    "they robbed me",
+    0
+   ]
+  ]
+ },
+ "n11": {
+  "who": "N",
+  "line": "But I didn't quit.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "but i didn't quit",
+    0
+   ]
+  ]
+ },
+ "r1": {
+  "who": "REFEREE",
+  "line": "Break!",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "break",
+    0
+   ]
+  ]
+ },
+ "m6": {
+  "who": "MOM",
+  "line": "Approved.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "approved",
+    0
+   ]
+  ]
+ }
+}

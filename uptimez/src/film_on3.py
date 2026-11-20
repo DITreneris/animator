@@ -644,6 +644,7 @@ def _drift(fn, start, focus, rate=0.03, most=0.08):
     def f(t):
         s_ = fn(t)
         z = 1.0 + min(most, rate * max(0.0, mo.CLOCK["T"] - start))
+        mo.CLOCK["zoom"] = (focus, z)
         out = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(out)
         c.translate(focus[0], focus[1]); c.scale(z, z); c.translate(-focus[0], -focus[1])
         c.set_source_surface(s_, 0, 0); c.get_source().set_filter(cairo.FILTER_BILINEAR); c.paint()
