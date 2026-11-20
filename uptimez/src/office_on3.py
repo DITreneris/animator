@@ -14,7 +14,7 @@ import kit
 import mom_on3 as q
 import client_on3 as b
 import client_sheet_on3 as csh
-from kit import Ctx, cut, rect, ellipse
+from kit import Ctx, cut, rect, ellipse, INK
 
 WALL, WALL_LIT = (0.30, 0.30, 0.32), (0.88, 0.88, 0.85)
 DESK = (0.46, 0.44, 0.42)
@@ -65,12 +65,47 @@ def mom(k, note=True, down=0.0, look=(-0.9, -0.1), mouth=None, pose="q_read"):
         P[pose] = old
 
 
-def desk(c, k, press=0.0, hand=None, lamp=True):
+def card(k, x, y, s=1.0, ang=0.0, sym="star", sq=0.62):
+    """v2: one tarot card laid on the desk (sq: how flat we see it). Symbols only: star, tower, gear (his garages'), back."""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(1, sq); c.rotate(ang); c.scale(s, s)
+    cut(k, [(-17, -27), (17, -27), (17, 27), (-17, 27)], q.CARD if sym != "back" else (0.16, 0.16, 0.18), lw=2)
+    c.set_source_rgb(*((0.80, 0.80, 0.78) if sym == "back" else INK)); c.set_line_width(1.2); c.rectangle(-13, -23, 26, 46); c.stroke()
+    if sym == "gear":
+        q.co.gear(k, 0, 0, 10, col=q.CARD, seed=5)
+    elif sym == "star":
+        c.new_path()
+        for j in range(10):
+            a = math.pi * 2 * j / 10 - math.pi / 2
+            rr = 11 if j % 2 == 0 else 4.6
+            (c.move_to if j == 0 else c.line_to)(rr * math.cos(a), rr * math.sin(a))
+        c.close_path(); c.set_source_rgb(*INK); c.fill()
+    elif sym == "tower":
+        c.set_source_rgb(*INK); c.rectangle(-6, -11, 12, 26); c.fill()
+        for dx in (-6, -1, 4):
+            c.rectangle(dx, -16, 3, 5); c.fill()
+    else:
+        c.move_to(-13, -23); c.line_to(13, 23); c.move_to(13, -23); c.line_to(-13, 23); c.stroke()
+    c.restore()
+
+
+def spread(k, x, y, s=1.0, side=1, sq=0.62):
+    """v2 (Tomas, 20 Nov: the desk looked empty): her tarot spread. Three cards face up in a row, the gear last, and
+    the deck beside them. side: +1 as she sees it (the deck at her right), -1 from the other side of the desk."""
+    for i, sym in enumerate(("star", "tower", "gear")):
+        card(k, x + side * (i - 1) * 46 * s, y + (2 if i == 1 else 0) * s, s, side * (i - 1) * 0.10 + (math.pi if side < 0 else 0), sym, sq)
+    for j in range(3):
+        card(k, x + side * 118 * s + j * 2 * s, y - j * 3 * s, s, 0.2, "back", sq)
+
+
+def desk(c, k, press=0.0, hand=None, lamp=True, cards=False):
     """The desk across the frame, the coupe, the button on its plate. hand: her hand's point, drawn onto the button."""
     rect(k, -20, 790, 580, 200, DESK, 5, shadow=False, lw=3)
     g = cairo.RadialGradient(BUTTON[0], 800, 10, BUTTON[0], 800, 240)
     g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0); c.set_source(g); c.rectangle(0, 790, 540, 170); c.fill()
     q.coupe(k, 86, 850, 1.7)
+    if cards:
+        spread(k, 214, 900, 1.25, -1, 0.5)
     bx, by = BUTTON
     rect(k, bx - 50, by - 2, 100, 26, (0.10, 0.10, 0.11), 6, shadow=False, lw=2.4)
     ellipse(k, bx, by + 5 * press, 30, 14 - 5 * press, (0.98, 0.98, 0.94) if press > 0.9 else (0.55, 0.55, 0.56), 7, shadow=False, lw=2.6)
@@ -83,21 +118,21 @@ def desk(c, k, press=0.0, hand=None, lamp=True):
         rect(k, (hx + bx) / 2 - 11, (hy + fy) / 2 - 6, 22, 12, (0.86, 0.87, 0.90), 11, shadow=False, lw=1.6)
 
 
-def _front(c, k, note=True, down=0.0, press=0.0, look=(-0.9, -0.1), mouth=None):
+def _front(c, k, note=True, down=0.0, press=0.0, look=(-0.9, -0.1), mouth=None, cards=False):
     room(c, k)
     o = mom(k, note, down, look, mouth)
-    desk(c, k, press, o["hands"][1] if down > 0.6 else None)
+    desk(c, k, press, o["hands"][1] if down > 0.6 else None, cards=cards)
 
 
-def front(note=True, down=0.0, press=0.0, look=(-0.9, -0.1), mouth=None):
+def front(note=True, down=0.0, press=0.0, look=(-0.9, -0.1), mouth=None, cards=False):
     """M1: she fills the frame."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
-    _front(c, k, note, down, press, look, mouth)
+    _front(c, k, note, down, press, look, mouth, cards)
     csh.noir(s)
     return s
 
 
-def over(glove_up=0.0, look=(0.2, 0.9), show=False):
+def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False):
     """M2, 4.3: over his shoulder. His hood and back fill the near left; one red glove, lower right, comes up with the
     note in it (glove_up 0..1). Across a deep desk she is small, and does not look up."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -113,6 +148,8 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False):
     rect(k, 430, 498, 62, 16, (0.10, 0.10, 0.11), 6, shadow=False, lw=2)                   # the button, by her
     ellipse(k, 461, 498, 18, 9, (0.55, 0.55, 0.56), 7, shadow=False, lw=2)
     q.coupe(k, 286, 520, 0.95)
+    if cards:
+        spread(k, 372, 600, 1.15, -1, 0.5)
     cut(k, [(-60, 980), (-60, 560), (-10, 380), (90, 300), (190, 380), (240, 580), (256, 980)], TRACK, shadow=False, lw=4)   # his back, hood up
     c.set_source_rgb(0.14, 0.14, 0.16); c.set_line_width(4); c.set_line_cap(1)
     c.move_to(10, 430); c.curve_to(60, 350, 130, 350, 172, 430); c.stroke()               # the hood's seam
@@ -129,7 +166,7 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False):
     return s
 
 
-def reverse(pay=0.0, take=0.0):
+def reverse(pay=0.0, take=0.0, cards=False):
     """M3, 4.4: her view. He is small, in his tracksuit, in front of the desk, the door behind him. pay 0..1: the note
     crosses the desk toward us. take 0..1: her ringed hand comes in from the near edge and covers it."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -144,6 +181,8 @@ def reverse(pay=0.0, take=0.0):
     cut(k, [(120, 560), (420, 560), (660, 960), (-120, 960)], DESK, shadow=False, lw=3)    # the desk, from her side
     g = cairo.LinearGradient(0, 560, 0, 960); g.add_color_stop_rgba(0, 0, 0, 0, 0.2); g.add_color_stop_rgba(1, 1, 1, 1, 0.25)
     c.set_source(g); c.rectangle(-120, 560, 780, 400); c.fill()
+    if cards:
+        spread(k, 250, 700, 1.7, 1, 0.5)
     if pay >= 0.3:                                           # the hundred, on the desk, coming to her
         u = (pay - 0.3) / 0.7
         b.banknote(k, 270, _lerp(600.0, 800.0, u), _lerp(0.9, 2.2, u), 0.08, 3)
