@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v3"
+V = "v4"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -36,7 +36,7 @@ GAP = 0.15
 # shot -> [(who, line, take key, offset into the shot)]
 LINES = {
     "2.0": [("N", "They say I know how business is done.", "n1", 0.0)],     # over the bill, after the punch (1.1 is 0.6 s)
-    "2.1": [("N", "One fight.", "n2", 0.6)],
+    "2.1": [("N", "One fight.", "n2", 0.15)],
     "2.2": [("MOM", "Where are you going, skunk?", "m1", 0.6)],
     "2.4": [("MOM", "Everything you need is in there.", "m2", 0.5)],
     "2.4b": [("N", "A lot of money.", "n3", 0.1)],

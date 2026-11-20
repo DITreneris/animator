@@ -1,4 +1,7 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v9 (v1 to v8 pinned). v9 (Tomas, /grill-me: the jumps
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v10 (v1 to v9 pinned). v10 (iteration 2 of 4, the
+camera and the cutting): a slow push in on every shot whose drawing stands still; no piece of a shot under half a
+second but a punch (the bell 3 x 0.5 s; after CASE CLOSED two pieces, not three; the tick without her face again);
+Don comes down the aisle at the camera; shorter toward 80 s. v9 (Tomas, /grill-me: the jumps
 in the ring and life first; about 80 s): the Client, Pam, Don, the Referee and the robot move from a pose or a place to
 the next over four drawings; the people breathe and blink, and talk while their line is spoken (motion_on3.alive);
 eleven still shots are shorter. v8 (Tomas: "Don is redrawn; everyone's
@@ -363,7 +366,7 @@ def _aisle(t):
     on his stool, and the robot both turn to look."""
     dx0, dy0, dw, dh = rg.DOOR
     u = ramp(t, 0.0, 1.5)
-    px, pf, ps = lerp(dx0 + dw / 2.0, 372.0, u), lerp(rg.FAR + 6.0, rg.FAR + 2.0, u), rg.SC * lerp(0.74, 0.86, u)
+    px, pf, ps = lerp(dx0 + dw / 2.0, 470.0, u), lerp(rg.FAR + 6.0, rg.FAR + 40.0, u), rg.SC * lerp(0.62, 1.04, u)   # v10: toward us, growing
     hy = pf - 330 * ps
 
     def lights(k):                                           # behind everything in the ring: the door, white; fireworks; the two beams
@@ -412,7 +415,7 @@ def _aisle(t):
     def robot(k):
         x, y, s_ = rg.HOME["robot_corner"]
         rg.shadow(k, x + 84, y, 40); r.robot(k, x + 84, y, s_, "r_wait", "ask", side=-1)
-    return rg.frame((lerp(470.0, 372.0, u), lerp(rg.F - 300.0, rg.F - 250.0, u), lerp(1.5, 1.28, u)), [lights, fountains, don, client, robot], [], door=True)
+    return rg.frame((lerp(dx0 + dw / 2.0 - 60, 440.0, u), lerp(rg.F - 300.0, rg.F - 262.0, u), lerp(1.5, 1.34, u)), [lights, fountains, don, client, robot], [], door=True)
 
 
 def s62a(t):
@@ -481,13 +484,23 @@ def s64(t):
         return rr2.shot_64(t)
     if t < 1.35:
         return rr2.shot_64(0.7)
-    return rr2.shot_64(0.8 + (t - 1.35) * (2.2 / 1.35))
+    return rr2.shot_64(S64_REST(t - 1.35))                   # v10: no piece under half a second (see _s64_rest)
+
+
+def _s64_rest():
+    """After CASE CLOSED the ring rough has three pieces (wide, the Client's cheer, the Referee). v10: the wide one is
+    out (0.43 s, and it said nothing the cheer does not); the cheer 0.65 s, the Referee 0.6 s."""
+    a, b_, c_ = 0.8 + 0.43 * (2.2 / 1.35), 0.8 + 0.96 * (2.2 / 1.35), 0.8 + 1.33 * (2.2 / 1.35)
+    return lambda u: (a + (b_ - a) * min(u / 0.65, 0.999)) if u < 0.65 else (b_ + (c_ - b_) * min((u - 0.65) / 0.6, 0.999))
+
+
+S64_REST = _s64_rest()
 
 
 def s52a(t):
     """The bell: three cuts, a quarter of a second each: from the front, his view of it, its view of him. The view from
     above is out (it read as blobs in four tests)."""
-    return F5["5.2a"](min(int(t / 0.25), 2) * 0.25 + 0.01)
+    return F5["5.2a"](min(int(t / 0.5), 2) * 0.25 + 0.01)      # v10: half a second each; a quarter was a flicker
 
 
 def _count_shot():
@@ -520,7 +533,7 @@ def s74a(t):
 
 
 def s74c(t):
-    return rr2.shot_74(1.1 + t)                              # her mouth; the tick
+    return rr2.shot_74(1.48 + t * (0.3 / 0.55))                # v10: the tick only, held 0.55 s; her face again is out
 
 
 # ---- 08 awake -----------------------------------------------------------------------------------------------------
@@ -613,11 +626,35 @@ _b.boxer = mo.alive(_b.boxer, "CLIENT", _b.POSES, skin=_co.SKIN, mouth_kw=True)
 _ca.pam_corner = mo.alive(_ca.pam_corner, "PAM", _ca.P_POSES, skin=_ca.pn.ps.SKIN, lip=(0.72, 0.10, 0.12))
 _ca.referee = mo.alive(_ca.referee, "REFEREE", None, skin=_ca.cb.M_SKIN, tween_pose=False)
 _r.robot = mo.alive(_r.robot, "ROBOT", None, breathe=0.0, blinks=False, tween_pose=False)
-TRIM = {"2.5": 0.9, "2.7": 1.3, "4.1": 1.0, "4.2": 1.5, "4.4t": 1.0, "4.4b": 0.8, "4.4c": 0.7, "6.3": 3.3, "8.1": 1.2, "8.2b": 0.7, "8.4": 1.3}
-FILM = [(n, TRIM.get(n, d), quick(f, d / TRIM[n]) if n in TRIM else f) for n, d, f in FILM]      # toward 80 s: the stills, shorter
+TRIM = {"2.5": 0.9, "2.7": 1.3, "4.1": 1.0, "4.2": 1.3, "4.4t": 1.0, "4.4b": 0.8, "4.4c": 0.7, "6.3": 3.0, "8.1": 1.2, "8.2b": 0.7, "8.4": 1.3,
+        "2.4": 1.5, "4.4": 2.1, "5.1a": 1.7, "5.2": 1.6, "5.3": 1.1, "7.1": 1.3, "7.2b": 1.3, "7.3": 2.0}      # v10: toward 80 s
+FILM = [(n, TRIM.get(n, d), quick(f, d / TRIM[n]) if n in TRIM else f) for n, d, f in FILM]
+LEN = {"5.2a": 1.5, "6.4": 2.6, "7.4c": 0.55}               # v10: pieces re-cut inside the shot's own function
+FILM = [(n, LEN.get(n, d), f) for n, d, f in FILM]
+# v10: the camera. A shot whose drawing stands still is pushed in on, slowly, from its first frame to its last (a move
+# of the finished frame about a point, 3% a second, 8% at most); the clock runs on through a held drawing, so it never
+# stops. Not on the first shot or the last (frame 0 is the last frame), nor on shots that have their own move.
+DRIFT = {"2.0": (270, 400), "2.5": (270, 380), "2.7": (270, 420), "3.3": (300, 430), "3.3b": (270, 430), "3.4c": (270, 400), "4.1": (270, 420),
+         "4.2": (270, 400), "4.3": (270, 430), "4.4a": (270, 520), "4.4b": (270, 480), "4.4c": (270, 400), "5.2a": (270, 430), "5.4": (270, 400),
+         "5.4b": (270, 520), "6.3": (270, 430), "7.4": (270, 400), "7.4b": (270, 520), "7.4c": (270, 430), "8.1": (270, 430), "8.2": (270, 430),
+         "8.2b": (270, 380), "8.3": (270, 480), "8.4": (270, 430)}
+
+
+def _drift(fn, start, focus, rate=0.03, most=0.08):
+    def f(t):
+        s_ = fn(t)
+        z = 1.0 + min(most, rate * max(0.0, mo.CLOCK["T"] - start))
+        out = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(out)
+        c.translate(focus[0], focus[1]); c.scale(z, z); c.translate(-focus[0], -focus[1])
+        c.set_source_surface(s_, 0, 0); c.get_source().set_filter(cairo.FILTER_BILINEAR); c.paint()
+        return out
+    return f
+
+
 _T0, _F = 0.0, []
 for _n, _d, _f in FILM:
-    _F.append((_n, _d, mo.timed(_n, _f, _T0))); _T0 += _d
+    _f = mo.timed(_n, _f, _T0)
+    _F.append((_n, _d, _drift(_f, _T0, DRIFT[_n]) if _n in DRIFT else _f)); _T0 += _d
 FILM = _F
 
 
