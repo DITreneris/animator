@@ -1,4 +1,6 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v12 (v1 to v11 pinned). v12 (an outside review: FAIL,
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v13 (v1 to v12 pinned). v13: three things both cold
+viewers took for mistakes: the doorway is a doorway (a frame, a FIGHTERS plate, a passage behind, dark or lit); the
+smoke is soft and drifts; the hall behind the robot in his view of it has the same people. v12 (an outside review: FAIL,
 "blobs and rectangles, not a crowd"): the spectators are people: three tiers behind the far ropes, paler and smaller
 with distance, overlapping, each in his own place, with fists, clapping, waving, shouting; at the ringside, backs and
 heads nearest us. Nothing else is touched. v11 (Tomas, on animatic v6):
@@ -377,7 +379,7 @@ def _aisle(t):
 
     def lights(k):                                           # behind everything in the ring: the door, white; fireworks; the two beams
         c = k.c
-        c.set_source_rgb(0.98, 0.98, 0.94); c.rectangle(dx0, dy0, dw, dh); c.fill()
+        _doorway(c, True)
         for i, (fx, fy, t0) in enumerate(((150, rg.FAR - 420, 0.3), (430, rg.FAR - 470, 0.7), (270, rg.FAR - 520, 1.1), (600, rg.FAR - 430, 1.5), (90, rg.FAR - 500, 1.8))):
             a = (t - t0) / 0.7
             if 0 < a < 1:
@@ -664,6 +666,7 @@ _sob.sofia = mo.alive(_sob.sofia, "SOFIA", None, tween_pose=False, blinks=False,
 HEAT = {"5.1a": 0.7, "5.1b": 0.7, "5.2a": 0.8, "5.2": 0.8, "5.5": 1.0, "5.6": 1.0, "6.2a": 0.9, "6.2b": 1.0, "6.2c": 0.9, "6.4": 0.7, "7.1": 0.7,
         "7.2": 1.0, "7.2b": 0.8, "7.3": 0.9, "7.5": 1.0}
 _hat0 = rg._hat
+_DRAW_RING0 = rg.draw_ring
 
 
 def _heat():
@@ -761,16 +764,78 @@ def _hat_live(c, x, top, rr_, hat=True):
 rg._hat = _hat_live
 
 
+def _doorway(c, lit):
+    """v13: the way out reads as a doorway (it was "a slab, a speaker" dark and "an empty sign" lit): a frame, a plate over
+    it (FIGHTERS), and a passage behind: its floor running back to a small far light. Lit: the passage white, the floor
+    still drawn."""
+    dx, dy, dw, dh = rg.DOOR
+    c.set_source_rgb(0.04, 0.04, 0.05); c.rectangle(dx - 7, dy - 7, dw + 14, dh + 7); c.fill()                      # the frame
+    g = cairo.LinearGradient(dx, 0, dx + dw, 0)
+    if lit:
+        g.add_color_stop_rgb(0, 0.80, 0.80, 0.78); g.add_color_stop_rgb(0.5, 0.99, 0.99, 0.95); g.add_color_stop_rgb(1, 0.80, 0.80, 0.78)
+    else:
+        g.add_color_stop_rgb(0, 0.10, 0.10, 0.12); g.add_color_stop_rgb(0.5, 0.20, 0.20, 0.23); g.add_color_stop_rgb(1, 0.10, 0.10, 0.12)
+    c.set_source(g); c.rectangle(dx, dy, dw, dh); c.fill()
+    mx = dx + dw / 2.0
+    c.new_path(); c.move_to(dx, dy + dh); c.line_to(mx - 9, dy + dh * 0.52); c.line_to(mx + 9, dy + dh * 0.52); c.line_to(dx + dw, dy + dh); c.close_path()   # the floor, going back
+    c.set_source_rgb(*((0.70, 0.70, 0.68) if lit else (0.30, 0.30, 0.33))); c.fill()
+    c.set_source_rgb(*((0.55, 0.55, 0.54) if lit else (0.06, 0.06, 0.07))); c.set_line_width(1.6)
+    for q in (0.25, 0.5, 0.75):                                                                                    # its boards
+        c.move_to(dx + dw * q, dy + dh); c.line_to(mx + (q - 0.5) * 18, dy + dh * 0.52); c.stroke()
+    if not lit:
+        c.set_source_rgb(0.62, 0.62, 0.60); c.rectangle(mx - 8, dy + dh * 0.30, 16, dh * 0.22); c.fill()             # the far end, lit
+    c.set_source_rgb(0.86, 0.86, 0.82); c.rectangle(dx - 10, dy - 30, dw + 20, 20); c.fill()                         # the plate
+    c.set_source_rgb(0.05, 0.05, 0.06); c.set_line_width(2); c.rectangle(dx - 10, dy - 30, dw + 20, 20); c.stroke()
+    c.select_font_face("Inter", 0, 1); c.set_font_size(11.5)
+    e = c.text_extents("FIGHTERS"); c.move_to(mx - e.x_advance / 2, dy - 15.5); c.show_text("FIGHTERS")
+
+
+def _smoke(c):
+    """v13: the hall's smoke, soft: three faint layers each, wide to narrow, drifting; one hard pale stroke read as a smear."""
+    T = mo.CLOCK["T"] if mo.CLOCK["shot"] is not None else 0.0
+    c.set_line_cap(1)
+    for j, (sx_, sy_) in enumerate(((250, 960), (440, 860), (350, 1120))):
+        sx_ += 26 * math.sin(2 * math.pi * (T * 0.05 + j * 0.31))
+        for wd, al in ((54, 0.022), (36, 0.03), (20, 0.035)):
+            c.set_source_rgba(1, 1, 1, al); c.set_line_width(wd)
+            c.move_to(sx_ - 90, sy_); c.curve_to(sx_ - 20, sy_ - 40, sx_ + 30, sy_ + 30, sx_ + 110, sy_ - 14); c.stroke()
+
+
 def _ring_with_wall():
-    src = inspect.getsource(rg.draw_ring)
+    src = inspect.getsource(_DRAW_RING0)
     old = "    dx, dy, dw, dh = DOOR                                                                  # the way out: a lit doorway\n"
     assert old in src
-    ns = dict(rg.__dict__); ns["_wall_crowd"] = _wall_crowd
+    d0 = src.index("    c.set_source_rgb(*((0.50, 0.50, 0.50) if door else (0.15, 0.15, 0.17)))"); d1 = src.index("    c.set_source_rgb(0.05, 0.05, 0.06)                                                     # the far crowd")
+    src = src[:d0] + "    _doorway(c, door)\n" + src[d1:]
+    m0 = src.index("    c.set_source_rgba(1, 1, 1, 0.10); c.set_line_width(16); c.set_line_cap(1)              # smoke"); m1 = src.index("    c.set_line_cap(0)\n", m0)
+    src = src[:m0] + "    _smoke(c)\n" + src[m1:]
+    ns = dict(rg.__dict__); ns.update(_wall_crowd=_wall_crowd, _doorway=_doorway, _smoke=_smoke)
     exec(src.replace(old, "    _wall_crowd(c)\n" + old).replace("_hat(c, x,", "_HAT(c, x,"), ns)
     ns["_HAT"] = _hat_live
     return ns["draw_ring"]
 
 
+def _hall_people(c):
+    """v13: the hall behind the robot as he sees it: the same three tiers of people (it was a black band with nine bumps)."""
+    g = cairo.RadialGradient(270, 380, 40, 270, 380, 760)
+    g.add_color_stop_rgba(0, 0.78, 0.78, 0.80, 1); g.add_color_stop_rgba(1, 0.12, 0.12, 0.14, 1); c.set_source(g); c.paint()
+    T, h = (mo.CLOCK["T"], _heat()) if mo.CLOCK["shot"] is not None else (0.0, 0.6)
+    for ri, (base, H, W_, step, tone) in enumerate(((668, 150, 54, 50, 0.40), (716, 178, 66, 59, 0.29), (774, 206, 80, 70, 0.17))):
+        x, i = -30.0 + ri * 19, 0
+        while x < 580:
+            k_ = 300 + ri * 100 + i; ph = (k_ * 0.2718) % 1.0
+            t_ = tone + 0.035 * ((k_ * 0.419) % 1.0 - 0.5)
+            _person(c, x, base, H * (0.9 + 0.22 * ((k_ * 0.531) % 1.0)), W_ * (0.86 + 0.3 * ((k_ * 0.713) % 1.0)), k_ % 3 != 1, _gesture(k_, h), T, ph, h,
+                    (t_, t_, t_ + 0.02), 1 if x < 270 else -1)
+            x += step * (0.82 + 0.4 * ((k_ * 0.291) % 1.0)); i += 1
+    c.set_source_rgb(0.05, 0.05, 0.06); c.rectangle(0, 700, 540, 80); c.fill()                                      # the barrier
+    c.set_source_rgb(0.50, 0.50, 0.54)
+    for y in (640, 690, 740):
+        c.rectangle(0, y, 540, 5); c.fill()
+    c.set_source_rgb(0.64, 0.64, 0.66); c.rectangle(0, 780, 540, 180); c.fill()
+
+
+rr._hall = _hall_people
 rg.draw_ring = _ring_with_wall()
 
 TRIM = {"2.5": 0.9, "2.7": 1.3, "4.1": 1.0, "4.2": 1.3, "4.4t": 1.0, "4.4b": 0.8, "4.4c": 0.7, "6.3": 3.0, "8.1": 1.2, "8.2b": 0.7, "8.4": 1.3,
