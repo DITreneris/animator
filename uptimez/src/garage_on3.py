@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: his garage office, awake, beat 08 (20 Nov), set v3 (v1, v2: garage_on3_v1.py, _v2.py; v3: in 8.4 it is the same arm that hung to the phone that lays it on the CV). v2, after an outside
+"""OFFICE NOIR 3: his garage office, awake, beat 08 (20 Nov), set v4 (v1 to v3: garage_on3_v1.py, _v2.py, _v3.py; v4: the ghost on the wall is the banner's own drawing, faded; v3: in 8.4 it is the same arm that hung to the phone that lays it on the CV). v2, after an outside
 review and cold tests 20-21: he is drawn lying (knees up, his head against the sofa's arm, one arm hanging to the phone
 on the floor), not a standing figure turned over; in 8.4 the gown comes down over his eyes and his other arm lays the
 phone on the CV; her photograph is clipped to the CV; on the wall the plan has left its ghost (ten bays, 10 GARAGES);
@@ -14,6 +14,8 @@ import kit
 import client_on3 as b
 import ring_rough2_on3 as rr2
 import street_on3 as st
+import noir2_cast as n2
+import props_on3 as pr
 from kit import Ctx, cut, rect, ellipse, INK
 
 WALL, FLOOR = (0.80, 0.77, 0.68), (0.46, 0.45, 0.46)
@@ -36,11 +38,11 @@ def phone(k, x, y, s=1.0, ang=0.0, screen="done", back=False):
         rect(k, -39, -72, 78, 144, col, 4, shadow=False, lw=1.4)
         if screen == "done":
             kit.text(k, "UptimeZ Find", 0, -48, 11.5, INK, bold=True)
-            kit.text(k, "PREMIUM", 0, -30, 10, (0.45, 0.45, 0.48), bold=True)
+            kit.text(k, "PREMIUM", 0, -32, 9, (0.45, 0.45, 0.48), bold=True)
             c.set_source_rgb(*GREEN); c.set_line_width(7); c.arc(0, 6, 22, 0, 2 * math.pi); c.stroke()
             c.set_line_width(5); c.set_line_cap(1); c.move_to(-10, 6); c.line_to(-2, 15); c.line_to(12, -5); c.stroke(); c.set_line_cap(0)
-            kit.text(k, "100%", 0, 46, 15, GREEN, bold=True)
-            kit.text(k, "COMPLETE", 0, 62, 10.5, GREEN, bold=True)
+            kit.text(k, "100%", 0, 42, 20, GREEN, bold=True)
+            kit.text(k, "COMPLETE", 0, 61, 12.5, GREEN, bold=True)
         elif screen == "ring":
             kit.text(k, "INCOMING CALL", 0, -56, 7.5, (0.45, 0.45, 0.48), bold=True)
             kit.text(k, "555", 0, -22, 30, INK, bold=True); kit.text(k, "0142", 0, 12, 30, INK, bold=True)
@@ -119,12 +121,19 @@ def gone(k, x, y, w, h):
     """Where the plan was pinned: a paler rectangle, four pin holes, one pin left with a torn corner."""
     c = k.c
     c.set_source_rgb(0.88, 0.86, 0.79); c.rectangle(x, y, w, h); c.fill()
-    c.set_source_rgba(0.35, 0.32, 0.25, 0.30); c.set_line_width(2)                                    # its ghost: ten bays, the title
-    bw = (w - 44) / 5
-    for r_ in range(2):
-        for i in range(5):
-            c.rectangle(x + 22 + i * bw + 3, y + 18 + r_ * 36, bw - 6, 30); c.stroke()
-    kit.text(k, "10 GARAGES", x + w / 2, y + h - 22, 17, (0.62, 0.58, 0.48), bold=True)
+    z = min((w - 16) / 108.0, (h - 12) / 98.0)               # v4: its ghost is the drawing itself, as it hangs over the ring: the building, the title block
+    c.save(); c.translate(x + w / 2 - 50 * z, y + h / 2 - 55 * z); c.scale(z, z)
+    c.push_group()
+    c.set_source_rgb(*pr.LINE)
+    old = n2.LOOK[0]; n2.LOOK[0] = 9
+    try:
+        n2.bays(c, 8, 42, 13.5, 1.9)
+    finally:
+        n2.LOOK[0] = old
+    c.set_source_rgb(*pr.LINE); c.set_line_width(1.2); c.rectangle(6, 80, 84, 18); c.stroke()
+    kit.text(k, "10", 21, 89.5, 17, pr.LINE, bold=True); kit.text(k, "GARAGES", 60, 89.5, 10.5, pr.LINE, bold=True)
+    c.pop_group_to_source(); c.paint_with_alpha(0.30)
+    c.restore()
     for i, (px, py, sx, sy) in enumerate(((x, y, 1, 1), (x + w, y, -1, 1), (x, y + h, 1, -1), (x + w, y + h, -1, -1))):
         cut(k, [(px + sx * 2, py + sy * 2), (px + sx * 40, py + sy * 5), (px + sx * 22, py + sy * 16), (px + sx * 9, py + sy * 34)], (0.80, 0.88, 0.96), shadow=False, lw=1.8)
         c.set_source_rgb(0.25, 0.40, 0.62); c.set_line_width(1.6)

@@ -1,7 +1,8 @@
 """OFFICE NOIR 3: the whole film as one board (20 Nov), for the whole-board cold test with the loop question.
 Every beat in order, drawn by the modules that staged it: 01 the punch (ring_rough2 7.5), 02 the street, 03 the alley,
 04 the arena door and her office, 05 the ring (stills from the moving rough), 06-07 the corner and the end, 08 awake.
-board() -> [(shot, surface)]. sheets(d) -> numbered sheets of twelve, a phone-size sheet, and the single frames."""
+v2 (v1 is board_on3_v1.py): the car's door round the window, both hands at the desk hers, the button's own shot after
+5.4 and 7.4, the garage wall's ghost. board() -> [(shot, surface)]. sheets(d) -> numbered sheets of twelve, a phone-size sheet, and the single frames."""
 import os
 import cairo
 import ring_rough_on3 as rr
@@ -24,17 +25,24 @@ def _rough(shots, fn):
 
 
 def board():
-    K = dict(cards="deck", v4=True)
+    K = dict(cards="deck", v4=True, v6=True)
+    O = dict(cards="deck", v4=True)
     b = [("1.1", rr2.shot_75(0.6)), ("1.1", rr2.shot_75(0.80))]
-    b += [("2", f) for f in stc.frames()]
+    b += [("2", f) for f in stc.frames(door=True)]
     b += [("3", f) for f in al.frames()]
     b += [("4.1", dr.behind(1.0)), ("4.2", dr.face((0.2, -0.9))), ("4.2", dr.face((-0.7, 0.9))), ("4.2", dr.face((0.2, -0.9), glove=1.0, push=0.45)),
-          ("4.3", of.over(0.0, show=True, **K)), ("4.3", of.over(1.0, show=True, **K)),
+          ("4.3", of.over(0.0, show=True, **O)), ("4.3", of.over(1.0, show=True, **O)),
           ("4.4", of.reverse(0, 0, **K)), ("4.4", of.reverse(1, 0, **K)), ("4.4", of.reverse(1, 1, turn=0, **K)),
           ("4.4", of.reverse(1, 1, turn=0.35, **K)), ("4.4", of.reverse(1, 1, turn=1.0, eyes=(0.3, 0.9), **K)),
           ("4.4b", of.tower_insert(1.0, v5=True)), ("4.4c", dr.react()), ("4.4c", dr.react(True))]
-    b += _rough(*R5)
-    b += _rough(rr2.SHOTS[:-1], rr2.FN)
+    for name, f in _rough(*R5):
+        b.append((name, f))
+        if name == "5.4" and b[-2][0] == "5.4":             # after her second frame: the button, close
+            b += [("5.4b", of.button_insert(0.5)), ("5.4b", of.button_insert(1.0))]
+    for name, f in _rough(rr2.SHOTS[:-1], rr2.FN):
+        if name == "7.4" and b[-1][0] == "7.4":             # between her and the tick: the button, close
+            b.append(("7.4b", of.button_insert(1.0)))
+        b.append((name, f))
     b += [("7.5", rr2.shot_75(0.6)), ("7.5", rr2.shot_75(0.80))]
     b += [("8.1", ga.f81()), ("8.2", ga.f82()), ("8.3", ga.f83()), ("8.4", ga.f84()), ("8.5", ga.f85())]
     return b

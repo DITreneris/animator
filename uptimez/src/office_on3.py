@@ -204,7 +204,7 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False, v4=False):
     return s
 
 
-def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None):
+def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None, v6=False):
     """M3, 4.4: her view. He is small, in his tracksuit, in front of the desk, the door behind him. pay 0..1: the note
     crosses the desk toward us. take 0..1: her ringed hand comes in from the near edge and covers it."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -249,7 +249,7 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None):
             if i in (1, 2):
                 rect(k, 275 + dx - 12, hy - 62, 24, 13, (0.86, 0.87, 0.90), 15 + i, shadow=False, lw=1.6)
     if cards == "deck" and turn is not None:
-        _deal(c, k, turn)
+        _deal(c, k, turn, v6)
     elif cards and turn is not None:
         _turn(c, k, turn)
     csh.noir(s)
@@ -307,7 +307,7 @@ def _door2(k):
     c.set_source_rgba(1, 1, 1, 0.22); c.new_path(); c.move_to(342, 516); c.line_to(380, 516); c.line_to(330, 566); c.line_to(250, 566); c.close_path(); c.fill()
 
 
-def _deal(c, k, t):
+def _deal(c, k, t, hers=False):
     """v5: the hundred is hers; now her other hand takes the top card off the deck, lays it in the middle of the desk
     (t 0..0.5, face down) and turns it (0.5..1): the Tower."""
     cx, cy = 250, 716
@@ -321,6 +321,20 @@ def _deal(c, k, t):
         v = (t - 0.5) / 0.5
         card(k, cx, cy, 1.9 + 0.5 * math.sin(math.pi * v), 0.04, "tower3", 0.5 * (0.25 + 0.75 * v))
     hx, hy = (px + 70, py) if t < 0.5 else (cx + 76 + 40 * max(0.0, t - 0.75) / 0.25, cy - 2)
+    if hers:                                                 # v6: plainly her other hand: up from her edge of the desk, the same wide cuff, the same rings
+        ax, ay = 470, 990
+        d = math.hypot(hx - ax, hy - ay); ux, uy = (hx - ax) / d, (hy - ay) / d
+        c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(120); c.set_line_cap(0); c.move_to(ax, ay); c.line_to(hx - ux * 96, hy - uy * 96); c.stroke()
+        c.set_source_rgb(0.84, 0.84, 0.86); c.set_line_width(134); c.move_to(hx - ux * 98, hy - uy * 98); c.line_to(hx - ux * 62, hy - uy * 62); c.stroke()
+        c.set_source_rgb(*INK); c.set_line_width(2.4)
+        ellipse(k, hx - ux * 8, hy - uy * 8, 58, 44, SKIN, 22, shadow=False, lw=3)
+        for i, off in enumerate((-36, -12, 12, 36)):
+            fx, fy = hx + ux * 40 - uy * off, hy + uy * 40 + ux * off
+            c.save(); c.translate(fx, fy); c.rotate(math.atan2(uy, ux)); ellipse(k, 0, 0, 24, 11, SKIN, 23 + i, shadow=False, lw=2.6)
+            if i in (1, 2):
+                rect(k, -16, -12, 12, 24, (0.86, 0.87, 0.90), 28 + i, shadow=False, lw=1.6)
+            c.restore()
+        return
     c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(46); c.set_line_cap(0); c.move_to(640, hy + 70); c.line_to(hx + 60, hy + 8); c.stroke()
     rect(k, hx + 30, hy - 16, 34, 44, (0.84, 0.84, 0.86), 21, shadow=False, lw=2.4)
     ellipse(k, hx, hy + 4, 34, 24, SKIN, 22, shadow=False, lw=3)
@@ -375,5 +389,31 @@ def tower_insert(t=1.0, v5=False):
     for i, dy in enumerate((-30, -4, 22)):
         rect(k, hx - 104, 524 + dy - 11, 62, 24, SKIN, 36 + i, shadow=False, lw=2.6)
     rect(k, hx - 60, 510, 20, 30, (0.86, 0.87, 0.90), 40, shadow=False, lw=2)
+    csh.noir(s)
+    return s
+
+
+def button_insert(press=0.0):
+    """5.4b / 7.4b, insert (v6): the button, close. Her ringed finger comes down on it; pressed, it lights and the
+    light jumps outward. The cause of the tick, large enough for a phone."""
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    c.set_source_rgb(*DESK); c.paint()
+    g = cairo.RadialGradient(270, 520, 40, 270, 520, 700); g.add_color_stop_rgba(0, 1, 1, 1, 0.20 + 0.5 * press); g.add_color_stop_rgba(1, 0, 0, 0, 0.5); c.set_source(g); c.paint()
+    rect(k, 90, 520, 360, 110, (0.10, 0.10, 0.11), 3, shadow=True, lw=4)                             # the plate
+    lit = press > 0.9
+    ellipse(k, 270, 520 + 26 * press, 130, 58 - 20 * press, (0.98, 0.98, 0.94) if lit else (0.55, 0.55, 0.56), 4, shadow=False, lw=4)
+    if lit:
+        c.set_source_rgb(0.98, 0.98, 0.94); c.set_line_width(9); c.set_line_cap(1)
+        for i in range(9):
+            a = math.pi + math.pi * (i + 0.5) / 9
+            c.move_to(270 + 170 * math.cos(a), 540 + 110 * math.sin(a)); c.line_to(270 + 240 * math.cos(a), 540 + 170 * math.sin(a)); c.stroke()
+        c.set_line_cap(0)
+    fy = _lerp(250.0, 500.0, min(press / 0.9, 1.0))                                                  # her finger, from above, a ring on it
+    rect(k, 196, -40, 150, fy - 250 + 60, (0.10, 0.10, 0.11), 5, shadow=False, lw=3)
+    rect(k, 184, fy - 250, 174, 40, (0.84, 0.84, 0.86), 6, shadow=False, lw=2.6)
+    ellipse(k, 270, fy - 150, 80, 70, SKIN, 7, shadow=False, lw=3.4)
+    rect(k, 246, fy - 110, 48, 118, SKIN, 8, shadow=False, lw=3)
+    ellipse(k, 270, fy + 6, 24, 16, SKIN, 9, shadow=False, lw=3)
+    rect(k, 242, fy - 70, 56, 22, (0.86, 0.87, 0.90), 10, shadow=False, lw=2)
     csh.noir(s)
     return s

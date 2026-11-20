@@ -35,14 +35,14 @@ def with_folder(x):
     return d
 
 
-def frames():
+def frames(door=False):
     """v3: the finger is out (it read as a wave twice; Tomas: proceed). Nine frames."""
     f = []
     f.append(st.frame("S1", [client(330)], rain=1))                                        # 2.1 he walks into the lamp's edge
     f.append(st.frame("S1", [client(400)], car=(250, 0.0), rain=2))                        # 2.2 the car, at his knees
-    f.append(st.window_pov(1.0, 1.0, 0.0))                                                 # 2.4 his view: the glass down; her hand, the folder
-    f.append(st.window_pov(1.0, 1.0, 0.6))                                                 #     his gloves on it; her hand still on it
-    f.append(st.window_pov(0.0, 1.0, 1.0))                                                 #     he has it; the glass is up
+    f.append(st.window_pov(1.0, 1.0, 0.0, door=door))                                                 # 2.4 his view: the glass down; her hand, the folder
+    f.append(st.window_pov(1.0, 1.0, 0.6, door=door))                                                 #     his gloves on it; her hand still on it
+    f.append(st.window_pov(0.0, 1.0, 1.0, door=door))                                                 #     he has it; the glass is up
     f.append(st.frame("S2", [with_folder(400)], car=(-190, 0.0), rain=3))                  #     the car pulls away; he holds the folder
     f.append(st.cv_insert(0.0))                                                            # 2.5 her photograph, and nothing else
     f.append(st.frame("S3", [sofia(690), with_folder(450)], rain=4))                       # 2.6 she comes under the lamp

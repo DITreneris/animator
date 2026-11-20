@@ -158,7 +158,7 @@ def folder(k, x, y, s=1.0, ang=0.0):
     c.restore()
 
 
-def window_pov(down=1.0, out=0.0, take=0.0, fist=0.0):
+def window_pov(down=1.0, out=0.0, take=0.0, fist=0.0, door=False):
     """His view of the car's rear door, black. down 0..1: the glass down a hand's width. fist 0..1: one red glove of
     his raised at the glass (2.3: the glass answers by going back up). out 0..1: from the dark her ringed hand comes
     down out of the gap with the folder hanging from it, straight at him. take 0..1: his two gloves come up from the
@@ -166,12 +166,28 @@ def window_pov(down=1.0, out=0.0, take=0.0, fist=0.0):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
     c.set_source_rgb(0.05, 0.05, 0.06); c.paint()
     c.set_source_rgb(0.86, 0.86, 0.88); c.set_line_width(7); c.move_to(-10, 700); c.line_to(550, 690); c.stroke()         # the chrome line
+    if door:                                                 # v4, opt-in: it is a car (two viewers took the window for a monitor): the roof's line, the door's seams, a wheel arch, rain on the paint
+        c.set_source_rgb(0.11, 0.11, 0.13); c.new_path(); c.move_to(-10, 960); c.line_to(-10, 96); c.curve_to(120, 44, 420, 40, 550, 84); c.line_to(550, 960); c.close_path(); c.fill()
+        c.set_source_rgb(0.86, 0.86, 0.88); c.set_line_width(6); c.move_to(-10, 96); c.curve_to(120, 44, 420, 40, 550, 84); c.stroke()      # the roof's chrome
+        c.set_source_rgb(0.02, 0.02, 0.03); c.set_line_width(4)
+        for x0, x1 in ((34, 26), (508, 520)):
+            c.move_to(x0, 80); c.line_to(x1, 960); c.stroke()                                                            # the door's seams
+        c.set_source_rgb(0.02, 0.02, 0.03); c.arc(600, 1010, 250, 0, 2 * math.pi); c.fill()                              # the rear wheel's arch
+        c.set_source_rgb(0.30, 0.30, 0.33); c.set_line_width(5); c.arc(600, 1010, 250, math.pi, 1.5 * math.pi); c.stroke()
+        c.set_source_rgba(1, 1, 1, 0.30); c.set_line_width(2.4); c.set_line_cap(1)
+        for i in range(16):
+            x = 30 + (i * 197) % 480; y = 470 + (i * 131) % 380
+            c.move_to(x, y); c.line_to(x - 3, y + 16 + (i % 3) * 8); c.stroke()                                          # rain, running down the door
+        c.set_line_cap(0)
     rect(k, 60, 110, 420, 330, (0.02, 0.02, 0.03), 3, shadow=False, lw=6)                                               # the window: nothing inside
     gap = 80 * down
     c.set_source_rgb(0.30, 0.31, 0.35); c.rectangle(64, 114 + gap, 412, 322 - gap); c.fill()                           # the glass goes DOWN: the gap is at the top
     c.set_source_rgba(1, 1, 1, 0.20); c.set_line_width(10); c.move_to(110, 410); c.line_to(250, 170 + gap); c.stroke()  # the lamp, in the glass
     c.set_source_rgb(0.80, 0.80, 0.84); c.set_line_width(3); c.move_to(64, 114 + gap); c.line_to(476, 114 + gap); c.stroke()
     ellipse(k, 440, 560, 26, 12, (0.86, 0.86, 0.88), 4, shadow=False, lw=2.4)                                           # the door's handle
+    if door:
+        cut(k, [(476, 106), (486, 106), (486, 446), (476, 446), (392, 106)], (0.11, 0.11, 0.13), shadow=False, lw=0)     # the rear pillar: the window slopes
+        c.set_source_rgb(0.02, 0.02, 0.03); c.set_line_width(6); c.move_to(392, 108); c.line_to(478, 444); c.stroke()
     if out > 0:
         hy = 114 + gap * 0.5 + 150 * out + 60 * min(take, 0.8)   # her hand, over the glass's edge, fingers down; it follows him down
         fy = 114 + gap * 0.5 + 150 * out + 150 + 150 * take                           # the folder, hanging from it; then in his gloves
