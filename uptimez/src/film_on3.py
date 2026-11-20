@@ -1,4 +1,7 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v10 (v1 to v9 pinned). v10 (iteration 2 of 4, the
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v11 (v1 to v10 pinned). v11 (Tomas, on animatic v6):
+the split frame is cut across, not down (6.2); the hall is alive: the crowd bobs and pumps fists, and throws tall waving
+shadows on the back wall; the second approval's sign is held for the robot's line; Sofía's head is tracked for her
+bubble. v10 (iteration 2 of 4, the
 camera and the cutting): a slow push in on every shot whose drawing stands still; no piece of a shot under half a
 second but a punch (the bell 3 x 0.5 s; after CASE CLOSED two pieces, not three; the tick without her face again);
 Don comes down the aisle at the camera; shorter toward 80 s. v9 (Tomas, /grill-me: the jumps
@@ -529,7 +532,30 @@ def s54b(t):
 
 
 def s74a(t):
-    return rr2.shot_74(t)                                    # the cracked screen asks; her office (to 1.1)
+    """v11: the cracked screen asks for 1.5 s (the robot now says it: "Human approval still pending."); then her office."""
+    return rr2.shot_74(0.2) if t < 1.5 else rr2.shot_74(0.5 + (t - 1.5))
+
+
+def s62h(t):
+    """v11 (Tomas: "the split frame: not cut down the middle but across?"). Two wide halves, one over the other: the robot
+    in its corner, proud, oiled; under it Mom at her desk with the hundred. In a tall frame a face needs width, and each
+    half was a sliver 267 px wide."""
+    def robot(k):
+        x, f = 590, rg.F - 40
+        rg.shadow(k, x, f, 40)
+        r.robot(k, x, f, rg.SC * r.REL, "r_oil", "proud", side=-1, oil=True)
+        r.oil_can(k, x - 58, f - 150 + 3 * math.sin(t * 5), 1.5, -0.7)
+        c = k.c; c.set_source_rgb(0.05, 0.05, 0.06)
+        for i in range(3):
+            y = f - 122 + ((t * 70 + i * 16) % 46)
+            c.save(); c.translate(x - 84, y); c.scale(3.2, 5); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    top = rg.frame((560, rg.F - 150, 2.0), [robot], [], near=False, hats=False)
+    low = rr2.mom_box(t)
+    out = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); oc = cairo.Context(out)
+    oc.save(); oc.rectangle(0, 0, 540, 477); oc.clip(); oc.set_source_surface(top, 0, -215); oc.paint(); oc.restore()
+    oc.save(); oc.rectangle(0, 483, 540, 477); oc.clip(); oc.set_source_surface(low, 0, 180); oc.paint(); oc.restore()
+    oc.set_source_rgb(0, 0, 0); oc.rectangle(0, 477, 540, 6); oc.fill()
+    return out
 
 
 def s74c(t):
@@ -605,13 +631,13 @@ for name, dur in R5:
         FILM.append((name, dur, F5[name]))
 for name, dur in rr2.SHOTS:
     if name == "7.4":
-        FILM += [("7.4", 1.1, s74a), ("7.4b", 0.45, s54b), ("7.4c", 0.7, s74c)]
+        FILM += [("7.4", 2.1, s74a), ("7.4b", 0.45, s54b), ("7.4c", 0.7, s74c)]
     elif name == "6.3":
         FILM += [("6.2a", 0.8, s62a), ("6.2b", 1.5, s62b), ("6.2c", 0.9, s62c), ("6.3", 3.9, s63b)]
     elif name == "6.1":
         FILM.append(("6.1", 2.2, quick(rr2.FN["6.1"], dur / 2.2)))
     elif name == "6.2":
-        FILM.append(("6.2", 1.1, quick(rr2.FN["6.2"], dur / 1.1)))
+        FILM.append(("6.2", 1.3, s62h))
     elif name == "6.4":
         FILM.append(("6.4", 2.7, s64))
     else:
@@ -626,6 +652,75 @@ _b.boxer = mo.alive(_b.boxer, "CLIENT", _b.POSES, skin=_co.SKIN, mouth_kw=True)
 _ca.pam_corner = mo.alive(_ca.pam_corner, "PAM", _ca.P_POSES, skin=_ca.pn.ps.SKIN, lip=(0.72, 0.10, 0.12))
 _ca.referee = mo.alive(_ca.referee, "REFEREE", None, skin=_ca.cb.M_SKIN, tween_pose=False)
 _r.robot = mo.alive(_r.robot, "ROBOT", None, breathe=0.0, blinks=False, tween_pose=False)
+# v11: the hall is alive. The far crowd and the ringside hats bob, harder when something lands; fists go up; and on the
+# hall's back wall the crowd throws tall shadows that sway and wave (the alley's lesson: a big plain shadow that moves
+# is read at once; a row of still hats is wallpaper). HEAT: how worked up the hall is in a shot.
+import sofia_on3 as _so3, sofia_ob as _sob
+_so3.sofia = mo.alive(_so3.sofia, "SOFIA", None, tween_pose=False, blinks=False, mouth_kw=True)     # so her bubble follows her
+_sob.sofia = mo.alive(_sob.sofia, "SOFIA", None, tween_pose=False, blinks=False, mouth_kw=True)
+HEAT = {"5.1a": 0.7, "5.1b": 0.7, "5.2a": 0.8, "5.2": 0.8, "5.5": 1.0, "5.6": 1.0, "6.2a": 0.9, "6.2b": 1.0, "6.2c": 0.9, "6.4": 0.7, "7.1": 0.7,
+        "7.2": 1.0, "7.2b": 0.8, "7.3": 0.9, "7.5": 1.0}
+_hat0 = rg._hat
+
+
+def _heat():
+    return HEAT.get(mo.CLOCK["shot"], 0.4)
+
+
+def _hat_live(c, x, top, rr_, hat=True):
+    if mo.CLOCK["shot"] is None:
+        return _hat0(c, x, top, rr_, hat)
+    T, h, ph = mo.CLOCK["T"], _heat(), (x * 0.137) % 1.0
+    dy = -abs(math.sin(2 * math.pi * (T * (1.3 + 0.9 * ph) + ph))) * (2 + 7 * h) * rr_ / 14.0
+    _hat0(c, x, top + dy, rr_, hat)
+    if int(x * 7) % 3 == 0 and h > 0.6:                      # a fist over the hat, pumping
+        w = abs(math.sin(2 * math.pi * (T * 2.2 + ph)))
+        c.rectangle(x + rr_ * 0.9, top + dy - rr_ * (1.6 + 1.2 * w), rr_ * 0.5, rr_ * 2.6); c.fill()
+        c.arc(x + rr_ * 1.15, top + dy - rr_ * (1.7 + 1.2 * w), rr_ * 0.55, 0, 2 * math.pi); c.fill()
+
+
+rg._hat = _hat_live
+
+
+def _wall_crowd(c):
+    """Tall shadows of the crowd on the hall's back wall, behind everything in the ring."""
+    if mo.CLOCK["shot"] is None:
+        return
+    T, h = mo.CLOCK["T"], _heat()
+    base = rg.FAR - 60
+    c.save()
+    for j, x0 in enumerate(range(-160, int(rg.WW) + 260, 132)):
+        ph = (j * 0.37) % 1.0
+        x = x0 + (8 + 10 * h) * math.sin(2 * math.pi * (T * 0.7 + ph))
+        H = 190 + 46 * (j % 3) + 14 * h * math.sin(2 * math.pi * (T * 1.4 + ph))
+        sh, hd = base - H + 78, base - H + 40
+        c.new_path()
+        c.move_to(x - 62, base); c.line_to(x - 44, sh); c.line_to(x + 44, sh); c.line_to(x + 62, base); c.close_path()   # the body
+        c.arc(x, hd, 30, 0, 2 * math.pi)                                                                          # the head
+        c.rectangle(x - 50, hd - 26, 100, 10); c.rectangle(x - 30, hd - 62, 60, 38)                                # the hat
+        for sd in ((1,), (-1, 1))[int(h > 0.75 and j % 2 == 0)] if (j % 2 == 0 or h > 0.75) else ():              # an arm up, waving
+            a = -1.15 + 0.38 * math.sin(2 * math.pi * (T * (1.5 + h) + ph + 0.3 * sd))
+            ex, ey = x + sd * (44 + 70 * math.cos(a)), sh + 6 + 70 * math.sin(a)
+            fx, fy = ex + sd * 20 * math.cos(a - 0.5), ey + 64 * math.sin(a - 0.5)
+            c.move_to(x + sd * 30, sh + 4); c.line_to(ex - sd * 12, ey - 8); c.line_to(fx - sd * 12, fy); c.line_to(fx + sd * 12, fy)
+            c.line_to(ex + sd * 14, ey + 10); c.line_to(x + sd * 46, sh + 30); c.close_path()
+            c.arc(fx, fy - 6, 15, 0, 2 * math.pi)
+        c.set_source_rgba(0.03, 0.03, 0.04, 0.30 + 0.16 * h); c.fill()
+    c.restore()
+
+
+def _ring_with_wall():
+    src = inspect.getsource(rg.draw_ring)
+    old = "    dx, dy, dw, dh = DOOR                                                                  # the way out: a lit doorway\n"
+    assert old in src
+    ns = dict(rg.__dict__); ns["_wall_crowd"] = _wall_crowd
+    exec(src.replace(old, "    _wall_crowd(c)\n" + old).replace("_hat(c, x,", "_HAT(c, x,"), ns)
+    ns["_HAT"] = _hat_live
+    return ns["draw_ring"]
+
+
+rg.draw_ring = _ring_with_wall()
+
 TRIM = {"2.5": 0.9, "2.7": 1.3, "4.1": 1.0, "4.2": 1.3, "4.4t": 1.0, "4.4b": 0.8, "4.4c": 0.7, "6.3": 3.0, "8.1": 1.2, "8.2b": 0.7, "8.4": 1.3,
         "2.4": 1.5, "4.4": 2.1, "5.1a": 1.7, "5.2": 1.6, "5.3": 1.1, "7.1": 1.3, "7.2b": 1.3, "7.3": 2.0}      # v10: toward 80 s
 FILM = [(n, TRIM.get(n, d), quick(f, d / TRIM[n]) if n in TRIM else f) for n, d, f in FILM]

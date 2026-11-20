@@ -37,8 +37,10 @@ PHRASES = {
     "n4b": [("One number.", COMMA), ("I never called.", 0)],
     "n5": [("Nothing scares me.", 0)],
     "n6": [("I make my own fire.", 0)],
+    "n6b": [("If you want to survive, you need to bargain.", 0)],      # one phrase: the comma is the model's own, the fall comes at the end
     "n7": [("I name my price.", 0)],
     "n7b": [("I don't believe in signs.", 0)],
+    "n7c": [("I always hit first.", 0)],
     "n8": [("I don't break.", TURN), ("I break even.", 0)],
     "n9": [("It was a fair fight.", 0)],
     "n11": [("But I didn't quit.", 0)],

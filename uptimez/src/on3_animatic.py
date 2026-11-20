@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v6"
+V = "v7"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -46,6 +46,7 @@ LINES = {                                                    # v6: the lines, pr
     "2.6": [("SOFIA", "Call me.", "s1", 1.05)],
     "3.1": [("N", "Nothing scares me.", "n5", 0.2)],
     "3.2": [("N", "I make my own fire.", "n6", 0.1)],
+    "3.4": [("N", "If you want to survive, you need to bargain.", "n6b", 0.1)],      # v7 (Tomas, at 0:25): he is on his way to the meeting about the fight
     "3.4d": [("DON", "Just looking.", "d1", 0.15)],
     "4.3": [("CLIENT", "How much?", "c1", 0.3), ("MOM", "One hundred bucks.", "m3", 0.3)],
     "4.4": [("N", "I name my price.", "n7", 0.6)],
@@ -53,6 +54,7 @@ LINES = {                                                    # v6: the lines, pr
     "4.4t": [("N", "I don't believe in signs.", "n7b", 0.3)],
     "5.1a": [("SOFIA", "Round one.", "s2", 0.8)],
     "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 2.3)],
+    "5.2": [("N", "I always hit first.", "n7c", 0.2)],                # v7 (Tomas, at 0:50): the narrator, briefly, on the fight
     "5.3": [("ROBOT", "Human approval required.", "rb1", 0.2)],
     "5.4": [("MOM", "Approved.", "m5", 0.9)],
     "5.6": [("N", "I don't break. I break even.", "n8", 0.2)],
@@ -63,7 +65,7 @@ LINES = {                                                    # v6: the lines, pr
     "7.1": [("N", "But I didn't quit.", "n11", 0.1)],
     "7.2b": [("REFEREE", "Break!", "r1", 0.2)],
     "7.3": [("N", "Ten garages. That was the plan.", "n12", 0.6)],
-    "7.4": [("ROBOT", "Human approval still pending.", "rb2", 0.0), ("MOM", "Approved.", "m6", 0.7)],
+    "7.4": [("ROBOT", "Human approval still pending.", "rb2", 0.0), ("MOM", "Approved.", "m6", 1.75)],
     "8.3": [("N", "I'll call her back tomorrow.", "n13", 0.5)],
     "8.4": [("N", "Tomorrow.", "n14", 0.5)],
 }
@@ -116,6 +118,11 @@ def takes():
     meta, log = {}, {}
     for shot, ls in LINES.items():
         for who, text, key, _ in ls:
+            import hashlib
+            cp = "on3_voices/cache/%s_%s" % (who, hashlib.md5(("v6|" + who + "|" + text).encode()).hexdigest()[:12])
+            if os.path.exists(cp + ".wav"):                   # v7: a take chosen once is kept; only new lines are recorded
+                a = sf.read(cp + ".wav")[0]; sf.write("%s/%s.wav" % (VOICES, key), a.astype(np.float32), SR)
+                meta[key] = round(len(a) / SR, 3); log[key] = json.load(open(cp + ".json")); continue
             tried, best = [], None
             for f in (1.0, 0.94, 1.07, 0.88, 1.13):
                 if who == "N":                                # v6: the narrator: Don's voice, the Noir 1 recipe, phrase by phrase with written pauses
@@ -135,12 +142,15 @@ def takes():
             ok = miss == 0
             sf.write("%s/%s.wav" % (VOICES, key), a.astype(np.float32), SR)
             meta[key] = round(len(a) / SR, 3); log[key] = {"who": who, "line": text, "speed": f, "heard_ok": ok, "tried": tried}
+            os.makedirs("on3_voices/cache", exist_ok=True)
+            sf.write(cp + ".wav", a.astype(np.float32), SR); json.dump(log[key], open(cp + ".json", "w"))
     json.dump(meta, open(VOICES + "/takes.json", "w"), indent=1)
     json.dump(log, open(VOICES + "/speech_check.json", "w"), indent=1)
     return meta
 
 
-SEEN = ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")                      # their mouths are on the screen: the shot waits for the line
+SEEN = ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")
+HOLD_N = ("7.3",)                                            # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
 _ENV = {}
 
 
@@ -165,7 +175,7 @@ def schedule(meta):
             en = st + meta[key]
             lines.append((round(st, 3), round(en, 3), who, text, key))
             prev_end = en
-            need = max(need, (en + 0.2 - T) if who in SEEN else (st + min(meta[key], 0.8) - T))      # v3: a line whose speaker is not seen talking runs on over the next shot
+            need = max(need, (en + 0.2 - T) if (who in SEEN or name in HOLD_N) else (st + min(meta[key], 0.8) - T))      # v3: a line whose speaker is not seen talking runs on over the next shot
         need = math.ceil(need * FPS - 1e-6) / FPS
         if need > dur + 1e-6:
             held.append((name, round(need - dur, 2)))
@@ -276,9 +286,10 @@ def _card(c, text, y0=100):
     return y
 
 
-def _bubble(c, text, tip, top=100):
+def _bubble(c, text, tip, top=100, avoid=()):
     """A spoken line: a white bubble, black edge; its tail to the speaker's cheek, level with the mouth. tip None: the
-    speaker is out of the frame, and the bubble has no tail and sits at the edge she speaks from."""
+    speaker is out of the frame: no tail, at the top right. v7: avoid: boxes (x0, y0, x1, y1) of every head on the
+    screen; the bubble takes the first place, nearest the speaker, that covers none of them and stays in the safe area."""
     c.select_font_face("Inter", 0, 1); c.set_font_size(24)
     rows, line = [], ""
     for wd in text.split():
@@ -289,13 +300,22 @@ def _bubble(c, text, tip, top=100):
             line = trial
     rows.append(line)
     w = max(c.text_extents(r_).x_advance for r_ in rows) + 36; h = 30 * len(rows) + 26
+
+    def clear(bx, by):
+        return all(bx + w < x0 or bx > x1 or by + h < y0 or by > y1 for x0, y0, x1, y1 in avoid)
     if tip is None:
-        bx, by = 522 - w - 6, top + 10
+        cands = [(522 - w - 6, top + 10), (24, top + 10), (522 - w - 6, top + 90), (24, top + 90)]
+        bx, by = next((p for p in cands if clear(*p)), cands[0])
     else:
-        side = tip[2] if len(tip) > 2 else (1 if tip[0] < 270 else -1)      # toward the middle of the frame, unless told
-        bx = min(522 - w, max(18, tip[0] + side * 46 - (0 if side > 0 else w)))
-        by = max(top, tip[1] - 130 - h)
-        tx = bx + (w * 0.22 if side > 0 else w * 0.78)
+        side0 = tip[2] if len(tip) > 2 else (1 if tip[0] < 270 else -1)
+        cands = []
+        for up in (130, 180, 240, 90, 300):
+            for side in (side0, -side0):
+                for off in (46, 110, -40):
+                    bx = min(522 - w, max(18, tip[0] + side * off - (0 if side > 0 else w)))
+                    cands.append((bx, max(top, tip[1] - up - h), side))
+        bx, by, side = next((p for p in cands if clear(p[0], p[1]) and p[1] + h < tip[1] - 30), cands[0])
+        tx = min(bx + w - 26, max(bx + 26, tip[0] + side * 30))
         c.new_path(); c.move_to(tx - 13, by + h - 4); c.line_to(tip[0], tip[1]); c.line_to(tx + 13, by + h - 4); c.close_path()
         c.set_source_rgb(1, 1, 1); c.fill_preserve(); c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(3); c.set_line_join(1); c.stroke()
     r_ = 16
@@ -312,9 +332,24 @@ def _bubble(c, text, tip, top=100):
         c.move_to(bx + 18, by + 36 + 30 * i); c.show_text(r2)
 
 
+def _heads(shot):
+    """Every head on this drawing, as a box on the finished frame: the tracked figures and Mom where she sits."""
+    heads, zoom = fm.mo.CLOCK.get("heads") or {}, fm.mo.CLOCK.get("zoom")
+    out = []
+    pts = [(hx, hy, 62 * sc) for hx, hy, sc in heads.values()]
+    if shot in MOM_AT and MOM_AT[shot][0] < 530 and shot not in ("2.2",):
+        pts.append((MOM_AT[shot][0] - 20, MOM_AT[shot][1] - 40, 70))
+    for hx, hy, r in pts:
+        if zoom:
+            (fx_, fy_), z = zoom
+            hx, hy, r = fx_ + (hx - fx_) * z, fy_ + (hy - fy_) * z, r * z
+        out.append((hx - r, hy - r * 1.25, hx + r, hy + r * 0.9))
+    return out
+
+
 def _tip(who, shot):
     heads, zoom = fm.mo.CLOCK.get("heads") or {}, fm.mo.CLOCK.get("zoom")
-    if who in heads and not (who == "CLIENT" and shot in CLIENT_AT):
+    if who in heads and not (who == "CLIENT" and shot in CLIENT_AT) and not (who == "SOFIA" and shot == "5.1a" and False):
         hx, hy, sc = heads[who]
         side = 1 if hx < 270 else -1
         p = (hx + side * 30 * sc, hy + 30 * sc)
@@ -341,7 +376,7 @@ def _text(surf, shot, now):
             top = _card(c, text) + 6
     for who, text in now:
         if who != "N":
-            _bubble(c, text, _tip(who, shot), top)
+            _bubble(c, text, _tip(who, shot), top, _heads(shot))
     return s
 
 
