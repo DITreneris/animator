@@ -129,12 +129,19 @@ def _arm_rolled(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
     hx, hy = ex + d(a1 + a2)[0] * ln, ey + d(a1 + a2)[1] * ln
     if LONG[0]:                                            # v9 (Tomas, /grill-me): her arms as the Referee's: a bare forearm that runs into the hand, a sleeve that bends, one soft roll; no boxes, no joint
         c = k.c
-        for (ax, ay, bx, by, cl, ww) in ((ex, ey, hx, hy, skin, w - 4), (sx, sy, ex, ey, col, w + 1)):
+        for (ax, ay, bx, by, cl, ww) in ((ex, ey, hx, hy, col if SLEEVES[0] else skin, (w - 1) if SLEEVES[0] else (w - 4)), (sx, sy, ex, ey, col, w + 1)):
             for cc, extra in ((INK, 4.4), (cl, 0)):
                 c.set_source_rgb(*cc); c.set_line_width(ww + extra); c.set_line_cap(1)
                 c.new_path(); c.move_to(ax, ay); c.line_to(bx, by); c.stroke()
         c.set_source_rgb(*tuple(max(0, v - 0.12) for v in col)); c.set_line_width(2.4)
         ang = math.atan2(hy - ey, hx - ex)
+        if SLEEVES[0]:                                         # one fold at the bend, a cuff, a hand
+            c.new_path(); c.move_to(ex - 5, ey - 3); c.line_to(ex + 5, ey + 3); c.stroke(); c.set_line_cap(0)
+            ux_, uy_ = math.cos(ang), math.sin(ang)
+            c.set_source_rgb(*INK); c.set_line_width(w + 4); c.new_path(); c.move_to(hx - ux_ * 9, hy - uy_ * 9); c.line_to(hx - ux_ * 2, hy - uy_ * 2); c.stroke()
+            c.set_source_rgb(*tuple(min(1, v + 0.10) for v in col)); c.set_line_width(w + 0.5); c.new_path(); c.move_to(hx - ux_ * 8.5, hy - uy_ * 8.5); c.line_to(hx - ux_ * 2.5, hy - uy_ * 2.5); c.stroke()
+            ellipse(k, hx + ux_ * 5, hy + uy_ * 5, w * 0.56, w * 0.5, skin, seed, shadow=False, lw=2)
+            return hx, hy
         c.new_path(); c.arc(ex, ey, (w + 1) / 2 - 1, ang - 1.1, ang + 1.1); c.stroke(); c.set_line_cap(0)       # the roll, a fold
         ellipse(k, hx + math.cos(ang) * 3, hy + math.sin(ang) * 3, w * 0.62, w * 0.56, skin, seed, shadow=False, lw=2)
         c.set_source_rgb(*skin); c.set_line_width(w - 6.5); c.set_line_cap(1); c.new_path(); c.move_to(hx - math.cos(ang) * 8, hy - math.sin(ang) * 8); c.line_to(hx, hy); c.stroke(); c.set_line_cap(0)   # no line at the wrist
@@ -245,6 +252,9 @@ def pam_corner(k, x, feet, s=1.0, pose="p_stand", face="neutral", look=(0, 0), s
                     for dy in (12, 20):
                         c.new_path(); c.move_to(sx * 12, bt + ln - dy + 2); c.line_to(sx * 30, bt + ln - dy); c.stroke()
             if watch == "chest":
+                if SLEEVES[0]:                                                           # v10: a dark cord round her neck, plainly a cord, down to it
+                    c.set_source_rgb(0.10, 0.10, 0.12); c.set_line_width(3.6); c.set_line_cap(1)
+                    c.new_path(); c.move_to(-17, bt + 4); c.line_to(-2, bt + 60); c.move_to(17, bt + 4); c.line_to(2, bt + 60); c.stroke(); c.set_line_cap(0)
                 c.set_source_rgb(*INK); c.set_line_width(1.8)                            # the stopwatch, on its cord
                 c.new_path(); c.move_to(-8, bt + 30); c.line_to(-2, bt + 62); c.move_to(8, bt + 30); c.line_to(2, bt + 62); c.stroke()
                 rect(k_, -3, bt + 56, 6, 8, STEEL, seed_ + 70, shadow=False, lw=1.2)
@@ -339,6 +349,7 @@ def _vest(k, bt):
         c.new_path(); c.arc(9, bt + 92 + i * 16, 2.6, 0, 2 * math.pi); c.fill()
 
 
+SLEEVES = [False]                                          # v10 (Tomas, /grill-me): Pam in sleeves to the wrist, her stopwatch low on a plain cord
 LONG = [False]                                             # v8 (Tomas, /grill-me): the Referee in sleeves to the wrist, so nobody takes his forearms for a machine's
 
 

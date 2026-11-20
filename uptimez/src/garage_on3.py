@@ -331,3 +331,29 @@ def f82b():
     gone(k, 74, 250, 170, 130)
     c.restore()
     return s
+
+
+def f83b(u=1.0):
+    """8.3b, insert (v7; Tomas, /grill-me: the ending must be plain): the phone still ringing. u < 0.5: his thumb over the
+    red button, not pressing. u >= 0.5: the phone face down on the CV, his hand flat on it; it still buzzes."""
+    s, c, k = _surf()
+    c.set_source_rgb(0.42, 0.30, 0.20); c.paint()
+    g = cairo.RadialGradient(300, 300, 40, 300, 300, 800); g.add_color_stop_rgba(0, 1, 0.95, 0.75, 0.35); g.add_color_stop_rgba(1, 0, 0, 0, 0.35); c.set_source(g); c.paint()
+    cut(k, [(250, 470), (560, 440), (560, 900), (270, 930)], CARD, shadow=True, lw=3)
+    kit.text(k, "WELCOME", 420, 800, 36, INK, bold=True)
+    cv(k, 392, 380, 1.9, 0.07)
+    if u < 0.5:
+        cut(k, [(-40, 980), (-40, 700), (60, 640), (150, 700), (190, 980)], b.GOWN, shadow=False, lw=4)
+        ellipse(k, 124, 640, 62, 50, SKIN, 12, shadow=False, lw=3)
+        phone(k, 138, 520, 1.55, -0.10, "ring")
+        ellipse(k, 196, 600, 30, 20, SKIN, 13, shadow=False, lw=3)                                    # his thumb, over the red button
+        buzz(k, 138, 430, 96, 2)
+    else:
+        v = (u - 0.5) / 0.5
+        phone(k, 386, 430, 1.55, 0.42, back=True)
+        buzz(k, 386, 430, 150, 2)
+        cut(k, [(120, 980), (150, 760), (300, 560), (420, 600), (330, 800), (330, 980)], b.GOWN, shadow=False, lw=4)   # his arm, across
+        ellipse(k, 372, 520 + 20 * (1 - v), 86, 64, SKIN, 14, shadow=False, lw=3.4)                    # his hand, flat on it
+        for i in range(4):
+            ellipse(k, 318 + i * 36, 462 + 20 * (1 - v) - (6 if i in (1, 2) else 0), 17, 30, SKIN, 15 + i, shadow=False, lw=2.6)
+    return s

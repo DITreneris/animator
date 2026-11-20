@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v4 (v1 to v3: film_on3_v1.py, _v2.py, _v3.py). v4 (Tomas,
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v5 (v1 to v4 pinned: film_on3_v1.py ... _v4.py). v5
+(Tomas, /grill-me): Pam in sleeves to the wrist, her stopwatch on a plain cord; the robe in three held pictures (she
+pulls, it sticks at the gloves; the bell, large; she waves it off and shoves it back); the hand-over at the car in
+1.8 s; her hand pushes the ticket; the first punch is seen landing; his hand turns the ringing phone face down on the
+CV (8.3b). v4: v4 (Tomas,
 /grill-me): Don's entrance is three cuts (his outline in the white door, the aisle, over the ropes); in the alley the
 gun's shadow comes down beside his head before he looks up; her one hand does everything at the desk; Pam's arms
 as the Referee's; one great match for a phone (3.2c); shorter: the street, the alley, the split screen, the count and
@@ -39,6 +43,7 @@ import sofia_on3 as so3
 import client_sheet_on3 as csh
 from kit import Ctx, rect
 ca.LONG[0] = True
+ca.SLEEVES[0] = True
 K = dict(cards="deck", v4=True, v6=True)
 
 
@@ -187,7 +192,7 @@ def s44(t):
     if t < 1.2:
         pay = 0.0 if t < 0.5 else 0.3 + 0.7 * ramp(t, 0.5, 0.45)
         return of.reverse(pay, 0.0, **K)
-    tk = ramp(t, 1.9, 0.5) if t >= 1.9 else None
+    tk = ramp(t, 2.15, 0.6) if t >= 2.15 else None           # then the same hand pushes the ticket out to him
     return of.reverse(1.0, 0.0, one=ramp(t, 1.2, 0.35) + ramp(t, 1.6, 0.5), ticket=tk, **K)
 
 
@@ -209,28 +214,55 @@ def s44c(t):
 
 # ---- 05 to 07 the ring: the roughs' own shots, with the button ----------------------------------------------------
 def s51c(t):
-    """Pam: "I'll help you undress." She has the robe off his shoulders and is pulling at the sleeve when the bell goes
-    (the Referee's arm comes down). "Ah. Too late. The bell." She shoves it back up over him."""
-    if t < 2.0:
-        return F5["5.1c"](t)
-    if t < 2.5:
-        u = (t - 2.0) / 0.5
+    """Three pictures, each held. 1 (to 1.3): Pam has the robe off his shoulders; the sleeve comes with her and sticks at
+    the glove. "I'll help you undress." 2 (1.3 to 2.2): the bell, large: the Referee's hand on it, the sound coming off
+    it. 3 (2.2 to 3.4): she lets go, one hand thrown up at the bell, and shoves the robe back up over him. "Ah. Too late.
+    The bell." (Pam)"""
+    if t < 1.3:
+        return F5["5.1c"](min(t * 1.25, 1.6))
+    if t < 2.2:
+        u = (t - 1.3) / 0.9
 
         def ref(k):
-            c = k.c                                          # the ring's bell on its board, beside him; his hand comes down on it
-            bx, by = 400, rg.F - 236
-            rect(k, bx - 30, by - 34, 60, 76, (0.30, 0.26, 0.22), 3, shadow=False, lw=2.4)
-            c.set_source_rgb(0.86, 0.86, 0.82); c.arc(bx, by, 24, 0, 2 * math.pi); c.fill_preserve(); c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(2.6); c.stroke()
-            c.arc(bx, by, 6, 0, 2 * math.pi); c.fill()
-            if u >= 0.4:
-                c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(5); c.move_to(bx - 40, by + 44); c.line_to(bx - 14, by + 12); c.stroke()
-            ca.referee(k, 336, rg.F - 96, rg.SC * ca.REL_REF, "ref_bell" if u < 0.4 else "ref_stand", look=(-0.8, 0), waistcoat=True)
-            if u >= 0.4:                                     # the bell: rings out from his hand
-                c = k.c; c.set_source_rgb(0.96, 0.96, 0.92); c.set_line_width(2.4)
-                for r_ in (26, 40, 54):
-                    c.new_path(); c.arc(400, rg.F - 236, 14 + r_ * (0.6 + 0.8 * (u - 0.4) / 0.6), -2.6, -0.5); c.stroke()
-        return rg.frame((336, rg.F - 230, 2.3), [ref], [], near=False, hats=False)
-    return F5["5.1c"](2.3 + (t - 2.5))
+            c = k.c
+            bx, by = 392, rg.F - 240
+            rect(k, bx - 34, by - 40, 68, 88, (0.30, 0.26, 0.22), 3, shadow=False, lw=2.6)
+            c.set_source_rgb(0.86, 0.86, 0.82); c.arc(bx, by, 28, 0, 2 * math.pi); c.fill_preserve(); c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(3); c.stroke()
+            c.arc(bx, by, 7, 0, 2 * math.pi); c.fill()
+            ca.referee(k, 320, rg.F - 96, rg.SC * ca.REL_REF, "ref_bell" if u < 0.25 else (-11, 4) + ca.cb._m_ik(1, 96, ca.cb.M_BT + 30), look=(0.8, 0), waistcoat=True)
+            if u >= 0.25:
+                c.set_source_rgb(0.97, 0.97, 0.93); c.set_line_width(3.4); c.set_line_cap(1)
+                for i_, r_ in enumerate((36, 52, 68, 84)):
+                    ph = ((u - 0.25) * 2.2 + i_ * 0.25) % 1.0
+                    for a0, a1 in ((-2.7, -1.9), (-1.25, -0.45), (0.45, 1.25)):
+                        c.new_path(); c.arc(bx, by, 30 + 70 * ph, a0, a1); c.stroke()
+                c.set_line_cap(0)
+        return rg.frame((372, rg.F - 236, 2.9), [ref], [], near=False, hats=False)
+    return F5["5.1c"](2.35 + (t - 2.2) * (0.85 / 1.2))
+
+
+def s55(t):
+    """5.5 with the punch seen: the tick; the glove through his eyes; black; then, from outside, the piston out and its
+    glove on his jaw, held; then he goes over."""
+    if t < 0.9:
+        return F5["5.5"](t)
+    if t < 1.25:                                             # close: the grey glove on his jaw, his face folding round it (the film's first picture, without the plaster yet)
+        u = (t - 0.9) / 0.35
+        s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_); k = Ctx(c, 0)
+        g = cairo.RadialGradient(230, 300, 40, 230, 300, 760)
+        g.add_color_stop_rgba(0, 0.80, 0.80, 0.82, 1); g.add_color_stop_rgba(1, 0.14, 0.14, 0.16, 1); c.set_source(g); c.paint()
+        sc = 3.3 * b.REL
+        dx = -26 * ramp(u, 0.25, 0.5)
+        b.boxer(k, 210 + dx, 520 - b.HY * sc + 20, sc, "b_walk", "hard" if u < 0.2 else "shock", (0.9, 0.0))
+        b.robot_glove(k, lerp(470.0, 300.0, u / 0.2) + dx * 0.6, 500, 3.0)
+        if 0.2 <= u < 0.75:
+            c.set_source_rgb(1, 1, 1); c.set_line_width(9); c.set_line_cap(1)
+            for i in range(7):
+                an = -2.6 + i * 0.5
+                c.move_to(250 + 90 * math.cos(an), 470 + 90 * math.sin(an)); c.line_to(250 + 150 * math.cos(an), 470 + 150 * math.sin(an)); c.stroke()
+        csh.noir(s_)
+        return s_
+    return F5["5.5"](0.93 + (t - 1.25))
 
 
 def s63(t):
@@ -451,11 +483,11 @@ def s85(t):
 
 
 FILM = [("1.1", 0.6, s11),
-        ("2.0", 0.9, s20), ("2.1", 0.8, quick(s21, 1.35)), ("2.2", 1.2, quick(s22, 1.2)), ("2.4", 2.8, s24), ("2.4b", 0.9, quick(s24b, 1.4)),
+        ("2.0", 0.9, s20), ("2.1", 0.8, quick(s21, 1.35)), ("2.2", 1.2, quick(s22, 1.2)), ("2.4", 1.8, quick(s24, 2.8 / 1.8)), ("2.4b", 0.9, quick(s24b, 1.4)),
         ("2.5", 1.1, s25), ("2.6", 1.2, quick(s26, 1.2)), ("2.7", 1.7, s27),
         ("3.1", 1.0, quick(s31, 1.3)), ("3.2", 0.8, s32), ("3.2b", 1.0, s32b), ("3.2c", 0.9, s32c), ("3.3", 0.9, s33), ("3.3b", 1.4, quick(s33b, 1.15)),
         ("3.4", 1.0, quick(s34, 1.3)), ("3.4b", 2.2, s34b),
-        ("4.1", 1.3, s41), ("4.2", 1.9, s42), ("4.3", 1.4, s43), ("4.4", 2.5, s44), ("4.4a", 0.9, s44a), ("4.4t", 1.5, s44t), ("4.4b", 1.2, s44b), ("4.4c", 1.2, quick(s44c, 1.15))]
+        ("4.1", 1.3, s41), ("4.2", 1.9, s42), ("4.3", 1.4, s43), ("4.4", 2.9, s44), ("4.4a", 0.9, s44a), ("4.4t", 1.5, s44t), ("4.4b", 1.2, s44b), ("4.4c", 1.2, quick(s44c, 1.15))]
 for name, dur in R5:
     if name == "5.4":
         FILM += [("5.4", 1.3, F5["5.4"]), ("5.4b", 0.5, s54b)]
@@ -463,6 +495,8 @@ for name, dur in R5:
         FILM.append(("5.1c", 3.4, s51c))
     elif name == "5.1a":
         FILM += [("5.1a", dur, F5["5.1a"]), ("5.1a2", 0.9, s51a2)]
+    elif name == "5.5":
+        FILM.append(("5.5", dur + 0.35, s55))
     elif name == "5.6":
         FILM.append(("5.6", 1.3, quick(F5["5.6"], dur / 1.3)))           # the count, quicker
     else:
@@ -480,7 +514,7 @@ for name, dur in rr2.SHOTS:
         FILM.append(("6.4", 2.5, s64))
     else:
         FILM.append((name, dur, rr2.FN[name]))
-FILM += [("8.1", 1.6, s81), ("8.2", 1.3, s82), ("8.2b", 1.0, lambda t: ga.f82b()), ("8.3", 2.2, s83), ("8.4", 2.2, s84), ("8.5", 1.0, s85)]
+FILM += [("8.1", 1.6, s81), ("8.2", 1.3, s82), ("8.2b", 1.0, lambda t: ga.f82b()), ("8.3", 1.8, s83), ("8.3b", 1.2, lambda t: _buzzing(lambda: ga.f83b(0.2 if t < 0.5 else 0.5 + 0.5 * ramp(t, 0.5, 0.3)), t)), ("8.4", 1.7, s84), ("8.5", 1.0, s85)]
 
 
 def _use():

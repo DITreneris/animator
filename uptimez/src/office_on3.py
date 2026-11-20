@@ -238,7 +238,7 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None, v6=F
     rect(k, 36, 852, 124, 30, (0.10, 0.10, 0.11), 6, shadow=False, lw=2.6)                 # the button, at her left
     ellipse(k, 98, 850, 38, 17, (0.55, 0.55, 0.56), 7, shadow=False, lw=2.8)
     if one is not None:
-        _one(c, k, one)
+        _one(c, k, one, ticket if (ticket is not None and ticket < 0.62) else None)
     elif take > 0 and v4:
         _take(k, soft=cards == "deck")
     elif take > 0:                                           # her hand, rings up, over the note
@@ -359,7 +359,7 @@ def _her_hand(k, x, y, grip=False):
         c.restore()
 
 
-def _one(c, k, u):
+def _one(c, k, u, push=None):
     """v8 (Tomas, /grill-me): one hand does all of it, so nobody asks whose the second is. u 0..1: it comes down on the
     hundred. 1..2: it pushes the hundred under the foot of her coupe and lets go. 2..3: to the deck; the top card to the
     middle of the desk, face down. 3..4: it turns the card: the Tower; the hand lies beside it."""
@@ -394,6 +394,8 @@ def _one(c, k, u):
             v = (t - 0.5) / 0.5
             card(k, M[0], M[1], 1.9 + 0.5 * math.sin(math.pi * v), 0.04, "tower3", 0.5 * (0.25 + 0.75 * v))
         hx, hy = f((M[0] + 30, M[1] + 62), (M[0] + 120, M[1] + 110), max(0.0, t - 0.6) / 0.4); grip = False
+    if push is not None:                                     # v9: the same hand pushes the ticket out to him, and comes back
+        hx, hy, grip = 150 - 10 * push + 34, _lerp(880.0, 640.0, push) + 78, True
     _her_hand(k, hx, hy, grip)
 
 
