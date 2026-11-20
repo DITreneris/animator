@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v5"
+V = "v6"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -35,29 +35,38 @@ GAP = 0.30                                                  # v5: air between li
 LEAD = 0.25                                                 # a narration line never starts on the cut
 
 # shot -> [(who, line, take key, offset into the shot)]
-LINES = {
-    "2.0": [("N", "They say I know how business is done.", "n1", 0.0)],     # over the bill, after the punch (1.1 is 0.6 s)
+LINES = {                                                    # v6: the lines, proposal v2 (on3_lines_proposal_v2.md)
+    "2.0": [("N", "Word is, I know how business works.", "n1", 0.0)],
     "2.1": [("N", "One fight.", "n2", 0.15)],
-    "2.2": [("MOM", "Where are you going, skunk?", "m1", 0.6)],
+    "2.2": [("MOM", "Where are you going, skunk?", "m1", 0.3), ("N", "My manager. Also my mother.", "n2b", 0.3)],
     "2.4": [("MOM", "Everything you need is in there.", "m2", 0.5)],
-    "2.4b": [("N", "A lot of money.", "n3", 0.1)],
+    "2.4b": [("N", "One folder.", "n3", 0.1)],
     "2.5": [("N", "One woman.", "n4", 0.2)],
-    "3.1": [("N", "I don't ask.", "n5", 0.2)],
-    "3.2": [("N", "I'm the one who asks the questions.", "n6", 0.1)],
+    "2.7": [("N", "One number I never called.", "n4b", 0.3)],
+    "2.6": [("SOFIA", "Call me.", "s1", 1.05)],
+    "3.1": [("N", "Nothing scares me.", "n5", 0.2)],
+    "3.2": [("N", "I make my own fire.", "n6", 0.1)],
+    "3.4d": [("DON", "Just looking.", "d1", 0.15)],
     "4.3": [("CLIENT", "How much?", "c1", 0.3), ("MOM", "One hundred bucks.", "m3", 0.3)],
     "4.4": [("N", "I name my price.", "n7", 0.6)],
-    "4.4a": [("MOM", "For the fight.", "m4", 0.1)],
-    "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Ah. Too late. The bell.", "p2", 2.3)],
+    "4.4a": [("MOM", "Your ticket. You're fighting.", "m4", 0.1)],
+    "4.4t": [("N", "I don't believe in signs.", "n7b", 0.3)],
+    "5.1a": [("SOFIA", "Round one.", "s2", 0.8)],
+    "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 2.3)],
+    "5.3": [("ROBOT", "Human approval required.", "rb1", 0.2)],
     "5.4": [("MOM", "Approved.", "m5", 0.9)],
     "5.6": [("N", "I don't break. I break even.", "n8", 0.2)],
     "6.1": [("PAM", "Some punch. Others patch.", "p3", 0.8)],
-    "6.2": [("N", "They beat me. They cheated me.", "n9", 0.0)],
-    "6.3": [("N", "They robbed me.", "n10", 1.4)],
+    "6.2": [("N", "It was a fair fight.", "n9", 0.0)],
+    "6.3": [("DON", "The woman in the photo…", "d2", 0.3), ("DON", "Recognize her?", "d3", 2.0)],
+    "6.4": [("DON", "Case closed.", "d4", 0.45)],
     "7.1": [("N", "But I didn't quit.", "n11", 0.1)],
     "7.2b": [("REFEREE", "Break!", "r1", 0.2)],
-    "7.4": [("MOM", "Approved.", "m6", 0.7)],
+    "7.3": [("N", "Ten garages. That was the plan.", "n12", 0.6)],
+    "7.4": [("ROBOT", "Human approval still pending.", "rb2", 0.0), ("MOM", "Approved.", "m6", 0.7)],
+    "8.3": [("N", "I'll call her back tomorrow.", "n13", 0.5)],
+    "8.4": [("N", "Tomorrow.", "n14", 0.5)],
 }
-# effect, shot, offset into the shot
 FX = [("punch", "1.1", 0.30), ("snap", "3.2c", 0.42), ("bell", "5.1c", 1.55), ("bell", "5.2a", 0.0), ("click", "5.4b", 0.15),
       ("punch", "5.5", 0.97), ("pop", "6.2a", 0.2), ("pop", "6.2a", 0.5), ("pop", "6.2b", 0.3), ("pop", "6.2b", 0.9), ("stamp", "6.4", 0.34),
       ("click", "7.4b", 0.15), ("punch", "7.5", 0.75), ("chime", "8.1", 0.05), ("buzz", "8.2", 0.2), ("buzz", "8.3", 0.1), ("buzz", "8.3", 0.8),
@@ -100,14 +109,20 @@ def takes():
     pv, psp, _ = sx.PAMS["A"]
     cv, csp, csem, _ = sob.CANDS[sob.CLIENT]
     client = lambda t, f: bc.norm(sob.warm(so.pitch(so.dry(t, cv, csp * f), csem)))
-    say = {"N": client, "CLIENT": client, "MOM": lambda t, f: bc.mom(t, f),
+    import on3_narr_clean as nc
+    say = {"CLIENT": client, "MOM": lambda t, f: bc.mom(t, f), "SOFIA": lambda t, f: bc.sofia(t, f), "ROBOT": lambda t, f: bc.robot(t, 1.12 * f),
+           "DON": lambda t, f: bc.norm(so.dry(t, "am_michael", 1.08 * f)),          # v6: Don's voice 1 of his audition; the narrator has am_onyx
            "PAM": lambda t, f: bc.norm(so.dry(t, pv, 1.0 * f)), "REFEREE": lambda t, f: bc.norm(so.dry(t, "bm_george", 1.05 * f))}
     meta, log = {}, {}
     for shot, ls in LINES.items():
         for who, text, key, _ in ls:
             tried, best = [], None
             for f in (1.0, 0.94, 1.07, 0.88, 1.13):
-                a = trim(np.asarray(say[who](text, f), dtype=np.float64)); h = heard(a)
+                if who == "N":                                # v6: the narrator: Don's voice, the Noir 1 recipe, phrase by phrase with written pauses
+                    a = np.asarray(nc.take(key, "D", f), dtype=np.float64)
+                else:
+                    a = trim(np.asarray(say[who](text, f), dtype=np.float64))
+                h = heard(a)
                 want = _words(text)
                 import difflib
                 miss = len(want) + len(h) - 2 * sum(m_.size for m_ in difflib.SequenceMatcher(None, want, h).get_matching_blocks())
@@ -125,7 +140,7 @@ def takes():
     return meta
 
 
-SEEN = ("CLIENT", "PAM", "REFEREE")                      # their mouths are on the screen: the shot waits for the line
+SEEN = ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")                      # their mouths are on the screen: the shot waits for the line
 _ENV = {}
 
 
@@ -235,7 +250,8 @@ def mix(shots, lines, total):
 
 MOM_AT = {"4.3": (322, 338), "5.4": (268, 562), "7.4": (268, 562),       # her cheek, level with her mouth, where she is on the screen
           "2.2": (330, 600), "2.4": (536, 420), "4.4a": (536, 330)}       # out of sight: the tail goes to the car, or off the edge she is at
-CLIENT_AT = {"4.3": (96, 302)}                              # he speaks with his back to us: the tail goes to his hood
+CLIENT_AT = {"4.3": (96, 302)}
+SOFIA_AT = {"2.6": (412, 462, 1), "5.1a": (440, 630)}        # (x, y) or (x, y, side): which side of the tip the bubble sits                              # he speaks with his back to us: the tail goes to his hood
 
 
 def _card(c, text, y0=100):
@@ -276,7 +292,7 @@ def _bubble(c, text, tip, top=100):
     if tip is None:
         bx, by = 522 - w - 6, top + 10
     else:
-        side = 1 if tip[0] < 270 else -1                     # toward the middle of the frame
+        side = tip[2] if len(tip) > 2 else (1 if tip[0] < 270 else -1)      # toward the middle of the frame, unless told
         bx = min(522 - w, max(18, tip[0] + side * 46 - (0 if side > 0 else w)))
         by = max(top, tip[1] - 130 - h)
         tx = bx + (w * 0.22 if side > 0 else w * 0.78)
@@ -303,12 +319,12 @@ def _tip(who, shot):
         side = 1 if hx < 270 else -1
         p = (hx + side * 30 * sc, hy + 30 * sc)
     else:
-        p = {"MOM": MOM_AT, "CLIENT": CLIENT_AT}.get(who, {}).get(shot)
+        p = {"MOM": MOM_AT, "CLIENT": CLIENT_AT, "SOFIA": SOFIA_AT}.get(who, {}).get(shot)
         if p is None:
             return None
     if zoom:
         (fx_, fy_), z = zoom
-        p = (fx_ + (p[0] - fx_) * z, fy_ + (p[1] - fy_) * z)
+        p = (fx_ + (p[0] - fx_) * z, fy_ + (p[1] - fy_) * z) + tuple(p[2:])
     return p
 
 

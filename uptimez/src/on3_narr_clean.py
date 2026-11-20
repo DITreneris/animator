@@ -34,8 +34,9 @@ def clean(a, semis):
     return a / np.sqrt(np.mean(a ** 2)) * 0.12
 
 
-def take(key, kind):
+def take(key, kind, pace=1.0):
     v, sp, semis, _ = KINDS[kind]
+    sp = sp * pace
     parts = []
     for txt, gap in nn.PHRASES[key]:
         best = None
