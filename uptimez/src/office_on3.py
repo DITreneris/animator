@@ -84,15 +84,24 @@ def card(k, x, y, s=1.0, ang=0.0, sym="star", sq=0.62):
         c.set_source_rgb(*INK); c.rectangle(-6, -11, 12, 26); c.fill()
         for dx in (-6, -1, 4):
             c.rectangle(dx, -16, 3, 5); c.fill()
+    elif sym == "tower2":                                    # the Tower, struck: its top going over, a bolt
+        c.set_source_rgb(*INK); c.rectangle(-7, -6, 13, 26); c.fill()
+        c.save(); c.translate(6, -6); c.rotate(0.55); c.rectangle(-13, -12, 13, 11); c.fill()
+        for dx in (-13, -8, -3):
+            c.rectangle(dx, -16, 3, 5); c.fill()
+        c.restore()
+        c.new_path(); c.move_to(-13, -22); c.line_to(-8, -22); c.line_to(-5, -15); c.line_to(-2, -15); c.line_to(-6, -3); c.line_to(-8, -11); c.line_to(-11, -11); c.close_path(); c.fill()   # the bolt, thick enough for a phone
     else:
         c.move_to(-13, -23); c.line_to(13, 23); c.move_to(13, -23); c.line_to(-13, 23); c.stroke()
     c.restore()
 
 
-def spread(k, x, y, s=1.0, side=1, sq=0.62):
+def spread(k, x, y, s=1.0, side=1, sq=0.62, faces=("star", "tower", "gear")):
     """v2 (Tomas, 20 Nov: the desk looked empty): her tarot spread. Three cards face up in a row, the gear last, and
     the deck beside them. side: +1 as she sees it (the deck at her right), -1 from the other side of the desk."""
-    for i, sym in enumerate(("star", "tower", "gear")):
+    for i, sym in enumerate(faces):
+        if sym is None:
+            continue
         card(k, x + side * (i - 1) * 46 * s, y + (2 if i == 1 else 0) * s, s, side * (i - 1) * 0.10 + (math.pi if side < 0 else 0), sym, sq)
     for j in range(3):
         card(k, x + side * 118 * s + j * 2 * s, y - j * 3 * s, s, 0.2, "back", sq)
@@ -148,8 +157,8 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False):
     rect(k, 430, 498, 62, 16, (0.10, 0.10, 0.11), 6, shadow=False, lw=2)                   # the button, by her
     ellipse(k, 461, 498, 18, 9, (0.55, 0.55, 0.56), 7, shadow=False, lw=2)
     q.coupe(k, 286, 520, 0.95)
-    if cards:
-        spread(k, 372, 600, 1.15, -1, 0.5)
+    if cards:                                                # cards="down": all three face down (before she turns one)
+        spread(k, 372, 600, 1.15, -1, 0.5, faces=("back",) * 3 if cards == "down" else ("star", "tower", "gear"))
     cut(k, [(-60, 980), (-60, 560), (-10, 380), (90, 300), (190, 380), (240, 580), (256, 980)], TRACK, shadow=False, lw=4)   # his back, hood up
     c.set_source_rgb(0.14, 0.14, 0.16); c.set_line_width(4); c.set_line_cap(1)
     c.move_to(10, 430); c.curve_to(60, 350, 130, 350, 172, 430); c.stroke()               # the hood's seam
@@ -166,7 +175,7 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False):
     return s
 
 
-def reverse(pay=0.0, take=0.0, cards=False):
+def reverse(pay=0.0, take=0.0, cards=False, turn=None):
     """M3, 4.4: her view. He is small, in his tracksuit, in front of the desk, the door behind him. pay 0..1: the note
     crosses the desk toward us. take 0..1: her ringed hand comes in from the near edge and covers it."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -181,8 +190,10 @@ def reverse(pay=0.0, take=0.0, cards=False):
     cut(k, [(120, 560), (420, 560), (660, 960), (-120, 960)], DESK, shadow=False, lw=3)    # the desk, from her side
     g = cairo.LinearGradient(0, 560, 0, 960); g.add_color_stop_rgba(0, 0, 0, 0, 0.2); g.add_color_stop_rgba(1, 1, 1, 1, 0.25)
     c.set_source(g); c.rectangle(-120, 560, 780, 400); c.fill()
-    if cards:
+    if cards and turn is None:
         spread(k, 250, 700, 1.7, 1, 0.5)
+    elif cards:                                              # v3 (Tomas, /grill-me): three face down; she turns the last one
+        spread(k, 250, 700, 1.7, 1, 0.5, faces=("back", "back", None))
     if pay >= 0.3:                                           # the hundred, on the desk, coming to her
         u = (pay - 0.3) / 0.7
         b.banknote(k, 270, _lerp(600.0, 800.0, u), _lerp(0.9, 2.2, u), 0.08, 3)
@@ -198,5 +209,54 @@ def reverse(pay=0.0, take=0.0, cards=False):
             rect(k, 275 + dx - 10, hy - 92, 20, 56, SKIN, 11 + i, shadow=False, lw=2.4)
             if i in (1, 2):
                 rect(k, 275 + dx - 12, hy - 62, 24, 13, (0.86, 0.87, 0.90), 15 + i, shadow=False, lw=1.6)
+    if cards and turn is not None:
+        _turn(c, k, turn)
+    csh.noir(s)
+    return s
+
+
+def _turn(c, k, t):
+    """4.4, its end: her other hand comes in from the right and turns the last card: the Tower. She does not look up
+    (this is her view). t 0: face down. 0..0.5: the hand comes, the card's edge lifts. 0.5..1: it goes over, larger
+    for a moment, and lies face up; the hand rests beside it."""
+    cx, cy = 250 + 46 * 1.7, 700
+    if t <= 0:
+        card(k, cx, cy, 1.7, 0.10, "back", 0.5)
+    elif t < 0.5:
+        u = t / 0.5
+        card(k, cx, cy - 10 * u, 1.7, 0.10, "back", 0.5 * (1 - 0.8 * u))      # seen thinner and thinner: its edge comes up
+    else:
+        u = (t - 0.5) / 0.5
+        card(k, cx, cy - 10 * (1 - u), 1.7 + 0.9 * math.sin(math.pi * min(u, 1.0)) * 0.4 + 0.5, 0.06, "tower2", 0.5 * (0.2 + 0.8 * u))
+    if t > 0:
+        u = min(t / 0.5, 1.0)
+        hx, hy = _lerp(620.0, cx + 74, u) + (30 * max(0.0, t - 0.75) / 0.25), cy - 4
+        c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(46); c.set_line_cap(0); c.move_to(640, hy + 60); c.line_to(hx + 60, hy + 8); c.stroke()   # her sleeve, from the right
+        rect(k, hx + 30, hy - 16, 34, 44, (0.84, 0.84, 0.86), 21, shadow=False, lw=2.4)
+        ellipse(k, hx, hy + 4, 34, 24, SKIN, 22, shadow=False, lw=3)
+        for i, dy in enumerate((-12, 2, 16)):
+            rect(k, hx - 58, hy + dy - 6, 34, 13, SKIN, 23 + i, shadow=False, lw=2.2)
+        rect(k, hx - 30, hy - 4, 12, 17, (0.86, 0.87, 0.90), 27, shadow=False, lw=1.6)
+
+
+def tower_insert(t=1.0):
+    """4.4b, insert (v3): the turned card, close, from above her hands. The Tower, struck. t < 1: her fingers still on
+    its edge. Below it, the corner of the hundred under her other hand."""
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    c.set_source_rgb(*DESK); c.paint()
+    g = cairo.RadialGradient(270, 380, 60, 270, 380, 760); g.add_color_stop_rgba(0, 1, 1, 1, 0.34); g.add_color_stop_rgba(1, 0, 0, 0, 0.42); c.set_source(g); c.paint()
+    card(k, 96, 150, 5.2, -0.12, "back", 1.0); card(k, -40, 420, 5.2, 0.08, "back", 1.0)       # the two still face down
+    card(k, 286, 400, 9.4, 0.05, "tower2", 1.0)
+    b.banknote(k, 150, 880, 4.2, 0.10, 3)                                                    # the hundred, under her hand
+    rect(k, 250, 880, 330, 150, (0.10, 0.10, 0.11), 30, shadow=False, lw=3)
+    rect(k, 214, 868, 60, 120, (0.84, 0.84, 0.86), 31, shadow=False, lw=2.6)
+    ellipse(k, 150, 930, 96, 66, SKIN, 32, shadow=False, lw=3.4)
+    hx = _lerp(452.0, 520.0, t)                                                              # her other hand, leaving the card
+    rect(k, hx + 54, 470, 120, 110, (0.10, 0.10, 0.11), 33, shadow=False, lw=3)
+    rect(k, hx + 30, 462, 44, 124, (0.84, 0.84, 0.86), 34, shadow=False, lw=2.6)
+    ellipse(k, hx, 524, 62, 50, SKIN, 35, shadow=False, lw=3.4)
+    for i, dy in enumerate((-30, -4, 22)):
+        rect(k, hx - 104, 524 + dy - 11, 62, 24, SKIN, 36 + i, shadow=False, lw=2.6)
+    rect(k, hx - 60, 510, 20, 30, (0.86, 0.87, 0.90), 40, shadow=False, lw=2)
     csh.noir(s)
     return s
