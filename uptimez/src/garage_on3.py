@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: his garage office, awake, beat 08 (20 Nov), set v2 (v1 is garage_on3_v1.py). v2, after an outside
+"""OFFICE NOIR 3: his garage office, awake, beat 08 (20 Nov), set v3 (v1, v2: garage_on3_v1.py, _v2.py; v3: in 8.4 it is the same arm that hung to the phone that lays it on the CV). v2, after an outside
 review and cold tests 20-21: he is drawn lying (knees up, his head against the sofa's arm, one arm hanging to the phone
 on the floor), not a standing figure turned over; in 8.4 the gown comes down over his eyes and his other arm lays the
 phone on the CV; her photograph is clipped to the CV; on the wall the plan has left its ghost (ten bays, 10 GARAGES);
@@ -213,16 +213,16 @@ def lying(k, face="exhausted", look=(-0.2, 0.6), hide=False, reach=False):
         for (x0, y0, x1, y1) in ((346, 590, 392, 600), (352, 616, 398, 628), (372, 646, 392, 658)):
             c.move_to(x0, y0); c.line_to(x1, y1); c.stroke()
         c.set_line_cap(0)
-    if reach:                                                # out over the sofa's arm, to the table: shoulder, elbow, wrist, hand
-        _seg(k, (310, 664), (392, 598), 17, 14, b.GOWN); _seg(k, (392, 598), (448, 616), 14, 12, b.GOWN)
-        _seg(k, (446, 616), (454, 618), 12, 12, CREAM, 2)
+    _seg(k, (304, 660), (262, 632), 16, 13, b.GOWN); _seg(k, (262, 632), (236, 664), 13, 11, b.GOWN)  # one arm on his belly, always
+    ellipse(k, 232, 668, 14, 11, SKIN, 15, shadow=False, lw=2.6)
+    if reach:                                                # v3: the arm that hung to the floor has come up with the phone: shoulder, elbow, wrist, hand
+        _seg(k, (304, 684), (396, 604), 17, 14, b.GOWN); _seg(k, (396, 604), (446, 616), 14, 12, b.GOWN)
+        rect(k, 440, 606, 9, 22, (0.85, 0.70, 0.20), 16, shadow=False, lw=1.6)
         ellipse(k, 466, 620, 15, 12, SKIN, 14, shadow=False, lw=2.6)
-    else:                                                    # on his belly
-        _seg(k, (304, 660), (262, 632), 16, 13, b.GOWN); _seg(k, (262, 632), (236, 664), 13, 11, b.GOWN)
-        ellipse(k, 232, 668, 14, 11, SKIN, 15, shadow=False, lw=2.6)
-    _seg(k, (296, 690), (282, 744), 16, 13, b.GOWN); _seg(k, (282, 744), (286, 772), 12, 11, SKIN)   # the other arm, over the edge
-    rect(k, 276, 754, 20, 8, (0.85, 0.70, 0.20), 16, shadow=False, lw=1.6)                           # his watch
-    ellipse(k, 288, 784, 14, 12, SKIN, 17, shadow=False, lw=2.6)
+    else:
+        _seg(k, (296, 690), (282, 744), 16, 13, b.GOWN); _seg(k, (282, 744), (286, 772), 12, 11, SKIN)   # over the edge of the seat
+        rect(k, 276, 754, 20, 8, (0.85, 0.70, 0.20), 16, shadow=False, lw=1.6)                       # his watch
+        ellipse(k, 288, 784, 14, 12, SKIN, 17, shadow=False, lw=2.6)
 
 
 def room(k, phone_at="floor", cover=0.0, face="exhausted", ringing=False):
@@ -246,9 +246,9 @@ def room(k, phone_at="floor", cover=0.0, face="exhausted", ringing=False):
     lamp(k, 512, 668)
     pack(k, 474, 640, 0.52)
     if phone_at == "floor":                                 # it has buzzed itself off the edge, under his hanging hand
-        g = cairo.RadialGradient(336, 822, 6, 336, 822, 90); g.add_color_stop_rgba(0, 0.5, 1, 0.6, 0.45); g.add_color_stop_rgba(1, 0.5, 1, 0.6, 0); c.set_source(g); c.paint()
-        phone(k, 336, 822, 0.58, 1.25, "done")
-        buzz(k, 336, 822, 50, 2)
+        g = cairo.RadialGradient(356, 830, 6, 356, 830, 90); g.add_color_stop_rgba(0, 0.5, 1, 0.6, 0.45); g.add_color_stop_rgba(1, 0.5, 1, 0.6, 0); c.set_source(g); c.paint()
+        phone(k, 356, 830, 0.58, 1.25, "done")
+        buzz(k, 356, 830, 50, 2)
     elif phone_at == "pack":                                # face down on the CV, under his hand
         phone(k, 480, 612, 0.40, 1.45, back=True)
         ellipse(k, 466, 620, 15, 12, SKIN, 18, shadow=False, lw=2.6)

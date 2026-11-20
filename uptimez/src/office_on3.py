@@ -91,9 +91,36 @@ def card(k, x, y, s=1.0, ang=0.0, sym="star", sq=0.62):
             c.rectangle(dx, -16, 3, 5); c.fill()
         c.restore()
         c.new_path(); c.move_to(-13, -22); c.line_to(-8, -22); c.line_to(-5, -15); c.line_to(-2, -15); c.line_to(-6, -3); c.line_to(-8, -11); c.line_to(-11, -11); c.close_path(); c.fill()   # the bolt, thick enough for a phone
+    elif sym == "tower3":                                    # v5: a tower you know at a glance: stone courses, windows, a door, the crown knocked off, a thick bolt
+        c.set_source_rgb(*INK)
+        _p = lambda pts: (c.new_path(), c.move_to(*pts[0]), [c.line_to(*q_) for q_ in pts[1:]], c.close_path(), c.fill())
+        _p([(-6.5, -7), (5.5, -7), (7.5, 20), (-8.5, 20)])                                   # the shaft, wider at the foot
+        _p([(-10.5, 20), (9.5, 20), (9.5, 22.5), (-10.5, 22.5)])                             # the ground
+        c.set_source_rgb(*q.CARD)
+        c.rectangle(-2.2, 12.5, 3.6, 7.5); c.fill(); c.arc(-0.4, 12.5, 1.8, math.pi, 0); c.fill()   # the door
+        for wy in (-3.5, 4.5):
+            c.rectangle(-1.6, wy, 2.4, 4); c.fill()                                          # windows
+        c.set_line_width(0.5)
+        for ly in (0.5, 8.5):
+            c.move_to(-7, ly); c.line_to(6.5, ly); c.stroke()                                # courses
+        c.set_source_rgb(*INK)
+        c.save(); c.translate(5, -10); c.rotate(0.6)                                         # the crown, going over
+        c.rectangle(-8, -5, 13, 5); c.fill()
+        for dx in (-8, -3.2, 1.6):
+            c.rectangle(dx, -8.4, 3.4, 3.6); c.fill()
+        c.restore()
+        _p([(-12.5, -22.5), (-7.5, -22.5), (-5.2, -16), (-2.6, -16), (-5.4, -8), (-7.4, -13), (-10.2, -13)])   # the bolt
+        for (fx, fy, fa) in ((-10.5, 4, 0.5), (10.5, 9, -0.6)):                               # stones, falling
+            c.save(); c.translate(fx, fy); c.rotate(fa); c.rectangle(-1.6, -1.2, 3.2, 2.4); c.fill(); c.restore()
     else:
         c.move_to(-13, -23); c.line_to(13, 23); c.move_to(13, -23); c.line_to(-13, 23); c.stroke()
     c.restore()
+
+
+def deck(k, x, y, s=1.0, sq=0.5, n=4):
+    """v5 (Tomas: proceed, taken as option 1): only the deck lies on her desk until he has paid."""
+    for j in range(n):
+        card(k, x + j * 1.5 * s, y - j * 3 * s, s, 0.2, "back", sq)
 
 
 def spread(k, x, y, s=1.0, side=1, sq=0.62, faces=("star", "tower", "gear")):
@@ -157,7 +184,9 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False, v4=False):
     rect(k, 430, 498, 62, 16, (0.10, 0.10, 0.11), 6, shadow=False, lw=2)                   # the button, by her
     ellipse(k, 461, 498, 18, 9, (0.55, 0.55, 0.56), 7, shadow=False, lw=2)
     q.coupe(k, 286, 520, 0.95)
-    if cards:                                                # cards="down": all three face down (before she turns one)
+    if cards == "deck":
+        deck(k, 352, 596, 1.15)
+    elif cards:                                              # cards="down": all three face down (before she turns one)
         spread(k, 372, 600, 1.15, -1, 0.5, faces=("back",) * 3 if cards == "down" else ("star", "tower", "gear"))
     cut(k, [(-60, 980), (-60, 560), (-10, 380), (90, 300), (190, 380), (240, 580), (256, 980)], TRACK, shadow=False, lw=4)   # his back, hood up
     c.set_source_rgb(0.14, 0.14, 0.16); c.set_line_width(4); c.set_line_cap(1)
@@ -193,9 +222,11 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None):
     cut(k, [(120, 560), (420, 560), (660, 960), (-120, 960)], DESK, shadow=False, lw=3)    # the desk, from her side
     g = cairo.LinearGradient(0, 560, 0, 960); g.add_color_stop_rgba(0, 0, 0, 0, 0.2); g.add_color_stop_rgba(1, 1, 1, 1, 0.25)
     c.set_source(g); c.rectangle(-120, 560, 780, 400); c.fill()
-    if cards and turn is None:
+    if cards == "deck":
+        deck(k, 400, 716, 1.7)
+    elif cards and turn is None:
         spread(k, 250, 700, 1.7, 1, 0.5)
-    elif cards:                                              # v3 (Tomas, /grill-me): three face down; she turns the last one
+    elif cards and cards != "deck":                          # v3 (Tomas, /grill-me): three face down; she turns the last one
         spread(k, 250, 700, 1.7, 1, 0.5, faces=("back", "back", None))
     if pay >= 0.3:                                           # the hundred, on the desk, coming to her
         u = (pay - 0.3) / 0.7
@@ -207,7 +238,7 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None):
     rect(k, 36, 852, 124, 30, (0.10, 0.10, 0.11), 6, shadow=False, lw=2.6)                 # the button, at her left
     ellipse(k, 98, 850, 38, 17, (0.55, 0.55, 0.56), 7, shadow=False, lw=2.8)
     if take > 0 and v4:
-        _take(k)
+        _take(k, soft=cards == "deck")
     elif take > 0:                                           # her hand, rings up, over the note
         hy = _lerp(1040.0, 820.0, take)
         rect(k, 200, hy + 50, 150, 200, (0.10, 0.10, 0.11), 8, shadow=False, lw=3)
@@ -217,7 +248,9 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None):
             rect(k, 275 + dx - 10, hy - 92, 20, 56, SKIN, 11 + i, shadow=False, lw=2.4)
             if i in (1, 2):
                 rect(k, 275 + dx - 12, hy - 62, 24, 13, (0.86, 0.87, 0.90), 15 + i, shadow=False, lw=1.6)
-    if cards and turn is not None:
+    if cards == "deck" and turn is not None:
+        _deal(c, k, turn)
+    elif cards and turn is not None:
         _turn(c, k, turn)
     csh.noir(s)
     return s
@@ -238,7 +271,7 @@ def money(k, x, y, s=1.0, ang=0.0):
     c.restore()
 
 
-def _take(k, x=270, y=838):
+def _take(k, x=270, y=838, soft=False):
     """v4, opt-in: her hand has the note: fingers bent over its far edge, the thumb at its side, and it has come toward her."""
     c = k.c
     c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(4); c.set_line_cap(1)                  # two marks where it was: it has moved
@@ -249,6 +282,13 @@ def _take(k, x=270, y=838):
     rect(k, x - 70, y + 62, 150, 200, (0.10, 0.10, 0.11), 8, shadow=False, lw=3)                # her sleeve, her cuff
     rect(k, x - 80, y + 44, 170, 34, (0.84, 0.84, 0.86), 9, shadow=False, lw=2.4)
     ellipse(k, x + 4, y + 18, 66, 44, SKIN, 10, shadow=False, lw=3)                             # the back of her hand
+    if soft:                                                 # v5: round fingers, closed over the note's far edge; no knuckle lines (they read as a robot's)
+        for i, dx in enumerate((-42, -14, 14, 42)):
+            ellipse(k, x + 4 + dx, y - 30, 13, 26 - (4 if i in (0, 3) else 0), SKIN, 11 + i, shadow=False, lw=2.6)
+            if i in (1, 2):
+                rect(k, x + 4 + dx - 14, y - 26, 28, 11, (0.86, 0.87, 0.90), 15 + i, shadow=False, lw=1.6)
+        cut(k, [(x - 58, y + 10), (x - 96, y - 14), (x - 104, y + 6), (x - 66, y + 36)], SKIN, shadow=False, lw=2.6)
+        return
     for i, dx in enumerate((-42, -14, 14, 42)):                                                 # fingers, bent: short, a knuckle, the tip gone over the edge
         rect(k, x + 4 + dx - 11, y - 54, 22, 44, SKIN, 11 + i, shadow=False, lw=2.4)
         c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(x + 4 + dx - 9, y - 38); c.line_to(x + 4 + dx + 9, y - 38); c.stroke()
@@ -265,6 +305,28 @@ def _door2(k):
     cut(k, [(380, 108), (474, 96), (478, 528), (380, 516)], (0.30, 0.30, 0.33), shadow=False, lw=3.4)   # the door, ajar
     ellipse(k, 394, 320, 7, 7, (0.80, 0.80, 0.82), 5, shadow=False, lw=1.6)
     c.set_source_rgba(1, 1, 1, 0.22); c.new_path(); c.move_to(342, 516); c.line_to(380, 516); c.line_to(330, 566); c.line_to(250, 566); c.close_path(); c.fill()
+
+
+def _deal(c, k, t):
+    """v5: the hundred is hers; now her other hand takes the top card off the deck, lays it in the middle of the desk
+    (t 0..0.5, face down) and turns it (0.5..1): the Tower."""
+    cx, cy = 250, 716
+    if t <= 0:
+        return
+    u = min(t / 0.5, 1.0)
+    px, py = _lerp(400.0, cx, u), cy - 26 * math.sin(math.pi * u)
+    if t < 0.5:
+        card(k, px, py, 1.7, 0.2 * (1 - u), "back", 0.5)
+    else:
+        v = (t - 0.5) / 0.5
+        card(k, cx, cy, 1.9 + 0.5 * math.sin(math.pi * v), 0.04, "tower3", 0.5 * (0.25 + 0.75 * v))
+    hx, hy = (px + 70, py) if t < 0.5 else (cx + 76 + 40 * max(0.0, t - 0.75) / 0.25, cy - 2)
+    c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(46); c.set_line_cap(0); c.move_to(640, hy + 70); c.line_to(hx + 60, hy + 8); c.stroke()
+    rect(k, hx + 30, hy - 16, 34, 44, (0.84, 0.84, 0.86), 21, shadow=False, lw=2.4)
+    ellipse(k, hx, hy + 4, 34, 24, SKIN, 22, shadow=False, lw=3)
+    for i, dy in enumerate((-12, 2, 16)):
+        ellipse(k, hx - 40, hy + dy, 20, 7.5, SKIN, 23 + i, shadow=False, lw=2.2)
+    rect(k, hx - 30, hy - 4, 12, 17, (0.86, 0.87, 0.90), 27, shadow=False, lw=1.6)
 
 
 def _turn(c, k, t):
@@ -291,14 +353,17 @@ def _turn(c, k, t):
         rect(k, hx - 30, hy - 4, 12, 17, (0.86, 0.87, 0.90), 27, shadow=False, lw=1.6)
 
 
-def tower_insert(t=1.0):
+def tower_insert(t=1.0, v5=False):
     """4.4b, insert (v3): the turned card, close, from above her hands. The Tower, struck. t < 1: her fingers still on
     its edge. Below it, the corner of the hundred under her other hand."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
     c.set_source_rgb(*DESK); c.paint()
     g = cairo.RadialGradient(270, 380, 60, 270, 380, 760); g.add_color_stop_rgba(0, 1, 1, 1, 0.34); g.add_color_stop_rgba(1, 0, 0, 0, 0.42); c.set_source(g); c.paint()
-    card(k, 96, 150, 5.2, -0.12, "back", 1.0); card(k, -40, 420, 5.2, 0.08, "back", 1.0)       # the two still face down
-    card(k, 286, 400, 9.4, 0.05, "tower2", 1.0)
+    if v5:                                                   # one card, alone on the desk
+        card(k, 262, 400, 10.4, 0.04, "tower3", 1.0)
+    else:
+        card(k, 96, 150, 5.2, -0.12, "back", 1.0); card(k, -40, 420, 5.2, 0.08, "back", 1.0)       # the two still face down
+        card(k, 286, 400, 9.4, 0.05, "tower2", 1.0)
     money(k, 150, 880, 3.8, 0.10)                                                            # the hundred, under her hand
     rect(k, 250, 880, 330, 150, (0.10, 0.10, 0.11), 30, shadow=False, lw=3)
     rect(k, 214, 868, 60, 120, (0.84, 0.84, 0.86), 31, shadow=False, lw=2.6)
