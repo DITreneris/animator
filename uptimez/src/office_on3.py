@@ -97,7 +97,7 @@ def front(note=True, down=0.0, press=0.0, look=(-0.9, -0.1), mouth=None):
     return s
 
 
-def over(glove_up=0.0, look=(0.2, 0.9)):
+def over(glove_up=0.0, look=(0.2, 0.9), show=False):
     """M2, 4.3: over his shoulder. His hood and back fill the near left; one red glove, lower right, comes up with the
     note in it (glove_up 0..1). Across a deep desk she is small, and does not look up."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -123,6 +123,8 @@ def over(glove_up=0.0, look=(0.2, 0.9)):
     b.banknote(k, gx + 6, gy - 22, 0.55, -0.3, 3)
     b._glove(k, gx, gy, 0.1, -1.0, 1, 71)
     c.restore()
+    if show:                                                 # v2, opt-in: the hundred, whole, held out past the glove (v1 hid it behind the glove)
+        b.banknote(k, gx - 96, gy - 64, 2.1, -0.16, 3)
     csh.noir(s)
     return s
 
