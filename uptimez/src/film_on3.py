@@ -1,4 +1,6 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v16 (v1 to v15 pinned). v16: what cold test 44 left:
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v17 (v1 to v16 pinned). v17: five small things from cold
+test 45: the robot jabs with its other glove down; the dent has cracks; no bars in the gap in 5.2; 5.2 a little wider so
+Pam is whole; in 3.1 the shadows stand further on, the gun clear of his head. v16: what cold test 44 left:
 his stopped glove in 5.2 shakes and shows it; the robot's jab in 7.2 is drawn over him (its glove was behind him) and
 its dent is small; the two shadows behind in the alley are paler than the one in front. v15 (Tomas, /grill-me): he lies
 on the sofa on his side, face to us; smoke, flame and the sponge's water move; the fight has a feint, footwork, a body
@@ -671,7 +673,8 @@ _r.robot = mo.alive(_r.robot, "ROBOT", None, breathe=0.0, blinks=False, tween_po
 ga.SIDE[0] = True
 al.RIM[0] = al.BOX2[0] = True
 _gang0 = al.gang
-al.gang = lambda *a_, **k_: [dict(m_, alpha=m_["alpha"] * (1.0 if m_["kind"] == "gun" else 0.66)) for m_ in _gang0(*a_, **k_)]   # v16: the two behind paler, so three men, not a mass
+GANG_DX = [0.0]
+al.gang = lambda *a_, **k_: [dict(m_, alpha=m_["alpha"] * (1.0 if m_["kind"] == "gun" else 0.66), x=m_["x"] + GANG_DX[0]) for m_ in _gang0(*a_, **k_)]   # v16: the two behind paler, so three men, not a mass
 dr.RIM[0] = True
 al.SMOKE[0] = lambda c, x, y, s_: mo.smoke(c, x, y, s_, seed=0.7, h=140)
 al.FLAME[0] = mo.flame
@@ -711,9 +714,6 @@ def _effort52(k, t, o):
         for i in range(2):
             yy = gy + sgn * (26 + 9 * i) + (2 if fl else -2)
             c.move_to(gx - 14 + 6 * i, yy); c.curve_to(gx - 4, yy + sgn * 4, gx + 6, yy - sgn * 4, gx + 16 - 6 * i, yy); c.stroke()
-    for i in range(3):                                       # the hand's breadth it cannot cross
-        xx = gx + 30 + i * 9 + (2 if fl else 0)
-        c.move_to(xx, gy - 9); c.line_to(xx, gy + 9); c.stroke()
     for i in range(3):                                       # sweat, flying back off him
         u = ((t - 0.82) * 1.9 + i * 0.33) % 1.0
         px, py = hx - 30 - 46 * u, hy - 40 - 30 * u + 60 * u * u
@@ -752,8 +752,19 @@ def _draw72(k, t, x, f, draw):
         c.restore()
 
 
+def _dent72(k, x, y):
+    """v17: the dent, with what makes it one: cracks running out of it and a pale lip on the side the light is."""
+    c = k.c
+    c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(1.8); c.set_line_cap(1)
+    for an, ln in ((-2.5, 13), (-1.2, 11), (0.3, 14), (1.5, 10), (2.6, 12)):
+        c.move_to(x + 7 * math.cos(an), y + 5 * math.sin(an)); c.line_to(x + (7 + ln * 0.5) * math.cos(an + 0.25), y + (5 + ln * 0.5) * math.sin(an + 0.25))
+        c.line_to(x + (7 + ln) * math.cos(an), y + (5 + ln) * math.sin(an)); c.stroke()
+    c.set_source_rgba(1, 1, 1, 0.7); c.set_line_width(1.6); c.new_path(); c.save(); c.translate(x, y); c.scale(8, 6); c.arc(0, 0, 1.15, 3.6, 5.6); c.restore(); c.stroke()
+    c.set_line_cap(0)
+
+
 def _rpose72(t):
-    return "r_jab" if 0.50 <= t < 0.74 else "r_wait"
+    return (0.1, 0, 0, (-44, 22), (96, -4)) if 0.50 <= t < 0.74 else "r_wait"      # v17: the jab with its other glove down; raised, that glove "looked nearly detached"
 
 
 def _splash(k, head, t):
@@ -798,7 +809,8 @@ def _surgery():
     for old, new in (("            pose, dx, lean = WALK, 0, 0.0\n", "            pose, dx, lean = _open52(t), 0, 0.0\n"),
                      ("        x, f = 290 + dx, F - 40\n", "        x, f = 290 + dx, F - 40 - _bob52(t)\n"),
                      ("shove + 1.5 * math.sin(t * 70), 0.06 + shove * 0.004\n", "shove + 4.5 * math.sin(t * 44), 0.06 + shove * 0.004 + 0.012 * math.sin(t * 44)\n"),
-                     ('        b.boxer(k, x, f, Q, pose, "hard", (0.9, 0))\n', '        _o52 = b.boxer(k, x, f, Q, pose, "hard", (0.9, 0)); _effort52(k, t, _o52)\n')):
+                     ('        b.boxer(k, x, f, Q, pose, "hard", (0.9, 0))\n', '        _o52 = b.boxer(k, x, f, Q, pose, "hard", (0.9, 0)); _effort52(k, t, _o52)\n'),
+                     ("    return rg.frame((412, 1100, 1.25), [ref, robot, pam, client], [], near=False, hats=False)", "    return rg.frame((378, 1094, 1.12), [ref, robot, pam, client], [], near=False, hats=False)")):   # v17: a little wider: Pam was half a figure at the edge
         assert old in src, old
         src = src.replace(old, new)
     ns = dict(rr.__dict__); ns.update(_open52=_open52, _bob52=_bob52, _effort52=_effort52)
@@ -813,16 +825,27 @@ def _surgery():
         assert old in src, old
         src = src.replace(old, new)
     for old, new in (("    return rg.frame(cam, [robot, client], [], near=False, hats=False)\n",
-                      "    return rg.frame(cam, [client, robot] if _rpose72(t) == 'r_jab' else [robot, client], [], near=False, hats=False)\n"),
-                     ("ellipse(k, x - 16, f - 86, 13, 10, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)", "ellipse(k, x - 16, f - 86, 8, 6, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)"),
+                      "    return rg.frame(cam, [client, robot] if _rpose72(t) != 'r_wait' else [robot, client], [], near=False, hats=False)\n"),
+                     ("ellipse(k, x - 16, f - 86, 13, 10, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)", "ellipse(k, x - 16, f - 86, 8, 6, (0.10, 0.10, 0.12), 3, shadow=False, lw=2); _dent72(k, x - 16, f - 86)"),
                      ("c.line_to(sx + 30 * math.cos(an), sy + 30 * math.sin(an)); c.stroke()", "c.line_to(sx + 22 * math.cos(an), sy + 22 * math.sin(an)); c.stroke()")):   # the star's rays ran through HR and made it read wrong
         assert old in src, old
         src = src.replace(old, new)
-    ns = dict(rr2.__dict__); ns.update(_pose72=_pose72, _rpose72=_rpose72, _draw72=_draw72, ramp=ramp)
+    ns = dict(rr2.__dict__); ns.update(_pose72=_pose72, _rpose72=_rpose72, _draw72=_draw72, ramp=ramp, _dent72=_dent72)
     exec(src, ns); rr2.shot_72 = ns["shot_72"]
 
 
+def _gang_on(fn, dx):
+    def f(t):
+        GANG_DX[0] = dx
+        try:
+            return fn(t)
+        finally:
+            GANG_DX[0] = 0.0
+    return f
+
+
 _surgery()
+FILM = [(n, d, _gang_on(f, 64.0) if n == "3.1" else f) for n, d, f in FILM]      # v17: in 3.1 the gun's end "looked attached" to his head
 _NEW = {"5.2": rr.shot_52, "7.2": rr2.shot_72, "6.1": quick(rr2.shot_61, dict(rr2.SHOTS)["6.1"] / 2.2)}
 FILM = [(n, d, _NEW.get(n, f)) for n, d, f in FILM]
 
