@@ -204,7 +204,7 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False, v4=False):
     return s
 
 
-def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None, v6=False):
+def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None, v6=False, ticket=None):
     """M3, 4.4: her view. He is small, in his tracksuit, in front of the desk, the door behind him. pay 0..1: the note
     crosses the desk toward us. take 0..1: her ringed hand comes in from the near edge and covers it."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -248,6 +248,8 @@ def reverse(pay=0.0, take=0.0, cards=False, turn=None, v4=False, eyes=None, v6=F
             rect(k, 275 + dx - 10, hy - 92, 20, 56, SKIN, 11 + i, shadow=False, lw=2.4)
             if i in (1, 2):
                 rect(k, 275 + dx - 12, hy - 62, 24, 13, (0.86, 0.87, 0.90), 15 + i, shadow=False, lw=1.6)
+    if ticket is not None:                                   # v7 (Tomas: proceed): for the hundred she slides a fight ticket back across the desk to him
+        fight_ticket(k, 150 - 10 * ticket, _lerp(880.0, 640.0, ticket), _lerp(2.3, 1.05, ticket), -0.10 + 0.04 * ticket)
     if cards == "deck" and turn is not None:
         _deal(c, k, turn, v6)
     elif cards and turn is not None:
@@ -305,6 +307,37 @@ def _door2(k):
     cut(k, [(380, 108), (474, 96), (478, 528), (380, 516)], (0.30, 0.30, 0.33), shadow=False, lw=3.4)   # the door, ajar
     ellipse(k, 394, 320, 7, 7, (0.80, 0.80, 0.82), 5, shadow=False, lw=1.6)
     c.set_source_rgba(1, 1, 1, 0.22); c.new_path(); c.move_to(342, 516); c.line_to(380, 516); c.line_to(330, 566); c.line_to(250, 566); c.close_path(); c.fill()
+
+
+def fight_ticket(k, x, y, s=1.0, ang=0.0):
+    """v7: what the hundred buys: a ticket, notched at both ends, a stub torn off. FIGHT, TONIGHT, No 1."""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(1, 0.62); c.rotate(ang); c.scale(s, s)
+    cut(k, [(-44, -20), (44, -20), (44, -7), (39, 0), (44, 7), (44, 20), (-44, 20), (-44, 7), (-39, 0), (-44, -7)], (0.97, 0.96, 0.90), lw=2)
+    c.set_source_rgb(*INK); c.set_line_width(1.2); c.set_dash([3, 3]); c.move_to(22, -20); c.line_to(22, 20); c.stroke(); c.set_dash([])
+    kit.text(k, "FIGHT", -10, -5, 15, INK, bold=True)
+    kit.text(k, "TONIGHT", -10, 10, 7.5, INK, bold=True)
+    kit.text(k, "1", 32, 0, 15, INK, bold=True)
+    c.restore()
+
+
+def ticket_insert(t=1.0):
+    """4.4a, insert (v7): the ticket stops against his two gloves at the far edge of her desk. He cannot pick it up."""
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    c.set_source_rgb(*DESK); c.paint()
+    g = cairo.RadialGradient(270, 420, 60, 270, 420, 760); g.add_color_stop_rgba(0, 1, 1, 1, 0.34); g.add_color_stop_rgba(1, 0, 0, 0, 0.42); c.set_source(g); c.paint()
+    c.set_source_rgb(0.05, 0.05, 0.06); c.rectangle(0, 0, 540, 150); c.fill()                         # the desk's far edge; beyond it, him
+    ty = _lerp(820.0, 400.0, t)
+    c.save(); c.translate(270, ty); c.scale(1, 1 / 0.62); c.translate(-270, -ty)
+    fight_ticket(k, 270, ty, 5.4, 0.04)
+    c.restore()
+    for side, gx in ((-1, 130), (1, 410)):                                                           # his gloves, down onto the desk's edge, either side of it
+        gy = 170
+        c.save(); c.translate(gx, gy); c.scale(3.4, 3.4); c.translate(-gx, -gy)
+        b._glove(k, gx, gy, -side * 0.15, 0.98, side, 81 + side)
+        c.restore()
+    csh.noir(s)
+    return s
 
 
 def _deal(c, k, t, hers=False):
