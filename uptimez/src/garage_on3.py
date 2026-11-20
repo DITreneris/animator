@@ -319,3 +319,15 @@ def f85():
 
 def frames():
     return [rr2.shot_75(0.74), f81(), f82(), f83(), f84(), f85()]
+
+
+def f82b():
+    """8.2b, insert (v6; Tomas, /grill-me: one close shot each for what a phone loses): the wall, close. Four torn
+    corners under their pins, and the plan's ghost: the building, 10 GARAGES. What hung over the ring hung here."""
+    s, c, k = _surf()
+    c.set_source_rgb(*WALL); c.paint()
+    g = cairo.RadialGradient(270, 480, 60, 270, 480, 760); g.add_color_stop_rgba(0, 1, 0.95, 0.75, 0.30); g.add_color_stop_rgba(1, 0.05, 0.05, 0.12, 0.40); c.set_source(g); c.paint()
+    c.save(); c.translate(270, 470); c.scale(2.7, 2.7); c.translate(-(74 + 85), -(250 + 65))
+    gone(k, 74, 250, 170, 130)
+    c.restore()
+    return s

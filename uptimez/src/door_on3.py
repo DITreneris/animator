@@ -49,7 +49,7 @@ def behind(tip=1.0, door_light=True):
     return s
 
 
-def face(look=(0.2, -0.9), glove=0.0, push=0.0, expr="hard", folder=True):
+def face(look=(0.2, -0.9), glove=0.0, push=0.0, expr="hard", folder=True, pocket=None):
     """4.2: his face, the ring's lamp on it; the folder under his arm at the bottom of the frame."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
     g = cairo.RadialGradient(270, 60, 40, 270, 300, 900)
@@ -58,6 +58,25 @@ def face(look=(0.2, -0.9), glove=0.0, push=0.0, expr="hard", folder=True):
     pose = "b_walk" if glove < 0.5 else (-9, 6, 150, 22)
     b.boxer(k, 262, 500 - b.HY * sc + 30, sc, pose, expr, look, outfit="street")
     if not folder:
+        csh.noir(s)
+        return s
+    if pocket is not None:                                   # v4 (Tomas, /grill-me): one glove shoves the folder into the hoodie's front pocket; her photograph's corner stays out
+        u = pocket
+        fx, fy, fa, fs = 120 + 150 * u, 800 - 60 * u + 150 * u * u, -0.16 + 0.26 * u, 1.0 - 0.22 * u
+        c.save(); c.translate(fx, fy); c.rotate(fa); c.scale(fs, fs)
+        rect(k, -84, -150, 150, 200, (0.98, 0.98, 0.96), 3, shadow=True, lw=3)
+        c.save(); c.rectangle(-76, -142, 134, 150); c.clip(); c.set_source_rgb(0.62, 0.62, 0.64); c.paint()
+        st.her(k, -6, -142 + 300, 1.15, (0.6, 0.0)); c.restore()
+        cut(k, [(-120, -40), (110, -40), (110, 190), (-120, 190)], (0.86, 0.80, 0.62), shadow=True, lw=3.4)
+        cut(k, [(30, -66), (104, -66), (110, -40), (30, -40)], (0.86, 0.80, 0.62), shadow=False, lw=3)
+        c.restore()
+        if u > 0.55:                                         # the pocket's lip, over it
+            cut(k, [(96, 838), (440, 838), (470, 990), (70, 990)], TRACK, shadow=False, lw=4)
+            c.set_source_rgb(0.12, 0.12, 0.14); c.set_line_width(4); c.move_to(100, 846); c.line_to(436, 846); c.stroke()
+        gx, gy = fx + 150 * fs, fy + 70 * fs                 # his glove on the folder's far edge, pushing it in
+        c.save(); c.translate(gx, gy); c.scale(3.0, 3.0); c.translate(-gx, -gy)
+        b._glove(k, gx, gy, -0.7, 0.7, 1, 73)
+        c.restore()
         csh.noir(s)
         return s
     c.save(); c.translate(120 - 30 * push, 800 + 250 * push); c.rotate(-0.16 - 0.5 * push)                                            # the folder under his arm, her photograph out of the top of it

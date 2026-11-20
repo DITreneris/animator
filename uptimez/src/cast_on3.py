@@ -294,6 +294,10 @@ def _open_hand(k, x, y, s, ang, fingers, seed, thumb=True, relax=False):
     """A bare hand at (x, y), its fingers along ang; fingers: how many are up (0..4), the rest curled."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    if relax and LONG[0]:                                  # v8: an idle hand is a hand: a palm, a thumb, no finger rods
+        ellipse(k, 4, 0, 17, 13, cb.M_SKIN, seed, shadow=False, lw=2.2)
+        ellipse(k, 4, -11, 7, 5, cb.M_SKIN, seed + 1, shadow=False, lw=1.8)
+        c.restore(); return
     for i in range(4):
         fy = (-7.5 + i * 5) if relax else (-10.5 + i * 7)
         ln = (13 + (2 if i in (1, 2) else 0) if relax else 24) if i < fingers else 7
@@ -323,7 +327,10 @@ def _vest(k, bt):
         c.new_path(); c.arc(9, bt + 92 + i * 16, 2.6, 0, 2 * math.pi); c.fill()
 
 
-def _macho_ref():
+LONG = [False]                                             # v8 (Tomas, /grill-me): the Referee in sleeves to the wrist, so nobody takes his forearms for a machine's
+
+
+def _macho_ref(long=False):
     """cand_bc.macho, its source changed in two places and run in a copy of cand_bc's names (cand_bc itself draws as
     before): the shoulder is a small cap, not a ball, and the arm is a shirt sleeve to the elbow with a rolled cuff."""
     src = inspect.getsource(cb.macho)
@@ -335,6 +342,11 @@ def _macho_ref():
                       "pass")):                               # v6: the seam between sleeve and chest stays drawn
         assert src.count(old) == 1, old
         src = src.replace(old, new)
+    if long:
+        for old, new in (("M_LN1, M_LN2, 40, 31, M_SLEEVE, M_SKIN, M_SKIN, M_HAND", "M_LN1, M_LN2, 40, 31, M_SLEEVE, M_SLEEVE, M_SKIN, M_HAND"),
+                         ("bulge=1.08, cuff=(M_SHIRT_DARK, 11)", "bulge=1.08")):
+            assert src.count(old) == 1, old
+            src = src.replace(old, new)
     ns = dict(vars(cb))
     ns.update(WAISTCOAT=WAISTCOAT, _vest=_vest, M_SLEEVE=SLEEVE, M_SHIRT=n2.WHITE_JACKET, M_SHIRT_DARK=(0.66, 0.66, 0.69), M_JEANS=(0.10, 0.10, 0.12), M_JEANS_DARK=(0.05, 0.05, 0.06),
               M_BELT=(0.08, 0.08, 0.09), M_BOOT=(0.07, 0.07, 0.08), _macho_face=n2._clean_face(cb._macho_face))
@@ -343,15 +355,33 @@ def _macho_ref():
 
 
 _MACHO = _macho_ref()
+_MACHO_LONG = _macho_ref(True)
 
 
 def referee(k, x, feet, s=1.0, pose="ref_stand", look=(-0.6, 0.0), brow=False, count=3, seed=700, waistcoat=False):
     WAISTCOAT[0] = waistcoat
     try:
-        o = _MACHO(k, x, feet, s, pose, "plain", look=look, badge=False, seed=seed)
+        o = (_MACHO_LONG if LONG[0] else _MACHO)(k, x, feet, s, pose, "plain", look=look, badge=False, seed=seed)
     finally:
         WAISTCOAT[0] = False
     c = k.c
+    if LONG[0]:                                            # v8: one smooth shirt sleeve over each arm, shoulder to wrist, and a cuff: no caps, no elbow, no forearm segment
+        a = cb.POSES_MACHO[pose] if isinstance(pose, str) else pose
+        c.save(); c.translate(x, feet); c.scale(s, s)
+        for side, (a1, a2) in ((-1, (a[0], a[1])), (1, (a[2], a[3]))):
+            sx, sy = side * (cb.M_SH[0] - 6), cb.M_BT + 26
+            ex, ey = side * cb.M_SH[0] + cb._d(a1)[0] * cb.M_LN1, sy + cb._d(a1)[1] * cb.M_LN1
+            hx, hy = ex + cb._d(a1 + a2)[0] * cb.M_LN2, ey + cb._d(a1 + a2)[1] * cb.M_LN2
+            wx, wy = ex + (hx - ex) * 0.82, ey + (hy - ey) * 0.82
+            for col, w in ((INK, 43), (n2.WHITE_JACKET, 38)):
+                c.set_source_rgb(*col); c.set_line_width(w); c.set_line_cap(1); c.set_line_join(1)
+                c.new_path(); c.move_to(sx, sy); c.curve_to(sx + (ex - sx) * 0.7, sy + (ey - sy) * 0.7, ex, ey, wx, wy); c.stroke()
+            for col, w in ((INK, 40), ((0.80, 0.80, 0.83), 35)):                                     # the cuff
+                c.set_source_rgb(*col); c.set_line_width(w); c.set_line_cap(0)
+                c.new_path(); c.move_to(wx, wy); c.line_to(wx + (hx - ex) * 0.10, wy + (hy - ey) * 0.10); c.stroke()
+            c.set_source_rgb(0.70, 0.70, 0.73); c.set_line_width(2.4); c.set_line_cap(1)             # one fold at the bend
+            c.new_path(); c.move_to(ex - 9, ey - 4); c.line_to(ex + 9, ey + 5); c.stroke(); c.set_line_cap(0)
+        c.restore()
     c.save(); c.translate(x, feet); c.scale(s, s)
     bt = cb.M_BT                                           # v2: shade where sleeve meets chest, and under the chest
     for sx in (-1, 1):

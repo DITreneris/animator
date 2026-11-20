@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v2 (v1 is film_on3_v1.py). v2, Tomas's notes on v1: the
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v3 (v1, v2: film_on3_v1.py, _v2.py). v3 (Tomas,
+/grill-me): Don comes into the ring as a fighter does, through the FIGHTERS door, crossed lights, fountains of sparks,
+fireworks (6.2b); the folder goes into the hoodie's pocket (4.2); the Referee's sleeves reach his wrists; one close
+shot each for what a phone loses: the bill (2.0), the matches (3.2b, closer), the ring girl's face (5.1a2), the
+garage wall (8.2b). v2: v2, Tomas's notes on v1: the
 fight bill HUMAN vs ROBOT; a long limousine; her picture is a plain identity photograph and on the street she is a
 woman under an umbrella; the matches in three stages; the shadows turn on Don and his hands go up; in 5.1c the bell
 rings while Pam has the robe half off him; in 6.3 Don's glass goes from the photograph to the ring girl: the same face.
@@ -23,11 +27,14 @@ from ring_rough_on3 import lerp
 
 R5, F5 = tuple(rr.SHOTS), dict(rr.FN)
 st.V5[0] = True
+import robot_on3 as r
+import noir2_cast as n2
 import ring_on3 as rg
 import cast_on3 as ca
 import sofia_on3 as so3
 import client_sheet_on3 as csh
 from kit import Ctx, rect
+ca.LONG[0] = True
 K = dict(cards="deck", v4=True, v6=True)
 T0 = 0.45                                                   # ring_rough2's 7.5 at this time is the film's first drawing: the glove an inch away
 
@@ -51,8 +58,30 @@ def _rain(t):
     return 1 + int(t * 10) % 4
 
 
+def s20(t):
+    """The bill, as large as the frame, rain on it: TONIGHT, HUMAN vs ROBOT."""
+    s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_); k = Ctx(c, 0)
+    c.set_source_rgb(0.20, 0.20, 0.23); c.paint()
+    c.set_source_rgb(0.12, 0.12, 0.14); c.set_line_width(4)
+    for i in range(12):
+        y = i * 84 - 10
+        c.move_to(0, y); c.line_to(540, y); c.stroke()
+        for j in range(-1, 5):
+            x = j * 150 + (75 if i % 2 else 0); c.move_to(x, y); c.line_to(x, y + 84); c.stroke()
+    z = 3.25 + 0.12 * ramp(t, 0.0, 0.9)
+    c.save(); c.translate(270, 470); c.scale(z, z); c.rotate(-0.03); c.translate(-(48 * 1.3 - 14), -(68 * 1.3 - 34))
+    st.poster2(k, 0, 0, 1.0, 7)
+    c.restore()
+    c.set_source_rgba(1, 1, 1, 0.35); c.set_line_width(2.4)
+    for i in range(14):
+        x = (i * 137 + int(t * 10) * 61) % 560; y = (i * 251 + int(t * 10) * 173) % 980
+        c.move_to(x, y); c.line_to(x - 12, y + 70); c.stroke()
+    csh.noir(s_)
+    return s_
+
+
 def s21(t):
-    return st.frame("S1", [stc.client(lerp(210.0, 400.0, t / 1.5))], rain=_rain(t))
+    return st.frame("S1", [stc.client(lerp(250.0, 400.0, t / 1.1))], rain=_rain(t))
 
 
 def s22(t):
@@ -91,7 +120,7 @@ def s32(t):
 def s32b(t):
     """The matches, close, in three stages: the box whole and squeezed; crushed, they spill; the last one snaps."""
     (lx, ly), (rx, ry) = al._probe(130)["hands"]
-    cam = ((lx + rx) / 2 + 6, (ly + ry) / 2 + 2, 3.6)
+    cam = ((lx + rx) / 2 + 4, (ly + ry) / 2 + 14, 5.4)        # v3: closer: two gloves and what is between them, nothing else
     if t < 0.45:
         f = al.fumble(130, stage=0, shake=math.sin(t * 40) * 2.0)
     elif t < 1.05:
@@ -130,10 +159,12 @@ def s41(t):
 
 def s42(t):
     if t < 0.5:
-        return dr.face((0.2, -0.9))
+        return dr.face((0.2, -0.9), pocket=0.0)              # up at the roll
     if t < 1.0:
-        return dr.face((-0.7, 0.9))
-    return dr.face((0.2, -0.9), glove=1.0, push=0.45 * ramp(t, 1.0, 0.25))
+        return dr.face((-0.7, 0.9), pocket=0.0)              # down at the folder
+    if t < 1.6:
+        return dr.face((-0.7, 0.9), pocket=ramp(t, 1.0, 0.5))    # into the pocket with it
+    return dr.face((0.2, -0.9), pocket=1.0)                  # and up again
 
 
 def s43(t):
@@ -217,6 +248,70 @@ def s63(t):
     return s
 
 
+def s51a2(t):
+    """The ring girl, close, as the card goes by: the face from the photograph, a feather on it now."""
+    s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_); k = Ctx(c, 0)
+    g = cairo.RadialGradient(270, 200, 40, 270, 300, 900); g.add_color_stop_rgba(0, 0.86, 0.86, 0.88, 1); g.add_color_stop_rgba(1, 0.22, 0.22, 0.25, 1); c.set_source(g); c.paint()
+    x = lerp(330.0, 250.0, t / 0.9)
+    so3.sofia(k, x, 520 + 272 * 3.4, 3.4, "r_card", "smile" if t < 0.5 else "spotted", (-0.6, 0.0), card_="ROUND 1")
+    csh.noir(s_)
+    return s_
+
+
+def s62b(t):
+    """Don comes in as a fighter does: the door at the back opens white, two lights cross on him, fountains of sparks
+    go up either side of the aisle, fireworks over the hats. He walks it with his glass held up like a belt. The Client,
+    on his stool, and the robot both turn to look."""
+    dx0, dy0, dw, dh = rg.DOOR
+    u = ramp(t, 0.5, 1.7)
+    px, pf, ps = lerp(dx0 + dw / 2.0, 330.0, u), lerp(rg.FAR + 6.0, rg.F - 8.0, u), rg.SC * lerp(0.74, 1.0, u)
+    hy = pf - 330 * ps
+
+    def lights(k):                                           # behind everything in the ring: the door, white; fireworks; the two beams
+        c = k.c
+        c.set_source_rgb(0.98, 0.98, 0.94); c.rectangle(dx0, dy0, dw, dh); c.fill()
+        for i, (fx, fy, t0) in enumerate(((150, rg.FAR - 420, 0.3), (430, rg.FAR - 470, 0.7), (270, rg.FAR - 520, 1.1), (600, rg.FAR - 430, 1.5), (90, rg.FAR - 500, 1.8))):
+            a = (t - t0) / 0.7
+            if 0 < a < 1:
+                c.set_source_rgba(1, 1, 1, 1 - a * 0.7); c.set_line_width(3.4); c.set_line_cap(1)
+                for j in range(14):
+                    an = j * math.pi / 7 + i
+                    c.move_to(fx + math.cos(an) * 60 * a * 0.5, fy + math.sin(an) * 60 * a * 0.5); c.line_to(fx + math.cos(an) * (30 + 78 * a), fy + math.sin(an) * (30 + 78 * a) + 22 * a * a); c.stroke()
+                c.set_line_cap(0)
+        for sx in (-1, 1):
+            c.set_source_rgba(1, 1, 1, 0.26 * ramp(t, 0.2, 0.3)); c.new_path()
+            c.move_to(360 + sx * 420, rg.FAR - 640); c.line_to(px - 70 * ps, hy + 380 * ps); c.line_to(px + 70 * ps, hy + 380 * ps); c.close_path(); c.fill()
+
+    def fountains(k):                                        # either side of his way in, at the ring's far edge
+        c = k.c
+        for sx in (-1, 1):
+            bx, by = dx0 + dw / 2 + sx * 86, rg.FAR - 96
+            c.set_source_rgb(0.99, 0.99, 0.95); c.set_line_width(2.6); c.set_line_cap(1)
+            for j in range(18):
+                ph = (t * 3.1 + j * 0.37) % 1.0
+                an = -math.pi / 2 + (j - 8.5) * 0.085
+                c.move_to(bx + math.cos(an) * 150 * ph, by + math.sin(an) * 150 * ph + 60 * ph * ph)
+                c.line_to(bx + math.cos(an) * 150 * (ph + 0.08), by + math.sin(an) * 150 * (ph + 0.08) + 60 * (ph + 0.08) ** 2); c.stroke()
+            c.set_line_cap(0)
+            rect(k, bx - 8, by - 4, 16, 22, (0.10, 0.10, 0.12), 60 + sx, shadow=False, lw=2)
+
+    def don(k):
+        rg.shadow(k, px, pf, 36 * ps / rg.SC)
+        old = n2.LOOK[0]; n2.LOOK[0] = 9
+        try:
+            n2.detective(k, px, pf, ps, "up", "squint", (-0.5, 0.2), lean=0)
+        finally:
+            n2.LOOK[0] = old
+
+    def client(k):
+        rr2._seated(k, True, look=(0.9, -0.2), face="tired")
+
+    def robot(k):
+        x, y, s_ = rg.HOME["robot_corner"]
+        rg.shadow(k, x + 84, y, 40); r.robot(k, x + 84, y, s_, "r_wait", "ask", side=-1)
+    return rg.frame((lerp(470.0, 372.0, u), lerp(rg.F - 300.0, rg.F - 250.0, u), lerp(1.5, 1.28, u)), [lights, fountains, don, client, robot], [], door=True)
+
+
 def s54b(t):
     return of.button_insert(ramp(t, 0.0, 0.2))
 
@@ -275,7 +370,7 @@ def s85(t):
 
 
 FILM = [("1.1", 0.6, s11),
-        ("2.1", 1.5, s21), ("2.2", 1.5, s22), ("2.4", 2.8, s24), ("2.4b", 1.3, s24b), ("2.5", 1.4, s25), ("2.6", 1.5, s26), ("2.7", 2.0, s27),
+        ("2.0", 0.9, s20), ("2.1", 1.1, s21), ("2.2", 1.5, s22), ("2.4", 2.8, s24), ("2.4b", 1.3, s24b), ("2.5", 1.4, s25), ("2.6", 1.5, s26), ("2.7", 2.0, s27),
         ("3.1", 1.3, s31), ("3.2", 1.0, s32), ("3.2b", 1.8, s32b), ("3.3", 1.1, s33), ("3.3b", 1.6, s33b), ("3.4", 1.3, s34), ("3.4b", 2.3, s34b),
         ("4.1", 1.6, s41), ("4.2", 1.9, s42), ("4.3", 1.5, s43), ("4.4", 2.2, s44), ("4.4a", 0.9, s44a), ("4.4t", 1.4, s44t), ("4.4b", 1.3, s44b), ("4.4c", 1.4, s44c)]
 for name, dur in R5:
@@ -283,16 +378,18 @@ for name, dur in R5:
         FILM += [("5.4", 1.3, F5["5.4"]), ("5.4b", 0.5, s54b)]
     elif name == "5.1c":
         FILM.append(("5.1c", 3.4, s51c))
+    elif name == "5.1a":
+        FILM += [("5.1a", dur, F5["5.1a"]), ("5.1a2", 0.9, s51a2)]
     else:
         FILM.append((name, dur, F5[name]))
 for name, dur in rr2.SHOTS:
     if name == "7.4":
         FILM += [("7.4", 1.1, s74a), ("7.4b", 0.45, s54b), ("7.4c", 0.7, s74c)]
     elif name == "6.3":
-        FILM.append(("6.3", 3.1, s63))
+        FILM += [("6.2b", 2.4, s62b), ("6.3", 3.1, s63)]
     else:
         FILM.append((name, dur, rr2.FN[name]))
-FILM += [("8.1", 1.6, s81), ("8.2", 1.6, s82), ("8.3", 2.2, s83), ("8.4", 2.2, s84), ("8.5", 1.0, s85)]
+FILM += [("8.1", 1.6, s81), ("8.2", 1.6, s82), ("8.2b", 1.0, lambda t: ga.f82b()), ("8.3", 2.2, s83), ("8.4", 2.2, s84), ("8.5", 1.0, s85)]
 
 
 def _use():
