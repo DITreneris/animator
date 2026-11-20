@@ -30,6 +30,7 @@ Thumbnails hide what matters. Perfect Date v2.2 passed a 216 px check with Hoody
 
 5. **Props measured, not looked at:** wrap each key prop's draw call, render every frame, and print its screen position per shot. It must match the prop timeline from G2: there in the shots it should be, at the same place, and nowhere else. (Untitled: the poop low in one shot, the card missing in another and present at 0:00 against the loop; each found by Tomas in one look, each found by the measurement in one run.)
 6. **The app's zones:** caption, likes and buttons cover roughly the bottom 250 px and a strip on the right. Keep faces and the payoff object above ~1700 px; anchor a camera push-in at the ground line.
+8. **Speech tails touch the speaker:** computed from where the speaker is drawn in that frame (a moving speaker defeats hand-set tails); a talking head's tail curves outside the hair to the cheek beside the mouth. Measure every bubble frame.
 7. **Text fitted by measurement:** each string measured against its card or plate with 30 px margins; crop every label at full size and check nothing (a sticker, a prop, a head) covers it.
 
 Re-check after every change, including small polish passes: breathing or a shift can push a character into the edge or behind something.
