@@ -20,4 +20,6 @@ into frame 0, where the next one is waiting.
 - The poop and the card were measured on every frame: the poop at 904/1700 px in every park shot it is in, the card at
   640/1714 from the plant (shot 11) to the kick (shot 15), and in no frame before or after.
 - Cold-viewer mute test (2 viewers, rough 7): 5 of 5 beats read by both. Their eight shared misreads were fixed in this cut.
+- Speech tails (20 Nov): placed every frame from where the speaker is drawn. Hoody's curve down outside his hair to his cheek
+  beside the mouth; MY AI's end on its antenna ball. Measured on all 240 bubble frames: 0 px from the speaker.
 - Not machine-checkable: whether it is funny, the voice timing and the mix. Tomas judges those.

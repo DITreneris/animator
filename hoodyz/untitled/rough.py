@@ -650,6 +650,102 @@ def s13(c, f, r, d):  # the X eyes hold for the word, then flicker back to blue 
 
 MAP.update({'s6': held(k06), 's10': held(k10, .06), 's9': s9, 's11': s11, 's12': s12, 's13': s13})
 
+# =====================================================================================================
+# 20 Nov: speech tails land on the speaker, computed every frame from where the speaker is actually drawn.
+# Hoody: the tip sits just outside his cheek beside the mouth (head-local (+-92, 64)); the bubble goes to that side, so the
+# tail never crosses his hair. MY AI: the tip touches the top of its antenna ball (it moves with walk, beat hops, tilt, shake).
+# =====================================================================================================
+ANCH = {}
+_hh0 = K.hoodyz_head
+def _hh_rec(c, x, y, s, *a, **k):
+    rot = k.get('rot', a[2] if len(a) > 2 else 0)
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    ANCH['h'] = dict(c=c.user_to_device(0, 0), side={q: c.user_to_device(q * 92, 64) for q in (-1, 1)},
+                     hair=[c.user_to_device(px, py) for px, py in ((-150, -40), (150, -40), (0, -190), (0, 120))])
+    c.restore()
+    return _hh0(c, x, y, s, *a, **k)
+K.hoodyz_head = _hh_rec
+
+_myai_draw = _myai0
+def _myai_rec(c, x, gy, s, eye='happy', look=(0, 0), arms=('down', 'down'), props=(None, None), rot=0, walk=None, bob=0, tilt=0, turn=0, talk=0.0, droop=0.0, **kw):
+    t = max(A.LIMITS['tilt'][0], min(A.LIMITS['tilt'][1], tilt))
+    c.save(); c.translate(x, gy); c.rotate(rot); c.translate(0, -280 * s - bob - (abs(math.sin(walk)) * 8 * s if walk is not None else 0)); c.scale(s, s)
+    c.translate(*A.NECK); c.rotate(math.radians(t)); c.translate(-A.NECK[0], -A.NECK[1])
+    ax = turn * 40; bx, by = ax + 70 * droop, -140 + 30 * droop
+    ANCH['ai'] = dict(tip=c.user_to_device(bx, by - 19), c=c.user_to_device(0, 0))
+    c.restore()
+    return _myai_draw(c, x, gy, s, eye=eye, look=look, arms=arms, props=props, rot=rot, walk=walk, bob=bob, tilt=tilt, turn=turn, talk=talk, droop=droop, **kw)
+_myai0 = _myai_rec                                                           # the breathing wrapper calls _myai0 by name
+
+LINE_OF = {s: n for n, s, off in VO}
+def speech(c, lines, r, tail, cy=500, size=66, cx=540):
+    """Ignores the hand-set tail/position: places the bubble from the speaker drawn in this frame, in screen space."""
+    shot = G.get('shot'); who = SPEAKER.get(LINE_OF.get(shot, ''), None)
+    a = ANCH.get(who)
+    if a is None: return _bub0(c, lines, min(r, G['r']), tail, cy=cy, size=size, cx=cx)
+    c.save(); c.select_font_face('Lilita One'); c.set_font_size(size)
+    w = max(c.text_extents(l).width for l in lines) + 90; h = len(lines) * size * 1.12 + 56; c.restore()
+    top_min, m = 380 + h / 2, 34
+    if who == 'h':
+        side = 1 if a['c'][0] < 540 else -1
+        tip = a['side'][side]; sh = abs(a['hair'][1][0] - a['c'][0]) / 150          # his head's scale on screen
+        bx = a['c'][0] + side * 310 * sh; by = tip[1] - h / 2 - 300 * sh                # far enough out that the tail clears his hair
+    else:
+        tip = a['tip']; bx = tip[0]; by = tip[1] - h / 2 - 240                         # high enough to clear what it points at
+    bx = min(max(bx, w / 2 + m), W - w / 2 - m); by = max(by, top_min)
+    G.setdefault('tails', []).append((who, (bx, by + h / 2 - 6), tip, a))
+    c.save(); c.identity_matrix(); _bub0(c, lines, min(r, G['r']), tip, cy=by, size=size, cx=bx); c.restore()
+KK.bubble = speech
+
+_draw_prev = draw
+def draw(f):
+    ANCH.clear(); G['tails'] = []
+    for n, d in SHOTS:
+        if START[n] <= f < START[n] + d: G['shot'] = n
+    return _draw_prev(f)
+
+# ---- a curved tail for Hoody: down outside his hair, then in under the side curls to his cheek at mouth height ----
+_hh1 = K.hoodyz_head
+def _hh_rec2(c, x, y, s, *a, **k):
+    rot = k.get('rot', a[2] if len(a) > 2 else 0)
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    ANCH['h2'] = {q: dict(tip=c.user_to_device(q * 90, 76), turn=c.user_to_device(q * 205, 70), out=c.user_to_device(q * 215, -60)) for q in (-1, 1)}
+    c.restore()
+    return _hh1(c, x, y, s, *a, **k)
+K.hoodyz_head = _hh_rec2
+
+def bubble_curved(c, lines, r, base_x, by, size, p):
+    """render.bubble's look, with a bent tail: bubble bottom -> outside the hair (p['out']) -> round the turn -> p['tip']."""
+    k = R.back(r / 5) if hasattr(R, 'back') else min(1, r / 5)
+    if k <= .03: return
+    c.save(); c.identity_matrix(); c.select_font_face('Lilita One'); c.set_font_size(size)
+    w = max(c.text_extents(l).width for l in lines) + 90; h = len(lines) * size * 1.12 + 56
+    bx, cy = base_x, by
+    kk = max(k, .02); b0, b1 = (bx - 34 * kk, cy + (h / 2 - 8) * kk), (bx + 34 * kk, cy + (h / 2 - 8) * kk)   # the tail stays on his face while the bubble pops
+    o, t, tp = p['out'], p['turn'], p['tip']
+    side = 1 if t[0] > tp[0] else -1
+    c.move_to(*b0); c.curve_to(o[0] - side * 24, o[1], t[0] - side * 10, t[1] + 30, tp[0], tp[1] + 10)
+    c.line_to(tp[0], tp[1] - 12)
+    c.curve_to(t[0] + side * 26, t[1] - 30, o[0] + side * 30, o[1], *b1); c.close_path(); fs(c, WHITE, 8)
+    c.translate(bx, cy); c.scale(k, k); c.translate(-bx, -cy)
+    rr(c, bx - w / 2, cy - h / 2, w, h, 40); fs(c, WHITE, 8)
+    c.move_to(bx - 32, cy + h / 2 - 12); c.line_to(bx + 32, cy + h / 2 - 12); c.set_source_rgb(*WHITE); c.set_line_width(14); c.stroke()
+    for i, l in enumerate(lines): txt(c, l, bx, cy - h / 2 + 28 + size * .56 + i * size * 1.12, size, NAVY, lw=0)
+    c.restore()
+
+_speech1 = speech
+def speech(c, lines, r, tail, cy=500, size=66, cx=540):
+    shot = G.get('shot'); who = SPEAKER.get(LINE_OF.get(shot, ''), None)
+    if who != 'h' or 'h2' not in ANCH: return _speech1(c, lines, r, tail, cy=cy, size=size, cx=cx)
+    a = ANCH['h']; side = 1 if a['c'][0] < 540 else -1; p = ANCH['h2'][side]
+    c.save(); c.select_font_face('Lilita One'); c.set_font_size(size)
+    w = max(c.text_extents(l).width for l in lines) + 90; h = len(lines) * size * 1.12 + 56; c.restore()
+    bx = min(max(p['out'][0] + side * (w / 2 - 70), w / 2 + 34), W - w / 2 - 34)
+    by = max(p['out'][1] - h / 2 - 150, 380 + h / 2)
+    G.setdefault('tails', []).append(('h', (bx, by + h / 2), p['tip'], a))
+    bubble_curved(c, lines, min(r, G['r']), bx, by, size, p)
+KK.bubble = speech
+
 if __name__ == '__main__':
     os.chdir(HERE)
     if sys.argv[1:2] == ['frames']:
