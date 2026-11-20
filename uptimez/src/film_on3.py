@@ -1,4 +1,6 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v6 (v1 to v5 pinned). v6 (Tomas, /grill-me): Pam in a
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v7 (v1 to v6 pinned). v7 (Tomas): Don wears his hat
+(a fedora over the headset: bald, he was taken for the machine); Sofia on the street is there: she comes after the CV
+(2.5 photograph, 2.7 CV, 2.6 her), looks at him as she passes, and he lifts a glove to her. v6: v6 (Tomas, /grill-me): Pam in a
 dark sweater's sleeves, hands with fingers; Don's face when he sees the gun's shadow (3.4c), then his hands up and
 his knees going; Sofia walks past him under the lamp and he turns after her; the bell is three cuts, the top view is
 out; the count is one, two, three, four; more time for Don's glass and CASE CLOSED and for the thumb on the red
@@ -50,6 +52,27 @@ ca.LONG[0] = True
 ca.SLEEVES[0] = True
 ca.DARK[0] = True
 import inspect
+
+
+def _hatted(orig, back=False):
+    """Don with his hat on, wherever this film draws him: a grey fedora over the head the cast module returns."""
+    def f(k, x, feet, s_=1.0, *a, **kw):
+        o = orig(k, x, feet, s_, *a, **kw)
+        hx, hy = o["head"]; c = k.c
+        c.save(); c.translate(hx, hy); c.scale(s_, s_)
+        felt, band = (0.34, 0.34, 0.38), (0.08, 0.08, 0.10)
+        c.new_path(); c.move_to(-34, -30); c.curve_to(-36, -78, -10, -84, -2, -70); c.curve_to(8, -86, 36, -78, 34, -30); c.close_path()
+        c.set_source_rgb(*felt); c.fill_preserve(); c.set_source_rgb(0.05, 0.05, 0.06); c.set_line_width(2.6); c.stroke()
+        c.set_source_rgb(*band); c.rectangle(-34, -42, 68, 11); c.fill()
+        c.new_path(); c.move_to(-58, -30); c.curve_to(-40, -40, 40, -40, 58, -30); c.curve_to(40, -20, -40, -20, -58, -30); c.close_path()
+        c.set_source_rgb(*felt); c.fill_preserve(); c.set_source_rgb(0.05, 0.05, 0.06); c.set_line_width(2.6); c.stroke()
+        c.restore()
+        return o
+    return f
+
+
+n2.detective = _hatted(n2.detective)
+n2.detective_back = _hatted(n2.detective_back, True)
 K = dict(cards="deck", v4=True, v6=True)
 
 
@@ -121,14 +144,27 @@ def s25(t):
 
 
 def s26(t):
-    """She walks past him under the lamp, from the arena's side to the street's: an umbrella, a look at him as she goes
-    by. His head turns after her."""
-    sx = lerp(820.0, 330.0, t / 1.3)
+    """She is there. She comes along the wall under her umbrella and stops beside him; they look at each other; he knows
+    the face from the photograph and lifts a glove; she nods and walks on behind him, out to the street. The camera is
+    wide enough to see her go."""
+    if t < 0.7:
+        sx = lerp(790.0, 575.0, t / 0.7)
+    elif t < 1.5:
+        sx = 575.0
+    else:
+        sx = lerp(575.0, 250.0, (t - 1.5) / 0.9)
+    stopped = 0.7 <= t < 1.5
+    wave = 0.95 <= t < 1.75
 
     def him(k):
-        stc.client(450, "b_pay", (0.8 if sx > 470 else -0.8, 0.1))(k)
-        st.folder(k, 452, stc.G - 30 - 176 * stc.Q, 0.62 * stc.SC, -0.06)
-    return st.frame("S3", [stc.sofia(sx, (-1, 0.2) if sx > 520 else (0.9, 0.2) if sx > 400 else (-1, 0.2)), him], rain=_rain(t))
+        stc.client(450, "b_fist" if wave else "b_pay", (0.9 if sx > 460 else -0.9, 0.0))(k)
+        st.folder(k, 452 - (30 if wave else 0), stc.G - 30 - 176 * stc.Q, 0.62 * stc.SC, -0.06)
+
+    def her(k):
+        k.c.save(); k.c.translate(0, 6 * math.sin((t - 1.1) * math.pi / 0.3) if 1.1 <= t < 1.4 else 0)       # her nod
+        stc.sofia(sx, (-0.9, 0.2) if (stopped or sx > 575) else (-1, 0.1))(k)
+        k.c.restore()
+    return st.frame((470, 1190, 1.12), [her, him], rain=_rain(t))
 
 
 def s27(t):
@@ -533,7 +569,7 @@ def s85(t):
 
 FILM = [("1.1", 0.6, s11),
         ("2.0", 0.9, s20), ("2.1", 0.8, quick(s21, 1.35)), ("2.2", 1.2, quick(s22, 1.2)), ("2.4", 1.8, quick(s24, 2.8 / 1.8)), ("2.4b", 0.9, quick(s24b, 1.4)),
-        ("2.5", 1.1, s25), ("2.6", 1.4, s26), ("2.7", 1.7, s27),
+        ("2.5", 1.1, s25), ("2.7", 1.7, s27), ("2.6", 2.4, s26),
         ("3.1", 0.8, quick(s31, 1.6)), ("3.2", 0.6, s32), ("3.2b", 0.9, quick(s32b, 1.1)), ("3.2c", 0.8, quick(s32c, 1.1)), ("3.3", 0.7, quick(s33, 1.25)),
         ("3.3b", 1.1, quick(s33b, 1.45)), ("3.4", 0.7, quick(s34, 1.85)), ("3.4b", 1.2, s34b), ("3.4c", 0.7, s34c), ("3.4d", 0.8, s34d),
         ("4.1", 1.3, s41), ("4.2", 1.9, s42), ("4.3", 1.0, quick(s43, 1.4)), ("4.4", 2.4, quick(s44, 2.9 / 2.4)), ("4.4a", 0.9, s44a),
@@ -566,8 +602,8 @@ for name, dur in rr2.SHOTS:
         FILM.append(("6.4", 2.7, s64))
     else:
         FILM.append((name, dur, rr2.FN[name]))
-FILM += [("8.1", 1.6, s81), ("8.2", 1.3, s82), ("8.2b", 1.0, lambda t: ga.f82b()), ("8.3", 1.8, s83),
-         ("8.3b", 1.7, lambda t: _buzzing(lambda: ga.f83b(0.2 if t < 1.0 else 0.5 + 0.5 * ramp(t, 1.0, 0.3)), t)), ("8.4", 1.7, s84), ("8.5", 1.0, s85)]
+FILM += [("8.1", 1.6, s81), ("8.2", 1.3, s82), ("8.2b", 1.0, lambda t: ga.f82b()), ("8.3", 1.5, s83),
+         ("8.3b", 1.3, lambda t: _buzzing(lambda: ga.f83b(0.2 if t < 0.6 else 0.5 + 0.5 * ramp(t, 0.6, 0.3)), t)), ("8.4", 1.7, s84), ("8.5", 1.0, s85)]
 
 
 def _use():
