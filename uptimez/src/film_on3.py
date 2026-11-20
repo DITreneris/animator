@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v5 (v1 to v4 pinned: film_on3_v1.py ... _v4.py). v5
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v6 (v1 to v5 pinned). v6 (Tomas, /grill-me): Pam in a
+dark sweater's sleeves, hands with fingers; Don's face when he sees the gun's shadow (3.4c), then his hands up and
+his knees going; Sofia walks past him under the lamp and he turns after her; the bell is three cuts, the top view is
+out; the count is one, two, three, four; more time for Don's glass and CASE CLOSED and for the thumb on the red
+button, less for the alley and the desk. v5: v5
 (Tomas, /grill-me): Pam in sleeves to the wrist, her stopwatch on a plain cord; the robe in three held pictures (she
 pulls, it sticks at the gloves; the bell, large; she waves it off and shoves it back); the hand-over at the car in
 1.8 s; her hand pushes the ticket; the first punch is seen landing; his hand turns the ringing phone face down on the
@@ -44,6 +48,8 @@ import client_sheet_on3 as csh
 from kit import Ctx, rect
 ca.LONG[0] = True
 ca.SLEEVES[0] = True
+ca.DARK[0] = True
+import inspect
 K = dict(cards="deck", v4=True, v6=True)
 
 
@@ -115,7 +121,14 @@ def s25(t):
 
 
 def s26(t):
-    return st.frame("S3", [stc.sofia(lerp(900.0, 690.0, t / 0.9)), stc.with_folder(450)], rain=_rain(t))
+    """She walks past him under the lamp, from the arena's side to the street's: an umbrella, a look at him as she goes
+    by. His head turns after her."""
+    sx = lerp(820.0, 330.0, t / 1.3)
+
+    def him(k):
+        stc.client(450, "b_pay", (0.8 if sx > 470 else -0.8, 0.1))(k)
+        st.folder(k, 452, stc.G - 30 - 176 * stc.Q, 0.62 * stc.SC, -0.06)
+    return st.frame("S3", [stc.sofia(sx, (-1, 0.2) if sx > 520 else (0.9, 0.2) if sx > 400 else (-1, 0.2)), him], rain=_rain(t))
 
 
 def s27(t):
@@ -162,11 +175,20 @@ def s34(t):
 
 
 def s34b(t):
-    """Don, bent over the cigarette end. On the wall beside his head the gun's shadow comes down and stops. He looks up.
-    His hands go up."""
-    if t < 0.7:
-        return al.frame2("A3w", [al.don_caught(lerp(60.0, 215.0, t / 0.6), 0.0)], al.gang("down", 0, True), cig=300)
-    return al.frame2("A3w", [al.barrel(ramp(t, 0.7, 0.5)), al.don_caught(215, 0.0 if t < 1.45 else 1.0)], al.gang("down", 0, True), cig=300)
+    """Don, bent over the cigarette end. On the wall beside his head the gun's shadow comes down and stops."""
+    if t < 0.5:
+        return al.frame2("A3w", [al.don_caught(lerp(60.0, 215.0, t / 0.45), 0.0)], al.gang("down", 0, True), cig=300)
+    return al.frame2("A3w", [al.barrel(ramp(t, 0.5, 0.45)), al.don_caught(215, 0.0)], al.gang("down", 0, True), cig=300)
+
+
+def s34c(t):
+    """Close: his eyes go to it. A drop of sweat."""
+    return al.frame2((262, al.G - 250, 3.1), [al.barrel(1.0), al.don_sees(215, ramp(t, 0.0, 0.6))], al.gang("down", 0, True), cig=300)
+
+
+def s34d(t):
+    """His hands go up; his knees are going."""
+    return al.frame2("A3w", [al.barrel(1.0), al.don_caught(215 + math.sin(t * 60) * 2.2, 1.0)], al.gang("down", 0, True), cig=300)
 
 
 # ---- 04 the price -------------------------------------------------------------------------------------------------
@@ -420,9 +442,36 @@ def s64(t):
     0.6 s, then Don's walk out and the Referee's eyebrow, quicker."""
     if t < 0.55:
         return rr2.shot_64(t)
-    if t < 1.15:
+    if t < 1.35:
         return rr2.shot_64(0.7)
-    return rr2.shot_64(0.8 + (t - 1.15) * (2.2 / 1.35))
+    return rr2.shot_64(0.8 + (t - 1.35) * (2.2 / 1.35))
+
+
+def s52a(t):
+    """The bell: three cuts, a quarter of a second each: from the front, his view of it, its view of him. The view from
+    above is out (it read as blobs in four tests)."""
+    return F5["5.2a"](min(int(t / 0.25), 2) * 0.25 + 0.01)
+
+
+def _count_shot():
+    src = inspect.getsource(rr.shot_56)
+    for old_, new_ in (("    n = 1 if t < 0.6 else 2 if t < 1.2 else 3\n", "    n = min(4, 1 + int(t / 0.4))\n"),
+                       ("    bob = 10 * abs(math.sin(t / 0.6 * math.pi))\n", "    bob = 16 * abs(math.sin(t / 0.4 * math.pi))\n"),
+                       ("math.pi / 2 + 0.25, n, 51)", "math.pi / 2 + 0.25, n, 51, thumb=False)"),
+                       ("c.set_source_rgba(0, 0, 0, 0.34)                         # the shadow of the plan", "c.set_source_rgba(0, 0, 0, 0.0)                          # the shadow of the plan (out: it read as a bar across him)")):
+        assert src.count(old_) == 1, old_
+        src = src.replace(old_, new_)
+    ns = dict(vars(rr)); exec(src.replace("def shot_56(", "def shot_56b("), ns)
+    return ns["shot_56b"]
+
+
+s56 = _count_shot()                                         # one, two, three, four: a finger more every 0.4 s, no thumb, the hand dipping on each
+
+
+def s63b(t):
+    """6.3 with room: the tweezers and the folder as before (to 1.2), then the glass: the photograph held, the slide, the
+    ring girl held; a second more in all."""
+    return s63(t) if t < 1.2 else s63(1.2 + (t - 1.2) * (1.9 / 2.7))
 
 
 def s54b(t):
@@ -484,10 +533,11 @@ def s85(t):
 
 FILM = [("1.1", 0.6, s11),
         ("2.0", 0.9, s20), ("2.1", 0.8, quick(s21, 1.35)), ("2.2", 1.2, quick(s22, 1.2)), ("2.4", 1.8, quick(s24, 2.8 / 1.8)), ("2.4b", 0.9, quick(s24b, 1.4)),
-        ("2.5", 1.1, s25), ("2.6", 1.2, quick(s26, 1.2)), ("2.7", 1.7, s27),
-        ("3.1", 1.0, quick(s31, 1.3)), ("3.2", 0.8, s32), ("3.2b", 1.0, s32b), ("3.2c", 0.9, s32c), ("3.3", 0.9, s33), ("3.3b", 1.4, quick(s33b, 1.15)),
-        ("3.4", 1.0, quick(s34, 1.3)), ("3.4b", 2.2, s34b),
-        ("4.1", 1.3, s41), ("4.2", 1.9, s42), ("4.3", 1.4, s43), ("4.4", 2.9, s44), ("4.4a", 0.9, s44a), ("4.4t", 1.5, s44t), ("4.4b", 1.2, s44b), ("4.4c", 1.2, quick(s44c, 1.15))]
+        ("2.5", 1.1, s25), ("2.6", 1.4, s26), ("2.7", 1.7, s27),
+        ("3.1", 0.8, quick(s31, 1.6)), ("3.2", 0.6, s32), ("3.2b", 0.9, quick(s32b, 1.1)), ("3.2c", 0.8, quick(s32c, 1.1)), ("3.3", 0.7, quick(s33, 1.25)),
+        ("3.3b", 1.1, quick(s33b, 1.45)), ("3.4", 0.7, quick(s34, 1.85)), ("3.4b", 1.2, s34b), ("3.4c", 0.7, s34c), ("3.4d", 0.8, s34d),
+        ("4.1", 1.3, s41), ("4.2", 1.9, s42), ("4.3", 1.0, quick(s43, 1.4)), ("4.4", 2.4, quick(s44, 2.9 / 2.4)), ("4.4a", 0.9, s44a),
+        ("4.4t", 1.2, quick(s44t, 1.25)), ("4.4b", 1.0, quick(s44b, 1.2)), ("4.4c", 1.0, quick(s44c, 1.4))]
 for name, dur in R5:
     if name == "5.4":
         FILM += [("5.4", 1.3, F5["5.4"]), ("5.4b", 0.5, s54b)]
@@ -495,26 +545,29 @@ for name, dur in R5:
         FILM.append(("5.1c", 3.4, s51c))
     elif name == "5.1a":
         FILM += [("5.1a", dur, F5["5.1a"]), ("5.1a2", 0.9, s51a2)]
+    elif name == "5.2a":
+        FILM.append(("5.2a", 0.75, s52a))
     elif name == "5.5":
         FILM.append(("5.5", dur + 0.35, s55))
     elif name == "5.6":
-        FILM.append(("5.6", 1.3, quick(F5["5.6"], dur / 1.3)))           # the count, quicker
+        FILM.append(("5.6", 1.6, s56))
     else:
         FILM.append((name, dur, F5[name]))
 for name, dur in rr2.SHOTS:
     if name == "7.4":
         FILM += [("7.4", 1.1, s74a), ("7.4b", 0.45, s54b), ("7.4c", 0.7, s74c)]
     elif name == "6.3":
-        FILM += [("6.2a", 0.8, s62a), ("6.2b", 1.5, s62b), ("6.2c", 0.9, s62c), ("6.3", 3.1, s63)]
+        FILM += [("6.2a", 0.8, s62a), ("6.2b", 1.5, s62b), ("6.2c", 0.9, s62c), ("6.3", 3.9, s63b)]
     elif name == "6.1":
-        FILM.append(("6.1", 2.2, quick(rr2.FN["6.1"], dur / 2.2)))       # the sponge and the plaster, quicker
+        FILM.append(("6.1", 2.2, quick(rr2.FN["6.1"], dur / 2.2)))
     elif name == "6.2":
-        FILM.append(("6.2", 1.1, quick(rr2.FN["6.2"], dur / 1.1)))       # the split screen: half as long
+        FILM.append(("6.2", 1.1, quick(rr2.FN["6.2"], dur / 1.1)))
     elif name == "6.4":
-        FILM.append(("6.4", 2.5, s64))
+        FILM.append(("6.4", 2.7, s64))
     else:
         FILM.append((name, dur, rr2.FN[name]))
-FILM += [("8.1", 1.6, s81), ("8.2", 1.3, s82), ("8.2b", 1.0, lambda t: ga.f82b()), ("8.3", 1.8, s83), ("8.3b", 1.2, lambda t: _buzzing(lambda: ga.f83b(0.2 if t < 0.5 else 0.5 + 0.5 * ramp(t, 0.5, 0.3)), t)), ("8.4", 1.7, s84), ("8.5", 1.0, s85)]
+FILM += [("8.1", 1.6, s81), ("8.2", 1.3, s82), ("8.2b", 1.0, lambda t: ga.f82b()), ("8.3", 1.8, s83),
+         ("8.3b", 1.7, lambda t: _buzzing(lambda: ga.f83b(0.2 if t < 1.0 else 0.5 + 0.5 * ramp(t, 1.0, 0.3)), t)), ("8.4", 1.7, s84), ("8.5", 1.0, s85)]
 
 
 def _use():

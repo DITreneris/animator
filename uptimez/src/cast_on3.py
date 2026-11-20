@@ -127,6 +127,8 @@ def _arm_rolled(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
     d = lambda a_: (math.sin(math.radians(a_)), math.cos(math.radians(a_)))
     ex, ey = sx + d(a1)[0] * ln, sy + d(a1)[1] * ln
     hx, hy = ex + d(a1 + a2)[0] * ln, ey + d(a1 + a2)[1] * ln
+    if DARK[0]:
+        col = (0.20, 0.20, 0.24)
     if LONG[0]:                                            # v9 (Tomas, /grill-me): her arms as the Referee's: a bare forearm that runs into the hand, a sleeve that bends, one soft roll; no boxes, no joint
         c = k.c
         for (ax, ay, bx, by, cl, ww) in ((ex, ey, hx, hy, col if SLEEVES[0] else skin, (w - 1) if SLEEVES[0] else (w - 4)), (sx, sy, ex, ey, col, w + 1)):
@@ -140,6 +142,14 @@ def _arm_rolled(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
             ux_, uy_ = math.cos(ang), math.sin(ang)
             c.set_source_rgb(*INK); c.set_line_width(w + 4); c.new_path(); c.move_to(hx - ux_ * 9, hy - uy_ * 9); c.line_to(hx - ux_ * 2, hy - uy_ * 2); c.stroke()
             c.set_source_rgb(*tuple(min(1, v + 0.10) for v in col)); c.set_line_width(w + 0.5); c.new_path(); c.move_to(hx - ux_ * 8.5, hy - uy_ * 8.5); c.line_to(hx - ux_ * 2.5, hy - uy_ * 2.5); c.stroke()
+            if DARK[0]:                                        # a palm, three fingers and a thumb: a hand, not a ball
+                c.save(); c.translate(hx + ux_ * 4, hy + uy_ * 4); c.rotate(ang)
+                for fy_ in (-4.2, 0, 4.2):
+                    ellipse(k, 9, fy_, 6.5, 2.6, skin, seed + 3, shadow=False, lw=1.4)
+                ellipse(k, 2, -7, 4.2, 2.4, skin, seed + 4, shadow=False, lw=1.4)
+                ellipse(k, 1, 0, 7.5, 7, skin, seed, shadow=False, lw=1.8)
+                c.restore()
+                return hx, hy
             ellipse(k, hx + ux_ * 5, hy + uy_ * 5, w * 0.56, w * 0.5, skin, seed, shadow=False, lw=2)
             return hx, hy
         c.new_path(); c.arc(ex, ey, (w + 1) / 2 - 1, ang - 1.1, ang + 1.1); c.stroke(); c.set_line_cap(0)       # the roll, a fold
@@ -349,6 +359,7 @@ def _vest(k, bt):
         c.new_path(); c.arc(9, bt + 92 + i * 16, 2.6, 0, 2 * math.pi); c.fill()
 
 
+DARK = [False]                                             # v11 (Tomas, /grill-me): her sleeves are a dark sweater's; her hands have fingers
 SLEEVES = [False]                                          # v10 (Tomas, /grill-me): Pam in sleeves to the wrist, her stopwatch low on a plain cord
 LONG = [False]                                             # v8 (Tomas, /grill-me): the Referee in sleeves to the wrist, so nobody takes his forearms for a machine's
 

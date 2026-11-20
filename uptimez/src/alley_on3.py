@@ -339,6 +339,28 @@ def barrel(u):
     return d
 
 
+def don_sees(x, u=1.0):
+    """3.4c (v5; Tomas, /grill-me: fright, not delight): Don, straightened half way, his eyes gone to the shadow beside
+    his head; a drop of sweat runs down his brow (u 0..1); his mouth has slipped."""
+    def d(k):
+        _sh(k, x, 36)
+        old = n2.LOOK[0]; n2.LOOK[0] = 9
+        try:
+            o = n2.detective(k, x, G - 12, SC, "look", "neutral", (1.0, -0.35), lean=4)
+        finally:
+            n2.LOOK[0] = old
+        c = k.c
+        hx, hy = o["head"]
+        c.set_source_rgb(*n2.d.SKIN if hasattr(n2.d, "SKIN") else (0.90, 0.76, 0.66)); c.rectangle(hx - 14, hy + 14, 28, 12); c.fill()      # over his smirk
+        c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
+        c.new_path(); c.move_to(hx - 10, hy + 21); c.curve_to(hx - 4, hy + 16, hx + 2, hy + 25, hx + 10, hy + 19); c.stroke(); c.set_line_cap(0)   # a mouth that wavers
+        for i, (dx, dy0) in enumerate(((-20, -26), (22, -18))):                                   # sweat
+            dy = dy0 + 26 * u * (1 + 0.4 * i)
+            c.new_path(); c.move_to(hx + dx, hy + dy - 7); c.curve_to(hx + dx - 5, hy + dy + 2, hx + dx + 5, hy + dy + 2, hx + dx, hy + dy - 7)
+            c.set_source_rgb(0.90, 0.95, 1.0); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.2); c.stroke()
+    return d
+
+
 def great_match(u):
     """3.2c, insert (v4; for a phone): two gloves and one match as wide as the frame between them. It bends (u to 0.55);
     it snaps: two halves, and the gloves hit each other."""
