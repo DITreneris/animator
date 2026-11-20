@@ -1,4 +1,7 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v11 (v1 to v10 pinned). v11 (Tomas, on animatic v6):
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v12 (v1 to v11 pinned). v12 (an outside review: FAIL,
+"blobs and rectangles, not a crowd"): the spectators are people: three tiers behind the far ropes, paler and smaller
+with distance, overlapping, each in his own place, with fists, clapping, waving, shouting; at the ringside, backs and
+heads nearest us. Nothing else is touched. v11 (Tomas, on animatic v6):
 the split frame is cut across, not down (6.2); the hall is alive: the crowd bobs and pumps fists, and throws tall waving
 shadows on the back wall; the second approval's sign is held for the robot's line; Sofía's head is tracked for her
 bubble. v10 (iteration 2 of 4, the
@@ -667,46 +670,95 @@ def _heat():
     return HEAT.get(mo.CLOCK["shot"], 0.4)
 
 
-def _hat_live(c, x, top, rr_, hat=True):
-    if mo.CLOCK["shot"] is None:
-        return _hat0(c, x, top, rr_, hat)
-    T, h, ph = mo.CLOCK["T"], _heat(), (x * 0.137) % 1.0
-    dy = -abs(math.sin(2 * math.pi * (T * (1.3 + 0.9 * ph) + ph))) * (2 + 7 * h) * rr_ / 14.0
-    _hat0(c, x, top + dy, rr_, hat)
-    if int(x * 7) % 3 == 0 and h > 0.6:                      # a fist over the hat, pumping
-        w = abs(math.sin(2 * math.pi * (T * 2.2 + ph)))
-        c.rectangle(x + rr_ * 0.9, top + dy - rr_ * (1.6 + 1.2 * w), rr_ * 0.5, rr_ * 2.6); c.fill()
-        c.arc(x + rr_ * 1.15, top + dy - rr_ * (1.7 + 1.2 * w), rr_ * 0.55, 0, 2 * math.pi); c.fill()
+def _person(c, x, base, h, w, hat, g, T, ph, heat, col, facing=1):
+    """v12: one spectator as a person: a head, a neck, a line of shoulders, a body, arms with an elbow and a fist. A
+    plain silhouette in one tone. g: fist1, fist2, clap, wave, lean (a hand at the mouth, shouting), still."""
+    r = 0.105 * h
+    ys = -h + 2 * r + 0.04 * h                               # the shoulders
+    sw = w * 0.5
+    live = 0.3 if g == "still" else 1.0
+    bob = -abs(math.sin(2 * math.pi * (T * (1.5 + 1.0 * ph) + ph))) * (0.015 + 0.06 * heat) * h * live     # v12b: twice the jump; it read as frozen at 8 fps
+    lean = (0.17 + 0.04 * math.sin(2 * math.pi * (T * 1.1 + ph))) * facing if g == "lean" else 0.03 * math.sin(2 * math.pi * (T * 0.6 + ph)) * live
+    c.save(); c.translate(x, base); c.rotate(lean); c.translate(0, bob)
+    c.set_source_rgb(*col)
+    c.new_path(); c.move_to(-0.40 * w, 0); c.line_to(-sw, ys + 0.16 * h); c.curve_to(-sw, ys + 0.02 * h, -sw + 0.10 * w, ys, -0.14 * w, ys)
+    c.line_to(-0.10 * w, ys - 0.05 * h); c.line_to(0.10 * w, ys - 0.05 * h); c.line_to(0.14 * w, ys)
+    c.curve_to(sw - 0.10 * w, ys, sw, ys + 0.02 * h, sw, ys + 0.16 * h); c.line_to(0.40 * w, 0); c.close_path(); c.fill()
+    hy = -h + r
+    c.save(); c.translate(0, hy); c.scale(r * 0.9, r); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    if hat:                                                  # a fedora: a brim and a dented crown, not a box
+        c.save(); c.translate(0, hy - 0.55 * r); c.scale(1.55 * r, 0.28 * r); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        c.new_path(); c.move_to(-0.86 * r, hy - 0.55 * r); c.curve_to(-0.9 * r, hy - 1.7 * r, -0.2 * r, hy - 1.75 * r, 0, hy - 1.45 * r)
+        c.curve_to(0.2 * r, hy - 1.75 * r, 0.9 * r, hy - 1.7 * r, 0.86 * r, hy - 0.55 * r); c.close_path(); c.fill()
+    c.set_line_width(0.15 * w); c.set_line_cap(1); c.set_line_join(1)
+
+    def arm(sd, ex, ey, fx, fy):
+        c.new_path(); c.move_to(sd * (sw - 0.08 * w), ys + 0.07 * h); c.line_to(ex, ey); c.line_to(fx, fy); c.stroke()
+        c.arc(fx, fy, 0.105 * w, 0, 2 * math.pi); c.fill()
+    pump = abs(math.sin(2 * math.pi * (T * (1.9 + heat) + ph)))
+    if g in ("fist1", "fist2"):
+        for sd in ((1, -1) if g == "fist2" else ((1,) if ph < 0.5 else (-1,))):
+            p_ = pump if sd > 0 else abs(math.sin(2 * math.pi * (T * (1.6 + heat) + ph + 0.25)))
+            arm(sd, sd * (sw + 0.10 * w), ys + 0.02 * h - 0.12 * h * p_, sd * (sw + 0.02 * w), ys - 0.18 * h - 0.28 * h * p_)
+    elif g == "clap":
+        gap = 0.03 * w + 0.20 * w * (0.5 + 0.5 * math.sin(2 * math.pi * (T * 3.2 + ph)))
+        for sd in (-1, 1):
+            arm(sd, sd * (sw + 0.06 * w), ys - 0.10 * h, sd * gap, ys - 0.36 * h)
+    elif g == "wave":
+        sd = 1 if ph < 0.5 else -1
+        arm(sd, sd * (sw + 0.08 * w), ys - 0.12 * h, sd * 0.30 * w + 0.26 * w * math.sin(2 * math.pi * (T * 1.8 + ph)), ys - 0.44 * h)
+    elif g == "lean":
+        arm(facing, facing * (sw + 0.02 * w), ys + 0.03 * h, facing * 0.22 * w, hy + 0.55 * r)
+    c.restore()
 
 
-rg._hat = _hat_live
+def _gesture(i, heat):
+    u, v = (i * 0.618) % 1.0, (i * 0.377) % 1.0
+    g = "fist1" if u < 0.25 else "fist2" if u < 0.40 else "clap" if u < 0.53 else "wave" if u < 0.65 else "lean" if u < 0.85 else "still"
+    return "still" if (g != "still" and v > heat * 1.35) else g
+
+
+ROWS = (                                                     # (base above the far edge, height, width, step, tone): three tiers behind the far ropes
+    (-128, 128, 46, 43, 0.33),
+    (-74, 150, 56, 51, 0.23),
+    (-14, 176, 68, 60, 0.14),
+)
 
 
 def _wall_crowd(c):
-    """Tall shadows of the crowd on the hall's back wall, behind everything in the ring."""
+    """v12: the crowd behind the far ropes: three tiers of people, the farther the paler and smaller, overlapping, each
+    in his own place in every shot and doing his own thing (fists, clapping, waving, shouting, or standing)."""
     if mo.CLOCK["shot"] is None:
         return
     T, h = mo.CLOCK["T"], _heat()
-    base = rg.FAR - 60
-    c.save()
-    for j, x0 in enumerate(range(-160, int(rg.WW) + 260, 132)):
-        ph = (j * 0.37) % 1.0
-        x = x0 + (8 + 10 * h) * math.sin(2 * math.pi * (T * 0.7 + ph))
-        H = 190 + 46 * (j % 3) + 14 * h * math.sin(2 * math.pi * (T * 1.4 + ph))
-        sh, hd = base - H + 78, base - H + 40
-        c.new_path()
-        c.move_to(x - 62, base); c.line_to(x - 44, sh); c.line_to(x + 44, sh); c.line_to(x + 62, base); c.close_path()   # the body
-        c.arc(x, hd, 30, 0, 2 * math.pi)                                                                          # the head
-        c.rectangle(x - 50, hd - 26, 100, 10); c.rectangle(x - 30, hd - 62, 60, 38)                                # the hat
-        for sd in ((1,), (-1, 1))[int(h > 0.75 and j % 2 == 0)] if (j % 2 == 0 or h > 0.75) else ():              # an arm up, waving
-            a = -1.15 + 0.38 * math.sin(2 * math.pi * (T * (1.5 + h) + ph + 0.3 * sd))
-            ex, ey = x + sd * (44 + 70 * math.cos(a)), sh + 6 + 70 * math.sin(a)
-            fx, fy = ex + sd * 20 * math.cos(a - 0.5), ey + 64 * math.sin(a - 0.5)
-            c.move_to(x + sd * 30, sh + 4); c.line_to(ex - sd * 12, ey - 8); c.line_to(fx - sd * 12, fy); c.line_to(fx + sd * 12, fy)
-            c.line_to(ex + sd * 14, ey + 10); c.line_to(x + sd * 46, sh + 30); c.close_path()
-            c.arc(fx, fy - 6, 15, 0, 2 * math.pi)
-        c.set_source_rgba(0.03, 0.03, 0.04, 0.30 + 0.16 * h); c.fill()
-    c.restore()
+    for ri, (dy, H, W_, step, tone) in enumerate(ROWS):
+        x, i = -420.0 + ri * 17, 0
+        while x < rg.WW + 440:
+            k_ = ri * 100 + i
+            ph = (k_ * 0.2718) % 1.0
+            hh = H * (0.90 + 0.22 * ((k_ * 0.531) % 1.0)); ww = W_ * (0.86 + 0.30 * ((k_ * 0.713) % 1.0))
+            t_ = tone + 0.035 * ((k_ * 0.419) % 1.0 - 0.5)
+            _person(c, x, rg.FAR + dy + 30, hh, ww, k_ % 3 != 1, _gesture(k_, h), T, ph, h, (t_, t_, t_ + 0.02), 1 if x < rg.LAMP[0] else -1)
+            x += step * (0.82 + 0.4 * ((k_ * 0.291) % 1.0)); i += 1
+
+
+def _hat_live(c, x, top, rr_, hat=True):
+    """The set's own hats. Far ones (small) are out: the tiers of people stand there now. The ringside ones (big, nearest
+    us) become people seen from behind, black, their heads and shoulders over the frame's bottom edge, some with a fist up."""
+    if mo.CLOCK["shot"] is None:
+        return _hat0(c, x, top, rr_, hat)
+    if rr_ < 20:
+        return
+    T, h = mo.CLOCK["T"], _heat()
+    i = int(x) // 7
+    for dx_, dyy, sc_, tone in ((62, 26, 0.86, 0.075), (0, 0, 1.0, 0.03)):
+        k_ = 900 + i * 2 + (dx_ > 0)
+        H = 250 * sc_ * (0.9 + 0.2 * ((k_ * 0.531) % 1.0))
+        _person(c, x + dx_, top - rr_ + H + dyy, H, 150 * sc_, k_ % 3 != 2, _gesture(k_, h), T, (k_ * 0.2718) % 1.0, h, (tone, tone, tone + 0.01), 1 if x < rg.LAMP[0] else -1)
+    c.set_source_rgb(0.03, 0.03, 0.04)
+
+
+rg._hat = _hat_live
 
 
 def _ring_with_wall():
