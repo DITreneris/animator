@@ -1,0 +1,413 @@
+{
+ "total": 50.26666666666667,
+ "rows": [
+  {
+   "shot": "1.1",
+   "start": 0.0,
+   "len": 1.4,
+   "lines": []
+  },
+  {
+   "shot": "1.2",
+   "start": 1.4,
+   "len": 2.4,
+   "lines": []
+  },
+  {
+   "shot": "1.4",
+   "start": 3.8,
+   "len": 3.9,
+   "lines": [
+    {
+     "key": "1.4r",
+     "who": "ROBOT",
+     "text": "Reply drafted. Human approval required.",
+     "t0": 4.05,
+     "t1": 6.418
+    },
+    {
+     "key": "1.4d",
+     "who": "DON",
+     "text": "Approved.",
+     "t0": 6.618,
+     "t1": 7.336
+    }
+   ]
+  },
+  {
+   "shot": "1.4b",
+   "start": 7.7,
+   "len": 1.3,
+   "lines": []
+  },
+  {
+   "shot": "2.1a",
+   "start": 9.0,
+   "len": 0.5,
+   "lines": []
+  },
+  {
+   "shot": "2.1",
+   "start": 9.5,
+   "len": 2.1,
+   "lines": [
+    {
+     "key": "2.1",
+     "who": "DON",
+     "text": "Let's fix this together.",
+     "t0": 9.75,
+     "t1": 11.249
+    }
+   ]
+  },
+  {
+   "shot": "2.2",
+   "start": 11.6,
+   "len": 2.3,
+   "lines": [
+    {
+     "key": "2.2",
+     "who": "CLIENT",
+     "text": "Nine o'clock. Your office.",
+     "t0": 11.85,
+     "t1": 13.546
+    }
+   ]
+  },
+  {
+   "shot": "3.1",
+   "start": 13.9,
+   "len": 3.966666666666667,
+   "lines": [
+    {
+     "key": "3.1r",
+     "who": "ROBOT",
+     "text": "Blueprint generated. Human approval required.",
+     "t0": 14.15,
+     "t1": 16.589
+    },
+    {
+     "key": "3.1d",
+     "who": "DON",
+     "text": "Approved.",
+     "t0": 16.789,
+     "t1": 17.507
+    }
+   ]
+  },
+  {
+   "shot": "3.2",
+   "start": 17.867,
+   "len": 1.0,
+   "lines": []
+  },
+  {
+   "shot": "3.3",
+   "start": 18.867,
+   "len": 1.4333333333333333,
+   "lines": [
+    {
+     "key": "3.3",
+     "who": "DON",
+     "text": "Recovered.",
+     "t0": 19.117,
+     "t1": 19.952
+    }
+   ]
+  },
+  {
+   "shot": "3.4",
+   "start": 20.3,
+   "len": 2.0,
+   "lines": []
+  },
+  {
+   "shot": "3.5",
+   "start": 22.3,
+   "len": 1.6666666666666667,
+   "lines": [
+    {
+     "key": "3.5",
+     "who": "CLIENT",
+     "text": "Is this a joke?",
+     "t0": 22.55,
+     "t1": 23.624
+    }
+   ]
+  },
+  {
+   "shot": "3.5b",
+   "start": 23.967,
+   "len": 0.6,
+   "lines": []
+  },
+  {
+   "shot": "4.1",
+   "start": 24.567,
+   "len": 1.3,
+   "lines": []
+  },
+  {
+   "shot": "4.2",
+   "start": 25.867,
+   "len": 1.3,
+   "lines": []
+  },
+  {
+   "shot": "4.2b",
+   "start": 27.167,
+   "len": 1.0,
+   "lines": []
+  },
+  {
+   "shot": "4.3a",
+   "start": 28.167,
+   "len": 1.4,
+   "lines": []
+  },
+  {
+   "shot": "4.3c",
+   "start": 29.567,
+   "len": 1.0,
+   "lines": []
+  },
+  {
+   "shot": "4.3b",
+   "start": 30.567,
+   "len": 1.5,
+   "lines": []
+  },
+  {
+   "shot": "4.4",
+   "start": 32.067,
+   "len": 2.7666666666666666,
+   "lines": [
+    {
+     "key": "4.4",
+     "who": "ROBOT",
+     "text": "The result was obtained by a h-human.",
+     "t0": 32.317,
+     "t1": 34.497
+    }
+   ]
+  },
+  {
+   "shot": "5.1",
+   "start": 34.833,
+   "len": 1.4,
+   "lines": [
+    {
+     "key": "5.1",
+     "who": "CLIENT",
+     "text": "Your number.",
+     "t0": 35.083,
+     "t1": 35.896
+    }
+   ]
+  },
+  {
+   "shot": "5.2",
+   "start": 36.233,
+   "len": 1.4,
+   "lines": []
+  },
+  {
+   "shot": "5.3",
+   "start": 37.633,
+   "len": 0.9,
+   "lines": []
+  },
+  {
+   "shot": "5.4a",
+   "start": 38.533,
+   "len": 1.9666666666666666,
+   "lines": [
+    {
+     "key": "5.4d",
+     "who": "DON",
+     "text": "Customer success.",
+     "t0": 38.783,
+     "t1": 40.14
+    }
+   ]
+  },
+  {
+   "shot": "5.4b",
+   "start": 40.5,
+   "len": 0.8,
+   "lines": []
+  },
+  {
+   "shot": "5.4c",
+   "start": 41.3,
+   "len": 0.7,
+   "lines": []
+  },
+  {
+   "shot": "6.1",
+   "start": 42.0,
+   "len": 1.0,
+   "lines": []
+  },
+  {
+   "shot": "6.2",
+   "start": 43.0,
+   "len": 2.0,
+   "lines": []
+  },
+  {
+   "shot": "6.3",
+   "start": 45.0,
+   "len": 1.2,
+   "lines": []
+  },
+  {
+   "shot": "6.3b",
+   "start": 46.2,
+   "len": 1.6,
+   "lines": []
+  },
+  {
+   "shot": "6.5",
+   "start": 47.8,
+   "len": 1.4666666666666666,
+   "lines": [
+    {
+     "key": "6.5",
+     "who": "SOFIA",
+     "text": "Still one star.",
+     "t0": 48.05,
+     "t1": 48.925
+    }
+   ]
+  },
+  {
+   "shot": "6.6",
+   "start": 49.267,
+   "len": 1.0,
+   "lines": []
+  }
+ ],
+ "shots": [
+  {
+   "shot": "1.4",
+   "line": {
+    "key": "1.4r",
+    "who": "ROBOT",
+    "text": "Reply drafted. Human approval required.",
+    "t0": 4.05,
+    "t1": 6.418
+   }
+  },
+  {
+   "shot": "1.4_1",
+   "line": {
+    "key": "1.4d",
+    "who": "DON",
+    "text": "Approved.",
+    "t0": 6.618,
+    "t1": 7.336
+   }
+  },
+  {
+   "shot": "2.1",
+   "line": {
+    "key": "2.1",
+    "who": "DON",
+    "text": "Let's fix this together.",
+    "t0": 9.75,
+    "t1": 11.249
+   }
+  },
+  {
+   "shot": "2.2",
+   "line": {
+    "key": "2.2",
+    "who": "CLIENT",
+    "text": "Nine o'clock. Your office.",
+    "t0": 11.85,
+    "t1": 13.546
+   }
+  },
+  {
+   "shot": "3.1",
+   "line": {
+    "key": "3.1r",
+    "who": "ROBOT",
+    "text": "Blueprint generated. Human approval required.",
+    "t0": 14.15,
+    "t1": 16.589
+   }
+  },
+  {
+   "shot": "3.1_1",
+   "line": {
+    "key": "3.1d",
+    "who": "DON",
+    "text": "Approved.",
+    "t0": 16.789,
+    "t1": 17.507
+   }
+  },
+  {
+   "shot": "3.3",
+   "line": {
+    "key": "3.3",
+    "who": "DON",
+    "text": "Recovered.",
+    "t0": 19.117,
+    "t1": 19.952
+   }
+  },
+  {
+   "shot": "3.5",
+   "line": {
+    "key": "3.5",
+    "who": "CLIENT",
+    "text": "Is this a joke?",
+    "t0": 22.55,
+    "t1": 23.624
+   }
+  },
+  {
+   "shot": "4.4",
+   "line": {
+    "key": "4.4",
+    "who": "ROBOT",
+    "text": "The result was obtained by a h-human.",
+    "t0": 32.317,
+    "t1": 34.497
+   }
+  },
+  {
+   "shot": "5.1",
+   "line": {
+    "key": "5.1",
+    "who": "CLIENT",
+    "text": "Your number.",
+    "t0": 35.083,
+    "t1": 35.896
+   }
+  },
+  {
+   "shot": "5.4a",
+   "line": {
+    "key": "5.4d",
+    "who": "DON",
+    "text": "Customer success.",
+    "t0": 38.783,
+    "t1": 40.14
+   }
+  },
+  {
+   "shot": "6.5",
+   "line": {
+    "key": "6.5",
+    "who": "SOFIA",
+    "text": "Still one star.",
+    "t0": 48.05,
+    "t1": 48.925
+   }
+  }
+ ]
+}

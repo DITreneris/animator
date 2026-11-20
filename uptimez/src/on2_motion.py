@@ -1,4 +1,9 @@
-"""v27 (18 Nov): 5.1, smoke lit behind the tables and black arms to the hands (on2_motion_b5 v13). on2_motion_v26.py is pinned.
+"""v28 (20 Nov): a joke by 0:01 (the outside review: "no joke at 0:01-0:02, the first is the gang war at about 0:03"; Tomas
+chose): OPEN28. 1.1 is 0.75 s (the taxi, the door, her heel); the cab pulls away at once and the gang war starts 0.25 s
+into 1.2, so the first shot is fired at 1.0 s and she doesn't blink. "New Year's Eve." runs on over the war and "The
+whole city was celebrating." waits for it. Frame 0 and the loop are unchanged. OPEN28[0] = False draws v27.
+on2_motion_v27.py is pinned.
+v27 (18 Nov): 5.1, smoke lit behind the tables and black arms to the hands (on2_motion_b5 v13). on2_motion_v26.py is pinned.
 v26 (18 Nov): Tomas: "0:29 too dark, the money must read; 0:32 too dark, I can't see the glass or the pour; 0:47
 too dark, I can't see the office; the UptimeZ logo must be there": lit spots on the money, the pour and the logo; a
 lighter side light there; the pour earlier and longer and the coupe clear of her hair; the office lit, its glass door,
@@ -48,7 +53,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v27"
+V = "v28"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -56,6 +61,11 @@ PLAN = [("1.1", 2.0, "n1"), ("1.2", 2.5, "n6", 0.05), ("1.2b", 0.75, None), ("2.
         ("2.5", 1.0, None), ("2.6", 3.0, "n3", -0.7),
         ("3.1", 1.75, None), ("3.2", 2.5, "n7", -0.5), ("3.3", 1.0, None), ("3.4", 1.5, None),
         ("4.1a", 1.5, "n8", -1.2), ("4.1b", 15 / 12.0, None), ("4.2", 1.25, None)]
+OPEN28 = [True]                                           # v28: the opening re-timed; False draws v27
+PLAN28 = {"1.1": ("1.1", 0.75, "n1", -1.03), "1.2": ("1.2", 2.75, "n6", 0.05)}   # 1.1's line runs on into 1.2
+LEADS28 = {"1.2": 0.75}                                   # the city line waits for New Year's Eve. to end
+SHOTS_12_28 = ((3, 0), (5, 2), (7, 1), (8, 3), (10, 0), (12, 2), (13, 1))
+FALL_28 = 14
 TEXT = dict(snd.NARR)
 
 
@@ -339,14 +349,20 @@ TAXI_DX = [0.0]                                             # v22: where the tax
 
 
 def m1_1(k, tl):
+    if OPEN28[0]:                                                    # v28: the same drawings, faster: door, foot, splash
+        return _m1_1(k, tl, 0.08, 0.25, 5)
+    return _m1_1(k, tl, 0.25, 0.34, 8)
+
+
+def _m1_1(k, tl, d0, dd, f0):
     street(k, 668, (440, 150), tl)
-    door = ease((tl - 0.25) / 0.34)
+    door = ease((tl - d0) / dd)
     n.taxi(k, 150 + TAXI_DX[0], 716, 2.5, door=door)
     d12 = int(round(tl * 12))
-    if d12 >= 8:                                                                # her foot comes out of the dark and down, in four drawings
-        foot, knee = (((186, 636), (219, 563)), ((192, 664), (218, 566)), ((199, 696), (217, 569)), ((206, 716), (216, 572)))[min(3, d12 - 8)]
+    if d12 >= f0:                                                               # her foot comes out of the dark and down, in four drawings
+        foot, knee = (((186, 636), (219, 563)), ((192, 664), (218, 566)), ((199, 696), (217, 569)), ((206, 716), (216, 572)))[min(3, d12 - f0)]
         b.step_out(k, foot, knee, hand=0.0)
-    splash(k, 176, 722, (tl - 11 / 12.0) / 0.5)
+    splash(k, 176, 722, (tl - (f0 + 3) / 12.0) / 0.5)
     rain(k, tl)
 
 
@@ -371,19 +387,20 @@ def alley(k, tl, cx=118, top=420, floor=690):
         cc.new_path(); cc.move_to(x0, top); cc.line_to(x1, fy0); cc.line_to(x1, fy1); cc.line_to(x0, floor); cc.close_path(); cc.fill()
     cc.set_source_rgb(0.20, 0.20, 0.22); cc.new_path(); cc.move_to(cx - 104, floor); cc.line_to(fx0, fy1); cc.line_to(fx1, fy1)
     cc.line_to(cx + 104, floor); cc.close_path(); cc.fill()
-    fired = {who: dd for dd, who in SHOTS_12}
+    shots12, fall_at = (SHOTS_12_28, FALL_28) if OPEN28[0] else (SHOTS_12, FALL_AT)
+    fired = {who: dd for dd, who in shots12}
     for i, (ox, face) in enumerate(GUNMEN):
         x, feet = cx + ox, fy1 + 2
         aim = co._ik(face, 118, co.BT + 46)                                  # the gun arm, straight out at the other side
         other = co._ik(-face, 34, co.BT + 120)
         pose = (other + aim) if face > 0 else (aim + other)
         cc.save()
-        if i == 3 and d >= FALL_AT:                                          # hit: he goes over backwards
-            f = min(1.0, (d - FALL_AT + 1) / 3.0)
+        if i == 3 and d >= fall_at:                                          # hit: he goes over backwards
+            f = min(1.0, (d - fall_at + 1) / 3.0)
             cc.translate(x, feet); cc.rotate(f * 1.35); cc.translate(-x, -feet)
         o = n.shadow(k, x, feet, 0.25, pose, lit_hand=None, seed=430 + i)
         cc.restore()
-        if any(dd == d for dd, who in SHOTS_12 if who == i):                 # the flash at the muzzle
+        if any(dd == d for dd, who in shots12 if who == i):                 # the flash at the muzzle
             hx, hy = o["hands"][1 if face > 0 else 0]
             cc.save(); cc.translate(hx + face * 9, hy); cc.new_path()
             for j in range(10):
@@ -419,7 +436,8 @@ def m1_2b(k, tl):
 def m1_2(k, tl):
     cc = k.c
     cc.save()
-    zoom(cc, 118, 560, 1.0 + 0.45 * ease((tl - 0.9) / 1.4))              # v17: over her shoulder, into the alley
+    z0 = 0.5 if OPEN28[0] else 0.9                                         # v28: the war starts sooner, so does the push
+    zoom(cc, 118, 560, 1.0 + 0.45 * ease((tl - z0) / 1.4))              # v17: over her shoulder, into the alley
     _m1_2(k, tl)
     cc.restore()
 
@@ -427,7 +445,7 @@ def m1_2(k, tl):
 def _m1_2(k, tl):
     street(k, 690, (430, 150), tl)
     alley(k, tl)                                                             # v13: behind her, as the cab pulls away
-    x = 40 - 640 * ease((tl - 0.3) / 0.9) ** 1.6
+    x = 40 - 640 * (ease(tl / 0.4) if OPEN28[0] else ease((tl - 0.3) / 0.9)) ** 1.6    # v28: the cab goes at once
     n.taxi(k, x, 730, 1.5, door=0.0)
     rise = 12 if tl < 1 / 12.0 else 5 if tl < 2 / 12.0 else 0
     look = (0.1, -0.2) if tl < 2.0 else (0.3, -0.3)                         # v13: she never looks round
@@ -862,15 +880,19 @@ def timing(kind):
 def _timing(kind):
     meta = json.load(open(snd.TAKES + "/takes.json"))
     rows, t = [], 0.0
-    for shot, planned, key, *more in PLAN:
+    for item in PLAN:
+        if OPEN28[0] and item[0] in PLAN28:                              # v28: the opening re-timed
+            item = PLAN28[item[0]]
+        shot, planned, key, *more = item
+        lead = LEADS28.get(shot, LEAD) if OPEN28[0] else LEAD
         tail = more[0] if more else TAIL                                  # a line that is cut off has no air after it
         take = meta["%s_%s" % (key, kind) if key and key[0] == "n" else key] if key else None    # the narration has kinds; the others have one take
-        need = (LEAD + take["len"] + tail) if key else 0.0
+        need = (lead + take["len"] + tail) if key else 0.0
         d = math.ceil(max(planned, need) * 12 - 1e-6) / 12.0
         row = {"shot": shot, "start": round(t, 4), "len": round(d, 4)}
         if key:
-            row["line"] = {"who": "N" if key[0] == "n" else take["who"], "key": key, "text": take["text"], "t0": round(t + LEAD, 3),
-                           "t1": round(t + LEAD + take["len"], 3)}
+            row["line"] = {"who": "N" if key[0] == "n" else take["who"], "key": key, "text": take["text"], "t0": round(t + lead, 3),
+                           "t1": round(t + lead + take["len"], 3)}
         rows.append(row); t += d
     return rows, t
 
@@ -1042,7 +1064,11 @@ def main(kind="A2", folder="../office-noir-2", hi=False):
         enc.stdin.write(buf)
     enc.stdin.close(); enc.wait()
     os.replace(tmp + "/video.part.mp4", tmp + "/video.mp4")
-    wav, spans = snd.motion_mix15([(r["shot"], r["start"], r["len"]) for r in rows], total, kind, tmp + "/mix.wav")
+    rr = [(r["shot"], r["start"], r["len"]) for r in rows]
+    if OPEN28[0]:                                                        # v28: the opening's sound follows its new timing
+        wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=8 / 12.0, shots12=SHOTS_12_28)
+    else:
+        wav, spans = snd.motion_mix15(rr, total, kind, tmp + "/mix.wav")
     out = ("%s/on2_film_%s_1080.mp4" if hi else "%s/on2_motion_test_%s.mp4") % (folder, V)
     # one constant gain to about -14.5 LUFS, then the final file is measured
     r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", wav, "-af", "ebur128", "-f", "null", "-"], capture_output=True, text=True)

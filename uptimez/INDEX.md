@@ -39,7 +39,7 @@ Episodes in **story order** (STORYLINE.md, Season 1). Each folder holds its rend
 | 5 | *Secret Santa* | [`secret-santa/`](secret-santa/) | README section |
 | 6 | *Happy Compliance* (Christmas Eve) | [`happy-compliance/`](happy-compliance/) | README section |
 | 7 | *Office Noir: The Secret of a Stolen Heart* | [`office-noir/`](office-noir/) | README section |
-| — | *Office Noir 2: The Shadow of Fate* (New Year special) | [`office-noir-2/`](office-noir-2/) | `office-noir-2-script-v5.md` (current); concepts v1–v4; README section |
+| — | *Office Noir 2: The Shadow of Fate* (New Year special) | [`office-noir-2/`](office-noir-2/) | `office-noir-2-script-v6.md` (current, release v28); concepts v1–v4; README section |
 | 8 | *The Best Candidate* | [`the-best-candidate/`](the-best-candidate/) | `the-best-candidate-interview-script-v1.md` … `v6.md` (v6 is current) |
 | 9 | *The Onboarding* | [`the-onboarding/`](the-onboarding/) | `the-onboarding-script-v11.md` (current, line by line with the shot list; animation v19 changes are in `src/ob_anim.py`); concepts v1–v9; `storyline-proposal-act-b.md` (a proposal; STORYLINE v3.2 decides). Release: `uptimez_ob_anim_v10.mp4` |
 | 10 | *First Search* | [`first-search/`](first-search/) | `first-search-concept-v6.md` (current: the portrait falls on Don at 1.2 s; ends on the near-shred); concepts v1–v5 and premises v1–v3 kept |
