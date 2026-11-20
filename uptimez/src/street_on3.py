@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the street, set v1 (20 Nov; Tomas, /grill-me). Outside the arena, at night: the arena's wall with
+"""OFFICE NOIR 3: the street, set v2 (20 Nov; street_on3_v1.py is v1). After cold test 12 and Tomas: Sofia on the street
+and in the photograph is the star of Office Noir 2, her dress black here (his gloves are the only red); the page is
+The Onboarding's CV (portrait in the corner, CV printed whole, the number small and circled, no lipstick telephone);
+the folder comes straight down out of the window to his gloves; his raised glove is answered: the glass goes back up.
+v1 (Tomas, /grill-me): Outside the arena, at night: the arena's wall with
 its fight posters, one street lamp with one pool of light, wet stones, and at the far right the arena door (beat 04's
 door: the same place). Mom's limousine stops along the kerb; she is a ringed hand at the rear window and no more.
 World: 900 wide, the pavement's front edge at G. Zones: A (0-330) where he walks in; B (330-620) the lamp's pool, where
@@ -11,6 +15,7 @@ import kit
 import client_on3 as b
 import client_sheet_on3 as csh
 import sofia_on3 as so3
+import noir2_cast as n2
 from kit import Ctx, cut, rect, ellipse, INK
 
 WW, G = 900, 1400
@@ -116,6 +121,16 @@ def frame(cam, mid=(), car=None, **kw):
     return s
 
 
+def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0), **kw):
+    """Office Noir 2's star, as he dreams her: the same gown, wrap and earrings, the gown black."""
+    old = n2.LOOK[0]; n2.LOOK[0] = 9
+    try:
+        with n2._swap((n2, "KEY", (0.07, 0.07, 0.08))):
+            return n2.star(k, x, feet, s, pose, face, look, **kw)
+    finally:
+        n2.LOOK[0] = old
+
+
 def _ring_hand(k, x, y, s=1.0):
     """Her small hand from the dark, palm down, two rings, a fur cuff behind it."""
     c = k.c
@@ -140,69 +155,70 @@ def folder(k, x, y, s=1.0, ang=0.0):
     c.restore()
 
 
-def window_pov(down=1.0, out=0.0, take=0.0):
-    """2.4, his view: the car's rear door fills the frame, black; the glass is down a hand's width (down 0..1); from the
-    dark her ringed hand holds the folder out (out 0..1); his two red gloves come up from the frame's foot and take it
-    between them (take 0..1)."""
+def window_pov(down=1.0, out=0.0, take=0.0, fist=0.0):
+    """His view of the car's rear door, black. down 0..1: the glass down a hand's width. fist 0..1: one red glove of
+    his raised at the glass (2.3: the glass answers by going back up). out 0..1: from the dark her ringed hand comes
+    down out of the gap with the folder hanging from it, straight at him. take 0..1: his two gloves come up from the
+    frame's foot and have it between them; her hand goes back in."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
     c.set_source_rgb(0.05, 0.05, 0.06); c.paint()
-    c.set_source_rgb(0.86, 0.86, 0.88); c.set_line_width(7); c.move_to(-10, 640); c.line_to(550, 628); c.stroke()         # the chrome line
-    rect(k, 60, 150, 420, 330, (0.02, 0.02, 0.03), 3, shadow=False, lw=6)                                               # the window: nothing inside
-    gap = 70 * down
-    c.set_source_rgb(0.15, 0.15, 0.18); c.rectangle(64, 154, 412, 322 - gap); c.fill()                                 # the glass, and the gap under it
-    c.set_source_rgba(1, 1, 1, 0.20); c.set_line_width(10); c.move_to(110, 420 - gap); c.line_to(250, 190); c.stroke()  # the lamp, in the glass
-    c.set_source_rgb(0.80, 0.80, 0.84); c.set_line_width(3); c.move_to(64, 476 - gap); c.line_to(476, 476 - gap); c.stroke()
+    c.set_source_rgb(0.86, 0.86, 0.88); c.set_line_width(7); c.move_to(-10, 700); c.line_to(550, 690); c.stroke()         # the chrome line
+    rect(k, 60, 110, 420, 330, (0.02, 0.02, 0.03), 3, shadow=False, lw=6)                                               # the window: nothing inside
+    gap = 80 * down
+    c.set_source_rgb(0.30, 0.31, 0.35); c.rectangle(64, 114 + gap, 412, 322 - gap); c.fill()                           # the glass goes DOWN: the gap is at the top
+    c.set_source_rgba(1, 1, 1, 0.20); c.set_line_width(10); c.move_to(110, 410); c.line_to(250, 170 + gap); c.stroke()  # the lamp, in the glass
+    c.set_source_rgb(0.80, 0.80, 0.84); c.set_line_width(3); c.move_to(64, 114 + gap); c.line_to(476, 114 + gap); c.stroke()
     ellipse(k, 440, 560, 26, 12, (0.86, 0.86, 0.88), 4, shadow=False, lw=2.4)                                           # the door's handle
     if out > 0:
-        hx = 420 - 190 * out + 60 * take                     # she lets go as he has it
-        fx, fy = hx - 150, 500 + 130 * take
-        if take < 0.9:
-            c.save(); c.rectangle(60, 476 - gap - 40, 420, 260); c.clip()
-            _ring_hand(k, hx, 476 - gap + 34, 1.3)
-            c.restore()
-        folder(k, fx if take == 0 else 270, fy if take > 0 else 476 - gap + 44, 3.0, -0.1)
-    for side, gx in ((-1, 150), (1, 390)):                   # his gloves
-        gy = 1040 - 200 * take
-        gx2 = gx - side * 10 * take
-        c.save(); c.translate(gx2, gy); c.scale(3.6, 3.6); c.translate(-gx2, -gy)
-        cut(k, [(gx2 - 22, gy + 26), (gx2 + 22, gy + 26), (gx2 + 26, gy + 120), (gx2 - 26, gy + 120)], (0.24, 0.24, 0.27), shadow=False, lw=1.2)
-        b._glove(k, gx2, gy, -side * 0.25, -0.97, side, 61 + side)
+        hy = 114 + gap * 0.5 + 150 * out * (1 - take)        # her hand, over the glass's edge, fingers down
+        fy = hy + 150 + 190 * take                           # the folder, hanging from it; then in his gloves
+        folder(k, 270, fy, 3.2, -0.05)
+        if take < 0.95:
+            c.save(); c.translate(270, hy); c.rotate(-math.pi / 2); _ring_hand(k, 0, 0, 1.25); c.restore()
+            c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(64, 108, 412, max(hy - 150, 4)); c.fill()                   # the dark she comes out of
+    for side, gx in ((-1, 150), (1, 390)):                   # his gloves, from the frame's foot
+        gy = 1040 - 190 * take
+        c.save(); c.translate(gx, gy); c.scale(3.6, 3.6); c.translate(-gx, -gy)
+        cut(k, [(gx - 22, gy + 26), (gx + 22, gy + 26), (gx + 26, gy + 120), (gx - 26, gy + 120)], (0.24, 0.24, 0.27), shadow=False, lw=1.2)
+        b._glove(k, gx, gy, -side * 0.25, -0.97, side, 61 + side)
+        c.restore()
+    if fist > 0:                                             # one glove, raised at the glass, and held
+        gx, gy = 330, 1080 - 520 * fist
+        c.save(); c.translate(gx, gy); c.scale(4.4, 4.4); c.translate(-gx, -gy)
+        cut(k, [(gx - 22, gy + 26), (gx + 22, gy + 26), (gx + 30, gy + 160), (gx - 30, gy + 160)], (0.24, 0.24, 0.27), shadow=False, lw=1.2)
+        b._glove(k, gx, gy, 0.05, -1.0, 1, 66)
         c.restore()
     csh.noir(s)
     return s
 
 
-def cv_insert(turned=0.0):
-    """2.5 / 2.7, from above, under the lamp: the folder open on his gloves. turned 0: her photograph, clipped to the
-    page. turned 1: the photograph turned over on its clip: CV, her number circled, a telephone drawn in lipstick."""
+def cv_insert(zoom=0.0):
+    """2.5 / 2.7, from above, under the lamp: the folder open on his gloves, and in it The Onboarding's sheet: her
+    portrait in the corner (the star, as on the street), CV printed beside it, lines, and at the foot her number,
+    small, circled. zoom 0..1: closer on the foot of the page, one glove beside the number."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
     c.set_source_rgb(0.30, 0.30, 0.33); c.paint()
     g = cairo.RadialGradient(270, 420, 40, 270, 420, 620); g.add_color_stop_rgba(0, 1, 1, 1, 0.5); g.add_color_stop_rgba(1, 0, 0, 0, 0.4)
     c.set_source(g); c.paint()
+    z = 1 + 0.9 * zoom
+    c.save(); c.translate(270, 480); c.scale(z, z); c.translate(-270 + 40 * zoom, -480 - 190 * zoom)
     cut(k, [(40, 170), (500, 150), (512, 780), (52, 800)], (0.86, 0.80, 0.62), lw=3)                # the folder, open
     cut(k, [(80, 200), (470, 186), (478, 750), (88, 764)], PAPER, shadow=False, lw=2.4)             # the page
-    kit.text(k, "CV", 150, 250, 52, INK, bold=True)
-    c.set_source_rgb(0.55, 0.55, 0.58); c.set_line_width(5)
-    for i in range(5):
-        c.move_to(110, 560 + i * 34); c.line_to(440 - (i % 3) * 50, 556 + i * 34); c.stroke()
-    if turned < 0.5:
-        w = 250 * (1 - 2 * turned)
-        rect(k, 270 - w / 2, 250, max(w, 4), 290, (0.98, 0.98, 0.96), 3, shadow=True, lw=3)         # her photograph
-        if w > 120:
-            c.save(); c.rectangle(270 - w / 2 + 8, 258, w - 16, 274); c.clip(); c.set_source_rgb(0.62, 0.62, 0.64); c.paint()
-            so3.sofia(k, 270, 420 + 272 * 1.7, 1.7, "r_hips", "spotted", (0, 0)); c.restore()
-    else:
-        kit.text(k, "555 0142", 270, 400, 54, INK, bold=True)
-        c.set_source_rgb(*b.KEY); c.set_line_width(7); c.save(); c.translate(270, 396); c.scale(170, 54); c.arc(0, 0, 1, 0.3, 6.6); c.restore(); c.stroke()
-        c.set_line_width(8); c.set_line_cap(1)               # a telephone, in lipstick
-        c.move_to(210, 500); c.curve_to(230, 460, 310, 460, 330, 500); c.stroke()
-        c.rectangle(232, 500, 76, 34); c.stroke(); c.set_line_cap(0)
-        w = 250 * (2 * turned - 1)
-        rect(k, 270 - w / 2, 250 - 300 * 0, max(w, 4), 40, (0.80, 0.80, 0.80), 3, shadow=False, lw=2)   # the photograph's back, flipped up on its clip
-    rect(k, 250, 232, 40, 26, (0.70, 0.70, 0.74), 9, shadow=False, lw=2)                             # the clip
-    for side, gx in ((-1, 60), (1, 480)):                    # his gloves, holding it open
-        c.save(); c.translate(gx, 850); c.scale(3.4, 3.4); c.translate(-gx, -850)
-        b._glove(k, gx, 850, -side * 0.3, -0.95, side, 71 + side)
+    rect(k, 104, 222, 176, 216, (0.98, 0.98, 0.96), 3, shadow=False, lw=3)                          # her portrait
+    c.save(); c.rectangle(110, 228, 164, 204); c.clip(); c.set_source_rgb(0.62, 0.62, 0.64); c.paint()
+    star(k, 192, 318 + 272 * 1.1, 1.1, "g_stand", "interested", (0.6, 0.0)); c.restore()
+    kit.text(k, "CV", 372, 270, 76, INK, bold=True)
+    c.set_source_rgb(0.55, 0.55, 0.58); c.set_line_width(6); c.set_line_cap(1)
+    for y, x0, x1 in ((330, 310, 446), (362, 310, 420), (394, 310, 440), (480, 110, 446), (514, 110, 400), (548, 110, 436), (582, 110, 360)):
+        c.move_to(x0, y); c.line_to(x1, y - 3); c.stroke()
+    c.set_line_cap(0)
+    kit.text(k, "555 0142", 214, 672, 34, INK, bold=True)
+    c.set_source_rgb(*b.KEY); c.set_line_width(5); c.save(); c.translate(214, 670); c.scale(112, 34); c.arc(0, 0, 1, 0.3, 6.6); c.restore(); c.stroke()
+    c.restore()
+    gloves = ((-1, 60, 850), (1, 480, 850)) if zoom < 0.5 else ((1, 430, 640),)
+    for side, gx, gy in gloves:                              # his gloves: holding it open; then one beside the number
+        c.save(); c.translate(gx, gy); c.scale(3.4, 3.4); c.translate(-gx, -gy)
+        b._glove(k, gx, gy, -side * 0.3, -0.95, side, 71 + side)
         c.restore()
     csh.noir(s)
     return s
