@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the alley, set v1 (20 Nov; Tomas, /grill-me). The gap beside the arena, off the street: the same
+"""OFFICE NOIR 3: the alley, set v2 (20 Nov; v1 is alley_on3_v1.py). v2 is a shadow pass after an outside review: the
+three shadows are men, not signs (gangster(): a snapped brim, a turned-up collar, square shoulders, bent arms, legs),
+each different, the middle one a fifth larger and hunched; one flat tone each, so limbs do not darken where they cross;
+weapons short and held, none across a head; they close in between shots. frames() is v2; frames_v1() is v1.
+v1: (20 Nov; Tomas, /grill-me). The gap beside the arena, off the street: the same
 brick, one fight poster, a lamp at the far end that throws everything onto one long lit wall. The gunmen are never
 seen: three big shadows in hats and coats on that wall (a tommy gun, a bat, a knife). One real hand comes out of a
 shadow with a lighter. No weapon is fired.
@@ -164,3 +168,245 @@ def frames():
     f.append(frame("A1", [client(600, "b_walk", (0.9, 0), cig=False)], DOWN, cig=300))     # 3.4 he walks on; the cigarette is on the ground
     f.append(frame("A3", [don(346)], UP, cig=300))                                         #     Don, the tweezers; behind him, hands up
     return f
+
+
+# ---- v2: the shadows as men -------------------------------------------------------------------------------------
+def _poly(c, pts):
+    c.new_path(); c.move_to(*pts[0])
+    for p in pts[1:]:
+        c.line_to(*p)
+    c.close_path(); c.fill()
+
+
+def _limb(c, pts, w, fist=0):
+    c.set_line_width(w); c.set_line_cap(1); c.set_line_join(1)
+    c.new_path(); c.move_to(*pts[0])
+    for p in pts[1:]:
+        c.line_to(*p)
+    c.stroke()
+    if fist:
+        c.arc(pts[-1][0], pts[-1][1], fist, 0, 2 * math.pi); c.fill()
+
+
+def _open_hand(c, x, y, r=17):
+    c.arc(x, y, r, 0, 2 * math.pi); c.fill()
+    c.set_line_width(8); c.set_line_cap(1)
+    for a in (-1.15, -0.55, 0.0, 0.55, 1.15):
+        c.move_to(x, y); c.line_to(x + math.sin(a) * r * 2.3, y - math.cos(a) * r * 2.3); c.stroke()
+
+
+def _tommy(c, x, y, a):
+    """A tommy gun, its rear grip at (x, y), the muzzle to the left, turned by a (positive: muzzle down)."""
+    c.save(); c.translate(x, y); c.rotate(-a)
+    _poly(c, [(26, -12), (-112, -12), (-112, 6), (26, 8)])                       # the body
+    _poly(c, [(26, -12), (84, -2), (88, 26), (70, 26), (26, 8)])                 # the stock
+    c.rectangle(-178, -7, 70, 9); c.fill()                                       # the barrel
+    c.rectangle(-196, -11, 20, 17); c.fill()                                     # the compensator
+    c.rectangle(-150, -15, 5, 9); c.fill()                                       # the sight
+    c.arc(-52, 26, 27, 0, 2 * math.pi); c.fill()                                 # the drum
+    _poly(c, [(-98, 4), (-88, 4), (-84, 36), (-98, 36)])                         # the fore grip
+    _poly(c, [(-6, 6), (10, 6), (18, 40), (2, 40)])                              # the rear grip
+    c.restore()
+
+
+def _knife(c, x, y, a):
+    c.save(); c.translate(x, y); c.rotate(a)
+    _poly(c, [(-4, 4), (-9, -62), (0, -92), (10, -58), (5, 4)])                  # a blade, point up at a = 0
+    c.rectangle(-15, -4, 30, 8); c.fill()                                        # the guard
+    c.restore()
+
+
+def _bat(c, x0, y0, x1, y1):
+    a = math.atan2(y1 - y0, x1 - x0); n = math.hypot(x1 - x0, y1 - y0)
+    c.save(); c.translate(x0, y0); c.rotate(a)
+    _poly(c, [(-14, -7), (n * 0.45, -9), (n * 0.8, -17), (n, -15), (n + 8, 0), (n, 15), (n * 0.8, 17), (n * 0.45, 9), (-14, 7)])
+    c.arc(-14, 0, 10, 0, 2 * math.pi); c.fill()                                  # the knob
+    c.restore()
+
+
+BUILD = {"knife": dict(sh=74, hem=64, arm=27, tilt=0.16, drop=6, lean=0.20),     # lean, wiry, bent forward
+         "gun": dict(sh=98, hem=84, arm=36, tilt=0.10, drop=26, lean=0.07),       # the big one: head sunk between his shoulders
+         "bat": dict(sh=84, hem=66, arm=30, tilt=-0.14, drop=0, lean=-0.03)}      # upright, his chin up
+
+
+def gangster(k, x, y, s=1.0, kind="gun", state="aim", flip=False, alpha=0.86, lean=None, aim=0.30):
+    """A man's shadow on the wall, feet at (x, y), facing screen left (the Client) unless flip. kind: knife, gun, bat.
+    state: aim (at him), down (lowered), up (empty hands up). One flat tone: drawn into a group, then laid on the wall."""
+    c = k.c; B = BUILD[kind]; sh, hem, aw = B["sh"], B["hem"], B["arm"]
+    lean = B["lean"] if lean is None else lean
+    if state != "aim":
+        lean *= 0.35                                                            # they stand off
+    c.save(); c.translate(x, y); c.scale(-s if flip else s, s)
+    c.transform(cairo.Matrix(1, 0, lean, 1, 0, 0))
+    c.push_group(); c.set_source_rgb(*SHADE)
+    for fx, bx in ((-44, -8), (10, 46)):                                         # legs, shoes pointing at him
+        _poly(c, [(fx, -80), (bx, -80), (bx - 2, 0), (fx - 20, 0), (fx - 18, -9), (fx + 2, -14)])
+    up = state == "up"
+    top = -300 - (10 if up else 0)
+    _poly(c, [(-sh, top + 6), (-sh + 12, top - 8), (sh - 8, top - 12), (sh + 4, top + 4), (sh - 20, -178),      # the coat: square shoulders, a waist, a wide hem
+              (hem + 10, -62), (-hem - 6, -62), (-sh + 22, -178)])
+    c.rectangle(-sh + 20, -186, 2 * sh - 38, 12); c.fill()                       # the belt
+    _poly(c, [(hem - 10, -150), (hem + 30, -66), (hem + 4, -62)])                # the coat's tail, behind
+    hx, hy = -8 - (0 if up else B["drop"] * 0.5), top - 8 + (0 if up else B["drop"])
+    c.save(); c.translate(hx, hy); c.rotate(0 if up else -B["tilt"])
+    _poly(c, [(-34, 6), (-46, -40), (-22, -8)]); _poly(c, [(30, 4), (48, -42), (20, -10)])                      # the collar, turned up
+    _poly(c, [(24, -10), (30, -52), (-22, -56), (-30, -44), (-42, -34), (-31, -28), (-33, -18), (-24, -6), (-4, 0)])   # jaw, chin, nose
+    _poly(c, [(-70, -40), (-66, -50), (-18, -58), (58, -66), (62, -57), (-14, -47)])                            # the brim, snapped down in front
+    _poly(c, [(-32, -54), (-38, -92), (-14, -106), (6, -95), (30, -105), (42, -62)])                            # the crown, pinched
+    c.restore()
+    ls, rs = (-sh + 12, top + 14), (sh - 12, top + 10)                           # shoulders: the near one is in front (screen left)
+    if up:
+        for sx, (ax, ay) in ((-1, ls), (1, rs)):
+            _limb(c, [(ax, ay), (sx * (sh + 44), top - 30), (sx * (sh + 30), top - 118)], aw)
+            _open_hand(c, sx * (sh + 30), top - 132, aw * 0.56)
+    elif kind == "gun":
+        if state == "aim":
+            gx, gy = -sh + 4, -230
+            fa = (gx - 92 * math.cos(aim), gy + 92 * math.sin(aim) + 10)         # the fore grip
+            _limb(c, [rs, (sh + 14, -226), (gx + 6, gy + 14)], aw, aw * 0.5)
+            _limb(c, [ls, (-sh - 40, -262), fa], aw, aw * 0.5)
+            _tommy(c, gx, gy, aim)
+        else:
+            _limb(c, [rs, (sh + 16, -210), (sh + 2, -138)], aw, aw * 0.55)
+            _limb(c, [ls, (-sh - 14, -214), (-sh - 4, -140)], aw, aw * 0.5)
+            _tommy(c, -sh - 8, -146, 1.42)                                      # hanging from one hand, muzzle at the ground
+    elif kind == "knife":
+        _limb(c, [rs, (sh + 30, -226), (sh - 6, -172)], aw, aw * 0.6)            # a fist on his hip, the elbow out
+        if state == "aim":
+            _limb(c, [ls, (-sh - 8, -214), (-sh - 62, -236)], aw, aw * 0.6)
+            _knife(c, -sh - 62, -240, -0.5)                                      # low, the point up at him
+        else:
+            _limb(c, [ls, (-sh - 12, -216), (-sh - 8, -146)], aw, aw * 0.6)
+            _knife(c, -sh - 8, -138, math.pi)                                    # point down, by his leg
+    else:
+        if state == "aim":
+            _limb(c, [ls, (-sh - 30, -228), (-sh - 26, -142)], aw, aw * 0.78)    # a big fist, low
+            _limb(c, [rs, (sh + 26, -238), (sh - 34, -282)], aw, aw * 0.6)       # the bat on his shoulder, behind his head
+            _bat(c, sh - 34, -286, sh + 74, -424)
+        else:
+            _limb(c, [rs, (sh + 14, -214), (sh + 6, -144)], aw, aw * 0.6)
+            _limb(c, [ls, (-sh - 12, -214), (-sh - 10, -150)], aw, aw * 0.6)
+            _bat(c, -sh - 10, -152, -sh - 26, -6)                                # its end on the ground
+    c.pop_group_to_source(); c.paint_with_alpha(alpha)
+    c.restore()
+
+
+def draw_alley2(k, mid=(), men=(), cig=None):
+    """v2. men: dicts for gangster() (x, s, kind, state, and flip, alpha, aim), drawn in the order given."""
+    def gang(k2):
+        c = k2.c
+        c.save(); c.rectangle(-40, G - 640, WW + 80, 600); c.clip()
+        for m in men:
+            m = dict(m); gangster(k2, m.pop("x"), G - 40, **m)
+        c.restore()
+        if cig is not None:
+            _cig(k2, cig)
+    draw_alley(k, [gang] + list(mid), (), None)
+
+
+def _cig(k, x):
+    """v2: the dropped end is large enough for a phone, and it still glows."""
+    c = k.c
+    rect(k, x - 17, G - 22, 30, 9, (0.96, 0.96, 0.92), 8, shadow=False, lw=1.6)
+    rect(k, x + 13, G - 22, 8, 9, b.KEY, 9, shadow=False, lw=1.4)
+    c.set_source_rgba(1, 1, 1, 0.6); c.set_line_width(3.4); c.set_line_cap(1)
+    c.move_to(x + 20, G - 24); c.curve_to(x + 38, G - 60, x + 4, G - 96, x + 28, G - 150); c.stroke(); c.set_line_cap(0)
+
+
+def frame2(cam, mid=(), men=(), cig=None):
+    cam = CAMS[cam] if isinstance(cam, str) else cam
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    c.save(); st.view(c, *cam); draw_alley2(k, mid, men, cig); c.restore()
+    csh.noir(s)
+    return s
+
+
+CAMS["A2w"] = (228, 1128, 1.5)                             # him, and the shadow over him
+CAMS["A3w"] = (330, 1130, 1.12)
+
+
+def gang(state, close=0.0, turn=False):
+    """The three, back to front. close 0..1: they have come nearer him (the sides in, the big one forward and larger)."""
+    kn = dict(x=250 - 14 * close, s=1.12 + 0.04 * close, kind="knife", state=state, alpha=0.72, flip=turn)
+    bt = dict(x=628 - 40 * close, s=1.24, kind="bat", state=state, alpha=0.68, flip=turn)
+    bg = dict(x=440 - 26 * close, s=1.50 + 0.08 * close, kind="gun", state=state, alpha=0.90, flip=turn)
+    return [bt, kn, bg]
+
+
+def _probe(x, pose="b_ask"):
+    k = Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
+    return b.boxer(k, x, G - 12, Q, pose, "hard", (0.9, 0), outfit="street", cig=True)
+
+
+def _tip(x):
+    """Where his cigarette ends (world)."""
+    return x + 43 * Q, G - 12 + (b.HY + 47) * Q
+
+
+def fumble(x, lit=False):
+    """v2: him, two gloves and a crushed matchbox he cannot open: matches fall out of it. lit: the cigarette burns."""
+    base = client(x, "b_ask", (0.9, 0.0), folder=False, matchbox=True)
+
+    def d(k):
+        o = base(k); c = k.c
+        (lx, ly), (rx, ry) = o["hands"]
+        mx, my = (lx + rx) / 2, (ly + ry) / 2
+        if not lit:
+            for i, (dx, dy, a) in enumerate(((-9, 20, 0.5), (4, 34, -0.9), (15, 23, 1.3), (-2, 52, 0.2))):   # matches, falling
+                c.save(); c.translate(mx + dx, my + dy); c.rotate(a)
+                c.set_source_rgb(0.93, 0.90, 0.78); c.rectangle(-7, -1.1, 14, 2.2); c.fill()
+                c.set_source_rgb(*b.KEY); c.arc(7, 0, 2.0, 0, 2 * math.pi); c.fill(); c.restore()
+        else:
+            tx, ty = _tip(x)
+            c.set_source_rgb(*b.KEY); c.arc(tx, ty, 3.4, 0, 2 * math.pi); c.fill()
+            c.set_source_rgba(1, 1, 1, 0.7); c.set_line_width(2.6); c.set_line_cap(1)
+            c.move_to(tx + 2, ty - 5); c.curve_to(tx + 16, ty - 26, tx - 8, ty - 44, tx + 10, ty - 72); c.stroke(); c.set_line_cap(0)
+        return o
+    return d
+
+
+def frames_v2b():
+    """v2 after cold test 16: the matches get their own shot (both viewers took the gloves for crossed arms), the
+    flame reaches the cigarette and it burns (both thought he refused the light)."""
+    f = []
+    f.append(frame2("A1", [client(60)], gang("aim")))                                        # 3.1
+    f.append(frame2("A2w", [fumble(130)], gang("aim", 1)))                                   # 3.2 they have closed in
+    (lx, ly), (rx, ry) = _probe(130)["hands"]
+    f.append(frame2(((lx + rx) / 2 + 6, (ly + ry) / 2 + 6, 3.6), [fumble(130)], gang("aim", 1)))   # 3.2b insert: gloves, a matchbox, matches falling
+    f.append(frame2("A3w", [fumble(150)], gang("down", 1)))                                  # 3.3 the weapons go down
+    tx, ty = _tip(130)
+    f.append(frame2("A2", [fumble(130, lit=True), lighter_hand(tx + 13, ty + 46, 0.9)], gang("down", 1)))   # the flame at the cigarette; it burns
+    f.append(frame2("A1", [client(600, "b_walk", (0.9, 0), cig=False)], gang("down", 0, True), cig=300))
+    f.append(frame2("A3w", [don(346)], gang("up"), cig=300))
+    return f
+
+
+def frames_v2():
+    f = []
+    f.append(frame2("A1", [client(60)], gang("aim")))                                        # 3.1 round the corner; three men's shadows, everything on him
+    f.append(frame2("A2w", [client(130, "b_ask", (0.9, 0.0), folder=False, matchbox=True)], gang("aim", 1)))   # 3.2 they have closed in; two gloves, a crushed matchbox
+    f.append(frame2("A3w", [client(150, "b_ask", (0.9, 0.0), folder=False, matchbox=True)], gang("down", 1)))  # 3.3 the weapons go down
+    ho = b.HY * Q
+    f.append(frame2("A2", [client(130, "b_ask", (0.9, 0.0), folder=False, matchbox=True), lighter_hand(130 + 62, G - 12 + ho + 62, 0.9)], gang("down", 1)))
+    f.append(frame2("A1", [client(600, "b_walk", (0.9, 0), cig=False)], gang("down", 0, True), cig=300))       # 3.4 he walks on; they watch him go
+    f.append(frame2("A3w", [don(346)], gang("up"), cig=300))                                 #     Don; behind him, empty hands up
+    return f
+
+
+frames_v1 = frames
+frames = frames_v2b
+
+
+def sheet(fs, out, w=330):
+    n = len(fs); h = int(w * 960 / 540)
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, n * (w + 8) + 8, h + 46); c = cairo.Context(s)
+    c.set_source_rgb(0.13, 0.13, 0.15); c.paint()
+    for i, f in enumerate(fs):
+        c.save(); c.translate(8 + i * (w + 8), 38); c.scale(w / 540, w / 540); c.set_source_surface(f, 0, 0); c.paint(); c.restore()
+        c.set_source_rgb(1, 1, 1); c.select_font_face("sans", 0, 1); c.set_font_size(20); c.move_to(12 + i * (w + 8), 26); c.show_text(str(i + 1))
+    s.write_to_png(out)
+
+
+if __name__ == "__main__":
+    import sys
+    sheet(frames(), sys.argv[1])
