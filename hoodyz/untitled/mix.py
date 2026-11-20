@@ -49,7 +49,7 @@ for j in range(nb):
     if j % 2 == 0:
         tt = T(.9); add(mus, tb, np.sin(2 * np.pi * S.mtof(bass) * tt) * np.exp(-tt * 3) * np.minimum(1, tt * 80), .28)
 k = int(t0('s8') * SR); f2 = int(.04 * SR); mus[k - f2:k] *= np.linspace(1, 0, f2); mus[k:] = 0     # cut on the exit
-for j in (7, 9, 10, 11):                                                      # the stamps, on the beat
+for j in (5, 7, 10, 11):                                                      # the stamps, on the beat
     tt = T(.18); add(fx, B0 + j * BEAT, (np.sin(2 * np.pi * 110 * tt) + lp(rng.standard_normal(len(tt)), 1200) * .6) * np.exp(-tt * 30), .55)
 for j in range(5):
     tt = T(.12); add(fx, t0('s9', 4) + j * .14, np.sin(2 * np.pi * (5200 + 300 * (j % 2)) * tt) * np.exp(-tt * 40), .05)

@@ -3,8 +3,10 @@
 21.1 s, 1080x1920, 30 fps, loops. `untitled.mp4`, cover `cover.png`. Built by `build.sh`.
 
 Hoody and MY AI walk into the park; MY AI falls for a dog poop ("Be brutally honest." / "A masterpiece! 10/10").
-20 minutes earlier, in a modern art museum, Hoody taught it "This is art" three times over brown bronze sculptures
-(UNTITLED, TWO FRIENDS, PUDDLE (SELF-PORTRAIT)) on a 120 BPM beat. In the park MY AI matches the shape (MATCH 99% = ART)
+20 minutes earlier, in a modern art museum, Hoody taught it "This is art" on a 120 BPM beat: at BLUE, MOSTLY (a blue canvas),
+at NOTHING (an empty plinth), and the third time MY AI says it itself, at the one bronze swirl, UNTITLED, and scans it.
+(Museum v3, 20 Nov: only one piece looks like the payoff; with every piece brown the joke was used up before the park.)
+In the park MY AI matches the shape (MATCH 99% = ART)
 and plants its own card, UNTITLED (2026). Eva bags the art. "VANDALISM!" Hoody kicks the card away and they walk on —
 into frame 0, where the next one is waiting.
 

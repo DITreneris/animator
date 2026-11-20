@@ -12,7 +12,7 @@ FPS = 30
 # ---------------- the timeline (frames) ----------------
 # rough 2: the museum runs on a 120 BPM grid (a beat = 15 frames) from the start of shot 5 to the exit; three
 # "This is art." lines land on beats 0, 6 and 8, the 10/10 stamps on beats 7, 9, 10, 11 (see mix.py).
-SHOTS = [('s1', 57), ('s2', 42), ('s3', 18), ('s4', 18), ('s5', 60), ('s6', 30), ('s6b', 30), ('s6c', 30), ('s7', 24), ('s8', 24),
+SHOTS = [('s1', 57), ('s2', 42), ('s3', 18), ('s4', 18), ('s5', 60), ('s6b', 30), ('s6c', 30), ('s6', 30), ('s7', 24), ('s8', 24),
          ('s9', 36), ('s10', 24), ('s11', 42), ('s12', 48), ('s12b', 18), ('s13', 33), ('s13b', 15), ('s14', 30), ('s15', 24), ('s16', 30)]
 START = {}; t = 0
 for n, d in SHOTS: START[n] = t; t += d
@@ -745,6 +745,71 @@ def speech(c, lines, r, tail, cy=500, size=66, cx=540):
     G.setdefault('tails', []).append(('h', (bx, by + h / 2), p['tip'], a))
     bubble_curved(c, lines, min(r, G['r']), bx, by, size, p)
 KK.bubble = speech
+
+# =====================================================================================================
+# 20 Nov, museum v3 (Tomas: "too much poop, it didn't hook"): ONE poop-like piece in the whole museum, the bronze UNTITLED.
+# The lesson is now three different things: Hoody at BLUE, MOSTLY (a big blue canvas), Hoody at NOTHING (an empty plinth),
+# then MY AI itself at the bronze swirl - "THIS IS ART!" - and only then the scan: SAVED: ART. The shape match stays.
+# Order: s5, s6b, s6c, s6 (scan), s7; lines on beats 0, 4, 6; stickers on beats 5, 7; the round on 10, 11 (mix.py).
+# =====================================================================================================
+def chair(c, x, y, s=1.0):
+    """A plain wooden chair, three-quarter view; y = the floor under it (the plinth top)."""
+    W_ = hx('c98a4b')
+    for dx in (-52, 44): rr(c, x + dx * s, y - 96 * s, 14 * s, 96 * s, 4 * s); fs(c, W_, max(3, 5 * s))
+    rr(c, x - 60 * s, y - 112 * s, 126 * s, 22 * s, 6 * s); fs(c, W_, max(3, 5 * s))
+    for dx in (-52, 44): rr(c, x + dx * s, y - 250 * s, 14 * s, 140 * s, 4 * s); fs(c, W_, max(3, 5 * s))
+    rr(c, x - 54 * s, y - 250 * s, 114 * s, 54 * s, 8 * s); fs(c, W_, max(3, 5 * s))
+
+def cubes(c, x, y, s=1.0):
+    """Three painted cubes stacked off-axis."""
+    for i, (dx, col) in enumerate(((-8, 'ff5c4d'), (14, 'ffcf2e'), (-4, '2f6fd6'))):
+        c.save(); c.translate(x + dx * s, y - (i * 78 + 40) * s); c.rotate((-.08, .1, -.05)[i]); rr(c, -42 * s, -40 * s, 84 * s, 80 * s, 6 * s); fs(c, hx(col), max(3, 6 * s)); c.restore()
+
+def k05(c):   # lesson 1: Hoody at BLUE, MOSTLY - a big blue canvas on the back wall, a rope in front. "See? This is art."
+    KK.gallery2(c, back='none', title_x=540)
+    c.rectangle(472, 872, 390, 320); c.set_source_rgba(0, 0, 0, .1); c.fill()
+    c.rectangle(460, 860, 390, 320); fs(c, hx('2f6fd6'), 7)                    # low on the wall, clear of his bubble
+    rr(c, 648, 1300, 14, 150, 4); fs(c, hx('d9dce2'), 4)                      # its label on a floor stand
+    KK.title_lbl(c, 655, 1215, 250, 'BLUE, MOSTLY', 'paint, 2019')
+    KK.stanchions(c, 470, 850, 1500)
+    KK.ai(c, 935, 1840, HS * 1.15 * AIK, eye='focus', tilt=-12, look=(-16, -6), arms=('down', 'down'))
+    KK.hoody(c, 165, 1820, HS * 1.15, expr='confident', arms=('rest', 'out'), gaze=22, blink=False)
+    KK.bubble(c, ['SEE? THIS IS ART.'], 20, (200, 1000), cy=545, cx=450)
+
+def s6b(c, f, r, d):  # lesson 2: Hoody at NOTHING - an empty plinth in a pool of light. "This is art." A 10/10 lands on the next beat
+    c.save(); push(c, r, d, .03)
+    KK.gallery2(c, back='door', title_x=720)
+    KK.visitor(c, 880, 1250, .4, hx('6f7f99'), hx('3b2416'))
+    g = cairo.LinearGradient(0, 700, 0, 1190); g.add_color_stop_rgba(0, 1, .98, .85, .5); g.add_color_stop_rgba(1, 1, .98, .85, .05)
+    c.move_to(660, 620); c.line_to(720, 620); c.line_to(830, 1190); c.line_to(550, 1190); c.close_path(); c.set_source(g); c.fill()
+    KK.floor_plinth(c, 690, 1500, 250, 320, 'NOTHING', 'air, 2019', score=r >= 15)
+    hoody(c, 175, 1820, HS * 1.15, expr='confident', arms=('rest', 'out'), gaze=22, blink=False)
+    up = r >= 15
+    myai(c, 925, 1840, HS * 1.15 * AIK, eye='happy' if up else 'focus', look=(-16, 4), arms=('down', 'down'), bob=14 if up and r < 19 else 0)
+    KK.bubble(c, ['THIS IS ART.'], 20, (200, 1010), cy=560, cx=430)
+    c.restore(); KK.topbar(c, 'HIS LESSON')
+
+def s6c(c, f, r, d):  # lesson 3: MY AI says it itself, at the one bronze piece: UNTITLED. Hoody, proud. A 10/10 on the next beat
+    c.save(); push(c, r, d, .03)
+    KK.gallery2(c, back='door', title_x=330, left_work=False)
+    t = KK.floor_plinth(c, 330, 1500, 280, 330, 'UNTITLED', score=r >= 15); KK.bronze_swirl(c, 330, t - 2, 1.2)
+    myai(c, 650, 1860, HS * 1.15 * AIK, eye='happy', look=(-16, 0), arms=('offer', 'down'), tilt=-6, bob=14 if 15 <= r < 19 else 0)
+    hoody(c, 935, 1820, HS * 1.0, expr='proud', arms=('rest', 'rest'), gaze=-20, blink=False)
+    KK.bubble(c, ['THIS IS ART!'], 20, (640, 1380), cy=700, cx=600)
+    c.restore(); KK.topbar(c, 'HIS LESSON')
+
+def k07(c):   # the fast round: three more, none of them brown - THE WAIT (a chair), THREE MOODS (cubes), a yellow canvas; 10/10 each
+    KK.gallery2(c, back='none', right_work=False)
+    c.rectangle(452, 760, 220, 280); c.set_source_rgba(0, 0, 0, .1); c.fill()
+    c.rectangle(440, 748, 220, 280); fs(c, hx('ffcf2e'), 6)
+    c.save(); c.translate(690, 1010); c.rotate(-.15); rr(c, -54, -26, 108, 52, 10); fs(c, WHITE, 5); txt(c, '10/10', 0, 0, 34, RED, lw=0); c.restore()
+    t = KK.floor_plinth(c, 150, 1500, 240, 300, 'THE WAIT', 'wood, 2019', score=True); chair(c, 150, t - 2, .9)
+    t = KK.floor_plinth(c, 905, 1500, 240, 280, 'THREE MOODS', 'paint, 2019'); cubes(c, 905, t - 2, .9)
+    KK.hoody(c, 420, 1890, HS * .9, expr='proud', arms=('rest', 'rest'), blink=False)
+    KK.ai(c, 690, 1900, HS * .9 * AIK, eye='happy', arms=('down', 'up'), props=(None, KK.card), look=(14, -4), turn=.2)
+k05.__name__, k07.__name__ = 'k05', 'k07'
+
+MAP.update({'s5': held(k05), 's6b': s6b, 's6c': s6c, 's7': held(k07)})
 
 if __name__ == '__main__':
     os.chdir(HERE)
