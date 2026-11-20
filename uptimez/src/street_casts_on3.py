@@ -28,16 +28,23 @@ def sofia(x, look=(-1, 0.3)):
     return d
 
 
+def with_folder(x):
+    def d(k):
+        client(x, "b_pay", (-0.8, 0.2))(k)
+        st.folder(k, x + 2, G - 30 - 176 * Q, 0.62 * SC, -0.06)
+    return d
+
+
 def frames():
+    """v3: the finger is out (it read as a wave twice; Tomas: proceed). Nine frames."""
     f = []
-    f.append(st.frame("S1", [client(150)], rain=1))                                        # 2.1 he walks; the door far off
+    f.append(st.frame("S1", [client(330)], rain=1))                                        # 2.1 he walks into the lamp's edge
     f.append(st.frame("S1", [client(400)], car=(250, 0.0), rain=2))                        # 2.2 the car, at his knees
-    f.append(st.frame("S2", [client(400, "b_fist", (0.2, 0.6))], car=(250, 1.0)))          # 2.3 one glove, raised at the glass
-    f.append(st.window_pov(1.0, fist=1.0))                                                 #     his view: the glove, held; the glass half down
-    f.append(st.window_pov(0.0, fist=1.0))                                                 #     the glass has gone back up
-    f.append(st.window_pov(1.0, 1.0, 0.0))                                                 # 2.4 down again: her hand, the folder, straight at him
-    f.append(st.window_pov(1.0, 1.0, 1.0))                                                 #     his gloves have it
-    f.append(st.cv_insert(0.0))                                                            # 2.5 the page: her portrait; he reads a target
-    f.append(st.frame("S3", [sofia(690), client(450, "b_walk", (0.9, 0))]))                # 2.6 she comes under the lamp
-    f.append(st.cv_insert(1.0))                                                            # 2.7 his glove at the foot of the page: her number
+    f.append(st.window_pov(1.0, 1.0, 0.0))                                                 # 2.4 his view: the glass down; her hand, the folder
+    f.append(st.window_pov(1.0, 1.0, 0.6))                                                 #     his gloves on it; her hand still on it
+    f.append(st.window_pov(0.0, 1.0, 1.0))                                                 #     he has it; the glass is up
+    f.append(st.frame("S2", [with_folder(400)], car=(-190, 0.0), rain=3))                  #     the car pulls away; he holds the folder
+    f.append(st.cv_insert(0.0))                                                            # 2.5 her photograph, and nothing else
+    f.append(st.frame("S3", [sofia(690), with_folder(450)], rain=4))                       # 2.6 she comes under the lamp
+    f.append(st.cv_insert(1.0))                                                            # 2.7 the photograph lifted: CV, her number
     return f
