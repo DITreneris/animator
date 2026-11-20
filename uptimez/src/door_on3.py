@@ -63,7 +63,7 @@ def face(look=(0.2, -0.9), glove=0.0, push=0.0, expr="hard", folder=True):
     c.save(); c.translate(120 - 30 * push, 800 + 250 * push); c.rotate(-0.16 - 0.5 * push)                                            # the folder under his arm, her photograph out of the top of it
     rect(k, -84, -150, 150, 200, (0.98, 0.98, 0.96), 3, shadow=True, lw=3)
     c.save(); c.rectangle(-76, -142, 134, 150); c.clip(); c.set_source_rgb(0.62, 0.62, 0.64); c.paint()
-    st.star(k, -6, -142 + 300, 1.15, "g_stand", "interested", (0.6, 0.0)); c.restore()
+    st.her(k, -6, -142 + 300, 1.15, (0.6, 0.0)); c.restore()
     cut(k, [(-120, -40), (110, -40), (110, 190), (-120, 190)], (0.86, 0.80, 0.62), shadow=True, lw=3.4)
     cut(k, [(30, -66), (104, -66), (110, -40), (30, -40)], (0.86, 0.80, 0.62), shadow=False, lw=3)
     c.restore()

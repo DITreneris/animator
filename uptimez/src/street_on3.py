@@ -37,8 +37,86 @@ def view(c, cx, cy, z):
     c.translate(270, 480); c.scale(z, z); c.translate(-cx, -cy)
 
 
+V5 = [False]                                               # v5 (Tomas, after the first moving rough): the poster, the car, her plain photograph
+
+
+def poster2(k, x, y, s=1.0, seed=0):
+    """v5: a proper fight bill: TONIGHT, HUMAN vs ROBOT, a red glove against a robot's head. Larger than v1's."""
+    c = k.c
+    c.save(); c.translate(x - 14, y - 34); c.scale(s * 1.3, s * 1.3)
+    rect(k, 0, 0, 96, 136, PAPER, seed, shadow=False, lw=2.4)
+    c.set_source_rgb(*INK); c.rectangle(4, 4, 88, 18); c.fill()
+    kit.text(k, "TONIGHT", 48, 13.5, 11.5, PAPER, bold=True)
+    kit.text(k, "HUMAN", 48, 36, 19, INK, bold=True)
+    ellipse(k, 24, 68, 16, 15, b.KEY, seed + 2, shadow=False, lw=2)                                   # the glove
+    ellipse(k, 14, 74, 6, 7, b.KEY, seed + 3, shadow=False, lw=1.6)
+    rect(k, 58, 55, 28, 26, (0.20, 0.20, 0.23), seed + 4, shadow=False, lw=2)                         # the robot's head: a screen, an aerial
+    c.set_source_rgb(*PAPER); c.rectangle(63, 62, 6, 4); c.fill(); c.rectangle(75, 62, 6, 4); c.fill(); c.rectangle(64, 72, 16, 3); c.fill()
+    c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(72, 55); c.line_to(72, 48); c.stroke(); c.arc(72, 46, 2.4, 0, 2 * math.pi); c.fill()
+    kit.text(k, "VS", 46, 69, 13, INK, bold=True)
+    kit.text(k, "ROBOT", 48, 100, 19, INK, bold=True)
+    c.set_source_rgb(*INK); c.set_line_width(1.6); c.move_to(10, 114); c.line_to(86, 114); c.stroke()
+    kit.text(k, "LAST ROUND", 48, 124, 9.5, INK, bold=True)
+    c.restore()
+
+
+def limo2(k, x, y, s=1.0, window=0.0, beams=True):
+    """v5: a long limousine that looks its price: a long bonnet, swept wings over white-walled wheels, a running board,
+    a tall grille and a mascot, four side windows with blinds, light along the roof and the wings. A third larger.
+    The rear glass is where v1's was, so the staging does not move."""
+    c = k.c
+    z = 1.34 * s
+    c.save(); c.translate(x + 350 * s - 430 * z, y); c.scale(z, z)             # the rear glass (centre 430 here) stays over v1's (350)
+    if beams:
+        g = cairo.LinearGradient(-360, 0, -70, 0); g.add_color_stop_rgba(0, 1, 1, 1, 0); g.add_color_stop_rgba(1, 1, 1, 1, 0.6)
+        c.set_source(g); c.move_to(-70, -66); c.line_to(-360, -128); c.line_to(-360, 6); c.close_path(); c.fill()
+    body, gloss = (0.05, 0.05, 0.06), (0.62, 0.62, 0.66)
+    cut(k, [(-78, -30), (-80, -78), (-50, -98), (150, -104), (196, -160), (236, -168), (520, -168), (566, -150), (600, -100), (640, -92), (646, -30)], body, shadow=False, lw=3)
+    c.set_source_rgb(*gloss); c.set_line_width(3.4); c.set_line_cap(1)                                # light along the bonnet and the roof
+    c.move_to(-46, -96); c.line_to(148, -102); c.stroke(); c.move_to(240, -166); c.line_to(516, -166); c.stroke(); c.set_line_cap(0)
+    for wx in (40, 540):                                                                             # the wings, swept over the wheels
+        cut(k, [(wx - 66, -30), (wx - 58, -62), (wx - 22, -82), (wx + 26, -82), (wx + 60, -60), (wx + 84, -30)], (0.08, 0.08, 0.10), shadow=False, lw=3)
+        c.set_source_rgb(*gloss); c.set_line_width(2.6); c.move_to(wx - 54, -62); c.curve_to(wx - 20, -84, wx + 26, -84, wx + 58, -60); c.stroke()
+        ellipse(k, wx, -22, 36, 36, (0.03, 0.03, 0.04), wx, shadow=False, lw=3)
+        ellipse(k, wx, -22, 26, 26, (0.92, 0.92, 0.90), wx + 1, shadow=False, lw=2)                    # the white wall
+        ellipse(k, wx, -22, 15, 15, (0.10, 0.10, 0.12), wx + 2, shadow=False, lw=2)
+        ellipse(k, wx, -22, 7, 7, (0.86, 0.86, 0.88), wx + 3, shadow=False, lw=1.4)
+    rect(k, 104, -34, 356, 10, (0.30, 0.30, 0.33), 7, shadow=False, lw=2.4)                            # the running board
+    c.set_source_rgb(0.86, 0.86, 0.88); c.set_line_width(4); c.move_to(-76, -70); c.line_to(640, -64); c.stroke()   # the chrome line
+    rect(k, -84, -92, 16, 56, (0.80, 0.80, 0.84), 8, shadow=False, lw=2.4)                             # the grille
+    c.set_source_rgb(0.20, 0.20, 0.23); c.set_line_width(1.6)
+    for gy in (-84, -74, -64, -54, -44):
+        c.move_to(-82, gy); c.line_to(-70, gy); c.stroke()
+    for i, (gx0, gw) in enumerate(((204, 74), (290, 84))):                                             # the front glasses: blinds half down
+        rect(k, gx0, -156, gw, 48, (0.16, 0.17, 0.20), 9 + i, shadow=False, lw=2.2)
+        c.set_source_rgb(0.42, 0.42, 0.45); c.rectangle(gx0 + 3, -153, gw - 6, 20); c.fill()
+    rect(k, 386, -156, 88, 48, (0.02, 0.02, 0.03), 12, shadow=False, lw=2.6)                           # the rear glass: black
+    if window > 0:
+        c.set_source_rgb(0.20, 0.20, 0.23); c.rectangle(388, -154, 84, 12 * window); c.fill()
+    rect(k, 486, -156, 44, 48, (0.02, 0.02, 0.03), 13, shadow=False, lw=2.2)                           # the quarter light
+    for hx in (300, 392):                                                                             # door handles
+        rect(k, hx, -92, 18, 5, (0.86, 0.86, 0.88), hx, shadow=False, lw=1.4)
+    ellipse(k, -74, -52, 11, 15, (1, 1, 0.96), 5, shadow=False, lw=2)                                  # the lamp
+    c.set_source_rgb(0.86, 0.86, 0.88); c.set_line_width(3); c.move_to(-58, -98); c.line_to(-58, -118); c.stroke()   # the mascot
+    cut(k, [(-58, -118), (-36, -126), (-58, -130)], (0.86, 0.86, 0.88), shadow=False, lw=1.6)
+    c.set_source_rgba(1, 1, 1, 0.16); c.rectangle(-70, 12, 700, 10); c.fill()                          # it shines in the wet road
+    c.restore()
+
+
+def her(k, x, feet, s=1.0, look=(0.6, 0.0)):
+    """Her picture. v1 to v4: Office Noir 2's star in black (feet as star() takes them). v5: The Onboarding's Sofia as
+    on an identity photograph: her everyday jacket, looking straight out, nothing in her hands."""
+    if not V5[0]:
+        return star(k, x, feet, s, "g_stand", "interested", look)
+    import sofia_ob as sob
+    yc = feet - 272 * s
+    return sob.sofia(k, x, yc + 40 * s + 243 * s * 1.1, s * 1.1, "low", "smile", (0, 0), badge=False, tablet_kind=None)
+
+
 def poster(k, x, y, s=1.0, seed=0):
     """A fight poster: a red glove against a round dark head, TONIGHT. No names."""
+    if V5[0]:
+        return poster2(k, x, y, s, seed)
     c = k.c
     c.save(); c.translate(x, y); c.scale(s, s)
     rect(k, 0, 0, 96, 132, PAPER, seed, shadow=False, lw=2.2)
@@ -106,7 +184,7 @@ def draw_street(k, mid=(), car=None, rain=0, door_open=False):
     for fn in mid:
         fn(k)
     if car:
-        limo(k, car[0], G + 96, 1.0, car[1])
+        (limo2 if V5[0] else limo)(k, car[0], G + 96, 1.0, car[1])
         c.set_source_rgba(1, 1, 1, 0.10)                     # its shine on the wet road
         c.rectangle(car[0] - 60, G + 104, 620, 60); c.fill()
     if rain:
@@ -231,7 +309,7 @@ def cv_insert(lift=0.0):
     if lift < 0.5:                                           # her photograph, over all of it
         rect(k, 104, 214, 340, 500, (0.98, 0.98, 0.96), 3, shadow=True, lw=3)
         c.save(); c.rectangle(114, 224, 320, 480); c.clip(); c.set_source_rgb(0.62, 0.62, 0.64); c.paint()
-        star(k, 274, 420 + 272 * 2.2, 2.2, "g_stand", "interested", (0.6, 0.0)); c.restore()
+        her(k, 274, 420 + 272 * 2.2, 2.2, (0.6, 0.0)); c.restore()
     else:                                                    # pushed up on its clip: its back, above the page
         cut(k, [(110, 216), (440, 204), (452, 40), (122, 52)], (0.80, 0.80, 0.80), shadow=True, lw=3)
     rect(k, 250, 196, 44, 30, (0.70, 0.70, 0.74), 9, shadow=False, lw=2)                             # the clip

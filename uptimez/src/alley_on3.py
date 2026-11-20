@@ -325,6 +325,37 @@ CAMS["A2w"] = (228, 1128, 1.5)                             # him, and the shadow
 CAMS["A3w"] = (330, 1130, 1.12)
 
 
+def don_caught(x, up=0.0):
+    """v3 (Tomas, /grill-me): the shadows he did not notice turn their weapons on Don. up 0: bent over his glass and the
+    cigarette end. up 1: straight, both hands as high as they go; the glass and the tweezers on the ground."""
+    def d(k):
+        _sh(k, x, 36)
+        old = n2.LOOK[0]; n2.LOOK[0] = 9
+        try:
+            if up < 0.5:
+                o = n2.detective(k, x, G - 12, SC, "look", "squint", (0.6, 0.9), lean=10)
+            else:
+                dm = n2.d.dm
+                o = n2.detective(k, x, G - 12, SC, dm.ik(-1, -64, n2.d.HY - 40) + dm.ik(1, 64, n2.d.HY - 40), "neutral", (0.9, -0.7), lean=-6, glass=False)
+        finally:
+            n2.LOOK[0] = old
+        c = k.c
+        if up < 0.5:
+            hx, hy = o["hands"][0]
+            c.set_source_rgb(0.80, 0.80, 0.84); c.set_line_width(2.4)
+            c.move_to(hx, hy); c.line_to(hx + 26, G - 22); c.move_to(hx - 5, hy + 3); c.line_to(hx + 22, G - 18); c.stroke()
+        else:                                                # dropped: the glass, the tweezers
+            ellipse(k, x + 64, G - 14, 15, 6, (0.80, 0.84, 0.90), 3, shadow=False, lw=2.6)
+            c.set_source_rgb(0.10, 0.10, 0.12); c.set_line_width(5); c.move_to(x + 78, G - 13); c.line_to(x + 100, G - 9); c.stroke()
+            c.set_source_rgb(0.80, 0.80, 0.84); c.set_line_width(2.4); c.move_to(x - 50, G - 12); c.line_to(x - 22, G - 16); c.move_to(x - 50, G - 12); c.line_to(x - 24, G - 9); c.stroke()
+            c.set_source_rgb(0.95, 0.95, 0.95); c.set_line_width(3); c.set_line_cap(1)               # he has had a fright
+            for a in (-2.2, -1.57, -0.94):
+                hx0, hy0 = o["head"]
+                c.move_to(hx0 + 62 * math.cos(a), hy0 - 30 + 62 * math.sin(a)); c.line_to(hx0 + 80 * math.cos(a), hy0 - 30 + 80 * math.sin(a)); c.stroke()
+            c.set_line_cap(0)
+    return d
+
+
 def gang(state, close=0.0, turn=False):
     """The three, back to front. close 0..1: they have come nearer him (the sides in, the big one forward and larger)."""
     kn = dict(x=250 - 14 * close, s=1.12 + 0.04 * close, kind="knife", state=state, alpha=0.72, flip=turn)
@@ -343,15 +374,42 @@ def _tip(x):
     return x + 43 * Q, G - 12 + (b.HY + 47) * Q
 
 
-def fumble(x, lit=False):
+def fumble(x, lit=False, stage=None, shake=0.0):
     """v2: him, two gloves and a crushed matchbox he cannot open: matches fall out of it. lit: the cigarette burns."""
-    base = client(x, "b_ask", (0.9, 0.0), folder=False, matchbox=True)
+    base = client(x, "b_ask", (0.9, 0.0), folder=False, matchbox=stage is None)
 
     def d(k):
         o = base(k); c = k.c
         (lx, ly), (rx, ry) = o["hands"]
         mx, my = (lx + rx) / 2, (ly + ry) / 2
-        if not lit:
+        if stage is not None and not lit:                    # v3 (Tomas: more of the matches): 0 the box, whole; 1 crushed, they spill; 2 one match, pinched, snaps
+            def match(px, py, a, ln=14.0, head=True):
+                c.save(); c.translate(px, py); c.rotate(a)
+                c.set_source_rgb(0.93, 0.90, 0.78); c.rectangle(-ln / 2, -1.2, ln, 2.4); c.fill()
+                if head:
+                    c.set_source_rgb(*b.KEY); c.arc(ln / 2, 0, 2.2, 0, 2 * math.pi); c.fill()
+                c.restore()
+            bx, by = mx + shake, my - 2
+            if stage == 0:                                   # a matchbox: a sleeve, a striking strip, a flame on its label
+                cut(k, [(bx - 13, by - 8), (bx + 13, by - 9), (bx + 14, by + 8), (bx - 12, by + 9)], (0.94, 0.92, 0.82), shadow=False, lw=1.6)
+                c.set_source_rgb(0.30, 0.24, 0.20); c.rectangle(bx - 12, by + 4, 25, 4); c.fill()
+                c.set_source_rgb(*b.KEY); c.new_path(); c.move_to(bx - 3, by + 1); c.curve_to(bx - 7, by - 4, bx - 1, by - 5, bx, by - 8); c.curve_to(bx + 2, by - 4, bx + 6, by - 3, bx + 3, by + 1); c.close_path(); c.fill()
+            else:
+                cut(k, [(bx - 11, by - 5), (bx + 8, by - 9), (bx + 12, by + 3), (bx - 5, by + 8), (bx - 13, by + 1)], (0.94, 0.92, 0.82), shadow=False, lw=1.6)
+                c.set_source_rgb(0.30, 0.24, 0.20); c.set_line_width(1.6); c.move_to(bx - 9, by - 2); c.line_to(bx + 2, by + 4); c.stroke()
+                fall = shake if stage == 1 else 1.0          # shake carries the fall in stage 1: 0..1
+                for i, (dx, dy, a) in enumerate(((-9, 20, 0.5), (4, 34, -0.9), (15, 23, 1.3), (-2, 52, 0.2), (10, 62, -0.4))):
+                    if stage == 2 or fall * 5 > i:
+                        match(mx + dx, my + dy * (0.5 + 0.5 * min(1.0, fall * 5 - i) if stage == 1 else 1.3) + (40 if stage == 2 else 0), a)
+            if stage == 2:                                   # the last one, between two glove tips: it bends, it breaks
+                if shake < 0.6:
+                    match(mx + 1, my - 20 - 4 * shake, -1.2 + 0.2 * shake, 17.0)
+                else:
+                    match(mx - 3, my - 18, -0.5, 9.0, head=False); match(mx + 6, my - 24, -1.9, 9.0)
+                    c.set_source_rgb(0.95, 0.95, 0.95); c.set_line_width(1.6)
+                    for a in (-2.4, -1.6, -0.8):
+                        c.move_to(mx + 2 + 9 * math.cos(a), my - 22 + 9 * math.sin(a)); c.line_to(mx + 2 + 15 * math.cos(a), my - 22 + 15 * math.sin(a)); c.stroke()
+        elif not lit:
             for i, (dx, dy, a) in enumerate(((-9, 20, 0.5), (4, 34, -0.9), (15, 23, 1.3), (-2, 52, 0.2))):   # matches, falling
                 c.save(); c.translate(mx + dx, my + dy); c.rotate(a)
                 c.set_source_rgb(0.93, 0.90, 0.78); c.rectangle(-7, -1.1, 14, 2.2); c.fill()

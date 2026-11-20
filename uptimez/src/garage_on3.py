@@ -76,7 +76,7 @@ def cv(k, x, y, s=1.0, ang=0.0, photo=True):
         c.save(); c.translate(44, -78); c.rotate(0.10)
         rect(k, -27, -34, 54, 68, (0.98, 0.98, 0.96), 6, shadow=True, lw=1.8)
         c.save(); c.rectangle(-23, -30, 46, 56); c.clip(); c.set_source_rgb(0.70, 0.72, 0.76); c.paint()
-        st.star(k, 0, -30 + 118, 0.44, "g_stand", "interested", (-0.6, 0.0)); c.restore()
+        st.her(k, 0, -30 + 118, 0.44, (-0.6, 0.0)); c.restore()
         rect(k, -6, -40, 12, 14, (0.70, 0.70, 0.74), 7, shadow=False, lw=1.4)
         c.restore()
     c.restore()

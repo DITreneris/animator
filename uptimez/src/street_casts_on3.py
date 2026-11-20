@@ -24,7 +24,17 @@ def client(x, pose="b_walk", look=(0.8, 0), **kw):
 
 def sofia(x, look=(-1, 0.3)):
     def d(k):
-        _sh(k, x, 36); st.star(k, x, G - 30, SC, "g_stand", "interested", look)
+        _sh(k, x, 36)
+        if not st.V5[0]:
+            st.star(k, x, G - 30, SC, "g_stand", "interested", look); return
+        import sofia_ob as sob                               # v5: an ordinary woman going home in the rain: her everyday jacket, an umbrella
+        o = sob.sofia(k, x, G - 30, SC * 0.86, "low", "smile", look, badge=False, tablet_kind=None)
+        hx, hy = o["hands"][1]; c = k.c
+        c.set_source_rgb(0.10, 0.10, 0.12); c.set_line_width(4); c.move_to(hx, hy); c.line_to(hx - 6, hy - 250); c.stroke()
+        c.new_path(); c.move_to(hx - 126, hy - 236); c.curve_to(hx - 100, hy - 330, hx + 88, hy - 330, hx + 114, hy - 236)
+        for i in range(4):
+            x0 = hx + 114 - 60 * i; c.curve_to(x0 - 10, hy - 250, x0 - 50, hy - 250, x0 - 60, hy - 236)
+        c.close_path(); c.set_source_rgb(0.08, 0.08, 0.10); c.fill_preserve(); c.set_source_rgb(0.02, 0.02, 0.03); c.set_line_width(3); c.stroke()
     return d
 
 

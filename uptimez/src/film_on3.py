@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v1. No sound, no text. 30 fps, 540x960.
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v2 (v1 is film_on3_v1.py). v2, Tomas's notes on v1: the
+fight bill HUMAN vs ROBOT; a long limousine; her picture is a plain identity photograph and on the street she is a
+woman under an umbrella; the matches in three stages; the shadows turn on Don and his hands go up; in 5.1c the bell
+rings while Pam has the robe half off him; in 6.3 Don's glass goes from the photograph to the ring girl: the same face.
+v1: No sound, no text. 30 fps, 540x960.
 Beats 01 to 04 and 08 move here for the first time (parameters of the staged frames, run through time); beats 05 to 07
 are the ring roughs' own shots (ring_rough_on3 v9, ring_rough2_on3 v3), with the button's insert cut in after 5.4 and
 inside 7.4. The last frame is the first frame: 8.5 ends on 1.1's first drawing.
@@ -18,6 +22,12 @@ import client_on3 as b
 from ring_rough_on3 import lerp
 
 R5, F5 = tuple(rr.SHOTS), dict(rr.FN)
+st.V5[0] = True
+import ring_on3 as rg
+import cast_on3 as ca
+import sofia_on3 as so3
+import client_sheet_on3 as csh
+from kit import Ctx, rect
 K = dict(cards="deck", v4=True, v6=True)
 T0 = 0.45                                                   # ring_rough2's 7.5 at this time is the film's first drawing: the glove an inch away
 
@@ -71,20 +81,28 @@ def s27(t):
 
 # ---- 03 the alley -------------------------------------------------------------------------------------------------
 def s31(t):
-    return al.frame2("A1", [al.client(lerp(-30.0, 70.0, t / 1.2))], al.gang("aim", ramp(t, 0.6, 1.0) * 0.5))
+    return al.frame2("A1", [al.client(lerp(-30.0, 70.0, t / 1.0))], al.gang("aim", ramp(t, 0.5, 0.8) * 0.5))
 
 
 def s32(t):
-    return al.frame2("A2w", [al.fumble(130 + math.sin(t * 22) * 1.5)], al.gang("aim", 0.5 + 0.5 * ramp(t, 0.0, 1.4)))
+    return al.frame2("A2w", [al.fumble(130, stage=0, shake=math.sin(t * 26) * 1.5)], al.gang("aim", 0.5 + 0.5 * ramp(t, 0.0, 1.0)))
 
 
 def s32b(t):
+    """The matches, close, in three stages: the box whole and squeezed; crushed, they spill; the last one snaps."""
     (lx, ly), (rx, ry) = al._probe(130)["hands"]
-    return al.frame2(((lx + rx) / 2 + 6, (ly + ry) / 2 + 6 + bob(t, 4, 2), 3.6), [al.fumble(130 + math.sin(t * 22) * 1.5)], al.gang("aim", 1))
+    cam = ((lx + rx) / 2 + 6, (ly + ry) / 2 + 2, 3.6)
+    if t < 0.45:
+        f = al.fumble(130, stage=0, shake=math.sin(t * 40) * 2.0)
+    elif t < 1.05:
+        f = al.fumble(130, stage=1, shake=(t - 0.45) / 0.5)
+    else:
+        f = al.fumble(130, stage=2, shake=(t - 1.05) / 0.6)
+    return al.frame2(cam, [f], al.gang("aim", 1))
 
 
 def s33(t):
-    return al.frame2("A3w", [al.fumble(150)], al.gang("aim" if t < 0.5 else "down", 1))
+    return al.frame2("A3w", [al.fumble(150, stage=2, shake=1.0)], al.gang("aim" if t < 0.45 else "down", 1))
 
 
 def s33b(t):
@@ -94,12 +112,15 @@ def s33b(t):
 
 
 def s34(t):
-    x = lerp(180.0, 700.0, t / 1.5)
+    x = lerp(180.0, 700.0, t / 1.3)
     return al.frame2("A1", [al.client(x, "b_walk", (0.9, 0), cig=x < 300)], al.gang("down", 0, True), cig=300 if x >= 300 else None)
 
 
 def s34b(t):
-    return al.frame2("A3w", [al.don(lerp(140.0, 346.0, t / 0.7))], al.gang("down" if t < 0.9 else "up", 0, t < 0.9), cig=300)
+    """Don, bent over the cigarette end. Behind him the three turn back and everything comes up at him. His hands go up."""
+    if t < 0.9:
+        return al.frame2("A3w", [al.don_caught(lerp(60.0, 215.0, t / 0.7), 0.0)], al.gang("down", 0, True), cig=300)
+    return al.frame2("A3w", [al.don_caught(215, 0.0 if t < 1.35 else 1.0)], al.gang("aim", ramp(t, 0.9, 0.5)), cig=300)
 
 
 # ---- 04 the price -------------------------------------------------------------------------------------------------
@@ -143,6 +164,59 @@ def s44c(t):
 
 
 # ---- 05 to 07 the ring: the roughs' own shots, with the button ----------------------------------------------------
+def s51c(t):
+    """Pam: "I'll help you undress." She has the robe off his shoulders and is pulling at the sleeve when the bell goes
+    (the Referee's arm comes down). "Ah. Too late. The bell." She shoves it back up over him."""
+    if t < 2.0:
+        return F5["5.1c"](t)
+    if t < 2.5:
+        u = (t - 2.0) / 0.5
+
+        def ref(k):
+            c = k.c                                          # the ring's bell on its board, beside him; his hand comes down on it
+            bx, by = 400, rg.F - 236
+            rect(k, bx - 30, by - 34, 60, 76, (0.30, 0.26, 0.22), 3, shadow=False, lw=2.4)
+            c.set_source_rgb(0.86, 0.86, 0.82); c.arc(bx, by, 24, 0, 2 * math.pi); c.fill_preserve(); c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(2.6); c.stroke()
+            c.arc(bx, by, 6, 0, 2 * math.pi); c.fill()
+            if u >= 0.4:
+                c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(5); c.move_to(bx - 40, by + 44); c.line_to(bx - 14, by + 12); c.stroke()
+            ca.referee(k, 336, rg.F - 96, rg.SC * ca.REL_REF, "ref_bell" if u < 0.4 else "ref_stand", look=(-0.8, 0), waistcoat=True)
+            if u >= 0.4:                                     # the bell: rings out from his hand
+                c = k.c; c.set_source_rgb(0.96, 0.96, 0.92); c.set_line_width(2.4)
+                for r_ in (26, 40, 54):
+                    c.new_path(); c.arc(400, rg.F - 236, 14 + r_ * (0.6 + 0.8 * (u - 0.4) / 0.6), -2.6, -0.5); c.stroke()
+        return rg.frame((336, rg.F - 230, 2.3), [ref], [], near=False, hats=False)
+    return F5["5.1c"](2.3 + (t - 2.5))
+
+
+def s63(t):
+    """Don's tweezers lift the folder away. In his glass: her photograph, the one from the CV. The glass leaves the
+    photograph and finds the ring girl herself: the same face. (6.4: CASE CLOSED.)"""
+    if t < 1.2:
+        return rr2.shot_63(t)
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
+    c.set_source_rgb(0.08, 0.08, 0.09); c.paint()
+    grow = lerp(0.86, 1.0, (t - 1.2) / 0.3)
+    slide = 620 * ramp(t, 2.0, 0.45)
+    c.save(); c.translate(270, 440); c.scale(grow, grow); c.translate(-270, -440)
+    c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(40); c.set_line_cap(1); c.move_to(420, 640); c.line_to(540, 900); c.stroke()
+    c.save(); c.arc(270, 440, 232, 0, 2 * math.pi); c.clip()
+    c.set_source_rgb(0.72, 0.72, 0.74); c.paint()                                                 # the ring's light, behind her
+    c.save(); c.translate(-slide, 0)
+    c.set_source_rgb(0.86, 0.80, 0.62); c.rectangle(-200, 0, 640, 960); c.fill()                  # the folder's inside
+    rect(k, 110, 250, 320, 400, (0.96, 0.96, 0.93), 3, shadow=False, lw=3)                        # her photograph, as on the CV
+    c.save(); c.rectangle(112, 252, 316, 396); c.clip(); c.set_source_rgb(0.62, 0.62, 0.64); c.paint()
+    st.her(k, 270, 380 + 272 * 2.2, 2.2); c.restore()
+    rect(k, 248, 236, 44, 30, (0.70, 0.70, 0.74), 9, shadow=False, lw=2)                          # its clip
+    so3.sofia(k, 270 + 620, 470 + 272 * 2.3, 2.3, "r_hips", "spotted", (0, 0))                    # the ring girl, herself
+    c.restore(); c.restore()
+    c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(22); c.arc(270, 440, 236, 0, 2 * math.pi); c.stroke()
+    c.set_source_rgba(1, 1, 1, 0.5); c.set_line_width(10); c.arc(270, 440, 200, 3.6, 4.5); c.stroke()
+    c.restore()
+    csh.noir(s)
+    return s
+
+
 def s54b(t):
     return of.button_insert(ramp(t, 0.0, 0.2))
 
@@ -202,19 +276,23 @@ def s85(t):
 
 FILM = [("1.1", 0.6, s11),
         ("2.1", 1.5, s21), ("2.2", 1.5, s22), ("2.4", 2.8, s24), ("2.4b", 1.3, s24b), ("2.5", 1.4, s25), ("2.6", 1.5, s26), ("2.7", 2.0, s27),
-        ("3.1", 1.6, s31), ("3.2", 1.4, s32), ("3.2b", 1.0, s32b), ("3.3", 1.3, s33), ("3.3b", 1.7, s33b), ("3.4", 1.5, s34), ("3.4b", 2.0, s34b),
+        ("3.1", 1.3, s31), ("3.2", 1.0, s32), ("3.2b", 1.8, s32b), ("3.3", 1.1, s33), ("3.3b", 1.6, s33b), ("3.4", 1.3, s34), ("3.4b", 2.3, s34b),
         ("4.1", 1.6, s41), ("4.2", 1.9, s42), ("4.3", 1.5, s43), ("4.4", 2.2, s44), ("4.4a", 0.9, s44a), ("4.4t", 1.4, s44t), ("4.4b", 1.3, s44b), ("4.4c", 1.4, s44c)]
 for name, dur in R5:
     if name == "5.4":
         FILM += [("5.4", 1.3, F5["5.4"]), ("5.4b", 0.5, s54b)]
+    elif name == "5.1c":
+        FILM.append(("5.1c", 3.4, s51c))
     else:
         FILM.append((name, dur, F5[name]))
 for name, dur in rr2.SHOTS:
     if name == "7.4":
         FILM += [("7.4", 1.1, s74a), ("7.4b", 0.45, s54b), ("7.4c", 0.7, s74c)]
+    elif name == "6.3":
+        FILM.append(("6.3", 3.1, s63))
     else:
         FILM.append((name, dur, rr2.FN[name]))
-FILM += [("8.1", 1.6, s81), ("8.2", 1.6, s82), ("8.3", 2.2, s83), ("8.4", 1.6, s84), ("8.5", 1.0, s85)]
+FILM += [("8.1", 1.6, s81), ("8.2", 1.6, s82), ("8.3", 2.2, s83), ("8.4", 2.2, s84), ("8.5", 1.0, s85)]
 
 
 def _use():
