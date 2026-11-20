@@ -1,4 +1,6 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v14 (v1 to v13 pinned). v14: the film is lit as Office
+"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v15 (v1 to v14 pinned). v15 (Tomas, /grill-me): he lies
+on the sofa on his side, face to us; smoke, flame and the sponge's water move; the fight has a feint, footwork, a body
+hook, a duck and an uppercut; a matchbox that reads, an edge of light at the door and round the alley's shadows. v14: the film is lit as Office
 Noir 1 and 2 were (light_on3.auto, on the finished frame, round the tracked figures); the Client's back at her desk is
 redrawn (office_on3.BACK2). v13: three things both cold
 viewers took for mistakes: the doorway is a doorway (a frame, a FIGHTERS plate, a passage behind, dark or lit); the
@@ -659,6 +661,134 @@ _b.boxer = mo.alive(_b.boxer, "CLIENT", _b.POSES, skin=_co.SKIN, mouth_kw=True)
 _ca.pam_corner = mo.alive(_ca.pam_corner, "PAM", _ca.P_POSES, skin=_ca.pn.ps.SKIN, lip=(0.72, 0.10, 0.12))
 _ca.referee = mo.alive(_ca.referee, "REFEREE", None, skin=_ca.cb.M_SKIN, tween_pose=False)
 _r.robot = mo.alive(_r.robot, "ROBOT", None, breathe=0.0, blinks=False, tween_pose=False)
+# v15 (Tomas, /grill-me): on the sofa he lies on his side, his face to us; cigarette smoke moves wherever there is a
+# cigarette, the lighter's flame flickers, the end glows; Pam's sponge splashes; the fight has more than one punch:
+# a feint and footwork before his first swing (5.2); in the last round a body hook, a duck under the robot's jab, an
+# uppercut (7.2). And the three things cold test 43 left: a matchbox that reads, an edge of light on his back at the door,
+# an edge round each shadow in the alley.
+ga.SIDE[0] = True
+al.RIM[0] = al.BOX2[0] = True
+dr.RIM[0] = True
+al.SMOKE[0] = lambda c, x, y, s_: mo.smoke(c, x, y, s_, seed=0.7, h=140)
+al.FLAME[0] = mo.flame
+mo.SMOKING.update({"3.3b": 0.55, "3.4": 0.0})
+GUARD = (-40, -165, 40, 165)
+JAB = (-40, -165, 92, 0)
+UWIND = (-40, -165, 24, 70)                                   # the glove low, by his hip
+UPPER = (-40, -165, 74, 84)                                   # and up under its chin
+
+
+def _open52(t):
+    """5.2, before he winds up: in his guard, on his toes, one jab at the air that the robot does not answer."""
+    if t < 0.10:
+        return GUARD
+    if t < 0.17:
+        return lerp(GUARD, JAB, (t - 0.10) / 0.07)
+    if t < 0.24:
+        return lerp(JAB, GUARD, (t - 0.17) / 0.07)
+    return lerp(GUARD, rr.WALK, (t - 0.24) / 0.11)
+
+
+def _bob52(t):
+    return 7 * abs(math.sin(t * 20)) if t < 0.35 else 0.0
+
+
+def _pose72(t):
+    """7.2: a hook to its body lands (0.3); he ducks; its jab goes over him; he comes up with an uppercut (0.9)."""
+    h1, h2 = 0.3, 0.9
+    if t < h1:
+        return lerp(rr.WIND, rr2.LOW, (t - h1 + 0.1) / 0.1)
+    if t < 0.40:
+        return rr2.LOW
+    if t < 0.50:
+        return lerp(rr2.LOW, GUARD, (t - 0.40) / 0.10)
+    if t < 0.72:
+        return GUARD
+    if t < 0.80:
+        return lerp(GUARD, UWIND, (t - 0.72) / 0.08)
+    return lerp(UWIND, UPPER, (t - 0.80) / 0.10)
+
+
+def _duck72(t):
+    return ramp(t, 0.40, 0.10) * (1 - ramp(t, 0.78, 0.12))
+
+
+def _draw72(k, t, x, f, draw):
+    d = _duck72(t)
+    c = k.c
+    c.save(); c.translate(x, f); c.rotate(0.24 * d); c.scale(1.0, 1.0 - 0.11 * d); c.translate(-x, -f)
+    try:
+        return draw()
+    finally:
+        c.restore()
+
+
+def _rpose72(t):
+    return "r_jab" if 0.50 <= t < 0.74 else "r_wait"
+
+
+def _splash(k, head, t):
+    """6.1: the sponge is squeezed over his head: drops fly out in arcs, water runs down his face, drips fall from his
+    chin, small rings where it lands on his shoulders."""
+    c = k.c
+    sx, sy = head[0] + 4, head[1] - 80
+    water, edge = (0.93, 0.96, 1.0), (0.10, 0.10, 0.12)
+
+    def drop(x, y, r_):
+        c.new_path(); c.move_to(x, y - r_ * 1.9); c.curve_to(x + r_ * 1.2, y - r_ * 0.2, x + r_, y + r_, x, y + r_); c.curve_to(x - r_, y + r_, x - r_ * 1.2, y - r_ * 0.2, x, y - r_ * 1.9)
+        c.set_source_rgb(*water); c.fill_preserve(); c.set_source_rgb(*edge); c.set_line_width(1.2); c.stroke()
+    for i in range(12):                                      # the burst
+        u = (t - 0.36 - 0.022 * (i % 5)) / 0.5
+        if 0 < u < 1:
+            an = -math.pi / 2 + (i - 5.5) * 0.30
+            drop(sx + math.cos(an) * 96 * u, sy + math.sin(an) * 70 * u + 170 * u * u, 4.2 - 1.6 * u)
+    c.set_line_cap(1)
+    for j, dx in enumerate((-20, -6, 9, 21)):                # down his face
+        u = (t - 0.5 - 0.05 * j) / 0.75
+        if 0 < u < 1.5:
+            y0, y1 = head[1] - 58, head[1] - 58 + 128 * min(u, 1.0)
+            ya = y0 + (y1 - y0) * max(0.0, (u - 1.0) * 2)
+            c.set_source_rgba(water[0], water[1], water[2], 0.85); c.set_line_width(2.6)
+            c.new_path(); c.move_to(head[0] + dx, ya); c.curve_to(head[0] + dx + 4, (ya * 2 + y1) / 3, head[0] + dx - 4, (ya + y1 * 2) / 3, head[0] + dx + 1, y1); c.stroke()
+    for j, dx in enumerate((-12, 4, 16)):                    # off his chin
+        ph = (t - 1.0 - 0.21 * j)
+        if 0 < ph < 1.1:
+            v = (ph * 2.2) % 1.0
+            drop(head[0] + dx, head[1] + 66 + 96 * v * v, 3.6)
+    c.set_line_cap(0)
+
+
+def _surgery():
+    """The ring roughs' own shots, with these pieces put in (their pinned files draw as before)."""
+    src = inspect.getsource(rr2.shot_61)
+    a_ = src.index("        if 0.45 < t < 1.3:"); b_ = src.index("c.move_to(head[0] + dx, y0); c.line_to(head[0] + dx, y0 + 12); c.stroke()\n") + len("c.move_to(head[0] + dx, y0); c.line_to(head[0] + dx, y0 + 12); c.stroke()\n")
+    ns = dict(rr2.__dict__); ns["_splash"] = _splash
+    exec(src[:a_] + "        _splash(k, head, t)\n" + src[b_:], ns); rr2.shot_61 = ns["shot_61"]
+
+    src = inspect.getsource(rr.shot_52)
+    for old, new in (("            pose, dx, lean = WALK, 0, 0.0\n", "            pose, dx, lean = _open52(t), 0, 0.0\n"),
+                     ("        x, f = 290 + dx, F - 40\n", "        x, f = 290 + dx, F - 40 - _bob52(t)\n")):
+        assert old in src, old
+        src = src.replace(old, new)
+    ns = dict(rr.__dict__); ns.update(_open52=_open52, _bob52=_bob52)
+    exec(src, ns); rr.shot_52 = ns["shot_52"]
+
+    src = inspect.getsource(rr2.shot_72)
+    a_ = src.index("    def swing(u, pose):"); b_ = src.index("    def robot(k):")
+    src = src[:a_] + "    pose = _pose72(t)\n\n" + src[b_:]
+    for old, new in (('        r.robot(k, x, f, SC * r.REL, "r_wait", "furious", side=-1, crack=cracked)\n', '        r.robot(k, x, f, SC * r.REL, _rpose72(t), "furious", side=-1, crack=cracked)\n'),
+                     ('        b.boxer(k, HITX, F - 40, Q, pose, "hard", (0.9, 0.1), tape=True)\n',
+                      '        _draw72(k, t, HITX, F - 40, lambda: b.boxer(k, HITX + 22 * ramp(t, 0.80, 0.10), F - 40, Q, pose, "hard", (0.9, 0.1), tape=True))\n')):
+        assert old in src, old
+        src = src.replace(old, new)
+    ns = dict(rr2.__dict__); ns.update(_pose72=_pose72, _rpose72=_rpose72, _draw72=_draw72, ramp=ramp)
+    exec(src, ns); rr2.shot_72 = ns["shot_72"]
+
+
+_surgery()
+_NEW = {"5.2": rr.shot_52, "7.2": rr2.shot_72, "6.1": quick(rr2.shot_61, dict(rr2.SHOTS)["6.1"] / 2.2)}
+FILM = [(n, d, _NEW.get(n, f)) for n, d, f in FILM]
+
 # v11: the hall is alive. The far crowd and the ringside hats bob, harder when something lands; fists go up; and on the
 # hall's back wall the crowd throws tall shadows that sway and wave (the alley's lesson: a big plain shadow that moves
 # is read at once; a row of still hats is wallpaper). HEAT: how worked up the hall is in a shot.

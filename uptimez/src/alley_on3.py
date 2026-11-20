@@ -132,6 +132,8 @@ def lighter_hand(x, y, s=1.0, flame=True):
         ellipse(k, 0, 0, 17, 14, (0.90, 0.76, 0.66), 5, shadow=False, lw=2)
         rect(k, -14, -34, 15, 26, (0.80, 0.80, 0.84), 6, shadow=False, lw=1.6)                        # the lighter
         if flame:
+            if FLAME[0]:
+                fl = FLAME[0](); c.translate(-6, -34); c.scale(0.85 + 0.3 * (fl - 0.8), fl); c.translate(6, 34)
             c.new_path(); c.move_to(-7, -34); c.curve_to(-17, -48, -9, -56, -6, -66); c.curve_to(-2, -56, 5, -48, -5, -34); c.close_path()
             c.set_source_rgb(1, 1, 0.96); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.2); c.stroke()
         c.restore()
@@ -229,6 +231,12 @@ BUILD = {"knife": dict(sh=74, hem=64, arm=27, tilt=0.16, drop=6, lean=0.20),    
          "bat": dict(sh=84, hem=66, arm=30, tilt=-0.14, drop=0, lean=-0.03)}      # upright, his chin up
 
 
+RIM = [False]
+BOX2 = [False]                                               # v6, opt-in: the matchbox with its tray out and a row of red heads
+SMOKE = [None]                                               # v6, opt-in: fn(c, x, y, s) draws the cigarette end's smoke, moving
+FLAME = [None]                                               # v6, opt-in: fn() -> the lighter flame's height, 0.8..1.2
+
+
 def gangster(k, x, y, s=1.0, kind="gun", state="aim", flip=False, alpha=0.86, lean=None, aim=0.30):
     """A man's shadow on the wall, feet at (x, y), facing screen left (the Client) unless flip. kind: knife, gun, bat.
     state: aim (at him), down (lowered), up (empty hands up). One flat tone: drawn into a group, then laid on the wall."""
@@ -287,7 +295,12 @@ def gangster(k, x, y, s=1.0, kind="gun", state="aim", flip=False, alpha=0.86, le
             _limb(c, [rs, (sh + 14, -214), (sh + 6, -144)], aw, aw * 0.6)
             _limb(c, [ls, (-sh - 12, -214), (-sh - 10, -150)], aw, aw * 0.6)
             _bat(c, -sh - 10, -152, -sh - 26, -6)                                # its end on the ground
-    c.pop_group_to_source(); c.paint_with_alpha(alpha)
+    pat = c.pop_group()
+    if RIM[0]:                                              # v6, opt-in: a pale edge round each shadow, so one man's shadow parts from the next
+        c.set_source_rgba(0.70, 0.70, 0.74, 0.55)
+        for ox, oy in ((-4, 0), (4, 0), (0, -4), (0, 4)):
+            c.save(); c.translate(ox, oy); c.mask(pat); c.restore()
+    c.set_source(pat); c.paint_with_alpha(alpha)
     c.restore()
 
 
@@ -309,6 +322,8 @@ def _cig(k, x):
     c = k.c
     rect(k, x - 17, G - 22, 30, 9, (0.96, 0.96, 0.92), 8, shadow=False, lw=1.6)
     rect(k, x + 13, G - 22, 8, 9, b.KEY, 9, shadow=False, lw=1.4)
+    if SMOKE[0]:
+        SMOKE[0](c, x + 20, G - 24, 1.0); return
     c.set_source_rgba(1, 1, 1, 0.6); c.set_line_width(3.4); c.set_line_cap(1)
     c.move_to(x + 20, G - 24); c.curve_to(x + 38, G - 60, x + 4, G - 96, x + 28, G - 150); c.stroke(); c.set_line_cap(0)
 
@@ -459,7 +474,15 @@ def fumble(x, lit=False, stage=None, shake=0.0):
                     c.set_source_rgb(*b.KEY); c.arc(ln / 2, 0, 2.2, 0, 2 * math.pi); c.fill()
                 c.restore()
             bx, by = mx + shake, my - 2
-            if stage == 0:                                   # a matchbox: a sleeve, a striking strip, a flame on its label
+            if stage == 0 and BOX2[0]:                       # v6: the tray pushed out of the sleeve, a row of red heads in it, the striking strip dark down the side
+                cut(k, [(bx + 4, by - 6), (bx + 26, by - 7), (bx + 27, by + 6), (bx + 5, by + 7)], (0.80, 0.76, 0.62), shadow=False, lw=1.4)      # the tray
+                for i in range(4):
+                    c.set_source_rgb(0.93, 0.90, 0.78); c.rectangle(bx + 6, by - 4.6 + i * 3.1, 14, 1.6); c.fill()
+                    c.set_source_rgb(*b.KEY); c.arc(bx + 22, by - 3.8 + i * 3.1, 2.0, 0, 2 * math.pi); c.fill()
+                cut(k, [(bx - 16, by - 8), (bx + 8, by - 9), (bx + 9, by + 8), (bx - 15, by + 9)], (0.94, 0.92, 0.82), shadow=False, lw=1.6)      # the sleeve
+                c.set_source_rgb(0.22, 0.18, 0.15); c.rectangle(bx - 15, by + 4.5, 24, 4); c.fill()
+                c.set_source_rgb(*b.KEY); c.new_path(); c.move_to(bx - 7, by + 2); c.curve_to(bx - 11, by - 3, bx - 5, by - 4, bx - 4, by - 7); c.curve_to(bx - 2, by - 3, bx + 2, by - 2, bx - 1, by + 2); c.close_path(); c.fill()
+            elif stage == 0:                                 # a matchbox: a sleeve, a striking strip, a flame on its label
                 cut(k, [(bx - 13, by - 8), (bx + 13, by - 9), (bx + 14, by + 8), (bx - 12, by + 9)], (0.94, 0.92, 0.82), shadow=False, lw=1.6)
                 c.set_source_rgb(0.30, 0.24, 0.20); c.rectangle(bx - 12, by + 4, 25, 4); c.fill()
                 c.set_source_rgb(*b.KEY); c.new_path(); c.move_to(bx - 3, by + 1); c.curve_to(bx - 7, by - 4, bx - 1, by - 5, bx, by - 8); c.curve_to(bx + 2, by - 4, bx + 6, by - 3, bx + 3, by + 1); c.close_path(); c.fill()

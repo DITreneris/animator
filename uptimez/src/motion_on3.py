@@ -334,6 +334,11 @@ def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True
         kit.face_draw = face_draw
         try:
             o = orig(k, px, pf, s, ppose, *a, **kw)
+            if kw.get("cig") and CLOCK["shot"] in SMOKING and CLOCK["t"] >= SMOKING[CLOCK["shot"]]:      # v4: his cigarette smokes, and its end glows
+                tx, ty = o["head"][0] + 48 * s, o["head"][1] + 45 * s
+                smoke(c, tx, ty - 2 * s, s * 0.95, seed=0.3, h=170)
+                gl = 0.5 + 0.5 * math.sin(T * 5.0)
+                c.set_source_rgb(0.86, 0.10 + 0.15 * gl, 0.14); c.arc(tx - 1.5 * s, ty, (2.6 + 1.2 * gl) * s, 0, 2 * math.pi); c.fill()
             try:
                 hx_, hy_ = c.user_to_device(*o["head"])
                 CLOCK.setdefault("heads", {}).setdefault(who, (hx_, hy_, abs(c.get_matrix().xx) * s))
@@ -345,3 +350,30 @@ def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True
             c.restore()
     fig.plain = orig
     return fig
+
+
+# ---- v4: smoke that moves ----------------------------------------------------------------------------------------------
+SMOKING = {}                                                 # shot -> from when (s) the cigarette in the Client's mouth is alight
+
+
+def smoke(c, x, y, s=1.0, seed=0.0, h=150.0, alpha=0.62):
+    """A cigarette's smoke from (x, y): two thin ribbons that rise, widen, curl and thin out, moving with the clock."""
+    T = CLOCK["T"] if CLOCK["shot"] is not None else 0.0
+    c.save(); c.set_line_cap(1); c.set_line_join(1)
+    for rb in range(2):
+        px = py = None
+        for i in range(15):
+            u = i / 14.0
+            xx = x + (3 + 26 * u) * s * math.sin(2 * math.pi * (u * 1.5 - T * 0.6 + seed + rb * 0.41)) + 16 * s * u * math.sin(T * 0.35 + seed * 7)
+            yy = y - h * s * u
+            if px is not None:
+                c.set_source_rgba(1, 1, 1, alpha * (1 - u) ** 1.25 * (0.6 if rb else 1.0)); c.set_line_width((2.2 + 5.5 * u) * s)
+                c.move_to(px, py); c.line_to(xx, yy); c.stroke()
+            px, py = xx, yy
+    c.restore()
+
+
+def flame():
+    """The lighter flame's height for this drawing, 0.8 to 1.2."""
+    T = CLOCK["T"] if CLOCK["shot"] is not None else 0.0
+    return 1.0 + 0.30 * math.sin(T * 27) + 0.12 * math.sin(T * 53 + 1)       # v4b: it read as still at 6 fps
