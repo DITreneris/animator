@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the turned walkers on one sheet, for approval before they go into the film. v3 (v1, v2 pinned): each as
+"""OFFICE NOIR 3: the turned walkers on one sheet, for approval before they go into the film. v4 (v1 to v3 pinned; v4: the same sheet for profile_on3 v5): each as
 it walks in the film, with what it carries there: the front drawing (a reference, not a pose of the walk), then the
 whole cycle, both legs: contact, down, passing, up, and the same four on the other leg."""
 import sys, math, cairo
@@ -65,4 +65,4 @@ def sheet(path, noir=True):
 
 
 if __name__ == "__main__":
-    sheet(sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_profile_sheet_v3.png")
+    sheet(sys.argv[1] if len(sys.argv) > 1 else "../office-noir-3/on3_profile_sheet_v4.png")

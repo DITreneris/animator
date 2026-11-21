@@ -1,4 +1,9 @@
-"""OFFICE NOIR 3: the walkers turned to the side, v4 (v1 to v3 pinned). v4 (a second outside review, of sheet v2: "the
+"""OFFICE NOIR 3: the walkers turned to the side, v5 (v1 to v4 pinned). v5 (two more outside reviews: her face "flat: drawn
+from the front on a three-quarter head", "the pelvis does not answer the carrying leg"; the last build, kept as a lesson):
+her face is drawn in two halves, the far one smaller and nearer the middle, with a small nose line; the far fall of her
+hair is gone and the near one tapers (a "box"); her knees lift less and her step is longer; every body shifts over the
+leg that carries it; Don's glass and hem move a little, late; the Client sinks deeper and his shoulders turn more.
+v4 (v1 to v3 pinned). v4 (a second outside review, of sheet v2: "the
 bodies do not pass the weight from one leg to the other"; and cold tests 49, 50): from the knees down first. A leg is
 as long as the hip is high at UP, so the carrying leg is straight there and bent at DOWN; the heel lands toe up, the
 foot is flat while it carries, the heel peels off before the toe; the free leg's knee comes through ahead of the other;
@@ -42,6 +47,7 @@ import motion_on3 as mo
 import sofia_ob as sob
 import sofia_v4 as sf
 import sofia_bc as sbc
+import sofia_ss as ss
 
 TAU = 2 * math.pi
 Q = 0.70                                                     # how narrow the front drawing is when it is turned
@@ -255,19 +261,20 @@ def _no_shoulder(orig):
 
 
 def client(k, x, feet, s=1.0, dir_=1, cig=False, folder=False, face="hard"):
-    drop = 11.0
+    drop = 13.0
     u, f0, f1, yb, sw = _cycle(x, s, dir_, 40.0, 30.0, drop)
+    bx = -4.5 * math.sin(TAU * u)                                                           # over the leg that carries him
     c = k.c
     lean = 0.075                                                                            # into it
     late = math.cos(TAU * (u - 0.10))                                                       # his gloves, a tenth of a step behind his arms
-    hip = (0, b.HIP - 8 + yb)
+    hip = (bx, b.HIP - 8 + yb)
     ll = (-(b.HIP - 8) + drop - 20) / 2.0                                                    # straight when he is highest
     sy = b.BT + 34
 
     def unit(tilt=False):
         c.save(); c.translate(x, feet); c.scale(s * dir_, s)
         if tilt:
-            c.translate(0, yb); c.rotate(lean)
+            c.translate(bx, yb); c.rotate(lean)
 
     unit()
     _client_leg(k, (hip[0] + 4, hip[1]), f1, tuple(v * 0.66 for v in b.CHAR), ll)          # the far leg: darker, so the two are told apart
@@ -282,7 +289,9 @@ def client(k, x, feet, s=1.0, dir_=1, cig=False, folder=False, face="hard"):
                    (b, "_lower_street", lambda *a, **kw: None), (b, "ellipse", _no_shoulder(b.ellipse))):
             return b.boxer(k2, x, feet + yb * s, s, "b_walk", face, (0.75 * dir_, 0.0), outfit="street", cig=cig)
 
-    o = turned(k, x, feet + yb * s, s, dir_, (-130, -500, 130, -150), front, turn=TURN - 4.0 * sw, lean=lean)     # his shoulders against his hips
+    c.save(); c.translate(bx * s * dir_, 0)
+    o = turned(k, x, feet + yb * s, s, dir_, (-130, -500, 130, -150), front, turn=TURN - 7.0 * sw, lean=lean)
+    c.restore()     # his shoulders against his hips
     hx_ = _turn_x(-4, 74) * dir_
     head = c.user_to_device(x + hx_ * s, feet + (yb + b.HY) * s)
     tip = c.user_to_device(x + dir_ * 78 * s, feet + (yb + b.HY + 52) * s)
@@ -332,12 +341,13 @@ def _don_leg(k, hip, f, col, ll):
 
 
 def don(k, x, feet, s=1.0, dir_=1, bent=0.0):
-    drop = 5.0 - 1.5 * bent
+    drop = 6.0 - 1.0 * bent
     crouch = 12.0 * bent                                                                    # creeping: his knees never straighten
     u, f0, f1, yb, sw = _cycle(x, s, dir_, 38.0 - 12.0 * bent, 14.0 + 4.0 * bent, drop)
     yb += crouch
+    bx = -2.5 * math.sin(TAU * u)
     c = k.c
-    hip = (0, d.HEM - 46 + yb)
+    hip = (bx, d.HEM - 46 + yb)
     ll = (-(d.HEM - 46) + drop - 10) / 2.0
     lean = math.radians(-1.5 + 11.5 * bent)                                                 # he leans back a little; over his glass, forward
     hem = math.cos(2 * TAU * (u - 0.21))                                                    # his hem: kicked forward by each knee, an eighth of a step late
@@ -346,7 +356,7 @@ def don(k, x, feet, s=1.0, dir_=1, bent=0.0):
     def unit(tilt=True):
         c.save(); c.translate(x, feet); c.scale(s * dir_, s)
         if tilt:
-            c.translate(0, yb); c.rotate(lean)
+            c.translate(bx, yb); c.rotate(lean)
 
     unit(False)
     _don_leg(k, (hip[0] + 3, hip[1]), f1, tuple(v * 0.66 for v in mo.TROUSERS), ll)
@@ -363,13 +373,15 @@ def don(k, x, feet, s=1.0, dir_=1, bent=0.0):
             return mo.don(k2, x, feet + yb * s, s, "look", "squint", (0.75 * dir_, 0.5 * bent), lean=0.0, glass=False)
 
     belt = -(d.BT + 127)
+    c.save(); c.translate(bx * s * dir_, 0)
     o = turned(k, x, feet + yb * s, s, dir_, (-90, -430, 90, -40), front, lean=lean,
-               rows=lambda yu: 4.0 * hem * max(0.0, min(1.0, (belt - yu) / (belt + d.HEM))) ** 1.3)
+               rows=lambda yu: 7.0 * hem * max(0.0, min(1.0, (belt - yu) / (belt + d.HEM))) ** 1.3)
+    c.restore()
     hx_ = _turn_x(0, 44) * dir_
     head = c.user_to_device(x + hx_ * s * 0.2, feet + (yb + d.HY) * s)
     unit()
     if bent > 0.5:
-        _don_arm(k, -22, sy, 52, 30, glass=True)                                            # his glass, held out low
+        _don_arm(k, -22, sy, 52 + 2.5 * math.cos(2 * TAU * (u - 0.15)), 30 - 4.0 * math.cos(2 * TAU * (u - 0.2)), glass=True)                                            # his glass, held out low
     else:
         _don_arm(k, -22, sy, -15 * sw + 4, 16)
     c.restore()
@@ -386,10 +398,11 @@ def _her_leg(k, hip, f, col, ll):
 
 
 def her(k, x, feet, s=1.0, dir_=-1):
-    drop = 5.0
-    u, f0, f1, yb, sw = _cycle(x, s, dir_, 25.0, 19.0, drop)
+    drop = 4.0
+    u, f0, f1, yb, sw = _cycle(x, s, dir_, 30.0, 9.0, drop)                                  # a longer step, the knee hardly lifted: her legs stay long
+    bx = -2.5 * math.sin(TAU * u)
     c = k.c
-    hip = (0, mo.HEM_HER - 40 + yb)
+    hip = (bx, mo.HEM_HER - 40 + yb)
     ll = (-(mo.HEM_HER - 40) + drop - 22) / 2.0
     col = [sbc.BLAZER]
     sway = math.cos(2 * TAU * (u - 0.17))                                                   # her hair: behind her body's rise and fall
@@ -397,6 +410,29 @@ def her(k, x, feet, s=1.0, dir_=-1):
 
     def unit():
         c.save(); c.translate(x, feet); c.scale(s * dir_, s)
+
+    def face34(orig):
+        """Her own face, turned: the far half (the side she walks to) smaller and nearer the middle; a small nose line."""
+        def f(k_, fx, fy, kind="neutral", look=(0, 0), seed=0):
+            c_ = k_.c
+            c_.save(); c_.new_path()                                                         # the near eye and brow, and the whole mouth
+            if dir_ > 0:
+                c_.rectangle(fx - 80, fy - 70, 84, 86)
+            else:
+                c_.rectangle(fx - 4, fy - 70, 84, 86)
+            c_.rectangle(fx - 80, fy + 16, 160, 60); c_.clip()
+            orig(k_, fx, fy, kind, look, seed); c_.restore()
+            c_.save(); c_.new_path()
+            if dir_ > 0:
+                c_.rectangle(fx + 4, fy - 70, 80, 86)
+            else:
+                c_.rectangle(fx - 84, fy - 70, 80, 86)
+            c_.clip()
+            c_.translate(fx + 5 * dir_, fy); c_.scale(0.80, 0.86); c_.translate(-(fx + 5 * dir_), -fy)
+            orig(k_, fx, fy, kind, look, seed); c_.restore()
+            c_.set_source_rgb(*(v * 0.70 for v in sf.SKIN)); c_.set_line_width(2.4); c_.set_line_cap(1)
+            c_.new_path(); c_.move_to(fx + 3 * dir_, fy + 8); c_.curve_to(fx + 8 * dir_, fy + 13, fx + 8 * dir_, fy + 17, fx + 2 * dir_, fy + 17); c_.stroke()
+        return f
 
     def arm(sx, a1, a2, seed):
         with _swap((sf, "BLOUSE", col[0])):
@@ -415,31 +451,26 @@ def her(k, x, feet, s=1.0, dir_=-1):
     def front(k2):
         c2 = k2.c
         c2.save(); c2.rectangle(x - 400, feet - 4000, 800, 4000 + (mo.HEM_HER + 2 + yb) * s); c2.clip()     # her own front drawing, down to her hem
-        with _swap((sf, "_arm", no_arm)):
+        with _swap((sf, "_arm", no_arm), (ss, "face", face34(ss.face))):
             o_ = sob.sofia(k2, x, feet + yb * s, s, "low", "smile", (0.8 * dir_, 0.15), badge=False, tablet_kind=None)
         c2.restore()
         return o_
 
     def hair(A, axl, fy, px):
-        """The two falls of hair beside her body, below her chin: their outer edges swing, late; the body does not."""
+        """Before the turn: the fall of hair on the side she walks to is behind her face and neck, so it goes; the one
+        behind her narrows to her waist (two flat falls turned into a box)."""
         h_, w_ = A.shape[:2]
-        top, bot = fy + (sob.HY + 34) * px, fy + (mo.HEM_HER - 30) * px
-        inner = 44 * px
-        for r in range(max(0, int(top)), min(h_, int(bot))):
-            g = ((r - top) / max(1.0, bot - top)) ** 1.2 * 9.0 * px * sway
-            if abs(g) < 0.3:
-                continue
-            row = A[r].copy(); xs = np.arange(w_, dtype=np.float32)
-            for sg in (-1, 1):
-                edge = axl + sg * inner
-                sel = (xs - edge) * sg > 0
-                span = max(8.0, (w_ - 1 - edge) if sg > 0 else edge)
-                far_ = np.abs(xs[sel] - edge) / span                         # 0 at the body, 1 out at the picture's edge
-                src = np.clip(xs[sel] - g * np.minimum(1.0, far_ * 4.0), 0, w_ - 1.001)
-                i0 = np.floor(src).astype(int); fr = (src - i0)[:, None]
-                A[r, sel] = row[i0] * (1 - fr) + row[i0 + 1] * fr
+        xs = (np.arange(w_, dtype=np.float32) - axl) * dir_ / px          # units from her axis, + the way she walks
+        r0, r1 = int(fy + (sob.HY + 62) * px), int(fy + (sob.BODY_TOP + 112) * px)
+        for r in range(max(0, int(fy + (sob.HY + 20) * px)), min(h_, r1 + 4)):
+            if r >= r0:
+                A[r, xs > 41.0] = 0
+            t = min(1.0, max(0.0, (r - (fy + sob.BODY_TOP * px)) / max(1.0, r1 - (fy + sob.BODY_TOP * px))))
+            A[r, xs < -(72.0 - 34.0 * t ** 1.6)] = 0
 
-    o = turned(k, x, feet + yb * s, s, dir_, (-110, -420, 110, -80), front, turn=TURN - 3.0 * sw)
+    c.save(); c.translate(bx * s * dir_, 0)
+    o = turned(k, x, feet + yb * s, s, dir_, (-110, -420, 110, -80), front, turn=TURN - 3.0 * sw, pre=hair)
+    c.restore()
     hx_ = _turn_x(0, 60) * dir_
     head = c.user_to_device(x + hx_ * s * 0.3, feet + (yb + sob.HY) * s)
     unit()
