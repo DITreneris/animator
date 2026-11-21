@@ -104,7 +104,7 @@ def light(surf, scene, heads=(), kind="B", seed=0):
     return out
 
 
-def auto(surf, heads=(), strength=1.0, seed=None, close=False, glow=True, pool=True):
+def auto(surf, heads=(), strength=1.0, seed=None, close=False, glow=True, pool=True, figs=(), key="top", blinds=False):
     """v2, the film's light (Tomas: "I think it is good"; an outside audit: A the base, B's depth, faces lighter, the
     vignette a quarter less, no shadow ovals). On a finished frame:
       a pool of light round the tracked figures (their heads decide where; no figures: no pool), the rest sinks;
@@ -117,6 +117,24 @@ def auto(surf, heads=(), strength=1.0, seed=None, close=False, glow=True, pool=T
     k_ = max(0.0, min(1.0, strength))
     if np.frombuffer(surf.get_data(), np.uint8)[::97].mean() > 205:                           # a white flash is not lit: it is the light
         return out
+    for m_, hx, hy, sc, who in (figs if k_ > 0 else ()):                                      # v3: light that falls ON each figure, inside its own outline
+        r = 62 * sc
+        if key == "top":                                                                      # a lamp overhead: the figure darkens downward from the shoulders
+            g = cairo.LinearGradient(0, hy - r * 1.2, 0, hy + r * 5.0)                         # v3b: stronger (0.44 was not seen): lit on top of the head and the shoulders, dark by the knees
+            g.add_color_stop_rgba(0, 1, 1, 1, 0.20 * k_); g.add_color_stop_rgba(0.16, 1, 1, 1, 0.0); g.add_color_stop_rgba(0.30, 0, 0, 0, 0.0)
+            g.add_color_stop_rgba(0.62, 0, 0, 0, 0.42 * k_); g.add_color_stop_rgba(1, 0, 0, 0, 0.66 * k_)
+        else:                                                                                 # a light at one side: the far half of the figure is dark
+            away = 1 if key == "left" else -1
+            g = cairo.LinearGradient(hx - away * r * 0.25, 0, hx + away * r * 1.25, 0)
+            g.add_color_stop_rgba(0, 0, 0, 0, 0.0); g.add_color_stop_rgba(0.45, 0, 0, 0, 0.52 * k_); g.add_color_stop_rgba(1, 0, 0, 0, 0.66 * k_)
+        c.set_source(g); c.mask_surface(m_, 0, 0)
+        if blinds:                                                                            # the blinds' bars across him
+            c.save(); c.translate(hx, hy); c.rotate(-0.2)
+            y = -900
+            while y < 1100:
+                c.rectangle(-900, y, 1800, 16); y += 40
+            c.restore()
+            c.save(); c.clip(); c.set_source_rgba(0, 0, 0, 0.30 * k_); c.mask_surface(m_, 0, 0); c.restore()
     heads = [h for h in heads if -80 < h[0] < W + 80 and -80 < h[1] < H + 80]
     if heads and k_ > 0 and pool:
         rs = [62 * sc for _, _, sc in heads]; rm = max(rs)

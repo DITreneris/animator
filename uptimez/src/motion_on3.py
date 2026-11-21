@@ -187,7 +187,7 @@ def _lower_street(k, seed):
         c.move_to(s0, b.HIP + 30); c.line_to(s1 + dx, -34 - lift); c.stroke()
 
 
-def walk(fn, x, s, dir_=1, a=28.0, up=22.0, on=True):
+def walk(fn, x, s, dir_=1, a=34.0, up=26.0, on=True):
     """fn: a cast callable that draws the Client at x (scale s). Drawn walking when on."""
     if not on:
         return fn
@@ -216,7 +216,7 @@ TIGHTS, BOOT = (0.13, 0.13, 0.15), (0.05, 0.05, 0.06)
 HEM_HER = -96
 
 
-def her(fn, x, feet, s, dir_=-1, a=20.0, up=11.0, on=True):
+def her(fn, x, feet, s, dir_=-1, a=26.0, up=15.0, on=True):
     """fn draws her standing at (x, feet), scale s. Walking: her own legs and boots are drawn stepping, and she is drawn
     over them down to her hem only."""
     if not on:
@@ -251,6 +251,8 @@ def her(fn, x, feet, s, dir_=-1, a=20.0, up=11.0, on=True):
 # Without a clock (CLOCK["shot"] is None) a wrapped figure draws exactly as the figure it wraps.
 CLOCK = {"shot": None, "t": 0.0, "T": 0.0, "say": {}}
 _ST, _CNT = {}, {}
+MASKS = [False]                                              # v5, opt-in: keep each figure's outline for the light pass
+FACE_AT = {}                                                 # v5: who -> shot -> [(from t, face)], used where the shot asks for the plain "hard" face
 FROZEN = set()                                               # shots whose figures do not breathe or blink (the loop's two ends: frame 0 is the last frame)
 TWEEN = 4.0 / 30.0
 
@@ -260,6 +262,7 @@ def timed(name, fn, start):
         CLOCK["shot"], CLOCK["t"] = name, t
         CLOCK["T"] = CLOCK.pop("T_ext", start + t)
         CLOCK["heads"], CLOCK["zoom"] = {}, None             # v3: where each speaker's head is on the finished frame, for bubbles
+        CLOCK["figs"] = []                                   # v5: each tracked figure's own outline on the frame, for light that falls on it
         _CNT.clear()
         return fn(t)
     return f
@@ -332,8 +335,23 @@ def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True
                 import iwry_mouths as im
                 im.mouth(k_, fx, fy + 28, code, skin, lip_col=lip, erase=(18, 10), seed=seed + 67)
         kit.face_draw = face_draw
+        if FACE_AT.get(who, {}).get(CLOCK["shot"]) and a and a[0] == "hard":                  # v5: his face follows the moment (it was one scowl for the whole fight)
+            fa = [f_ for t0, f_ in FACE_AT[who][CLOCK["shot"]] if CLOCK["t"] >= t0]
+            if fa:
+                a = (fa[-1],) + tuple(a[1:])
         try:
+            if MASKS[0]:
+                c.push_group()
             o = orig(k, px, pf, s, ppose, *a, **kw)
+            if MASKS[0]:
+                pat = c.pop_group(); c.set_source(pat); c.paint()
+                try:
+                    m_ = cairo.ImageSurface(cairo.FORMAT_A8, 540, 960); mc = cairo.Context(m_)
+                    mc.set_matrix(c.get_matrix()); mc.set_source(pat); mc.paint()
+                    hx_, hy_ = c.user_to_device(*o["head"])
+                    CLOCK.setdefault("figs", []).append((m_, hx_, hy_, abs(c.get_matrix().xx) * s, who))
+                except Exception:
+                    pass
             if kw.get("cig") and CLOCK["shot"] in SMOKING and CLOCK["t"] >= SMOKING[CLOCK["shot"]]:      # v4: his cigarette smokes, and its end glows
                 tx, ty = o["head"][0] + 48 * s, o["head"][1] + 45 * s
                 smoke(c, tx, ty - 2 * s, s * 0.95, seed=0.3, h=170)

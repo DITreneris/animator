@@ -27,16 +27,16 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v13"
+V = "v14"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
-GAP = 0.30                                                  # v5: air between lines, as in Office Noir 2
-LEAD = 0.25                                                 # a narration line never starts on the cut
+GAP = 0.20                                                  # v5: air between lines, as in Office Noir 2
+LEAD = 0.15                                                 # a narration line never starts on the cut
 
 # shot -> [(who, line, take key, offset into the shot)]
 LINES = {                                                    # v6: the lines, proposal v2 (on3_lines_proposal_v2.md)
-    "2.0": [("N", "Word is, I know how business works.", "n1", 0.0)],
+    "1.1": [("N", "Word is, I know how business works.", "n1", 0.2)],      # v14: it starts on the punch (it began on the poster and pushed everything after it)
     "2.1": [("N", "One fight.", "n2", 0.15)],
     "2.2": [("MOM", "Where are you going, skunk?", "m1", 0.3), ("N", "My manager. Also my mother.", "n2b", 0.3)],
     "2.4": [("MOM", "Everything you need is in there.", "m2", 0.5)],
@@ -51,20 +51,20 @@ LINES = {                                                    # v6: the lines, pr
     "4.3": [("CLIENT", "How much?", "c1", 0.3), ("MOM", "One hundred bucks.", "m3", 0.3)],
     "4.4": [("N", "I name my price.", "n7", 0.6)],
     "4.4a": [("MOM", "Your ticket. You're fighting.", "m4", 0.1)],
-    "4.4t": [("N", "I don't believe in signs.", "n7b", 0.3)],
+    "4.4t": [("N", "I don't believe in signs.", "n7b", 0.15)],
     "5.1a": [("SOFIA", "Round one.", "s2", 0.8)],
     "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 2.3)],
     "5.2": [("N", "I always hit first.", "n7c", 0.2)],                # v7 (Tomas, at 0:50): the narrator, briefly, on the fight
     "5.3": [("ROBOT", "Human approval required.", "rb1", 0.2)],
     "5.4": [("MOM", "Approved.", "m5", 0.9)],
     "5.6": [("N", "I don't break. I break even.", "n8", 0.2)],
-    "6.1": [("PAM", "Some punch. Others patch.", "p3", 0.8)],
+    "6.1": [("PAM", "Some punch. Others patch.", "p3", 0.5)],
     "6.2": [("N", "It was a fair fight.", "n9", 0.0)],
     "6.3": [("DON", "The woman in the photo…", "d2", 0.3), ("DON", "Recognize her?", "d3", 2.0)],
     "6.4": [("DON", "Case closed.", "d4", 0.45)],
     "7.1": [("N", "But I didn't quit.", "n11", 0.1)],
     "7.2b": [("REFEREE", "Break!", "r1", 0.2)],
-    "7.3": [("N", "Ten garages. That was the plan.", "n12", 0.6)],
+    "7.3": [("N", "Ten garages. That was the plan.", "n12", 0.2)],
     "7.4": [("ROBOT", "Human approval still pending.", "rb2", 0.0), ("MOM", "Approved.", "m6", 1.75)],
     "8.3": [("N", "I'll call her back tomorrow.", "n13", 0.5)],
     "8.4": [("N", "Tomorrow.", "n14", 0.5)],
@@ -154,14 +154,44 @@ HOLD_N = ("7.3",)                                            # v7: a narration l
 _ENV = {}
 
 
-def _mouth(key, tl):
-    """The mouth shape for a drawing of this take, on twos: by how loud the take is there."""
+_VIS = {}
+
+
+def _visemes(text):
+    """The line's letters as mouth shapes, in order: a wide A, E with teeth, a round O, a small U, lips shut (M),
+    the lip under the teeth (F), a part-open rest (C). A space is a short shut."""
+    out = []
+    for wd in text.lower().split():
+        i = 0
+        while i < len(wd):
+            ch, two = wd[i], wd[i:i + 2]
+            if two in ("th", "sh", "ch", "ng"):
+                out.append("C"); i += 2; continue
+            if two in ("oo", "ou", "ow"):
+                out.append("O"); i += 2; continue
+            if two in ("ee", "ea", "ai", "ay", "ie"):
+                out.append("E"); i += 2; continue
+            v = "A" if ch == "a" else "E" if ch in "ei" else "O" if ch == "o" else "U" if ch in "uw" else "M" if ch in "mbp" else "F" if ch in "fv" else "C" if ch.isalpha() else None
+            if v and not (out and out[-1] == v and v in "CM"):
+                out.append(v)
+            i += 1
+        out.append("M")
+    return out[:-1] or ["M"]
+
+
+def _mouth(key, tl, text=""):
+    """v14: the mouth for a drawing of this take, on twos: the line's own shapes spread over its length, and shut where
+    the take is silent (it was open by loudness alone: three shapes, whatever was said)."""
     if key not in _ENV:
         a, _ = sf.read("%s/%s.wav" % (VOICES, key)); n = SR // 12
-        e = np.array([np.sqrt(np.mean(a[i:i + n] ** 2)) for i in range(0, len(a), n)]); _ENV[key] = e / (e.max() + 1e-9)
-    i = int(tl * 12); e = _ENV[key]
-    v = e[i] if 0 <= i < len(e) else 0.0
-    return "A" if v > 0.55 else "E" if v > 0.28 else "U" if v > 0.10 else None
+        e = np.array([np.sqrt(np.mean(a[i:i + n] ** 2)) for i in range(0, len(a), n)]); _ENV[key] = (e / (e.max() + 1e-9), len(a) / SR)
+        _VIS[key] = _visemes(text)
+    e, ln = _ENV[key]
+    i = int(tl * 12)
+    if not (0 <= i < len(e)) or e[i] < 0.08:
+        return None
+    seq = _VIS[key]
+    return seq[min(len(seq) - 1, int((int(tl * 12) / 12.0) / ln * len(seq)))]
 
 
 def schedule(meta):
@@ -175,7 +205,7 @@ def schedule(meta):
             en = st + meta[key]
             lines.append((round(st, 3), round(en, 3), who, text, key))
             prev_end = en
-            need = max(need, (en + 0.2 - T) if (who in SEEN or name in HOLD_N) else (st + min(meta[key], 0.8) - T))      # v3: a line whose speaker is not seen talking runs on over the next shot
+            need = max(need, (en + 0.2 - T) if (who in SEEN or name in HOLD_N) else (st + min(meta[key], 0.5) - T))      # v3: a line whose speaker is not seen talking runs on over the next shot
         need = math.ceil(need * FPS - 1e-6) / FPS
         if need > dur + 1e-6:
             held.append((name, round(need - dur, 2)))
@@ -390,7 +420,7 @@ def build(out):
         def f(t, fn=fn, base=base, st=st, name=name):
             T = st + t
             fm.mo.CLOCK["T_ext"] = T                                    # the clock runs on through a held drawing: they breathe
-            fm.mo.CLOCK["say"] = {who: _mouth(key_, T - a) for a, b_, who, text, key_ in lines if a <= T < b_ and who in SEEN}
+            fm.mo.CLOCK["say"] = {who: _mouth(key_, T - a, text) for a, b_, who, text, key_ in lines if a <= T < b_ and who in SEEN}
             s = fn(min(t, base - 1.0 / FPS))
             return _text(s, name, [(who, text) for a, b_, who, text, _ in lines if a - 0.05 <= T < b_ + 0.15])
         FN[key] = f; SH.append((key, dur))

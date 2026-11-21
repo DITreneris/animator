@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (20 Nov), v17 (v1 to v16 pinned). v17: five small things from cold
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v18 (v1 to v17 pinned). v18 (Tomas: "fix them, the
+best way"): light falls on the figures themselves (each one's own outline: darker down from the shoulders under a lamp,
+the far half dark beside a light, the blinds' bars across him in her office); on the street he turns to her, looks
+down at her CV and lifts it, and his eyes follow her out (no raised glove); his face follows the fight; bigger
+strides; shorter. v17: five small things from cold
 test 45: the robot jabs with its other glove down; the dent has cracks; no bars in the gap in 5.2; 5.2 a little wider so
 Pam is whole; in 3.1 the shadows stand further on, the gun clear of his head. v16: what cold test 44 left:
 his stopped glove in 5.2 shakes and shows it; the robot's jab in 7.2 is drawn over him (its glove was behind him) and
@@ -163,11 +167,35 @@ def s26(t):
     else:
         sx = 575.0 - 250.0 * min(1.0, (t - 1.8) / 1.2) ** 1.25
     stopped = 1.0 <= t < 1.8
-    wave = 1.2 <= t < 2.1
+    # v18 (Tomas: the film's axis; his raised glove by her head was "detached", "a block or a touch"): no raised glove.
+    # She stops; he turns to her (he leans her way, his eyes on her); she says it; his eyes drop to the CV in his gloves
+    # and he lifts it a little: her number; she walks on and his eyes follow her out.
+    # v18b (cold test 46: "he is a statue… his gloves seem to close over the paper… he hides it from her"): he ACTS. He
+    # brings the CV up beside her face, looks at the paper, at her, at the paper: it is her. She says it. He lowers it as
+    # she goes, and leans after her.
+    see = ramp(t, 0.85, 0.2)
+    read = ramp(t, 1.0, 0.22) * (1 - ramp(t, 1.95, 0.25))    # the CV, up at his chin, between them
+    if t < 1.0:
+        look = (0.9 * see, 0.05)
+    elif t < 1.3:
+        look = (0.45, -0.5)                                  # the paper
+    elif t < 1.6:
+        look = (0.95, 0.0)                                   # her
+    elif t < 1.9:
+        look = (0.45, -0.5)                                  # the paper again
+    else:
+        look = (max(-0.95, 0.95 - 1.9 * ramp(t, 1.95, 0.45)), 0.05)
+    pay = b.POSES["b_pay"]
+    pose = tuple(p_ + (g_ - p_) * read for p_, g_ in zip(pay, GUARD))
 
     def him(k):
-        stc.client(450, "b_fist" if wave else "b_pay", (0.9 if sx > 460 else -0.9, 0.0))(k)
-        st.folder(k, 452 - (30 if wave else 0), stc.G - 30 - 176 * stc.Q, 0.62 * stc.SC, -0.06)
+        c = k.c
+        lean = 0.08 * see * (1 - ramp(t, 1.95, 0.3)) - 0.07 * ramp(t, 2.1, 0.4)
+        c.save(); c.translate(450, stc.G - 30); c.rotate(lean); c.translate(-450, -(stc.G - 30))
+        o = b.boxer(k, 450, stc.G - 30, stc.Q, pose if read > 0.02 else "b_pay", "hard", look, outfit="street")
+        hx_, hy_ = (o["hands"][0][0] + o["hands"][1][0]) / 2, (o["hands"][0][1] + o["hands"][1][1]) / 2
+        st.folder(k, hx_ + 2, hy_ - 6 * stc.Q, (0.62 + 0.20 * read) * stc.SC, -0.06 + 0.10 * read)
+        c.restore()
 
     def her(k):
         k.c.save(); k.c.translate(0, 6 * math.sin((t - 1.4) * math.pi / 0.3) if 1.4 <= t < 1.7 else 0)       # her nod
@@ -844,6 +872,27 @@ def _gang_on(fn, dx):
     return f
 
 
+def _lamp_below(c):
+    """v18: the lamp over the plan, from under it, as a lamp: the dark inside of its shade all round, the bulb's glow in
+    the middle, the cord going up. (A thin dark hoop round a white middle read as "a halo or hoop".)"""
+    c.save(); c.translate(270, 170); c.scale(1, 0.62)
+    c.set_source_rgb(0.05, 0.05, 0.06); c.arc(0, 0, 176, 0, 2 * math.pi); c.fill()                 # the shade's rim
+    g = cairo.RadialGradient(0, 0, 30, 0, 0, 166)
+    g.add_color_stop_rgb(0, 1, 1, 0.97); g.add_color_stop_rgb(0.30, 0.86, 0.86, 0.84); g.add_color_stop_rgb(0.34, 0.34, 0.34, 0.37); g.add_color_stop_rgb(1, 0.13, 0.13, 0.15)
+    c.set_source(g); c.arc(0, 0, 166, 0, 2 * math.pi); c.fill()                                    # its dark inside, the bulb lit in the middle
+    c.restore()
+    c.set_source_rgb(0.05, 0.05, 0.06); c.set_line_width(5); c.move_to(270, 62); c.line_to(270, 0); c.stroke()      # the cord
+
+
+def _plan_pov2():
+    src = inspect.getsource(rg.plan_pov)
+    a_ = src.index("    c.set_source_rgb(0.20, 0.20, 0.23); c.set_line_width(22)"); b_ = src.index("    c.set_source_rgba(1, 1, 1, 0.10); c.set_line_width(26); c.set_line_cap(1)")
+    ns = dict(rg.__dict__); ns["_lamp_below"] = _lamp_below
+    exec(src[:a_] + "    _lamp_below(c)\n" + src[b_:], ns)
+    return ns["plan_pov"]
+
+
+rg.plan_pov = _plan_pov2()
 _surgery()
 FILM = [(n, d, _gang_on(f, 64.0) if n == "3.1" else f) for n, d, f in FILM]      # v17: in 3.1 the gun's end "looked attached" to his head
 _NEW = {"5.2": rr.shot_52, "7.2": rr2.shot_72, "6.1": quick(rr2.shot_61, dict(rr2.SHOTS)["6.1"] / 2.2)}
@@ -1030,7 +1079,7 @@ def _hall_people(c):
 rr._hall = _hall_people
 rg.draw_ring = _ring_with_wall()
 
-TRIM = {"2.5": 0.9, "2.7": 1.3, "4.1": 1.0, "4.2": 1.3, "4.4t": 1.0, "4.4b": 0.8, "4.4c": 0.7, "6.3": 3.0, "8.1": 1.2, "8.2b": 0.7, "8.4": 1.3,
+TRIM = {"2.5": 0.9, "2.7": 1.3, "4.1": 0.85, "4.2": 1.1, "4.4t": 1.0, "4.4b": 0.8, "4.4c": 0.7, "6.3": 3.0, "8.1": 1.0, "5.6": 1.4, "8.2b": 0.7, "8.4": 1.3,
         "2.4": 1.5, "4.4": 2.1, "5.1a": 1.7, "5.2": 1.6, "5.3": 1.1, "7.1": 1.3, "7.2b": 1.3, "7.3": 2.0}      # v10: toward 80 s
 FILM = [(n, TRIM.get(n, d), quick(f, d / TRIM[n]) if n in TRIM else f) for n, d, f in FILM]
 LEN = {"5.2a": 1.5, "6.4": 2.6, "7.4c": 0.55}               # v10: pieces re-cut inside the shot's own function
@@ -1063,6 +1112,17 @@ import light_on3 as lt
 UNLIT = ("8.1", "8.2", "8.2b", "8.3", "8.3b", "8.4", "6.2", "6.2a")
 CLOSE = ("1.1", "3.4c", "4.2", "4.4c", "5.1a2", "7.5", "8.5")
 of.BACK2[0] = True                                           # his back at her desk, redrawn
+of.BLINDS2[0] = True                                         # v18: and the blinds' bars across it
+mo.MASKS[0] = True                                           # v18: light falls on the figures themselves, inside their own outlines
+mo.FACE_AT["CLIENT"] = {                                     # v18: his face through the fight
+    "5.2": [(0.0, "confident"), (0.35, "hard"), (0.85, "puzzled"), (1.25, "shock")],
+    "5.3": [(0.0, "suspicious")],
+    "6.1": [(0.0, "exhausted"), (0.4, "shock"), (1.0, "tired")],
+    "7.1": [(0.0, "tired"), (0.7, "hard")],
+    "7.2": [(0.0, "hard"), (0.95, "confident")],
+    "7.2b": [(0.0, "puzzled")],
+    "7.3": [(0.0, "confident"), (0.9, "relief")],
+}
 mo.FROZEN.update(("1.1", "8.5"))                             # the loop's two ends: no breath, no blink (they had made the last frame differ from the first)
 
 
@@ -1074,8 +1134,10 @@ def _lit(fn, name):
         s_ = fn(t)
         heads = [v for who, v in (mo.CLOCK.get("heads") or {}).items() if who != "ROBOT"]      # the robot's black head is not a face to lift
         k_ = ramp(t, 0.55, 0.4) if name == "8.5" else 1.0
+        key = "left" if name.startswith("3.") else "right" if name.startswith("4.") else "top"
         seed = None if name in ("1.1", "8.5") else int(round(mo.CLOCK["T"] * 15))            # grain on twos
-        return lt.auto(s_, heads, k_, seed, name in CLOSE, glow=name not in ("1.1", "7.5", "8.5"), pool=name not in ("5.6",))
+        return lt.auto(s_, heads, k_, seed, name in CLOSE, glow=name not in ("1.1", "7.5", "8.5"), pool=name not in ("5.6",),
+                       figs=[] if name in ("1.1", "7.5", "8.5", "5.6", "2.5", "2.7", "6.3", "5.3") else (mo.CLOCK.get("figs") or []), key=key, blinds=name in ("4.4", "4.4b"))
     return f
 
 
