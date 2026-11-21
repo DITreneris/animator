@@ -59,3 +59,20 @@ Two fresh viewers; three sheets from the animatic: 4.4 to 4.4c (2.5 a second), 5
 Both: the card "I don't believe in signs." lies on the top edge of the Tower card in 4.4b; one could not tell who pays whom ("he is the one putting money down").
 
 Nothing was changed after this test.
+
+# Cold test 65 (21 Nov): film v30, animatic v26 (pauses, weight, crowd, tones)
+
+Two fresh viewers; the first 3 s (5 a second), the alley 3.4b to 3.4d (2.5 a second), 7.2 to 7.2b (7.5 a second), from the animatic.
+
+| Question | Viewer A | Viewer B | Verdict |
+|---|---|---|---|
+| The pause in "Word is, / I know how business works." | "Yes: he claims to know how business works while a mechanical glove is in his face" | "Yes… the picture contradicts the brag" | **read (both)** |
+| The first punch | "the landed pose holds for 4 frames, about 0.8 s"; "the glove teleports… no travel, smear or wind-up"; the waiting glove "gives the gag away" | the same three points | held: read; the travel: **failed (both)** |
+| The weight of his hits (7.2) | "Half… a starburst, a three-frame hold and a slight frame jolt… The robot does not react at all" to the first; the second "Better" | "Partly… that one feels like a tap"; the second "sells better because the head snaps" | half |
+| The crowd | "nothing. It is a static cutout" | "no clear reaction tied to either hit; if they move, it does not read" | **failed (both)** |
+| The gun's shadow | "hard in 3, 6 and 7, where it is black on black with only a thin pale outline" | hard in frame 2, "easy to read" where it crosses the lit wall | better in one position, **still hard** |
+| The robot gets up (7.2b) | "it pops between 24 and 25" | "snaps upright in one frame while the referee is stepping in" | **failed (both)**, third time |
+| The Referee's entrance | "slides in from the right edge… sleeve first" but "from nowhere" | "sleeve first (21-22), body at 23… effectively comes from nowhere" | seen entering now; no walk |
+| Stillness | "25-30: The "Break!" tableau is fully frozen for about 0.8 s" | the same | **failed (both)** |
+
+Not tested: the darker robot (nobody was asked), the house over the alley, the last glove's new waiting place. Nothing was changed after this test.

@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v25"
+V = "v26"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -36,7 +36,7 @@ LEAD = 0.15                                                 # a narration line n
 
 # shot -> [(who, line, take key, offset into the shot)]
 LINES = {                                                    # v6: the lines, proposal v2 (on3_lines_proposal_v2.md)
-    "1.1": [("N", "Word is, I know how business works.", "n1", 0.2)],      # v14: it starts on the punch (it began on the poster and pushed everything after it)
+    "1.1": [("N", "Word is, I know how business works.", "n1", 0.15)],      # v14: it starts on the punch (it began on the poster and pushed everything after it)
     "2.1": [("N", "One fight.", "n2", 0.15)],
     "2.2": [("MOM", "Where are you going, skunk?", "m1", 0.3), ("N", "My manager. Also my mother.", "n2b", 0.3)],
     "2.4": [("MOM", "Everything you need is in there.", "m2", 0.5)],
@@ -69,7 +69,7 @@ LINES = {                                                    # v6: the lines, pr
     "8.3": [("N", "I'll call her back tomorrow.", "n13", 0.5)],
     "8.4": [("N", "Tomorrow.", "n14", 0.5)],
 }
-FX = [("punch", "1.1", 0.19), ("snap", "3.2c", 0.42), ("bell", "5.1c", 1.55), ("bell", "5.2a", 0.0), ("click", "5.4b", 0.15), ("stamp", "5.4b", 0.17),
+FX = [("punch", "1.1", 1.02), ("punch", "7.2", 0.58), ("punch", "7.2", 1.76), ("snap", "3.2c", 0.42), ("bell", "5.1c", 1.55), ("bell", "5.2a", 0.0), ("click", "5.4b", 0.15), ("stamp", "5.4b", 0.17),
       ("punch", "5.5", 0.67), ("pop", "6.2a", 0.2), ("pop", "6.2a", 0.5), ("pop", "6.2b", 0.3), ("pop", "6.2b", 0.9), ("stamp", "6.4", 0.34),
       ("click", "7.4b", 0.15), ("punch", "7.5", 0.75), ("chime", "8.1", 0.05), ("buzz", "8.2", 0.2), ("buzz", "8.3", 0.1), ("buzz", "8.3", 0.8),
       ("buzz", "8.3b", 0.05), ("bell", "8.5", 0.75)]
@@ -295,6 +295,11 @@ CLIENT_AT = {"4.3": (96, 302)}
 SOFIA_AT = {"2.6": (412, 462, 1), "5.1a": (440, 630)}        # (x, y) or (x, y, side): which side of the tip the bubble sits                              # he speaks with his back to us: the tail goes to his hood
 
 
+# v26 (Tomas: "small meaningful pauses, e.g. after Word is"): the voice already pauses there; the card now pauses with it:
+# the first phrase alone until the voice goes on (seconds into the take).
+SPLIT = {"n1": ("Word is,", 1.20), "n2b": ("My manager.", 1.66), "n8": ("I don't break.", 1.52), "n12": ("Ten garages.", 1.73)}
+
+
 def _card(c, text, y0=100):
     """Narration: typewriter on cream cards with a black edge, at the top under the bar, two rows at most (Office Noir 2)."""
     c.select_font_face("Special Elite", 0, 0); c.set_font_size(30)
@@ -441,7 +446,7 @@ def build(out):
             fm.mo.CLOCK["T_ext"] = T                                    # the clock runs on through a held drawing: they breathe
             fm.mo.CLOCK["say"] = {who: _mouth(key_, T - a, text) for a, b_, who, text, key_ in lines if a <= T < b_ and who in SEEN}
             s = fn(min(t, base - 1.0 / FPS))
-            return _text(s, name, [(who, text) for a, b_, who, text, _ in lines if a - 0.05 <= T < b_ + 0.15])
+            return _text(s, name, [(who, SPLIT[k_][0] if k_ in SPLIT and T - a < SPLIT[k_][1] else text) for a, b_, who, text, k_ in lines if a - 0.05 <= T < b_ + 0.15])
         FN[key] = f; SH.append((key, dur))
     audio, fx = mix(shots, lines, total)
     d = os.path.dirname(os.path.abspath(out))

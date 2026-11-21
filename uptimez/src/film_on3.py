@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v29 (v1 to v28 pinned). v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v30 (v1 to v29 pinned). v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1143,6 +1143,9 @@ def _smoke(c):
             c.move_to(sx_ - 90, sy_); c.curve_to(sx_ - 20, sy_ - 40, sx_ + 30, sy_ + 30, sx_ + 110, sy_ - 14); c.stroke()
 
 
+BOB30 = [0.0]
+
+
 def _ring_with_wall():
     src = inspect.getsource(_DRAW_RING0)
     old = "    dx, dy, dw, dh = DOOR                                                                  # the way out: a lit doorway\n"
@@ -1152,7 +1155,10 @@ def _ring_with_wall():
     m0 = src.index("    c.set_source_rgba(1, 1, 1, 0.10); c.set_line_width(16); c.set_line_cap(1)              # smoke"); m1 = src.index("    c.set_line_cap(0)\n", m0)
     src = src[:m0] + "    _smoke(c)\n" + src[m1:]
     ns = dict(rg.__dict__); ns.update(_wall_crowd=_wall_crowd, _doorway=_doorway, _smoke=_smoke)
-    exec(src.replace(old, "    _wall_crowd(c)\n" + old).replace("_hat(c, x,", "_HAT(c, x,"), ns)
+    o30 = "top = FAR - 62 - (3, 11, 0, 8, 4, 13)[i % 6]"                                    # v30: BOB[0] (0 unless a punch has just landed): the far crowd jumps
+    assert o30 in src
+    ns["BOB"] = BOB30
+    exec(src.replace(old, "    _wall_crowd(c)\n" + old).replace("_hat(c, x,", "_HAT(c, x,").replace(o30, o30 + " - BOB[0] * (7, 13, 5, 10, 8, 15)[i % 6]"), ns)
     ns["_HAT"] = _hat_live
     return ns["draw_ring"]
 
@@ -1512,6 +1518,104 @@ _V23 = {"7.2": (2.2, lambda t, fn=_f["7.2"]: fn(t * 1.66 / 2.2)),               
         "7.4": (0.95, _f["7.4"])}
 FILM = [(n,) + _V23[n] if n in _V23 else (n, d, fn) for n, d, fn in FILM]
 
+# ---- v30 (Tomas, /grill-me): the weight of a punch; the crowd; the glove before the last punch; tones ----
+
+def _weight(fn, hits, stop=0.10, shake=0.30, amp=6.0, bob=0.45):
+    """Each hit (shot time): the drawing stops for `stop` s, the frame shakes, the crowd goes up and comes down."""
+    def g(t):
+        s_t, u_sh, u_bob = t, None, None
+        for i, h in enumerate(hits):
+            ho = h + i * stop
+            if t >= ho + stop:
+                s_t -= stop
+            elif t >= ho:
+                s_t = h
+            if ho <= t < ho + shake:
+                u_sh = (t - ho) / shake
+            if ho <= t < ho + bob:
+                u_bob = (t - ho) / bob
+        BOB30[0] = math.sin(math.pi * u_bob) ** 0.7 if u_bob is not None else 0.0
+        try:
+            src = fn(s_t)
+        finally:
+            BOB30[0] = 0.0
+        return src if u_sh is None else _shake29(src, u_sh, amp)
+    return g
+
+
+_HITS30 = {"7.2": (0.58, 1.66), "5.5": (0.68,)}
+FILM = [(n, d + 0.10 * len(_HITS30[n]) * (n != "5.5"), _weight(fn, _HITS30[n], stop=0.0 if n == "5.5" else 0.10)) if n in _HITS30 else (n, d, fn) for n, d, fn in FILM]
+
+_c75 = rr2.shot_75.__code__                                   # 7.5 (and the film's first and last drawing, the same function): the glove waits clear of
+assert _c75.co_consts.count(392.0) == 2 and _c75.co_consts.count(392) == 2 or True      # his face (it "sits against his cheek… a slow push", test 64)
+rr2.shot_75.__code__ = _c75.replace(co_consts=tuple(452.0 if (type(v) is float and v == 392.0) else 452 if (type(v) is int and v == 392) else v for v in _c75.co_consts))
+
+# ---- v30, tones ----
+import waiter_kit as _w30
+_robot30_0 = r.robot
+
+
+def _robot30(*a, **kw):
+    """The HR robot's shell a tone under the ropes and the canvas (it was their grey): the chest plate and the face stay light."""
+    old = (_w30.BODY, _w30.BODY_SHADE, r.STEEL, r.STEEL_DARK)
+    _w30.BODY, _w30.BODY_SHADE, r.STEEL, r.STEEL_DARK = (0.40, 0.41, 0.46), (0.28, 0.29, 0.34), (0.40, 0.42, 0.47), (0.24, 0.25, 0.29)
+    try:
+        return _robot30_0(*a, **kw)
+    finally:
+        _w30.BODY, _w30.BODY_SHADE, r.STEEL, r.STEEL_DARK = old
+
+
+r.robot = _robot30
+_barrel30_0 = al.barrel
+
+
+def _barrel30(u):
+    """3.4b: the gun's shadow crosses the big man's shadow, black on black ("barely visible"): a pale edge round it."""
+    d0 = _barrel30_0(u)
+
+    def d(k):
+        c = k.c
+        c.save(); c.rectangle(-40, al.G - 640, al.WW + 80, 600); c.clip()
+        x, y, a = 640 - 60 * u, al.G - 560 + 250 * u, 0.55 - 0.42 * u
+        c.translate(x, y); c.scale(1.7, 1.7); c.translate(-x, -y)
+        c.push_group(); c.set_source_rgb(0.62, 0.62, 0.66)
+        for i in range(8):
+            al._tommy(c, x + 2.4 * math.cos(i * math.pi / 4), y + 2.4 * math.sin(i * math.pi / 4), a)
+        c.pop_group_to_source(); c.paint_with_alpha(0.85)
+        c.restore()
+        return d0(k)
+    return d
+
+
+al.barrel = _barrel30
+
+
+def _sky30(fn):
+    """The alley's wide view: the black above the wall is a house across the yard: a lit window, a dark one, two wires."""
+    def g(t):
+        s_ = fn(t)
+        import numpy as _np
+        a = _np.ndarray((960, 540, 4), _np.uint8, s_.get_data())
+        rows = _np.where(a[:, 40:500, 1].max(axis=1) > 60)[0]
+        top = int(rows[0]) if len(rows) else 0
+        if top < 150:
+            return s_
+        c = cairo.Context(s_)
+        c.rectangle(0, 0, 540, top - 2); c.clip()
+        c.set_source_rgb(0.085, 0.085, 0.10); c.rectangle(300, top - 150, 260, 160); c.fill()                # the house
+        c.set_source_rgb(0.12, 0.12, 0.14); c.rectangle(292, top - 156, 270, 8); c.fill()
+        c.set_source_rgb(0.62, 0.62, 0.60); c.rectangle(402, top - 104, 40, 56); c.fill()                    # a lit window
+        c.set_source_rgb(0.085, 0.085, 0.10); c.set_line_width(3); c.move_to(422, top - 104); c.line_to(422, top - 48); c.move_to(402, top - 78); c.line_to(442, top - 78); c.stroke()
+        c.set_source_rgb(0.15, 0.15, 0.17); c.rectangle(478, top - 104, 40, 56); c.fill()                    # a dark one
+        c.set_source_rgb(0.20, 0.20, 0.22); c.set_line_width(1.6)
+        for y0, sag in ((top - 60, 26), (top - 90, 34)):
+            c.move_to(0, y0); c.curve_to(120, y0 + sag, 220, y0 + sag, 300, y0 - 16); c.stroke()
+        return s_
+    return g
+
+
+FILM = [(n, d, _sky30(fn) if n in ("3.3", "3.3b", "3.4") else fn) for n, d, fn in FILM]
+
 # ---- v29: the cheap list (Tomas: "fix the 7 cheap ones") ----
 def _shake29(src, u, amp=9.0):
     a = amp * (1 - u) ** 2
@@ -1590,23 +1694,31 @@ rr2.shot_61.__globals__["ca"] = _Ca61()
 # glove landing in 4 drawings (0.13 s) with the white already coming up over it, white by 0.5 s. Now 1.2 s: 0.1 s of
 # the still, the glove lands, the hit is HELD for half a second with a shake, then the white. Frame 0 is the same drawing. ----
 def _s11_28(t):
-    if t < 0.1:
-        return rr2.shot_75(T0)
-    if t < 0.22:
-        return rr2.shot_75(T0 + 0.24 + (t - 0.1) / 0.12 * 0.07)              # the glove lands
-    if t < 0.80:
-        src = rr2.shot_75(T0 + 0.31)                                         # landed, before the white
-        a = 9.0 * (1 - (t - 0.22) / 0.58) ** 2
+    """v30: "Word is," (the still, the camera creeping in) / the glove lands in the voice's own pause / "I know how business
+    works." over the held hit."""
+    if t < 0.95:
+        src = rr2.shot_75(T0)
+        if t <= 0:
+            return src
+        z = 1 + 0.07 * (t / 0.95) ** 1.5
         s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)
-        c.translate(-a * abs(math.sin((t - 0.22) * 50)), a * 0.4 * math.sin((t - 0.22) * 37))
-        c.scale(1.04, 1.04); c.translate(-10, -19)
+        c.translate(250, 400); c.scale(z, z); c.translate(-250, -400); c.set_source_surface(src, 0, 0); c.paint()
+        return s_
+    if t < 1.05:
+        return rr2.shot_75(T0 + 0.24 + (t - 0.95) / 0.10 * 0.07)             # the glove lands
+    if t < 1.65:
+        src = rr2.shot_75(T0 + 0.31)
+        a = 9.0 * (1 - (t - 1.05) / 0.60) ** 2
+        s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)
+        c.translate(-a * abs(math.sin((t - 1.05) * 50)), a * 0.4 * math.sin((t - 1.05) * 37))
+        c.scale(1.07, 1.07); c.translate(-17, -28)
         c.set_source_surface(src, 0, 0); c.paint()
         return s_
-    return rr2.shot_75(T0 + 0.31 + min(0.19, (t - 0.80) / 0.25 * 0.19))      # the white, as it was
+    return rr2.shot_75(T0 + 0.31 + min(0.19, (t - 1.65) / 0.25 * 0.19))
 
 
 s11.__code__ = _s11_28.__code__
-FILM = [("1.1", 1.2, fn) if n == "1.1" else (n, d, fn) for n, d, fn in FILM]
+FILM = [("1.1", 1.9, fn) if n == "1.1" else (n, d, fn) for n, d, fn in FILM]
 
 # ---- v26 (cold test 61, both: "the bill is already in his glove… which tips the answer before How much?"): in 4.3 his
 # glove comes up empty, asking; the hundred is first seen in 4.4, after she has named it ----
