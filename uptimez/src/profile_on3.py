@@ -1,4 +1,10 @@
-"""OFFICE NOIR 3: the walkers turned to the side, v3 (v1, v2 pinned). v3 (an outside review of v2, 21 Nov: "not a real side
+"""OFFICE NOIR 3: the walkers turned to the side, v4 (v1 to v3 pinned). v4 (a second outside review, of sheet v2: "the
+bodies do not pass the weight from one leg to the other"; and cold tests 49, 50): from the knees down first. A leg is
+as long as the hip is high at UP, so the carrying leg is straight there and bent at DOWN; the heel lands toe up, the
+foot is flat while it carries, the heel peels off before the toe; the free leg's knee comes through ahead of the other;
+the far leg is another tone, the hips are apart. Don walks as he does in the film: bent over his glass, creeping. Her
+late hair is off until the legs read (it tore her edge).
+v3 (v1, v2 pinned). v3 (an outside review of v2, 21 Nov: "not a real side
 view: the faces stay frontal; the walk is legs waving; arm and leg layers collide; nothing has weight"):
   * the front drawing is TURNED, not narrowed: drawn off to the side and wrapped round an upright cylinder, row by row
     (TURN degrees): the face goes to the side he walks to, the far side shortens, the back of the hood, hat or hair comes
@@ -43,12 +49,28 @@ d = n2.d
 
 
 def stride(u, a, up):
-    """One foot through a step: on the ground it goes back under him; in the air it swings forward, heel first down."""
+    """One foot through a step. Returns (ahead, lift, pitch). On the ground (the first half) it goes back under him: it
+    lands on the heel, toe up, is flat while it carries, and the heel peels off before the toe. In the air it swings
+    through, toe down first, toe up before it lands."""
     u = u % 1.0
     if u < 0.5:
-        return a * (1 - 4 * u), 0.0, -0.22 + 1.2 * u          # (ahead, lift, pitch): heel strike to toe-off
+        if u < 0.07:
+            p = -0.42 * (1 - u / 0.07)
+        elif u < 0.30:
+            p = 0.0
+        else:
+            p = 0.62 * ((u - 0.30) / 0.20) ** 1.3
+        return a * (1 - 4 * u), 0.0, p
     q = (u - 0.5) / 0.5
-    return -a + 2 * a * q, up * math.sin(math.pi * q) ** 0.8, 0.38 - 0.6 * q
+    e = q * q * (3 - 2 * q)
+    return -a + 2 * a * e, up * math.sin(math.pi * q) ** 0.8, 0.62 - 1.04 * q ** 0.7
+
+
+def _ankle(hipx, f, ah, toe, heel):
+    """Where the ankle is (x, y; y up is negative) for a foot f whose sole is ah under the ankle: the lowest part of the
+    turned foot is on the ground (plus its lift), so a heel that peels off raises the ankle."""
+    extra = toe * math.sin(f[2]) if f[2] > 0 else heel * math.sin(-f[2])
+    return hipx + f[0], -(f[1] + extra) - ah
 
 
 def _walk(x, s, dir_, a, up, rise):
@@ -72,16 +94,15 @@ def _board(k, p0, p1, w0, w1, col, lw=2.2):
             (p1[0] - nx * w1 / 2, p1[1] - ny * w1 / 2), (p0[0] - nx * w0 / 2, p0[1] - ny * w0 / 2)], col, shadow=False, lw=lw)
 
 
-def _leg(k, hip, f, w, col, seam=None, joint=True):
-    """hip to knee to ankle; returns the ankle. The knee is a round of the same cloth, so the two boards read as one leg."""
+def _leg(k, hip, f, w, col, ll, ah=20, toe=30, heel=12, seam=None, taper=(0.92, 0.84)):
+    """hip to knee to ankle; returns the ankle. ll: the length of thigh and of shin. The knee is a round of the same
+    cloth, so the two boards read as one leg."""
     c = k.c
-    ank = (hip[0] + f[0], -f[1] - 20)
-    ll = (-20 - hip[1]) * 0.515
+    ank = _ankle(hip[0], f, ah, toe, heel)
     kn = _knee(hip, ank, ll, ll)
-    _board(k, hip, kn, w, w * 0.92, col)
-    _board(k, kn, ank, w * 0.92, w * 0.84, col)
-    if joint:
-        c.new_path(); c.arc(kn[0], kn[1], w * 0.43, 0, TAU); c.set_source_rgb(*col); c.fill()
+    _board(k, hip, kn, w, w * taper[0], col)
+    _board(k, kn, ank, w * taper[0], w * taper[1], col)
+    c.new_path(); c.arc(kn[0], kn[1], w * taper[0] * 0.47, 0, TAU); c.set_source_rgb(*col); c.fill()
     if seam:
         c.set_source_rgb(*seam); c.set_line_width(2.0); c.set_line_cap(1)
         c.new_path(); c.move_to(*hip); c.line_to(*kn); c.line_to(*ank); c.stroke(); c.set_line_cap(0)
@@ -139,7 +160,8 @@ def turned(k, x, feet, s, dir_, box, draw, turn=None, lean=0.0, rows=None, pre=N
     any_ = al.any(axis=1)
     left = np.where(any_, np.argmax(al, axis=1), axl); right = np.where(any_, w - 1 - np.argmax(al[:, ::-1], axis=1), axl)
     R = np.maximum(np.maximum(axl - left, right - axl), 1.0)
-    R = np.maximum(R, ndimage.median_filter(R, size=max(3, int(7 * px) | 1)))[:, None]      # a notch or a point a few rows high does not turn on its own (a torn edge)
+    R = np.maximum(R, ndimage.median_filter(R, size=max(3, int(7 * px) | 1)))
+    R = np.maximum(R, ndimage.gaussian_filter1d(R, 2.5 * px))[:, None]      # a notch or a point a few rows high does not turn on its own (a torn edge)
     e = 4.2 * px + 1.0                                       # the front drawing's own edge line is left behind
     th = math.radians(TURN if turn is None else turn) * dir_
     shift = np.zeros((h, 1), np.float32)
@@ -207,9 +229,9 @@ def _trainer(k, ank, pitch):
     c.restore()
 
 
-def _client_leg(k, hip, f, col):
-    ank = _leg(k, hip, f, 50, col, seam=b.CHAR_LINE)
-    cut(k, [(ank[0] - 22, ank[1] - 8), (ank[0] + 22, ank[1] - 8), (ank[0] + 21, ank[1] + 7), (ank[0] - 21, ank[1] + 7)], b.CHAR_DARK, shadow=False, lw=1.8)   # the cuff
+def _client_leg(k, hip, f, col, ll):
+    ank = _leg(k, hip, f, 48, col, ll, ah=20, toe=38, heel=22, seam=b.CHAR_LINE)
+    cut(k, [(ank[0] - 21, ank[1] - 8), (ank[0] + 21, ank[1] - 8), (ank[0] + 20, ank[1] + 7), (ank[0] - 20, ank[1] + 7)], b.CHAR_DARK, shadow=False, lw=1.8)   # the cuff
     _trainer(k, ank, f[2])
 
 
@@ -233,11 +255,13 @@ def _no_shoulder(orig):
 
 
 def client(k, x, feet, s=1.0, dir_=1, cig=False, folder=False, face="hard"):
-    u, f0, f1, yb, sw = _cycle(x, s, dir_, 40.0, 26.0, 9.0)
+    drop = 11.0
+    u, f0, f1, yb, sw = _cycle(x, s, dir_, 40.0, 30.0, drop)
     c = k.c
     lean = 0.075                                                                            # into it
     late = math.cos(TAU * (u - 0.10))                                                       # his gloves, a tenth of a step behind his arms
     hip = (0, b.HIP - 8 + yb)
+    ll = (-(b.HIP - 8) + drop - 20) / 2.0                                                    # straight when he is highest
     sy = b.BT + 34
 
     def unit(tilt=False):
@@ -246,12 +270,12 @@ def client(k, x, feet, s=1.0, dir_=1, cig=False, folder=False, face="hard"):
             c.translate(0, yb); c.rotate(lean)
 
     unit()
-    _client_leg(k, (hip[0] + 16, hip[1]), f1, tuple(v * 0.84 for v in b.CHAR))              # the far leg
+    _client_leg(k, (hip[0] + 4, hip[1]), f1, tuple(v * 0.66 for v in b.CHAR), ll)          # the far leg: darker, so the two are told apart
     c.restore()
     unit(True)
-    _client_arm(k, 84, sy - 6, 22 * sw + 6, 34 + 14 * late, 911, shoulder=False)                # the far arm: from the leading edge, behind him
+    _client_arm(k, 84, sy - 6, 18 * sw + 10, 62 + 10 * late, 911, shoulder=False)                # the far arm: from the leading edge, behind him
     c.restore()
-    unit(); _client_leg(k, (hip[0] - 6, hip[1]), f0, b.CHAR); c.restore()
+    unit(); _client_leg(k, (hip[0] - 4, hip[1]), f0, b.CHAR, ll); c.restore()
 
     def front(k2):
         with _swap((b, "limb", lambda k_, sx, sy_, a1, a2, *a, **kw: (sx, sy_ + 150)), (b, "_glove", lambda *a, **kw: None),
@@ -267,7 +291,7 @@ def client(k, x, feet, s=1.0, dir_=1, cig=False, folder=False, face="hard"):
         c.save(); c.translate(-30, b.BT + 100); c.rotate(-0.14); cut(k, [(-34, -24), (36, -24), (36, 26), (-34, 26)], b.IVORY, shadow=False, lw=2); c.restore()
         _client_arm(k, -46, sy, 6, 74, 913, shoulder=False)
     else:
-        _client_arm(k, -46, sy, -22 * sw + 6, 34 - 14 * late, 913, shoulder=False)                          # the near arm: back when the near leg is forward
+        _client_arm(k, -46, sy, -18 * sw + 10, 62 - 10 * late, 913, shoulder=False)                # the near arm: back when the near leg is forward; his gloves up at his belt, not at his knees                          # the near arm: back when the near leg is forward
     c.restore()
     return {"head": c.device_to_user(*head), "tip": c.device_to_user(*tip)}
 
@@ -299,22 +323,22 @@ def _don_arm(k, sx, sy, u, f, glass=False):
     return hx, hy
 
 
-def _don_leg(k, hip, f, col):
+def _don_leg(k, hip, f, col, ll):
     c = k.c
-    ank = (hip[0] + f[0], -f[1] - 10)
-    ll = (-10 - hip[1]) * 0.52
-    kn = _knee(hip, ank, ll, ll)
-    _board(k, hip, kn, 28, 27, col); _board(k, kn, ank, 27, 26, col)
-    c.new_path(); c.arc(kn[0], kn[1], 12, 0, TAU); c.set_source_rgb(*col); c.fill()
+    ank = _leg(k, hip, f, 28, col, ll, ah=10, toe=28, heel=14, taper=(0.96, 0.92))
     c.save(); c.translate(ank[0], ank[1] + 10); c.rotate(f[2])
     cut(k, [(-14, -13), (10, -13), (28, -5), (28, 0), (-14, 0)], mo.SHOE, shadow=False, lw=1.8)      # the front drawing's walking shoe
     c.restore()
 
 
 def don(k, x, feet, s=1.0, dir_=1, bent=0.0):
-    u, f0, f1, yb, sw = _cycle(x, s, dir_, 38.0, 13.0, 3.5)
+    drop = 5.0 - 1.5 * bent
+    crouch = 12.0 * bent                                                                    # creeping: his knees never straighten
+    u, f0, f1, yb, sw = _cycle(x, s, dir_, 38.0 - 12.0 * bent, 14.0 + 4.0 * bent, drop)
+    yb += crouch
     c = k.c
     hip = (0, d.HEM - 46 + yb)
+    ll = (-(d.HEM - 46) + drop - 10) / 2.0
     lean = math.radians(-1.5 + 11.5 * bent)                                                 # he leans back a little; over his glass, forward
     hem = math.cos(2 * TAU * (u - 0.21))                                                    # his hem: kicked forward by each knee, an eighth of a step late
     sy = d.BT + 24
@@ -325,8 +349,8 @@ def don(k, x, feet, s=1.0, dir_=1, bent=0.0):
             c.translate(0, yb); c.rotate(lean)
 
     unit(False)
-    _don_leg(k, (hip[0] + 9, hip[1]), f1, tuple(v * 0.84 for v in mo.TROUSERS))
-    _don_leg(k, (hip[0] - 5, hip[1]), f0, mo.TROUSERS)
+    _don_leg(k, (hip[0] + 3, hip[1]), f1, tuple(v * 0.66 for v in mo.TROUSERS), ll)
+    _don_leg(k, (hip[0] - 3, hip[1]), f0, mo.TROUSERS, ll)
     c.restore()
     unit(); _don_arm(k, 42, sy - 4, 15 * sw * (1 - bent) + 4, 16); c.restore()                  # the far arm, from the leading edge, behind his coat
 
@@ -340,7 +364,7 @@ def don(k, x, feet, s=1.0, dir_=1, bent=0.0):
 
     belt = -(d.BT + 127)
     o = turned(k, x, feet + yb * s, s, dir_, (-90, -430, 90, -40), front, lean=lean,
-               rows=lambda yu: 9.0 * hem * max(0.0, min(1.0, (belt - yu) / (belt + d.HEM))) ** 1.3)
+               rows=lambda yu: 4.0 * hem * max(0.0, min(1.0, (belt - yu) / (belt + d.HEM))) ** 1.3)
     hx_ = _turn_x(0, 44) * dir_
     head = c.user_to_device(x + hx_ * s * 0.2, feet + (yb + d.HY) * s)
     unit()
@@ -353,22 +377,20 @@ def don(k, x, feet, s=1.0, dir_=1, bent=0.0):
 
 
 # ---- the woman under the umbrella: light, short steps; her hair late, the umbrella steady ------------------------------
-def _her_leg(k, hip, f, col):
+def _her_leg(k, hip, f, col, ll):
     c = k.c
-    ank = (hip[0] + f[0], -f[1] - 22)
-    ll = (-22 - hip[1]) * 0.515
-    kn = _knee(hip, ank, ll, ll)
-    _board(k, hip, kn, 17, 15, col, lw=1.8); _board(k, kn, ank, 15, 12, col, lw=1.8)
-    c.new_path(); c.arc(kn[0], kn[1], 6.6, 0, TAU); c.set_source_rgb(*col); c.fill()
-    c.save(); c.translate(ank[0], ank[1] + 22); c.rotate(f[2] * 0.7)
+    ank = _leg(k, hip, f, 17, col, ll, ah=22, toe=17, heel=8, taper=(0.9, 0.74))
+    c.save(); c.translate(ank[0], ank[1] + 22); c.rotate(f[2] * 0.8)
     cut(k, [(-8, -28), (8, -28), (17, -3), (17, 0), (-6, 0), (-8, -6)], mo.BOOT, shadow=False, lw=1.6)   # the front drawing's boot
     c.restore()
 
 
 def her(k, x, feet, s=1.0, dir_=-1):
-    u, f0, f1, yb, sw = _cycle(x, s, dir_, 24.0, 15.0, 3.5)
+    drop = 5.0
+    u, f0, f1, yb, sw = _cycle(x, s, dir_, 25.0, 19.0, drop)
     c = k.c
     hip = (0, mo.HEM_HER - 40 + yb)
+    ll = (-(mo.HEM_HER - 40) + drop - 22) / 2.0
     col = [sbc.BLAZER]
     sway = math.cos(2 * TAU * (u - 0.17))                                                   # her hair: behind her body's rise and fall
     sy = sob.BODY_TOP + 16 + yb
@@ -381,9 +403,9 @@ def her(k, x, feet, s=1.0, dir_=-1):
             return sf._arm(k, sx, sy, a1, a2, seed, w=15)
 
     unit()
-    _her_leg(k, (hip[0] + 11, hip[1]), f1, tuple(min(1.0, v * 2.1) for v in mo.TIGHTS))
-    _her_leg(k, (hip[0] - 7, hip[1]), f0, mo.TIGHTS)
-    arm(32, 16 * sw + 4, 12, 21)                                                            # the far arm swings
+    _her_leg(k, (hip[0] + 3, hip[1]), f1, tuple(min(1.0, v * 2.4) for v in mo.TIGHTS), ll)
+    _her_leg(k, (hip[0] - 3, hip[1]), f0, mo.TIGHTS, ll)
+    arm(16, 16 * sw + 2, 10, 21)                                                            # the far arm swings
     c.restore()
 
     def no_arm(k_, sx, sy_, a1, a2, seed, ln=48, w=17):
@@ -417,7 +439,7 @@ def her(k, x, feet, s=1.0, dir_=-1):
                 i0 = np.floor(src).astype(int); fr = (src - i0)[:, None]
                 A[r, sel] = row[i0] * (1 - fr) + row[i0 + 1] * fr
 
-    o = turned(k, x, feet + yb * s, s, dir_, (-110, -420, 110, -80), front, pre=hair, turn=TURN - 3.0 * sw)
+    o = turned(k, x, feet + yb * s, s, dir_, (-110, -420, 110, -80), front, turn=TURN - 3.0 * sw)
     hx_ = _turn_x(0, 60) * dir_
     head = c.user_to_device(x + hx_ * s * 0.3, feet + (yb + sob.HY) * s)
     unit()
