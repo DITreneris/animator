@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v21"
+V = "v22"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -317,7 +317,10 @@ def _card(c, text, y0=100):
     return y
 
 
-def _bubble(c, text, tip, top=100, avoid=()):
+_BOX = {}                                                    # v22: (line, shot) -> where its bubble was put on its first drawing
+
+
+def _bubble(c, text, tip, top=100, avoid=(), key=None):
     """A spoken line: a white bubble, black edge; its tail to the speaker's cheek, level with the mouth. tip None: the
     speaker is out of the frame: no tail, at the top right. v7: avoid: boxes (x0, y0, x1, y1) of every head on the
     screen; the bubble takes the first place, nearest the speaker, that covers none of them and stays in the safe area."""
@@ -344,9 +347,11 @@ def _bubble(c, text, tip, top=100, avoid=()):
 
     def clear(bx, by):
         return all(bx + w < x0 or bx > x1 or by + h < y0 or by > y1 for x0, y0, x1, y1 in avoid)
-    if tip is None:
+    if key in _BOX:                                          # v22 (Tomas: "the bubbles jump when they move; it is hard to read"): the bubble stays where it
+        rows, w, h, bx, by, side = _BOX[key]                 # was first put for this line in this shot; only its tail follows the mouth
+    elif tip is None:
         cands = [(522 - w - 6, top + 10), (24, top + 10), (522 - w - 6, top + 90), (24, top + 90)]
-        bx, by = next((p for p in cands if clear(*p)), cands[0])
+        bx, by = next((p for p in cands if clear(*p)), cands[0]); side = 1
     else:
         side0 = tip[2] if len(tip) > 2 else (1 if tip[0] < 270 else -1)
         cands = []
@@ -356,6 +361,9 @@ def _bubble(c, text, tip, top=100, avoid=()):
                     bx = min(522 - w, max(18, tip[0] + side * off - (0 if side > 0 else w)))
                     cands.append((bx, max(top, tip[1] - up - h), side))
         bx, by, side = next((p for p in cands if clear(p[0], p[1]) and p[1] + h < tip[1] - 30), cands[0])
+    if key is not None:
+        _BOX.setdefault(key, (rows, w, h, bx, by, side))
+    if tip is not None:
         tx = min(bx + w - 26, max(bx + 26, tip[0] + side * 30))
         c.new_path(); c.move_to(tx - 13, by + h - 4); c.line_to(tip[0], tip[1]); c.line_to(tx + 13, by + h - 4); c.close_path()
         c.set_source_rgb(1, 1, 1); c.fill_preserve(); c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(3); c.set_line_join(1); c.stroke()
@@ -417,7 +425,7 @@ def _text(surf, shot, now):
             top = _card(c, text) + 6
     for who, text in now:
         if who != "N" and text not in NO_BUBBLE:
-            _bubble(c, text, _tip(who, shot), top, _heads(shot))
+            _bubble(c, text, _tip(who, shot), top, _heads(shot), key=(text, shot))
     return s
 
 
