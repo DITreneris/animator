@@ -1,0 +1,44 @@
+{
+ "shots": [
+  {
+   "shot": "3.1r",
+   "line": {
+    "key": "3.1r",
+    "who": "ROBOT",
+    "text": "Blueprint generated. Human approval required.",
+    "t0": 0.1,
+    "t1": 2.539
+   }
+  },
+  {
+   "shot": "3.1d",
+   "line": {
+    "key": "3.1d",
+    "who": "DON",
+    "text": "Approved.",
+    "t0": 2.7,
+    "t1": 3.418
+   }
+  },
+  {
+   "shot": "3.3",
+   "line": {
+    "key": "3.3",
+    "who": "DON",
+    "text": "Recovered.",
+    "t0": 5.917,
+    "t1": 6.752
+   }
+  },
+  {
+   "shot": "3.5",
+   "line": {
+    "key": "3.5",
+    "who": "CLIENT",
+    "text": "Is this a joke?",
+    "t0": 9.167,
+    "t1": 10.241
+   }
+  }
+ ]
+}

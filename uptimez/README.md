@@ -215,13 +215,30 @@ DON dreams he is a hard-boiled detective in a black-and-white rain-soaked office
 | `uptimez_on_anim.mp4` | release v8, 540 preview | Same film, 540×960 |
 | `uptimez_on_anim_v9.mp4` | **v9 (final, 18 Nov)**, 540 preview | 43.0 s. A black cat crosses at 0:01 and Don's hat jumps (`cat_on.py`); the narration starts after it, with a pause before "Unsigned."; softer thunder; the cat curled on the bed leaps out; the tail desaturates and dissolves into frame 0. QA report `on_qa_report_v9.txt` |
 | `on_tails_v8_check.png`, `on_qa_report.txt` | v8 checks | The ticketed moments; the G5 report |
-| `on_cover_v2.png` (v1 kept) | cover | Title cards "Office Noir: The Secret of a Stolen Heart" |
+| `on_cover_v3.png` (v1, v2 kept) | cover | v3 (18 Nov), for Shorts: a small OFFICE NOIR label and one headline, "WHO STOLE THE HEART?", over Don holding his lens to the heart on his own lapel; Mom's curlers on a lit wall. v2: the three title cards |
 | `on_animatic_silent.mp4`, `on_animatic_voiced.mp4` | animatics | Storyboard timed to the takes |
 | `on_auditions_v5.mp4`, `on_mom_auditions.mp4`, `_v2.mp4` | auditions | Voices; Mom F (`bf_alice` + `bm_lewis`, aged, shouting); Sofía A (−2 semitones, a pause) |
 | `on_sb_sheet_v1..v5.png`, `on_sb_loop_v1..v5.png` | storyboard | v5: the partner robot, the brag list, hat C, the cheek tails |
 | `on_set_sheet_v1..v3.png`, `on_set_phone_v1..v3.png`, `props_sheet_on_v1..v2.png`, `props_phone_on_v1..v2.png` | set and props | The noir office and its bedroom twin; phone-size checks |
 
 Character sheets: `characters/uptimez-{don,mom,sofia}-on-*`, `uptimez-pam-on-v1..v3-*`. Built from `src/` (`on_*.py`, `*_on.py`, `sound_on*.py`, `thumb_on.py`); `./uptimez/build.sh on`.
+
+### Office Noir 2: The Shadow of Fate — [`office-noir-2/`](office-noir-2/)
+
+New Year special. SOFÍA dreams she is a femme fatale in a black-and-white city on New Year's Eve, red gown and red gloves the only colour. She steps out of a taxi while two gangs shoot it out behind her, and she doesn't blink. In a cabaret a bald detective in a headset hunts for her fingerprints; she slips him a stamp: CASE CLOSED. In the dark UptimeZ office she finds what she came for in Don's drawer, the Client's roll, and hides under the desk as his shoes come in: it was Don. At midnight she wakes up at the office party, asleep on a table with a party blower; Pam sweeps up the icing-sugar prints of her dream: "Some dream. Others sweep." She blows the blower, it gives up, and through the window behind her a taxi pulls up: the film loops.
+
+| File | Version | Notes |
+|---|---|---|
+| `on2_film_v28_1080.mp4` | **release v28 (current, 20 Nov)**, not committed | 1080×1920, native 1080, 79.2 s, 30 fps, BT.709, −15.0 LUFS, −2.5 dBTP, 16/16 lines heard by Whisper, the last drawing is the first. Rebuild with `./uptimez/build.sh on2`. v27 (18 Nov) was the release before |
+| `on2_motion_test_v28.mp4` | v28, 540 preview | v28: a joke by 0:01, the first gunshot at 1.0 s (1.1 is 0.75 s); v25: the first Noir's look (blinds on the walls under the people, a side light, lighter faces, typewriter narration cards at the top); v26: the money, the pour and the office lit; v27: the arms in the bar against smoke. v24 is the last before the new look |
+| `office-noir-2-script-v6.md` | script (current) | Line by line with the shot list, as of v28 (the look of v25–v27, the new opening); v1–v5 and concepts v1–v4 kept |
+| `on2_shotboard_v8.png` | shot board | One frame from each of the 48 set-ups of v24 |
+| `on2_cover_v3.png` (v1, v2 kept) | cover | Her face close, her eyes on the Shadow, his lit hand on her shoulder; OFFICE NOIR 2 label, "The Shadow of Fate". Checked at feed size (120 px) |
+| `on2_anim_mute_test_v8.md`, `on2_board_mute_test_v1.md`, `_v4.md`, `on2_pacing_test_v15.md` | tests | Cold mute tests of the board and the animation; the cold pacing test |
+| `on1_vs_on2_*.png`, `on2_look_proto_v1.png`, `on2_look_v25_six.png`, `on2_v25_sixteen.png`, `on2_v26_fixed_frames.png` | look | Why the first Noir looked better, and the before/after of the new look |
+| `on2_board_v1..v7.png`, `on2_board_mute_v*`, `on2_cast_v1..v5.png` (+ phone), `on2_don_back_v1.png`, `on2_shadow_hat_v1.png`, `on2_two_men_v1.png`, `on2_animatic_v1.mp4`, `on2_narration_*` | development | Board, cast, animatic, narration auditions (A2 chosen) |
+
+Built from `src/`: `on2_motion.py` (timing, the picture, the release; `_v1`…`_v27` kept), `on2_motion_b5.py` and `on2_motion_b68.py` (beats 05 and 06–08), `on2_board.py` (sets), `noir2_cast.py` (the cast in noir), `on2_sound.py` (the takes in `src/on2_voices/`, the mixes), `engine_on.py` (the noir pass; TONE v3 is the new look, `engine_on_v2.py` keeps Office Noir unchanged), `thumb_on2.py` (the cover), `on2_mute_anim.py` (sheets for the cold tests).
 
 ### The Best Candidate — [`the-best-candidate/`](the-best-candidate/)
 
@@ -245,8 +262,10 @@ Episode 9. A garage owner with ten garages walks in to sign up, because he keeps
 
 | File | Version | Notes |
 |---|---|---|
-| `uptimez_ob_anim_v10.mp4` | **animation v10 (current)** | 540×960, 74.3 s, 51 shots, 21 lines; after two cold mute tests and the director's notes |
-| `the-onboarding-script-v10.md` | script (current) | Line by line with the shot list; v1–v9 kept |
+| `uptimez_ob_anim_v19.mp4` (+ `_1080`, not committed) | **animation v19 (current, 18 Nov)** | 540 and native 1080, 76.8 s, −14.0 LUFS, −1.4 dBTP, 21/21 lines heard. The first joke at 1.7 s: the door slams, OUR FIRST CLIENT drops onto the Client and a ficus leaf onto his head; he signs up wearing it; Pam hangs it back, crooked. The plan is MY GARAGES (no. 7 ringed); the film loops (he has lost the strip again and comes back to the door). v12–v18 previews kept |
+| `ob_cover_v1.png` | cover | THE FIRST CLIENT: him with the frame round his neck and the leaf, "Hi. I'd like to sign up." (`src/thumb_ob.py`) |
+| `ob_v19_fixed_shots.png` | check | The Client's size and the dressed walls, v19 |
+| `the-onboarding-script-v11.md` | script (current) | Line by line with the shot list, as of animation v11; v12–v19 changes are in the `ob_anim.py` notes; v1–v10 kept |
 | `the-onboarding-concept-v1.md` … `v9.md` | concepts | The development |
 | `ob_storyboard_v1..v3.png` (+ `_mute`), `ob_chain_v1..v2.png` | storyboard | The reaction chain and the mute versions |
 | `ob_cast_v1..v6.png`, `ob_client_looks_v1..v3.png`, `ob_sofia_v1..v3.png`, `ob_set_v1..v5.png` (+ phone checks) | sheets | The Client's looks, Sofía's pearls, the set |

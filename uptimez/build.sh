@@ -16,6 +16,8 @@
 #        ./build.sh on                  Office Noir: The Secret of a Stolen Heart: timing + mix (jazz-noir cue) from the
 #                                       kept takes, animatics, animation at 540 and native 1080, cover
 #        ./build.sh xmas2               Happy Compliance v2 (Pam v4, curved tails, no cropped signs): 540 + 1080, cover v2
+#        ./build.sh on2                 Office Noir 2: The Shadow of Fate (New Year special), motion test at 540 and the
+#                                       release drawn natively at 1080 from the kept takes, cover
 #        ./build.sh bc                  The Best Candidate, animation v3: timing + mix from the kept takes, the bubble
 #                                       checks on the board and on every drawing, then 540x960 and the 1080 master
 #        ./build.sh ob                  The Onboarding, animation v19: timing + mix (sparse vibes) from the kept takes,
@@ -240,6 +242,17 @@ build_mf() {
   echo "Wrote $out/uptimez_mf_anim_v2.mp4, _1080.mp4 and the cover"
 }
 
+build_on2() {
+  # Office Noir 2: The Shadow of Fate (New Year special). The kept takes are in src/on2_voices/ (not re-recorded).
+  # on2_motion.py: timing from the takes, the picture (the first Noir's look: LOOK3), the mix; "release" draws 1080.
+  local out=${OUT_DIR:-$HERE/office-noir-2}; mkdir -p "$out"
+  ( cd src
+    python3 on2_motion.py A2
+    python3 on2_motion.py A2 release
+    python3 thumb_on2.py "$out/on2_cover_v3.png"
+  )
+}
+
 build_on() {
   # Office Noir: The Secret of a Stolen Heart. The kept takes are in src/on_voices/ (sound_on.py takes / extra re-records
   # them; not needed to rebuild). on_anim.py: timing from the measured takes, the mix (jazz-noir cue, rain, effects) and
@@ -249,7 +262,7 @@ build_on() {
     python3 on_anim.py F
     python3 on_film.py preview
     python3 on_film.py release
-    python3 thumb_on.py "$out/on_cover_v2.png"
+    python3 thumb_on.py "$out/on_cover_v3.png"                          # v3 (thumb_on_v2.py draws v2)
     mv on_animatic_voiced.mp4 on_animatic_silent.mp4 "$out/"
     mv on_film_preview.mp4 "$out/uptimez_on_anim.mp4"
     mv on_film_1080.mp4 "$out/uptimez_on_anim_1080.mp4"
@@ -388,6 +401,7 @@ case "${1:-}" in
   bc)         build_bc ;;
   ob)         build_ob ;;
   on)         build_on ;;
+  on2)        build_on2 ;;
   iwry)       build_iwry ;;
   iwry_anim)  build_iwry_release ;;
   iwry_thumb) ( cd src && python3 thumb_iwry.py "${OUT_DIR:-$HERE/i-will-replace-you}/iwry_thumbnail.png" ) ;;
