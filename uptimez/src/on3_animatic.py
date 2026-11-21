@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v20"
+V = "v21"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -46,8 +46,8 @@ LINES = {                                                    # v6: the lines, pr
     "2.6": [("SOFIA", "Call me.", "s1", 1.05)],
     "3.1": [("N", "Nothing scares me.", "n5", 0.2)],
     "3.2": [("N", "I make my own fire.", "n6", 0.1)],
-    "3.4": [("N", "If you want to survive, you need to bargain.", "n6b", 0.1)],      # v7 (Tomas, at 0:25): he is on his way to the meeting about the fight
     "3.4d": [("DON", "Just looking.", "d1", 0.15)],
+    "4.1": [("N", "If you want to survive, you need to bargain.", "n6b", 0.15)],     # v21 (Tomas: "is it in its place? maybe after Just looking."): on his way in to her desk, as the set-up of "How much?" / "I name my price."; the alley's reveal of Don plays without a voice over it
     "4.3": [("CLIENT", "How much?", "c1", 0.3), ("MOM", "One hundred bucks.", "m3", 0.3)],
     "4.4": [("N", "I name my price.", "n7", 0.6)],
     "4.4a": [("MOM", "Your ticket. You're fighting.", "m4", 0.1)],
