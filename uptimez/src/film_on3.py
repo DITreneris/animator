@@ -1,4 +1,5 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v19 (v1 to v18 pinned). v19 (Tomas: "walking from the
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v20 (v1 to v19 pinned). v20 (Tomas: "very bad profiles, the proportions are not kept, 1/10"): PROFILE is off: they walk
+facing us as in v18 until the side drawings are redrawn from the front ones' parts and approved on a sheet. v19 (Tomas: "walking from the
 side: we do it"): the Client, Don and the woman under the umbrella walk in side drawings made for walking
 (profile_on3), and the cut-out turns between side and front; she goes out in front of him; the robe comes off and goes
 back on over four drawings; the LAST ROUND card passes above his head; the last push-in is not ten times into a small
@@ -141,6 +142,8 @@ def s20(t):
 
 def s21(t):
     x = lerp(250.0, 400.0, t / 1.1)
+    if not PROFILE:
+        return st.frame("S1", [mo.walk(stc.client(x), x, stc.Q, on=t < 1.1)], rain=_rain(t))
     return st.frame("S1", [_side("CLIENT", "client", x, stc.G - 30, stc.Q, 1, stc._sh)], rain=_rain(t))      # v19: from the side, striding
 
 
@@ -205,7 +208,12 @@ def s26(t):
 
     sh36 = lambda k, x_: stc._sh(k, x_, 36)
     going = t >= 1.9
-    if t < 1.0:                                              # v19: she walks in her side drawing, and turns to him as she stops
+    if not PROFILE:
+        def her(k):
+            k.c.save(); k.c.translate(0, 6 * math.sin((t - 1.4) * math.pi / 0.3) if 1.4 <= t < 1.7 else 0)       # her nod
+            mo.her(stc.sofia(sx, (-0.9, 0.2) if (stopped or sx > 575) else (-1, 0.1)), sx, stc.G - 30, stc.SC * 0.86, on=not stopped)(k)
+            k.c.restore()
+    elif t < 1.0:                                            # v19: she walks in her side drawing, and turns to him as she stops
         her = _turning(sx, ramp(t, 0.91, 0.09), _side("SOFIA", "her", sx, stc.G - 30, stc.SC * 0.86, -1, sh36))
     elif t < 1.9:
         def front(k):
@@ -224,6 +232,7 @@ def s27(t):
 
 # ---- v19: the walkers, from the side ----------------------------------------------------------------------------------
 import profile_on3 as pf
+PROFILE = False                                              # v20: off until the side drawings are approved on a sheet
 
 
 def _side(who, kind, x, feet, sc, dir_, shadow, **kw):
@@ -258,6 +267,8 @@ def _walk_then_face(t, stop, x, side, front, w=0.09):
 # ---- 03 the alley -------------------------------------------------------------------------------------------------
 def s31(t):
     x = lerp(-30.0, 70.0, t / 1.0)
+    if not PROFILE:
+        return al.frame2("A1", [mo.walk(al.client(x), x, al.Q, on=t < 1.0)], al.gang("aim", ramp(t, 0.5, 0.8) * 0.5))
     side = _side("CLIENT", "client", x, al.G - 12, al.Q, 1, al._sh, cig=True, folder=True)
     return al.frame2("A1", [_walk_then_face(t, 1.0, x, side, al.client(x))], al.gang("aim", ramp(t, 0.5, 0.8) * 0.5))
 
@@ -293,6 +304,8 @@ def s33b(t):
 
 def s34(t):
     x = 210.0 + 200.0 * t                            # v8: a hurried walk, in steps; he is still in the frame at the cut
+    if not PROFILE:
+        return al.frame2("A1", [mo.walk(al.client(x, "b_walk", (0.9, 0), cig=x < 300), x, al.Q, a=30.0)], al.gang("down", 0, True), cig=300 if x >= 300 else None)
     side = _side("CLIENT", "client", x, al.G - 12, al.Q, 1, al._sh, cig=x < 300, folder=True)
     return al.frame2("A1", [side], al.gang("down", 0, True), cig=300 if x >= 300 else None)
 
@@ -301,6 +314,12 @@ def s34b(t):
     """Don, bent over the cigarette end. On the wall beside his head the gun's shadow comes down and stops."""
     if t < 0.8:                                              # v8: he walks in on his own two feet
         x = 215.0 - 110.0 * (1 - t / 0.8) ** 1.3
+        if not PROFILE:
+            mo.NOW["walk"] = (x, 1)
+            try:
+                return al.frame2("A3w", [al.don_caught(x, 0.0)], al.gang("down", 0, True), cig=300)
+            finally:
+                mo.NOW.clear()
         side = _side("DON", "don", x, al.G - 12, al.SC, 1, lambda k, x_: al._sh(k, x_, 36), bent=1.0)      # v19: from the side, bent over his glass
         return al.frame2("A3w", [_walk_then_face(t, 0.8, x, side, al.don_caught(x, 0.0))], al.gang("down", 0, True), cig=300)
     return al.frame2("A3w", [al.barrel(ramp(t, 0.8, 0.45)), al.don_caught(215, 0.0)], al.gang("down", 0, True), cig=300)
