@@ -26,3 +26,28 @@ Two fresh viewers, mute. Sheet 1: ten stills from different places (the street, 
 ## Things both named in the stills that are not sizes
 
 A "T" shape floating at the ropes in 5.1a; a white "flame" over his head in 6.1 (the sponge's water); the robot's face smiles in 6.4 and is angry everywhere else; a stick between his boots in 5.1c (the stool's leg).
+
+# Cold test 59 (21 Nov): film v25 before the seat was drawn
+
+Two fresh viewers, ten stills and 7.2 to 7.3 at 10 a second. The Client was only lowered on his stool (as before, in proportion).
+
+- Sizes: the Referee is now "clearly the shortest" (both), "child-sized… reads as a boy" (one). He is the series' 80 % of Don; beside a 117 % Client he is about 60 % of him.
+- Sitting: **failed (both).** "I cannot tell, and that is the problem… no stool, no knees, no lap"; "It looks like the standing figure slid down the frame."
+- 7.3: the raised glove is no longer a punch ("It is not a punch", both); what it is for is "ambiguous" (both).
+- 7.2b: the Referee "appears out of nowhere" (both); the robot "tilted in 12 and upright in 13, with nothing in between".
+
+# Cold test 60 (21 Nov): the seat drawn (stool, knees under the robe, boots on the canvas)
+
+Two fresh viewers, eight stills and 7.2b at 10 a second.
+
+| Question | Viewer A | Viewer B | Verdict |
+|---|---|---|---|
+| Standing or sitting, 6.1, 6.3, 7.1 | all eight pictures named correctly; "Robe skirt is gone, both gloves rest on his knees, shins point straight down, stool legs show either side" | all eight correctly; "Both gloves rest side by side on his lap… thin stool legs show on either side" | **read (both)**; they take his knees for his gloves, and it still says "sitting" |
+| How good is the seat | "The sitting pose is weak… only the gloves on knees sell it"; in 6.3 "hard white horizontal bands across his lap" | in 6.3 "the lap area is badly drawn… looks like a rendering glitch" | read, not pretty: the hem's stripe over his knees in 6.3 |
+| Sizes across the pictures | "Nobody is clearly off-scale between pictures; fairly sure" | one mild doubt about Pam (low confidence) | read |
+| He gets up (7.1) | "he gets up off the stool, ready to go again" | "He is on his feet, so he has got up" | read |
+| The Referee comes in (7.2b) | "He pops in. He is absent in 7 and fully present in 8" | the same; "slides left… his legs look the same in every frame" | **failed (both)** |
+| The robot gets up | "one in-between frame (11)… a snap" | "a single frame step between 10 and 11" | **failed (both)** |
+| The hold after | "12-19 is eight identical frames" | the same | **failed (both)** |
+
+Cause of all three failures in 7.2b, found after the test: an earlier layer plays this shot nearly twice as fast as it was written, so its action was over in 0.4 s and the rest was a still. Changed after the test and **not re-tested**: the shot runs at half speed (the Referee walks in from outside the frame, on the door's side, over 0.5 s; the robot rights itself over the next 0.5 s, in the open).

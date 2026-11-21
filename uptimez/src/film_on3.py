@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v24 (v1 to v23 pinned). v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v25 (v1 to v24 pinned). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -83,6 +83,8 @@ _b0.REL *= CLIENT_BIG                                        # a head taller tha
 _r0.REL *= CLIENT_BIG / 1.12                                 # the robot grows with him (108 % of Don with his hat)
 import ring_rough_on3 as rr
 import ring_rough2_on3 as rr2
+rr2.SEAT = 65 * rr2.Q                                        # v25: a seated man's hips drop to the stool, his feet stay on the canvas
+rr2.SIT = (150, rr2.F - 36 + rr2.SEAT)
 import street_on3 as st
 import street_casts_on3 as stc
 import alley_on3 as al
@@ -1504,10 +1506,77 @@ def _don_back23(k, x, feet, s=1.0, pose=None, **kw):
 
 n2.detective_back = mo.alive(_don_back23, "DON", None, tween_pose=False, blinks=False)       # his back is a lit figure, not a flat "ghost"
 _f = {n: fn for n, d, fn in FILM}
+_V23_72 = (_f["7.2"], _f["7.2b"])
 _V23 = {"7.2": (2.2, lambda t, fn=_f["7.2"]: fn(t * 1.66 / 2.2)),                             # his three punches and nothing else
         "7.2b": (1.9, lambda t, a_=_f["7.2"], b_=_f["7.2b"]: a_(1.68 + t * (0.8 / 0.6)) if t < 0.6 else b_(t - 0.6)),   # the wide tail (the robot gets up), then the Referee
         "7.4": (0.95, _f["7.4"])}
 FILM = [(n,) + _V23[n] if n in _V23 else (n, d, fn) for n, d, fn in FILM]
+
+# ---- v25: he SITS (cold tests 58 and 59, all four viewers: "no stool, no knees, no lap… the standing figure slid down the
+# frame", so Pam and Don looked too big beside him). The stool, his shins and boots on the canvas, his body lowered onto
+# the seat, the robe over his knees. ----
+ROBE25 = (0.824, 0.122, 0.169)
+
+
+def _seated25(k, tape, look=(0.6, 0.1), face="tired"):
+    x, fl, s = rr2.SIT[0], rg.F - 36, rr2.Q
+    drop = 65 * s
+
+    def draw(k):
+        c = k.c
+        Y = lambda u: fl - u * s                                                                               # a height above the canvas, in his own units
+        with _plain21():
+            rect(k, x - 98 * s, Y(100), 196 * s, 14 * s, (0.36, 0.36, 0.38), 31, shadow=False, lw=2.2)           # the stool: its seat shows either side of him
+            for sx in (-92, 82):
+                rect(k, x + sx * s, Y(86), 10 * s, 86 * s, (0.26, 0.26, 0.28), 32, shadow=False, lw=2)
+            c.save(); c.rectangle(x - 400, Y(60), 800, 400); c.clip()                                            # shins and boots, where he stood
+            b.boxer(k, x, fl, s, "b_walk", face, look, tape=tape); c.restore()
+            c.save(); c.rectangle(x - 400, Y(63) - 2000, 800, 2000); c.clip()                                    # the rest of him, lowered onto the seat
+            o = b.boxer(k, x, fl + drop, s, "b_walk", face, look, tape=tape); c.restore()
+            for sg in (-1, 1):                                                                                   # his knees, forward under the robe, and its hem round each
+                kx, ky = x + sg * 40 * s, Y(84)
+                ellipse(k, kx, ky, 37 * s, 30 * s, ROBE25, 34 + sg, shadow=False, lw=2.6)
+                c.save(); c.new_path(); c.save(); c.translate(kx, ky); c.scale(37 * s, 30 * s); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.clip()
+                c.rectangle(kx - 60 * s, Y(66), 120 * s, 7 * s); c.set_source_rgb(0.953, 0.933, 0.882); c.fill()
+                c.restore()
+                c.set_source_rgb(0.62, 0.08, 0.12); c.set_line_width(2); c.set_line_cap(1)
+                c.new_path(); c.arc(kx, ky - 6 * s, 16 * s, math.pi * 1.15, math.pi * 1.85); c.stroke()            # the cloth pulled over the knee
+        return o
+    return mo.tracked("CLIENT", draw)(k)
+
+
+rr2._seated = _seated25
+_s63_22a.__globals__["_seated"] = _seated25
+rr2.shot_61.__globals__["_seated"] = _seated25               # 6.1 was rebuilt in v15 with its own copy
+
+
+class _B71:
+    """7.1: on the stool until he gets up (the shot's own copy draws him through this)."""
+    def __getattr__(self, n):
+        return getattr(b, n)
+
+    def boxer(self, k, x, f, s, *a, **kw):
+        if abs(f - rr2.SIT[1]) < 0.01:
+            return _seated25(k, True, (0.9, 0), "hard")
+        return b.boxer(k, x, f, s, *a, **kw)
+
+
+rr2.shot_71.__globals__["b"] = _B71()
+
+
+class _S71:
+    """7.1: the card passes above a bigger man's head."""
+    def __getattr__(self, n):
+        return getattr(so3, n)
+
+    def card(self, fk, x, y, s, *a, **kw):
+        return so3.card(fk, x, y, s * 0.62, *a, **kw)
+
+
+rr2.shot_71.__globals__["so3"] = _S71()
+_c71 = rr2.shot_71.__code__
+assert all(_c71.co_consts.count(v) == 1 for v in (250, 710, 610, 620)), _c71.co_consts
+rr2.shot_71.__code__ = _c71.replace(co_consts=tuple({250: 100, 710: 860, 610: 313, 620: 325}.get(v, v) if type(v) is int else v for v in _c71.co_consts))
 
 # ---- v24 (Tomas: sizes "by the series' proportions"): the Client is the series' size (CLIENT_BIG, at the top); the shots whose
 # framing is a close view of him alone keep the framing they were approved with ----
@@ -1575,7 +1644,11 @@ def _shot72_24():
     src = inspect.getsource(m.shot_72b)                       # 7.2b: he is where 7.2 left him, and the dent is where 7.2 made it
     for old, new in (("        x = HITX - 80 * back\n", "        x = FX24 - 18 * back\n"),
                      ("ellipse(k, x - 16, f - 86, 13, 10, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)", "ellipse(k, x - 16 * RB24, f - DY24, 10, 8, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)"),
-                     ("        x = lerp(546.0, 396.0, inn)\n", "        x = lerp(546.0, 384.0, inn)\n")):
+                     ("        x = lerp(546.0, 396.0, inn)\n", "        x = lerp(650.0, 372.0, inn)\n"),
+                     ("    inn = lerp(0.0, 1.0, t / 0.3)\n", "    inn = lerp(0.0, 1.0, t / 0.5)\n"),          # v25: he walks in (he \"teleported\", test 58)
+                     ("rg.shadow(k, x, F - 60, 36); ca.referee(k, x, F - 60,", "rg.shadow(k, x, F - 60, 36); ca.referee(k, x, F - 60 - (5 * abs(math.sin(t * 19)) if inn < 1 else 0),"),
+                     ("        rock = 0.28 * (1 - lerp(0.0, 1.0, (t - 0.6) / 0.4))\n",
+                      "        u_ = min(1.0, max(0.0, (t - 0.3) / 0.75))\n        rock = 0.28 * (1 - u_) ** 2 - 0.06 * math.sin(u_ * math.pi * 3) * (1 - u_)\n")):   # v25: it rights itself in the open, with a wobble
         assert old in src, old
         src = src.replace(old, new)
     g2 = rr2.shot_72b.__globals__
@@ -1593,6 +1666,9 @@ def _shot72_24():
 
 _shot72_24()
 
+_f = {n: (d, fn) for n, d, fn in FILM}
+_V25 = {"7.2b": (1.55, lambda t, a_=_V23_72[0], b_=_V23_72[1]: a_(1.68 + t * 2.0) if t < 0.4 else b_((t - 0.4) * 0.5))}   # at half speed: this layer plays 7.2b nearly twice as fast as it was written   # v25: 0.4 s of the wide tail, then he walks in while it gets up
+FILM = [(n,) + _V25[n] if n in _V25 else (n, d, fn) for n, d, fn in FILM]
 CLOSE24 = ("1.1", "4.2", "4.4c", "5.3", "5.6", "7.5", "8.1", "8.5")
 FILM = [(n, d, _framed(fn) if n in CLOSE24 else fn) for n, d, fn in FILM]
 
