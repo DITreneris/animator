@@ -152,8 +152,11 @@ def phone(k, kind="guarantee", seed=940):
         T(c, "9:00", cx, y0 + 670, 56, col=GREY)
     elif kind == "contact3":                                                   # props v3: a contact card, saved
         T(c, "NEW CONTACT", cx, y0 + 60, 28, col=GREY)
-        _avatar(k, cx, y0 + 190, 90, (0.40, 0.26, 0.20), seed + 1)
-        ellipse(k, cx, y0 + 206, 60, 64, kit.PEOPLE.get("PAM", {}).get("skin", (0.96, 0.82, 0.70)), seed + 2, shadow=False, outline=False)
+        if REAL_PAM[0]:
+            pam_photo(k, cx, y0 + 190, 92, seed + 1)
+        else:
+            _avatar(k, cx, y0 + 190, 90, (0.40, 0.26, 0.20), seed + 1)
+            ellipse(k, cx, y0 + 206, 60, 64, kit.PEOPLE.get("PAM", {}).get("skin", (0.96, 0.82, 0.70)), seed + 2, shadow=False, outline=False)
         T(c, "Pam", cx, y0 + 370, 64)
         T(c, "555 0142", cx, y0 + 440, 46, col=INK, bold=False)
         T(c, "note: finds things", cx, y0 + 500, 30, col=GREY, bold=False)
@@ -196,8 +199,9 @@ def phone(k, kind="guarantee", seed=940):
             c.set_source_rgb(*GRN); c.set_line_width(5); c.move_to(x0 + 40, y0 + 630); c.line_to(x0 + 52, y0 + 618)
             c.line_to(x0 + 62, y0 + 640); c.line_to(x0 + 76, y0 + 612); c.stroke()            # the brand mark, simplified
             T(c, "UptimeZ:", x0 + 100, y0 + 626, 30, center=False)
-            T(c, "“Correct.", x0 + 100, y0 + 664, 34, bold=False, center=False)
-            T(c, "We will recover.”", x0 + 100, y0 + 700, 34, bold=False, center=False)
+            r1, r2 = REPLY_TXT[0] or ("“Correct.", "We will recover.”")
+            T(c, r1, x0 + 100, y0 + 664, 34, bold=False, center=False)
+            T(c, r2, x0 + 100, y0 + 700, 34, bold=False, center=False)
             c.save(); c.push_group()                                                                # her draft, greyed
             _avatar(k, x0 + 52, y0 + 770, 26, (0.98, 0.84, 0.40), seed + 9, ring=SOFIA_RING)
             T(c, "We value every", x0 + 100, y0 + 764, 28, col=GREY, bold=False, center=False)
@@ -219,9 +223,31 @@ def _client_avatar(k, x, y, r, seed):
     co_.gear(k, x, y, r * 0.62, col=(0.86, 0.68, 0.22), seed=seed + 1)
 
 
-PROPS4 = [False]                                          # props v4 (the third props review): see plan(), ai_site(), phone2()
+PROPS4 = [False]
+REAL_PAM = [False]                                        # props v5 (Tomas): her contact photo is Pam herself, drawn
+
+
+def pam_photo(k, cx, cy, r, seed=0):
+    """Pam's head and shoulders in a round photo (the way the portrait frames the Client: the real figure, clipped)."""
+    import pam_bc as pb_
+    c = k.c
+    c.save(); c.new_path(); c.arc(cx, cy, r, 0, 2 * math.pi); c.clip()
+    c.set_source_rgb(0.86, 0.90, 0.96); c.paint()
+    s_ = r / 62.0
+    h = kit.PEOPLE["PAM"]["h"]
+    head_off = (-300 * h + 78 - 44) * s_                                      # kit.person: the head's height above the feet
+    pb_.pam(k, cx, cy + 0.15 * r - head_off, s_, "stand", "pleased", (0, 0.1), glasses="low")
+    c.restore()
+    c.set_source_rgb(*INK); c.set_line_width(max(2, r * 0.05)); c.new_path(); c.arc(cx, cy, r, 0, 2 * math.pi); c.stroke()                                          # props v4 (the third props review): see plan(), ai_site(), phone2()
 REPLY_BIG = [False]                                       # props v3: the reply dominates its insert
 SAME_LAYOUT = [False]                                     # props v3: the UPDATE keeps the post's lines where they were
+
+
+REPLY_TXT = [None]          # One Star v14 (Tomas, 20 Nov): the company's reply, opt-in, as two lines; None = v13's
+REPLY_V14 = ("\u201cOur AI does", "not lose files.\u201d")  # "Correct. We will recover." did not work: the AI fights back
+REPLY_V15 = ("\u201cShut off!", "Our AI does not", "lose files!\u201d")  # v15 (Tomas): the AI matched his tone, in a
+REPLY_V15_SWEAR = ("\u201cF*ck off!", "Our AI does not", "lose files!\u201d")  # robot's words ("Shut off!"); the swear kept
+REPLY_V14_SMALL = ("\u201cOur AI", "does not lose files.\u201d")   # the same, broken for the small reply row
 
 
 def phone2(k, kind="crisis", seed=950):
@@ -272,12 +298,37 @@ def phone2(k, kind="crisis", seed=950):
                 c.set_source_rgb(*GRN); c.set_line_width(5); c.move_to(x0 + 40, ry + 52); c.line_to(x0 + 52, ry + 40)
                 c.line_to(x0 + 62, ry + 62); c.line_to(x0 + 76, ry + 34); c.stroke()
                 T(c, "UptimeZ:", x0 + 100, ry + 38, 26, center=False, col=GREY)
-                T(c, "\u201cCorrect.", x0 + 100, ry + 82, 40, center=False)
-                T(c, "We will recover.\u201d", x0 + 30, ry + 126, 40, center=False)
-                ry += 30
+                if REPLY_TXT[0] and len(REPLY_TXT[0]) == 3:                    # v15: the swear big, the claim under it
+                    c.set_source_rgb(0.86, 0.88, 0.92); c.rectangle(x0 + 10, ry, w - 20, 190); c.fill()
+                    rect(k, x0 + 30, ry + 22, 56, 56, NAVY, seed + 8, shadow=False, lw=1.5)
+                    c.set_source_rgb(*GRN); c.set_line_width(5); c.move_to(x0 + 40, ry + 52); c.line_to(x0 + 52, ry + 40)
+                    c.line_to(x0 + 62, ry + 62); c.line_to(x0 + 76, ry + 34); c.stroke()
+                    T(c, "UptimeZ:", x0 + 100, ry + 38, 26, center=False, col=GREY)
+                    r1, r2, r3 = REPLY_TXT[0]
+                    T(c, r1, x0 + 100, ry + 86, 46, center=False)
+                    T(c, r2, x0 + 30, ry + 134, 36, center=False)
+                    T(c, r3, x0 + 30, ry + 174, 36, center=False)
+                    ry += 80
+                else:
+                    r1, r2 = REPLY_TXT[0] or ("\u201cCorrect.", "We will recover.\u201d")
+                    T(c, r1, x0 + 100, ry + 82, 40, center=False)
+                    T(c, r2, x0 + 30, ry + 126, 40, center=False)
+                    ry += 30
             else:
-                T(c, "UptimeZ: \u201cCorrect.", x0 + 100, ry + 46, 30, center=False, bold=(kind == "reply"))
-                T(c, "We will recover.\u201d", x0 + 100, ry + 84, 30, center=False, bold=(kind == "reply"))
+                if REPLY_TXT[0] and len(REPLY_TXT[0]) == 3:                    # v15: three lines, a taller row
+                    c.set_source_rgb(0.86, 0.88, 0.92); c.rectangle(x0 + 10, ry, w - 20, 150); c.fill()
+                    rect(k, x0 + 30, ry + 22, 56, 56, NAVY, seed + 8, shadow=False, lw=1.5)
+                    c.set_source_rgb(*GRN); c.set_line_width(5); c.move_to(x0 + 40, ry + 52); c.line_to(x0 + 52, ry + 40)
+                    c.line_to(x0 + 62, ry + 62); c.line_to(x0 + 76, ry + 34); c.stroke()
+                    r1, r2, r3 = REPLY_TXT[0]
+                    T(c, "UptimeZ: " + r1, x0 + 100, ry + 46, 30, center=False, bold=(kind == "reply"))
+                    T(c, r2, x0 + 100, ry + 84, 30, center=False, bold=(kind == "reply"))
+                    T(c, r3, x0 + 100, ry + 120, 30, center=False, bold=(kind == "reply"))
+                    ry += 0 if kind == "pam" else 40                           # 6.3b: her card covers the dimmed rest
+                else:
+                    r1, r2 = (REPLY_V14_SMALL if REPLY_TXT[0] else None) or ("\u201cCorrect.", "We will recover.\u201d")
+                    T(c, "UptimeZ: " + r1, x0 + 100, ry + 46, 30, center=False, bold=(kind == "reply"))
+                    T(c, r2, x0 + 100, ry + 84, 30, center=False, bold=(kind == "reply"))
             if kind == "reply" and REPLY_BIG[0]:
                 c.save(); c.push_group()
                 _avatar(k, x0 + 44, ry + 150, 16, (0.98, 0.84, 0.40), seed + 9, ring=SOFIA_RING)
@@ -433,6 +484,13 @@ def ai_site(k, seed=975):
 
 # --- the plan -----------------------------------------------------------------------------------------------------------
 
+FLIP0 = [None]              # One Star scene 4 (opt-in): the first strip's turn, radians (pi = upside down, 0 = right)
+GAP_PLAIN = [False]         # layout v2: the gap at 7 as a torn hole only: no red outline, no red 7 (it gave the answer away)
+TAPE7_DY = [0.0]            # scene 4: the tape higher on bay 7, clear of its number
+NOTAPE7 = [False]           # scene 4: the 7 laid in, before her tape goes across it
+TITLE_TAPE = [False]        # layout v2: MY GARAGES in pen on one strip of tape (the printed title is cut by the strips)
+
+
 def plan(k, state="before", seed=740):
     """The taped plan, top shot. state: before (ep 10: the first strip upside down, a hole at 7), turned (4.1: the first
     strip the right way round, the hole still there), whole (4.3: the 7 in, taped), number (6.3: her number in pen on
@@ -460,7 +518,8 @@ def plan(k, state="before", seed=740):
             cx_ = (x0 + x1) / 2
             dx, dy, a = jit[i]
             flip = state == "before" and i == 0
-            c.save(); c.translate(dx, dy); c.translate(cx_, -9); c.rotate(a + (math.pi if flip else 0)); c.translate(-cx_, 9)
+            turn = (math.pi if flip else 0) if (FLIP0[0] is None or i != 0) else FLIP0[0]
+            c.save(); c.translate(dx, dy); c.translate(cx_, -9); c.rotate(a + turn); c.translate(-cx_, 9)
             hgt = 104 if (i != 1 or state in ("whole", "number")) else 58
             c.save(); c.rectangle(x0, -61, x1 - x0, hgt); c.clip()
             ac.plan_open(k, 0, 0, 1.0, seed)
@@ -477,10 +536,17 @@ def plan(k, state="before", seed=740):
         for j in range(7):                                                     # a torn top edge
             c.line_to(hx0 + hw * (j + 0.5) / 7, hy0 + (1.6 if j % 2 else -1.2)); c.line_to(hx0 + hw * (j + 1) / 7, hy0)
         c.line_to(hx0 + hw, hy0 + hh); c.line_to(hx0, hy0 + hh); c.close_path()
-        c.set_source_rgb(0.86, 0.78, 0.64); c.fill_preserve()                  # the light desk through it
-        c.set_source_rgb(*RED); c.set_line_width(1.0); c.set_dash([2.4, 1.6]); c.stroke(); c.set_dash([])
-        c.select_font_face("Inter", 0, 1); c.set_font_size(11); c.set_source_rgba(*RED, 0.85)
-        e = c.text_extents("7"); c.move_to(bx + bw / 2 - e.x_advance / 2, by + bh / 2 + 8); c.show_text("7")
+        if GAP_PLAIN[0]:                                                       # a real hole: whatever lies under shows
+            c.set_source_rgba(0.04, 0.05, 0.10, 0.45); c.fill_preserve()        # through, in the plan's shadow
+            c.set_source_rgb(0.96, 0.96, 0.98); c.set_line_width(1.1); c.stroke()
+        else:
+            c.set_source_rgb(0.86, 0.78, 0.64); c.fill_preserve()              # the light desk through it
+        if GAP_PLAIN[0]:
+            pass
+        else:
+            c.set_source_rgb(*RED); c.set_line_width(1.0); c.set_dash([2.4, 1.6]); c.stroke(); c.set_dash([])
+            c.select_font_face("Inter", 0, 1); c.set_font_size(11); c.set_source_rgba(*RED, 0.85)
+            e = c.text_extents("7"); c.move_to(bx + bw / 2 - e.x_advance / 2, by + bh / 2 + 8); c.show_text("7")
     elif state == "turned":
         c.set_source_rgb(*INK); c.set_line_width(1.0); c.set_dash([3, 2])
         c.rectangle(bx - 2, by - 3, bw + 4, bh + 16); c.stroke(); c.set_dash([])
@@ -490,8 +556,15 @@ def plan(k, state="before", seed=740):
             c.set_source_rgba(0.98, 0.96, 0.86, 0.72); c.rectangle(-7, -3.5, 14, 7); c.fill()
             c.set_source_rgba(0.6, 0.55, 0.4, 0.5); c.set_line_width(0.6); c.rectangle(-7, -3.5, 14, 7); c.stroke()
             c.restore()
-    if state in ("whole", "number"):                                                             # the 7, taped in
-        c.save(); c.translate(bx + bw / 2, by + bh / 2 + 4); c.rotate(-0.06)
+    if TITLE_TAPE[0] and state != "number":                                                     # MY GARAGES, in her pen
+        c.save(); c.translate(8, -54); c.rotate(-0.03)
+        c.set_source_rgb(0.98, 0.96, 0.86); c.rectangle(-36, -6.5, 72, 13); c.fill()
+        c.set_source_rgba(0.6, 0.55, 0.4, 0.8); c.set_line_width(0.6); c.rectangle(-36, -6.5, 72, 13); c.stroke()
+        c.set_source_rgb(0.10, 0.15, 0.55); c.select_font_face("Comic Neue", 0, 1); c.set_font_size(9.5)
+        e = c.text_extents("MY GARAGES"); c.move_to(-e.x_advance / 2, 3.4); c.show_text("MY GARAGES")
+        c.restore()
+    if state in ("whole", "number") and not NOTAPE7[0]:                                          # the 7, taped in
+        c.save(); c.translate(bx + bw / 2, by + bh / 2 + 4 + TAPE7_DY[0]); c.rotate(-0.06)
         th_ = 12 if state == "number" else 10
         c.set_source_rgba(0.98, 0.96, 0.86, 0.85); c.rectangle(-bw / 2 - 4, -th_ / 2, bw + 8, th_); c.fill()
         c.set_source_rgba(0.6, 0.55, 0.4, 0.5); c.set_line_width(0.6); c.rectangle(-bw / 2 - 4, -th_ / 2, bw + 8, th_); c.stroke()

@@ -1,0 +1,145 @@
+{
+ "total": 64.833,
+ "shots": [
+  {
+   "shot": "1.2",
+   "line": {
+    "key": "1.2",
+    "who": "CLIENT",
+    "text": "Paid $999. They lost my blueprint. My lawyer will call.",
+    "t0": 0.5,
+    "t1": 5.884
+   }
+  },
+  {
+   "shot": "1.4r",
+   "line": {
+    "key": "1.4r",
+    "who": "ROBOT",
+    "text": "Reply drafted. Human approval required.",
+    "t0": 6.5,
+    "t1": 8.868
+   }
+  },
+  {
+   "shot": "1.4d",
+   "line": {
+    "key": "1.4d",
+    "who": "DON",
+    "text": "Approved.",
+    "t0": 9.068,
+    "t1": 9.786
+   }
+  },
+  {
+   "shot": "1.4b",
+   "line": {
+    "key": "1.4b",
+    "who": "ROBOT",
+    "text": "Shut off! Our AI does not lose files!",
+    "t0": 10.583,
+    "t1": 12.729
+   }
+  },
+  {
+   "shot": "2.1",
+   "line": {
+    "key": "2.1",
+    "who": "DON",
+    "text": "Let's fix this together.",
+    "t0": 13.833,
+    "t1": 15.332
+   }
+  },
+  {
+   "shot": "2.2",
+   "line": {
+    "key": "2.2",
+    "who": "CLIENT",
+    "text": "Nine o'clock. Your office.",
+    "t0": 15.85,
+    "t1": 17.546
+   }
+  },
+  {
+   "shot": "3.1r",
+   "line": {
+    "key": "3.1r",
+    "who": "ROBOT",
+    "text": "Blueprint generated. Human approval required.",
+    "t0": 18.333,
+    "t1": 20.772
+   }
+  },
+  {
+   "shot": "3.1d",
+   "line": {
+    "key": "3.1d",
+    "who": "DON",
+    "text": "Approved.",
+    "t0": 20.972,
+    "t1": 21.69
+   }
+  },
+  {
+   "shot": "3.3",
+   "line": {
+    "key": "3.3",
+    "who": "DON",
+    "text": "Recovered.",
+    "t0": 24.333,
+    "t1": 25.168
+   }
+  },
+  {
+   "shot": "3.5",
+   "line": {
+    "key": "3.5",
+    "who": "CLIENT",
+    "text": "Is this a joke?",
+    "t0": 27.583,
+    "t1": 28.657
+   }
+  },
+  {
+   "shot": "4.4",
+   "line": {
+    "key": "4.4",
+    "who": "ROBOT",
+    "text": "The result was obtained by a h-human.",
+    "t0": 40.417,
+    "t1": 42.597
+   }
+  },
+  {
+   "shot": "5.1",
+   "line": {
+    "key": "5.1",
+    "who": "CLIENT",
+    "text": "Your number.",
+    "t0": 44.0,
+    "t1": 44.813
+   }
+  },
+  {
+   "shot": "5.4d",
+   "line": {
+    "key": "5.4d",
+    "who": "DON",
+    "text": "Customer success.",
+    "t0": 52.833,
+    "t1": 54.19
+   }
+  },
+  {
+   "shot": "6.5",
+   "line": {
+    "key": "6.5",
+    "who": "SOFIA",
+    "text": "Still one star.",
+    "t0": 61.467,
+    "t1": 62.342
+   }
+  }
+ ]
+}
