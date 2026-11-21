@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the boxing scene as it stands in animatic v15, drawn out for review (no change to the film).
+"""OFFICE NOIR 3: the boxing scene drawn out for review, v2 (v1 pinned: animatic v15, before the fixes): animatic v17,
+after film v21 and v22. The plan is now the real empty ring with each camera's frame drawn on it (the set is a flat
+drawing seen from the front: a camera is a crop, it has no lens position); the continuity chart says why somebody is not
+in a picture (out of frame, gone out) instead of marking it red.
+v1: the boxing scene as it stands in animatic v15, drawn out for review (no change to the film).
 Makes, in office-noir-3/ring_analysis_v1/: 1_timeline.png (shots, lines, blows, motion, loudness), 2_plan.png (the
 ring from above with the camera set-ups), 3_continuity.png (who is where on screen in every shot, and the states).
 The frame sheets block_A..D are cut from the animatic by the same shot times."""
@@ -7,9 +11,11 @@ import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, FancyBboxPatch, Polygon, Circle
 
-OUT = "../office-noir-3/ring_analysis_v1/"
-m = json.load(open("on3_animatic_timing_v15.json"))
-T0, T1 = 38.167, 81.267
+OUT = "../office-noir-3/ring_analysis_v2/"
+VID = "../office-noir-3/on3_animatic_v17.mp4"
+m = json.load(open("on3_animatic_timing_v17.json"))
+T0 = next(a[1] for a in m["shots"] if a[0] == "5.1a"); T1 = next(a[1] + a[2] for a in m["shots"] if a[0] == "7.5")
+LEN_ = T1 - T0
 SH = [(a[0], a[1], a[2]) for a in m["shots"] if T0 - 0.01 <= a[1] < T1]
 LINES = [l for l in m["lines"] if T0 <= l[0] < T1]
 BLOCKS = [("A  įžanga", "5.1a", "5.1c"), ("B  pirmas raundas", "5.2a", "5.6"), ("C  kampas ir detektyvas", "6.1", "6.4"), ("D  paskutinis raundas", "7.1", "7.5")]
@@ -18,14 +24,22 @@ KIND = {"5.1a": "W", "5.1a2": "C", "5.1b": "I", "5.1c": "M", "5.2a": "W", "5.2":
         "7.4": "I", "7.4b": "I", "7.4c": "I", "7.5": "C"}
 COL = {"W": "#4c78a8", "M": "#72b7b2", "C": "#f58518", "I": "#b0b0b0", "X": "#9d7cc2"}
 NAME = {"W": "platus planas (visas ringas)", "M": "vidutinis (kampas, du veikėjai)", "C": "stambus planas", "I": "intarpas (ne ringe / detalė)", "X": "keli planai viename kadre"}
-BLOWS = [(47.75, "Kliento smūgis\nsustoja ore"), (52.55, "roboto smūgis:\njis krenta"), (71.0, "Kliento smūgis\npataiko"), (80.85, "roboto smūgis\n(kilpa)")]
-FIGHT = [(46.9, 48.5), (52.4, 53.67), (70.13, 73.23), (79.97, 81.27)]      # two fighters acting on each other
-WHAT = {"5.1a": "ringas, Sofía neša ROUND 1", "5.1a2": "Sofía stambiai", "5.1b": "planas virš ringo, pirštinė", "5.1c": "Pam nurengia; gongas; chalatas atgal",
-        "5.2a": "abu centre; robotas; jo žvilgsnis", "5.2": "jis muša, smūgis sustoja", "5.3": "roboto akimis: APPROVAL", "5.4": "Mama: Approved.",
-        "5.4b": "mygtukas", "5.5": "varnelė; smūgis; jis krenta", "5.6": "iš viršaus: guli, skaičiuoja", "6.1": "Pam: kempinė, pleistras", "6.2": "padalytas: robotas / Mama",
-        "6.2a": "Dono siluetas duryse", "6.2b": "Donas ateina, blykstės", "6.2c": "Donas lipa per virvę", "6.3": "aplankas; nuotrauka", "6.4": "CASE CLOSED; planas; teisėjas",
-        "7.1": "jis atsistoja (LAST ROUND)", "7.2": "jis muša robotą", "7.2b": "teisėjas: Break!", "7.3": "jis siekia plano", "7.4": "robotas laukia; Mama", "7.4b": "mygtukas",
-        "7.4c": "varnelė", "7.5": "smūgis į veidą"}
+def _st(n):
+    return next(a[1] for a in m["shots"] if a[0] == n)
+
+
+def _en(n):
+    return next(a[1] + a[2] for a in m["shots"] if a[0] == n)
+
+
+BLOWS = [(_st("5.2") + 0.8, "Kliento smūgis\nsustoja ore"), (_st("5.5") + 0.67, "roboto smūgis:\njis krenta"), (_st("7.2") + 1.3, "Kliento trys\nsmūgiai"), (_st("7.5") + 0.78, "roboto smūgis\n(kilpa)")]
+FIGHT = [(_st("5.2"), _en("5.2")), (_st("5.5") + 0.25, _en("5.5")), (_st("7.2"), _en("7.2b")), (_st("7.5"), _en("7.5"))]      # two fighters acting on each other
+WHAT = {"5.1a": "ringas, Sofía neša ROUND 1 per visą priekį", "5.1a2": "Sofía stambiai", "5.1b": "planas virš ringo, pirštinė", "5.1c": "chalatas užstringa; gongas; atgal",
+        "5.2a": "abu centre; robotas; jo žvilgsnis", "5.2": "jis muša, smūgis sustoja (priartinta)", "5.3": "roboto akimis: APPROVAL", "5.4": "Mama neskaito, ranka leidžiasi",
+        "5.4b": "mygtukas", "5.5": "varnelė; pirštinės; smūgis; krenta", "5.6": "iš viršaus: guli, skaičiuoja, Pam tempia", "6.1": "Pam: kempinė, pleistras", "6.2": "padalytas: robotas / Mama",
+        "6.2a": "Dono siluetas duryse", "6.2b": "Donas ateina, blykstės", "6.2c": "Donas lipa per virvę", "6.3": "aplankas su nuotrauka; lupa", "6.4": "CASE CLOSED; Donas išeina; žvilgsnis",
+        "7.1": "jis atsistoja (LAST ROUND)", "7.2": "jis muša robotą (trys smūgiai)", "7.2b": "teisėjas: Break!", "7.3": "jis siekia plano", "7.4": "suskilęs ekranas laukia", "7.4b": "mygtukas",
+        "7.4c": "varnelė; Approved.", "7.5": "smūgis į veidą"}
 
 
 def start(name):
@@ -37,7 +51,17 @@ def end(name):
 
 
 def timeline():
-    mot = np.load("/tmp/rb/motion.npy"); cut = np.load("/tmp/rb/cut.npy"); db = np.load("/tmp/rb/db.npy")
+    import subprocess, glob, os, tempfile
+    from PIL import Image
+    d_ = tempfile.mkdtemp()
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(T0), "-t", str(LEN_), "-i", VID, "-vf", "fps=30,scale=90:160", d_ + "/%05d.png"], check=True)
+    prev, mot = None, []
+    for f_ in sorted(glob.glob(d_ + "/*.png")):
+        a_ = np.asarray(Image.open(f_).convert("L"), dtype=np.float32); mot.append(0 if prev is None else float(np.abs(a_ - prev).mean())); prev = a_
+    mot = np.array(mot); cut = mot > 22
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(T0), "-t", str(LEN_), "-i", VID, "-ac", "1", "-ar", "8000", "-f", "f32le", d_ + "/a.raw"], check=True)
+    au = np.fromfile(d_ + "/a.raw", dtype=np.float32)
+    db = np.array([20 * np.log10(np.sqrt((au[i:i + 1600] ** 2).mean() + 1e-12) + 1e-6) for i in range(0, len(au) - 1600, 1600)])
     mm = mot.copy(); mm[cut] = np.nan
     for i in np.where(cut)[0]:
         mm[max(0, i - 1):i + 2] = np.nan
@@ -53,7 +77,7 @@ def timeline():
         x0, x1 = start(s0), end(s1)
         a.add_patch(Rectangle((x0, 1.08), x1 - x0, 0.42, fc="#222222", ec="white", lw=2))
         a.text((x0 + x1) / 2, 1.29, "%s   %.1f s" % (lab, x1 - x0), ha="center", va="center", color="white", fontsize=13, weight="bold")
-    a.set_ylim(0, 1.55); a.set_yticks([]); a.set_title("Bokso scena animatike v15: 0:38,2 – 1:21,3 (43,1 s, 26 kadrai). Kadrai pagal plano tipą", loc="left", fontsize=15, weight="bold")
+    a.set_ylim(0, 1.55); a.set_yticks([]); a.set_title("Bokso scena animatike v17 (po pataisų): %d:%04.1f – %d:%04.1f (%.1f s, 26 kadrai; v15 buvo 43,1 s). Kadrai pagal plano tipą" % (T0 // 60, T0 % 60, T1 // 60, T1 % 60, LEN_) + "", loc="left", fontsize=15, weight="bold")
     a.legend(handles=[Rectangle((0, 0), 1, 1, fc=COL[k_]) for k_ in "WMCIX"], labels=[NAME[k_] for k_ in "WMCIX"], ncol=5, loc="upper right", bbox_to_anchor=(1, 1.42), frameon=False, fontsize=10)
     a = ax[1]
     for n, s, d in SH:
@@ -73,7 +97,7 @@ def timeline():
         a.annotate(lab, (x, np.nanmax(sm) * 0.78), ha="center", fontsize=9.5, color="#b71c1c", weight="bold")
         a.plot([x], [np.nanmax(sm) * 0.70], marker="*", ms=18, color="#e45756")
     a.set_ylabel("judesys kadre\n(pikselių pokytis,\nbe montažo šuolių)", fontsize=10); a.set_ylim(0, np.nanmax(sm) * 1.05)
-    a.text(T0 + 0.1, np.nanmax(sm) * 0.93, "raudonai: kovotojai veikia vienas kitą (%.1f s iš 43,1 s = %d %%)" % (sum(b - a_ for a_, b in FIGHT), round(100 * sum(b - a_ for a_, b in FIGHT) / 43.1)), fontsize=11, color="#b71c1c")
+    a.text(T0 + 0.1, np.nanmax(sm) * 0.93, "raudonai: kovotojai veikia vienas kitą (%.1f s iš %.1f s = %d %%; v15: 7,3 s iš 43,1 s = 17 %%)" % (sum(b - a_ for a_, b in FIGHT), LEN_, round(100 * sum(b - a_ for a_, b in FIGHT) / LEN_)), fontsize=11, color="#b71c1c")
     a = ax[3]
     cuts = t[cut]
     cps = np.array([((cuts >= x - 1.5) & (cuts < x + 1.5)).sum() / 3.0 for x in t])
@@ -81,11 +105,11 @@ def timeline():
     for x in cuts:
         a.axvline(x, color="#5e3c99", lw=0.6, alpha=0.6, ymax=0.15)
     a.set_ylabel("montažo šuoliai\nper sekundę\n(3 s langas)", fontsize=10)
-    a.text(T0 + 0.1, cps.max() * 0.85, "iš viso %d šuoliai, vidutiniškai kas %.1f s" % (len(cuts), 43.1 / len(cuts)), fontsize=11, color="#5e3c99")
+    a.text(T0 + 0.1, cps.max() * 0.85, "iš viso %d šuoliai, vidutiniškai kas %.1f s" % (len(cuts), LEN_ / len(cuts)), fontsize=11, color="#5e3c99")
     a = ax[4]
     td = T0 + np.arange(len(db)) * 0.2
     a.fill_between(td, -45, db, color="#54a24b", alpha=0.6, lw=0); a.set_ylim(-45, -5); a.set_ylabel("garsas, dB\n(juodraštinis\nmiksas)", fontsize=10)
-    a.set_xlim(T0, T1); a.set_xticks(np.arange(39, 82, 1)); a.set_xticklabels(["%d:%02d" % (x // 60, x % 60) for x in range(39, 82)], fontsize=8.5)
+    a.set_xlim(T0, T1); a.set_xticks(np.arange(int(T0) + 1, int(T1) + 1, 1)); a.set_xticklabels(["%d:%02d" % (x // 60, x % 60) for x in range(int(T0) + 1, int(T1) + 1)], fontsize=8.5)
     for a_ in ax:
         for lab, s0, s1 in BLOCKS[1:]:
             a_.axvline(start(s0), color="black", lw=1.6, ls="--")
@@ -95,56 +119,65 @@ def timeline():
 
 
 def plan():
-    fig, ax = plt.subplots(figsize=(20, 14)); ax.set_aspect("equal")
-    ax.add_patch(Rectangle((60, 0), 580, 300, fc="#eeeeee", ec="black", lw=3))                                   # the canvas
-    for i in (12, 24, 36):
-        ax.add_patch(Rectangle((60 - i, -i), 580 + 2 * i, 300 + 2 * i, fc="none", ec="#999999", lw=1))
-    ax.text(350, 285, "RINGAS (schema iš viršaus; gylis sąlyginis, nes dekoracija piešta iš priekio)", ha="center", fontsize=12, color="#555555")
-    for (x, y) in ((60, 0), (640, 0), (60, 300), (640, 300)):
-        ax.add_patch(Circle((x, y), 9, fc="black"))
-    pts = {"Pam\n(prie jo kampo)": (88, 60, "#00796b"), "taburetė": (165, 150, "#777777"), "KLIENTAS\n(kovos vieta)": (296, 110, "#d32f2f"),
-           "teisėjas": (368, 215, "#ef6c00"), "ROBOTAS\n(kovos vieta)": (452, 110, "#5d4037"), "roboto kampas\n(laidas, tepalinė)": (600, 75, "#5d4037")}
-    for lab, (x, y, c) in pts.items():
-        ax.add_patch(Circle((x, y), 15, fc=c, ec="black", alpha=0.9)); ax.text(x + (26 if x < 100 else 0), y - (20 if x < 100 else 24), lab, ha="left" if x < 100 else "center", va="top", fontsize=11, color=c, weight="bold")
-    ax.annotate("", (430, 110), (318, 110), arrowprops=dict(arrowstyle="<->", lw=2.5, color="#d32f2f")); ax.text(374, 132, "156 vienetai tarp jų", ha="center", fontsize=10, color="#d32f2f")
-    ax.add_patch(Rectangle((290, 318), 160, 18, fc="white", ec="black", lw=2)); ax.text(370, 348, "PLANAS „10 GARAGES“ kabo virš ringo (prizas)", ha="center", fontsize=11, weight="bold")
-    ax.add_patch(Circle((250, 235), 22, fc="#fff59d", ec="#999900", alpha=0.6)); ax.text(250, 235, "lempa", ha="center", va="center", fontsize=9)
-    ax.add_patch(Rectangle((560, 360), 70, 22, fc="black")); ax.text(595, 392, "durys FIGHTERS\n(Donas ateina 6.2a–b)", ha="center", fontsize=10)
-    ax.add_patch(Rectangle((40, 372), 620, 70, fc="#cccccc", ec="none")); ax.text(350, 407, "MINIA: trys eilės už ringo (siluetai, rankos, skrybėlės)", ha="center", va="center", fontsize=11)
-    ax.add_patch(Rectangle((40, -120), 620, 34, fc="#cccccc", ec="none")); ax.text(350, -103, "pirma eilė: galvos kadro apačioje", ha="center", va="center", fontsize=10)
-    ax.annotate("", (300, -62), (640, -62), arrowprops=dict(arrowstyle="->", lw=2.5, color="#c2185b")); ax.text(470, -52, "Sofíos takas su kortele (5.1a): iš dešinės į kairę, prieš virves", ha="center", fontsize=10, color="#c2185b")
-    ax.annotate("", (470, 60), (590, 330), arrowprops=dict(arrowstyle="->", lw=2, color="#1565c0", ls="--")); ax.text(560, 215, "Dono kelias\n(6.2b–6.3);\nišėjimo nėra", fontsize=10, color="#1565c0")
-    cams = [("R1 bendras", 332, 0.9, ["5.1a"], "#4c78a8"), ("R2 centras (≈1,1–1,3)", 385, 1.2, ["5.2a", "5.2", "5.5", "7.2", "7.2b", "6.4"], "#4c78a8"),
-            ("R3 jo kampas (1,7–2,3)", 205, 2.0, ["5.1c", "6.1", "7.1", "6.3"], "#72b7b2"), ("R4 roboto kampas (2,0)", 560, 2.0, ["6.2", "7.2 pradžia"], "#72b7b2"),
-            ("7.3 (1,5)", 335, 1.5, ["7.3"], "#9d7cc2")]
-    for i, (lab, cx, z, shots, c) in enumerate(cams):
-        half = 270 / z; y0 = -170 - 62 * i
-        ax.add_patch(Polygon([(cx, y0), (cx - half, -8), (cx + half, -8)], fc=c, ec=c, alpha=0.10, lw=1.5))
-        ax.plot([cx - half, cx + half], [y0, y0], color=c, lw=5, solid_capstyle="butt")
-        ax.text(cx + half + 8, y0, "%s: %s" % (lab, ", ".join(shots)), va="center", fontsize=11, color="black", weight="bold")
-    ax.text(700, 300, "NE RINGE:\n• Mamos kabinetas (5.4, 6.2 apačia, 7.4):\n  kita vieta, žaliuzės, mygtukas\n• roboto akimis (5.3)\n• iš viršaus (5.6): guli, teisėjo ranka\n• planas iš apačios (5.1b, 7.3 antra pusė)\n• stambūs: Sofía (5.1a2), smūgis (5.5, 7.5)",
-            fontsize=11.5, va="top", bbox=dict(fc="#f5f5f5", ec="#999999"))
-    ax.text(700, 90, "VISOS KAMEROS ŽIŪRI IŠ TOS PAČIOS PUSĖS\n(iš salės priekio). Klientas visada kairėje,\nrobotas dešinėje: krypties taisyklė nelaužoma.\n\nJuostos apačioje rodo, kokį ringo plotį\nmato kiekviena kamera.", fontsize=11.5, va="top", bbox=dict(fc="#fff8e1", ec="#999999"))
-    ax.set_xlim(-60, 1010); ax.set_ylim(-480, 460); ax.axis("off")
-    ax.set_title("Ringo planas ir kamerų pozicijos (kaip yra dabar)", loc="left", fontsize=16, weight="bold")
-    fig.savefig(OUT + "2_plan.png", dpi=100, bbox_inches="tight", facecolor="white"); plt.close(fig)
+    """The real empty ring, seen wider than any shot, with each camera's frame drawn on it and the home places marked."""
+    import cairo
+    import film_on3 as fm
+    from PIL import Image, ImageDraw, ImageFont
+    rg = fm.rg
+    wide = (332, 1150, 0.60)
+    s_ = rg.frame(wide, [], [], near=False, hats=False)
+    arr = np.ndarray((960, 540, 4), np.uint8, s_.get_data())[:, :, :3][:, :, ::-1]
+    K = 3
+    im = Image.fromarray(arr.copy()).resize((540 * K, 960 * K)).crop((0, 250 * K, 540 * K, 760 * K))
+    W, H = im.size
+    canvas = Image.new("RGB", (W + 900, H + 150), "white"); canvas.paste(im, (0, 110)); d = ImageDraw.Draw(canvas)
+    f1 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 26); f2 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 23)
+    f0 = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 34)
+
+    def P(x, y):
+        fx, fy = rg.to_frame(wide, x, y)
+        return fx * K, (fy - 250) * K + 110
+    cams = [("R1 bendras", (332, 1140, 0.9), "#1f77b4", "5.1a; 6.4 išėjimas"), ("5.5 platus", (318, 1130, 1.0), "#17becf", "5.5 kritimas"),
+            ("R2 centras", (412, 1100, 1.25), "#2ca02c", "5.2a, 5.2, 7.2 galas, 7.2b"), ("7.3", (335, 1130, 1.5), "#9467bd", "7.3 siekia plano"),
+            ("R3 jo kampas", (200, 1160, 1.7), "#ff7f0e", "5.1c"), ("5.2 priartinimas", (384, 1185, 1.9), "#d62728", "5.2 sustojęs smūgis"),
+            ("jo kampas arti", (205, 1165, 2.2), "#8c564b", "6.1, 7.1; 6.3 (2,0); 6.4 žvilgsnis (2,1)"), ("R4 roboto kampas", (560, 1250, 2.0), "#e377c2", "6.2 viršus"),
+            ("7.2 vidutinis", (430, 1240, 2.3), "#7f7f7f", "7.2 smūgiai")]
+    y_leg = 130
+    d.text((20, 30), "Ringas, kaip jis nupieštas, ir kiekvienos kameros kadras ant jo (kamera = iškarpa: centras ir didinimas)", font=f0, fill="black")
+    for i, (lab, (cx, cy, z), col, shots) in enumerate(cams):
+        x0, y0 = P(cx - 270 / z, cy - 480 / z); x1, y1 = P(cx + 270 / z, cy + 480 / z)
+        for w_ in range(5):
+            d.rectangle((x0 + w_, max(112, y0) + w_, x1 - w_, min(H + 108, y1) - w_), outline=col)
+        d.rectangle((x0, max(112, y0), x0 + 14 * len(lab) + 16, max(112, y0) + 34), fill=col); d.text((x0 + 8, max(112, y0) + 3), lab, font=f2, fill="white")
+        d.rectangle((W + 30, y_leg, W + 70, y_leg + 30), fill=col)
+        d.text((W + 84, y_leg - 2), "%s  (×%.2f)" % (lab, z), font=f1, fill="black"); d.text((W + 84, y_leg + 30), shots, font=f2, fill="#333333"); y_leg += 84
+    F = rg.F
+    for lab, x, col in (("Pam A", 228, "#00796b"), ("Pam B–D", 176, "#00796b"), ("Klientas: kampas", 130, "#d32f2f"), ("Klientas: kova", 290, "#d32f2f"), ("Robotas", 466, "#5d4037"), ("Teisėjas", 546, "#ef6c00")):
+        px, py = P(x, F + 18)
+        d.polygon([(px, py), (px - 14, py + 26), (px + 14, py + 26)], fill=col)
+        tw = d.textlength(lab, font=f2); d.rectangle((px - tw / 2 - 5, py + 28, px + tw / 2 + 5, py + 58), fill="white"); d.text((px - tw / 2, py + 30), lab, font=f2, fill=col)
+    d.text((W + 30, y_leg + 10), "Ne ringo piešinyje (atskiri intarpai):", font=f1, fill="black")
+    for j, tx in enumerate(("5.1b, 7.3 galas: planas iš apačios", "5.1c vidurys: gongas", "5.3: roboto akimis", "5.4, 5.4b, 7.4b: Mamos kabinetas, mygtukas",
+                             "5.5 pradžia: varnelė; jo akimis; smūgis stambiai", "5.6: iš viršaus", "6.2 apačia: Mama", "6.2a–b: durys, praėjimas", "6.3 galas: lupa", "7.4, 7.4c: ekranas", "7.5: smūgis stambiai")):
+        d.text((W + 30, y_leg + 50 + 32 * j), "• " + tx, font=f2, fill="#333333")
+    canvas.save(OUT + "2_plan.png")
 
 
 # who is where on the screen (L left third, C centre, R right; - not in the frame; ins = an insert without the ring), read from the frames
 ROWS = ["Klientas", "Robotas", "Teisėjas", "Pam", "Sofía", "Donas", "Mama", "chalatas", "pleistras", "roboto veidas", "planas kadre"]
 GRID = {
-    "5.1a": ["L", "C", "C", "L", "R→C", "-", "-", "yra", "nėra", "piktas", "taip"], "5.1a2": ["-", "-", "-", "-", "C", "-", "-", "", "", "", "ne"],
-    "5.1b": ["pirštinė", "-", "-", "-", "-", "-", "-", "", "", "", "taip"], "5.1c": ["L", "-", "ins", "R", "-", "-", "-", "yra→nėra→yra", "nėra", "", "taip"],
+    "5.1a": ["L", "C", "R", "L", "R→L", "-", "-", "yra", "nėra", "piktas", "taip"], "5.1a2": ["-", "-", "-", "-", "C", "-", "-", "", "", "", "ne"],
+    "5.1b": ["pirštinė", "-", "-", "-", "-", "-", "-", "", "", "", "taip"], "5.1c": ["L", "už kadro", "ins", "R→už jo→L", "išėjo", "-", "-", "yra→pusė→yra", "nėra", "", "taip"],
     "5.2a": ["L", "C", "R", "L kr.", "-", "-", "-", "yra", "nėra", "piktas", "taip"], "5.2": ["L", "C", "R", "L kr.", "-", "-", "-", "yra", "nėra", "piktas", "taip"],
     "5.3": ["C", "(jo akys)", "-", "-", "-", "-", "-", "yra", "nėra", "", "ne"], "5.4": ["-", "-", "-", "-", "-", "-", "C", "", "", "", ""],
-    "5.4b": ["-", "-", "-", "-", "-", "-", "ranka", "", "", "", ""], "5.5": ["L (krenta)", "C→R", "R", "-", "-", "-", "-", "yra", "nėra", "varnelė", "taip"],
-    "5.6": ["C (guli)", "-", "ranka", "-", "-", "-", "-", "yra", "nėra", "", "ne"], "6.1": ["L", "-", "-", "C", "-", "-", "-", "yra", "uždeda", "", "kraštas"],
+    "5.4b": ["-", "-", "-", "-", "-", "-", "ranka", "", "", "", ""], "5.5": ["L (krenta)", "C→R", "R", "L", "-", "-", "-", "yra", "nėra", "varnelė", "taip"],
+    "5.6": ["L (guli prie kampo)", "už kadro", "iš viršaus", "rankos", "-", "-", "-", "yra", "nėra", "", "ne"], "6.1": ["L", "-", "-", "C", "-", "-", "-", "yra", "uždeda", "", "kraštas"],
     "6.2": ["-", "C", "-", "-", "-", "-", "C", "", "", "šypsosi", "ne"], "6.2a": ["-", "-", "-", "-", "-", "C", "-", "", "", "", "ne"],
     "6.2b": ["-", "R kr.", "-", "-", "-", "C", "-", "", "", "APPROVAL", "taip"], "6.2c": ["L kr.", "-", "-", "-", "-", "C", "-", "yra", "yra", "", "taip"],
-    "6.3": ["L", "-", "-", "-", "nuotr.", "R", "-", "yra", "yra", "", "taip"], "6.4": ["L", "R kr.", "C", "L kr.", "-", "C (nugara)", "-", "yra", "yra", "", "taip"],
-    "7.1": ["L→C", "-", "-", "-", "kortelė", "-", "-", "yra", "yra", "", "kraštas"], "7.2": ["L", "C", "-", "NĖRA", "-", "NĖRA", "-", "yra", "yra", "piktas", "taip"],
-    "7.2b": ["L", "C", "C", "NĖRA", "-", "-", "-", "yra", "yra", "piktas", "taip"], "7.3": ["C", "NĖRA", "NĖRA", "NĖRA", "-", "-", "-", "yra", "yra", "", "taip"],
-    "7.4": ["-", "C", "-", "-", "-", "-", "C", "", "", "APPROVAL", "ne"], "7.4b": ["-", "-", "-", "-", "-", "-", "ranka", "", "", "", ""],
+    "6.3": ["L", "-", "-", "-", "nuotr.", "R", "-", "yra", "yra", "", "taip"], "6.4": ["L", "R kr.", "C", "L kr.", "-", "C→durys (išeina)", "-", "yra", "yra", "", "taip"],
+    "7.1": ["L→C", "-", "-", "-", "kortelė", "-", "-", "yra", "yra", "", "kraštas"], "7.2": ["L", "C", "R", "už kadro", "-", "išėjo", "-", "yra", "yra", "piktas→skilęs", "taip"],
+    "7.2b": ["L", "C", "R→C", "už kadro", "-", "-", "-", "yra", "yra", "skilęs", "taip"], "7.3": ["C", "R kr.", "už kadro", "už kadro", "-", "-", "-", "yra", "yra", "skilęs", "taip"],
+    "7.4": ["-", "C", "-", "-", "-", "-", "-", "", "", "APPROVAL", "ne"], "7.4b": ["-", "-", "-", "-", "-", "-", "ranka", "", "", "", ""],
     "7.4c": ["-", "C", "-", "-", "-", "-", "-", "", "", "varnelė", ""], "7.5": ["C", "pirštinė", "-", "-", "-", "-", "-", "yra", "yra", "", "ne"]}
 
 
@@ -159,8 +192,10 @@ def continuity():
             fc = "white"
             if v in ("", "-"):
                 fc = "#f2f2f2"
-            elif "NĖRA" in v:
+            elif "NĖRA" in v or "TIKRINTI" in v:
                 fc = "#ffb3b3"
+            elif v.startswith("už kadro") or v.startswith("išėjo"):
+                fc = "#e6e6e6"
             elif v.startswith("L"):
                 fc = "#cfe2f3"
             elif v.startswith("R"):
@@ -176,10 +211,10 @@ def continuity():
         ax.add_patch(Rectangle((j0, len(ROWS) + 0.75), j1 - j0, 0.5, fc="#222222", ec="white", lw=2)); ax.text((j0 + j1) / 2, len(ROWS) + 1.0, lab, color="white", ha="center", va="center", fontsize=12, weight="bold")
         ax.plot([j0, j0], [0, len(ROWS) + 0.75], color="black", lw=2)
     ax.plot([0, len(names)], [4, 4], color="black", lw=1.5)
-    ax.text(0, -0.5, "L, C, R: kairė, centras, dešinė ekrano dalis. Mėlyna / žalia / oranžinė = vieta ekrane. Raudona NĖRA = veikėjas turėtų būti kadre pagal ankstesnį kadrą, bet jo nėra. „kr.“ = prie kadro krašto. Pilka = kadre nėra ir neturi būti.",
+    ax.text(0, -0.5, "L, C, R: kairė, centras, dešinė ekrano dalis. „už kadro“ = veikėjas ringe stovi savo vietoje, bet ši kamera jo neaprėpia (ne klaida). „išėjo“ = išėjimas parodytas anksčiau. Raudona = klaida arba tikrinti (v2: raudonų nebėra). „kr.“ = prie kadro krašto.",
             fontsize=11, va="top")
     ax.set_xlim(-2.2, len(names)); ax.set_ylim(-1.2, len(ROWS) + 1.4); ax.axis("off")
-    ax.set_title("Nuoseklumas: kas kur ekrane kiekviename kadre, ir būsenos", loc="left", fontsize=16, weight="bold")
+    ax.set_title("Nuoseklumas po pataisų (animatikas v17): kas kur ekrane kiekviename kadre, ir būsenos", loc="left", fontsize=16, weight="bold")
     fig.savefig(OUT + "3_continuity.png", dpi=100, bbox_inches="tight", facecolor="white"); plt.close(fig)
 
 

@@ -19,3 +19,30 @@ Found by test 55 and changed after it, **not re-tested**: the robe's return popp
 Still open: the card girl "is never seen again… no exit" (she now walks to the left third, but the cut comes before she leaves); "the cause of the snag is not visible" in the close picture (the glove is out of it); the bell's "white streaks cover the 10 on the poster"; the opening walk is "slow".
 
 The test cannot tell: whether it is funny, the voices, the mix.
+
+# Cold test 56: the whole boxing scene after blocks C and D (film v22, animatic v17)
+
+Two fresh viewers, mute, 152 frames at 4 a second and five moments at 10; the same nine questions as test 53 (before any fix).
+
+| | Test 53 (v15) | Test 56 (v17) |
+|---|---|---|
+| Length of the scene | 43.1 s | 39.6 s |
+| Punches counted | 6 (both) | 7 and 6 |
+| Is it a fight | "Barely. The only real exchange is… about a second" | "It only feels like a fight in 115–121"; "Only 115–121 plays as an exchange" |
+| The peak | the gloves on the prize, then the last hit | "Frame 120 is the peak of the scene: the only time he is ahead"; "Emotionally at 120–121, when the robot goes over" |
+| The approval chain | read | read ("he loses to her button"; "The fight is rigged from an office") |
+| After the knockdown | "a cursor"; "someone reaching down to help" | "flat on his back with stars, and a hand counts over him" (both); the count itself "unreadable" for one |
+| Black frame before the punch | both confused | gone, not mentioned |
+| Robot and Referee missing at 7.3 | both | the robot is there; "The robot's reset looks like a missing shot"; the Referee "vanishes" (he is out of that frame) |
+| The detective's folder | "blank folder" | "a small card or photo"; "a dark blob on it"; "looks like the dome button" |
+| Who is the woman in the photo | not known | still not known ("the ring girl in disguise, a missing person, or a relative of the old woman") |
+| The detective's exit | "fades off to the right, half-transparent" | still "washed-out pale… like a ghost"; "dissolves mid-ring" |
+| The robe (at 4 a second) | "suddenly robeless… a glitch" | not read at this rate: "laces or checks the glove" (both); at 10 a second, alone, test 55 read it |
+
+New in this test:
+- **A break of the film's own rule:** "the robot's counter at 118 comes with no approval step, though every other robot punch needs one" (one viewer; the other: "takes a glove in the face"). In 7.2 the robot jabs back without anybody's approval.
+- The wide picture after the three punches, with the Referee between them, is "eight almost identical frames straight after the best punch. This is the worst stall" (both).
+- The second approval is still "a repeat" (both): 2.5 s of screen, button and tick.
+- The card girl is "about twice the boxer's height" (both).
+
+Not re-tested after this test: nothing was changed after it.

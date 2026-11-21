@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v16"
+V = "v17"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -56,16 +56,16 @@ LINES = {                                                    # v6: the lines, pr
     "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 2.5)],
     "5.2": [("N", "I always hit first.", "n7c", 0.2)],                # v7 (Tomas, at 0:50): the narrator, briefly, on the fight
     "5.3": [("ROBOT", "Human approval required.", "rb1", 0.2)],
-    "5.5": [("MOM", "Approved.", "m5", 0.0)],                       # v16: she presses first; the word comes off the button (it came half a second before it)
-    "5.6": [("N", "I don't break. I break even.", "n8", 0.2)],
+    "5.5": [("MOM", "Approved.", "m5", 0.0), ("N", "I don't break. I break even.", "n8", 1.15)],   # v17: the narrator starts on the fall (on the count it held the corner for 1.3 s)                       # v16: she presses first; the word comes off the button (it came half a second before it)
     "6.1": [("PAM", "Some punch. Others patch.", "p3", 0.5)],
     "6.2": [("N", "It was a fair fight.", "n9", 0.0)],
     "6.3": [("DON", "The woman in the photo…", "d2", 0.3), ("DON", "Recognize her?", "d3", 2.0)],
     "6.4": [("DON", "Case closed.", "d4", 0.45)],
     "7.1": [("N", "But I didn't quit.", "n11", 0.1)],
+    "7.2": [("N", "Ten garages. That was the plan.", "n12", 0.25)],   # v17 (Tomas: "start it earlier"): over his punches; 7.3 is no longer held for it
     "7.2b": [("REFEREE", "Break!", "r1", 0.2)],
-    "7.3": [("N", "Ten garages. That was the plan.", "n12", 0.2)],
-    "7.4": [("ROBOT", "Human approval still pending.", "rb2", 0.0), ("MOM", "Approved.", "m6", 1.75)],
+    "7.4": [("ROBOT", "Human approval still pending.", "rb2", 0.0)],
+    "7.4c": [("MOM", "Approved.", "m6", 0.0)],                       # v17: her office is not shown a second time: the button, the tick, her word
     "8.3": [("N", "I'll call her back tomorrow.", "n13", 0.5)],
     "8.4": [("N", "Tomorrow.", "n14", 0.5)],
 }
@@ -151,7 +151,7 @@ def takes():
 
 SEEN = ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")
 NO_BUBBLE = ("Human approval required.",)                    # v16: the robot's own screen says it, in its view of him (the same words twice)
-HOLD_N = ("7.3",)                                            # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
+HOLD_N = ()                                            # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
 _ENV = {}
 
 

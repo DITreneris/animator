@@ -1,4 +1,9 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v21 (v1 to v20 pinned). v21 (seven outside audits of the
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v22 (v1 to v21 pinned). v22 (the second half of the boxing
+scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
+hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
+photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
+points up at it, then the Client looks at us (the Referee's eyebrow is out); 7.2 the three punches take 2.5 s (1.8);
+7.4 is the cracked screen only: her office is not shown twice (the button and the tick follow as before). v21 (seven outside audits of the
 boxing scene and cold test 53, triaged; Tomas: "proceed"; the first half: continuity, blocks A and B): the robot is a
 quarter bigger (it "reads as a toy" in the wide shots); 5.1a she walks the card right across and out; 5.1c the robe
 comes off one shoulder and STAYS on the arm whose sleeve is stuck at the glove, the bell stops her, she shoves it back,
@@ -96,6 +101,7 @@ ca.LONG[0] = True
 ca.SLEEVES[0] = True
 ca.DARK[0] = True
 import inspect
+import sys
 import contextlib
 
 
@@ -1417,6 +1423,62 @@ _V21 = {"5.1a": (1.7, quick(_s51a21, 2.0 / 1.7)), "5.1c": (3.4, s51c21),
         "7.2": (dict((n, d) for n, d, _ in FILM)["7.2"], _with_cast(_f["7.2"], lambda cam, t: [_ref_home] if abs(cam[2] - 1.25) < 0.02 else [])),
         "7.3": (dict((n, d) for n, d, _ in FILM)["7.3"], _with_cast(_f["7.3"], lambda cam, t: [_ref_home, _robot_home] if abs(cam[2] - 1.5) < 0.02 else []))}
 FILM = [(n,) + _V21[n] if n in _V21 else (n, d, fn) for n, d, fn in FILM]
+
+# ---- v22: the boxing scene, second half (block C, 6.1 to 6.4; block D, 7.1 to 7.5) -----------------------------------
+def _src2(mod, fn, reps, name, extra=None):
+    src = inspect.getsource(fn)
+    for old_, new_ in reps:
+        assert src.count(old_) == 1, old_
+        src = src.replace(old_, new_)
+    ns = dict(vars(mod)); ns.update(extra or {})
+    exec(src.replace("def %s(" % fn.__name__, "def %s(" % name), ns)
+    return ns[name]
+
+
+def _photo22(k, fx, fy):
+    """Her photograph, small, clipped to the folder Don lifts (it was a blank card: what woman?)."""
+    c = k.c
+    rect(k, fx - 12, fy - 20, 24, 30, (0.96, 0.96, 0.93), 71, shadow=False, lw=1.4)
+    c.set_source_rgb(0.92, 0.84, 0.56); c.arc(fx, fy - 6, 8.5, 0, 2 * math.pi); c.fill()             # her hair,
+    c.set_source_rgb(0.80, 0.62, 0.50); c.arc(fx, fy - 5, 5.2, 0, 2 * math.pi); c.fill()             # her face,
+    c.set_source_rgb(0.12, 0.12, 0.14); c.rectangle(fx - 8, fy + 2, 16, 7); c.fill()                 # her jacket
+
+
+_s63_22a = _src2(rr2, rr2.shot_63, (("            _folder(k, fx, fy, 0.62, -0.25 + 0.3 * lift)\n",
+                                     "            _folder(k, fx, fy, 0.62, -0.25 + 0.3 * lift)\n            PHOTO22(k, fx, fy)\n"),), "shot_63_22", {"PHOTO22": _photo22})
+_s63_22 = _src2(sys.modules[__name__], s63, (("        return rr2.shot_63(t)\n", "        return _s63_22a(t)\n"),
+                                              ('"r_hips", "spotted", (0, 0))', '"r_hips", "smile" if t < 2.72 else "spotted", (0, 0))')), "s63_22")     # the ring girl first with the photograph's own smile: the same face
+_s62c_22 = _src2(sys.modules[__name__], s62c, (("    px, pf = lerp(430.0, 340.0, u), rg.F - 14 - 26 * math.sin(math.pi * u)\n",
+                                                "    px, pf = lerp(430.0, 340.0, u), rg.F - 14 - 5 * math.sin(math.pi * u)\n"),), "s62c_22")         # one foot stays on the canvas
+
+
+def s64_22(t):
+    """6.4, 2.35 s. The stamp (no one has answered him); CASE CLOSED held; Don walks out under the plan, all the way to
+    the door, and does not look up, while the Client points at it; the Client looks at us."""
+    if t < 0.55:
+        return rr2.shot_64(t)
+    if t < 1.0:
+        return rr2.shot_64(0.7)
+    if t < 2.0:
+        return rr2.shot_64(0.8 + (t - 1.0) * 1.58)
+
+    def client(k):
+        rg.shadow(k, 236, rg.F - 30, 44)
+        b.boxer(k, 236, rg.F - 30, rr.Q, rr.WALK, "hard", (0.0, 0.0), tape=True)
+
+    def pam(k):
+        rg.shadow(k, 120, rg.F - 14, 34); ca.pam_corner(k, 120, rg.F - 14, rg.SC, "p_stand", "neutral", (0.9, 0.0))
+    return rg.frame((236, rg.F - 205, 2.1), [pam, client], [], near=False, hats=False)
+
+
+_f = {n: fn for n, d, fn in FILM}
+_V22 = {"6.2a": (0.6, quick(_f["6.2a"], 0.8 / 0.6)), "6.2b": (1.3, quick(_f["6.2b"], 1.5 / 1.3)),
+        "6.2c": (0.9, _s62c_22),
+        "6.3": (3.0, lambda t: _s63_22(t * 1.3) if t * 1.3 < 1.2 else _s63_22(1.2 + (t * 1.3 - 1.2) * (1.9 / 2.7))),
+        "6.4": (2.35, s64_22),
+        "7.2": (2.5, quick(_f["7.2"], dict((n, d) for n, d, _ in FILM)["7.2"] / 2.5)),
+        "7.4": (1.5, lambda t: rr2.shot_74(0.2))}
+FILM = [(n,) + _V22[n] if n in _V22 else (n, d, fn) for n, d, fn in FILM]
 
 _T0, _F = 0.0, []
 for _n, _d, _f in FILM:
