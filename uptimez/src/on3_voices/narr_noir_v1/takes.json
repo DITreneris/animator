@@ -1,0 +1,282 @@
+{
+ "n1": [
+  {
+   "phrase": "Word is.",
+   "speed": 0.9,
+   "pitch_start_hz": 174.5,
+   "pitch_end_hz": 122.8,
+   "falls": true,
+   "pause_after": 0.3
+  },
+  {
+   "phrase": "I know how business works.",
+   "speed": 0.9,
+   "pitch_start_hz": 189.7,
+   "pitch_end_hz": 112.4,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "word is i know how business works",
+   "heard_ok": true,
+   "length": 2.9
+  }
+ ],
+ "n2": [
+  {
+   "phrase": "One fight.",
+   "speed": 0.9,
+   "pitch_start_hz": 170.7,
+   "pitch_end_hz": 109.3,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "one fight one fight one fight one fight one",
+   "heard_ok": true,
+   "length": 1.03
+  }
+ ],
+ "n2b": [
+  {
+   "phrase": "My manager.",
+   "speed": 0.9,
+   "pitch_start_hz": 178.4,
+   "pitch_end_hz": 110.9,
+   "falls": true,
+   "pause_after": 0.6
+  },
+  {
+   "phrase": "Also my mother.",
+   "speed": 0.9,
+   "pitch_start_hz": 182.5,
+   "pitch_end_hz": 104.1,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "my manager also my mother",
+   "heard_ok": true,
+   "length": 3.05
+  }
+ ],
+ "n3": [
+  {
+   "phrase": "One folder.",
+   "speed": 0.9,
+   "pitch_start_hz": 183.2,
+   "pitch_end_hz": 99.8,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "one folder",
+   "heard_ok": true,
+   "length": 1.12
+  }
+ ],
+ "n4": [
+  {
+   "phrase": "One woman.",
+   "speed": 0.9,
+   "pitch_start_hz": 181.1,
+   "pitch_end_hz": 103.4,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "one woman",
+   "heard_ok": true,
+   "length": 0.99
+  }
+ ],
+ "n4b": [
+  {
+   "phrase": "One number.",
+   "speed": 0.9,
+   "pitch_start_hz": 178.4,
+   "pitch_end_hz": 108.6,
+   "falls": true,
+   "pause_after": 0.3
+  },
+  {
+   "phrase": "I never called.",
+   "speed": 0.9,
+   "pitch_start_hz": 175.2,
+   "pitch_end_hz": 101.2,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "one number i never called",
+   "heard_ok": true,
+   "length": 2.59
+  }
+ ],
+ "n5": [
+  {
+   "phrase": "Nothing scares me.",
+   "speed": 0.9,
+   "pitch_start_hz": 180.5,
+   "pitch_end_hz": 110.9,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "nothing scares me",
+   "heard_ok": true,
+   "length": 1.47
+  }
+ ],
+ "n6": [
+  {
+   "phrase": "I make my own fire.",
+   "speed": 0.9,
+   "pitch_start_hz": 183.9,
+   "pitch_end_hz": 102.6,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "i make my own fire",
+   "heard_ok": true,
+   "length": 1.6
+  }
+ ],
+ "n7": [
+  {
+   "phrase": "I name my price.",
+   "speed": 0.9,
+   "pitch_start_hz": 174.7,
+   "pitch_end_hz": 103.5,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "i need my price",
+   "heard_ok": false,
+   "length": 1.39
+  }
+ ],
+ "n7b": [
+  {
+   "phrase": "I don't believe in signs.",
+   "speed": 0.9,
+   "pitch_start_hz": 182.9,
+   "pitch_end_hz": 112.1,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "i don't believe in signs",
+   "heard_ok": true,
+   "length": 1.83
+  }
+ ],
+ "n8": [
+  {
+   "phrase": "I don't break.",
+   "speed": 0.9,
+   "pitch_start_hz": 170.5,
+   "pitch_end_hz": 112.7,
+   "falls": true,
+   "pause_after": 0.6
+  },
+  {
+   "phrase": "I break even.",
+   "speed": 0.9,
+   "pitch_start_hz": 175.8,
+   "pitch_end_hz": 90.2,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "i don't break i break even",
+   "heard_ok": true,
+   "length": 2.96
+  }
+ ],
+ "n9": [
+  {
+   "phrase": "It was a fair fight.",
+   "speed": 0.9,
+   "pitch_start_hz": 171.4,
+   "pitch_end_hz": 91.3,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "it was a fair fight",
+   "heard_ok": true,
+   "length": 1.42
+  }
+ ],
+ "n11": [
+  {
+   "phrase": "But I didn't quit.",
+   "speed": 0.9,
+   "pitch_start_hz": 171.1,
+   "pitch_end_hz": 128.0,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "but i didn't quit",
+   "heard_ok": true,
+   "length": 1.32
+  }
+ ],
+ "n12": [
+  {
+   "phrase": "Ten garages.",
+   "speed": 0.9,
+   "pitch_start_hz": 184.6,
+   "pitch_end_hz": 109.8,
+   "falls": true,
+   "pause_after": 0.5
+  },
+  {
+   "phrase": "That was the plan.",
+   "speed": 0.9,
+   "pitch_start_hz": 185.3,
+   "pitch_end_hz": 88.8,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "10 garages that was the plan",
+   "heard_ok": true,
+   "length": 3.11
+  }
+ ],
+ "n13": [
+  {
+   "phrase": "I'll call her back tomorrow.",
+   "speed": 0.864,
+   "pitch_start_hz": 189.0,
+   "pitch_end_hz": 112.7,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "i'll call her back tomorrow",
+   "heard_ok": true,
+   "length": 1.93
+  }
+ ],
+ "n14": [
+  {
+   "phrase": "Tomorrow.",
+   "speed": 0.9,
+   "pitch_start_hz": 178.8,
+   "pitch_end_hz": 107.7,
+   "falls": true,
+   "pause_after": 0
+  },
+  {
+   "heard": "tomorrow",
+   "heard_ok": true,
+   "length": 0.96
+  }
+ ]
+}

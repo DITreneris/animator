@@ -242,3 +242,138 @@ def her(fn, x, feet, s, dir_=-1, a=20.0, up=11.0, on=True):
         finally:
             c.restore(); c.restore()
     return dr
+
+
+# ---- v2: life: in-betweens when a pose or a place jumps, breath, blinks, lips -----------------------------------------
+# A film sets the clock for every drawing (timed); a figure wrapped in alive() then
+#   moves from its last pose and place to the new one over four drawings, with a small overshoot, when they jump;
+#   breathes (a slow rise and fall about its feet); blinks; and, while CLOCK["say"][who] holds a mouth shape, talks.
+# Without a clock (CLOCK["shot"] is None) a wrapped figure draws exactly as the figure it wraps.
+CLOCK = {"shot": None, "t": 0.0, "T": 0.0, "say": {}}
+_ST, _CNT = {}, {}
+FROZEN = set()                                               # shots whose figures do not breathe or blink (the loop's two ends: frame 0 is the last frame)
+TWEEN = 4.0 / 30.0
+
+
+def timed(name, fn, start):
+    def f(t):
+        CLOCK["shot"], CLOCK["t"] = name, t
+        CLOCK["T"] = CLOCK.pop("T_ext", start + t)
+        CLOCK["heads"], CLOCK["zoom"] = {}, None             # v3: where each speaker's head is on the finished frame, for bubbles
+        _CNT.clear()
+        return fn(t)
+    return f
+
+
+def _back(p):
+    p = max(0.0, min(1.0, p)) - 1.0
+    return 1.0 + p * p * (2.2 * p + 1.2)
+
+
+def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True, tween_pose=True, mouth_kw=False):
+    import inspect
+    default_pose = inspect.signature(orig).parameters["pose"].default
+    ph = (sum(ord(ch) for ch in who) % 17) / 17.0
+
+    def fig(k, x, feet, s=1.0, pose=None, *a, **kw):
+        pose = default_pose if pose is None else pose
+        if CLOCK["shot"] is None:
+            return orig(k, x, feet, s, pose, *a, **kw)
+        T = CLOCK["T"]
+        try:
+            tup = (poses(pose) if callable(poses) else poses[pose]) if (poses is not None and isinstance(pose, str)) else pose
+        except KeyError:
+            tup = pose
+        num = tween_pose and isinstance(tup, (tuple, list)) and all(isinstance(q, (int, float)) for q in tup)
+        n = _CNT[who] = _CNT.get(who, 0) + 1
+        key = (who, n)
+        tgt = (list(tup) if num else []) + [x, feet]
+        st = _ST.get(key)
+        moving = False
+        if (st is None or st["shot"] != CLOCK["shot"] or not (0 < T - st["T"] < 0.09) or len(st["tgt"]) != len(tgt)
+                or abs(s - st["s"]) > 0.04 * s):
+            cur, st = tgt, {"from": tgt, "t0": -9.0}
+        else:
+            dp = max([abs(p - q) for p, q in zip(tgt[:-2], st["tgt"][:-2])] or [0.0])
+            dx = max(abs(tgt[-1] - st["tgt"][-1]), abs(tgt[-2] - st["tgt"][-2])) / s
+            if dx > 130:                                     # a cut inside the shot: no sliding across it
+                st["from"], st["t0"] = tgt, -9.0
+            elif dp > 16 or dx > 16:                         # a jump: start from what is on the screen now
+                st["from"], st["t0"] = st["cur"], T - 1.0 / 30
+            p = (T - st["t0"]) / TWEEN
+            moving = p < 1.0
+            e = _back(p)
+            cur = [f + (g - f) * e for f, g in zip(st["from"], tgt)] if moving else tgt
+        st.update(shot=CLOCK["shot"], T=T, tgt=tgt, cur=cur, s=s)
+        _ST[key] = st
+        px, pf = cur[-2], cur[-1]
+        ppose = tuple(cur[:-2]) if (num and moving) else pose
+        code = CLOCK["say"].get(who)
+        if code and mouth_kw:
+            kw = dict(kw); kw["mouth"] = code
+        still_ = CLOCK["shot"] in FROZEN
+        shut = blinks and not still_ and ((T + ph * 5.0) % (2.9 + ph * 1.3)) < 0.1
+        c = k.c
+        c.save()
+        if breathe and not moving and not still_:
+            sy = 1.0 + breathe * math.sin(2 * math.pi * (T / 3.4 + ph))
+            c.translate(px, pf); c.scale(1.0, sy); c.translate(-px, -pf)
+        old = kit.face_draw
+
+        def face_draw(k_, fx, fy, face, look, glasses=False, seed=0):
+            old(k_, fx, fy, face, look, glasses=glasses, seed=seed)
+            if shut and skin and face not in ("squint", "happy", "pleased", "smug"):
+                r_ = 14.5 if face in ("shock", "panic") else 11.5
+                for sx in (-17, 17):
+                    ellipse(k_, sx, fy, r_, r_, skin, seed + sx + 71, shadow=False, outline=False)
+                    k_.c.set_source_rgb(*INK); k_.c.set_line_width(3.2); k_.c.set_line_cap(1)
+                    k_.c.move_to(sx - 9, fy + 2); k_.c.curve_to(sx - 3, fy + 5, sx + 3, fy + 5, sx + 9, fy + 2); k_.c.stroke()
+            if code and skin and not mouth_kw:
+                import iwry_mouths as im
+                im.mouth(k_, fx, fy + 28, code, skin, lip_col=lip, erase=(18, 10), seed=seed + 67)
+        kit.face_draw = face_draw
+        try:
+            o = orig(k, px, pf, s, ppose, *a, **kw)
+            if kw.get("cig") and CLOCK["shot"] in SMOKING and CLOCK["t"] >= SMOKING[CLOCK["shot"]]:      # v4: his cigarette smokes, and its end glows
+                tx, ty = o["head"][0] + 48 * s, o["head"][1] + 45 * s
+                smoke(c, tx, ty - 2 * s, s * 0.95, seed=0.3, h=170)
+                gl = 0.5 + 0.5 * math.sin(T * 5.0)
+                c.set_source_rgb(0.86, 0.10 + 0.15 * gl, 0.14); c.arc(tx - 1.5 * s, ty, (2.6 + 1.2 * gl) * s, 0, 2 * math.pi); c.fill()
+            try:
+                hx_, hy_ = c.user_to_device(*o["head"])
+                CLOCK.setdefault("heads", {}).setdefault(who, (hx_, hy_, abs(c.get_matrix().xx) * s))
+            except Exception:
+                pass
+            return o
+        finally:
+            kit.face_draw = old
+            c.restore()
+    fig.plain = orig
+    return fig
+
+
+# ---- v4: smoke that moves ----------------------------------------------------------------------------------------------
+SMOKING = {}                                                 # shot -> from when (s) the cigarette in the Client's mouth is alight
+
+
+def smoke(c, x, y, s=1.0, seed=0.0, h=150.0, alpha=0.62):
+    """A cigarette's smoke from (x, y): two thin ribbons that rise, widen, curl and thin out, moving with the clock."""
+    T = CLOCK["T"] if CLOCK["shot"] is not None else 0.0
+    c.save(); c.set_line_cap(1); c.set_line_join(1)
+    for rb in range(2):
+        px = py = None
+        for i in range(15):
+            u = i / 14.0
+            xx = x + (3 + 26 * u) * s * math.sin(2 * math.pi * (u * 1.5 - T * 0.6 + seed + rb * 0.41)) + 16 * s * u * math.sin(T * 0.35 + seed * 7)
+            yy = y - h * s * u
+            if px is not None:
+                c.set_source_rgba(1, 1, 1, alpha * (1 - u) ** 1.25 * (0.6 if rb else 1.0)); c.set_line_width((2.2 + 5.5 * u) * s)
+                c.move_to(px, py); c.line_to(xx, yy); c.stroke()
+            px, py = xx, yy
+    c.restore()
+
+
+def flame():
+    """The lighter flame's height for this drawing, 0.8 to 1.2."""
+    T = CLOCK["T"] if CLOCK["shot"] is not None else 0.0
+    return 1.0 + 0.30 * math.sin(T * 27) + 0.12 * math.sin(T * 53 + 1)       # v4b: it read as still at 6 fps

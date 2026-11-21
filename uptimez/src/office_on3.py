@@ -168,6 +168,34 @@ def front(note=True, down=0.0, press=0.0, look=(-0.9, -0.1), mouth=None, cards=F
     return s
 
 
+BACK2 = [False]                                              # v10, opt-in: his back redrawn (Tomas: "it looks strange there")
+
+
+def _back2(k, c, glove_up):
+    """His back as a back: a round hood, a neck, sloping shoulders, the hood's seam and its fold at the neck, a line of
+    light down the side the window is on, and one arm that leaves his shoulder and ends in the glove. (v9 and before: a
+    flat grey slab with a pointed top, and a forearm coming up from the frame's edge on its own.)"""
+    gx, gy = 390, _lerp(900.0, 720.0, glove_up)
+    cut(k, [(246, 640), (318, 668), (gx + 54, gy + 74), (gx - 44, gy + 92), (300, 800), (236, 760)], TRACK, shadow=False, lw=3.4)      # the arm, from his shoulder to the glove
+    c.new_path(); c.move_to(-60, 980); c.line_to(-60, 610); c.curve_to(-44, 528, 6, 506, 30, 482)
+    c.curve_to(-8, 440, -8, 298, 100, 284); c.curve_to(208, 298, 208, 440, 170, 482)
+    c.curve_to(204, 504, 286, 528, 312, 640); c.line_to(322, 980); c.close_path()
+    g = cairo.LinearGradient(-60, 0, 320, 0)
+    g.add_color_stop_rgb(0, TRACK[0] * 0.95, TRACK[1] * 0.95, TRACK[2] * 0.95); g.add_color_stop_rgb(1, TRACK[0] * 1.55, TRACK[1] * 1.55, TRACK[2] * 1.55)
+    c.set_source(g); c.fill_preserve(); c.set_source_rgb(0.05, 0.05, 0.06); c.set_line_width(4); c.stroke()
+    c.set_source_rgb(0.12, 0.12, 0.14); c.set_line_width(3.4); c.set_line_cap(1)
+    c.move_to(100, 290); c.curve_to(96, 360, 96, 420, 100, 500); c.stroke()                 # the hood's seam, crown to neck
+    c.move_to(32, 484); c.curve_to(70, 520, 130, 520, 168, 484); c.stroke()                 # the hood, folded at the neck
+    c.move_to(100, 520); c.line_to(104, 980); c.stroke()                                    # the back's seam
+    c.set_line_width(2.4)
+    for x0, y0, x1, y1 in ((-30, 600, 10, 640), (230, 600, 262, 650), (250, 700, 270, 760)):   # folds at the shoulders
+        c.move_to(x0, y0); c.line_to(x1, y1); c.stroke()
+    c.set_source_rgba(1, 1, 1, 0.62); c.set_line_width(7)                                   # light from the window, down his right side
+    c.new_path(); c.move_to(118, 288); c.curve_to(204, 302, 204, 438, 168, 480); c.curve_to(202, 502, 282, 528, 308, 640); c.line_to(314, 760); c.stroke()
+    c.set_line_cap(0)
+    cut(k, [(gx - 46, gy + 60), (gx + 32, gy + 60), (gx + 36, gy + 78), (gx - 48, gy + 80)], (0.10, 0.10, 0.12), shadow=False, lw=2.6)   # the cuff
+
+
 def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False, v4=False):
     """M2, 4.3: over his shoulder. His hood and back fill the near left; one red glove, lower right, comes up with the
     note in it (glove_up 0..1). Across a deep desk she is small, and does not look up."""
@@ -188,12 +216,16 @@ def over(glove_up=0.0, look=(0.2, 0.9), show=False, cards=False, v4=False):
         deck(k, 352, 596, 1.15)
     elif cards:                                              # cards="down": all three face down (before she turns one)
         spread(k, 372, 600, 1.15, -1, 0.5, faces=("back",) * 3 if cards == "down" else ("star", "tower", "gear"))
-    cut(k, [(-60, 980), (-60, 560), (-10, 380), (90, 300), (190, 380), (240, 580), (256, 980)], TRACK, shadow=False, lw=4)   # his back, hood up
-    c.set_source_rgb(0.14, 0.14, 0.16); c.set_line_width(4); c.set_line_cap(1)
-    c.move_to(10, 430); c.curve_to(60, 350, 130, 350, 172, 430); c.stroke()               # the hood's seam
-    c.move_to(92, 470); c.line_to(92, 960); c.stroke()
-    gx, gy = 390, _lerp(900.0, 720.0, glove_up)              # his glove, the note pinched against it
-    cut(k, [(gx - 60, 980), (gx - 44, gy + 60), (gx + 30, gy + 60), (gx + 50, 980)], TRACK, shadow=False, lw=3.4)
+    if BACK2[0]:
+        _back2(k, c, glove_up)
+        gx, gy = 390, _lerp(900.0, 720.0, glove_up)
+    else:
+        cut(k, [(-60, 980), (-60, 560), (-10, 380), (90, 300), (190, 380), (240, 580), (256, 980)], TRACK, shadow=False, lw=4)   # his back, hood up
+        c.set_source_rgb(0.14, 0.14, 0.16); c.set_line_width(4); c.set_line_cap(1)
+        c.move_to(10, 430); c.curve_to(60, 350, 130, 350, 172, 430); c.stroke()               # the hood's seam
+        c.move_to(92, 470); c.line_to(92, 960); c.stroke()
+        gx, gy = 390, _lerp(900.0, 720.0, glove_up)              # his glove, the note pinched against it
+        cut(k, [(gx - 60, 980), (gx - 44, gy + 60), (gx + 30, gy + 60), (gx + 50, 980)], TRACK, shadow=False, lw=3.4)
     c.save(); c.translate(gx, gy); c.scale(3.0, 3.0); c.translate(-gx, -gy)
     b.banknote(k, gx + 6, gy - 22, 0.55, -0.3, 3)
     b._glove(k, gx, gy, 0.1, -1.0, 1, 71)

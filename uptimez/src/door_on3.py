@@ -22,6 +22,9 @@ def _robot(k):
     rg.shadow(k, 352, y, 40); r.robot(k, 352, y, s, "r_wait", "furious", side=-1)
 
 
+RIM = [False]
+
+
 def behind(tip=1.0, door_light=True):
     """4.1. tip 0..1: his head goes back."""
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s); k = Ctx(c, 0)
@@ -42,6 +45,9 @@ def behind(tip=1.0, door_light=True):
     c.set_source_rgb(0.12, 0.12, 0.14); c.set_line_width(4); c.set_line_cap(1)
     c.move_to(196, 640 + dy); c.curve_to(236, 566 + dy * 2, 304, 566 + dy * 2, 344, 640 + dy); c.stroke()
     c.move_to(270, 690); c.line_to(270, 960); c.stroke(); c.set_line_cap(0)
+    if RIM[0]:                                              # v5, opt-in: the ring's light on the edge of his hood and shoulders (he was dark on dark)
+        c.set_source_rgba(1, 1, 1, 0.55); c.set_line_width(6); c.set_line_cap(1); c.set_line_join(1)
+        c.new_path(); c.move_to(128, 700); c.line_to(176, 560 + dy); c.line_to(270, 506 + dy * 2); c.line_to(364, 560 + dy); c.line_to(412, 700); c.stroke(); c.set_line_cap(0)
     st.folder(k, 440, 800, 1.5, 1.42)                                                           # the folder, under his arm
     cut(k, [(396, 720), (446, 740), (452, 990), (400, 990)], TRACK, shadow=False, lw=3.4)
     c.restore()

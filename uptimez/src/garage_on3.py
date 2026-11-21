@@ -196,11 +196,51 @@ def _seg(k, a, bb, w0, w1, col, lw=3):
     cut(k, [(x0 + nx * w0, y0 + ny * w0), (x1 + nx * w1, y1 + ny * w1), (x1 - nx * w1, y1 - ny * w1), (x0 - nx * w0, y0 - ny * w0)], col, shadow=False, lw=lw)
 
 
+SIDE = [False]                                               # v8, opt-in (Tomas: "he lies there like a pile of laundry")
+
+
+def _lying_side(k, face, look, hide, reach):
+    """On his side along the seat, his face to us: head on the sofa's arm, a hand under his cheek, one shoulder up, the
+    belt round his middle, both legs out to the left, one on the other. hide: he does not pull the gown over his head
+    now; he shuts his eyes. reach: the near arm goes out over the sofa's arm to the table; else it hangs to the floor."""
+    import client_ob as co
+    co.FACES.setdefault("asleep", dict(co.FACES["exhausted"], lid=0.97))
+    c = k.c
+    for dx, dy, col in ((6, -12, b.GOWN_SHADE), (0, 0, b.GOWN)):                                     # the legs, the far one a little higher
+        hip, knee, ank = (196 + dx, 678 + dy), (124 + dx, 672 + dy), (58 + dx, 690 + dy)
+        _seg(k, knee, ank, 13, 11, SKIN)
+        cut(k, [(ank[0] + 4, ank[1] - 9), (ank[0] - 30, ank[1] - 12), (ank[0] - 34, ank[1] + 6), (ank[0] + 2, ank[1] + 10)], SKIN, shadow=False, lw=3)
+        _seg(k, hip, knee, 27, 20, col)
+    cut(k, [(298, 612), (324, 636), (320, 704), (190, 706), (170, 672), (188, 648), (242, 640)], b.GOWN, shadow=False, lw=3.4)   # his body: the shoulder up, the waist in, the hip
+    cut(k, [(318, 646), (268, 664), (302, 692)], CREAM, shadow=False, lw=2.4)                        # the lapel
+    cut(k, [(312, 654), (280, 666), (302, 684)], SKIN, shadow=False, lw=2)
+    _seg(k, (232, 642), (228, 706), 8, 8, CREAM, 2.4)                                                # the belt
+    _seg(k, (224, 676), (204, 700), 6, 5, CREAM, 2.0)                                                # and its end
+    _seg(k, (300, 660), (346, 682), 15, 12, b.GOWN)                                                  # the far arm, bent under his head
+    ellipse(k, 358, 676, 14, 11, SKIN, 13, shadow=False, lw=2.6)
+    if reach:                                                # the near arm, up and round behind his head to the table (in front, it crossed his face)
+        _seg(k, (294, 624), (372, 584), 17, 14, b.GOWN); _seg(k, (372, 584), (446, 612), 14, 12, b.GOWN)
+        rect(k, 440, 604, 9, 22, (0.85, 0.70, 0.20), 16, shadow=False, lw=1.6)
+        ellipse(k, 466, 618, 15, 12, SKIN, 14, shadow=False, lw=2.6)
+    hx, hy = 338, 630
+    c.save(); c.arc(hx + 4, hy - 2, 62, 0, 2 * math.pi); c.clip()                                    # his head, on its side, face to us
+    c.translate(hx, hy); c.rotate(0.52); c.translate(2 * Q, -b.HY * Q)
+    b.boxer(k, 0, 0, Q, "b_walk", "asleep" if hide else face, look, awake=True)
+    c.restore()
+    cut(k, [(322, 648), (298, 660), (314, 686), (332, 676)], b.GOWN, shadow=False, lw=3)             # the collar
+    if not reach:
+        _seg(k, (290, 672), (278, 742), 17, 13, b.GOWN); _seg(k, (278, 742), (284, 772), 12, 11, SKIN)   # the near arm, over the seat's edge to the floor
+        rect(k, 273, 754, 20, 8, (0.85, 0.70, 0.20), 16, shadow=False, lw=1.6)
+        ellipse(k, 286, 784, 14, 12, SKIN, 17, shadow=False, lw=2.6)
+
+
 def lying(k, face="exhausted", look=(-0.2, 0.6), hide=False, reach=False):
     """v2: him on the sofa, drawn lying: his head against the sofa's arm at screen right, his back on the seat, knees
     up. One arm hangs over the front of the seat to the floor. hide: the gown pulled up over his eyes. reach: his other
     arm goes out over the sofa's arm to the side table."""
     c = k.c
+    if SIDE[0]:
+        return _lying_side(k, face, look, hide, reach)
     for dx, dy, col in ((-16, -8, b.GOWN_SHADE), (0, 0, b.GOWN)):                                    # legs: the far one, then the near one
         hip, knee, ank = (204 + dx, 684 + dy), (150 + dx, 612 + dy), (116 + dx, 690 + dy)
         _seg(k, knee, ank, 13, 11, SKIN)
