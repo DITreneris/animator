@@ -41,7 +41,8 @@ FX += [("1.2", d, fx.pop(520 + 40 * i), 0.10) for i, d in enumerate((3, 7, 11, 1
 FX += [("1.4", d, fx.key(), 0.14) for d in (4, 6, 8, 10, 12)]                                     # REPLY types on its visor
 FX += [("1.4", 36, fx.pop(880), 0.14), ("3.1", 29, fx.pop(880), 0.14)]                            # its green tick
 FX += [("3.1", 28, fx.rustle(0.3), 0.20)]                                                         # the sheet curls on the floor
-FX += [("3.2", 0, fx.door(0.5), 0.20), ("3.5", 17, fx.step(), 0.22)]                              # the door; he turns to go
+FX += [("3.2", 0, fx.door(0.5), 0.20), ("3.5", 17, fx.step(), 0.22)]
+FX += [("3.2a", 2, fx.tape(0.22), 0.16), ("3.2a", 4, fx.rustle(0.4), 0.22)]                         # the page torn off, falling                              # the door; he turns to go
 FX += [("4.1", 12, fx.key(), 0.20), ("4.2b", 3, fx.whoosh(0.22), 0.14)]                           # her glasses; her arm
 FX += [("4.3c", 5, fx.rustle(0.18), 0.20)]                                                        # the strip turned to us
 FX += [("4.4", 0, fx.sweep(600, 200, 0.45), 0.10)]                                                # its visor dims: power down
@@ -166,4 +167,4 @@ def main(out_dir, tag):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "../customer-success", sys.argv[2] if len(sys.argv) > 2 else "rough_v4")
+    main(sys.argv[1] if len(sys.argv) > 1 else "../customer-success", sys.argv[2] if len(sys.argv) > 2 else "rough_v5")

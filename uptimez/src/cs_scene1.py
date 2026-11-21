@@ -29,7 +29,7 @@ import cs_anim as A
 from cs_board import S, at, base, calendar_on
 from kit import Ctx, INK, ellipse, rect
 
-V = "v8"                                                   # v2: Don's reach by IK; v3: the reply "Our AI does not lose files."
+V = "v9"                                                   # v2: Don's reach by IK; v3: the reply "Our AI does not lose files."
                                                            # (script v14). v1, v2 kept in cs_scene1_v1.py, cs_scene1_v2.py
 DPS = 12
 SR = 48000
@@ -139,8 +139,8 @@ def s1_1(k, d):
     got = {}
 
     def back(k_):
-        from cs_cal import calendar2, CAL_AT
-        calendar2(k_, *CAL_AT)                                                    # v7: its new place (cs_cal.CAL_AT)
+        import cs_cal                                                             # v9: First Search's calendar, right of the
+        cs_cal.wall(k_, cs_cal.FRI if END66[0] else cs_cal.THU, t=d / float(DPS))  # portrait: THU 11; FRI 12 by the end
         c_ = k_.c
         feet = sb.F + 6
         c_.save(); c_.translate(575, feet); c_.scale(1.0, br(d, 0.3)); c_.translate(-575, -feet)

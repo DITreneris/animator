@@ -16,7 +16,7 @@ RAIL = (470, 380, 860)                                     # x > 470 between y 3
 SIGNS = {                                                  # set coordinates (x0, y0, x1, y1)
     "portrait+plaque": (355, 300, 510, 500),
     "logo": (296, 226, 350, 278),
-    "calendar": (266, 418, 330, 512),
+    "calendar": (532, 430, 598, 512),                          # First Search's, right of the portrait
 }
 WIDES = {"1.1", "6.6"}
 
