@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v18"
+V = "v19"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -53,7 +53,7 @@ LINES = {                                                    # v6: the lines, pr
     "4.4a": [("MOM", "Your ticket. You're fighting.", "m4", 0.1)],
     "4.4t": [("N", "I don't believe in signs.", "n7b", 0.15)],
     "5.1a": [("SOFIA", "Round one.", "s2", 0.8)],
-    "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 2.5)],
+    "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 1.95)],
     "5.2": [("N", "I always hit first.", "n7c", 0.2)],                # v7 (Tomas, at 0:50): the narrator, briefly, on the fight
     "5.3": [("ROBOT", "Human approval required.", "rb1", 0.2)],
     "5.5": [("MOM", "Approved.", "m5", 0.0), ("N", "I don't break. I break even.", "n8", 1.15)],   # v17: the narrator starts on the fall (on the count it held the corner for 1.3 s)                       # v16: she presses first; the word comes off the button (it came half a second before it)
@@ -322,15 +322,25 @@ def _bubble(c, text, tip, top=100, avoid=()):
     speaker is out of the frame: no tail, at the top right. v7: avoid: boxes (x0, y0, x1, y1) of every head on the
     screen; the bubble takes the first place, nearest the speaker, that covers none of them and stays in the safe area."""
     c.select_font_face("Inter", 0, 1); c.set_font_size(24)
-    rows, line = [], ""
-    for wd in text.split():
-        trial = (line + " " + wd).strip()
-        if c.text_extents(trial).x_advance > 270 and line:
-            rows.append(line); line = wd
+
+    def wrap(width):
+        rows, line = [], ""
+        for wd in text.split():
+            trial = (line + " " + wd).strip()
+            if c.text_extents(trial).x_advance > width and line:
+                rows.append(line); line = wd
+            else:
+                line = trial
+        rows.append(line)
+        return rows, max(c.text_extents(r_).x_advance for r_ in rows) + 36, 30 * len(rows) + 26
+    rows, w, h = wrap(270)
+    if tip is None and avoid:                                # v19: a bigger head on the screen: a narrower bubble beside it before one across it
+        for width in (270, 180, 140):
+            rows, w, h = wrap(width)
+            if any(all(bx + w < x0 or bx > x1 or by + h < y0 or by > y1 for x0, y0, x1, y1 in avoid) for bx, by in ((522 - w - 6, top + 10), (24, top + 10), (522 - w - 6, top + 90), (24, top + 90))):
+                break
         else:
-            line = trial
-    rows.append(line)
-    w = max(c.text_extents(r_).x_advance for r_ in rows) + 36; h = 30 * len(rows) + 26
+            rows, w, h = wrap(270)
 
     def clear(bx, by):
         return all(bx + w < x0 or bx > x1 or by + h < y0 or by > y1 for x0, y0, x1, y1 in avoid)

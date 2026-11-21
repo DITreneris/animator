@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v22 (v1 to v21 pinned). v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v24 (v1 to v23 pinned). v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -77,6 +77,10 @@ import cairo
 import robot_on3 as _r0
 ROBOT_BIG = 1.25                                             # v21: beside him in the wide shots it read as a toy
 _r0.REL *= ROBOT_BIG                                         # before the ring modules measure with it
+import client_on3 as _b0
+CLIENT_BIG = (0.66 / 0.67) / 0.70                            # v24 (Tomas: "sizes by the series' proportions"): The Onboarding stands him at 0.66 beside Pam at 0.67; here he was 0.70 of that
+_b0.REL *= CLIENT_BIG                                        # a head taller than Don, as in the series
+_r0.REL *= CLIENT_BIG / 1.12                                 # the robot grows with him (108 % of Don with his hat)
 import ring_rough_on3 as rr
 import ring_rough2_on3 as rr2
 import street_on3 as st
@@ -1265,9 +1269,12 @@ def _look21(t):
     return (0.7, -0.9) if t < 2.80 else (0.8, 0.9) if t < 3.0 else (0.0, 0.0)
 
 
+GIRL24 = 0.74                                               # v24: the card girl was drawn at 0.92 beside the others' 0.70: 132 % of Don; now 98 %, the series' 96 %
+rr.__dict__['GIRL24'] = GIRL24
 _s51a21 = _src(rr.shot_51a, (("        x = 720 - 150 * t\n", "        x = 735 - 290 * t\n"),
                              ("        rg.shadow(k, 336, F - 96, 36); ca.referee(k, 336, F - 96,", "        rg.shadow(k, 546, F - 96, 36); ca.referee(k, 546, F - 96,"),      # the Referee and the robot where round one has them (they changed places over the cut)
-                             ("        rg.shadow(k, 408, F - 42, 40); r.robot(k, 408, F - 42,", "        rg.shadow(k, 466, F - 46, 40); r.robot(k, 466, F - 46,")), "shot_51a21")      # she walks the card right across, and out past his corner
+                             ("        rg.shadow(k, 408, F - 42, 40); r.robot(k, 408, F - 42,", "        rg.shadow(k, 466, F - 46, 40); r.robot(k, 466, F - 46,"),
+                             ("F + 108 - 3 * abs(math.sin(t * math.pi * 3.2)), 0.92,", "F + 2 - 3 * abs(math.sin(t * math.pi * 3.2)), 0.92 * GIRL24,")), "shot_51a21")   # v24: GIRL24, her size beside the others      # she walks the card right across, and out past his corner
 _b51c21 = _src(rr.shot_51c, (
     ("            with rc.head_back():\n                cl(k)\n            c = k.c\n",
      "            c = k.c\n            thr = cx + lerp(-170.0, -8.0, pull) * Q\n            with rc.head_back():\n                cl(k)\n"
@@ -1284,7 +1291,7 @@ _b51c21 = _src(rr.shot_51c, (
     ("            b.boxer(k, cx, cf - (5 * math.sin(back * math.pi) if t >= 2.35 else 0), Q, \"b_walk\", \"hard\", (0.7, -0.9))\n",
      "            b.boxer(k, cx, cf - (5 * math.sin(back * math.pi) if t >= 2.35 else 0), Q, \"b_walk\", \"hard\", LOOK21(t))\n"),
     ("            away = lerp(0.0, 1.0, (t - 2.75) / 0.3)         # she steps back, hands off\n", "            away = lerp(0.0, 1.0, (t - 2.75) / 0.45)        # she goes back behind him, to the ropes\n"),
-    ("            px_, pf = cx + 118 + 40 * away, F - 14\n", "            px_, pf = cx + 118 - 204 * away, F - 14\n"),
+    ("            px_, pf = cx + 118 + 40 * away, F - 14\n", "            px_, pf = cx + 118 - 280 * away, F - 14\n"),
     ("        cam = (gx + 52, gy - 44, 2.3) if 0.85 <= t < 1.95 else \"R3\"", "        cam = (gx + 52, gy - 44, 2.3) if 1.25 <= t < 1.62 else \"R3\""),
     ("    return rg.frame(\"R3\", [client, pam], [], near=False, hats=False)\n", "    return rg.frame(\"R3\", [pam, client] if t >= 2.9 else [client, pam], [], near=False, hats=False)\n"),
 ), "shot_51c21")
@@ -1501,6 +1508,93 @@ _V23 = {"7.2": (2.2, lambda t, fn=_f["7.2"]: fn(t * 1.66 / 2.2)),               
         "7.2b": (1.9, lambda t, a_=_f["7.2"], b_=_f["7.2b"]: a_(1.68 + t * (0.8 / 0.6)) if t < 0.6 else b_(t - 0.6)),   # the wide tail (the robot gets up), then the Referee
         "7.4": (0.95, _f["7.4"])}
 FILM = [(n,) + _V23[n] if n in _V23 else (n, d, fn) for n, d, fn in FILM]
+
+# ---- v24 (Tomas: sizes "by the series' proportions"): the Client is the series' size (CLIENT_BIG, at the top); the shots whose
+# framing is a close view of him alone keep the framing they were approved with ----
+@contextlib.contextmanager
+def _client_rel(v):
+    old = _b0.REL; _b0.REL = v
+    try:
+        yield
+    finally:
+        _b0.REL = old
+
+
+def _framed(fn):
+    def g(t):
+        with _client_rel(_b0.REL / CLIENT_BIG):
+            return fn(t)
+    return g
+
+
+_ref24_0 = ca.referee
+
+
+def _ref24(k, x, f, s, *a, **kw):
+    """v24: the ring is drawn flat, so a man further back stood higher at the same size and his head came level with the
+    Client's (cold test 58, both). Further back is a little smaller."""
+    return _ref24_0(k, x, f, s * (1.0 - 0.0022 * max(0.0, (rg.F - 40) - f)), *a, **kw)
+
+
+ca.referee = _ref24
+
+def _shot72_24():
+    """7.2 rebuilt from the module's own source at the new sizes: he stands where his glove still lands on the belt plate,
+    the dent and the stars are where the bigger robot's plate and face are, and the close camera is as much wider."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("_rr2_fresh24", os.path.join(os.path.dirname(os.path.abspath(__file__)), "ring_rough2_on3.py"))
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    src = inspect.getsource(m.shot_72)
+    a_ = src.index("    def swing(u, pose):"); b_ = src.index("    def robot(k):")
+    src = src[:a_] + "    pose = _pose72(t)\n\n" + src[b_:]
+    RB = _r0.REL / (0.82 * ROBOT_BIG)                         # how much bigger the robot is than the one the shot was drawn for
+    F_ = rr2.F
+    feet = (311.2, F_ - 40)                                 # where he stood (HITX) at the size the stars were placed for
+    fy = F_ - 40                                              # his feet stay on the line the other shots stand him on
+    t1 = (466 - 16 * RB, fy + CLIENT_BIG * ((F_ - 132) - feet[1]))   # where on its belt plate his glove now lands
+    DY = (F_ - 46) - t1[1]
+    fx = t1[0] - CLIENT_BIG * (438 - feet[0])
+    s2 = (fx + CLIENT_BIG * (436 - feet[0]), fy + CLIENT_BIG * ((F_ - 196) - feet[1]))
+    for old, new in (('        r.robot(k, x, f, SC * r.REL, "r_wait", "furious", side=-1, crack=cracked)\n', '        r.robot(k, x, f, SC * r.REL, _rpose72(t), "furious", side=-1, crack=cracked)\n'),
+                     ('        b.boxer(k, HITX, F - 40, Q, pose, "hard", (0.9, 0.1), tape=True)\n',
+                      '        _draw72(k, t, FX24, FY24, lambda: b.boxer(k, FX24 + 22 * ramp(t, 0.80, 0.10), FY24, Q, pose, "hard", (0.9, 0.1), tape=True))\n'),
+                     ("        rg.shadow(k, HITX, F - 40, 44)\n", "        rg.shadow(k, FX24, FY24, 58)\n"),
+                     ("((h1, (438, F - 132)), (h2, (436, F - 196)))", "((h1, T124), (h2, S224))"),
+                     ("    return rg.frame(cam, [robot, client], [], near=False, hats=False)\n",
+                      "    return rg.frame(cam, [client, robot] if _rpose72(t) != 'r_wait' else [robot, client], [], near=False, hats=False)\n"),
+                     ("ellipse(k, x - 16, f - 86, 13, 10, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)", "ellipse(k, x - 16 * RB24, f - DY24, 10, 8, (0.10, 0.10, 0.12), 3, shadow=False, lw=2); _dent72(k, x - 16 * RB24, f - DY24)"),
+                     ("c.line_to(sx + 30 * math.cos(an), sy + 30 * math.sin(an)); c.stroke()", "c.line_to(sx + 26 * math.cos(an), sy + 26 * math.sin(an)); c.stroke()"),
+                     ("cam = (430, F - 160, 2.3) if", "cam = CAM24 if")):
+        assert old in src, old
+        src = src.replace(old, new)
+    old_fn = rr2.shot_72
+    g = old_fn.__globals__                                    # the earlier versions' wrappers hold this very function: it gets the new body
+    g.update(FX24=fx, FY24=fy, T124=t1, S224=s2, RB24=RB, DY24=DY, CAM24=(400, F_ - 205, 1.62))
+    exec(src, g)
+    old_fn.__code__ = g["shot_72"].__code__
+    src = inspect.getsource(m.shot_72b)                       # 7.2b: he is where 7.2 left him, and the dent is where 7.2 made it
+    for old, new in (("        x = HITX - 80 * back\n", "        x = FX24 - 18 * back\n"),
+                     ("ellipse(k, x - 16, f - 86, 13, 10, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)", "ellipse(k, x - 16 * RB24, f - DY24, 10, 8, (0.10, 0.10, 0.12), 3, shadow=False, lw=2)"),
+                     ("        x = lerp(546.0, 396.0, inn)\n", "        x = lerp(546.0, 384.0, inn)\n")):
+        assert old in src, old
+        src = src.replace(old, new)
+    g2 = rr2.shot_72b.__globals__
+    g2.update(FX24=fx, RB24=RB, DY24=DY)
+    old_b = rr2.shot_72b
+    exec(src, g2)
+    old_b.__code__ = g2["shot_72b"].__code__
+    src = inspect.getsource(m.shot_73)                        # 7.3: a step further from the robot: his raised glove passed over its head
+    assert src.count("322, F - 40") == 2
+    src = src.replace("322, F - 40", "246, F - 40").replace("(335, 1130, 1.5)", "(300, 1122, 1.5)")
+    old_c = rr2.shot_73
+    exec(src, g2)
+    old_c.__code__ = g2["shot_73"].__code__
+
+
+_shot72_24()
+
+CLOSE24 = ("1.1", "4.2", "4.4c", "5.3", "5.6", "7.5", "8.1", "8.5")
+FILM = [(n, d, _framed(fn) if n in CLOSE24 else fn) for n, d, fn in FILM]
 
 _T0, _F = 0.0, []
 for _n, _d, _f in FILM:
