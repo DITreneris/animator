@@ -1480,6 +1480,28 @@ _V22 = {"6.2a": (0.6, quick(_f["6.2a"], 0.8 / 0.6)), "6.2b": (1.3, quick(_f["6.2
         "7.4": (1.5, lambda t: rr2.shot_74(0.2))}
 FILM = [(n,) + _V22[n] if n in _V22 else (n, d, fn) for n, d, fn in FILM]
 
+# ---- v23 (Tomas, 21 Nov: "throw out" the robot's un-approved jab; the wide stall after his punches; Don's back; the robot getting up) ----
+rr2.shot_72.__globals__["_rpose72"] = lambda t: "r_guard" if 0.50 <= t < 0.74 else "r_wait"      # it covers up; it never hits without approval
+
+
+def _duck72(t):
+    return 0.0
+
+
+rr2.shot_72.__globals__["_duck72"] = _duck72
+
+
+def _don_back23(k, x, feet, s=1.0, pose=None, **kw):
+    return mo.don_back(k, x, feet, s, **kw)
+
+
+n2.detective_back = mo.alive(_don_back23, "DON", None, tween_pose=False, blinks=False)       # his back is a lit figure, not a flat "ghost"
+_f = {n: fn for n, d, fn in FILM}
+_V23 = {"7.2": (2.2, lambda t, fn=_f["7.2"]: fn(t * 1.66 / 2.2)),                             # his three punches and nothing else
+        "7.2b": (1.9, lambda t, a_=_f["7.2"], b_=_f["7.2b"]: a_(1.68 + t * (0.8 / 0.6)) if t < 0.6 else b_(t - 0.6)),   # the wide tail (the robot gets up), then the Referee
+        "7.4": (0.95, _f["7.4"])}
+FILM = [(n,) + _V23[n] if n in _V23 else (n, d, fn) for n, d, fn in FILM]
+
 _T0, _F = 0.0, []
 for _n, _d, _f in FILM:
     _f = _lit(mo.timed(_n, _f, _T0), _n)

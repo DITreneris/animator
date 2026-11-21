@@ -46,3 +46,21 @@ New in this test:
 - The card girl is "about twice the boxer's height" (both).
 
 Not re-tested after this test: nothing was changed after it.
+
+## Test 57 (21 Nov): block D after film v23 (7.1 to 7.5)
+
+Two fresh viewers, mute, 89 frames at 8 a second, seven questions. Changed since test 56: the robot's jab in 7.2 is out (it covers up), 7.2 is his punches only, 7.2b opens on the wide tail and the Referee comes in, the second approval is about 2.0 s.
+
+| Question | Viewer A | Viewer B | Verdict |
+|---|---|---|---|
+| Does the machine hit him during the round | "The machine never hits him during the fight itself; it only raises a guard (20-22)" | "During the actual round (frames 12-29) the machine lands nothing" | read; one of the two was unsure of the guard: "guarding, recoiling or about to hit back" |
+| The rule (it hits only after approval) | "the machine cannot strike or win until a human signs off, and a human does" | "a human sign-off decides it, not the punches" | read |
+| The Referee | "a referee or handler stopping the boxer" | "a referee or official stopping the man from hitting a downed opponent" | read; before he steps in he is "a second figure with glasses behind the robot" / "drawn differently (grey…)" |
+| The robot gets up | "It never visibly gets up; it is simply upright after a slight change of framing at 41" | "we never see it rise; it is simply back up after a reframe" | **failed (both)** |
+| The stall after his punches | "41-45 are five identical frames, and 36-40 are almost identical" | "Frames 41-45: three figures frozen" | **still there**, shorter (about 1.2 s, was eight frames at 4 a second = 2 s) |
+| The second approval | "62-69 is one static title card for about a second" | "the title card, a full second of still image" | still slow; nobody called it a repeat (they did not see the first one) |
+| The last image | "he is sucker-punched just as he thinks he has won" | "the man who thought he had won is flattened" | read |
+
+Shared misreads that are not beats: the pressing hand "has a black sleeve, but the waistcoat man has white sleeves" (both wondered whose it is; her office was not in this set); the gloves on the banner: "reaches for the prize and it is lifted out of his grasp" against "celebrating under the prize".
+
+Not tested here: Don's back in 6.4 (it is in block C), the sound, the lines. Nothing was changed after this test.

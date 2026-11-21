@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v17"
+V = "v18"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -62,9 +62,9 @@ LINES = {                                                    # v6: the lines, pr
     "6.3": [("DON", "The woman in the photo…", "d2", 0.3), ("DON", "Recognize her?", "d3", 2.0)],
     "6.4": [("DON", "Case closed.", "d4", 0.45)],
     "7.1": [("N", "But I didn't quit.", "n11", 0.1)],
-    "7.2": [("N", "Ten garages. That was the plan.", "n12", 0.25)],   # v17 (Tomas: "start it earlier"): over his punches; 7.3 is no longer held for it
-    "7.2b": [("REFEREE", "Break!", "r1", 0.2)],
-    "7.4": [("ROBOT", "Human approval still pending.", "rb2", 0.0)],
+    "7.2": [("N", "Ten garages. That was the plan.", "n12", 0.05)],   # v17 (Tomas: "start it earlier"): over his punches; 7.3 is no longer held for it
+    "7.2b": [("REFEREE", "Break!", "r1", 0.9)],
+    "7.3": [("ROBOT", "Human approval still pending.", "rb2", 1.45)],        # v18: pre-laps the cut to it
     "7.4c": [("MOM", "Approved.", "m6", 0.0)],                       # v17: her office is not shown a second time: the button, the tick, her word
     "8.3": [("N", "I'll call her back tomorrow.", "n13", 0.5)],
     "8.4": [("N", "Tomorrow.", "n14", 0.5)],
