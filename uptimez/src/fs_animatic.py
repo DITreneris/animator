@@ -1,4 +1,11 @@
-"""FIRST SEARCH (episode 10): the animatic v25 (fs_animatic_v24.py = v24, kept): storyboard v27 (frame 0 and the loop:
+"""FIRST SEARCH (episode 10): the animatic v27 (fs_animatic_v26.py = v26, kept): storyboard v32; cut to about 36 s from
+the same drawings and the same lines (every line whole: the holds trimmed to what it takes to read a shot, a line's lead
+0.05 s and its tail 0.10 s, the ending RETRY-first); the bubbles' tails go beside the speaker's mouth on the side away
+from anyone else, never with the tip inside the bubble; an off-screen speaker's bubble sits at the frame's edge on their
+side, never on the portrait; the file is tagged BT.709, TV range.
+FIRST SEARCH (episode 10): the animatic v26 (fs_animatic_v25.py = v25, kept): storyboard v28 (5.1 restaged; the
+promise and the post's small print legible).
+FIRST SEARCH (episode 10): the animatic v25 (fs_animatic_v24.py = v24, kept): storyboard v27 (frame 0 and the loop:
 Don under the portrait, which smiles whenever it is whole).
 FIRST SEARCH (episode 10): the animatic v24 (fs_animatic_v23.py = v23, kept): storyboard v26 (frame 0 closer, Pam out
 front, 8.2 the rescue).
@@ -62,12 +69,20 @@ import sound_xmas as sx
 import sound_iwry as si
 from kit import Ctx, INK
 
-V = "v25"
+V = "v27"
 W, H, FPS, SR = 540, 960, 30, 48000
 HERE = os.path.dirname(os.path.abspath(__file__))
 VOICES = "fs_voices/film_v9"
 TAKES = json.load(open(os.path.join(HERE, VOICES, "takes.json")))
 LEAD, TAIL = 0.15, 0.30
+RETIME = [True]                                            # v27: the ~36 s cut (False: v26's timing)
+if RETIME[0]:
+    LEAD, TAIL = 0.05, 0.10
+CUT27 = {"1.1a": 0.8, "1.1b": 0.7, "1.2": 1.3, "1.3": 1.25, "2.1": 0.4, "2.2": 2.64, "2.3": 0.5, "3.1": 1.0, "3.2": 0.7,
+         "3.3": 1.0, "3.4": 0.6, "4.1": 1.92, "4.2": 2.40, "4.3": 0.82, "4.4": 0.4, "4.5": 0.8, "5.1": 1.0, "5.2": 1.54,
+         "5.2b": 0.4, "5.2c": 0.45, "5.3": 1.51, "6.1b": 1.12, "6.2a": 0.9, "6.2b": 1.0, "7.1": 1.39, "7.2": 0.6,
+         "7.3": 0.5, "7.4": 1.09, "7.5": 1.05, "8.1": 1.51, "8.2": 0.8, "9.1": 0.8, "9.2": 1.6, "9.3": 0.7, "9.4": 0.6,
+         "9.5": 0.3}
 LINE_OF = {"1.2": "1.2", "2.2": "2.2", "3.3": "3.3", "4.1": "4.1", "4.2": "4.2", "4.3": "4.3", "5.2": "5.2",
            "5.3": "5.3", "7.1": "7.1", "7.4": "7.4",
            "6.1b": "6.1b", "7.5": "7.5", "8.1": "8.1"}
@@ -82,6 +97,17 @@ def timing():
     span_left = 0.0
     for shot, hold, fn, note in sb.SHOTS:
         ln = hold
+        if RETIME[0] and shot in CUT27:
+            ln = CUT27[shot]
+            if shot in LINE_OF and shot not in SPAN:
+                ln = max(ln, LEAD + TAKES[LINE_OF[shot]]["len"] + TAIL)
+            if shot in SPAN:
+                span_left = max(0.0, LEAD + TAKES[LINE_OF[shot]]["len"] + TAIL - ln)
+            elif span_left > 0:
+                ln = max(ln, span_left); span_left = 0.0
+            rows.append(dict(shot=shot, start=round(t, 3), len=round(ln, 3)))
+            t += ln
+            continue
         if shot in LINE_OF:
             need = LEAD + TAKES[LINE_OF[shot]]["len"] + TAIL
             if shot in SPAN:
@@ -168,6 +194,15 @@ def speech(c, k, text, head, others, mono=False, size=30, taken=()):
     if on:
         hx, hy, r = head
         side = 1 if hx < 270 else -1
+        others_on = [h for h in others if 0 <= h[0] <= 540 and 0 <= h[1] <= 960]
+        def clear(sd):                                     # how far a tip on side sd is from anyone else's face
+            tx_, ty_ = hx + sd * (r * 0.95 + 8), hy + r * 0.35
+            if not (8 <= tx_ <= 532):
+                return -1
+            return min([((tx_ - ox) ** 2 + (ty_ - oy) ** 2) ** 0.5 - orr for ox, oy, orr in others_on] or [999])
+        side = max((side, -side), key=clear)
+        top_tip = clear(side) < r * 0.4                    # both sides crowded or off the frame: the tail comes down
+                                                           # onto the top of the speaker's head instead
         bx = max(L, min(R - bw, hx + side * r * 0.9 - bw / 2))
         xs = [bx] + [max(L, min(R - bw, bx + d_)) for d_ in (-40, 40, -80, 80, -120, 120, -160, 160, -220, 220)]
         for by in range(int(hy - r - bh - 30), T + 7, -8):                          # just above, then higher
@@ -186,10 +221,10 @@ def speech(c, k, text, head, others, mono=False, size=30, taken=()):
             for by in range(int(hy + r * 1.3 + 24), int(B - bh), 8):
                 if free(bx, by):
                     place = (bx, by); break
-    if place is None:                                                               # off screen: toward where they are
-        ax = 270 if head is None else (L if head[0] < 0 else R - bw if head[0] > 540 else head[0] - bw / 2)
-        bx = max(L, min(R - bw, ax))
-        for by in range(T + 8, int(B - bh), 8):
+    if place is None:                                                               # off screen: at the frame's edge on
+        ax = R - bw if head is None else (L if head[0] < 0 else R - bw if head[0] > 540 else head[0] - bw / 2)   # their side,
+        bx = max(L, min(R - bw, ax))                                                # in the top band
+        for by in range(T + 8, 380, 8):
             if free(bx, by):
                 place = (bx, by); break
         if place is None:
@@ -198,9 +233,16 @@ def speech(c, k, text, head, others, mono=False, size=30, taken=()):
     tail = None
     if on:
         hx, hy, r = head
-        mx_ = bx + bw / 2
-        side = 1 if mx_ >= hx else -1
         tip = (hx + side * (r * 0.95 + 8), hy + r * 0.35)                             # beside the mouth, outside the head
+        if top_tip:
+            tip = (hx, hy - r - 8)
+        if bx - 8 <= tip[0] <= bx + bw + 8 and by - 8 <= tip[1] <= by + bh + 8:       # the tip inside the bubble: move it off
+            if side > 0:
+                bx = min(R - bw, tip[0] + 44)
+            else:
+                bx = max(L, tip[0] - 44 - bw)
+            if bx - 8 <= tip[0] <= bx + bw + 8:                                       # no room beside: above it then
+                by = max(T + 8, tip[1] - r * 1.6 - bh)
         if tip[1] > by + bh:                                                         # the speaker below
             cx = max(bx + 30, min(bx + bw - 30, tip[0]))
             tail = [(cx - 13, by + bh - 3), tip, (cx + 13, by + bh - 3)]
@@ -359,7 +401,9 @@ def main(d):
         f.write("file '%s'\n" % st_[(rows[-1]["shot"], False)])
     out = os.path.join(d, "fs_animatic_%s.mp4" % V)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-i", wav,
-                    "-vf", "fps=30,format=yuv420p", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+                    "-vf", "fps=30,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p", "-c:v", "libx264", "-preset", "veryfast",
+                    "-crf", "20", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
+                    "-color_range", "tv",
                     "-c:a", "aac", "-b:a", "192k", "-t", "%.3f" % total, "-movflags", "+faststart", out], check=True)
     print("wrote", out)
 
