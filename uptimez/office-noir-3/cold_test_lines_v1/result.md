@@ -76,3 +76,24 @@ Two fresh viewers; the first 3 s (5 a second), the alley 3.4b to 3.4d (2.5 a sec
 | Stillness | "25-30: The "Break!" tableau is fully frozen for about 0.8 s" | the same | **failed (both)** |
 
 Not tested: the darker robot (nobody was asked), the house over the alley, the last glove's new waiting place. Nothing was changed after this test.
+
+# Cold test 66 (21 Nov): film v31, animatic v27
+
+Two fresh viewers; the first 2 s, 5.1a, 7.2 to 7.2b at 10 a second, 6.3 at 4 a second, from the animatic.
+
+| Question | Viewer A | Viewer B | Verdict |
+|---|---|---|---|
+| The photograph and the ring girl (6.3) | "Same person. The hoop earring, the beauty mark on the same cheek, the bow tie, the hair and the red lips all match, and 10-12 put the photo next to her" | "The same person… The only differences are the feather headband and the expression" | **read (both)**: the first time in the film's tests |
+| The first glove: given away? | "Nothing… a pure sucker punch" | "None… It works as a sucker punch, and the joke lands against the narration" | **read (both)** |
+| The first glove's travel | "one travel frame (10), then it is on his face" | the same | still one drawing |
+| Hit 1 in 7.2 | "Starburst, three-frame stop, frame shake, machine tilt… Lands moderately" | "Moderate… the robot rocking back" | the recoil is seen (both); it was "a tap" |
+| Hit 2 | "The best one" | "the stronger one"; but "The fist never visibly reaches the head" | read; one doubt about the contact |
+| The white drawing on a hit | "no white frame on any hit" | "no white frame" | not seen: it is 1 to 2 drawings of 30 a second, the sheet shows every third |
+| The crowd | "no readable reaction" | "No reaction that I can see" | **failed (both), second time** |
+| Robe, belt, antenna swinging | "Not that I can see… a few pixels here, so a very small swing could be missed" | "Nothing" | **failed (both)** |
+| The card girl's steps | "It reads as a slide" | "It reads as a slide… I cannot rule out a tiny leg cycle" | **failed (both)** |
+| The Referee's steps | "a pop and slide over three frames"; a "white sleeve-like limb" before his body | "a pop and slide"; "a detached limb sticking out of the robot" | **failed (both)** |
+| The robot at the end of 7.2b | "Upright… the recovery is never shown; it happens across the framing change at 33" | "tilted about 20 degrees, slumped back against the right corner ropes… "leaning", not "beaten"" | no snap is reported now; the two disagree on its state |
+| Stillness | "36-41: Six frames with nothing moving" | "f35-41 (0.7 s): Completely frozen under the "Break!" bubble" | **failed (both)** |
+
+Nothing was changed after this test.

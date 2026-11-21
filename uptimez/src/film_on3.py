@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v30 (v1 to v29 pinned). v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v31 (v1 to v30 pinned). v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1520,7 +1520,10 @@ FILM = [(n,) + _V23[n] if n in _V23 else (n, d, fn) for n, d, fn in FILM]
 
 # ---- v30 (Tomas, /grill-me): the weight of a punch; the crowd; the glove before the last punch; tones ----
 
-def _weight(fn, hits, stop=0.10, shake=0.30, amp=6.0, bob=0.45):
+RECOIL31, SWAY31, ANT31, STEP31 = [0.0], [0.0], [0.0], [None]
+
+
+def _weight(fn, hits, stop=0.10, shake=0.30, amp=6.0, bob=0.6, recoil=False, flash=False):
     """Each hit (shot time): the drawing stops for `stop` s, the frame shakes, the crowd goes up and comes down."""
     def g(t):
         s_t, u_sh, u_bob = t, None, None
@@ -1534,17 +1537,194 @@ def _weight(fn, hits, stop=0.10, shake=0.30, amp=6.0, bob=0.45):
                 u_sh = (t - ho) / shake
             if ho <= t < ho + bob:
                 u_bob = (t - ho) / bob
-        BOB30[0] = math.sin(math.pi * u_bob) ** 0.7 if u_bob is not None else 0.0
+        BOB30[0] = 2.6 * math.sin(math.pi * u_bob) ** 0.7 if u_bob is not None else 0.0
+        dt = min((t - (h + i * stop) for i, h in enumerate(hits) if t >= h + i * stop), default=None)
+        imp = math.sin(2 * math.pi * 1.7 * dt) * math.exp(-3.2 * dt) if dt is not None and dt < 1.2 else 0.0    # v31: what a hit leaves swinging
+        RECOIL31[0] = 0.20 * math.sin(math.pi * min(1.0, dt / 0.42)) if (recoil and dt is not None and dt < 0.42) else 0.0
+        SWAY31[0], ANT31[0] = 0.8 * imp, 1.0 * imp
         try:
             src = fn(s_t)
         finally:
-            BOB30[0] = 0.0
-        return src if u_sh is None else _shake29(src, u_sh, amp)
+            BOB30[0] = RECOIL31[0] = SWAY31[0] = ANT31[0] = 0.0
+        if u_sh is not None:
+            src = _shake29(src, u_sh, amp)
+        if flash and dt is not None and dt < 1.5 / 30:                                   # v31: one white drawing as it lands
+            c = cairo.Context(src); c.set_source_rgba(1, 1, 1, 0.82); c.paint()
+        return src
     return g
 
 
 _HITS30 = {"7.2": (0.58, 1.66), "5.5": (0.68,)}
-FILM = [(n, d + 0.10 * len(_HITS30[n]) * (n != "5.5"), _weight(fn, _HITS30[n], stop=0.0 if n == "5.5" else 0.10)) if n in _HITS30 else (n, d, fn) for n, d, fn in FILM]
+FILM = [(n, d + 0.10 * len(_HITS30[n]) * (n != "5.5"), _weight(fn, _HITS30[n], stop=0.0 if n == "5.5" else 0.10, recoil=n == "7.2", flash=n == "7.2")) if n in _HITS30 else (n, d, fn) for n, d, fn in FILM]
+
+# ---- v31 (Tomas, /grill-me) ----
+# the first glove comes from outside the frame: the film's first (and last) drawing is his face alone
+T0 = 0.0
+_c75b = rr2.shot_75.__code__
+assert _c75b.co_consts.count(560.0) == 1
+rr2.shot_75.__code__ = _c75b.replace(co_consts=tuple(790.0 if (type(v) is float and v == 560.0) else v for v in _c75b.co_consts))
+
+
+def _s11_31(t):
+    if t < 0.95:
+        src = rr2.shot_75(0.0)
+        if t <= 0:
+            return src
+        z = 1 + 0.07 * (t / 0.95) ** 1.5
+        s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)
+        c.translate(250, 400); c.scale(z, z); c.translate(-250, -400); c.set_source_surface(src, 0, 0); c.paint()
+        return s_
+    if t < 1.08:                                               # it flies in: four drawings, the last two stretched along its way
+        u = (t - 0.95) / 0.13
+        src = rr2.shot_75(0.45 * min(1.0, u / 0.6)) if u < 0.6 else rr2.shot_75(0.69 + 0.06 * (u - 0.6) / 0.4)
+        return src
+    if t < 1.65:
+        src = rr2.shot_75(0.75)
+        a = 9.0 * (1 - (t - 1.08) / 0.57) ** 2
+        s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)
+        c.translate(-a * abs(math.sin((t - 1.08) * 50)), a * 0.4 * math.sin((t - 1.08) * 37))
+        c.scale(1.07, 1.07); c.translate(-17, -28)
+        c.set_source_surface(src, 0, 0); c.paint()
+        return s_
+    return rr2.shot_75(0.75 + min(0.19, (t - 1.65) / 0.25 * 0.19))
+
+
+s11.__code__ = _s11_31.__code__
+
+# 7.2b: the robot does not get up in this shot (three tests could not see it): it stays against the ropes; 7.3 finds it upright
+def _no_rise():
+    co_ = rr2.shot_72b.__code__
+    out = []
+    for v in co_.co_consts:
+        if hasattr(v, "co_name") and v.co_name == "robot":
+            assert 0.75 in v.co_consts
+            v = v.replace(co_consts=tuple(1e9 if (type(x) is float and x == 0.75) else x for x in v.co_consts))
+        out.append(v)
+    rr2.shot_72b.__code__ = co_.replace(co_consts=tuple(out))
+
+
+
+# her photograph: the ring girl's own face (her waves, her hoop, her mark), without the feather (it was The Onboarding's Sofia:
+# pearls like Mom's, another haircut; nobody matched the two)
+def _her31(k, x, feet, s=1.0, look=(0.6, 0.0)):
+    old = so3.feather
+    so3.feather = lambda *a, **kw: None
+    try:
+        with _plain21():
+            return so3.sofia(k, x, feet + 34 * s, s * 1.04, "r_hips", "smile", (0, 0))
+    finally:
+        so3.feather = old
+
+
+st.her = _her31
+
+
+def _photo31(fn):
+    """6.3: while the glass is on the ring girl, Don's other hand holds the photograph up beside it: the two faces at once."""
+    def g(t):
+        s_ = fn(t)
+        u = ramp(t, 2.25, 0.3)
+        if u <= 0:
+            return s_
+        tmp = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c = cairo.Context(tmp); k = Ctx(c, 0)
+        y = lerp(1000.0, 742.0, u)
+        c.translate(118, y); c.rotate(-0.08)
+        rect(k, -86, -112, 172, 224, (0.96, 0.96, 0.93), 3, shadow=True, lw=3)
+        c.save(); c.rectangle(-78, -104, 156, 196); c.clip(); c.set_source_rgb(0.62, 0.62, 0.64); c.paint()
+        _her31(k, 0, -104 + 150 + 272 * 1.15 - 34 * 1.15, 1.15); c.restore()
+        ellipse(k, 60, 118, 26, 20, (0.80, 0.80, 0.82), 5, shadow=False, lw=2.4)              # his thumb on its corner
+        c2 = cairo.Context(s_); c2.set_source_surface(_grey29(tmp), 0, 0); c2.paint()
+        return s_
+    return g
+
+
+FILM = [(n, d, _photo31(fn) if n == "6.3" else fn) for n, d, fn in FILM]
+
+
+def _fresh31(name):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("_fresh31_" + name, os.path.join(os.path.dirname(os.path.abspath(__file__)), name + ".py"))
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    return m
+
+
+def _rep31(src, pairs):
+    for a_, b_ in pairs:
+        assert a_ in src, a_
+        src = src.replace(a_, b_)
+    return src
+
+
+# what swings after a hit: the hem of his robe and the ends of his belt (SWAY31), the robot's antenna (ANT31). Both are 0
+# outside the shots that set them, and then every drawing is as it was.
+_mb = _fresh31("client_on3")
+_b0.SW31 = lambda: SWAY31[0] * 16
+exec(_rep31(inspect.getsource(_mb._lower_ring), (
+    ("(86, HEM + 2), (44, HEM + 6), (8, HEM), (-32, HEM + 6), (-78, HEM + 2)]", "(86 + SW31(), HEM + 2), (44 + SW31(), HEM + 6), (8 + SW31(), HEM), (-32 + SW31(), HEM + 6), (-78 + SW31(), HEM + 2)]"),
+    ("c.line_to(x1, HEM - (24 if not awake else 2))", "c.line_to(x1 + SW31() * 0.8, HEM - (24 if not awake else 2))"),
+    ("c.line_to(12, HEM + 1)", "c.line_to(12 + SW31(), HEM + 1)"),
+    ("cut(k, [(-76, HEM - 20), (-32, HEM - 16), (8, HEM - 22), (44, HEM - 16), (84, HEM - 20), (83, HEM - 9), (44, HEM - 5),\n                (8, HEM - 11), (-32, HEM - 5), (-75, HEM - 9)], IVORY, shadow=False, lw=1.6)",
+     "cut(k, [(x_ + SW31() * 0.85, y_) for x_, y_ in [(-76, HEM - 20), (-32, HEM - 16), (8, HEM - 22), (44, HEM - 16), (84, HEM - 20), (83, HEM - 9), (44, HEM - 5),\n                (8, HEM - 11), (-32, HEM - 5), (-75, HEM - 9)]], IVORY, shadow=False, lw=1.6)"))), _b0.__dict__)
+exec(_rep31(inspect.getsource(_mb._torso_ring), (
+    ("(22 + dx + 6, HIP - 6 + ln), (22 + dx - 6, HIP - 8 + ln)]", "(22 + dx + 6 + SW31() * 1.5, HIP - 6 + ln), (22 + dx - 6 + SW31() * 1.5, HIP - 8 + ln)]"),)), _b0.__dict__)
+_mr = _fresh31("robot_on3")
+ROBOT31 = [None]
+r.AX31 = lambda: ANT31[0] * 13
+_keep = r.robot
+exec(_rep31(inspect.getsource(_mr.robot), (
+    ("c.move_to(0, -44); c.line_to(0, -58); c.stroke()", "c.move_to(0, -44); c.line_to(AX31(), -58); c.stroke()"),
+    ("ellipse(k, 0, -62, 6.5, 6.5,", "ellipse(k, AX31(), -62, 6.5, 6.5,"),
+    ("c.move_to(11 * math.cos(a), -62 + 11 * math.sin(a)); c.line_to(18 * math.cos(a), -62 + 18 * math.sin(a))",
+     "c.move_to(AX31() + 11 * math.cos(a), -62 + 11 * math.sin(a)); c.line_to(AX31() + 18 * math.cos(a), -62 + 18 * math.sin(a))"))), r.__dict__)
+ROBOT31[0] = r.__dict__["robot"]
+r.robot = _keep
+
+
+# steps: a figure drawn facing us that crosses the ring slid; now each leg lifts in turn and the body rides on it
+def _stepped31(draw, k, x, feet, s, hip, ph):
+    c = k.c
+    ll, lr = max(0.0, math.sin(ph)) * 11 * s, max(0.0, -math.sin(ph)) * 11 * s
+    bob = abs(math.cos(ph)) * 3.0 * s
+    yh = feet - hip * s
+    c.save(); c.rectangle(x - 600, yh - 3000, 1200, 3000 - bob); c.clip(); o = draw(feet - bob); c.restore()
+    with _plain21():
+        for x0, lift in ((x - 600, ll), (x, lr)):
+            c.save(); c.rectangle(x0, yh - bob - lift, 600, 4000); c.clip(); draw(feet - lift); c.restore()
+    return o
+
+
+class _CaStep:
+    def __getattr__(self, n):
+        return getattr(ca, n)
+
+    def referee(self, k, x, feet, s, *a, **kw):
+        if STEP31[0] is None:
+            return ca.referee(k, x, feet, s, *a, **kw)
+        return _stepped31(lambda f_: ca.referee(k, x, f_, s, *a, **kw), k, x, feet, s, 150, STEP31[0])
+
+
+class _SoStep:
+    def __getattr__(self, n):
+        return getattr(so3, n)
+
+    def sofia(self, k, x, feet, s, *a, **kw):
+        if STEP31[0] is None:
+            return so3.sofia(k, x, feet, s, *a, **kw)
+        return _stepped31(lambda f_: so3.sofia(k, x, f_, s, *a, **kw), k, x, feet, s, 108, STEP31[0])
+
+
+def _steps31(fn, when, rate):
+    def g(t):
+        STEP31[0] = t * rate if when(t) else None
+        try:
+            return fn(t)
+        finally:
+            STEP31[0] = None
+    return g
+
+
+_s51a21.__globals__["so3"] = _SoStep()
+FILM = [(n, d, _steps31(fn, lambda t: True, 13.0) if n == "5.1a" else fn) for n, d, fn in FILM]
 
 _c75 = rr2.shot_75.__code__                                   # 7.5 (and the film's first and last drawing, the same function): the glove waits clear of
 assert _c75.co_consts.count(392.0) == 2 and _c75.co_consts.count(392) == 2 or True      # his face (it "sits against his cheek… a slow push", test 64)
@@ -1559,12 +1739,15 @@ def _robot30(*a, **kw):
     """The HR robot's shell a tone under the ropes and the canvas (it was their grey): the chest plate and the face stay light."""
     old = (_w30.BODY, _w30.BODY_SHADE, r.STEEL, r.STEEL_DARK)
     _w30.BODY, _w30.BODY_SHADE, r.STEEL, r.STEEL_DARK = (0.40, 0.41, 0.46), (0.28, 0.29, 0.34), (0.40, 0.42, 0.47), (0.24, 0.25, 0.29)
+    if RECOIL31[0]:
+        kw["wobble"] = kw.get("wobble", 0.0) + RECOIL31[0] * kw.get("side", 1)
     try:
-        return _robot30_0(*a, **kw)
+        return ROBOT31[0](*a, **kw)
     finally:
         _w30.BODY, _w30.BODY_SHADE, r.STEEL, r.STEEL_DARK = old
 
 
+ROBOT31[0] = ROBOT31[0] or _robot30_0
 r.robot = _robot30
 _barrel30_0 = al.barrel
 
@@ -1717,7 +1900,7 @@ def _s11_28(t):
     return rr2.shot_75(T0 + 0.31 + min(0.19, (t - 1.65) / 0.25 * 0.19))
 
 
-s11.__code__ = _s11_28.__code__
+s11.__code__ = _s11_31.__code__                             # v31 (was _s11_28)
 FILM = [("1.1", 1.9, fn) if n == "1.1" else (n, d, fn) for n, d, fn in FILM]
 
 # ---- v26 (cold test 61, both: "the bill is already in his glove… which tips the answer before How much?"): in 4.3 his
@@ -1890,9 +2073,11 @@ def _shot72_24():
 
 
 _shot72_24()
+_no_rise()                                                   # v31
+rr2.shot_72b.__globals__["ca"] = _CaStep()                   # v31: the Referee walks in on his legs
 
 _f = {n: (d, fn) for n, d, fn in FILM}
-_V25 = {"7.2b": (1.55, lambda t, a_=_V23_72[0], b_=_V23_72[1]: a_(1.68 + t * 2.0) if t < 0.4 else b_((t - 0.4) * 0.5))}   # at half speed: this layer plays 7.2b nearly twice as fast as it was written   # v25: 0.4 s of the wide tail, then he walks in while it gets up
+_V25 = {"7.2b": (1.55, lambda t, a_=_V23_72[0], b_=_steps31(_V23_72[1], lambda t_: t_ < 0.5, 26.0): a_(1.68 + t * 2.0) if t < 0.4 else b_((t - 0.4) * 0.5))}   # at half speed: this layer plays 7.2b nearly twice as fast as it was written   # v25: 0.4 s of the wide tail, then he walks in while it gets up
 FILM = [(n,) + _V25[n] if n in _V25 else (n, d, fn) for n, d, fn in FILM]
 CLOSE24 = ("1.1", "4.2", "4.4c", "5.3", "5.6", "7.5", "8.1", "8.5")
 FILM = [(n, d, _framed(fn) if n in CLOSE24 else fn) for n, d, fn in FILM]
