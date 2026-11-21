@@ -91,6 +91,29 @@ def check_v3():
         OUT_V2, FILM_V2, KEY["3.5"] = o2, f2, k35
 
 
+OUT_V4 = "cs_voices/film_v4"
+FILM_V4_NEW = [                                            # One Star v15/v16 (Tomas): the post in the Client's voice, the reply
+    ("1.2", "CLIENT", "Paid $999. They lost my blueprint. My lawyer will call.",       # in the robot's
+     "Paid nine hundred ninety-nine. They lost my blueprint. My lawyer will call."),   # ("nine ninety-nine" was heard "9.99")
+    ("1.4b", "ROBOT", "Shut off! Our AI does not lose files!", None),                 # 4 reads tried: this one 1/1 word-perfect
+]
+
+
+def takes_v4():
+    """film_v3 copied unchanged, and the two new lines."""
+    os.makedirs(OUT_V4, exist_ok=True)
+    meta = json.load(open(OUT_V3 + "/takes.json"))
+    for k in meta:
+        shutil.copyfile("%s/%s.wav" % (OUT_V3, k), "%s/%s.wav" % (OUT_V4, k))
+    for key, who, line, give in FILM_V4_NEW:
+        a = ob.trim(np.asarray(sfs.take(key, who, give or line, None), dtype=np.float64))
+        sf.write("%s/%s.wav" % (OUT_V4, key), a.astype(np.float32), SR)
+        meta[key] = dict(who=who, text=line, len=round(len(a) / float(SR), 3), f0=round(float(bc.f0(a))),
+                         rms=round(float(np.sqrt(np.mean(a ** 2))), 3), peak=round(float(np.abs(a).max()), 3), source="kokoro")
+        print("%-5s %-6s %5.2f s  %s" % (key, who, meta[key]["len"], line), flush=True)
+    json.dump(meta, open(OUT_V4 + "/takes.json", "w"), indent=1)
+
+
 def phone_line(a):
     """A voice through a phone: 300-3400 Hz, a little crushed."""
     from scipy.signal import butter, sosfilt
@@ -198,3 +221,5 @@ if __name__ == "__main__":
         takes_v3()
     elif cmd == "check_v3":
         sys.exit(1 if check_v3() else 0)
+    elif cmd == "takes_v4":
+        takes_v4()

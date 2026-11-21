@@ -1,4 +1,6 @@
-# Customer Success — script v12 (line by line, with the shot list)
+# One Star — script v12 (line by line, with the shot list)
+
+**Title (20 Nov, Tomas): "One Star"**, after the post at 0:01 and the last line, "Still one star." The working title "Customer Success" survives as Don's line at the handshake; the folder and file names keep it (`customer-success/`, `cs_*`) so nothing built breaks.
 
 UptimeZ Inc. · episode 11 · 20 Nov · for review · scripts v1–v11 are kept
 

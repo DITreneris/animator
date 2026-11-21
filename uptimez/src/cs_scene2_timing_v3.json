@@ -1,0 +1,24 @@
+{
+ "shots": [
+  {
+   "shot": "2.1",
+   "line": {
+    "key": "2.1",
+    "who": "DON",
+    "text": "Let's fix this together.",
+    "t0": 0.75,
+    "t1": 2.249
+   }
+  },
+  {
+   "shot": "2.2",
+   "line": {
+    "key": "2.2",
+    "who": "CLIENT",
+    "text": "Nine o'clock. Your office.",
+    "t0": 2.917,
+    "t1": 4.613
+   }
+  }
+ ]
+}

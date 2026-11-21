@@ -1,0 +1,14 @@
+{
+ "shots": [
+  {
+   "shot": "4.4",
+   "line": {
+    "key": "4.4",
+    "who": "ROBOT",
+    "text": "The result was obtained by a h-human.",
+    "t0": 10.417,
+    "t1": 12.597
+   }
+  }
+ ]
+}
