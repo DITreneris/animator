@@ -27,3 +27,19 @@ Two fresh viewers; 24 frames with cards and bubbles, 2.5 a second, 4.1 to 4.4t (
 Other: one viewer took the woman in his photo (4.2) for the lady at the desk ("The woman from the photo (hat, glasses, pearls)"): both wear pearls. "I name my price." and "I don't believe in signs." are tight against his hood in 4.4 for one viewer, clear for the other.
 
 Nothing was changed after this test.
+
+# Cold test 63 (21 Nov): animatic v23, first build (4.3 waits until she has named the price)
+
+Two fresh viewers; 29 frames with cards and bubbles, 2.5 a second, 4.1 to 4.4c.
+
+| Question | Viewer A | Viewer B | Verdict |
+|---|---|---|---|
+| Who says "One hundred bucks." | "The woman… Sure… Bubble tail points at her" | "Person behind the desk… sure" | **read (both)**; in test 62 it "reads as him saying it" |
+| Who says "Your ticket. You're fighting." | "Guess… the bubble sits beside the man's head, so it reads as his line" | "guess… reads as his line" | **failed (both)**: not part of this change; she is out of the frame for the whole line |
+| A face or a sign covered | "No face is covered in any frame" | "none covered" | read; the card no longer lies on his hood in 4.4 |
+| Stillness | "5-13: Nine frames (about 3.6 s) of one locked over-the-shoulder shot… the dead spot of the piece" | "6-13… frozen and only the bubbles change… a slideshow with captions" | **the cost of the hold (both)** |
+| The joke | read, through "I don't believe in signs" and the Tower card | the same | read |
+
+Both: "it is not obvious who pays whom": the bill changes hands at the bottom edge of the frame.
+
+Changed after this test and **not re-tested**: 4.3 is played, not held (3.3 s): his glove comes up as he asks, she looks up from her cards as she names the price.

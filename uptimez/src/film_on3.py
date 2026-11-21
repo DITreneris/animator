@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v26 (v1 to v25 pinned). v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v27 (v1 to v26 pinned). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1520,6 +1520,16 @@ def _s43_26(t):
 
 s43.__code__ = _s43_26.__code__
 
+
+def _s43_27(t):
+    """v27: 4.3 now waits for both lines (animatic v23), and stood still for three seconds (test 63, both). It plays them:
+    his glove comes up as he asks; she looks up from her cards as she names the price."""
+    u = ramp(t, 1.72, 0.25)
+    return of.over(ramp(t, 0.80, 0.45), look=(0.2 - 0.5 * u, 0.9 - 1.0 * u), show=False, cards="deck", v4=True)
+
+
+FILM = [("4.3", 3.3, _s43_27) if n == "4.3" else (n, d, fn) for n, d, fn in FILM]
+
 # ---- v25: he SITS (cold tests 58 and 59, all four viewers: "no stool, no knees, no lap… the standing figure slid down the
 # frame", so Pam and Don looked too big beside him). The stool, his shins and boots on the canvas, his body lowered onto
 # the seat, the robe over his knees. ----
@@ -1679,6 +1689,18 @@ _V25 = {"7.2b": (1.55, lambda t, a_=_V23_72[0], b_=_V23_72[1]: a_(1.68 + t * 2.0
 FILM = [(n,) + _V25[n] if n in _V25 else (n, d, fn) for n, d, fn in FILM]
 CLOSE24 = ("1.1", "4.2", "4.4c", "5.3", "5.6", "7.5", "8.1", "8.5")
 FILM = [(n, d, _framed(fn) if n in CLOSE24 else fn) for n, d, fn in FILM]
+
+
+def _framed27(fn, f_):
+    def g(t):
+        with _client_rel(_b0.REL * f_):
+            return fn(t)
+    return g
+
+
+# v27: at her door he stands alone under the narration card, and at the series' size the card lay across his hood
+# (tests 61, 62). A little further from the camera: 0.82 of it, his head under the card.
+FILM = [(n, d, _framed27(fn, 0.82) if n in ("4.4", "4.4t") else fn) for n, d, fn in FILM]
 
 _T0, _F = 0.0, []
 for _n, _d, _f in FILM:

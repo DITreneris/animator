@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v22"
+V = "v23"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -151,7 +151,7 @@ def takes():
 
 SEEN = ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")
 NO_BUBBLE = ("Human approval required.",)                    # v16: the robot's own screen says it, in its view of him (the same words twice)
-HOLD_N = ()                                            # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
+HOLD_N = ("4.3",)  # v23 (Tomas, option 1): 4.3 waits until she has named the price: over 4.4 her line read as his;                                          # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
 _ENV = {}
 
 
