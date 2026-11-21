@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v32 (v1 to v31 pinned). v32: awake, the CV carries the real photograph (episode 10's); the gown's collar is off his mouth in 8.2. v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v33 (v1 to v32 pinned). v33: the first glove's flight is six drawings with a trail; 7.2b plays to its end, the Referee in front of the robot. v32: awake, the CV carries the real photograph (episode 10's); the gown's collar is off his mouth in 8.2. v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1574,19 +1574,26 @@ def _s11_31(t):
         s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)
         c.translate(250, 400); c.scale(z, z); c.translate(-250, -400); c.set_source_surface(src, 0, 0); c.paint()
         return s_
-    if t < 1.08:                                               # it flies in: four drawings, the last two stretched along its way
-        u = (t - 0.95) / 0.13
-        src = rr2.shot_75(0.45 * min(1.0, u / 0.6)) if u < 0.6 else rr2.shot_75(0.69 + 0.06 * (u - 0.6) / 0.4)
-        return src
-    if t < 1.65:
+    if t < 1.15:                                               # v33: it flies in over six drawings, each with the two before it faint behind it
+        pos = lambda u: rr2.shot_75(0.45 * min(1.0, u / 0.65)) if u < 0.65 else rr2.shot_75(0.69 + 0.06 * (u - 0.65) / 0.35)
+        u = (t - 0.95) / 0.20
+        src = pos(u)
+        c = cairo.Context(src)
+        for du, al in ((0.10, 0.34), (0.20, 0.18)):
+            if u - du > 0:
+                c.set_source_surface(pos(u - du), 0, 0); c.paint_with_alpha(al)
+        s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)             # at the size the creep-in ended on (it popped back)
+        c.translate(250, 400); c.scale(1.07, 1.07); c.translate(-250, -400); c.set_source_surface(src, 0, 0); c.paint()
+        return s_
+    if t < 1.72:
         src = rr2.shot_75(0.75)
-        a = 9.0 * (1 - (t - 1.08) / 0.57) ** 2
+        a = 9.0 * (1 - (t - 1.15) / 0.57) ** 2
         s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)
-        c.translate(-a * abs(math.sin((t - 1.08) * 50)), a * 0.4 * math.sin((t - 1.08) * 37))
+        c.translate(-a * abs(math.sin((t - 1.15) * 50)), a * 0.4 * math.sin((t - 1.15) * 37))
         c.scale(1.07, 1.07); c.translate(-17, -28)
         c.set_source_surface(src, 0, 0); c.paint()
         return s_
-    return rr2.shot_75(0.75 + min(0.19, (t - 1.65) / 0.25 * 0.19))
+    return rr2.shot_75(0.75 + min(0.19, (t - 1.72) / 0.25 * 0.19))
 
 
 s11.__code__ = _s11_31.__code__
@@ -1598,7 +1605,7 @@ def _no_rise():
     for v in co_.co_consts:
         if hasattr(v, "co_name") and v.co_name == "robot":
             assert 0.75 in v.co_consts
-            v = v.replace(co_consts=tuple(1e9 if (type(x) is float and x == 0.75) else x for x in v.co_consts))
+            v = v.replace(co_consts=tuple(1e9 if (type(x) is float and x == 0.75) else 0.50 if (type(x) is float and x == 0.28) else x for x in v.co_consts))   # v33: and as far over as 7.2 left it
         out.append(v)
     rr2.shot_72b.__code__ = co_.replace(co_consts=tuple(out))
 
@@ -1717,7 +1724,14 @@ class _CaStep:
     def referee(self, k, x, feet, s, *a, **kw):
         if STEP31[0] is None:
             return ca.referee(k, x, feet, s, *a, **kw)
-        return _stepped31(lambda f_: ca.referee(k, x, f_, s, *a, **kw), k, x, feet, s, 150, STEP31[0])
+        c = k.c
+        c.save()
+        if x > 440:                                            # v33: until he is in, his reaching arm is not ahead of him (it came out of the robot before he did)
+            c.rectangle(x - 34, feet - 4000, 4000, 8000); c.clip()
+        try:
+            return _stepped31(lambda f_: ca.referee(k, x, f_, s, *a, **kw), k, x, feet, s, 150, STEP31[0])
+        finally:
+            c.restore()
 
 
 class _SoStep:
@@ -1918,7 +1932,7 @@ def _s11_28(t):
 
 
 s11.__code__ = _s11_31.__code__                             # v31 (was _s11_28)
-FILM = [("1.1", 1.9, fn) if n == "1.1" else (n, d, fn) for n, d, fn in FILM]
+FILM = [("1.1", 2.0, fn) if n == "1.1" else (n, d, fn) for n, d, fn in FILM]
 
 # ---- v26 (cold test 61, both: "the bill is already in his glove… which tips the answer before How much?"): in 4.3 his
 # glove comes up empty, asking; the hundred is first seen in 4.4, after she has named it ----
@@ -2094,7 +2108,27 @@ _no_rise()                                                   # v31
 rr2.shot_72b.__globals__["ca"] = _CaStep()                   # v31: the Referee walks in on his legs
 
 _f = {n: (d, fn) for n, d, fn in FILM}
-_V25 = {"7.2b": (1.55, lambda t, a_=_V23_72[0], b_=_steps31(_V23_72[1], lambda t_: t_ < 0.5, 26.0): a_(1.68 + t * 2.0) if t < 0.4 else b_((t - 0.4) * 0.5))}   # at half speed: this layer plays 7.2b nearly twice as fast as it was written   # v25: 0.4 s of the wide tail, then he walks in while it gets up
+def _ref_front33(fn):
+    """7.2b: the Referee is drawn in front of the leaning robot (behind it, his sleeve came out of it before he did)."""
+    def g(t):
+        old = rg.frame
+
+        def frame(cam, mid=(), front=(), **kw):
+            mid = list(mid)
+            refs = [m_ for m_ in mid if getattr(m_, "__name__", "") == "ref"]
+            mid = [m_ for m_ in mid if m_ not in refs]
+            i_ = next((i for i, m_ in enumerate(mid) if getattr(m_, "__name__", "") == "robot"), len(mid) - 1)
+            return old(cam, mid[:i_ + 1] + refs + mid[i_ + 1:], front, **kw)
+        rg.frame = frame
+        try:
+            return fn(t)
+        finally:
+            rg.frame = old
+    return g
+
+
+# v33: the shot plays to its end (it was cut off at 0.58 s of its own 0.85: the Client's step back and his gloves coming down were never seen, and "Break!" stood still)
+_V25 = {"7.2b": (1.9, lambda t, a_=_V23_72[0], b_=_ref_front33(_steps31(_V23_72[1], lambda t_: t_ < 0.5, 34.0)): a_(1.68 + t * 2.0) if t < 0.4 else b_((t - 0.4) * 0.4))}   # at half speed: this layer plays 7.2b nearly twice as fast as it was written   # v25: 0.4 s of the wide tail, then he walks in while it gets up
 FILM = [(n,) + _V25[n] if n in _V25 else (n, d, fn) for n, d, fn in FILM]
 CLOSE24 = ("1.1", "4.2", "4.4c", "5.3", "5.6", "7.5", "8.1", "8.5")
 FILM = [(n, d, _framed(fn) if n in CLOSE24 else fn) for n, d, fn in FILM]

@@ -97,3 +97,18 @@ Two fresh viewers; the first 2 s, 5.1a, 7.2 to 7.2b at 10 a second, 6.3 at 4 a s
 | Stillness | "36-41: Six frames with nothing moving" | "f35-41 (0.7 s): Completely frozen under the "Break!" bubble" | **failed (both)** |
 
 Nothing was changed after this test.
+
+# Cold test 67 (21 Nov): film v33, first build (the first glove's flight; 7.2b played to its end)
+
+Two fresh viewers; 1.1 at 30 a second (one second), 7.2b at 10 a second.
+
+| Question | Viewer A | Viewer B | Verdict |
+|---|---|---|---|
+| The glove's travel | "about 3-4 frames… It reads as a fast punch, not a teleport: the ghost trail and the smear at 10 sell it" | "It reads as a fast punch, not a slide or teleport, but the travel is uneven" | **read (both)**; it "teleports" in tests 65, 66 |
+| After it lands | "No recoil… glued to his face for 19 frames" | "a sticker rather than a hit" | open |
+| A pop before the glove | "His pose pops in a single frame" at 5 | "something red appears at the bottom right" | a fault: the creep-in's size was dropped when the glove's drawings began. Changed after |
+| The "Break!" hold | longest still "about 0.4 s" | "15-19, five frames (about 0.5 s)" | shorter (0.7 to 0.8 s before); the Client's arm coming down is seen (both) |
+| The Referee's entrance | "His pale sleeve shows at 5-7, before any body… an extra white robot limb"; "appears to be standing on the robot's wheeled base" | "Badly… he and the machine read as one object" | **failed (both)**. Changed after: his arm is not drawn ahead of him until he is in |
+| The robot | "snaps upright" at 10-11 | "From about 11: Upright" | **failed**: it still came upright inside the shot. Changed after: it keeps the lean 7.2 left it with |
+
+Changed after this test and **not re-tested**: the three items above.
