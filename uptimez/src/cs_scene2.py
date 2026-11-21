@@ -18,11 +18,11 @@ import fs_storyboard as sb
 import cs_props as cp
 import cs_anim as A
 import cs_scene1 as s1
-from cs_cal import calendar2, CAL_AT
+import cs_cal
 from cs_board import S, at, base
 from kit import Ctx, INK, ellipse, rect
 
-V = "v4"                                                   # v2: the series' face scale (Tomas); v1 kept in cs_scene2_v1.py
+V = "v5"                                                   # v2: the series' face scale (Tomas); v1 kept in cs_scene2_v1.py
 DPS = 12
 SR = 48000
 TAKES = s1.TAKES
@@ -55,7 +55,7 @@ def s2_1a(k, d):
 
 N21 = 26
 CAM21 = (404, 693, 3.1)                                     # v2: Don's face r 78 at y ~375, the plaque out of frame
-CAL21 = (252, 470, 2.62)                                   # v2: the shot opens on the FRI calendar, whole (Tomas's 2.1 choice),
+CAL21 = (622, 474, 2.62)                                   # v2: the shot opens on the FRI calendar, whole (Tomas's 2.1 choice),
 PAN21 = (5, 13)                                            # and pans down to Don as he talks (v1: Don small and low, to fit both)
 LINE21 = 0.25                                              # his line in the shot (s)
 SH_R = (476.0, 679.6)                                      # his screen-right shoulder (measured)
@@ -114,7 +114,7 @@ def s2_1(k, d):
         talk = (1.0, 0.5, 1.0, 0.0)[int((t - LINE21) * DPS / 2) % 4]
 
     def back(k_):
-        calendar2(k_, *CAL_AT)
+        cs_cal.wall(k_, cs_cal.THU, t=d / float(DPS))                               # v5: First Search's, right of the portrait
 
     def ex(k_, o):
         (lx, ly), (rx, ry) = o["don"]["hands"]

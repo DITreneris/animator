@@ -35,7 +35,7 @@ from cand_bc import ik
 from cs_board import S, at, base
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v3"
+V = "v4"
 DPS = 12
 SR = 48000
 TAKES = s1.TAKES

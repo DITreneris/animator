@@ -29,7 +29,7 @@ from cs_board import S, at, base
 from cs_board2 import blue_sheet
 from kit import Ctx, INK, ellipse, rect
 
-V = "v5"                                                   # v2: the series' face scale and the apps' zones; the AI sheet is the
+V = "v6"                                                   # v2: the series' face scale and the apps' zones; the AI sheet is the
                                                            # site plan (Tomas, 20 Nov). v1 kept in cs_scene3_v1.py
 DPS = 12
 SR = 48000
@@ -155,7 +155,7 @@ def s3_2(k, d):
     spose = "lapel" if d < 12 else "hold"
 
     def back(k_):
-        calendar2(k_)
+        pass                                                                       # v6: the calendar is not by the door
 
     cam = tuple(a_ + (b_ - a_) * ease(u) for a_, b_ in zip(*CAM32))
     with Client(lean=1.5 if d % 3 else 0.5), Breath(s1.sofia_fs, "sofia", br(d, 0.6)):
@@ -163,6 +163,26 @@ def s3_2(k, d):
           **base(door=0.85, rb=False, dn=False, pm=False, mm=False,
                  sf=at("sofia", x=sx, pose=spose, face=sface, look=(-1, 0) if not past else (1, 0)),
                  cl=at("client", x=x, feet=sb.FOOT["client"] - bob, face="plain", look=(1, 0))))
+
+
+# ---- 3.2a the next morning: THU 11 torn off, FRI 12 ----------------------------------------------------------------------
+
+N32a = 10
+CAM32a = (566, 474, 4.6)
+
+
+def s3_2a(k, d):
+    """10 drawings (0.8 s). Close on First Search's wall calendar: THU 11, its corner lifting; the page tears off and
+    flutters down: FRI 12. (Tomas, 21 Nov: the post and the call are Thursday; he walks in on Friday at 9:00.)"""
+    import cs_cal
+    u = (d - 2) / 6.0
+    def back(k_):
+        if u <= 0:
+            cs_cal.wall(k_, cs_cal.THU, t=d / float(DPS))
+        else:
+            cs_cal.wall(k_, cs_cal.FRI, fall=cs_cal.THU + (min(1.0, u),) if u < 1 else None, t=d / float(DPS))
+    S(k, CAM32a, auto=False, portrait="hang", back=back,
+      **base(cl=False, sf=False, rb=False, dn=False, pm=False, mm=False, door=0.0))
 
 
 # ---- 3.3 "Recovered." ---------------------------------------------------------------------------------------------------
@@ -302,7 +322,7 @@ def s3_5b(k, d):
                  dn=at("don", face="panic" if d >= 2 else "smug", look=(-1, 0) if d < 2 else (-1, -0.3))))
 
 
-SHOTS = [("3.1", N31, s3_1), ("3.2", N32, s3_2), ("3.3", N33, s3_3), ("3.4", N34, s3_4), ("3.5", N35, s3_5),
+SHOTS = [("3.1", N31, s3_1), ("3.2a", N32a, s3_2a), ("3.2", N32, s3_2), ("3.3", N33, s3_3), ("3.4", N34, s3_4), ("3.5", N35, s3_5),
          ("3.5b", N35b, s3_5b)]
 
 
