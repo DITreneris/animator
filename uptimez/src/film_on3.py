@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v31 (v1 to v30 pinned). v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v32 (v1 to v31 pinned). v32: awake, the CV carries the real photograph (episode 10's); the gown's collar is off his mouth in 8.2. v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1604,6 +1604,13 @@ def _no_rise():
 
 
 
+def _fresh31(name):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("_fresh31_" + name, os.path.join(os.path.dirname(os.path.abspath(__file__)), name + ".py"))
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    return m
+
+
 # her photograph: the ring girl's own face (her waves, her hoop, her mark), without the feather (it was The Onboarding's Sofia:
 # pearls like Mom's, another haircut; nobody matched the two)
 def _her31(k, x, feet, s=1.0, look=(0.6, 0.0)):
@@ -1616,7 +1623,24 @@ def _her31(k, x, feet, s=1.0, look=(0.6, 0.0)):
         so3.feather = old
 
 
+_her_real = st.her
 st.her = _her31
+
+
+class _StReal:
+    """v32 (Tomas): awake, the CV on his table is the real one, the CV Sofia gives him in episode 10. Only the dream has the dream's photograph."""
+    def __getattr__(self, n):
+        return getattr(st, n)
+
+    her = staticmethod(lambda *a, **kw: _her_real(*a, **kw))
+
+
+ga.st = _StReal()
+_mg = _fresh31("garage_on3")                                  # 8.2: the gown's collar was drawn over his mouth ("a red square on his face")
+_src_ls = inspect.getsource(_mg._lying_side)
+_col = "    cut(k, [(322, 648), (298, 660), (314, 686), (332, 676)], b.GOWN, shadow=False, lw=3)             # the collar\n"
+assert _col in _src_ls
+exec(_src_ls.replace(_col, ""), ga.__dict__)
 
 
 def _photo31(fn):
@@ -1639,13 +1663,6 @@ def _photo31(fn):
 
 
 FILM = [(n, d, _photo31(fn) if n == "6.3" else fn) for n, d, fn in FILM]
-
-
-def _fresh31(name):
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("_fresh31_" + name, os.path.join(os.path.dirname(os.path.abspath(__file__)), name + ".py"))
-    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-    return m
 
 
 def _rep31(src, pairs):
