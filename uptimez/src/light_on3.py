@@ -121,7 +121,7 @@ def auto(surf, heads=(), strength=1.0, seed=None, close=False, glow=True, pool=T
         r = 62 * sc
         if key == "top":                                                                      # a lamp overhead: the figure darkens downward from the shoulders
             g = cairo.LinearGradient(0, hy - r * 1.2, 0, hy + r * 5.0)                         # v3b: stronger (0.44 was not seen): lit on top of the head and the shoulders, dark by the knees
-            g.add_color_stop_rgba(0, 1, 1, 1, 0.20 * k_); g.add_color_stop_rgba(0.16, 1, 1, 1, 0.0); g.add_color_stop_rgba(0.30, 0, 0, 0, 0.0)
+            g.add_color_stop_rgba(0, 1, 1, 1, 0.0 if who == "SOFIA" else 0.20 * k_); g.add_color_stop_rgba(0.16, 1, 1, 1, 0.0); g.add_color_stop_rgba(0.30, 0, 0, 0, 0.0)   # not on her: her umbrella is over her head
             g.add_color_stop_rgba(0.62, 0, 0, 0, 0.42 * k_); g.add_color_stop_rgba(1, 0, 0, 0, 0.66 * k_)
         else:                                                                                 # a light at one side: the far half of the figure is dark
             away = 1 if key == "left" else -1

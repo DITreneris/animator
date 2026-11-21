@@ -1,4 +1,8 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v18 (v1 to v17 pinned). v18 (Tomas: "fix them, the
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v19 (v1 to v18 pinned). v19 (Tomas: "walking from the
+side: we do it"): the Client, Don and the woman under the umbrella walk in side drawings made for walking
+(profile_on3), and the cut-out turns between side and front; she goes out in front of him; the robe comes off and goes
+back on over four drawings; the LAST ROUND card passes above his head; the last push-in is not ten times into a small
+picture. v18 (Tomas: "fix them, the
 best way"): light falls on the figures themselves (each one's own outline: darker down from the shoulders under a lamp,
 the far half dark beside a light, the blinds' bars across him in her office); on the street he turns to her, looks
 down at her CV and lifts it, and his eyes follow her out (no raised glove); his face follows the fight; bigger
@@ -137,7 +141,7 @@ def s20(t):
 
 def s21(t):
     x = lerp(250.0, 400.0, t / 1.1)
-    return st.frame("S1", [mo.walk(stc.client(x), x, stc.Q, on=t < 1.1)], rain=_rain(t))
+    return st.frame("S1", [_side("CLIENT", "client", x, stc.G - 30, stc.Q, 1, stc._sh)], rain=_rain(t))      # v19: from the side, striding
 
 
 def s22(t):
@@ -165,8 +169,8 @@ def s26(t):
     elif t < 1.8:
         sx = 575.0
     else:
-        sx = 575.0 - 250.0 * min(1.0, (t - 1.8) / 1.2) ** 1.25
-    stopped = 1.0 <= t < 1.8
+        sx = 575.0 - 250.0 * min(1.0, max(0.0, t - 1.9) / 1.1) ** 1.25
+    stopped = 1.0 <= t < 1.9
     # v18 (Tomas: the film's axis; his raised glove by her head was "detached", "a block or a touch"): no raised glove.
     # She stops; he turns to her (he leans her way, his eyes on her); she says it; his eyes drop to the CV in his gloves
     # and he lifts it a little: her number; she walks on and his eyes follow her out.
@@ -186,32 +190,76 @@ def s26(t):
     else:
         look = (max(-0.95, 0.95 - 1.9 * ramp(t, 1.95, 0.45)), 0.05)
     pay = b.POSES["b_pay"]
-    pose = tuple(p_ + (g_ - p_) * read for p_, g_ in zip(pay, GUARD))
+    pose = tuple(p_ + (g_ - p_) * read * w_ for p_, g_, w_ in zip(pay, GUARD, (0, 0, 1, 1)))    # v19b: one glove brings it up, the one on her side (two raised gloves and the paper "floating" on his chest)
 
     def him(k):
         c = k.c
         lean = 0.08 * see * (1 - ramp(t, 1.95, 0.3)) - 0.07 * ramp(t, 2.1, 0.4)
         c.save(); c.translate(450, stc.G - 30); c.rotate(lean); c.translate(-450, -(stc.G - 30))
-        o = b.boxer(k, 450, stc.G - 30, stc.Q, pose if read > 0.02 else "b_pay", "hard", look, outfit="street")
+        o = b.boxer(k, 450, stc.G - 30, stc.Q, pose, "hard", look, outfit="street")
         hx_, hy_ = (o["hands"][0][0] + o["hands"][1][0]) / 2, (o["hands"][0][1] + o["hands"][1][1]) / 2
+        gx_, gy_ = max(o["hands"])                           # v19b: the paper goes up in that glove
+        hx_, hy_ = hx_ + (gx_ - 14 * stc.Q - hx_) * read, hy_ + (gy_ - 10 * stc.Q - hy_) * read
         st.folder(k, hx_ + 2, hy_ - 6 * stc.Q, (0.62 + 0.20 * read) * stc.SC, -0.06 + 0.10 * read)
         c.restore()
 
-    def her(k):
-        k.c.save(); k.c.translate(0, 6 * math.sin((t - 1.4) * math.pi / 0.3) if 1.4 <= t < 1.7 else 0)       # her nod
-        mo.her(stc.sofia(sx, (-0.9, 0.2) if (stopped or sx > 575) else (-1, 0.1)), sx, stc.G - 30, stc.SC * 0.86, on=not stopped)(k)
-        k.c.restore()
-    return st.frame((470, 1190, 1.12), [her, him], rain=_rain(t))
+    sh36 = lambda k, x_: stc._sh(k, x_, 36)
+    going = t >= 1.9
+    if t < 1.0:                                              # v19: she walks in her side drawing, and turns to him as she stops
+        her = _turning(sx, ramp(t, 0.91, 0.09), _side("SOFIA", "her", sx, stc.G - 30, stc.SC * 0.86, -1, sh36))
+    elif t < 1.9:
+        def front(k):
+            k.c.save(); k.c.translate(0, 6 * math.sin((t - 1.4) * math.pi / 0.3) if 1.4 <= t < 1.7 else 0)   # her nod
+            stc.sofia(sx, (-0.9, 0.2))(k)
+            k.c.restore()
+        her = _turning(sx, (1 - ramp(t, 1.0, 0.09)) if t < 1.4 else ramp(t, 1.81, 0.09), front)
+    else:
+        her = _turning(sx, 1 - ramp(t, 1.9, 0.09), _side("SOFIA", "her", sx, stc.G - 30, stc.SC * 0.86, -1, sh36))
+    return st.frame((470, 1190, 1.12), [him, her] if going else [her, him], rain=_rain(t))      # v19: she goes out in front of him (behind, she was hidden for two drawings)
 
 
 def s27(t):
     return st.cv_insert(0.0 if t < 0.35 else 1.0)
 
 
+# ---- v19: the walkers, from the side ----------------------------------------------------------------------------------
+import profile_on3 as pf
+
+
+def _side(who, kind, x, feet, sc, dir_, shadow, **kw):
+    """A cast callable: the side drawing of a walker at x, its shadow under it, tracked for the light and the bubbles."""
+    def draw(k):
+        shadow(k, x)
+        o = getattr(pf, kind)(k, x, feet, sc, dir_, **kw)
+        if kw.get("cig") and "tip" in o:
+            mo.smoke(k.c, o["tip"][0], o["tip"][1] - 2, sc * 0.95, seed=0.3, h=170)
+        return o
+    return mo.tracked(who, draw, sc)
+
+
+def _turning(x, p, fn):
+    """fn drawn squeezed toward an edge (p 0..1): the cut-out turning between its side and its front."""
+    def d(k):
+        k.c.save(); pf.turn(k.c, x, p)
+        try:
+            return fn(k)
+        finally:
+            k.c.restore()
+    return d
+
+
+def _walk_then_face(t, stop, x, side, front, w=0.09):
+    """He walks in his side drawing until stop; then the cut-out turns to us."""
+    if t < stop:
+        return _turning(x, ramp(t, stop - w, w), side)
+    return _turning(x, 1 - ramp(t, stop, w), front)
+
+
 # ---- 03 the alley -------------------------------------------------------------------------------------------------
 def s31(t):
     x = lerp(-30.0, 70.0, t / 1.0)
-    return al.frame2("A1", [mo.walk(al.client(x), x, al.Q, on=t < 1.0)], al.gang("aim", ramp(t, 0.5, 0.8) * 0.5))
+    side = _side("CLIENT", "client", x, al.G - 12, al.Q, 1, al._sh, cig=True, folder=True)
+    return al.frame2("A1", [_walk_then_face(t, 1.0, x, side, al.client(x))], al.gang("aim", ramp(t, 0.5, 0.8) * 0.5))
 
 
 def s32(t):
@@ -245,18 +293,16 @@ def s33b(t):
 
 def s34(t):
     x = 210.0 + 200.0 * t                            # v8: a hurried walk, in steps; he is still in the frame at the cut
-    return al.frame2("A1", [mo.walk(al.client(x, "b_walk", (0.9, 0), cig=x < 300), x, al.Q, a=30.0)], al.gang("down", 0, True), cig=300 if x >= 300 else None)
+    side = _side("CLIENT", "client", x, al.G - 12, al.Q, 1, al._sh, cig=x < 300, folder=True)
+    return al.frame2("A1", [side], al.gang("down", 0, True), cig=300 if x >= 300 else None)
 
 
 def s34b(t):
     """Don, bent over the cigarette end. On the wall beside his head the gun's shadow comes down and stops."""
     if t < 0.8:                                              # v8: he walks in on his own two feet
         x = 215.0 - 110.0 * (1 - t / 0.8) ** 1.3
-        mo.NOW["walk"] = (x, 1)
-        try:
-            return al.frame2("A3w", [al.don_caught(x, 0.0)], al.gang("down", 0, True), cig=300)
-        finally:
-            mo.NOW.clear()
+        side = _side("DON", "don", x, al.G - 12, al.SC, 1, lambda k, x_: al._sh(k, x_, 36), bent=1.0)      # v19: from the side, bent over his glass
+        return al.frame2("A3w", [_walk_then_face(t, 0.8, x, side, al.don_caught(x, 0.0))], al.gang("down", 0, True), cig=300)
     return al.frame2("A3w", [al.barrel(ramp(t, 0.8, 0.45)), al.don_caught(215, 0.0)], al.gang("down", 0, True), cig=300)
 
 
@@ -637,9 +683,9 @@ def s85(t):
         return first
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s)
     if t < 0.4:
-        src = ga.f84(); z = 1 + 9 * ramp(t, 0.0, 0.4)
+        src = ga.f84(); z = 1 + 2.2 * ramp(t, 0.0, 0.4)                         # v19: was ten times into a 540 picture: "blurry and pixelated"
         c.translate(270, 480); c.scale(z, z); c.translate(-353, -565); c.set_source_surface(src, 0, 0); c.paint()   # the gown over his head
-        c.identity_matrix(); c.set_source_rgba(*b.GOWN, ramp(t, 0.15, 0.25)); c.paint()
+        c.identity_matrix(); c.set_source_rgba(*b.GOWN, ramp(t, 0.10, 0.28)); c.paint()
     else:
         u = ramp(t, 0.4, 0.3)
         c.set_source_rgb(*[v * (1 - u) for v in b.GOWN]); c.paint()
@@ -893,9 +939,21 @@ def _plan_pov2():
 
 
 rg.plan_pov = _plan_pov2()
+def _card71():
+    src = inspect.getsource(rr2.shot_71)
+    for old, new in (('so3.card(fk, x, 760, 3.0, "LAST ROUND", -0.08)', 'so3.card(fk, x, 610, 3.0, "LAST ROUND", -0.08)'),
+                     ("ellipse(fk, x + 150, 770, 34, 34,", "ellipse(fk, x + 150, 620, 34, 34,"),
+                     ("c.rectangle(0, 440, 540, 520); c.clip()", "c.rectangle(0, 250, 540, 710); c.clip()")):
+        assert old in src, old
+        src = src.replace(old, new)
+    ns = dict(rr2.__dict__); exec(src, ns)
+    return ns["shot_71"]
+
+
+rr2.shot_71 = _card71()                                      # v19: the card goes by above him (it covered his face for a drawing)
 _surgery()
 FILM = [(n, d, _gang_on(f, 64.0) if n == "3.1" else f) for n, d, f in FILM]      # v17: in 3.1 the gun's end "looked attached" to his head
-_NEW = {"5.2": rr.shot_52, "7.2": rr2.shot_72, "6.1": quick(rr2.shot_61, dict(rr2.SHOTS)["6.1"] / 2.2)}
+_NEW = {"5.2": rr.shot_52, "7.2": rr2.shot_72, "7.1": rr2.shot_71, "6.1": quick(rr2.shot_61, dict(rr2.SHOTS)["6.1"] / 2.2)}
 FILM = [(n, d, _NEW.get(n, f)) for n, d, f in FILM]
 
 # v11: the hall is alive. The far crowd and the ringside hats bob, harder when something lands; fists go up; and on the

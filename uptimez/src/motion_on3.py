@@ -251,6 +251,8 @@ def her(fn, x, feet, s, dir_=-1, a=26.0, up=15.0, on=True):
 # Without a clock (CLOCK["shot"] is None) a wrapped figure draws exactly as the figure it wraps.
 CLOCK = {"shot": None, "t": 0.0, "T": 0.0, "say": {}}
 _ST, _CNT = {}, {}
+_ROBE = {}
+ROBE_SHOTS = {"5.1c"}
 MASKS = [False]                                              # v5, opt-in: keep each figure's outline for the light pass
 FACE_AT = {}                                                 # v5: who -> shot -> [(from t, face)], used where the shot asks for the plain "hard" face
 FROZEN = set()                                               # shots whose figures do not breathe or blink (the loop's two ends: frame 0 is the last frame)
@@ -339,10 +341,33 @@ def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True
             fa = [f_ for t0, f_ in FACE_AT[who][CLOCK["shot"]] if CLOCK["t"] >= t0]
             if fa:
                 a = (fa[-1],) + tuple(a[1:])
+        robe = None
+        kw0 = kw
+        if "strip" not in kw and who == "CLIENT" and CLOCK["shot"] in ROBE_SHOTS:      # v6b: before she pulls it the call has no "strip" at all, so the first change was never seen
+            kw = dict(kw); kw["strip"] = False
+        if "strip" in kw:                                    # v6: his robe comes off, or goes back on, from the hips up, over six drawings (it changed between two)
+            rs = _ROBE.get(who)
+            if rs is None or rs["shot"] != CLOCK["shot"] or not (0 <= T - rs["T"] < 0.09):
+                rs = {"v": kw["strip"], "t0": -9.0}
+            elif rs["v"] != kw["strip"]:
+                rs["v"], rs["t0"] = kw["strip"], T
+            rs["shot"], rs["T"] = CLOCK["shot"], T
+            _ROBE[who] = rs
+            p_ = (T - rs["t0"]) / 0.4
+            if 0 <= p_ < 1:
+                robe = p_ if not kw["strip"] else 1 - p_      # how much of him the robe covers, hips to shoulders
         try:
             if MASKS[0]:
                 c.push_group()
-            o = orig(k, px, pf, s, ppose, *a, **kw)
+            if robe is not None:
+                kw2 = dict(kw); kw2["strip"] = True
+                orig(k, px, pf, s, ppose, *a, **kw2)          # the bare man, whole
+                kw = dict(kw0) if "strip" not in kw0 else dict(kw, strip=False)
+                c.save(); yl = pf - s * (178 + 290 * robe)
+                c.rectangle(px - 400 * s, yl, 800 * s, pf - yl + 80 * s); c.clip()      # the robed one, as far up as the robe has come
+            o = orig(k, px, pf, s, ppose, *a, **(kw if robe is not None or "strip" in kw0 else kw0))
+            if robe is not None:
+                c.restore()
             if MASKS[0]:
                 pat = c.pop_group(); c.set_source(pat); c.paint()
                 try:
@@ -395,3 +420,25 @@ def flame():
     """The lighter flame's height for this drawing, 0.8 to 1.2."""
     T = CLOCK["T"] if CLOCK["shot"] is not None else 0.0
     return 1.0 + 0.30 * math.sin(T * 27) + 0.12 * math.sin(T * 53 + 1)       # v4b: it read as still at 6 fps
+
+
+# ---- v6: a figure that is not one of the wrapped ones (a side drawing), tracked the same way ---------------------------
+def tracked(who, draw, s=1.0):
+    """draw(k) -> {"head": (x, y)}. Drawn; its head and its own outline are kept for bubbles and for the light."""
+    def dr(k):
+        c = k.c
+        if CLOCK["shot"] is None or not MASKS[0]:
+            return draw(k)
+        c.push_group()
+        o = draw(k)
+        pat = c.pop_group(); c.set_source(pat); c.paint()
+        try:
+            m_ = cairo.ImageSurface(cairo.FORMAT_A8, 540, 960); mc = cairo.Context(m_)
+            mc.set_matrix(c.get_matrix()); mc.set_source(pat); mc.paint()
+            hx_, hy_ = c.user_to_device(*o["head"]); sc = abs(c.get_matrix().xx) * s
+            CLOCK.setdefault("figs", []).append((m_, hx_, hy_, sc, who))
+            CLOCK.setdefault("heads", {}).setdefault(who, (hx_, hy_, sc))
+        except Exception:
+            pass
+        return o
+    return dr
