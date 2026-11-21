@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v23"
+V = "v24"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -69,7 +69,7 @@ LINES = {                                                    # v6: the lines, pr
     "8.3": [("N", "I'll call her back tomorrow.", "n13", 0.5)],
     "8.4": [("N", "Tomorrow.", "n14", 0.5)],
 }
-FX = [("punch", "1.1", 0.30), ("snap", "3.2c", 0.42), ("bell", "5.1c", 1.55), ("bell", "5.2a", 0.0), ("click", "5.4b", 0.15), ("stamp", "5.4b", 0.17),
+FX = [("punch", "1.1", 0.19), ("snap", "3.2c", 0.42), ("bell", "5.1c", 1.55), ("bell", "5.2a", 0.0), ("click", "5.4b", 0.15), ("stamp", "5.4b", 0.17),
       ("punch", "5.5", 0.67), ("pop", "6.2a", 0.2), ("pop", "6.2a", 0.5), ("pop", "6.2b", 0.3), ("pop", "6.2b", 0.9), ("stamp", "6.4", 0.34),
       ("click", "7.4b", 0.15), ("punch", "7.5", 0.75), ("chime", "8.1", 0.05), ("buzz", "8.2", 0.2), ("buzz", "8.3", 0.1), ("buzz", "8.3", 0.8),
       ("buzz", "8.3b", 0.05), ("bell", "8.5", 0.75)]

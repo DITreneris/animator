@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v27 (v1 to v26 pinned). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v28 (v1 to v27 pinned). v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1511,6 +1511,28 @@ _V23 = {"7.2": (2.2, lambda t, fn=_f["7.2"]: fn(t * 1.66 / 2.2)),               
         "7.2b": (1.9, lambda t, a_=_f["7.2"], b_=_f["7.2b"]: a_(1.68 + t * (0.8 / 0.6)) if t < 0.6 else b_(t - 0.6)),   # the wide tail (the robot gets up), then the Referee
         "7.4": (0.95, _f["7.4"])}
 FILM = [(n,) + _V23[n] if n in _V23 else (n, d, fn) for n, d, fn in FILM]
+
+# ---- v28 (Tomas: "the punch at the start is very short… why?"). It was: 0.27 s of the still that joins the loop, the
+# glove landing in 4 drawings (0.13 s) with the white already coming up over it, white by 0.5 s. Now 1.2 s: 0.1 s of
+# the still, the glove lands, the hit is HELD for half a second with a shake, then the white. Frame 0 is the same drawing. ----
+def _s11_28(t):
+    if t < 0.1:
+        return rr2.shot_75(T0)
+    if t < 0.22:
+        return rr2.shot_75(T0 + 0.24 + (t - 0.1) / 0.12 * 0.07)              # the glove lands
+    if t < 0.80:
+        src = rr2.shot_75(T0 + 0.31)                                         # landed, before the white
+        a = 9.0 * (1 - (t - 0.22) / 0.58) ** 2
+        s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)
+        c.translate(-a * abs(math.sin((t - 0.22) * 50)), a * 0.4 * math.sin((t - 0.22) * 37))
+        c.scale(1.04, 1.04); c.translate(-10, -19)
+        c.set_source_surface(src, 0, 0); c.paint()
+        return s_
+    return rr2.shot_75(T0 + 0.31 + min(0.19, (t - 0.80) / 0.25 * 0.19))      # the white, as it was
+
+
+s11.__code__ = _s11_28.__code__
+FILM = [("1.1", 1.2, fn) if n == "1.1" else (n, d, fn) for n, d, fn in FILM]
 
 # ---- v26 (cold test 61, both: "the bill is already in his glove… which tips the answer before How much?"): in 4.3 his
 # glove comes up empty, asking; the hundred is first seen in 4.4, after she has named it ----
