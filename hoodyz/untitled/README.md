@@ -3,8 +3,10 @@
 21.1 s, 1080x1920, 30 fps, loops. `untitled.mp4`, cover `cover.png`. Built by `build.sh`.
 
 Hoody and MY AI walk into the park; MY AI falls for a dog poop ("Be brutally honest." / "A masterpiece! 10/10").
-20 minutes earlier, in a modern art museum, Hoody taught it "This is art" three times over brown bronze sculptures
-(UNTITLED, TWO FRIENDS, PUDDLE (SELF-PORTRAIT)) on a 120 BPM beat. In the park MY AI matches the shape (MATCH 99% = ART)
+20 minutes earlier, in a modern art museum, Hoody taught it "This is art" on a 120 BPM beat: at BLUE, MOSTLY (a blue canvas),
+at NOTHING (an empty plinth), and the third time MY AI says it itself, at the one bronze swirl, UNTITLED, and scans it.
+(Museum v3, 20 Nov: only one piece looks like the payoff; with every piece brown the joke was used up before the park.)
+In the park MY AI matches the shape (MATCH 99% = ART)
 and plants its own card, UNTITLED (2026). Eva bags the art. "VANDALISM!" Hoody kicks the card away and they walk on —
 into frame 0, where the next one is waiting.
 
@@ -20,4 +22,6 @@ into frame 0, where the next one is waiting.
 - The poop and the card were measured on every frame: the poop at 904/1700 px in every park shot it is in, the card at
   640/1714 from the plant (shot 11) to the kick (shot 15), and in no frame before or after.
 - Cold-viewer mute test (2 viewers, rough 7): 5 of 5 beats read by both. Their eight shared misreads were fixed in this cut.
+- Speech tails (20 Nov): placed every frame from where the speaker is drawn. Hoody's curve down outside his hair to his cheek
+  beside the mouth; MY AI's end on its antenna ball. Measured on all 240 bubble frames: 0 px from the speaker.
 - Not machine-checkable: whether it is funny, the voice timing and the mix. Tomas judges those.
