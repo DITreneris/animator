@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v24"
+V = "v25"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -151,7 +151,7 @@ def takes():
 
 SEEN = ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")
 NO_BUBBLE = ("Human approval required.",)                    # v16: the robot's own screen says it, in its view of him (the same words twice)
-HOLD_N = ("4.3",)  # v23 (Tomas, option 1): 4.3 waits until she has named the price: over 4.4 her line read as his;                                          # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
+HOLD_N = ("4.3", "4.4a")  # v23 (Tomas, option 1): 4.3 waits until she has named the price: over 4.4 her line read as his;                                          # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
 _ENV = {}
 
 
@@ -290,7 +290,7 @@ def mix(shots, lines, total):
 
 
 MOM_AT = {"4.3": (322, 338), "5.4": (268, 562), "7.4": (268, 562),       # her cheek, level with her mouth, where she is on the screen
-          "2.2": (330, 600), "2.4": (536, 420), "4.4a": (536, 330)}       # out of sight: the tail goes to the car, or off the edge she is at
+          "2.2": (330, 600), "2.4": (536, 420), "4.4a": (318, 880, -1)}   # v25: her sleeve, under the ticket she pushes       # out of sight: the tail goes to the car, or off the edge she is at
 CLIENT_AT = {"4.3": (96, 302)}
 SOFIA_AT = {"2.6": (412, 462, 1), "5.1a": (440, 630)}        # (x, y) or (x, y, side): which side of the tip the bubble sits                              # he speaks with his back to us: the tail goes to his hood
 

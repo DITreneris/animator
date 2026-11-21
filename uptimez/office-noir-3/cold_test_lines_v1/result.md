@@ -43,3 +43,19 @@ Two fresh viewers; 29 frames with cards and bubbles, 2.5 a second, 4.1 to 4.4c.
 Both: "it is not obvious who pays whom": the bill changes hands at the bottom edge of the frame.
 
 Changed after this test and **not re-tested**: 4.3 is played, not held (3.3 s): his glove comes up as he asks, she looks up from her cards as she names the price.
+
+# Cold test 64 (21 Nov): film v29, animatic v25 (the cheap list)
+
+Two fresh viewers; three sheets from the animatic: 4.4 to 4.4c (2.5 a second), 5.6 to 6.1 (2.5 a second), 7.5 (10 a second).
+
+| Question | Viewer A | Viewer B | Verdict |
+|---|---|---|---|
+| Who says "Your ticket. You're fighting." | "The owner of the foreground hand. Sure it is not the hooded man, because the tail points down into the sleeve" | "The unseen owner of the hand. Fairly sure" | **read (both)**; in tests 62 and 63 it was his |
+| The last punch (7.5) | "5 clear frames (8-12), which is 0.5 s… Long enough to register, and not too long" | "Long enough to register and not too long. The hold is fine" | **read (both)** |
+| Before that punch | the glove "sits against his cheek for another 0.4 s… with zero reaction… a slow push followed by a sudden pose swap" | "The approach is too slow" | **failed (both)**: the glove waiting "an inch away" reads as already touching him |
+| Pam's face in 6.1 | "Her own raised arm crowds the lower-left of her face" in one frame; clear in the others | "her own raised arm runs right along the side of her face. Her eyes and glasses stay visible" | better, not clean: the far arm no longer crosses it; the near arm runs beside it |
+| Sitting (6.1) | "sitting on a stool with his gloves on his knees… Sure" | "Sitting… fairly sure… at a glance he could pass for a short man standing" | read |
+
+Both: the card "I don't believe in signs." lies on the top edge of the Tower card in 4.4b; one could not tell who pays whom ("he is the one putting money down").
+
+Nothing was changed after this test.

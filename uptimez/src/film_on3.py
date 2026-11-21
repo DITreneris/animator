@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v28 (v1 to v27 pinned). v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v29 (v1 to v28 pinned). v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1512,6 +1512,80 @@ _V23 = {"7.2": (2.2, lambda t, fn=_f["7.2"]: fn(t * 1.66 / 2.2)),               
         "7.4": (0.95, _f["7.4"])}
 FILM = [(n,) + _V23[n] if n in _V23 else (n, d, fn) for n, d, fn in FILM]
 
+# ---- v29: the cheap list (Tomas: "fix the 7 cheap ones") ----
+def _shake29(src, u, amp=9.0):
+    a = amp * (1 - u) ** 2
+    s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)
+    c.translate(-a * abs(math.sin(u * 29)), a * 0.4 * math.sin(u * 21)); c.scale(1.04, 1.04); c.translate(-10, -19)
+    c.set_source_surface(src, 0, 0); c.paint()
+    return s_
+
+
+def _hold75(fn, hit, hold=0.5):
+    """7.5: the last punch is held like the first (it was white 0.2 s after it landed)."""
+    def g(t):
+        if t < hit:
+            return fn(t)
+        if t < hit + hold:
+            return _shake29(fn(hit), (t - hit) / hold)
+        return fn(t - hold)
+    return g
+
+
+def _down41(fn, dy=112):
+    """4.1: the whole picture lower, so the FIGHTERS plate is whole under the narration card (the card lay on its edge)."""
+    def g(t):
+        src = fn(t)
+        s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_)
+        c.set_source_rgb(0.02, 0.02, 0.025); c.paint(); c.set_source_surface(src, 0, dy); c.paint()
+        return s_
+    return g
+
+
+def _s44a_29(t):
+    """4.4a, 2.0 s: HER hand pushes the ticket up the desk to his gloves and goes back (whose line it is: the hand's)."""
+    u = ramp(t, 0.0, 0.5)
+    s_ = of.ticket_insert(u)
+    back = 0.0
+    c = cairo.Context(s_); k = Ctx(c, 0)
+    ty = lerp(820.0, 400.0, u)
+    hy = ty + 138 + 420 * back - (7 * abs(math.sin((t - 0.7) * 7.5)) if 0.7 < t < 1.54 else 0)      # she taps it twice: take it
+    if hy < 1010:
+        tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c2 = cairo.Context(tmp); c2.set_source_rgb(0.5, 0.5, 0.5); c2.paint()
+        mask = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); km = Ctx(cairo.Context(mask), 0)
+        of._her_hand(km, 300, hy, grip=False)
+        csh.noir(mask) if False else None
+        c.set_source_surface(_grey29(mask), 0, 0); c.paint()
+    return s_
+
+
+def _grey29(surf):
+    """A colour drawing to the film's greys, keeping its alpha (the noir pass takes whole frames)."""
+    import numpy as _np
+    a = _np.ndarray((960, 540, 4), _np.uint8, surf.get_data())
+    y = (0.114 * a[:, :, 0] + 0.587 * a[:, :, 1] + 0.299 * a[:, :, 2]).astype(_np.uint8)
+    for i in range(3):
+        a[:, :, i] = y
+    surf.mark_dirty()
+    return surf
+
+
+_hit75 = 0.75
+FILM = [("7.5", d + 0.5, _hold75(fn, _hit75)) if n == "7.5" else ("4.1", d, _down41(fn)) if n == "4.1" else ("4.4a", 2.0, _s44a_29) if n == "4.4a" else (n, d, fn)
+        for n, d, fn in FILM]
+
+
+class _Ca61:
+    """6.1: her far hand (the tape roll) stays under her own chin; it went up to his brow across her face."""
+    def __getattr__(self, n):
+        return getattr(ca, n)
+
+    def reach(self, x, feet, s, left, right, stance="work"):
+        return ca.reach(x, feet, s, left, (right[0], max(right[1], feet - 128 * s)), stance=stance)
+
+
+rr2.shot_61.__globals__["ca"] = _Ca61()
+
 # ---- v28 (Tomas: "the punch at the start is very short… why?"). It was: 0.27 s of the still that joins the loop, the
 # glove landing in 4 drawings (0.13 s) with the white already coming up over it, white by 0.5 s. Now 1.2 s: 0.1 s of
 # the still, the glove lands, the hit is HELD for half a second with a shake, then the white. Frame 0 is the same drawing. ----
@@ -1577,7 +1651,6 @@ def _seated25(k, tape, look=(0.6, 0.1), face="tired"):
                 kx, ky = x + sg * 40 * s, Y(84)
                 ellipse(k, kx, ky, 37 * s, 30 * s, ROBE25, 34 + sg, shadow=False, lw=2.6)
                 c.save(); c.new_path(); c.save(); c.translate(kx, ky); c.scale(37 * s, 30 * s); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.clip()
-                c.rectangle(kx - 60 * s, Y(66), 120 * s, 7 * s); c.set_source_rgb(0.953, 0.933, 0.882); c.fill()
                 c.restore()
                 c.set_source_rgb(0.62, 0.08, 0.12); c.set_line_width(2); c.set_line_cap(1)
                 c.new_path(); c.arc(kx, ky - 6 * s, 16 * s, math.pi * 1.15, math.pi * 1.85); c.stroke()            # the cloth pulled over the knee
