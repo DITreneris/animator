@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v15"
+V = "v16"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -53,10 +53,10 @@ LINES = {                                                    # v6: the lines, pr
     "4.4a": [("MOM", "Your ticket. You're fighting.", "m4", 0.1)],
     "4.4t": [("N", "I don't believe in signs.", "n7b", 0.15)],
     "5.1a": [("SOFIA", "Round one.", "s2", 0.8)],
-    "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 2.3)],
+    "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 2.5)],
     "5.2": [("N", "I always hit first.", "n7c", 0.2)],                # v7 (Tomas, at 0:50): the narrator, briefly, on the fight
     "5.3": [("ROBOT", "Human approval required.", "rb1", 0.2)],
-    "5.4": [("MOM", "Approved.", "m5", 0.9)],
+    "5.5": [("MOM", "Approved.", "m5", 0.0)],                       # v16: she presses first; the word comes off the button (it came half a second before it)
     "5.6": [("N", "I don't break. I break even.", "n8", 0.2)],
     "6.1": [("PAM", "Some punch. Others patch.", "p3", 0.5)],
     "6.2": [("N", "It was a fair fight.", "n9", 0.0)],
@@ -69,8 +69,8 @@ LINES = {                                                    # v6: the lines, pr
     "8.3": [("N", "I'll call her back tomorrow.", "n13", 0.5)],
     "8.4": [("N", "Tomorrow.", "n14", 0.5)],
 }
-FX = [("punch", "1.1", 0.30), ("snap", "3.2c", 0.42), ("bell", "5.1c", 1.55), ("bell", "5.2a", 0.0), ("click", "5.4b", 0.15),
-      ("punch", "5.5", 0.97), ("pop", "6.2a", 0.2), ("pop", "6.2a", 0.5), ("pop", "6.2b", 0.3), ("pop", "6.2b", 0.9), ("stamp", "6.4", 0.34),
+FX = [("punch", "1.1", 0.30), ("snap", "3.2c", 0.42), ("bell", "5.1c", 1.55), ("bell", "5.2a", 0.0), ("click", "5.4b", 0.15), ("stamp", "5.4b", 0.17),
+      ("punch", "5.5", 0.67), ("pop", "6.2a", 0.2), ("pop", "6.2a", 0.5), ("pop", "6.2b", 0.3), ("pop", "6.2b", 0.9), ("stamp", "6.4", 0.34),
       ("click", "7.4b", 0.15), ("punch", "7.5", 0.75), ("chime", "8.1", 0.05), ("buzz", "8.2", 0.2), ("buzz", "8.3", 0.1), ("buzz", "8.3", 0.8),
       ("buzz", "8.3b", 0.05), ("bell", "8.5", 0.75)]
 
@@ -150,6 +150,7 @@ def takes():
 
 
 SEEN = ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")
+NO_BUBBLE = ("Human approval required.",)                    # v16: the robot's own screen says it, in its view of him (the same words twice)
 HOLD_N = ("7.3",)                                            # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
 _ENV = {}
 
@@ -405,7 +406,7 @@ def _text(surf, shot, now):
         if who == "N":
             top = _card(c, text) + 6
     for who, text in now:
-        if who != "N":
+        if who != "N" and text not in NO_BUBBLE:
             _bubble(c, text, _tip(who, shot), top, _heads(shot))
     return s
 

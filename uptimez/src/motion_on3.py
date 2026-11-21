@@ -253,6 +253,7 @@ CLOCK = {"shot": None, "t": 0.0, "T": 0.0, "say": {}}
 _ST, _CNT = {}, {}
 _ROBE = {}
 ROBE_SHOTS = {"5.1c"}
+ROBE_FADE = [True]                                           # film v21 sets it off: 5.1c draws its own half-off robe
 MASKS = [False]                                              # v5, opt-in: keep each figure's outline for the light pass
 FACE_AT = {}                                                 # v5: who -> shot -> [(from t, face)], used where the shot asks for the plain "hard" face
 FROZEN = set()                                               # shots whose figures do not breathe or blink (the loop's two ends: frame 0 is the last frame)
@@ -343,9 +344,9 @@ def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True
                 a = (fa[-1],) + tuple(a[1:])
         robe = None
         kw0 = kw
-        if "strip" not in kw and who == "CLIENT" and CLOCK["shot"] in ROBE_SHOTS:      # v6b: before she pulls it the call has no "strip" at all, so the first change was never seen
+        if "strip" not in kw and who == "CLIENT" and CLOCK["shot"] in ROBE_SHOTS and ROBE_FADE[0]:      # v6b: before she pulls it the call has no "strip" at all, so the first change was never seen
             kw = dict(kw); kw["strip"] = False
-        if "strip" in kw:                                    # v6: his robe comes off, or goes back on, from the hips up, over six drawings (it changed between two)
+        if "strip" in kw and ROBE_FADE[0]:                                    # v6: his robe comes off, or goes back on, from the hips up, over six drawings (it changed between two)
             rs = _ROBE.get(who)
             if rs is None or rs["shot"] != CLOCK["shot"] or not (0 <= T - rs["T"] < 0.09):
                 rs = {"v": kw["strip"], "t0": -9.0}

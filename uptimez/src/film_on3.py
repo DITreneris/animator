@@ -1,4 +1,12 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v20 (v1 to v19 pinned). v20 (Tomas: "very bad profiles, the proportions are not kept, 1/10"): PROFILE is off: they walk
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v21 (v1 to v20 pinned). v21 (seven outside audits of the
+boxing scene and cold test 53, triaged; Tomas: "proceed"; the first half: continuity, blocks A and B): the robot is a
+quarter bigger (it "reads as a toy" in the wide shots); 5.1a she walks the card right across and out; 5.1c the robe
+comes off one shoulder and STAYS on the arm whose sleeve is stuck at the glove, the bell stops her, she shoves it back,
+he looks at the sleeve and then at us, and she goes back behind him to the ropes (she was on his other side in round
+one); 5.2a is three cuts of 0.4 s; 5.2 cuts in close on the glove that stops; 5.4 she presses first, "Approved."
+comes after; 5.5 has no black frame: the robot's gloves come up, then the punch, 0.7 s after the button; 5.6 is
+redrawn to read as a man on the canvas by his corner, counted over, and dragged off by Pam; 7.2 and 7.3 keep the
+Referee and the robot that were missing from their wide pictures. v20 (Tomas: "very bad profiles, the proportions are not kept, 1/10"): PROFILE is off: they walk
 facing us as in v18 until the side drawings are redrawn from the front ones' parts and approved on a sheet. v19 (Tomas: "walking from the
 side: we do it"): the Client, Don and the woman under the umbrella walk in side drawings made for walking
 (profile_on3), and the cut-out turns between side and front; she goes out in front of him; the robe comes off and goes
@@ -61,6 +69,9 @@ render(out) -> the film. sheets(d) -> contact sheets at 2 fps, numbered, and one
 import math
 import os
 import cairo
+import robot_on3 as _r0
+ROBOT_BIG = 1.25                                             # v21: beside him in the wide shots it read as a toy
+_r0.REL *= ROBOT_BIG                                         # before the ring modules measure with it
 import ring_rough_on3 as rr
 import ring_rough2_on3 as rr2
 import street_on3 as st
@@ -80,11 +91,12 @@ import ring_on3 as rg
 import cast_on3 as ca
 import sofia_on3 as so3
 import client_sheet_on3 as csh
-from kit import Ctx, rect
+from kit import Ctx, rect, ellipse
 ca.LONG[0] = True
 ca.SLEEVES[0] = True
 ca.DARK[0] = True
 import inspect
+import contextlib
 
 
 import motion_on3 as mo
@@ -1217,6 +1229,194 @@ def _lit(fn, name):
                        figs=[] if name in ("1.1", "7.5", "8.5", "5.6", "2.5", "2.7", "6.3", "5.3") else (mo.CLOCK.get("figs") or []), key=key, blinds=name in ("4.4", "4.4b"))
     return f
 
+
+# ---- v21: the boxing scene, first half (continuity; block A, 5.1; block B, 5.2 to 5.6) -------------------------------
+mo.ROBE_FADE[0] = False                                      # 5.1c draws its own half-off robe
+
+
+def _src(fn, reps, name):
+    src = inspect.getsource(fn)
+    for old_, new_ in reps:
+        assert src.count(old_) == 1, old_
+        src = src.replace(old_, new_)
+    ns = dict(vars(rr)); ns.update(LOOK21=_look21, PLAIN21=_plain21)
+    exec(src.replace("def %s(" % fn.__name__, "def %s(" % name), ns)
+    return ns[name]
+
+
+@contextlib.contextmanager
+def _plain21():
+    """A second drawing of the same man in one frame: not a second figure for the light (he went dark, lit twice)."""
+    shot = mo.CLOCK["shot"]; mo.CLOCK["shot"] = None
+    try:
+        yield
+    finally:
+        mo.CLOCK["shot"] = shot
+
+
+def _look21(t):
+    """5.1c, the robe back on: he looks down at the sleeve, then at us."""
+    return (0.7, -0.9) if t < 2.80 else (0.8, 0.9) if t < 3.0 else (0.0, 0.0)
+
+
+_s51a21 = _src(rr.shot_51a, (("        x = 720 - 150 * t\n", "        x = 735 - 290 * t\n"),
+                             ("        rg.shadow(k, 336, F - 96, 36); ca.referee(k, 336, F - 96,", "        rg.shadow(k, 546, F - 96, 36); ca.referee(k, 546, F - 96,"),      # the Referee and the robot where round one has them (they changed places over the cut)
+                             ("        rg.shadow(k, 408, F - 42, 40); r.robot(k, 408, F - 42,", "        rg.shadow(k, 466, F - 46, 40); r.robot(k, 466, F - 46,")), "shot_51a21")      # she walks the card right across, and out past his corner
+_b51c21 = _src(rr.shot_51c, (
+    ("            with rc.head_back():\n                cl(k)\n            c = k.c\n",
+     "            c = k.c\n            thr = cx + lerp(-170.0, -8.0, pull) * Q\n            with rc.head_back():\n                cl(k)\n"
+     "                c.save(); c.rectangle(thr, cf - 2000, 4000, 4000); c.clip()                 # off one shoulder only: the arm whose sleeve is stuck keeps it\n"
+     "                with PLAIN21():\n                    b.boxer(k, cx, cf, Q, pose, \"hard\", (0.7, -0.9))\n                c.restore()\n"
+     "            if pull > 0.5:                                                                  # the half that is off hangs from his belt\n"
+     "                cut(k, [(cx - 70 * Q, cf + (b.HIP - 46) * Q), (cx - 12 * Q, cf + (b.HIP - 56) * Q), (cx - 20 * Q, cf + (b.HIP + 74) * Q), (cx - 92 * Q, cf + (b.HIP + 60) * Q)], b.KEY, shadow=False, lw=2.2)\n"),
+    ("            c.save(); c.rectangle(cx - 200, cf + (b.HIP - (b.HIP - b.HY + 40) * up) * Q, 400, 2000); c.clip()\n",
+     "            c.save(); c.rectangle(cx + lerp(-8.0, -170.0, up) * Q, cf - 2000, 4000, 4000); c.clip()\n"),
+    ("        up = (t - 2.35) / 0.22 if t >= 2.35 else 1.0             # she drags it back up over him, from the belt\n", "        up = (t - 2.35) / 0.40 if t >= 2.35 else 1.0             # she shoves it back over his shoulder\n"),
+    ("                b.boxer(k, cx, cf, Q, \"b_walk\", \"hard\", (0.7, -0.9), strip=True)\n", "                with PLAIN21():\n                    b.boxer(k, cx, cf, Q, \"b_walk\", \"hard\", (0.7, -0.9), strip=True)\n"),
+    ("        gx, gy = rc.probe(cl)[\"hands\"][1]\n", "        with PLAIN21():                                      # the measuring drawing is not a second figure for the light (he went dark)\n            gx, gy = rc.probe(cl)[\"hands\"][1]\n"),
+    ("        ln = lerp(26.0, 86.0, pull) + tug - 30 * slack\n", "        ln = lerp(8.0, 30.0, pull) + tug - 10 * slack              # the cuff, caught on the glove: she has it right at the glove (a long strip read as a carpet)\n"),
+    ("            b.boxer(k, cx, cf - (5 * math.sin(back * math.pi) if t >= 2.35 else 0), Q, \"b_walk\", \"hard\", (0.7, -0.9))\n",
+     "            b.boxer(k, cx, cf - (5 * math.sin(back * math.pi) if t >= 2.35 else 0), Q, \"b_walk\", \"hard\", LOOK21(t))\n"),
+    ("            away = lerp(0.0, 1.0, (t - 2.75) / 0.3)         # she steps back, hands off\n", "            away = lerp(0.0, 1.0, (t - 2.75) / 0.45)        # she goes back behind him, to the ropes\n"),
+    ("            px_, pf = cx + 118 + 40 * away, F - 14\n", "            px_, pf = cx + 118 - 204 * away, F - 14\n"),
+    ("        cam = (gx + 52, gy - 44, 2.3) if 0.85 <= t < 1.95 else \"R3\"", "        cam = (gx + 52, gy - 44, 2.3) if 1.25 <= t < 1.62 else \"R3\""),
+    ("    return rg.frame(\"R3\", [client, pam], [], near=False, hats=False)\n", "    return rg.frame(\"R3\", [pam, client] if t >= 2.9 else [client, pam], [], near=False, hats=False)\n"),
+), "shot_51c21")
+_s51c20, _s55_20 = s51c, s55
+
+
+def _pam_back(k):
+    ca.pam_corner(k, 176, rg.F - 38, rg.SC, "p_stand", "neutral", (-0.6, 0.8))
+
+
+def s51c21(t):
+    """5.1c, 3.4 s. She takes the collar; the robe comes off one shoulder and the sleeve sticks at the glove (close on
+    it); the bell; they stand as they were; she shoves it back on; he looks at the sleeve, at us; she goes to the ropes."""
+    if t < 0.3:
+        return _b51c21(t * 0.35 / 0.3)
+    if t < 1.5:
+        return _b51c21(0.35 + (t - 0.3) * 1.2)
+    if t < 2.2:
+        return _s51c20(1.3 + (t - 1.5) * 0.9 / 0.7)
+    if t < 2.45:
+        return _b51c21(2.0)
+    if t < 2.8:                                              # she shoves it back: the pull, run backwards (its own redrawing popped: bare for one drawing)
+        return _b51c21(1.2 - (t - 2.45) / 0.35 * 0.85)
+    return _b51c21(2.76 + (t - 2.8) * 0.82)
+
+
+def _recam(fn, when, cam):
+    """The same shot, from `when` on seen by another camera (a cut in)."""
+    def f(t):
+        if t < when:
+            return fn(t)
+        orig = rg.frame
+        rg.frame = lambda cam_, *a, **kw: orig(cam, *a, **kw)
+        try:
+            return fn(t)
+        finally:
+            rg.frame = orig
+    return f
+
+
+def _with_cast(fn, extra):
+    """The same shot with the people its wide picture left out: extra(cam, t) -> drawers put behind the others."""
+    def f(t):
+        orig = rg.frame
+
+        def fr(cam_, mid, front, *a, **kw):
+            c_ = rg.CAMS[cam_] if isinstance(cam_, str) else cam_
+            return orig(cam_, list(extra(c_, t)) + list(mid), front, *a, **kw)
+        rg.frame = fr
+        try:
+            return fn(t)
+        finally:
+            rg.frame = orig
+    return f
+
+
+def _ref_home(k):
+    rg.shadow(k, 546, rg.F - 96, 36); ca.referee(k, 546, rg.F - 96, rg.SC * ca.REL_REF, "ref_stand", look=(-0.8, 0.2), waistcoat=True)
+
+
+def _robot_home(k):
+    rg.shadow(k, 466, rg.F - 46, 40); r.robot(k, 466, rg.F - 46, rg.SC * r.REL, "r_wait", "furious", side=-1, crack=True)
+
+
+def s55_21(t):
+    """5.5, 1.85 s: the tick; through his eyes its gloves come up, and one comes at the lens; the glove on his jaw; he
+    goes over. No black frame (unread in every test)."""
+    if t < 0.25:
+        return F5["5.5"](t * 1.2)
+    if t < 0.37:
+        return rr.pov_client(t, "tick", jab=0.0)
+    if t < 0.60:
+        return rr.pov_client(t, "tick", jab=(t - 0.37) / 0.23)
+    if t < 0.95:
+        return _s55_20(0.9 + (t - 0.60))
+    return _s55_20(1.25 + (t - 0.95))
+
+
+def _star(c, x, y, r_, a):
+    c.new_path()
+    for i in range(10):
+        rr_ = r_ if i % 2 == 0 else r_ * 0.45
+        c.line_to(x + rr_ * math.cos(a + i * math.pi / 5), y + rr_ * math.sin(a + i * math.pi / 5))
+    c.close_path(); c.set_source_rgb(0.98, 0.98, 0.94); c.fill_preserve(); c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(2.4); c.stroke()
+
+
+def s56_21(t):
+    """5.6, 1.4 s, from above: he lies on the canvas by his own corner (the post and the ropes at the top left: where he
+    went down); stars go round his head; the Referee, seen from over him (his head, his shoulders, his arm), counts on his
+    fingers, one more every 0.3 s; at four, Pam's hands come in from the ropes and take him by the collar: he slides to
+    his corner."""
+    s_ = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s_); k = Ctx(c, 0)
+    c.set_source_rgb(0.70, 0.70, 0.72); c.paint()
+    g = cairo.RadialGradient(300, 500, 40, 300, 500, 600)
+    g.add_color_stop_rgba(0, 1, 1, 1, 0.5); g.add_color_stop_rgba(1, 0, 0, 0, 0.35); c.set_source(g); c.paint()
+    c.set_source_rgb(0.16, 0.16, 0.18); c.rectangle(0, 0, 540, 96); c.fill(); c.rectangle(0, 0, 60, 960); c.fill()      # outside the ring: the apron, top and left
+    c.set_source_rgb(0.90, 0.90, 0.92)                       # the ropes of his corner, seen from over them
+    for d_ in (66, 84, 102):
+        c.rectangle(d_ - 36, d_ + 30, 6, 960); c.fill(); c.rectangle(d_ - 36, d_ + 30, 540, 6); c.fill()
+    ellipse(k, 44, 110, 30, 30, (0.34, 0.34, 0.37), 5, shadow=False, lw=3)                 # the corner post's pad
+    drag = ramp(t, 1.12, 0.28)
+    sc = 1.22 * b.REL                                        # he lies ACROSS the picture, his head to his corner: upright he read as standing
+    mx, my = 318 - 120 * drag, 560 - 26 * drag               # the middle of him
+    rot = -math.pi / 2 + 0.10 + 0.10 * drag
+    c.set_source_rgba(0, 0, 0, 0.30)                         # he is on the floor: his shadow all round him
+    c.save(); c.translate(mx, my); c.rotate(rot); c.scale(170, 260); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    x, f = mx, my - b.HY * sc * 0.5
+    c.save(); c.translate(mx, my); c.rotate(rot); c.translate(-mx, -my)
+    o = b.boxer(k, x, f, sc, (-84, -4, 84, 4), "exhausted", (0.0, -0.3))
+    hx, hy = c.user_to_device(*o["head"])
+    c.restore()
+    for i in range(3):                                       # out: stars round his head
+        an = t * 5.0 + i * 2 * math.pi / 3
+        _star(c, hx - 6 + 66 * math.cos(an), hy + 100 * math.sin(an), 22, an)
+    n = min(4, 1 + int(t / 0.3))
+    bob = 16 * abs(math.sin(t / 0.3 * math.pi))
+    rect(k, 380, 60, 84, 150 + bob, (0.96, 0.96, 0.94), 12, shadow=False, lw=2.6)          # the Referee from over him: his arm,
+    ca._open_hand(k, 420, 248 + bob, 3.2, math.pi / 2 + 0.25, n, 51, thumb=False)          # his hand, counting,
+    ellipse(k, 440, 40, 150, 62, (0.96, 0.96, 0.94), 13, shadow=False, lw=2.6)             # his shoulders,
+    ellipse(k, 440, 34, 62, 46, (0.09, 0.09, 0.10), 14, shadow=False, lw=2.6)              # the top of his head
+    if drag > 0:                                             # Pam, from the ropes: two sleeves, two hands on his collar
+        for dy_ in (-34, 34):
+            px_, py_ = lerp(-40.0, hx - 70, min(1.0, drag * 3)), hy + dy_
+            rect(k, -30, py_ - 15, px_ + 30, 30, (0.20, 0.20, 0.22), 21, shadow=False, lw=2.4)
+            ellipse(k, px_ + 6, py_, 20, 17, (0.86, 0.72, 0.62), 22, shadow=False, lw=2.4)
+    csh.noir(s_)
+    return s_
+
+
+_f = {n: fn for n, d, fn in FILM}
+_V21 = {"5.1a": (1.7, quick(_s51a21, 2.0 / 1.7)), "5.1c": (3.4, s51c21),
+        "5.2a": (1.2, lambda t: F5["5.2a"](min(int(t / 0.4), 2) * 0.25 + 0.01)),
+        "5.2": (1.6, _recam(_f["5.2"], 1.02, (384, 1185, 1.9))),
+        "5.4": (0.8, lambda t, fn=_f["5.4"]: fn(t + 0.42)),
+        "5.5": (1.85, _with_cast(s55_21, lambda cam, t: [_pam_back] if abs(cam[2] - 1.0) < 0.02 else [])), "5.6": (1.4, s56_21),
+        "7.2": (dict((n, d) for n, d, _ in FILM)["7.2"], _with_cast(_f["7.2"], lambda cam, t: [_ref_home] if abs(cam[2] - 1.25) < 0.02 else [])),
+        "7.3": (dict((n, d) for n, d, _ in FILM)["7.3"], _with_cast(_f["7.3"], lambda cam, t: [_ref_home, _robot_home] if abs(cam[2] - 1.5) < 0.02 else []))}
+FILM = [(n,) + _V21[n] if n in _V21 else (n, d, fn) for n, d, fn in FILM]
 
 _T0, _F = 0.0, []
 for _n, _d, _f in FILM:

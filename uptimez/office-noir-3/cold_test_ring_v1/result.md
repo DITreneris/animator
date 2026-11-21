@@ -1,15 +1,21 @@
-# Cold test, ring set v1: 5.1a, 5.1b, 5.2 (19 Nov)
+# Cold tests 54 and 55: the boxing scene, first half (film v21, animatic v16)
 
-Three consecutive camera frames, no captions, shown to two fresh viewers who had seen nothing else. Result: **FAIL, 2 of 5** for both (pass is 4 of 5).
+Test 54: two fresh viewers, mute, blocks A and B (5.1a to 5.6) at 4 pictures a second and four moments at 10. Test 55: two more, the robe shot alone at 10 a second, after the fixes that test 54 asked for.
 
-| # | Intended | Viewer A | Viewer B | Verdict |
-|---|---|---|---|---|
-| 1 | A ring: a boxer and his helper in a corner, a robot and a referee at centre, a ring girl walks ROUND 1 | Read | Read | Read; but the card covers the robot's head, so neither knew the opponent until 5.2 |
-| 2 | She looks at him; he looks up at the thing over the ring | "He glares across the ring"; nobody looks at the poster; "set dressing" | "Nobody looks at it in any frame" | Missed by both |
-| 3 | His robe is pulled off his shoulders and sticks at the gloves | "Lacing or checking his glove, or holding his arm back" | "I honestly can't tell" | Misread by both, the same way |
-| 4 | He swings; the glove stops short; the robot does not move | Read ("a miss or a punch that stops short") | Read ("falls short, or a frozen pose") | Read at full size; at phone size both thought it might land |
-| 5 | The Referee, neutral, gives the start; Pam times it | "Feels like he is on the robot's side"; arm not noticed | "Referee or the robot's handler?"; "hands on his hips" | Misread by both |
+| What was changed | Test 54 | Test 55 | Verdict |
+|---|---|---|---|
+| The approval chain (5.3 to 5.5) | "a clear cause-and-effect chain with a good snap at the end"; "clear and funny without sound"; strongest stretch for both | | read |
+| Button to punch | 4 pictures at 4 a second, "about 1 second"; "about 0.7 seconds from the checkmark"; "Fast and sudden" (both) | | read; no black frame was mentioned |
+| His first punch (5.2, the cut in) | "stops dead in the air well short of the robot and trembles"; "hangs in the air… wobble lines" | | read |
+| 5.6 from above | "flat on his back… stars orbiting his head"; "He is lying, never standing"; the count read by both; the drag: "as if dragged out… possibly hands" | | read; the drag partly |
+| The robot's size | "about his height but spindly… believable as a comic opponent"; "Believable. It is about his height in the wides" | | read |
+| The robe (5.1c) | FAIL: "a lighting or layer error rather than half undressed"; "a red carpet or a ribbon"; "I don't get it" | "The robe won't come off over the gloves, the bell goes, so the second just puts it back on and hides" (both, nearly the same words) | read after the fix |
+| Pam's side | "The crossing exists but is so brief it reads as a jump" | "She slips behind him… peeks out from behind his other side" | read |
 
-Shared misreads that are not beats: the Referee's bare forearms read as jointed, mechanical arms ("is he a robot too?"); bare-chested in 5.1b then robed in 5.2 read as a continuity error; nobody is seen arriving; Pam smiles at the camera, not at her work; Sofía's legs run into the audience band; the plan sits in a different place in each frame; the lit doorway is noticed and unused.
+Found by test 54 and fixed before test 55: he went dark while half undressed (he was lit twice: the measuring drawing and the half-robe drawing counted as figures); the stretched sleeve read as a carpet (now the cuff is held right at the glove); the Referee and the robot stood the other way round in the opening than in round one; Pam was missing from the wide picture of the fall.
 
-What the test cannot tell: whether it is funny, and anything that needs sound (the bell, the stopwatch's click).
+Found by test 55 and changed after it, **not re-tested**: the robe's return popped ("bare-chested in 26… a glitch or wipe") — it is now the pull run backwards; the boxer "does essentially nothing" at the end: the look at the sleeve and at us is only his eyes and is not seen.
+
+Still open: the card girl "is never seen again… no exit" (she now walks to the left third, but the cut comes before she leaves); "the cause of the snag is not visible" in the close picture (the glove is out of it); the bell's "white streaks cover the 10 on the poster"; the opening walk is "slow".
+
+The test cannot tell: whether it is funny, the voices, the mix.
