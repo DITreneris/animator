@@ -109,6 +109,7 @@ People who are exceptionally good at one thing, disastrously bad at another, and
 | 6 | Happy Compliance | Governance censors the tree, not the boss. Sofía to Pam: "Get him." |
 | 7 | Office Noir | Don's dream. **Mom is real**: she wakes him in his bedroom |
 | 8 | The Best Candidate | **Mom works at UptimeZ.** Father is "parking". 0 RESULTS is planted |
+| — | Office Noir 2: The Shadow of Fate (New Year special) | Sofía's dream, as Office Noir was Don's: she is the noir heroine everyone wants, and the Shadow wants what she carries. **She wakes at the office New Year's party with a party blower, icing sugar on her cheek; Don gives her a thumbs-up and Pam sweeps up after her** ("Some dream. Others sweep."). Outside the season's count |
 
 *Prompt Telephone*, *Saved to Cloud* and *Downloads Expedition* are prequel shorts from the same office, before Sofía. Pam's doodle of Don with horns is from there.
 
@@ -127,7 +128,7 @@ People who are exceptionally good at one thing, disastrously bad at another, and
 | 12 | The Escalation | The Client threatens to cancel; Sofía can exploit the crisis or protect the relationship |
 | 13 | Human Approval | The robot finds the real fix (the integration); Don refuses the cost. Pam rescuing him again becomes the bottleneck |
 | 14 | Assistant to the CEO | **Father, the investor**, uses the crisis to move on Don's chair. Mom must choose between protecting her son and protecting his position |
-| 15 | The Review | The Client credits Pam by name; Don hears praise for his leadership |
+| 15 | The Review | *To be rethought (20 Nov):* the Client already credits Pam by name in public in episode 11 (his one-star review, "Pam found it."), so 12 opens on its fallout. 15 needs a new engine |
 | 16 | Renewal Day | Pam's value becomes undeniable in money; Sofía faces a real choice, not another flirtation |
 
 **The planned finale (not locked): THE HUMAN ALGORITHM.** The Client knowingly pays for Pam's work, not for UptimeZ Find. Don: "AI-powered customer intelligence." Robot: "No AI was involved." Don: "Approved." The revenue is real; the product claim is still false.

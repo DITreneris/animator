@@ -229,16 +229,16 @@ New Year special. SOFÍA dreams she is a femme fatale in a black-and-white city 
 
 | File | Version | Notes |
 |---|---|---|
-| `on2_film_v27_1080.mp4` | **release v27 (current, 18 Nov)**, not committed | 1080×1920, native 1080, 80.1 s, 30 fps, BT.709, −15.0 LUFS, −2.4 dBTP, 16/16 lines heard by Whisper, the last drawing is the first. Rebuild with `./uptimez/build.sh on2` |
-| `on2_motion_test_v27.mp4` | v27, 540 preview | v25: the first Noir's look (blinds on the walls under the people, a side light, lighter faces, typewriter narration cards at the top); v26: the money, the pour and the office lit; v27: the arms in the bar against smoke. v24 is the last before the new look |
-| `office-noir-2-script-v5.md` | script (current) | Line by line with the shot list, as of v24; v1–v4 and concepts v1–v4 kept |
+| `on2_film_v28_1080.mp4` | **release v28 (current, 20 Nov)**, not committed | 1080×1920, native 1080, 79.2 s, 30 fps, BT.709, −15.0 LUFS, −2.5 dBTP, 16/16 lines heard by Whisper, the last drawing is the first. Rebuild with `./uptimez/build.sh on2`. v27 (18 Nov) was the release before |
+| `on2_motion_test_v28.mp4` | v28, 540 preview | v28: a joke by 0:01, the first gunshot at 1.0 s (1.1 is 0.75 s); v25: the first Noir's look (blinds on the walls under the people, a side light, lighter faces, typewriter narration cards at the top); v26: the money, the pour and the office lit; v27: the arms in the bar against smoke. v24 is the last before the new look |
+| `office-noir-2-script-v6.md` | script (current) | Line by line with the shot list, as of v28 (the look of v25–v27, the new opening); v1–v5 and concepts v1–v4 kept |
 | `on2_shotboard_v8.png` | shot board | One frame from each of the 48 set-ups of v24 |
 | `on2_cover_v3.png` (v1, v2 kept) | cover | Her face close, her eyes on the Shadow, his lit hand on her shoulder; OFFICE NOIR 2 label, "The Shadow of Fate". Checked at feed size (120 px) |
 | `on2_anim_mute_test_v8.md`, `on2_board_mute_test_v1.md`, `_v4.md`, `on2_pacing_test_v15.md` | tests | Cold mute tests of the board and the animation; the cold pacing test |
 | `on1_vs_on2_*.png`, `on2_look_proto_v1.png`, `on2_look_v25_six.png`, `on2_v25_sixteen.png`, `on2_v26_fixed_frames.png` | look | Why the first Noir looked better, and the before/after of the new look |
 | `on2_board_v1..v7.png`, `on2_board_mute_v*`, `on2_cast_v1..v5.png` (+ phone), `on2_don_back_v1.png`, `on2_shadow_hat_v1.png`, `on2_two_men_v1.png`, `on2_animatic_v1.mp4`, `on2_narration_*` | development | Board, cast, animatic, narration auditions (A2 chosen) |
 
-Built from `src/`: `on2_motion.py` (timing, the picture, the release; `_v1`…`_v26` kept), `on2_motion_b5.py` and `on2_motion_b68.py` (beats 05 and 06–08), `on2_board.py` (sets), `noir2_cast.py` (the cast in noir), `on2_sound.py` (the takes in `src/on2_voices/`, the mixes), `engine_on.py` (the noir pass; TONE v3 is the new look, `engine_on_v2.py` keeps Office Noir unchanged), `thumb_on2.py` (the cover), `on2_mute_anim.py` (sheets for the cold tests).
+Built from `src/`: `on2_motion.py` (timing, the picture, the release; `_v1`…`_v27` kept), `on2_motion_b5.py` and `on2_motion_b68.py` (beats 05 and 06–08), `on2_board.py` (sets), `noir2_cast.py` (the cast in noir), `on2_sound.py` (the takes in `src/on2_voices/`, the mixes), `engine_on.py` (the noir pass; TONE v3 is the new look, `engine_on_v2.py` keeps Office Noir unchanged), `thumb_on2.py` (the cover), `on2_mute_anim.py` (sheets for the cold tests).
 
 ### The Best Candidate — [`the-best-candidate/`](the-best-candidate/)
 

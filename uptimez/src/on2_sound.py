@@ -1954,3 +1954,180 @@ if __name__ == "__main__":
         takes()
         o, t = audition()
         print("wrote", o, "%.1f s" % t)
+
+
+def motion_mix16(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav", leads=None, heel_at=11 / 12.0, shots12=None):
+    """Motion test v28: motion_mix15 with the opening re-timed (Tomas: a joke by 0:01). leads: a line's start after its
+    shot, where it isn't 0.25 (the city line waits for New Year's Eve.); heel_at: the heel in 1.1; shots12: the drawings
+    of 1.2's gang war. With the defaults it is motion_mix15."""
+    leads = leads or {}
+    shots12 = shots12 or ((12, 0), (14, 2), (16, 1), (17, 3), (19, 0), (21, 2), (22, 1))
+    n = int((total + 0.4) * SR)
+    music = np.zeros(n + SR)
+    oj.groove(music, 0.40, total, level=0.85)
+    music = music[:n]
+    rain = so.rain(total + 0.4)[:n]
+    voice = np.zeros(n)
+    fx = np.zeros(n)
+    at = {s: t0 for s, t0, d in rows}
+    spans = []
+    for shot, key in {"1.1": "n1", "2.1": "n2", "2.6": "n3", "5.3": "s1", "5.4": "n4", "6.1": "n5", "7.2a": "m1", "7.2b": "c1", "8.1": "m2", "8.5": "p1",
+                     "1.2": "n6", "3.2": "n7", "4.1a": "n8", "5.2": "n9", "5.6": "n10", "6.4": "n11"}.items():
+        a, _ = sf.read("%s/%s_%s.wav" % (TAKES, key, kind) if key[0] == "n" else "%s/%s.wav" % (TAKES, key))
+        ld = leads.get(shot, 0.25)
+        p = int((at[shot] + ld) * SR); voice[p:p + len(a)] += a[:n - p]
+        spans.append((shot, key, at[shot] + ld, at[shot] + ld + len(a) / SR))
+    h, th = heel(), thud()
+
+    def put(t, a, g=1.0):
+        p = int(t * SR)
+        if 0 <= p < n:
+            fx[p:p + len(a)] += a[:n - p] * g
+    put(at["1.1"] + heel_at, h, 1.0)                                    # the heel on the stones
+    rg = np.random.default_rng(31)
+    for dr, who in shots12:      # 1.2: far off, through the rain
+        tt_ = so.tt(0.30)
+        crack = rg.standard_normal(len(tt_)) * np.exp(-tt_ / 0.012) + np.sin(2 * np.pi * 70 * tt_) * np.exp(-tt_ / 0.08) * 0.8
+        k_ = int(0.0015 * SR); dull = np.convolve(crack, np.ones(k_) / k_, mode="same")       # v23: brighter, and louder
+        put(at["1.2"] + dr / 12.0 + 0.03, dull, 0.60 if who < 2 else 0.48)
+        put(at["1.2"] + dr / 12.0 + 0.12, dull, 0.20 if who < 2 else 0.16)                  # the slap off the walls
+    for dr in (1, 4, 7):                                                  # 1.2b: and while we are close on her
+        tt_ = so.tt(0.30)
+        crack = rg.standard_normal(len(tt_)) * np.exp(-tt_ / 0.012) + np.sin(2 * np.pi * 70 * tt_) * np.exp(-tt_ / 0.08) * 0.8
+        k_ = int(0.0015 * SR); a_ = np.convolve(crack, np.ones(k_) / k_, mode="same")
+        put(at["1.2b"] + dr / 12.0 + 0.03, a_, 0.50); put(at["1.2b"] + dr / 12.0 + 0.12, a_, 0.16)
+    for i in range(6):                                                    # walking away, 2.1
+        put(at["2.1"] + 0.15 + i * 0.42, h, 0.6 - i * 0.05)
+    put(at["2.5"] + 3 / 12.0, so.metal_click(2400, 0.08), 0.9)            # the compact
+    put(at["2.5"] + 3 / 12.0 + 0.07, so.metal_click(3100, 0.05), 0.5)
+    for i in range(10):                                                   # running, 2.6: a contact every half cycle
+        put(at["2.6"] + i / 3.0, h, 0.75 - i * 0.05)
+    for i, g in enumerate((0.35, 0.7, 0.9, 0.6, 0.3)):                    # 3.1: she runs past, close
+        put(at["3.1"] + 0.17 + i / 4.0, h, g)
+    for i in range(6):                                                    # 3.2: he is coming, far off
+        put(at["3.2"] + i * 5 / 12.0, th, 0.30 + i * 0.05)
+    put(at["3.2"] + 10 / 12.0, so.swish(0.18), 0.3)                       # the broom lifted
+    put(at["3.2"] + 12.5 / 12.0, so.swish(0.34), 0.9)                     # one sweep
+    put(at["3.3"] + 0.45, so.swish(0.22), 0.35)
+    for i in range(2):                                                    # 3.4: he walks off the wrong way
+        put(at["3.4"] + 10 / 12.0 + i * 5 / 12.0, th, 0.85 - i * 0.12)
+    for i in range(2):                                                    # 4.1: she walks up
+        put(at["4.1a"] + 0.02 + i * 0.3, h, 0.5)
+    put(at["4.1a"] + 10 / 12.0, so.metal_click(2600, 0.10), 1.0)          # the coin in the tin cup
+    put(at["4.1a"] + 10 / 12.0 + 0.06, so.metal_click(3900, 0.07), 0.6)
+    put(at["4.1a"] + 13 / 12.0, so.chirp(), 4.0)                          # the robot has noticed
+    put(at["4.1b"] + 0.02, h, 0.5)                                        # two steps
+    put(at["4.1b"] + 3 / 12.0, h, 0.5)
+    put(at["4.1b"] + 6 / 12.0, so.swish(0.16), 0.9)                       # its arm, out
+    put(at["4.1b"] + 7 / 12.0, so.metal_click(1500, 0.06), 0.8)
+    put(at["4.1b"] + 9 / 12.0, so.chirp(), 4.0)
+    put(at["4.2"] + 9 / 12.0, so.metal_click(2600, 0.06), 0.7)            # she takes it back
+    put(at["4.2"] + 10 / 12.0, so.swish(0.14), 0.7)
+    for i in range(3):
+        put(at["4.2"] + 1.0 + i * 0.2, h, 0.55 - i * 0.12)
+    b0 = at["5.1"]                                                        # beat 05: the bar
+
+    def at5(shot, drawing):
+        return at[shot] + drawing / 12.0
+    for i in range(5):                                                    # 5.1: her heels on the boards
+        put(b0 + i * 0.5, h, 0.42)
+    for dr, a_ in ((2, so.swish(0.12)), (6, so.metal_click(4200, 0.05)), (11, so.metal_click(4600, 0.05)), (15, so.swish(0.12))):
+        put(at5("5.1", dr), a_, 0.35)
+    for dr in (2, 7, 22, 27):                                             # 5.2: his steps, in and out
+        put(at5("5.2", dr), th, 0.55)
+    put(at5("5.2", 6), so.swish(0.16), 0.5); put(at5("5.2", 28), so.swish(0.16), 0.4)
+    put(at5("5.3", 20), so.metal_click(3600, 0.06), 0.5)                  # 5.3: a coupe set down, and filled
+    for dr in (2, 6, 10, 14):                                             # the cloth on the glass
+        put(at5("5.3", dr), so.swish(0.10), 0.14)
+    put(at5("5.3", 22), so.swish(0.40), 0.25)
+    put(at5("5.4", 0), so.swish(0.50), 0.5)                               # 5.4: the note along the bar; one tap
+    put(at5("5.4", 11), th, 0.3)
+    for dr in (0, 2, 4, 6, 8, 12, 15):                                    # 5.5: her finger on the bays
+        put(at5("5.5", dr), so.metal_click(900, 0.03), 0.3)
+    put(at5("5.6", 2), so.swish(0.20), 0.4)                               # 5.6: over; the lipstick
+    for dr in (7, 10, 13, 17, 21):
+        put(at5("5.6", dr), so.swish(0.28), 0.28)
+    put(at5("5.7", 0), so.swish(0.40), 0.4)                               # 5.7: across the bar; her fingers, once
+    for dr in (8, 9):
+        put(at5("5.7", dr), so.metal_click(900, 0.03), 0.3)
+    for dr in (6, 10, 14):                                                # 5.10: the door, still swinging
+        put(at5("5.10", dr), so.swish(0.22), 0.22)
+    put(at5("5.9", 11), so.sting(110.0, 1.6), 0.6)                        # 5.9: his eye
+    put(at5("5.10", 8), th, 1.4); put(at5("5.10", 8), so.metal_click(700, 0.05), 0.5)   # 5.10: CASE CLOSED
+    put(at5("5.10", 18), so.metal_click(3600, 0.06), 0.45)
+    for dr in (0, 2):                                                     # 6.1: in, running; the door, shut with her back
+        put(at5("6.1", dr), h, 0.5)
+    put(at5("6.1", 4), th, 1.6); put(at5("6.1", 4), so.metal_click(500, 0.06), 0.5)
+    put(at5("6.2", 3), so.swish(0.45), 0.5); put(at5("6.2c", 6), so.swish(0.35), 0.35)   # 6.2: the drawer, pulled; the roll
+    put(at5("6.2", 9), th, 0.35)                                          # it stops against its runners
+    for dr in (30, 33):
+        put(at5("6.2c", dr - 12), so.metal_click(900, 0.03), 0.3)
+    put(at5("6.4", 3), th, 0.25); put(at5("6.4", 8), so.swish(0.50), 0.35)               # 6.4: the roll laid down; the door
+    put(at5("6.6", 6), so.swish(0.30), 0.3)                               # 6.6: his hand
+    for dr in (1, 2, 4, 5, 7, 8, 10):                                     # 6.7: keys
+        put(at5("6.7a", dr), so.metal_click(5200 + 300 * (dr % 3), 0.04), 0.35)
+    put(at5("6.7", 2), so.swish(0.20), 0.6); put(at5("6.7", 4), th, 0.5)
+    put(at5("7.1c", 0), th, 0.6); put(at5("7.1c", 4), th, 0.6)          # 7.1: his shoes
+    put(at5("6.2r", 4), so.sting(220.0, 0.6), 0.25)                       # v21: the drawer: her little win
+    for dr in (5, 7, 9):                                                  # 7.2: her slippers
+        put(at5("7.2a", dr), th, 0.3)
+    tpop = at5("7.3", 2)
+    put(tpop, so.pop(), 1.6)                                              # 7.3: one pop
+    put(at5("8.1", 12), so.metal_click(1200, 0.03), 0.2)                  # 8.1: the paper hat lands
+    put(at5("8.2", 8), th, 0.5)                                           # 8.2: she jerks upright
+    tb = so.tt(0.55)                                                      # 8.3: the blower toots
+    ph = 2 * np.pi * np.cumsum(420 + 110 * tb) / SR
+    toot = (np.sin(ph) + np.sin(3 * ph) / 3 + np.sin(5 * ph) / 5) * np.minimum(1, tb / 0.02) * np.minimum(1, (0.55 - tb) / 0.08) * 0.12
+    put(at5("8.3", 7), toot, 1.0)
+    for dr in (2, 12):                                                    # 8.5: the broom
+        put(at5("8.5", dr), so.swish(0.40), 0.5)
+    put(at5("8.5", 17), so.metal_click(700, 0.05), 0.35); put(at5("8.5", 17), so.swish(0.30), 0.3)   # v21: into the pan; the puff
+    tw = so.tt(0.75)                                                      # v21, 8.6: the blower again, and it gives up
+    ph = 2 * np.pi * np.cumsum(330 - 120 * tw / 0.75 + 14 * np.sin(2 * np.pi * 7 * tw)) / SR
+    fiz = (np.sin(ph) + np.sin(3 * ph) / 3) * np.minimum(1, tw / 0.03) * np.clip((0.75 - tw) / 0.35, 0, 1) * 0.08
+    put(at5("8.6", 14), fiz, 1.0)
+    tend = at["8.7"]                                                      # v22: into the window
+    tb_ = so.tt(0.95)                                                      # the taxi's brakes, ending on the seam
+    sq = np.sin(2 * np.pi * np.cumsum(2300 - 500 * tb_ / 0.95 + 40 * np.sin(2 * np.pi * 9 * tb_)) / SR)
+    hiss = np.random.default_rng(77).standard_normal(len(tb_))
+    env_ = np.minimum(1, tb_ / 0.15) * np.clip((0.95 - tb_) / 0.12, 0, 1)
+    put(total - 0.95, (sq * 0.05 + so.hp(hiss, 3) * 0.06) * env_, 1.0)
+    tsec = np.arange(n) / SR
+    inside = np.clip((tsec - b0) / 0.6, 0.0, 1.0)                         # the door closes behind her
+    back = np.clip((tsec - tend) / (total - tend), 0.0, 1.0) / 0.9         # v22: the rain comes back to where the film starts
+    rain = rain * np.maximum(np.where(tsec >= tpop, 0.0, 1.0 - 0.84 * inside), 0.9 * back)
+    music = music * (1.0 + 0.30 * inside) * np.clip((tpop - tsec) / 0.02, 0.0, 1.0)     # the jazz stops dead on the pop
+    beat = 60.0 / 104.0                                                   # Auld Lang Syne, vibes, from the cut to colour
+    tune = [(60, 1), (65, 1.5), (65, .5), (65, 1), (69, 1), (67, 1.5), (65, .5), (67, 1), (69, 1), (65, 1.5), (65, .5), (69, 1), (72, 1),
+            (74, 3), (74, 1), (72, 1.5), (69, .5), (69, 1), (65, 1), (67, 1.5), (65, .5), (67, 1), (69, 1), (65, 1.5), (62, .5), (62, 1),
+            (60, 1), (65, 3)]
+    als = np.zeros(n)
+    t0 = at["8.1"]
+    for mi, bt in tune:
+        v = oj.vibe(440.0 * 2 ** ((mi - 69) / 12.0), 1.6) * 2.4
+        p = int(t0 * SR)
+        if p < n:
+            als[p:p + len(v)] += v[:n - p]
+        t0 += bt * beat
+    for i, mi in enumerate((53, 48, 53, 58, 53, 48, 58, 53)):             # a root under each bar
+        v = oj.vibe(440.0 * 2 ** ((mi - 69) / 12.0), 2.2) * 1.6
+        p = int((at["8.1"] + (1 + 4 * i) * beat) * SR)
+        if p < n:
+            als[p:p + len(v)] += v[:n - p]
+    als *= np.clip((total - 0.15 - tsec) / (total - 0.15 - tend), 0.0, 1.0)
+    env = np.zeros(n)                                                     # duck the music under her voice
+    for _, _, t0, t1 in spans:
+        env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
+    k = int(0.12 * SR); env = np.convolve(env, np.ones(k) / k, mode="same")
+    mix = voice * 1.0 + music * (0.26 - 0.15 * env) + als * (1.0 - 0.45 * env) + rain * 0.55 + fx * 0.5
+    mix = np.tanh(mix * 2.0) / 2.0 * 1.5
+    sf.write(out, mix.astype(np.float32), SR)
+    return out, spans
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        take_kind(sys.argv[1])
+    else:
+        takes()
+        o, t = audition()
+        print("wrote", o, "%.1f s" % t)
