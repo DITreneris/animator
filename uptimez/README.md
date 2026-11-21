@@ -276,12 +276,18 @@ Built from `src/` (`*_ob`, `ob_anim.py`, `qa_ob*.py`); `./uptimez/build.sh ob`.
 
 ### First Search — [`first-search/`](first-search/)
 
-Episode 10, **in development: concept only.** The Client comes back to the same room, under his own framed photograph: the bank needs his plan on Friday. Don sells him Premium, "Guaranteed by Friday"; the search returns 0 RESULTS; Sofía says the red looks bad, and Don has the zero turned green. "You said I'd never lose anything again." "We fixed the red." Pam, at the back, tapes his plan together and says nothing.
+Episode 10, **built: film v35 (21 Nov), 62.9 s.** The Client needs his blueprint by Friday. Don sells him a guarantee, takes his $999, posts the win, and has the robot paint the empty search result green. Sofía plasters the cracked portrait, Pam writes STUPID on the robot's back and tapes the plan, Mom scrubs the bump off Don's head with a licked thumb. On Friday the plan is shredded strips; "See you in court." On Monday the portrait is whole again.
 
 | File | Notes |
 |---|---|
-| `first-search-concept-v6.md` | **Current.** Seven beats, nine lines, 42–44 s: opens on the red zero, the portrait falls on Don's head at 1.2 s, "It's the red. It looks bad.", the held shot of four looks, Mom's "Young man.", the near-shred |
-| `first-search-concept-v1..v5.md`, `first-search-premise-v1..v3.md` | Kept |
+| `first-search-film-v35.md` | **Current.** The film as built: every shot with its time and line, the running props, the hand-off to episode 11, the version history |
+| `fs_film35_540.mp4` | **Film v35**, 540 (the 1080 is rebuilt, not committed). 62.9 s, −15.2 LUFS, peak −2.2 dBFS, the last frame leads into frame 0 (only the calendar differs: MON 1 / MON 8) |
+| `fs_timing_film3..35.json` | Each film's shot timing (QA and Whisper read it) |
+| `first-search-script-v10.md` | The production script the film started from; the film grew past it (the threat and the court, the post, the lipstick, the flashback, the huddle). Scripts v1–v9 kept |
+| `first-search-concept-v1..v6.md`, `first-search-premise-v1..v3.md` | Kept |
+| `fs_shot_design_v1.md`, `fs_shot_list_v2.md`, `cold_test_v11/`, `cold_test_v12/` | Board-stage staging and cold tests |
+
+Built from `src/` (`fs_film35.py`, over `fs_film5.py` … `fs_film34.py`, all kept; `fs_storyboard.py`, `fs_set.py`, `fs_anim.py`, `fs_animatic.py`, voices in `src/fs_voices/film_v13`): `cd src && python3 fs_film35.py ../first-search 1080`. `FS_ONLY=C,U` renders only those shots.
 
 ### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
 

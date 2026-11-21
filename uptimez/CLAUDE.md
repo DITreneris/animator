@@ -39,6 +39,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 - Pin the previous file as `_vN` before changing it. A pinned file imports the pinned modules it was built with.
 - After any change, rebuild the approved sheets, covers and renders and **compare md5**. They must be byte-identical.
 - New renders get new names; the release a README calls current is replaced only when it's approved.
+- **A drawing map's later entry wins.** After replacing a shot's drawing, check that the map points at the new function (print it, or assert it) and look at that shot in the render: two fixes in First Search were overwritten for ten versions (lesson 86).
 
 ## Render and QA standard (G5)
 
@@ -49,7 +50,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | Speech | Whisper on every line inside the final mix, three windows per line; a lone word gets the previous line as context; score by words or letters (it runs "Pam a heart" together) |
 | Text | Every bubble, card and shout inside the safe area (18, 96, 522, 820 at 540×960) and off the right-hand button rail. Speech bubbles never cover a face. Narration and cards go at the top, under the bar (y 96): the bottom quarter is where TikTok, Reels and Shorts put captions, even inside the safe area |
 | Tails | Each tail ends beside the mouth **drawn in that frame**, curving round outside the head. Off-screen speakers get no tail (a caption, a screen readout or a quoted card instead) |
-| Frame 0 | Complete (no flash, nothing scaling in), and the last frame leads back into it |
+| Frame 0 | Complete (no flash, nothing scaling in), held at least 0.4 s before the camera moves, and the last frame leads back into it. The sound runs through the seam: no dead stop before frame 0 (a fade of 0.3 s at most) |
 | Size | **1080 renders are not committed** (`uptimez/**/*_1080.mp4` is in `.gitignore`); `build.sh` rebuilds them and they're delivered directly. The 540 previews, covers and sheets are committed. The 1080 files committed before 17 Nov stay tracked |
 
 Validate every new check on a known failure first; a check that always passes is worse than none.
