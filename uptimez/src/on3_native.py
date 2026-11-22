@@ -3,7 +3,7 @@ upscale"). The film's modules make their own 540x960 surfaces in a hundred place
 before any of them is imported, every cairo.ImageSurface is made S times as large with a device scale of S: all drawing
 stays in the same 540x960 units, and the pixel passes (the noir pass, the grain, two in film_on3) take their size from
 the surface. Nothing in the 540 build changes: this file is the only place the scale is set.
-  KOKORO_DIR=... python3 on3_native.py            -> ../office-noir-3/office_noir_3_release_v5_1080.mp4 and _540.mp4"""
+  KOKORO_DIR=... python3 on3_native.py            -> ../office-noir-3/office_noir_3_release_v6_1080.mp4 and _540.mp4"""
 import os
 import subprocess
 import sys
@@ -53,7 +53,7 @@ import ring_rough_on3 as rr
 _src = __import__("inspect").getsource(rr.render)
 assert '"540x960"' in _src
 exec(_src.replace('"540x960"', '"%dx%d"' % (540 * S, 960 * S)).replace('"-crf", "18"', '"-crf", "16"'), rr.__dict__)
-an.V = "release_v5"
+an.V = "release_v6"
 D = "../office-noir-3/"
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "frames":             # a few drawings, to compare with the 540 build
@@ -62,9 +62,9 @@ if __name__ == "__main__":
         for n, t in (("1.1", 1.3), ("2.6", 1.5), ("3.4", 0.5), ("4.3b", 0.5), ("5.5", 1.5), ("7.2", 0.7), ("6.3", 2.6), ("8.3", 0.8)):
             s = F[n](t); print(n, s.get_width(), s.get_height()); s.write_to_png("/tmp/nat_%s_%d.png" % (n, S))
         sys.exit(0)
-    out = D + "office_noir_3_release_v5_1080.mp4"
+    out = D + "office_noir_3_release_v6_1080.mp4"
     total, held, lines = an.build(out)
     print("%.2f s" % total)
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-vf", "scale=540:960:flags=area,format=yuv420p", "-c:v", "libx264", "-crf", "27",
                            "-preset", "medium", "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
-                           "-movflags", "+faststart", "-c:a", "copy", D + "office_noir_3_release_v5_540.mp4"])
+                           "-movflags", "+faststart", "-c:a", "copy", D + "office_noir_3_release_v6_540.mp4"])

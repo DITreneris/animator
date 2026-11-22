@@ -2236,6 +2236,13 @@ def _framed27(fn, f_):
     return g
 
 
+# ---- v38 (Tomas, 22 Nov, 1:20: "what is wrong with the lying man", "junk left in his circle"): the man on the sofa is drawn
+# anew (garage_lying_on3): his head clipped to its own outline, not the whole boxer in a circle; one body on its side. With it,
+# from a review of that picture: his eyes on the phone while it lies on the floor, a contact shadow under it, a darker "10". ----
+import garage_lying_on3 as _gl38
+_gl38.install(ga)
+
+
 # v27: at her door he stands alone under the narration card, and at the series' size the card lay across his hood
 # (tests 61, 62). A little further from the camera: 0.82 of it, his head under the card.
 FILM = [(n, d, _framed27(fn, 0.82) if n in ("4.4", "4.4t") else fn) for n, d, fn in FILM]
