@@ -603,14 +603,20 @@ def desk_shot(k, sh, heads):
             pam(k_, o); r = oc.robot(k_, dl.RX, F + 4, rs)
             drawn["robot"] = (r["screen"][0], r["screen"][1], 50 * rs)
         shot = dl.shot("3.1", [dl.h_seat(), vis, dl.hp(652, F + 6, dl.PS)], wide, "", rb=False, chair=False,
-                       cam=(434, 640, 0.85))                     # v7: the OUT OF ORDER sign just out at the right
+                       cam=WIDE_CAM[0])                          # v10: closer (v7 was (434, 640, 0.85): a tiny cast, half the frame floor)
     elif which == "robot":
         shot = dl.shot("3.2", [vis], robot, "", rb=False, zmax=3.6, chair=False, cam=ROBOT_CAM[0] or cf.face_cam([vis], z_max=3.6))
     elif which == "don":
         shot = dl.shot("3.3", [dl.h_seat()], don, "", chair=False)
     else:
         shot = dl.shot("3.6", [dl.hp(652, F + 6, dl.PS)], pam, "", chair=False)
-    cam = dl.draw(shot, k)
+    import fs_storyboard as sb_
+    old_rs = sb_.SC["robot"]
+    sb_.SC["robot"] = ROBOT_S                                     # the storyboard forces every robot to its SC (0.40) inside a set
+    try:                                                          # shot; episode 13 only, restored after the frame
+        cam = dl.draw(shot, k)
+    finally:
+        sb_.SC["robot"] = old_rs
     DON_FAULTS[:] = don_rule({n: (CH[2] if n == "don" else rs if n == "robot" else dl.PS) for n in drawn})
     for name, h in drawn.items():
         if which == "wide" or name == which:
@@ -685,10 +691,11 @@ def visor_point():
     return _VIS[0]
 
 
+WIDE_CAM = [(450, 660, 0.95)]                         # 3.1 (v10): the cast as big as the button column allows
 DON_FAULTS = []                                            # the Don rule's faults for the last desk frame
 DON_EDGE = [60]                                            # 3.4: how far right of the robot the throne slides in
-ROBOT_S = 0.48                                             # v10 (22 Nov, decided): the front-desk set's canon (fs_set4.HOME);
-                                                           # the storyboard's 0.40 made it a gnome beside the throne
+ROBOT_S = 0.66                                             # v11 (22 Nov, Tomas): the largest the Don rule allows (95 % of his height). The storyboard's 0.40
+                                                           # and the set's 0.48 both read as a gnome, "a rat", beside the throne
 
 
 # --- the series rule "DON is always the tallest and widest" (22 Nov, decided: checked wherever Don shares a frame) -------
