@@ -20,7 +20,7 @@ The prequel shorts here are mostly **540×960 animatics** (30 fps, about 15 s): 
 | **THE ROBOT** | One machine, reassigned: Don's desk robot (*Day One*) → cafeteria waiter (*I Will Replace You*) → HR (from *Raises for Everyone*) | Every statement and stamp technically true; needs human approval for money, access and commitments | Pitched and filtered per episode |
 | **MOM** | Don's mother; Assistant to Don since *The Best Candidate* | Curlers, an old shouting voice; Don shrinks when she enters | Voice F: `bf_alice` + `bm_lewis`, aged |
 | **THE CLIENT** | Owner of ten garages (from *The Onboarding*) | The first real customer; not an idiot. Olive work jacket, VISITOR badge, a head taller than Don | `am_fenrir` −4 semitones |
-| **FATHER** | The investor (from episode 14, planned) | Holds the majority share; can replace the CEO | not cast yet |
+| **FATHER** | The investor, a nightclub kingpin (from episode 12, *Daddy's Home*, in concept) | Holds the majority share; can replace the CEO | not cast yet |
 
 ### Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*)
 

@@ -78,7 +78,7 @@ People who are exceptionally good at one thing, disastrously bad at another, and
 |---|---|---|
 | **MOM**, Assistant to Don | Wants him to be an adult; her protection keeps him a child | Sparingly. When she enters, Don shrinks without a word. "DONNIE!" is for big moments. **She knows Father is the investor** |
 | **THE CLIENT**, owner of ten garages | Wants a useful answer, not an impressive system; starts out believing confident professionals deliver | **Not an idiot.** He signs up because he keeps losing his **blueprint**: the plan of his ten garages, ten numbered bays, white on blue, the only blue paper in the show. His condition: "One month. I ask, you find it." He grows sceptical of Don while coming to trust Pam. Voice: `am_fenrir` −4 semitones |
-| **FATHER** (from episode 14) | Treats authority as proof of competence, just as Don treats selling | **The investor**: his money founded UptimeZ, he holds the majority share, and he can replace the CEO. A threatening version of Don, not just an angry old man. Mom makes Don feel like a little boy; Father makes others see him as one |
+| **FATHER** (from episode 12) | Treats authority as proof of competence, just as Don treats selling | **The investor**: his money founded UptimeZ, he holds the majority share, and he can replace the CEO. A threatening version of Don, not just an angry old man. Mom makes Don feel like a little boy; Father makes others see him as one |
 
 ## Relationships that work without Don
 
@@ -125,10 +125,10 @@ People who are exceptionally good at one thing, disastrously bad at another, and
 
 | # | Episode | Pressure |
 |---|---|---|
-| 12 | The Escalation | The Client threatens to cancel; Sofía can exploit the crisis or protect the relationship |
-| 13 | Human Approval | The robot finds the real fix (the integration); Don refuses the cost. Pam rescuing him again becomes the bottleneck |
-| 14 | Assistant to the CEO | **Father, the investor**, uses the crisis to move on Don's chair. Mom must choose between protecting her son and protecting his position |
-| 15 | The Review | *To be rethought (20 Nov):* the Client already credits Pam by name in public in episode 11 (his one-star review, "Pam found it."), so 12 opens on its fallout. 15 needs a new engine |
+| 12 | **Daddy's Home** (concept v3) | The one-star post reaches **Father, the investor**, through his bodyguard. He arrives today at five, "my people first". The office mistakes the coffee-machine repairman for his man and shows him everything. Father: "I prefer green in cash." / "Find my money." The robot turns to the CEO chair. It ends with the money in Don's CEO chair, and the robot has seen it. Sofía's CV is in a bodyguard's pocket; DAD rings again: "Answer it." |
+| 13 | The Demonstration | Father wants to see the thing that "can find anything" find his money. Carried over: the robot finds the real fix (the integration) and Don refuses the cost; Pam rescuing him again becomes the bottleneck |
+| 14 | The Refund | The Client returns. Carried over: he threatens to cancel; Sofía can exploit the crisis or protect the relationship |
+| 15 | Permission to Succeed | Carried over from the old 14: Father moves on Don's chair, and Mom must choose between protecting her son and protecting his position. *To be developed* |
 | 16 | Renewal Day | Pam's value becomes undeniable in money; Sofía faces a real choice, not another flirtation |
 
 **The planned finale (not locked): THE HUMAN ALGORITHM.** The Client knowingly pays for Pam's work, not for UptimeZ Find. Don: "AI-powered customer intelligence." Robot: "No AI was involved." Don: "Approved." The revenue is real; the product claim is still false.

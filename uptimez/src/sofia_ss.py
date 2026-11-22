@@ -22,6 +22,9 @@ from kit import INK, cut, rect, ellipse, rough_ellipse_pts, text
 from sofia_v4 import SKIN, HAIR, HAIR_SHINE, HAIR_SHADE, RED, GOLD, GOLD_LIGHT, BLOUSE, BLOUSE_SHADE, BELT, H
 
 SKIRT, TIGHTS, PUMPS = sm.SKIRT, sm.TIGHTS, sm.PUMPS
+PULLED = [False]                                           # v3, opt-in (Daddy's Home): all of it pulled back into a ponytail
+                                                           # drawn by the caller: no back layer, no side locks. sofia_ss_v2.py is pinned
+PENCIL = [False]                                           # v4, opt-in (Daddy's Home): a longer, narrower skirt. sofia_ss_v3.py is pinned
 SWEPT = [False]                                            # v2, opt-in: all her hair swept over her right shoulder (screen-left)
                                                            # in Hollywood waves; her left ear (screen-right) shows
 NOTE_COVER = sm.NOTE_COVER
@@ -96,8 +99,9 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", look=(0, 0), lag
         back = [(-52 + lgx, hy - 30), (-80 + lgx * 1.4, body_top + 20), (-84 + lgx * 1.8, body_top + 120 + lgy),
                 (-58 + lgx * 1.8, body_top + 142 + lgy), (-30 + lgx * 1.8, body_top + 110 + lgy), (20 + lgx, body_top + 10),
                 (50 + lgx, hy + 6), (54 + lgx, hy - 30)]
-    cut(k, back, HAIR, lw=2.2)
-    if not SWEPT[0]:
+    if not PULLED[0]:
+        cut(k, back, HAIR, lw=2.2)
+    if not SWEPT[0] and not PULLED[0]:
         cut(k, [(-40 + lgx, hy + 10), (-50 + lgx * 1.5, body_top + 80 + lgy), (-24 + lgx * 1.7, body_top + 96 + lgy),
                 (24 + lgx * 1.7, body_top + 96 + lgy), (50 + lgx * 1.5, body_top + 80 + lgy), (40 + lgx, hy + 10)],
             HAIR_SHADE, shadow=False, outline=False)
@@ -115,8 +119,12 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", look=(0, 0), lag
         cut(k, [(sx_ - 6, -13), (sx_ + 6, -13), (sx_ + 6 + o * 11, 0), (sx_ - 1 + o * 3, 0), (sx_ - 6, -7)], PUMPS,
             shadow=False, lw=1.8)
         c.restore()
-    cut(k, [(-29, body_top + 102), (29, body_top + 102), (45, body_top + 116), (50, -92), (-50, -92),
-            (-45, body_top + 116)], SKIRT)
+    if PENCIL[0]:
+        cut(k, [(-29, body_top + 102), (29, body_top + 102), (41, body_top + 120), (35, -66), (-35, -66),
+                (-41, body_top + 120)], SKIRT)
+    else:
+        cut(k, [(-29, body_top + 102), (29, body_top + 102), (45, body_top + 116), (50, -92), (-50, -92),
+                (-45, body_top + 116)], SKIRT)
     # the v4 teal wrap blouse on the newer figure
     top = [(-37, body_top), (37, body_top), (41, body_top + 40), (29, body_top + 102), (-29, body_top + 102),
            (-41, body_top + 40)]
@@ -159,20 +167,28 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", look=(0, 0), lag
         ellipse(k, hx_, hy_, 9, 9, SKIN, seed + 81, shadow=False, lw=2)
     # head, front hair (v4), locks, hoops
     ellipse(k, 0, hy, 50, 50, SKIN, seed + 20)
-    cap = rough_ellipse_pts(k, 0, hy - 10, 54, 48, seed + 21)
+    cap = rough_ellipse_pts(k, 0, hy - 10, 54, 48 if not PULLED[0] else 44, seed + 21)
     cap = [q for q in cap if q[1] < hy - 30] + [(53, hy - 24), (30, hy - 40), (0, hy - 44), (-30, hy - 40), (-53, hy - 22)]
     cap.sort(key=lambda q: math.atan2(q[1] - (hy - 10), q[0]))
     cut(k, cap, HAIR, shadow=False, lw=2)
-    crown = [(math.cos(a_) * 58, hy - 16 + math.sin(a_) * 50) for a_ in
-             [math.pi * (1.05 + 0.9 * i / 11) for i in range(12)]]
-    cut(k, crown + [(54, hy - 22), (24, hy - 40), (-26, hy - 34), (-56, hy - 22)], HAIR, shadow=False, lw=2)
-    c.set_source_rgb(*INK); c.set_line_width(2)
-    c.move_to(-22, hy - 64); c.curve_to(-26, hy - 54, -30, hy - 44, -26, hy - 34); c.stroke()
-    c.set_source_rgb(*HAIR_SHINE); c.set_line_width(4.5); c.set_line_cap(1)
-    c.move_to(-34, hy - 48); c.curve_to(-18, hy - 56, 2, hy - 56, 18, hy - 50); c.stroke()
+    if PULLED[0]:                                          # v4: no fringe, no parting: combed straight back, close to the head
+        crown = [(math.cos(a_) * 54, hy - 12 + math.sin(a_) * 44) for a_ in
+                 [math.pi * (1.03 + 0.94 * i / 11) for i in range(12)]]
+        cut(k, crown + [(52, hy - 26), (28, hy - 42), (0, hy - 47), (-28, hy - 42), (-52, hy - 26)], HAIR, shadow=False, lw=2)
+        c.set_source_rgb(*HAIR_SHINE); c.set_line_width(3.2); c.set_line_cap(1)
+        for x0 in (-30, -8, 14):
+            c.move_to(x0, hy - 44); c.curve_to(x0 + 6, hy - 52, x0 + 14, hy - 56, x0 + 22, hy - 55); c.stroke()
+    else:
+        crown = [(math.cos(a_) * 58, hy - 16 + math.sin(a_) * 50) for a_ in
+                 [math.pi * (1.05 + 0.9 * i / 11) for i in range(12)]]
+        cut(k, crown + [(54, hy - 22), (24, hy - 40), (-26, hy - 34), (-56, hy - 22)], HAIR, shadow=False, lw=2)
+        c.set_source_rgb(*INK); c.set_line_width(2)
+        c.move_to(-22, hy - 64); c.curve_to(-26, hy - 54, -30, hy - 44, -26, hy - 34); c.stroke()
+        c.set_source_rgb(*HAIR_SHINE); c.set_line_width(4.5); c.set_line_cap(1)
+        c.move_to(-34, hy - 48); c.curve_to(-18, hy - 56, 2, hy - 56, 18, hy - 50); c.stroke()
     if SWEPT[0]:
         _swept(k, hy, body_top, lgx, lgy, seed)
-    else:
+    elif not PULLED[0]:
         for sx_ in (-1, 1):
             lx0 = sx_ * 50
             cut(k, [(lx0 - 8 * sx_, hy - 20), (lx0 + 12 * sx_, hy - 24), (lx0 + 17 * sx_ + lgx * 0.6, hy + 56 + lgy),
