@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v34 (v1 to v33 pinned). v34: 4.3 is two pictures (he asks; she names the price in her own close picture, 4.3b); no white drawing on a hit. v33: the first glove's flight is six drawings with a trail; 7.2b plays to its end, the Referee in front of the robot. v32: awake, the CV carries the real photograph (episode 10's); the gown's collar is off his mouth in 8.2. v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v35 (v1 to v34 pinned). v35: the end fades straight to black, not through red. v34: 4.3 is two pictures (he asks; she names the price in her own close picture, 4.3b); no white drawing on a hit. v33: the first glove's flight is six drawings with a trail; 7.2b plays to its end, the Referee in front of the robot. v32: awake, the CV carries the real photograph (episode 10's); the gown's collar is off his mouth in 8.2. v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1809,9 +1809,10 @@ def _sky30(fn):
     def g(t):
         s_ = fn(t)
         import numpy as _np
-        a = _np.ndarray((960, 540, 4), _np.uint8, s_.get_data())
-        rows = _np.where(a[:, 40:500, 1].max(axis=1) > 60)[0]
-        top = int(rows[0]) if len(rows) else 0
+        z_ = s_.get_height() // 960                             # 1, or 2 when the film is drawn at 1080 (on3_native.py)
+        a = _np.ndarray((s_.get_height(), s_.get_width(), 4), _np.uint8, s_.get_data())
+        rows = _np.where(a[:, 40 * z_:500 * z_, 1].max(axis=1) > 60)[0]
+        top = int(rows[0]) // z_ if len(rows) else 0
         if top < 150:
             return s_
         c = cairo.Context(s_)
@@ -1880,7 +1881,7 @@ def _s44a_29(t):
 def _grey29(surf):
     """A colour drawing to the film's greys, keeping its alpha (the noir pass takes whole frames)."""
     import numpy as _np
-    a = _np.ndarray((960, 540, 4), _np.uint8, surf.get_data())
+    a = _np.ndarray((surf.get_height(), surf.get_width(), 4), _np.uint8, surf.get_data())
     y = (0.114 * a[:, :, 0] + 0.587 * a[:, :, 1] + 0.299 * a[:, :, 2]).astype(_np.uint8)
     for i in range(3):
         a[:, :, i] = y
@@ -1952,6 +1953,25 @@ def _s43_27(t):
 
 FILM = [("4.3", 3.3, _s43_27) if n == "4.3" else (n, d, fn) for n, d, fn in FILM]
 
+
+# ---- v35 (Tomas: "fade straight to black"): the end went through a flat red ("looks like a glitch", both whole-film viewers) ----
+def _s85_35(t):
+    first = rr2.shot_75(T0)
+    if t >= 0.9:
+        return first
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960); c = cairo.Context(s)
+    if t < 0.4:
+        src = ga.f84(); z = 1 + 1.2 * ramp(t, 0.0, 0.4)
+        c.translate(270, 480); c.scale(z, z); c.translate(-353, -565); c.set_source_surface(src, 0, 0); c.paint()      # in on his sleeping face
+        c.identity_matrix(); c.set_source_rgba(0, 0, 0, ramp(t, 0.05, 0.33)); c.paint()                                # and the dark comes down: his eyes are shut
+    else:
+        c.set_source_rgb(0, 0, 0); c.paint()
+        if t > 0.6:
+            c.set_source_surface(first, 0, 0); c.paint_with_alpha(ramp(t, 0.6, 0.3))
+    return s
+
+
+s85.__code__ = _s85_35.__code__
 
 # v34 (Tomas, after the whole-film test: 4.3 "the worst stretch", one picture for both lines): two pictures. He asks over
 # his shoulder (4.3, 1.5 s); she names the price in her own close picture (4.3b): she looks up from her cards at him.
