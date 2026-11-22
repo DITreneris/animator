@@ -180,6 +180,7 @@ V31 = [True]
 V33 = [True]                                               # v33: frame 0 framed clear of the bottom dead zone (off: board v32 exactly)
 V32 = [True]                                               # v32: close and medium shots without set dressing (off: board v31 exactly)
 CUR_SHOT = [None]
+STEP_DASHES = [True]                                       # film v37: off (they hung in the air at the right)
 DROP32 = {"5.2": {"portrait"}, "4.4": {"shredder"}, "5.3": {"shredder"}, "7.2": {"portrait", "counter", "shredder"},
           "7.3": {"counter", "shredder"}, "7.4": {"portrait", "shredder"}, "7.5": {"counter", "shredder"},
           "8.1": {"shredder"}, "8.2": {"counter"}}                                               # v31: 7.1 a close-up, the post as in Prompt Telephone (off: board v30 exactly)                                               # v30: 7.1 from the front, the phone by her face (off: board v29 exactly)                                               # v29: the banner rule, 1.2 the Client speaking in frame, 5.2c whose plan (off: board v28 exactly)                                               # v28: 5.1 restaged; the promise, the reactions and "Open to work" legible (off: board v27 exactly)                                               # v27: frame 0 Don and the portrait only; the portrait smiles when whole (off: board v26 exactly)
@@ -2097,7 +2098,7 @@ def f8_7_2(k):                                             # close, cropped low:
             mfs.mom(k, mx_, F + 90 + ANIM.get("m72_bob", 0), D("mom", 1.4), "lick", "sweet", look=(-1, -0.3), lean=-6)
         c = k.c
         c.set_source_rgb(*INK); c.set_line_width(3); c.set_line_cap(1)                      # her trailing step
-        for dy in (-80, -40, 0):
+        for dy in ((-80, -40, 0) if STEP_DASHES[0] else ()):                                # (film v37 turns them off)
             c.move_to(668 + ANIM.get("m72_dx", 0), F - 40 + dy); c.line_to(704 + ANIM.get("m72_dx", 0), F - 40 + dy); c.stroke()
     CAM4[0] = (520, F - 190, 2.0)
     try:
