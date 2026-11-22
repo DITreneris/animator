@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 3, 2: 6, 3: 3, 4: 3}                                   # each scene's current version (new versions, new files)
+VER = {1: 3, 2: 6, 3: 3, 4: 3, 5: 1}                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -188,10 +188,22 @@ def s37(t, L):                                             # the smile is gone; 
     return dict(don_over=dict(sweat=1 + int(2 * u), forward=u)), {}
 
 
+# --- scene 5, Frame 0 ------------------------------------------------------------------------------------------------
+def s41(t, L):                                             # his hand going out of the door; DONNIE buzzing; face down, held
+    return dict(hand_dx=50 - 70 * t / L, buzz=3 * math.sin(t * 2 * math.pi * 18) if t < 0.45 else 0.0,
+                donnie_down=t > 0.55), {}
+
+
+def s42(t, L):                                             # frame 0's drawing; the black car's lights go across the wall, leaving
+    u = ease((t - 0.3) / 0.8)
+    return (dict(sweep_x=160 - 420 * u) if 0 < u < 1 else {}), {}
+
+
 MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14,
           "2.1": s21, "2.2": s22, "2.3b": s23b, "2.5": s25, "2.7": s27, "2.8c": s28c, "2.8d": s28d, "2.8e": s28e,
           "2.9": s29,
-          "3.2": s32, "3.3": s33, "3.5": s35, "3.6": s36, "3.7": s37}
+          "3.2": s32, "3.3": s33, "3.5": s35, "3.6": s36, "3.7": s37,
+          "4.1": s41, "4.2": s42}
 HANDS_CAM = (500, 742, 3.0)                                # v9: the cut-in: his hands, working in the light
 
 

@@ -550,7 +550,8 @@ def donnie_shot(k, sh, heads):
     c.set_source_rgb(0.30, 0.34, 0.40); c.rectangle(80, F - 130, 80, 28); c.fill()
     c.restore()
     c.set_source_rgba(1.0, 0.98, 0.88, 0.35); c.rectangle(20, F - 330, 180, 330); c.fill()
-    c.save(); c.translate(132, 690)
+    st = sh["state"]
+    c.save(); c.translate(132 + st.get("hand_dx", 0.0) + st.get("buzz", 0.0), 690)     # stage 7: walking out; it buzzes
     for col, lw in ((INK, 40), (dc.VELVET, 34)):                                     # his sleeve, velvet, going out
         c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
         c.move_to(110, 60); c.line_to(24, 14); c.stroke()
@@ -558,7 +559,7 @@ def donnie_shot(k, sh, heads):
         c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
         c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
         e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, 0); c_.show_text("DONNIE")
-    oc.phone(k, 0, -10, 0.95, scr, ang=-0.35)
+    oc.phone(k, 0, -10, 0.95, None if st.get("donnie_down") else scr, ang=-0.35)   # face down against his palm
     ellipse(k, 10, 22, 24, 18, dc.SKIN_F, 3441, lw=2)
     c.restore()
 
