@@ -283,6 +283,20 @@ Episode 10, **in development: concept only.** The Client comes back to the same 
 | `first-search-concept-v6.md` | **Current.** Seven beats, nine lines, 42–44 s: opens on the red zero, the portrait falls on Don's head at 1.2 s, "It's the red. It looks bad.", the held shot of four looks, Mom's "Young man.", the near-shred |
 | `first-search-concept-v1..v5.md`, `first-search-premise-v1..v3.md` | Kept |
 
+### One Star — [`customer-success/`](customer-success/)
+
+Episode 11, **rough cut v5; not final.** Thursday the 11th: every phone in the office buzzes with the Client's post, one star, "Paid $999. They lost my blueprint. My lawyer will call." The robot drafts a reply and Don approves it unread: "Shut off! Our AI does not lose files!" Don phones him: "Nine o'clock. Your office." Friday the 12th, Don presents a plan "recovered" by the AI; the Client: "Is this a joke?" At the door Pam unrolls the plan she taped together, with a hole at bay 7, and the strip from his own pocket fills it. Robot: "The result was obtained by a h-human." He asks for her number and saves it: "finds things". Don: "Customer success." The post gets "UPDATE: Pam found it."; Sofía: "Still one star." Don reads his phone and puffs up. The folder and file names keep the working title (`customer-success/`, `cs_*`).
+
+| File | Notes |
+|---|---|
+| `one_star_rough_v5_540.mp4` | **Rough cut v5 (21 Nov)**, 540: 61.9 s, 14 lines, −15.7 LUFS, −2.7 dBTP, Whisper 14 of 14. Two cold viewers answered all six direct questions (`cs_cold_test_film_v2.md`). The wall calendar is First Search's (THU 11 → FRI 12). The 1080 file is rebuilt, not committed |
+| `one_star_rough_v4_540.mp4` | Rough v4: before the shared calendar |
+| `customer-success-script-v18.md` | **Current script**, line by line with the shot list and the protect list; v14–v17 kept |
+| `one-star-layout-v1.md`, `-v2.md`, `cs_layout_v*_scene3..6.png` | The layout pass: every scene laid out before it was animated |
+| `cs_motion_test_v8.md`, `cs_cold_test_film_v1.md`, `-v2.md` | Motion tests v8–v10 and the two cold tests of the whole film |
+
+Built from `src/` (`cs_scene1.py` … `cs_scene6.py`, `cs_film.py`, `cs_frame.py` for scale and dead zones, `cs_sfx.py`, `cs_cal.py`, `sound_cs.py`): `python3 cs_film.py ../customer-success rough_v5`. **Still open:** Tomas's listen with sound, the final master and the cover.
+
 ### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
 
 Christmas Eve at the office. DON walks in mid-shave in an open bathrobe: "Sorry. Getting ready for the ball." SOFÍA (glamorous nurse) and PAM (a five-minute home-made superhero: bath-towel cape, cardboard mask, paper "P"): "Eww." Don's eyes drop to the two red ornaments in Sofía's hands: "Nice balls. I've got two for you." The office robot, now promoted to HR and in a Santa hat, rolls in: "Inappropriate balls detected." It points at Don, rolls straight past him, and censors every ornament on the tree, then the two in Sofía's hands. "Violation resolved." Don gives a relieved thumbs-up. Sofía hands Pam a censored ornament: "Get him." The mask goes on: "Human in the loop." Sofía, sweetly: "Merry Christmas, Don." THUD. "Happy compliance!" A bar falls off, the alarm starts again. The joke: AI governance protects the company from the tree, not from the boss.
