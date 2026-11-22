@@ -679,6 +679,26 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 84. **Cold viewers' shared misreads are cheap fixes.** Both read all five beats of rough 7, and both misread the same eight details: the dog's puff as blossom, the phone as "a blue rectangle", Eva's lean as a fall, the red X eyes as death, the card text as a blank at phone size. Each was a few lines of staging.
 85. **Check a review against the series' own canon.** A review asked for "ITS ART" to become "IT'S ART"; in this series ITS is the possessive pair of HIS (HIS DATE / ITS DATE). It also asked to bring back the plinth rule Tomas had just replaced. Refuse both and say why.
 
+## UptimeZ: Office Noir 3, walking seen from the side (21 Nov)
+
+**What happened.** The walkers of Office Noir 3 (the Client, Don, Sofía) walked facing the camera and read as schematic, so they were given a side walk:
+- v1 was drawn from nothing and put straight into the animatic. Tomas: "very bad profiles, the proportions are not kept, bad graphics, 1/10".
+- v2 to v5 were built from the front drawings (narrowed, then wrapped round a cylinder and turned 31°), with side legs, a walk cycle with weight, a sheet and a walk-on-the-spot test.
+- Four outside reviews and six cold-test rounds later: the Client "reads as a real walk"; Don "glides"; Sofía "paddles", her face "flat", her hair "a box". The film still walks them facing us (`PROFILE = False`); about 6 of its 89 seconds are side walks.
+
+**Lessons.**
+86. **A new view of a character goes on a sheet beside the old one before it goes into a film.** v1 went into five shots and an animatic first, and all of it was thrown away. Front drawing, the new view, same scale, one picture; then the film.
+87. **Build a new view from the old drawing's own parts and measures, never from nothing.** The from-nothing Client had a pale hood where his is dark and half his width. Reusing his own limb, glove, shoe and colour constants made him the same man at once (cold viewers: 4 of 4).
+88. **Turning a flat front drawing works where something frames the face, and nowhere else.** The Client's hood turned into a believable three-quarter head. Don's bare round head with a pointed collar came out "a tall square block with a jagged collar", and Sofía's two flat falls of hair "a box", "a backpack", her face "flat to the camera" with "both eyes full size". Those heads need a drawn three-quarter head (far eye smaller and nearer the middle, far hair hidden), checked on one pose first.
+89. **A walk is fixed from the knees down first.** What made the Client read: a leg exactly as long as the hip is high at UP (straight there, bent at DOWN), the heel landing toe up, the back heel peeling off before the toe, and each step taken from where he stands on the ground (a stance foot measured at 0.00 px of slide).
+90. **Side legs hang from one point.** Hips set apart "for the three-quarter view" made the legs cross in an X in every contact pose; both viewers saw crossed legs, not a stride.
+91. **A late hem or late hair of a few pixels is not seen.** Six rounds: "nothing visibly trails". Do not animate cloth, hair or props before the legs read, and then make it large or leave it out.
+92. **The sheet shows the figure as it is in the film.** Don upright without his glass and Sofía without her umbrella were poses the film never uses; a reviewer rightly called it a continuity fault. Eight poses (both legs), the props of the shot, the front drawing set apart as a reference.
+93. **Test a walk in three steps: black shapes, then without props, then with them, on the spot over floor marks, at 8 to 10 pictures a second.** Stills cannot show sliding or rhythm; a reviewer scoring stills gave the one walk viewers believed 6.5 of 10.
+94. **Outside reviews of stills contradict each other about motion; cold viewers on moving strips decide.** One review wanted Don slow with long steps, the next short and wary; one said the face was 80 % of Sofía's problem, the next that she would work without touching it.
+95. **Set the bound and the fallback before the first round.** Two review rounds were the rule and four were taken, for six seconds of film. Say at the start how many rounds a shot is worth and what it falls back to (here: the walk facing the camera).
+96. **Decide every character's size beside the others once, for the whole film.** Don is 15 % taller than the Client in one plane and 1.8 times in two neighbouring shots because the camera differs; Tomas also asks why Pam is bigger than the boxer and the Referee so large. Still to decide.
+
 ## UptimeZ: One Star, from motion tests to rough v5 (19–21 Nov)
 
 **What happened.** Episode 11 went from ten motion tests to a full rough cut (61.9 s, 14 lines, about 100 effects) in three days:
@@ -687,16 +707,16 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 - The mic gesture (5.4b) was cut after three rounds; the wall calendar was replaced by First Search's own.
 
 **Lessons.**
-86. **Lay the scene out before animating it.** A layout sheet per scene (who, where, what size, which prop, when) showed the wrong map in Don's hand and a robot under the button rail before a frame was animated. The board alone had not.
-87. **Scale is measured, not judged.** `src/cs_frame.py` checks every shot: the biggest face at r 78–80 (540 px space) near y 400, nothing story-critical below y 720 or under the right rail (x > 470, y 380–860), signs whole or out. Tomas had asked for big characters three times; only a script that fails kept it true.
-88. **Arms reach by IK from the shoulder.** Blending pose angles sent Don's arm through his body on the way to the robot's pad. Solve the elbow from the shoulder and the target (`cand_bc.ik`).
-89. **The change happens on screen.** The 7 written by the pen, the page torn off the calendar, "finds things" typed letter by letter. A cut from before to after read as two different props.
-90. **A glance is not a turn.** The Client's look up read as surprise, and Pam's look at Don read as nothing. Keep the eyes still and give the turn to a hand and a prop.
-91. **Cut the ambiguous face; don't tune it.** Don's smug face read as tense in two versions. Without it, the same shot read as careless, which was the point.
-92. **A line that won't work is a stance problem.** "Correct. We will recover." had three rewrites. What fixed it was the company picking a fight ("Shut off! Our AI does not lose files!"), read by the robot in a flat voice, and the Client reading his own post.
-93. **One prop, one drawing, across the series.** One Star had its own wall calendar until it was compared with First Search's on main. Now `cs_cal.wall` calls First Search's drawing, in the same place, and the date follows on (MON 8 → THU 11 → FRI 12).
-94. **Check room tone and reverb with the recognizer.** A soft office hum and a short echo took Whisper from 14 of 14 lines to 7. TONE 0.3, softer reflections and one lifted line brought them back. The ear had said it was fine.
-95. **Ask the cold viewers direct questions too.** After the open prompt, six facts the film depends on (the number, the day, who found it, what the post says). An open telling can pass with a fact nobody read.
-96. **Music is cut by the story's silences.** One sparse bed, cut dead on the buzz, on "Is this a joke?" and for "Still one star.", says more than a second cue would.
-97. **Check the script against the set before writing poses.** Planning episode 12, the concept had Don with his feet on a desk; the front desk set gives him no desk. Read `series/front-desk-set.md` with the script beside it.
+97. **Lay the scene out before animating it.** A layout sheet per scene (who, where, what size, which prop, when) showed the wrong map in Don's hand and a robot under the button rail before a frame was animated. The board alone had not.
+98. **Scale is measured, not judged.** `src/cs_frame.py` checks every shot: the biggest face at r 78–80 (540 px space) near y 400, nothing story-critical below y 720 or under the right rail (x > 470, y 380–860), signs whole or out. Tomas had asked for big characters three times; only a script that fails kept it true.
+99. **Arms reach by IK from the shoulder.** Blending pose angles sent Don's arm through his body on the way to the robot's pad. Solve the elbow from the shoulder and the target (`cand_bc.ik`).
+100. **The change happens on screen.** The 7 written by the pen, the page torn off the calendar, "finds things" typed letter by letter. A cut from before to after read as two different props.
+101. **A glance is not a turn.** The Client's look up read as surprise, and Pam's look at Don read as nothing. Keep the eyes still and give the turn to a hand and a prop.
+102. **Cut the ambiguous face; don't tune it.** Don's smug face read as tense in two versions. Without it, the same shot read as careless, which was the point.
+103. **A line that won't work is a stance problem.** "Correct. We will recover." had three rewrites. What fixed it was the company picking a fight ("Shut off! Our AI does not lose files!"), read by the robot in a flat voice, and the Client reading his own post.
+104. **One prop, one drawing, across the series.** One Star had its own wall calendar until it was compared with First Search's on main. Now `cs_cal.wall` calls First Search's drawing, in the same place, and the date follows on (MON 8 → THU 11 → FRI 12).
+105. **Check room tone and reverb with the recognizer.** A soft office hum and a short echo took Whisper from 14 of 14 lines to 7. TONE 0.3, softer reflections and one lifted line brought them back. The ear had said it was fine.
+106. **Ask the cold viewers direct questions too.** After the open prompt, six facts the film depends on (the number, the day, who found it, what the post says). An open telling can pass with a fact nobody read.
+107. **Music is cut by the story's silences.** One sparse bed, cut dead on the buzz, on "Is this a joke?" and for "Still one star.", says more than a second cue would.
+108. **Check the script against the set before writing poses.** Planning episode 12, the concept had Don with his feet on a desk; the front desk set gives him no desk. Read `series/front-desk-set.md` with the script beside it.
 

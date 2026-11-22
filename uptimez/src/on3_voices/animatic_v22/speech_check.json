@@ -1,0 +1,618 @@
+{
+ "n1": {
+  "who": "N",
+  "line": "Word is, I know how business works.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "word is i know how business works",
+    0
+   ]
+  ]
+ },
+ "n2": {
+  "who": "N",
+  "line": "One fight.",
+  "speed": 1.07,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "one fight one fight one fight one fight",
+    6
+   ],
+   [
+    0.94,
+    "one fight one fight one fight one fight",
+    6
+   ],
+   [
+    1.07,
+    "one fight",
+    0
+   ]
+  ]
+ },
+ "m1": {
+  "who": "MOM",
+  "line": "Where are you going, skunk?",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "where are you going skunk",
+    0
+   ]
+  ]
+ },
+ "n2b": {
+  "who": "N",
+  "line": "My manager. Also my mother.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "my manager also my mother",
+    0
+   ]
+  ]
+ },
+ "m2": {
+  "who": "MOM",
+  "line": "Everything you need is in there.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "everything you need is in there",
+    0
+   ]
+  ]
+ },
+ "n3": {
+  "who": "N",
+  "line": "One folder.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "one folder",
+    0
+   ]
+  ]
+ },
+ "n4": {
+  "who": "N",
+  "line": "One woman.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "one woman",
+    0
+   ]
+  ]
+ },
+ "n4b": {
+  "who": "N",
+  "line": "One number I never called.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "one number i never called",
+    0
+   ]
+  ]
+ },
+ "s1": {
+  "who": "SOFIA",
+  "line": "Call me.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "call me",
+    0
+   ]
+  ]
+ },
+ "n5": {
+  "who": "N",
+  "line": "Nothing scares me.",
+  "speed": 0.88,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "nothing nothing nothing nothing nothing nothing nothing nothing",
+    9
+   ],
+   [
+    0.94,
+    "nothing nothing nothing nothing nothing nothing",
+    7
+   ],
+   [
+    1.07,
+    "nothing nothing nothing nothing nothing nothing nothing nothing",
+    9
+   ],
+   [
+    0.88,
+    "nothing scares me",
+    0
+   ]
+  ]
+ },
+ "n6": {
+  "who": "N",
+  "line": "I make my own fire.",
+  "speed": 1.07,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i make i make i make i make i make i make",
+    13
+   ],
+   [
+    0.94,
+    "i make i make i make i make i make i make",
+    13
+   ],
+   [
+    1.07,
+    "i make my own fire",
+    0
+   ]
+  ]
+ },
+ "d1": {
+  "who": "DON",
+  "line": "Just looking.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "just looking",
+    0
+   ]
+  ]
+ },
+ "n6b": {
+  "who": "N",
+  "line": "If you want to survive, you need to bargain.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "if you want to survive you need to bargain",
+    0
+   ]
+  ]
+ },
+ "c1": {
+  "who": "CLIENT",
+  "line": "How much?",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "how much",
+    0
+   ]
+  ]
+ },
+ "m3": {
+  "who": "MOM",
+  "line": "One hundred bucks.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "one hundred bucks",
+    0
+   ]
+  ]
+ },
+ "n7": {
+  "who": "N",
+  "line": "I name my price.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i name my price",
+    0
+   ]
+  ]
+ },
+ "m4": {
+  "who": "MOM",
+  "line": "Your ticket. You're fighting.",
+  "speed": 0.94,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "your ticket your fighting",
+    2
+   ],
+   [
+    0.94,
+    "your ticket you're fighting",
+    0
+   ]
+  ]
+ },
+ "n7b": {
+  "who": "N",
+  "line": "I don't believe in signs.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i don't believe in signs",
+    0
+   ]
+  ]
+ },
+ "s2": {
+  "who": "SOFIA",
+  "line": "Round one.",
+  "speed": 1.0,
+  "heard_ok": false,
+  "tried": [
+   [
+    1.0,
+    "round",
+    1
+   ],
+   [
+    0.94,
+    "round",
+    1
+   ],
+   [
+    1.07,
+    "round",
+    1
+   ],
+   [
+    0.88,
+    "round",
+    1
+   ],
+   [
+    1.13,
+    "round",
+    1
+   ]
+  ]
+ },
+ "p1": {
+  "who": "PAM",
+  "line": "I'll help you undress.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i'll help you undress",
+    0
+   ]
+  ]
+ },
+ "p2": {
+  "who": "PAM",
+  "line": "Too late. The bell.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "too late the bell",
+    0
+   ]
+  ]
+ },
+ "n7c": {
+  "who": "N",
+  "line": "I always hit first.",
+  "speed": 1.07,
+  "heard_ok": false,
+  "tried": [
+   [
+    1.0,
+    "i always i always i always i always i always i",
+    11
+   ],
+   [
+    0.94,
+    "i always i always i always i always i always i",
+    11
+   ],
+   [
+    1.07,
+    "i always i always i always i always i always",
+    10
+   ],
+   [
+    0.88,
+    "i always i always i always i always i always i",
+    11
+   ],
+   [
+    1.13,
+    "i always i always i always i always i always",
+    10
+   ]
+  ]
+ },
+ "rb1": {
+  "who": "ROBOT",
+  "line": "Human approval required.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "human approval required",
+    0
+   ]
+  ]
+ },
+ "m5": {
+  "who": "MOM",
+  "line": "Approved.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "approved",
+    0
+   ]
+  ]
+ },
+ "n8": {
+  "who": "N",
+  "line": "I don't break. I break even.",
+  "speed": 0.94,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "don't break i break even",
+    1
+   ],
+   [
+    0.94,
+    "i don't break i break even",
+    0
+   ]
+  ]
+ },
+ "p3": {
+  "who": "PAM",
+  "line": "Some punch. Others patch.",
+  "speed": 1.07,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "some punch others patch you",
+    1
+   ],
+   [
+    0.94,
+    "some punch others patchy",
+    2
+   ],
+   [
+    1.07,
+    "some punch others patch",
+    0
+   ]
+  ]
+ },
+ "n9": {
+  "who": "N",
+  "line": "It was a fair fight.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "it was a fair fight",
+    0
+   ]
+  ]
+ },
+ "d2": {
+  "who": "DON",
+  "line": "The woman in the photo\u2026",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "the woman in the photo",
+    0
+   ]
+  ]
+ },
+ "d3": {
+  "who": "DON",
+  "line": "Recognize her?",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "recognize her",
+    0
+   ]
+  ]
+ },
+ "d4": {
+  "who": "DON",
+  "line": "Case closed.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "case closed",
+    0
+   ]
+  ]
+ },
+ "n11": {
+  "who": "N",
+  "line": "But I didn't quit.",
+  "speed": 1.13,
+  "heard_ok": false,
+  "tried": [
+   [
+    1.0,
+    "but but but but but but but but but",
+    11
+   ],
+   [
+    0.94,
+    "but but but but but but but but but",
+    11
+   ],
+   [
+    1.07,
+    "but but but but i but i but i",
+    9
+   ],
+   [
+    0.88,
+    "but but but but but but but but but",
+    11
+   ],
+   [
+    1.13,
+    "but i i i i i i i",
+    8
+   ]
+  ]
+ },
+ "n12": {
+  "who": "N",
+  "line": "Ten garages. That was the plan.",
+  "speed": 1.0,
+  "heard_ok": false,
+  "tried": [
+   [
+    1.0,
+    "garages that was the plan",
+    1
+   ],
+   [
+    0.94,
+    "garages that was the plan",
+    1
+   ],
+   [
+    1.07,
+    "garages that was the plan",
+    1
+   ],
+   [
+    0.88,
+    "garages that was the plan",
+    1
+   ],
+   [
+    1.13,
+    "garages that was the plan",
+    1
+   ]
+  ]
+ },
+ "r1": {
+  "who": "REFEREE",
+  "line": "Break!",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "break",
+    0
+   ]
+  ]
+ },
+ "rb2": {
+  "who": "ROBOT",
+  "line": "Human approval still pending.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "human approval still pending",
+    0
+   ]
+  ]
+ },
+ "m6": {
+  "who": "MOM",
+  "line": "Approved.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "approved",
+    0
+   ]
+  ]
+ },
+ "n13": {
+  "who": "N",
+  "line": "I'll call her back tomorrow.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "i'll call her back tomorrow",
+    0
+   ]
+  ]
+ },
+ "n14": {
+  "who": "N",
+  "line": "Tomorrow.",
+  "speed": 1.0,
+  "heard_ok": true,
+  "tried": [
+   [
+    1.0,
+    "tomorrow",
+    0
+   ]
+  ]
+ }
+}

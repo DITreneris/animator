@@ -187,7 +187,7 @@ def _lower_street(k, seed):
         c.move_to(s0, b.HIP + 30); c.line_to(s1 + dx, -34 - lift); c.stroke()
 
 
-def walk(fn, x, s, dir_=1, a=28.0, up=22.0, on=True):
+def walk(fn, x, s, dir_=1, a=34.0, up=26.0, on=True):
     """fn: a cast callable that draws the Client at x (scale s). Drawn walking when on."""
     if not on:
         return fn
@@ -216,7 +216,7 @@ TIGHTS, BOOT = (0.13, 0.13, 0.15), (0.05, 0.05, 0.06)
 HEM_HER = -96
 
 
-def her(fn, x, feet, s, dir_=-1, a=20.0, up=11.0, on=True):
+def her(fn, x, feet, s, dir_=-1, a=26.0, up=15.0, on=True):
     """fn draws her standing at (x, feet), scale s. Walking: her own legs and boots are drawn stepping, and she is drawn
     over them down to her hem only."""
     if not on:
@@ -251,6 +251,11 @@ def her(fn, x, feet, s, dir_=-1, a=20.0, up=11.0, on=True):
 # Without a clock (CLOCK["shot"] is None) a wrapped figure draws exactly as the figure it wraps.
 CLOCK = {"shot": None, "t": 0.0, "T": 0.0, "say": {}}
 _ST, _CNT = {}, {}
+_ROBE = {}
+ROBE_SHOTS = {"5.1c"}
+ROBE_FADE = [True]                                           # film v21 sets it off: 5.1c draws its own half-off robe
+MASKS = [False]                                              # v5, opt-in: keep each figure's outline for the light pass
+FACE_AT = {}                                                 # v5: who -> shot -> [(from t, face)], used where the shot asks for the plain "hard" face
 FROZEN = set()                                               # shots whose figures do not breathe or blink (the loop's two ends: frame 0 is the last frame)
 TWEEN = 4.0 / 30.0
 
@@ -260,6 +265,7 @@ def timed(name, fn, start):
         CLOCK["shot"], CLOCK["t"] = name, t
         CLOCK["T"] = CLOCK.pop("T_ext", start + t)
         CLOCK["heads"], CLOCK["zoom"] = {}, None             # v3: where each speaker's head is on the finished frame, for bubbles
+        CLOCK["figs"] = []                                   # v5: each tracked figure's own outline on the frame, for light that falls on it
         _CNT.clear()
         return fn(t)
     return f
@@ -332,8 +338,46 @@ def alive(orig, who, poses=None, skin=None, lip=None, breathe=0.007, blinks=True
                 import iwry_mouths as im
                 im.mouth(k_, fx, fy + 28, code, skin, lip_col=lip, erase=(18, 10), seed=seed + 67)
         kit.face_draw = face_draw
+        if FACE_AT.get(who, {}).get(CLOCK["shot"]) and a and a[0] == "hard":                  # v5: his face follows the moment (it was one scowl for the whole fight)
+            fa = [f_ for t0, f_ in FACE_AT[who][CLOCK["shot"]] if CLOCK["t"] >= t0]
+            if fa:
+                a = (fa[-1],) + tuple(a[1:])
+        robe = None
+        kw0 = kw
+        if "strip" not in kw and who == "CLIENT" and CLOCK["shot"] in ROBE_SHOTS and ROBE_FADE[0]:      # v6b: before she pulls it the call has no "strip" at all, so the first change was never seen
+            kw = dict(kw); kw["strip"] = False
+        if "strip" in kw and ROBE_FADE[0]:                                    # v6: his robe comes off, or goes back on, from the hips up, over six drawings (it changed between two)
+            rs = _ROBE.get(who)
+            if rs is None or rs["shot"] != CLOCK["shot"] or not (0 <= T - rs["T"] < 0.09):
+                rs = {"v": kw["strip"], "t0": -9.0}
+            elif rs["v"] != kw["strip"]:
+                rs["v"], rs["t0"] = kw["strip"], T
+            rs["shot"], rs["T"] = CLOCK["shot"], T
+            _ROBE[who] = rs
+            p_ = (T - rs["t0"]) / 0.4
+            if 0 <= p_ < 1:
+                robe = p_ if not kw["strip"] else 1 - p_      # how much of him the robe covers, hips to shoulders
         try:
-            o = orig(k, px, pf, s, ppose, *a, **kw)
+            if MASKS[0]:
+                c.push_group()
+            if robe is not None:
+                kw2 = dict(kw); kw2["strip"] = True
+                orig(k, px, pf, s, ppose, *a, **kw2)          # the bare man, whole
+                kw = dict(kw0) if "strip" not in kw0 else dict(kw, strip=False)
+                c.save(); yl = pf - s * (178 + 290 * robe)
+                c.rectangle(px - 400 * s, yl, 800 * s, pf - yl + 80 * s); c.clip()      # the robed one, as far up as the robe has come
+            o = orig(k, px, pf, s, ppose, *a, **(kw if robe is not None or "strip" in kw0 else kw0))
+            if robe is not None:
+                c.restore()
+            if MASKS[0]:
+                pat = c.pop_group(); c.set_source(pat); c.paint()
+                try:
+                    m_ = cairo.ImageSurface(cairo.FORMAT_A8, 540, 960); mc = cairo.Context(m_)
+                    mc.set_matrix(c.get_matrix()); mc.set_source(pat); mc.paint()
+                    hx_, hy_ = c.user_to_device(*o["head"])
+                    CLOCK.setdefault("figs", []).append((m_, hx_, hy_, abs(c.get_matrix().xx) * s, who))
+                except Exception:
+                    pass
             if kw.get("cig") and CLOCK["shot"] in SMOKING and CLOCK["t"] >= SMOKING[CLOCK["shot"]]:      # v4: his cigarette smokes, and its end glows
                 tx, ty = o["head"][0] + 48 * s, o["head"][1] + 45 * s
                 smoke(c, tx, ty - 2 * s, s * 0.95, seed=0.3, h=170)
@@ -377,3 +421,25 @@ def flame():
     """The lighter flame's height for this drawing, 0.8 to 1.2."""
     T = CLOCK["T"] if CLOCK["shot"] is not None else 0.0
     return 1.0 + 0.30 * math.sin(T * 27) + 0.12 * math.sin(T * 53 + 1)       # v4b: it read as still at 6 fps
+
+
+# ---- v6: a figure that is not one of the wrapped ones (a side drawing), tracked the same way ---------------------------
+def tracked(who, draw, s=1.0):
+    """draw(k) -> {"head": (x, y)}. Drawn; its head and its own outline are kept for bubbles and for the light."""
+    def dr(k):
+        c = k.c
+        if CLOCK["shot"] is None or not MASKS[0]:
+            return draw(k)
+        c.push_group()
+        o = draw(k)
+        pat = c.pop_group(); c.set_source(pat); c.paint()
+        try:
+            m_ = cairo.ImageSurface(cairo.FORMAT_A8, 540, 960); mc = cairo.Context(m_)
+            mc.set_matrix(c.get_matrix()); mc.set_source(pat); mc.paint()
+            hx_, hy_ = c.user_to_device(*o["head"]); sc = abs(c.get_matrix().xx) * s
+            CLOCK.setdefault("figs", []).append((m_, hx_, hy_, sc, who))
+            CLOCK.setdefault("heads", {}).setdefault(who, (hx_, hy_, sc))
+        except Exception:
+            pass
+        return o
+    return dr
