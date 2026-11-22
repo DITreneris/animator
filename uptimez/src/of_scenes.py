@@ -57,7 +57,8 @@ BLOCK = {
 }
 LAMP_HELD = (520, 648)
 FATHER_LAMP = (450, 640, 2.0)                              # Father's closes in scene 3: the plan whole above, the lamp man behind him
-FX_LAMP = 410                                    # 2.3 on: bodyguard 1 behind the car, the lamp over the engine
+FX_LAMP = 410
+LAMP_CAM = (530, 770, 1.30)                                # 2.3 (v7): both men whole, the plan whole above them
 
 
 # --- the shots -------------------------------------------------------------------------------------------------------
@@ -124,7 +125,7 @@ SCENES = [
           cast=("father", "client", "g2"), state=dict(bonnet=1.0, burn=1.0)),
         S("2.2", "CLOSE", ["client"], "CLOSE, the Client, back under the bonnet, not looking up.",
           line='CLIENT: "It found nothing."', cast=("client",), state=dict(bonnet=1.0, burn=1.0)),
-        S("2.3", "MEDIUM", (604, 680, 2.8), "MEDIUM on the handover (v2). Without looking he holds the lamp out behind him; bodyguard 1 "
+        S("2.3", "MEDIUM", LAMP_CAM, "MEDIUM on the handover (v2). Without looking he holds the lamp out behind him; bodyguard 1 "
           "takes it unasked and holds it over the engine. **He is a garage hand now.**", action="the lamp, handed back",
           reaction="bodyguard 1 takes it", cast=("father", "client", "g1", "g2"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.3b", "CLOSE", FATHER_LAMP, "CLOSE, Father, watching that. A long look; his eyes go from the lamp to the Client. "
@@ -298,7 +299,7 @@ def _cast_draw(k, n, scene, sh, heads):
             o["head"] = (o["head"][0], bf + (o["head"][1] - bf) * 0.86)
             if ps.get("hand_back") and ps.get("client_lamp", True):
                 hx_, hy_ = ps.get("hand_back_at", (bx + 70, 650))
-                gs.lamp(k, hx_ - 6, hy_ + 2, ang=-1.3)
+                gs.lamp(k, hx_ - 6, hy_ + 2, ang=-1.3, lit=ps.get("lamp_lit", True))
         elif kind == "watch":
             o = oc.client(k, x, f, CS, look=look, targets=oc.watch_pose(x, f, CS), face=ps.get("face", "bored"))
         elif kind == "pocket":
@@ -329,6 +330,8 @@ def garage_shot(k, sh, scene, heads, cam):
         legs_out = 0.0
     if st.get("sit") and "client" not in sh["cast"]:
         legs_out = gs.LEGS_OUT
+    if legs_out is not None and st.get("legs_jolt"):
+        legs_out += st["legs_jolt"]
     bon = st.get("bonnet", 0.0)
     if sh["id"] == "2.8d":
         bon = 0.35                                                            # the slam, on its way down

@@ -45,61 +45,68 @@ def lerp(a, b, u):
 
 
 # --- the four tests: [(shot id, seconds, function(t, len) -> (state overrides, pose overrides))] -----------------------
+def hold(u):
+    """v2: an action's key drawings: 0..1 over its time, then held at 1 (the result stays on screen)."""
+    return ease(u)
+
+
 def rock():
-    def s08(t, L):
-        k = t / L
-        tilt = -0.11 * math.sin(min(1.0, k * 1.6) * math.pi * 3.2) * (1 - 0.6 * k) if t > 0.15 else 0.0
-        return dict(tilt=tilt), {}
+    def s08(t, L):                                             # v2: two big pumps, then the car settles; the legs jolt
+        if t < 0.15:
+            return dict(tilt=0.0, legs_jolt=0.0), {}
+        ph = (t - 0.15) / 0.30
+        a = -0.17 * abs(math.sin(ph * math.pi)) if ph < 2 else -0.17 * abs(math.sin(ph * math.pi)) * math.exp(-(ph - 2) * 1.5)
+        return dict(tilt=a, legs_jolt=-60 * a), {}
     def s09(t, L):
-        return dict(sway_v=42 * math.sin(t * 9.0) * math.exp(-t * 1.2)), {}
+        return dict(sway_v=46 * math.sin(t * 8.0) * math.exp(-t * 1.0)), {}
     def s010(t, L):
-        u = ease(t / 0.20)                                     # the hand off at once (in 3 drawings)
+        u = hold(t / 0.20)                                     # the hand off at once: 3 drawings, then it stays off
         x, f = sc.BLOCK[1]["g1"]
         roof = sc._pt("roof", x, f)
-        off = [sc._pt("off_l", x - 26 * u, f), sc._pt("off_r", x - 26 * u, f)]
-        back = -26 * ease((t - 0.10) / 0.25)                  # away from Father
-        turn = -1.0 * ease((t - 0.45) / 0.25)                  # only then does he look at Father
-        tg = [lerp(roof, off[1], u)]                            # only the roof hand moves; the other rests
-        return {}, dict(g1=dict(targets_xy=tg, back=back, turn=turn), father=dict(look=(1, -0.1), face="hard"))
+        off = sc._pt("off_r", x, f)
+        back = -30 * hold((t - 0.15) / 0.20)                   # a step away from Father
+        turn = -1.0 * hold((t - 0.40) / 0.20)                  # only then does he look at Father; held
+        return {}, dict(g1=dict(targets_xy=[lerp(roof, off, u)], back=back, turn=turn),
+                        father=dict(look=(1, -0.1), face="brow" if t > 0.75 else "hard"))
     return [("0.8", s08), ("0.9", s09), ("0.10", s010)]
 
 
 def veto():
-    def s15(t, L):
-        return {}, dict(g2=dict(targets=["lighter"], lighter=1.0, turn=-1.0 * ease((t - 0.15) / 0.35)))
-    def s16(t, L):
-        face = "brow" if t > 0.18 else "hard"
-        shake = 0.0 if t < 0.45 else 0.5 * math.sin((t - 0.45) * 2 * math.pi * 2.2) * math.exp(-(t - 0.45) * 2.5)
-        return dict(fshake=shake * 14), dict(father=dict(face=face, look=(1 + shake, -0.2)))
-    def s17(t, L):
-        lid = 1.0 - ease((t - 0.10) / 0.12)                    # snap
-        return {}, dict(g2=dict(targets=["lighter"], lighter=1.0 if lid > 0.5 else 0.0, lid=lid, turn=-1.0))
+    def s15(t, L):                                             # the flame held; his head turns to Father, held 0.4 s
+        return {}, dict(g2=dict(targets=["lighter"], lighter=1.0, turn=-1.0 * hold((t - 0.10) / 0.25)))
+    def s16(t, L):                                             # the brow up at 0.15, then two clear shakes
+        face = "brow" if t > 0.15 else "hard"
+        shake = 0.0 if t < 0.35 else math.sin((t - 0.35) * 2 * math.pi * 2.0) * math.exp(-(t - 0.35) * 1.6)
+        return dict(fshake=shake * 30), dict(father=dict(face=face, look=(1 + 0.8 * shake, -0.2)))
+    def s17(t, L):                                             # still looking at Father: the lid shuts, held
+        lid = 1.0 - hold((t - 0.20) / 0.20)
+        return {}, dict(g2=dict(targets=["lighter"], lighter=1.0 if lid > 0.6 else 0.0, lid=lid, turn=-1.0))
     return [("1.5", s15), ("1.6", s16), ("1.7", s17)]
 
 
 def lamp():
+    """v2: wide enough for both men whole; the lamp travels low, beside him, unlit; he takes it with one hand."""
     bx, bf = sc.BENT_AT
-    start, out_ = (bx - 30, 700), (bx + 78, 646)
+    start, out_ = (bx - 30, 700), (bx + 52, 690)
     x, f = sc.BLOCK[3]["g1"]
+    rest = (x - 44, f - 120)
     def s23(t, L):
-        u1 = ease(t / 0.45)                                    # his hand comes back with it, not looking
-        hb = lerp(start, out_, u1)
-        u2 = ease((t - 0.45) / 0.30)                           # bodyguard 1's hand comes to it
-        g_from = (x + 30, f - 150)
-        gh = lerp(g_from, (out_[0] + 4, out_[1] - 4), u2)
-        u3 = ease((t - 0.80) / 0.45)                           # he takes it over the engine
+        u1 = hold(t / 0.40)                                    # his hand comes back with it, not looking
+        u2 = hold((t - 0.40) / 0.30)                           # the bodyguard's hand comes to it
+        u3 = hold((t - 0.80) / 0.40)                           # he lifts it over the engine, lit, and holds it
+        gh = lerp(rest, out_, u2)
         if u3 > 0:
-            gh = lerp((out_[0] + 4, out_[1] - 4), sc.LAMP_HELD, u3)
+            gh = lerp(out_, sc.LAMP_HELD, u3)
             return {}, dict(client=dict(kind="bent", hand_back=True, hand_back_at=lerp(out_, start, u3), client_lamp=False),
                             g1=dict(targets_xy=[gh], lamp=True, lamp_xy=gh), father=dict(look=(1, -0.2)))
-        return {}, dict(client=dict(kind="bent", hand_back=True, hand_back_at=hb), g1=dict(targets_xy=[gh]),
-                        father=dict(look=(1, -0.2)))
+        return {}, dict(client=dict(kind="bent", hand_back=True, hand_back_at=lerp(start, out_, u1), lamp_lit=False),
+                        g1=dict(targets_xy=[gh]), father=dict(look=(1, -0.2)))
     return [("2.3", s23)]
 
 
 def turn():
-    def s34(t, L):                                             # v2: Don's crown and shoulder at the right edge to turn to
-        return dict(turn=ease((t - 0.20) / 0.90), don_edge=True), {}
+    def s34(t, L):                                             # the turn over 0.6 s, then held; Don in the frame
+        return dict(turn=hold((t - 0.15) / 0.60), don_edge=True), {}
     return [("3.4", s34)]
 
 

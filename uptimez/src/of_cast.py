@@ -247,4 +247,25 @@ def robot(k, x, feet, s, turn=0.0):
     """turn 0..1: its head turning toward Don (episode 12's 10.5a at 1); the smile never changes."""
     if turn <= 0:
         return dq.robot_state(k, x, feet, s, "idle")
-    return dq.rm.robot(k, x, feet, s, (0.0, 0, 0, (-8, 0), (8, 0)), "eager", (turn, 0), 1, head_dx=TURN_DX * turn, head_rot=0.0)
+    o = dq.rm.robot(k, x, feet, s, (0.0, 0, 0, (-8, 0), (8, 0)), "eager", (turn, 0), 1, head_dx=TURN_DX * turn * 0.5, head_rot=0.0)
+    _visor_turn(k, o["screen"], 50 * s, turn)                  # v2: the face on the visor turns, not just slides
+    return o
+
+
+def _visor_turn(k, scr, r, u):
+    """its screen face turned toward screen right by u (0..1): the eyes and the smile slide to the visor's edge, the far
+    eye narrows, the smile turns into a side-on curve. The same eager smile throughout."""
+    c = k.c
+    sx, sy = scr
+    c.set_source_rgb(0.09, 0.12, 0.24); c.arc(sx, sy, 0.86 * r, 0, 2 * math.pi); c.fill()
+    cx = sx + 0.46 * r * u
+    cyan = (0.45, 0.92, 1.0)
+    for e, side in ((-1, "far"), (1, "near")):
+        ex = cx + e * 0.30 * r * (1 - 0.45 * u)
+        wx = 0.13 * r * ((1 - 0.65 * u) if side == "far" else 1.0)
+        c.save(); c.translate(ex, sy - 0.10 * r); c.scale(max(0.2, wx), 0.13 * r)
+        c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgba(*cyan, 0.35); c.fill_preserve() if False else None
+        c.set_source_rgb(*cyan); c.fill()
+    c.set_source_rgb(*cyan); c.set_line_width(0.07 * r); c.set_line_cap(1)
+    c.new_path(); c.arc(cx + 0.06 * r * u, sy + 0.12 * r, 0.24 * r, 0.25 + 0.35 * u, math.pi - 0.25 - 0.15 * u); c.stroke()
