@@ -1,15 +1,66 @@
-# Cold test, ring set v1: 5.1a, 5.1b, 5.2 (19 Nov)
+# Cold tests 54 and 55: the boxing scene, first half (film v21, animatic v16)
 
-Three consecutive camera frames, no captions, shown to two fresh viewers who had seen nothing else. Result: **FAIL, 2 of 5** for both (pass is 4 of 5).
+Test 54: two fresh viewers, mute, blocks A and B (5.1a to 5.6) at 4 pictures a second and four moments at 10. Test 55: two more, the robe shot alone at 10 a second, after the fixes that test 54 asked for.
 
-| # | Intended | Viewer A | Viewer B | Verdict |
-|---|---|---|---|---|
-| 1 | A ring: a boxer and his helper in a corner, a robot and a referee at centre, a ring girl walks ROUND 1 | Read | Read | Read; but the card covers the robot's head, so neither knew the opponent until 5.2 |
-| 2 | She looks at him; he looks up at the thing over the ring | "He glares across the ring"; nobody looks at the poster; "set dressing" | "Nobody looks at it in any frame" | Missed by both |
-| 3 | His robe is pulled off his shoulders and sticks at the gloves | "Lacing or checking his glove, or holding his arm back" | "I honestly can't tell" | Misread by both, the same way |
-| 4 | He swings; the glove stops short; the robot does not move | Read ("a miss or a punch that stops short") | Read ("falls short, or a frozen pose") | Read at full size; at phone size both thought it might land |
-| 5 | The Referee, neutral, gives the start; Pam times it | "Feels like he is on the robot's side"; arm not noticed | "Referee or the robot's handler?"; "hands on his hips" | Misread by both |
+| What was changed | Test 54 | Test 55 | Verdict |
+|---|---|---|---|
+| The approval chain (5.3 to 5.5) | "a clear cause-and-effect chain with a good snap at the end"; "clear and funny without sound"; strongest stretch for both | | read |
+| Button to punch | 4 pictures at 4 a second, "about 1 second"; "about 0.7 seconds from the checkmark"; "Fast and sudden" (both) | | read; no black frame was mentioned |
+| His first punch (5.2, the cut in) | "stops dead in the air well short of the robot and trembles"; "hangs in the air… wobble lines" | | read |
+| 5.6 from above | "flat on his back… stars orbiting his head"; "He is lying, never standing"; the count read by both; the drag: "as if dragged out… possibly hands" | | read; the drag partly |
+| The robot's size | "about his height but spindly… believable as a comic opponent"; "Believable. It is about his height in the wides" | | read |
+| The robe (5.1c) | FAIL: "a lighting or layer error rather than half undressed"; "a red carpet or a ribbon"; "I don't get it" | "The robe won't come off over the gloves, the bell goes, so the second just puts it back on and hides" (both, nearly the same words) | read after the fix |
+| Pam's side | "The crossing exists but is so brief it reads as a jump" | "She slips behind him… peeks out from behind his other side" | read |
 
-Shared misreads that are not beats: the Referee's bare forearms read as jointed, mechanical arms ("is he a robot too?"); bare-chested in 5.1b then robed in 5.2 read as a continuity error; nobody is seen arriving; Pam smiles at the camera, not at her work; Sofía's legs run into the audience band; the plan sits in a different place in each frame; the lit doorway is noticed and unused.
+Found by test 54 and fixed before test 55: he went dark while half undressed (he was lit twice: the measuring drawing and the half-robe drawing counted as figures); the stretched sleeve read as a carpet (now the cuff is held right at the glove); the Referee and the robot stood the other way round in the opening than in round one; Pam was missing from the wide picture of the fall.
 
-What the test cannot tell: whether it is funny, and anything that needs sound (the bell, the stopwatch's click).
+Found by test 55 and changed after it, **not re-tested**: the robe's return popped ("bare-chested in 26… a glitch or wipe") — it is now the pull run backwards; the boxer "does essentially nothing" at the end: the look at the sleeve and at us is only his eyes and is not seen.
+
+Still open: the card girl "is never seen again… no exit" (she now walks to the left third, but the cut comes before she leaves); "the cause of the snag is not visible" in the close picture (the glove is out of it); the bell's "white streaks cover the 10 on the poster"; the opening walk is "slow".
+
+The test cannot tell: whether it is funny, the voices, the mix.
+
+# Cold test 56: the whole boxing scene after blocks C and D (film v22, animatic v17)
+
+Two fresh viewers, mute, 152 frames at 4 a second and five moments at 10; the same nine questions as test 53 (before any fix).
+
+| | Test 53 (v15) | Test 56 (v17) |
+|---|---|---|
+| Length of the scene | 43.1 s | 39.6 s |
+| Punches counted | 6 (both) | 7 and 6 |
+| Is it a fight | "Barely. The only real exchange is… about a second" | "It only feels like a fight in 115–121"; "Only 115–121 plays as an exchange" |
+| The peak | the gloves on the prize, then the last hit | "Frame 120 is the peak of the scene: the only time he is ahead"; "Emotionally at 120–121, when the robot goes over" |
+| The approval chain | read | read ("he loses to her button"; "The fight is rigged from an office") |
+| After the knockdown | "a cursor"; "someone reaching down to help" | "flat on his back with stars, and a hand counts over him" (both); the count itself "unreadable" for one |
+| Black frame before the punch | both confused | gone, not mentioned |
+| Robot and Referee missing at 7.3 | both | the robot is there; "The robot's reset looks like a missing shot"; the Referee "vanishes" (he is out of that frame) |
+| The detective's folder | "blank folder" | "a small card or photo"; "a dark blob on it"; "looks like the dome button" |
+| Who is the woman in the photo | not known | still not known ("the ring girl in disguise, a missing person, or a relative of the old woman") |
+| The detective's exit | "fades off to the right, half-transparent" | still "washed-out pale… like a ghost"; "dissolves mid-ring" |
+| The robe (at 4 a second) | "suddenly robeless… a glitch" | not read at this rate: "laces or checks the glove" (both); at 10 a second, alone, test 55 read it |
+
+New in this test:
+- **A break of the film's own rule:** "the robot's counter at 118 comes with no approval step, though every other robot punch needs one" (one viewer; the other: "takes a glove in the face"). In 7.2 the robot jabs back without anybody's approval.
+- The wide picture after the three punches, with the Referee between them, is "eight almost identical frames straight after the best punch. This is the worst stall" (both).
+- The second approval is still "a repeat" (both): 2.5 s of screen, button and tick.
+- The card girl is "about twice the boxer's height" (both).
+
+Not re-tested after this test: nothing was changed after it.
+
+## Test 57 (21 Nov): block D after film v23 (7.1 to 7.5)
+
+Two fresh viewers, mute, 89 frames at 8 a second, seven questions. Changed since test 56: the robot's jab in 7.2 is out (it covers up), 7.2 is his punches only, 7.2b opens on the wide tail and the Referee comes in, the second approval is about 2.0 s.
+
+| Question | Viewer A | Viewer B | Verdict |
+|---|---|---|---|
+| Does the machine hit him during the round | "The machine never hits him during the fight itself; it only raises a guard (20-22)" | "During the actual round (frames 12-29) the machine lands nothing" | read; one of the two was unsure of the guard: "guarding, recoiling or about to hit back" |
+| The rule (it hits only after approval) | "the machine cannot strike or win until a human signs off, and a human does" | "a human sign-off decides it, not the punches" | read |
+| The Referee | "a referee or handler stopping the boxer" | "a referee or official stopping the man from hitting a downed opponent" | read; before he steps in he is "a second figure with glasses behind the robot" / "drawn differently (grey…)" |
+| The robot gets up | "It never visibly gets up; it is simply upright after a slight change of framing at 41" | "we never see it rise; it is simply back up after a reframe" | **failed (both)** |
+| The stall after his punches | "41-45 are five identical frames, and 36-40 are almost identical" | "Frames 41-45: three figures frozen" | **still there**, shorter (about 1.2 s, was eight frames at 4 a second = 2 s) |
+| The second approval | "62-69 is one static title card for about a second" | "the title card, a full second of still image" | still slow; nobody called it a repeat (they did not see the first one) |
+| The last image | "he is sucker-punched just as he thinks he has won" | "the man who thought he had won is flattened" | read |
+
+Shared misreads that are not beats: the pressing hand "has a black sleeve, but the waistcoat man has white sleeves" (both wondered whose it is; her office was not in this set); the gloves on the banner: "reaches for the prize and it is lifted out of his grasp" against "celebrating under the prize".
+
+Not tested here: Don's back in 6.4 (it is in block C), the sound, the lines. Nothing was changed after this test.

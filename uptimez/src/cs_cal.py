@@ -48,3 +48,19 @@ def calendar2(k, x=296, y=470, s=0.20, day="20", tear=0.0):
         c.set_source_rgb(*EDGE)
         c.move_to(420, 570); c.line_to(420 - 90 * tear, 570); c.line_to(420, 570 - 90 * tear); c.close_path(); c.fill()
     c.restore()
+
+
+# ---- v2 (Tomas, 21 Nov, /grill-me): the series has ONE wall calendar: First Search's, as it is --------------------------
+# First Search (film v30, on main) hangs a tear-off calendar right of the portrait and ends on MON 8. One Star follows
+# it: the same drawing (fs_film30.calendar, called, not copied), the same place, THU 11 for the post and the call, and
+# the page torn off to FRI 12 before he walks in at 9:00. calendar2 above (my redraw, by the door) is no longer used.
+FS_AT = (564, 468)                                          # = fs_film30.CALPOS
+THU, FRI = ("THURSDAY", 11), ("FRIDAY", 12)
+
+
+def wall(k, day=THU, fall=None, t=0.0, x=None, y=None, s=1.0):
+    """First Search's calendar on the wall. day: (name, date); fall: (name, date, u) the page before, falling (u 0-1);
+    t: seconds into the shot (its page corner lifts)."""
+    import fs_film30 as f30
+    f30.SHOT_T[0] = t
+    f30.calendar(k, FS_AT[0] if x is None else x, FS_AT[1] if y is None else y, s, day[0], day[1], fall)

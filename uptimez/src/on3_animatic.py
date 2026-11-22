@@ -27,16 +27,16 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v13"
+V = "v30"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
-GAP = 0.30                                                  # v5: air between lines, as in Office Noir 2
-LEAD = 0.25                                                 # a narration line never starts on the cut
+GAP = 0.20                                                  # v5: air between lines, as in Office Noir 2
+LEAD = 0.15                                                 # a narration line never starts on the cut
 
 # shot -> [(who, line, take key, offset into the shot)]
 LINES = {                                                    # v6: the lines, proposal v2 (on3_lines_proposal_v2.md)
-    "2.0": [("N", "Word is, I know how business works.", "n1", 0.0)],
+    "1.1": [("N", "Word is, I know how business works.", "n1", 0.15)],      # v14: it starts on the punch (it began on the poster and pushed everything after it)
     "2.1": [("N", "One fight.", "n2", 0.15)],
     "2.2": [("MOM", "Where are you going, skunk?", "m1", 0.3), ("N", "My manager. Also my mother.", "n2b", 0.3)],
     "2.4": [("MOM", "Everything you need is in there.", "m2", 0.5)],
@@ -46,31 +46,32 @@ LINES = {                                                    # v6: the lines, pr
     "2.6": [("SOFIA", "Call me.", "s1", 1.05)],
     "3.1": [("N", "Nothing scares me.", "n5", 0.2)],
     "3.2": [("N", "I make my own fire.", "n6", 0.1)],
-    "3.4": [("N", "If you want to survive, you need to bargain.", "n6b", 0.1)],      # v7 (Tomas, at 0:25): he is on his way to the meeting about the fight
     "3.4d": [("DON", "Just looking.", "d1", 0.15)],
-    "4.3": [("CLIENT", "How much?", "c1", 0.3), ("MOM", "One hundred bucks.", "m3", 0.3)],
+    "4.1": [("N", "If you want to survive, you need to bargain.", "n6b", 0.15)],     # v21 (Tomas: "is it in its place? maybe after Just looking."): on his way in to her desk, as the set-up of "How much?" / "I name my price."; the alley's reveal of Don plays without a voice over it
+    "4.3": [("CLIENT", "How much?", "c1", 0.3)],
+    "4.3b": [("MOM", "One hundred bucks.", "m3", 0.3)],                 # v30: her own close picture
     "4.4": [("N", "I name my price.", "n7", 0.6)],
     "4.4a": [("MOM", "Your ticket. You're fighting.", "m4", 0.1)],
-    "4.4t": [("N", "I don't believe in signs.", "n7b", 0.3)],
+    "4.4t": [("N", "I don't believe in signs.", "n7b", 0.15)],
     "5.1a": [("SOFIA", "Round one.", "s2", 0.8)],
-    "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 2.3)],
+    "5.1c": [("PAM", "I'll help you undress.", "p1", 0.1), ("PAM", "Too late. The bell.", "p2", 1.95)],
     "5.2": [("N", "I always hit first.", "n7c", 0.2)],                # v7 (Tomas, at 0:50): the narrator, briefly, on the fight
     "5.3": [("ROBOT", "Human approval required.", "rb1", 0.2)],
-    "5.4": [("MOM", "Approved.", "m5", 0.9)],
-    "5.6": [("N", "I don't break. I break even.", "n8", 0.2)],
-    "6.1": [("PAM", "Some punch. Others patch.", "p3", 0.8)],
+    "5.5": [("MOM", "Approved.", "m5", 0.0), ("N", "I don't break. I break even.", "n8", 1.15)],   # v17: the narrator starts on the fall (on the count it held the corner for 1.3 s)                       # v16: she presses first; the word comes off the button (it came half a second before it)
+    "6.1": [("PAM", "Some punch. Others patch.", "p3", 0.5)],
     "6.2": [("N", "It was a fair fight.", "n9", 0.0)],
     "6.3": [("DON", "The woman in the photo…", "d2", 0.3), ("DON", "Recognize her?", "d3", 2.0)],
     "6.4": [("DON", "Case closed.", "d4", 0.45)],
     "7.1": [("N", "But I didn't quit.", "n11", 0.1)],
-    "7.2b": [("REFEREE", "Break!", "r1", 0.2)],
-    "7.3": [("N", "Ten garages. That was the plan.", "n12", 0.6)],
-    "7.4": [("ROBOT", "Human approval still pending.", "rb2", 0.0), ("MOM", "Approved.", "m6", 1.75)],
+    "7.2": [("N", "Ten garages. That was the plan.", "n12", 0.05)],   # v17 (Tomas: "start it earlier"): over his punches; 7.3 is no longer held for it
+    "7.2b": [("REFEREE", "Break!", "r1", 0.75)],
+    "7.3": [("ROBOT", "Human approval still pending.", "rb2", 1.45)],        # v18: pre-laps the cut to it
+    "7.4c": [("MOM", "Approved.", "m6", 0.0)],                       # v17: her office is not shown a second time: the button, the tick, her word
     "8.3": [("N", "I'll call her back tomorrow.", "n13", 0.5)],
     "8.4": [("N", "Tomorrow.", "n14", 0.5)],
 }
-FX = [("punch", "1.1", 0.30), ("snap", "3.2c", 0.42), ("bell", "5.1c", 1.55), ("bell", "5.2a", 0.0), ("click", "5.4b", 0.15),
-      ("punch", "5.5", 0.97), ("pop", "6.2a", 0.2), ("pop", "6.2a", 0.5), ("pop", "6.2b", 0.3), ("pop", "6.2b", 0.9), ("stamp", "6.4", 0.34),
+FX = [("punch", "1.1", 1.13), ("punch", "7.2", 0.58), ("punch", "7.2", 1.76), ("snap", "3.2c", 0.42), ("bell", "5.1c", 1.55), ("bell", "5.2a", 0.0), ("click", "5.4b", 0.15), ("stamp", "5.4b", 0.17),
+      ("punch", "5.5", 0.67), ("pop", "6.2a", 0.2), ("pop", "6.2a", 0.5), ("pop", "6.2b", 0.3), ("pop", "6.2b", 0.9), ("stamp", "6.4", 0.34),
       ("click", "7.4b", 0.15), ("punch", "7.5", 0.75), ("chime", "8.1", 0.05), ("buzz", "8.2", 0.2), ("buzz", "8.3", 0.1), ("buzz", "8.3", 0.8),
       ("buzz", "8.3b", 0.05), ("bell", "8.5", 0.75)]
 
@@ -150,18 +151,49 @@ def takes():
 
 
 SEEN = ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")
-HOLD_N = ("7.3",)                                            # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
+NO_BUBBLE = ("Human approval required.",)                    # v16: the robot's own screen says it, in its view of him (the same words twice)
+HOLD_N = ("4.3", "4.3b", "4.4a")  # v23 (Tomas, option 1): 4.3 waits until she has named the price: over 4.4 her line read as his;                                          # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
 _ENV = {}
 
 
-def _mouth(key, tl):
-    """The mouth shape for a drawing of this take, on twos: by how loud the take is there."""
+_VIS = {}
+
+
+def _visemes(text):
+    """The line's letters as mouth shapes, in order: a wide A, E with teeth, a round O, a small U, lips shut (M),
+    the lip under the teeth (F), a part-open rest (C). A space is a short shut."""
+    out = []
+    for wd in text.lower().split():
+        i = 0
+        while i < len(wd):
+            ch, two = wd[i], wd[i:i + 2]
+            if two in ("th", "sh", "ch", "ng"):
+                out.append("C"); i += 2; continue
+            if two in ("oo", "ou", "ow"):
+                out.append("O"); i += 2; continue
+            if two in ("ee", "ea", "ai", "ay", "ie"):
+                out.append("E"); i += 2; continue
+            v = "A" if ch == "a" else "E" if ch in "ei" else "O" if ch == "o" else "U" if ch in "uw" else "M" if ch in "mbp" else "F" if ch in "fv" else "C" if ch.isalpha() else None
+            if v and not (out and out[-1] == v and v in "CM"):
+                out.append(v)
+            i += 1
+        out.append("M")
+    return out[:-1] or ["M"]
+
+
+def _mouth(key, tl, text=""):
+    """v14: the mouth for a drawing of this take, on twos: the line's own shapes spread over its length, and shut where
+    the take is silent (it was open by loudness alone: three shapes, whatever was said)."""
     if key not in _ENV:
         a, _ = sf.read("%s/%s.wav" % (VOICES, key)); n = SR // 12
-        e = np.array([np.sqrt(np.mean(a[i:i + n] ** 2)) for i in range(0, len(a), n)]); _ENV[key] = e / (e.max() + 1e-9)
-    i = int(tl * 12); e = _ENV[key]
-    v = e[i] if 0 <= i < len(e) else 0.0
-    return "A" if v > 0.55 else "E" if v > 0.28 else "U" if v > 0.10 else None
+        e = np.array([np.sqrt(np.mean(a[i:i + n] ** 2)) for i in range(0, len(a), n)]); _ENV[key] = (e / (e.max() + 1e-9), len(a) / SR)
+        _VIS[key] = _visemes(text)
+    e, ln = _ENV[key]
+    i = int(tl * 12)
+    if not (0 <= i < len(e)) or e[i] < 0.08:
+        return None
+    seq = _VIS[key]
+    return seq[min(len(seq) - 1, int((int(tl * 12) / 12.0) / ln * len(seq)))]
 
 
 def schedule(meta):
@@ -175,7 +207,7 @@ def schedule(meta):
             en = st + meta[key]
             lines.append((round(st, 3), round(en, 3), who, text, key))
             prev_end = en
-            need = max(need, (en + 0.2 - T) if (who in SEEN or name in HOLD_N) else (st + min(meta[key], 0.8) - T))      # v3: a line whose speaker is not seen talking runs on over the next shot
+            need = max(need, (en + 0.2 - T) if (who in SEEN or name in HOLD_N) else (st + min(meta[key], 0.5) - T))      # v3: a line whose speaker is not seen talking runs on over the next shot
         need = math.ceil(need * FPS - 1e-6) / FPS
         if need > dur + 1e-6:
             held.append((name, round(need - dur, 2)))
@@ -258,10 +290,15 @@ def mix(shots, lines, total):
     return np.tanh(out * 1.6) / 1.6, fx
 
 
-MOM_AT = {"4.3": (322, 338), "5.4": (268, 562), "7.4": (268, 562),       # her cheek, level with her mouth, where she is on the screen
-          "2.2": (330, 600), "2.4": (536, 420), "4.4a": (536, 330)}       # out of sight: the tail goes to the car, or off the edge she is at
+MOM_AT = {"4.3": (322, 338), "4.3b": (268, 562), "5.4": (268, 562), "7.4": (268, 562),       # her cheek, level with her mouth, where she is on the screen
+          "2.2": (330, 600), "2.4": (536, 420), "4.4a": (318, 880, -1)}   # v25: her sleeve, under the ticket she pushes       # out of sight: the tail goes to the car, or off the edge she is at
 CLIENT_AT = {"4.3": (96, 302)}
 SOFIA_AT = {"2.6": (412, 462, 1), "5.1a": (440, 630)}        # (x, y) or (x, y, side): which side of the tip the bubble sits                              # he speaks with his back to us: the tail goes to his hood
+
+
+# v26 (Tomas: "small meaningful pauses, e.g. after Word is"): the voice already pauses there; the card now pauses with it:
+# the first phrase alone until the voice goes on (seconds into the take).
+SPLIT = {"n1": ("Word is,", 1.20), "n2b": ("My manager.", 1.66), "n8": ("I don't break.", 1.52), "n12": ("Ten garages.", 1.73)}
 
 
 def _card(c, text, y0=100):
@@ -286,26 +323,41 @@ def _card(c, text, y0=100):
     return y
 
 
-def _bubble(c, text, tip, top=100, avoid=()):
+_BOX = {}                                                    # v22: (line, shot) -> where its bubble was put on its first drawing
+
+
+def _bubble(c, text, tip, top=100, avoid=(), key=None):
     """A spoken line: a white bubble, black edge; its tail to the speaker's cheek, level with the mouth. tip None: the
     speaker is out of the frame: no tail, at the top right. v7: avoid: boxes (x0, y0, x1, y1) of every head on the
     screen; the bubble takes the first place, nearest the speaker, that covers none of them and stays in the safe area."""
     c.select_font_face("Inter", 0, 1); c.set_font_size(24)
-    rows, line = [], ""
-    for wd in text.split():
-        trial = (line + " " + wd).strip()
-        if c.text_extents(trial).x_advance > 270 and line:
-            rows.append(line); line = wd
+
+    def wrap(width):
+        rows, line = [], ""
+        for wd in text.split():
+            trial = (line + " " + wd).strip()
+            if c.text_extents(trial).x_advance > width and line:
+                rows.append(line); line = wd
+            else:
+                line = trial
+        rows.append(line)
+        return rows, max(c.text_extents(r_).x_advance for r_ in rows) + 36, 30 * len(rows) + 26
+    rows, w, h = wrap(270)
+    if tip is None and avoid:                                # v19: a bigger head on the screen: a narrower bubble beside it before one across it
+        for width in (270, 180, 140):
+            rows, w, h = wrap(width)
+            if any(all(bx + w < x0 or bx > x1 or by + h < y0 or by > y1 for x0, y0, x1, y1 in avoid) for bx, by in ((522 - w - 6, top + 10), (24, top + 10), (522 - w - 6, top + 90), (24, top + 90))):
+                break
         else:
-            line = trial
-    rows.append(line)
-    w = max(c.text_extents(r_).x_advance for r_ in rows) + 36; h = 30 * len(rows) + 26
+            rows, w, h = wrap(270)
 
     def clear(bx, by):
         return all(bx + w < x0 or bx > x1 or by + h < y0 or by > y1 for x0, y0, x1, y1 in avoid)
-    if tip is None:
+    if key in _BOX:                                          # v22 (Tomas: "the bubbles jump when they move; it is hard to read"): the bubble stays where it
+        rows, w, h, bx, by, side = _BOX[key]                 # was first put for this line in this shot; only its tail follows the mouth
+    elif tip is None:
         cands = [(522 - w - 6, top + 10), (24, top + 10), (522 - w - 6, top + 90), (24, top + 90)]
-        bx, by = next((p for p in cands if clear(*p)), cands[0])
+        bx, by = next((p for p in cands if clear(*p)), cands[0]); side = 1
     else:
         side0 = tip[2] if len(tip) > 2 else (1 if tip[0] < 270 else -1)
         cands = []
@@ -315,6 +367,9 @@ def _bubble(c, text, tip, top=100, avoid=()):
                     bx = min(522 - w, max(18, tip[0] + side * off - (0 if side > 0 else w)))
                     cands.append((bx, max(top, tip[1] - up - h), side))
         bx, by, side = next((p for p in cands if clear(p[0], p[1]) and p[1] + h < tip[1] - 30), cands[0])
+    if key is not None:
+        _BOX.setdefault(key, (rows, w, h, bx, by, side))
+    if tip is not None:
         tx = min(bx + w - 26, max(bx + 26, tip[0] + side * 30))
         c.new_path(); c.move_to(tx - 13, by + h - 4); c.line_to(tip[0], tip[1]); c.line_to(tx + 13, by + h - 4); c.close_path()
         c.set_source_rgb(1, 1, 1); c.fill_preserve(); c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(3); c.set_line_join(1); c.stroke()
@@ -375,8 +430,8 @@ def _text(surf, shot, now):
         if who == "N":
             top = _card(c, text) + 6
     for who, text in now:
-        if who != "N":
-            _bubble(c, text, _tip(who, shot), top, _heads(shot))
+        if who != "N" and text not in NO_BUBBLE:
+            _bubble(c, text, _tip(who, shot), top, _heads(shot), key=(text, shot))
     return s
 
 
@@ -390,9 +445,9 @@ def build(out):
         def f(t, fn=fn, base=base, st=st, name=name):
             T = st + t
             fm.mo.CLOCK["T_ext"] = T                                    # the clock runs on through a held drawing: they breathe
-            fm.mo.CLOCK["say"] = {who: _mouth(key_, T - a) for a, b_, who, text, key_ in lines if a <= T < b_ and who in SEEN}
+            fm.mo.CLOCK["say"] = {who: _mouth(key_, T - a, text) for a, b_, who, text, key_ in lines if a <= T < b_ and who in SEEN}
             s = fn(min(t, base - 1.0 / FPS))
-            return _text(s, name, [(who, text) for a, b_, who, text, _ in lines if a - 0.05 <= T < b_ + 0.15])
+            return _text(s, name, [(who, SPLIT[k_][0] if k_ in SPLIT and T - a < SPLIT[k_][1] else text) for a, b_, who, text, k_ in lines if a - 0.05 <= T < b_ + 0.15])
         FN[key] = f; SH.append((key, dur))
     audio, fx = mix(shots, lines, total)
     d = os.path.dirname(os.path.abspath(out))
@@ -400,7 +455,7 @@ def build(out):
     sf.write(wav, audio.astype(np.float32), SR)
     rr.SHOTS, rr.FN = tuple(SH), FN
     rr.render(silent)
-    ln = "loudnorm=I=-15:TP=-1.5:LRA=11"                         # v5: two passes: measure, then set, so the level lands on -15
+    ln = "loudnorm=I=-15:TP=%s:LRA=11" % os.environ.get("ON3_TP", "-1.5")                         # v5: two passes: measure, then set, so the level lands on -15
     r = subprocess.run(["ffmpeg", "-hide_banner", "-i", wav, "-af", ln + ":print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
     j = json.loads(r[r.rindex("{"):r.rindex("}") + 1])
     ln2 = ln + ":measured_I=%s:measured_TP=%s:measured_LRA=%s:measured_thresh=%s:offset=%s:linear=true" % (

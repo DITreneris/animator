@@ -168,6 +168,7 @@ def front(note=True, down=0.0, press=0.0, look=(-0.9, -0.1), mouth=None, cards=F
     return s
 
 
+BLINDS2 = [False]
 BACK2 = [False]                                              # v10, opt-in: his back redrawn (Tomas: "it looks strange there")
 
 
@@ -182,7 +183,15 @@ def _back2(k, c, glove_up):
     c.curve_to(204, 504, 286, 528, 312, 640); c.line_to(322, 980); c.close_path()
     g = cairo.LinearGradient(-60, 0, 320, 0)
     g.add_color_stop_rgb(0, TRACK[0] * 0.95, TRACK[1] * 0.95, TRACK[2] * 0.95); g.add_color_stop_rgb(1, TRACK[0] * 1.55, TRACK[1] * 1.55, TRACK[2] * 1.55)
-    c.set_source(g); c.fill_preserve(); c.set_source_rgb(0.05, 0.05, 0.06); c.set_line_width(4); c.stroke()
+    c.set_source(g); c.fill_preserve()
+    if BLINDS2[0]:                                           # v11, opt-in: the blinds' bars fall across his back, as they do on her wall
+        path = c.copy_path()
+        c.save(); c.clip(); c.translate(120, 600); c.rotate(-0.2); c.set_source_rgba(0, 0, 0, 0.34)
+        y = -500
+        while y < 600:
+            c.rectangle(-500, y, 1000, 18); y += 44
+        c.fill(); c.restore(); c.new_path(); c.append_path(path)
+    c.set_source_rgb(0.05, 0.05, 0.06); c.set_line_width(4); c.stroke()
     c.set_source_rgb(0.12, 0.12, 0.14); c.set_line_width(3.4); c.set_line_cap(1)
     c.move_to(100, 290); c.curve_to(96, 360, 96, 420, 100, 500); c.stroke()                 # the hood's seam, crown to neck
     c.move_to(32, 484); c.curve_to(70, 520, 130, 520, 168, 484); c.stroke()                 # the hood, folded at the neck

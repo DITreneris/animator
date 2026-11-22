@@ -56,13 +56,12 @@ The Client needs his blueprint by Friday. Don sells him a guarantee, takes his $
 
 ## Hand-off to episode 11 (One Star, `customer-success/`)
 
-Decided 21 Nov; not yet made in episode 11's files:
+Done in One Star rough v5 (on main, 21 Nov):
 
-1. **The calendar** hangs right of the portrait, between it and the desk (`cs_board.calendar_on()` puts it left, by the door).
-2. **The same drawing** as episode 10's (`calendar()` in `src/fs_film35.py`); best moved into a shared module, so both episodes draw from one source.
-3. **The date** on the calendar is whatever day episode 11 opens on, shown big (the day and the number), and the phone's calendar (2.2) agrees with it.
-4. `cs_props.py`: "new to the set in ep 11" becomes "from ep 10". Script v12's calendar line: "right of the portrait, by the desk", with the date.
-5. **Episode 11 picks up after the court threat** (decided 21 Nov). Episode 10 already shows the Client Pam's taped plan and ends on "See you in court."; episode 11 starts after it, whenever its story needs, and its handing-over of the plan is the plan he has already seen. Episode 10 stays as it is.
+1. **The calendar** hangs right of the portrait, between it and the desk, as in episode 10.
+2. **The same drawing:** `cs_cal.wall` calls episode 10's `calendar()` (`fs_film30.calendar`; unchanged through v35). The old by-the-door redraw is kept as `cs_cal_v1.py`.
+3. **The dates follow on:** episode 10 ends on MON 8; One Star's post and call are on THU 11, the page tears off to FRI 12 before the Client walks in.
+4. **Episode 11 picks up after the court threat** (decided 21 Nov). Episode 10 already shows the Client Pam's taped plan and ends on "See you in court."; episode 11 starts after it, and its handing-over of the plan is the plan he has already seen. Episode 10 stays as it is.
 
 ## How it got here (film versions)
 

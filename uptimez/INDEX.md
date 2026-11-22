@@ -43,6 +43,7 @@ Episodes in **story order** (STORYLINE.md, Season 1). Each folder holds its rend
 | 8 | *The Best Candidate* | [`the-best-candidate/`](the-best-candidate/) | `the-best-candidate-interview-script-v1.md` … `v6.md` (v6 is current) |
 | 9 | *The Onboarding* | [`the-onboarding/`](the-onboarding/) | `the-onboarding-script-v11.md` (current, line by line with the shot list; animation v19 changes are in `src/ob_anim.py`); concepts v1–v9; `storyline-proposal-act-b.md` (a proposal; STORYLINE v3.2 decides). Release: `uptimez_ob_anim_v10.mp4` |
 | 10 | *First Search* | [`first-search/`](first-search/) | `first-search-film-v35.md` (current: the film as built, shot by shot); film `fs_film35_540.mp4` (62.9 s); script v10 is the plan it started from; scripts v1–v9, concepts v1–v6 and premises v1–v3 kept |
+| 11 | *One Star* (working title: Customer Success) | [`customer-success/`](customer-success/) | `customer-success-script-v18.md` (current, line by line with the shot list); `one-star-layout-v2.md`; test notes `cs_motion_test_v8.md`, `cs_cold_test_film_v1.md`, `cs_cold_test_film_v2.md`. Rough cut: `one_star_rough_v5_540.mp4` |
 | — | *Saved Locally* (retired) | [`history/saved-locally/`](history/saved-locally/) | its own README |
 
 ## Characters and brand

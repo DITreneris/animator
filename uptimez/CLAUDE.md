@@ -39,7 +39,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 - Pin the previous file as `_vN` before changing it. A pinned file imports the pinned modules it was built with.
 - After any change, rebuild the approved sheets, covers and renders and **compare md5**. They must be byte-identical.
 - New renders get new names; the release a README calls current is replaced only when it's approved.
-- **A drawing map's later entry wins.** After replacing a shot's drawing, check that the map points at the new function (print it, or assert it) and look at that shot in the render: two fixes in First Search were overwritten for ten versions (lesson 86).
+- **A drawing map's later entry wins.** After replacing a shot's drawing, check that the map points at the new function (print it, or assert it) and look at that shot in the render: two fixes in First Search were overwritten for ten versions (lesson 109).
 
 ## Render and QA standard (G5)
 
