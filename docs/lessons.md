@@ -699,3 +699,24 @@ Each gate has a pass mark and runs before the next stage. A failed gate goes bac
 95. **Set the bound and the fallback before the first round.** Two review rounds were the rule and four were taken, for six seconds of film. Say at the start how many rounds a shot is worth and what it falls back to (here: the walk facing the camera).
 96. **Decide every character's size beside the others once, for the whole film.** Don is 15 % taller than the Client in one plane and 1.8 times in two neighbouring shots because the camera differs; Tomas also asks why Pam is bigger than the boxer and the Referee so large. Still to decide.
 
+
+## UptimeZ: Office Noir 3, from the ring to release_v6 (22 Nov)
+
+**What happened.** The film went from animatic v18 to release_v6 in one day: sizes set to the series', the bargain joke moved, the office cut in two pictures, the end faded to black, the fight bill made a prop, tails aimed at the drawn mouth, the film drawn natively at 1080. Whole-film cold test 68: 5 of 5 beats, both viewers. Then Tomas at 1:20: "what is that junk left in his circle", "what is wrong with the lying man".
+
+**Lessons.**
+97. **A part is cut out by its own outline, never by a circle round the whole figure.** The lying man's head was the entire standing boxer, turned and clipped to a circle; the boxer's robe and shoulders sat inside the circle beside his face. Clip to the head's own points, and paint whatever body is left at the clip's edge in the outline colour.
+98. **Before removing a patch, look at what it covers.** The gown's collar lay on his mouth ("a red square on his face"); taking it off uncovered the junk it had been hiding. After any removal, open the same spot at 2× in every shot that uses the drawing.
+99. **A badly drawn figure is redrawn as a standalone picture first, then put in.** "Do not mount anything, make me a proper .png": one picture, one review, three small fixes, and only then `install()` from the film. The old module stayed untouched and the first picture rebuilt byte for byte.
+100. **A lying figure is one body, not a standing one laid down.** Shoulder up, waist in, hip up, limbs as curved tubes with round ends; the head turned to match the body (58°, not 30°), on something. Straight quads read as "a pile".
+101. **Eyes are aimed in the head's own frame.** Turning the head 58° turned his look with it, away from the phone. Work out where the thing is on screen, turn that direction back by the head's angle, and check the pupils in the picture.
+102. **What fits in the still can be cut by the camera's move.** His feet fit in the picture and lose their tips in the film, where the frame drifts in. Check edges at both ends of a move (the sign rule, applied to limbs).
+103. **A reviewer of one still does not know who it is or where the story stands.** The review called the Client "Don", asked for a tie on a man in a gown, and for a screen text the story contradicts. Triage each point against the frame and the canon; of six points two held (the look, the phone's shadow). Give an outside reviewer the character's name and the beat in one line.
+104. **A flash or a flat colour frame reads as a fault.** The white frame on each hit ("looks like an error") and the red wash at the end ("a glitch", both viewers) were taken out; weight comes from a hit-stop, a shake and the crowd, and the end fades to black.
+105. **An action shorter than about half a second is not seen.** The opening punch lasted 0.13 s. Give a blow a pause before it and time after it; a small pause after "Word is," did more than any drawing.
+106. **A bubble stays where it is while its line is spoken.** Bubbles that followed a moving speaker could not be read. Freeze the box per line and shot; only the tail follows, to the mouth drawn in that frame. Off-screen speakers get no tail.
+107. **Two things that share one drawing share every change.** Changing the dream's photograph changed the real CV, because both read one picture. When a prop exists in two states, give each its own source before touching either.
+108. **When a check fails, find out which is wrong, the film or the check.** The speech check failed on digits and short lines and the 1080 comparison on text hinting; the scorer was changed, the mark not lowered, and each check is proven on a planted fault (the mix played backwards: 0 of 37).
+109. **Cairo's device scale is not in `user_to_device`, and a scaled surface used as a source is placed in its own units.** The first 1080 build ignored the sign rule for the first reason; a crop of a 2× surface came out black for the second.
+110. **A face beats a gesture.** The glove on his cheek covered an eye; it was moved so both eyes show. Tomas: "Facial expressions are more important for comedy."
+111. **Lesson 96, decided:** every character at the series' size, the robot scaled with the Client; tested on a size sheet before the film (test 58).
