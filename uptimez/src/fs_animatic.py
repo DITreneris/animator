@@ -1,4 +1,4 @@
-"""FIRST SEARCH (episode 10): the animatic v27 (fs_animatic_v26.py = v26, kept): storyboard v32; cut to about 36 s from
+"""FIRST SEARCH (episode 10): the animatic v27, with film v36's opt-in tails (fs_animatic_v27.py = as before, kept; fs_animatic_v26.py = v26, kept): storyboard v32; cut to about 36 s from
 the same drawings and the same lines (every line whole: the holds trimmed to what it takes to read a shot, a line's lead
 0.05 s and its tail 0.10 s, the ending RETRY-first); the bubbles' tails go beside the speaker's mouth on the side away
 from anyone else, never with the tip inside the bubble; an off-screen speaker's bubble sits at the frame's edge on their
@@ -167,10 +167,17 @@ def _hits(box, heads):
     return False
 
 
-def speech(c, k, text, head, others, mono=False, size=30, taken=()):
+TAIL_MOUTH_Y = [0.72]                                      # film v36: the mouth below the head point
+
+
+def speech(c, k, text, head, others, mono=False, size=30, taken=(), tail_head=None, top_tip_at=None):
     """A canon speech bubble (episode 9's): white, rough-edged, Lilita One (the robot in mono caps). head (x, y, r) on
     the canvas or None (off screen: no tail). Placed just above the speaker if it fits, else beside, else below;
-    never over a face or another bubble; inside the safe area."""
+    never over a face or another bubble; inside the safe area.
+    tail_head (x, y, r), opt-in (film v36): the face itself, while head is the whole head (hair, curl, antenna) the
+    bubble keeps clear of: the tip goes beside the mouth drawn on that face, and the tail curves round outside the
+    whole head. top_tip_at (x, y): where a tail may come down from above (bare scalp, an antenna); None: never from
+    above, the tip goes to the other side of the face instead. Without tail_head it draws exactly as before."""
     face = kit.MONO if mono else kit.FONT
     c.select_font_face(face, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD if mono else cairo.FONT_WEIGHT_NORMAL)
     c.set_font_size(size)
@@ -236,6 +243,15 @@ def speech(c, k, text, head, others, mono=False, size=30, taken=()):
         tip = (hx + side * (r * 0.95 + 8), hy + r * 0.35)                             # beside the mouth, outside the head
         if top_tip:
             tip = (hx, hy - r - 8)
+        if tail_head is not None:                                                     # v36: the mouth on the face
+            thx, thy, thr = tail_head
+            tip = (thx + side * (thr * 0.92 + 6), thy + thr * TAIL_MOUTH_Y[0])
+            if top_tip or not (6 <= tip[0] <= 534):
+                if top_tip_at is not None:
+                    tip = top_tip_at
+                else:
+                    side = -side
+                    tip = (min(534, max(6, thx + side * (thr * 0.92 + 6))), thy + thr * TAIL_MOUTH_Y[0])
         if bx - 8 <= tip[0] <= bx + bw + 8 and by - 8 <= tip[1] <= by + bh + 8:       # the tip inside the bubble: move it off
             if side > 0:
                 bx = min(R - bw, tip[0] + 44)
@@ -243,7 +259,19 @@ def speech(c, k, text, head, others, mono=False, size=30, taken=()):
                 bx = max(L, tip[0] - 44 - bw)
             if bx - 8 <= tip[0] <= bx + bw + 8:                                       # no room beside: above it then
                 by = max(T + 8, tip[1] - r * 1.6 - bh)
-        if tip[1] > by + bh:                                                         # the speaker below
+        if tail_head is not None and tip[1] > by + bh:                               # v36: down round the head's outside
+            wx = hx + side * (r + 16)                                                 # beside the whole head
+            cx = max(bx + 30, min(bx + bw - 30, wx))
+            b0 = by + bh - 3
+            ctl = (wx, b0 + 0.75 * (tip[1] - b0)) if abs(tip[0] - hx) > 0.6 * r else (tip[0], (b0 + tip[1]) / 2)
+            def qb(p0, p1, p2, u):
+                return ((1 - u) ** 2 * p0[0] + 2 * (1 - u) * u * p1[0] + u * u * p2[0],
+                        (1 - u) ** 2 * p0[1] + 2 * (1 - u) * u * p1[1] + u * u * p2[1])
+            us = [i / 8.0 for i in range(9)]
+            left = [qb((cx - 13, b0), (ctl[0] - 4, ctl[1]), tip, u) for u in us]
+            right = [qb((cx + 13, b0), (ctl[0] + 4, ctl[1]), tip, u) for u in us]
+            tail = left + right[::-1][1:]
+        elif tip[1] > by + bh:                                                       # the speaker below
             cx = max(bx + 30, min(bx + bw - 30, tip[0]))
             tail = [(cx - 13, by + bh - 3), tip, (cx + 13, by + bh - 3)]
         elif tip[1] < by:
@@ -256,7 +284,13 @@ def speech(c, k, text, head, others, mono=False, size=30, taken=()):
         kit.cut(k, tail, (1, 1, 1))
     kit.cut(k, kit.rough_rect_pts(k, bx, by, bw, bh, 900 + len(text), j=1.6), (1, 1, 1))
     if tail:
-        c.set_source_rgb(1, 1, 1); c.move_to(*tail[0]); c.line_to(*tail[1]); c.line_to(*tail[2]); c.close_path(); c.fill()
+        c.set_source_rgb(1, 1, 1); c.move_to(*tail[0])
+        if len(tail) == 3:
+            c.line_to(*tail[1]); c.line_to(*tail[2])
+        else:                                                                         # v36: the curved tail, inside its outline
+            for p_ in tail[1:]:
+                c.line_to(*p_)
+        c.close_path(); c.fill()
     c.select_font_face(face, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD if mono else cairo.FONT_WEIGHT_NORMAL)
     c.set_font_size(size); c.set_source_rgb(*INK)
     for i, (r_, w_) in enumerate(zip(rows, ws)):
