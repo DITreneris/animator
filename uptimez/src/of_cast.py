@@ -244,7 +244,7 @@ def watch_pose(x, feet, s):
     return [(x + 22, hip - 74)]                                                    # his watch hand (screen right)
 
 
-def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, phone_dad=False, forward=0.0):
+def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, phone_dad=False, forward=0.0, phone_ear=False):
     """Don in the throne: dq.don_seated's own drawing, with his arms and face set (pose: kit angles); forward: he sits up."""
     c = k.c
     cs = s
@@ -275,7 +275,10 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
             c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(15)
             e = c_.text_extents("DAD"); c_.move_to(-e.x_advance / 2, -2); c_.show_text("DAD")
             c_.set_font_size(8); e = c_.text_extents("calling…"); c_.move_to(-e.x_advance / 2, 12); c_.show_text("calling…")
-        phone(k, px + 4 * s, py - 30 * s, s * 1.15, scr, ang=0.05)
+        if phone_ear:                                                           # v2 (22 Nov): at his ear, a call
+            phone(k, hx - 66 * s, hy + 12 * s, s * 1.05, scr, ang=-0.12)   # beside the face, not over it
+        else:
+            phone(k, px + 4 * s, py - 30 * s, s * 1.15, scr, ang=0.05)
     return o
 
 

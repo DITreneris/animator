@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 4, 2: 7, 3: 4, 4: 6, 5: 2}                                   # each scene's current version (new versions, new files)
+VER = {1: 4, 2: 7, 3: 4, 4: 7, 5: 2}                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -185,7 +185,9 @@ def s37(t, L):                                             # the smile is gone; 
     if t < 0.2:
         return dict(don="stiff"), {}
     u = ease((t - 0.2) / 0.3)
-    return dict(don_over=dict(sweat=1 + int(2 * u), forward=u)), {}
+    if t < 0.55:                                           # DAD on the screen, at his chest
+        return dict(don_over=dict(sweat=1 + int(2 * u), forward=u)), {}
+    return dict(don_over=dict(sweat=3, forward=1.0, phone_ear=True, pose=(-150, -110, 30, 10))), {}   # then at his ear
 
 
 # --- scene 5, Frame 0 ------------------------------------------------------------------------------------------------
