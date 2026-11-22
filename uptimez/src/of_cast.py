@@ -84,7 +84,42 @@ def father(k, x, feet, s, face="hard", look=(1, 0), targets=()):
             side = -1 if tx < 0 else 1
             free[side] = ik(side * 40, sy, tx, ty, 48, 48, side)
         pose = tuple(list(free.get(-1, (-8, 0))) + list(free.get(1, (8, 0))))
-    return dc.father(k, x, feet, s, pose=pose, face=face, look=look)
+    dc.BROW_UP[0] = 14 if face == "brow2" else 9; dc.BROW_DARK[0] = face == "brow2"                                # v8: his one move, big enough to read
+    try:
+        o = dc.father(k, x, feet, s, pose=pose, face="brow" if face == "brow2" else face, look=look)
+    finally:
+        dc.BROW_UP[0] = 9; dc.BROW_DARK[0] = False
+    _stubble(k, o["head"], s, low=face == "low")
+    return o
+
+
+def _stubble(k, head, s, low=False):
+    """episode 13 only (22 Nov, decided: 3 of 4 cold viewers read him as a woman): a grey shadow on the jaw and the
+    upper lip, so the face reads as a man's. Drawn over dh_cast's father; episode 12 is untouched."""
+    c = k.c
+    hx, hy = head
+    c.save(); c.translate(hx, hy + (6 if low else 0) * s); c.scale(s, s)
+    sh = (0.40, 0.38, 0.38, 0.32)
+    c.new_path()                                                     # the jaw, under the mouth, cheek to cheek
+    c.move_to(-36, 22); c.curve_to(-34, 38, -18, 45, 0, 45); c.curve_to(18, 45, 34, 38, 36, 22)
+    c.curve_to(28, 30, 18, 36, 0, 37); c.curve_to(-18, 36, -28, 30, -36, 22); c.close_path()
+    c.set_source_rgba(*sh); c.fill()
+    c.new_path()                                                     # the upper lip
+    c.move_to(-13, 25); c.curve_to(-6, 22, 6, 22, 13, 25); c.line_to(12, 28); c.curve_to(5, 26.5, -5, 26.5, -12, 28); c.close_path()
+    c.set_source_rgba(*sh); c.fill()
+    c.set_source_rgba(0.28, 0.26, 0.26, 0.6)                         # the stipple, on the jaw only
+    import random
+    rnd = random.Random(1313)
+    n = 0
+    while n < 46:
+        px, py = rnd.uniform(-35, 35), rnd.uniform(24, 44)
+        edge_top = 22 + 15 * (1 - (abs(px) / 36) ** 2)               # under the inner curve
+        edge_bot = 45 - 23 * (abs(px) / 36) ** 2
+        if not (edge_top <= py <= edge_bot):
+            continue
+        n += 1
+        c.arc(px, py, 1.0, 0, 2 * math.pi); c.fill()
+    c.restore()
 
 
 def _narrow(fn):
@@ -98,6 +133,9 @@ def _narrow(fn):
     return f
 
 
+MOUTH = [None]                                             # the film's lip sync: a mouth code for the Client this drawing
+
+
 @_narrow
 def client(k, x, feet, s, look=(-1, 0), targets=(), clip_hip=False, face="bored"):
     pose = arms_to(x, feet, s, False, targets) if targets else "open"
@@ -106,7 +144,7 @@ def client(k, x, feet, s, look=(-1, 0), targets=(), clip_hip=False, face="bored"
         hip = feet + co.HIP * s
         c.save(); c.rectangle(x - 300, hip - 500, 600, 506); c.clip()
     import client_of as cof                                   # the garage outfit (client_of v1, 22 Nov)
-    o = cof.client(k, x, feet, s, pose, face, look=look)
+    o = cof.client(k, x, feet, s, pose, face, look=look, mouth=MOUTH[0])
     if clip_hip:
         c.restore()
     return o
@@ -150,7 +188,7 @@ def creeper(k, x, y, s=1.0):
         ellipse(k, x + wx * s, y + 13 * s, 6 * s, 6 * s, (0.30, 0.30, 0.32), 3512 + wx, shadow=False, lw=1.6)
 
 
-def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True):
+def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wipe=0.0):
     """sat up on the creeper: the board on the floor, his seat on it, knees up, the rag between his hands."""
     creeper(k, x - 20, floor - 14, 0.9)
     seat = floor - 30
@@ -161,8 +199,9 @@ def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True):
             c.move_to(x + sx * 8, seat); c.line_to(kx, seat - 44); c.line_to(fx, floor - 6); c.stroke()
         cut(k, [(fx - 18, floor - 14), (fx + 8, floor - 14), (fx + 10, floor), (fx - 20, floor)], (0.42, 0.27, 0.14), shadow=False, lw=2)
     hip_feet = seat - co.HIP * s
-    hands = (x - 44, seat - 54)
-    o = client(k, x, hip_feet, s, look=look, targets=[(hands[0] - 6, hands[1]), (hands[0] + 10, hands[1] + 4)], clip_hip=True)
+    hands = (x - 44 + 10 * wipe, seat - 54 + 3 * wipe)                        # wipe -1..1: the rag worked between the hands
+    o = client(k, x, hip_feet, s, look=look, targets=[(hands[0] - 6, hands[1]), (hands[0] + 10, hands[1] + 4)], clip_hip=True,
+               face=face)
     if rag_hands:
         rag(k, hands[0] + 2, hands[1] + 2, 1.1)
     return o

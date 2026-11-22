@@ -512,10 +512,14 @@ def lighter(k, x, y, s=1.0, flame=1.0, hand=True, lid=1.0):
         c.restore()
     rect(k, -26, 0, 52, 74, GOLD, 3101, lw=2.6)                                   # the case
     c.set_source_rgb(*GOLD_D); c.set_line_width(2); c.move_to(-26, 22); c.line_to(26, 22); c.stroke()
-    c.save(); c.translate(26, 0); c.rotate(-1.9 * lid)                           # the lid, open on its hinge
-    cut(k, [(0, 0), (0, -2), (-52, -2), (-52, 30), (0, 30)], GOLD, lw=2.4)
-    c.restore()
+    if lid >= 0.15:
+        c.save(); c.translate(26, 0); c.rotate(-1.9 * lid)                       # the lid, open on its hinge
+        cut(k, [(0, 0), (0, -2), (-52, -2), (-52, 30), (0, 30)], GOLD, lw=2.4)
+        c.restore()
     rect(k, -16, -26, 28, 26, (0.86, 0.86, 0.84), 3102, shadow=False, lw=2)       # the chimney
+    if lid < 0.15:                                                                # v9: SHUT, the lid down over the chimney
+        rect(k, -26, -30, 52, 32, GOLD, 3104, lw=2.6)
+        c.set_source_rgb(*GOLD_D); c.set_line_width(2); c.move_to(-26, 0); c.line_to(26, 0); c.stroke()
     c.set_source_rgb(*INK)
     for i in range(3):
         for j in range(2):

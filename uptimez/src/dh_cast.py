@@ -28,6 +28,9 @@ STEEL, STEEL_D = (0.78, 0.80, 0.84), (0.55, 0.57, 0.62)
 CUP = (0.93, 0.90, 0.82)
 
 
+BROW_UP = [9]; BROW_DARK = [False]                                  # how far "brow" lifts; episode 13 raises it for one shot (default unchanged)
+
+
 def _father_face(k, x, y, face, look, glasses=False, seed=0):
     """v2 (21 Nov, after the design review): he does less. Half-closed lids, grey brows level (not pressed into a
     frown), a short flat mouth. face: "hard", "talk" (the mouth opens a little), "brow" (his left brow goes up: the only
@@ -46,10 +49,10 @@ def _father_face(k, x, y, face, look, glasses=False, seed=0):
         c.move_to(x + sx - 10.5, y - 1.5); c.line_to(x + sx + 10.5, y - 1.5); c.stroke()
         c.set_source_rgba(0.45, 0.30, 0.28, 0.5); c.set_line_width(1.8)         # a bag under each eye
         c.move_to(x + sx - 8, y + 11); c.curve_to(x + sx - 3, y + 14, x + sx + 3, y + 14, x + sx + 8, y + 11); c.stroke()
-    up = 9 if face == "brow" else 0
+    up = BROW_UP[0] if face == "brow" else 0
     bd = 2.5 if low else 0.0                                                   # low: the brows press down over the eyes
     for sx, lift in ((-1, 0), (1, up)):                                         # brows: grey, thick, level
-        c.set_source_rgb(*GREY_HAIR); c.set_line_width(7); c.set_line_cap(1)
+        c.set_source_rgb(*((0.36, 0.36, 0.38) if lift and BROW_DARK[0] else GREY_HAIR)); c.set_line_width(7); c.set_line_cap(1)
         c.move_to(x + sx * 28, y - 12 + bd * 0.4 - lift * 0.6); c.line_to(x + sx * 7, y - 12 + bd - lift); c.stroke()
         c.set_source_rgb(*INK); c.set_line_width(1.6)
         c.move_to(x + sx * 28, y - 8.5 - lift * 0.6); c.line_to(x + sx * 7, y - 8.5 - lift); c.stroke()

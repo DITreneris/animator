@@ -160,7 +160,7 @@ def room(total):
 
 # --- the mix ----------------------------------------------------------------------------------------------------------
 def timing():
-    d = json.load(open(os.path.join(OUT, "of_timing_v2.json")))
+    d = json.load(open(os.path.join(OUT, "of_timing_v3.json")))
     return {s["shot"]: s for s in d["shots"]}, d["total"]
 
 
@@ -253,7 +253,7 @@ def master(a, target=-14.0, tp=-2.6):          # AAC adds about 0.9 dB
     stays under tp (lessons: the AAC overshoot is checked on the final file too)."""
     from scipy.signal import resample_poly
     from scipy.ndimage import minimum_filter1d
-    path = os.path.join(OUT, "of_sound_v1.wav")
+    path = os.path.join(OUT, "of_sound_v2.wav")
     g = 1.0
     x = a / (np.abs(a).max() + 1e-9) * 0.5
     for _ in range(6):
@@ -277,7 +277,7 @@ def check(lines):
     """the recognizer on every line inside the final mix: three windows (the line, with a lead, with a tail)."""
     import of_voices as ov
     import sound_fs as sfs
-    a, sr = sf.read(os.path.join(OUT, "of_sound_v1.wav"))
+    a, sr = sf.read(os.path.join(OUT, "of_sound_v2.wav"))
     r = ov.recognizer()
     res = {}
     prev = None
@@ -302,7 +302,7 @@ def check(lines):
         prev = (t0, line.split(":", 1)[1] if ":" in line else line)
         res[sid] = dict(line=line, heard=heard, ok=ok)
         print("%-5s %d/3  %-48s | %s" % (sid, ok, line[:48], heard[0]), flush=True)
-    json.dump(res, open(os.path.join(OUT, "of_sound_v1_check.json"), "w"), indent=1)
+    json.dump(res, open(os.path.join(OUT, "of_sound_v2_check.json"), "w"), indent=1)
     return res
 
 
@@ -315,7 +315,7 @@ def levels(path):
 if __name__ == "__main__":
     a, lines, total = mix()
     master(a)
-    I, P = levels(os.path.join(OUT, "of_sound_v1.wav"))
+    I, P = levels(os.path.join(OUT, "of_sound_v2.wav"))
     print("master: %.1f s, %.1f LUFS, true peak %.1f dBTP" % (total, I, P))
     res = check(lines)
     KNOWN = {"2.6": "\"And then?\" is heard \"On then\" in 2 of 3 windows in the mix (1 of 3 dry at stop 2 without context): "

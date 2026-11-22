@@ -75,30 +75,34 @@ def veto():
     def s15(t, L):                                             # the flame held; his head turns to Father, held 0.4 s
         return {}, dict(g2=dict(targets=["lighter"], lighter=1.0, turn=-1.0 * hold((t - 0.10) / 0.25)))
     def s16(t, L):                                             # the brow up at 0.15, then two clear shakes
-        face = "brow" if t > 0.15 else "hard"
-        shake = 0.0 if t < 0.35 else math.sin((t - 0.35) * 2 * math.pi * 2.0) * math.exp(-(t - 0.35) * 1.6)
-        return dict(fshake=shake * 30), dict(father=dict(face=face, look=(1 + 0.8 * shake, -0.2)))
+        face = "brow2" if t > 0.15 else "hard"                     # v3: the brow arches high, then a small no
+        shake = 0.0 if t < 0.40 else math.sin((t - 0.40) * 2 * math.pi * 2.0) * math.exp(-(t - 0.40) * 1.4)
+        return dict(fshake=shake * 14), dict(father=dict(face=face, look=(1 + 0.8 * shake, -0.2)))
     def s17(t, L):                                             # still looking at Father: the lid shuts, held
-        lid = 1.0 - hold((t - 0.20) / 0.20)
-        return {}, dict(g2=dict(targets=["lighter"], lighter=1.0 if lid > 0.6 else 0.0, lid=lid, turn=-1.0))
+        lid = 1.0 - hold((t - 0.15) / 0.12)                     # v3: SNAP, then the hand comes down off the plan
+        import of_set as gs
+        bx, by = gs.bay7()
+        down = 90 * hold((t - 0.32) / 0.25)
+        return {}, dict(g2=dict(targets_xy=[(bx + 2, by + 92 + down)], lighter=1.0 if lid > 0.6 else 0.0, lid=lid, turn=-1.0))
     return [("1.5", s15), ("1.6", s16), ("1.7", s17)]
 
 
 def lamp():
-    """v2: wide enough for both men whole; the lamp travels low, beside him, unlit; he takes it with one hand."""
+    """v3: the lamp never near a face. It passes low, at the bay's edge, unlit; bodyguard 1 lifts it high over the bay and
+    points it down: the light falls on the engine, the Client's eyes and hands stay in it; Father watches at the left."""
     bx, bf = sc.BENT_AT
-    start, out_ = (bx - 30, 700), (bx + 52, 690)
+    start, out_ = (bx - 30, 718), (bx + 60, 724)
     x, f = sc.BLOCK[3]["g1"]
     rest = (x - 44, f - 120)
     def s23(t, L):
-        u1 = hold(t / 0.40)                                    # his hand comes back with it, not looking
-        u2 = hold((t - 0.40) / 0.30)                           # the bodyguard's hand comes to it
-        u3 = hold((t - 0.80) / 0.40)                           # he lifts it over the engine, lit, and holds it
+        u1 = hold(t / 0.35)                                    # his hand comes back with it, low, not looking
+        u2 = hold((t - 0.35) / 0.25)                           # the bodyguard's hand comes down to it
+        u3 = hold((t - 0.65) / 0.35)                           # he lifts it high and points it down; held
         gh = lerp(rest, out_, u2)
         if u3 > 0:
-            gh = lerp(out_, sc.LAMP_HELD, u3)
+            gh = lerp(out_, sc.LAMP_HIGH, u3)
             return {}, dict(client=dict(kind="bent", hand_back=True, hand_back_at=lerp(out_, start, u3), client_lamp=False),
-                            g1=dict(targets_xy=[gh], lamp=True, lamp_xy=gh), father=dict(look=(1, -0.2)))
+                            g1=dict(targets_xy=[gh], lamp=True, lamp_xy=gh, cone=u3), father=dict(look=(1, -0.2)))
         return {}, dict(client=dict(kind="bent", hand_back=True, hand_back_at=lerp(start, out_, u1), lamp_lit=False),
                         g1=dict(targets_xy=[gh]), father=dict(look=(1, -0.2)))
     return [("2.3", s23)]
@@ -111,6 +115,7 @@ def turn():
 
 
 TESTS = dict(rock=rock, veto=veto, lamp=lamp, turn=turn)
+VERSION = dict(rock=2, veto=2, lamp=3, turn=2)
 
 
 def render_test(name):
@@ -149,7 +154,7 @@ def render_test(name):
                 surf.write_to_png(os.path.join(d, "f%04d.png" % n)); n += 1
             if i % 2 == 0:                                       # 15 -> 7.5, close to the 8 fps strip
                 strip.append((sid, t, surf))
-    mp4 = os.path.join(OUT, "of_motion_%s_v1_540.mp4" % name)
+    mp4 = os.path.join(OUT, "of_motion_%s_v%d_540.mp4" % (name, VERSION.get(name, 1)))
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS), "-i", os.path.join(d, "f%04d.png"), "-vf",
                     "scale=540:960:flags=lanczos,format=yuv420p", "-c:v", "libx264", "-crf", "20", "-preset", "veryfast",
                     "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", mp4], check=True)
