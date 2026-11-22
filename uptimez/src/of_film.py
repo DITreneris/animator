@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 3, 2: 6, 3: 3, 4: 5, 5: 1}                                   # each scene's current version (new versions, new files)
+VER = {1: 4, 2: 7, 3: 4, 4: 6, 5: 2}                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -320,7 +320,8 @@ def render_scene(n):
         sid = sh0["id"]
         L = tm[sid]["len"]
         fn = MOTION.get(sid, still)
-        nd = max(1, int(round(L * DPS)))
+        st0 = tm[sid]["start"]                                 # v2 (rough cut): drawings on the timeline's own grid, so
+        nd = max(1, int(round((st0 + L) * DPS)) - int(round(st0 * DPS)))   # the picture never drifts from the sound
         for i in range(nd):
             t = i / DPS
             st_over, pose_over = fn(t, L)

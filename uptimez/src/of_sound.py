@@ -273,11 +273,14 @@ def master(a, target=-14.0, tp=-2.6):          # AAC adds about 0.9 dB
     return path
 
 
-def check(lines):
-    """the recognizer on every line inside the final mix: three windows (the line, with a lead, with a tail)."""
+def check(lines, path=None, out=None):
+    """the recognizer on every line inside the final mix: three windows (the line, with a lead, with a tail).
+    path: another mix to check (the rough cut's decoded AAC); out: where the json goes."""
     import of_voices as ov
     import sound_fs as sfs
-    a, sr = sf.read(os.path.join(OUT, "of_sound_v2.wav"))
+    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v2.wav"))
+    if a.ndim > 1:
+        a = a.mean(axis=1)
     r = ov.recognizer()
     res = {}
     prev = None
@@ -302,7 +305,7 @@ def check(lines):
         prev = (t0, line.split(":", 1)[1] if ":" in line else line)
         res[sid] = dict(line=line, heard=heard, ok=ok)
         print("%-5s %d/3  %-48s | %s" % (sid, ok, line[:48], heard[0]), flush=True)
-    json.dump(res, open(os.path.join(OUT, "of_sound_v2_check.json"), "w"), indent=1)
+    json.dump(res, open(out or os.path.join(OUT, "of_sound_v2_check.json"), "w"), indent=1)
     return res
 
 
