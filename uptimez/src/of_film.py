@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 3, 2: 5, 3: 3}                                   # each scene's current version (new versions, new files)
+VER = {1: 3, 2: 6, 3: 3, 4: 3}                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -142,16 +142,56 @@ def _veto(t16, t17):
                         g2=dict(targets_xy=[(VETO_L[0] + 40, VETO_L[1] - 20)], turn=-1.0))
     t = t17
     lid = 1.0 - ease((t - 0.05) / 0.10)                      # SNAP, under his two fingers
-    off = ease((t - 0.45) / 0.20)
+    off = ease((t - 0.64) / 0.06)                             # v10: the two fingers HELD on the shut lid, 0.5 s
     hand = [om.lerp(lid_pt, rest, off)] if off < 0.95 else []
     return st, dict(father=dict(face="brow2" if t < 0.4 else "hard", look=(1, -0.4), targets_xy=hand,
-                                two_fingers=off < 0.3, front_lighter=(VETO_L[0], VETO_L[1], 1.0 if lid > 0.6 else 0.0, lid)),
+                                two_fingers=off < 0.5, front_lighter=(VETO_L[0], VETO_L[1], 1.0 if lid > 0.6 else 0.0, lid)),
                     g2=dict(targets_xy=[(VETO_L[0] + 40, VETO_L[1] - 20)], turn=-1.0))
+
+
+# --- scene 4, The Calendar ---------------------------------------------------------------------------------------------
+def _loud(sid, t):
+    m = mouth_at(sid, t)
+    return {None: 0.0, "M": 0.15, "C": 0.45, "E": 0.7, "O": 0.85, "A": 1.0}[m]
+
+
+def s32(t, L):                                             # the visor: the line pops on, and glows as it talks
+    k_ = 0.02 + 0.98 * min(1.0, max(0.0, (t / 0.15))) if t < 0.15 else 1.0 + 0.08 * math.sin(min(1.0, (t - 0.15) / 0.12) * math.pi)
+    return dict(visor_k=k_, visor_glow=_loud("3.2", t)), {}
+
+
+def s33(t, L):                                             # he sits up for good news
+    return dict(don_over=dict(forward=0.6 * ease(t / 0.3))), {}
+
+
+def s35(t, L):                                             # he follows the look down, to himself; the smile goes in ONE drawing
+    if t < 0.40:
+        u = ease(t / 0.35)
+        return dict(don="happy", don_over=dict(look=(1 - 0.8 * u, u))), {}
+    return {}, {}
+
+
+def s36(t, L):                                             # buzz; the phone, filling the frame; she looks at Don; face down
+    if t < 0.22:                                           # v3: shorter buzz and insert, so face down HOLDS 0.6 s
+        return dict(buzz=4 * math.sin(t * 2 * math.pi * 18) if t > 0.03 else 0.0), {}
+    if t < 0.67:
+        return dict(_cam="insert", insert="invite"), {}
+    if t < 0.80:
+        return dict(pam_look=(-1, 0.2)), {}                    # she looks at Don, the phone still up
+    return dict(pam_look=(1, 0.3) if t > 1.10 else (-1, 0.2), phone_down=True, pam_pose=(-8, 0, 40, 40)), {}    # then away
+
+
+def s37(t, L):                                             # the smile is gone; he grabs the phone; DAD; the sweat comes back
+    if t < 0.2:
+        return dict(don="stiff"), {}
+    u = ease((t - 0.2) / 0.3)
+    return dict(don_over=dict(sweat=1 + int(2 * u), forward=u)), {}
 
 
 MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14,
           "2.1": s21, "2.2": s22, "2.3b": s23b, "2.5": s25, "2.7": s27, "2.8c": s28c, "2.8d": s28d, "2.8e": s28e,
-          "2.9": s29}
+          "2.9": s29,
+          "3.2": s32, "3.3": s33, "3.5": s35, "3.6": s36, "3.7": s37}
 HANDS_CAM = (500, 742, 3.0)                                # v9: the cut-in: his hands, working in the light
 
 
@@ -195,6 +235,8 @@ for _sid, _fn in om.veto():
     MOTION[_sid] = _fn
 MOTION["1.6"] = lambda t, L: _veto(t, None)
 MOTION["1.7"] = lambda t, L: _veto(None, t)
+for _sid, _fn in om.turn():
+    MOTION[_sid] = _fn
 for _sid, _fn in om.rock():
     MOTION[_sid] = _fn
 

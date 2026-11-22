@@ -172,7 +172,7 @@ SCENES = [
         S("3.5", "CLOSE", "desk", "CLOSE, Don, as 3.3. He follows the look down, to himself. The smile goes in one drawing.",
           reaction="the smile goes", state=dict(desk="don", don="stiff")),
         S("3.6", "CLOSE", "desk", "CLOSE, Pam at the counter. Her phone buzzes: **INVITATION, from FATHER**. She reads it, looks "
-          "at Don, turns the phone **face down**. (Inside its 1.4 s: 0.6 s on the phone, filling the frame.)",
+          "at Don, turns the phone **face down**. (Inside its 1.4 s: 0.45 s on the phone, filling the frame; then face down, held 0.6 s.)",
           action="the phone, face down", fx="buzz", state=dict(desk="pam"),
           then=S("3.6 insert", "INSERT", "insert", "the phone: INVITATION, from FATHER", state=dict(insert="invite"))),
         S("3.7", "CLOSE", "desk", "CLOSE, Don, as 3.3. He grabs his phone off the throne's arm and dials DAD. The sweat comes back.",
@@ -576,7 +576,7 @@ def desk_shot(k, sh, heads):
     drawn = {}                                                    # v7: the faces where the rigs drew them
 
     def don(k_, o):
-        d = oc.don_throne(k_, CH[0], dl.FLOOR, CH[2], **don_kw[sh["state"].get("don", "happy")])
+        d = oc.don_throne(k_, CH[0], dl.FLOOR, CH[2], **dict(don_kw[sh["state"].get("don", "happy")], **sh["state"].get("don_over", {})))
         drawn["don"] = (d["head"][0], d["head"][1], 50 * CH[2])
 
     def robot(k_, o):
@@ -593,7 +593,7 @@ def desk_shot(k, sh, heads):
 
     def pam(k_, o):
         don(k_, o)
-        q = pb.pam(k_, 652, F + 6, dl.PS, (-8, 0, 140, 60), "neutral", look=(0.4, 0.6), glasses="up")
+        q = pb.pam(k_, 652, F + 6, dl.PS, sh["state"].get("pam_pose", (-8, 0, 140, 60)), "neutral", look=sh["state"].get("pam_look", (0.4, 0.6)), glasses="up")
         heads["_pamhand"] = q["hands"][1]
         drawn["pam"] = (q["head"][0], q["head"][1], 50 * dl.PS)
     vis = visor_point()
@@ -621,9 +621,23 @@ def desk_shot(k, sh, heads):
         r = 50 * rs * z
         gs.protect(c, "WITHOUT HIM on the visor", x - 0.82 * r, y - 0.82 * r, x + 0.82 * r, y + 0.82 * r)
         c.set_source_rgb(0.08, 0.12, 0.22); c.arc(x, y, 0.82 * r, 0, 2 * math.pi); c.fill()
-        gs.T(c, "WITHOUT", x, y - 0.04 * r, 0.30 * r, col=(0.35, 0.85, 0.95))
-        gs.T(c, "HIM", x, y + 0.40 * r, 0.40 * r, col=(0.35, 0.85, 0.95))
+        gl = sh["state"].get("visor_glow", 0.0)                                  # stage 7: it glows as it talks
+        if gl:
+            g_ = cairo.RadialGradient(x, y, 0.1 * r, x, y, 0.82 * r)
+            g_.add_color_stop_rgba(0, 0.35, 0.85, 0.95, 0.35 * gl); g_.add_color_stop_rgba(1, 0.35, 0.85, 0.95, 0.0)
+            c.set_source(g_); c.arc(x, y, 0.82 * r, 0, 2 * math.pi); c.fill()
+        vk = sh["state"].get("visor_k", 1.0)                                     # stage 7: the line pops on
+        gs.T(c, "WITHOUT", x, y - 0.04 * r, 0.30 * r * vk, col=(0.35, 0.85, 0.95))
+        gs.T(c, "HIM", x, y + 0.40 * r, 0.40 * r * vk, col=(0.35, 0.85, 0.95))
     heads.pop("_screen", None)
+    if which == "pam" and "pam" in heads:                                              # v10: the desk in front of her
+        px, py, pr = heads["pam"]
+        X, Y = (px - cam[0]) * z + 270, (py - cam[1]) * z + 480
+        dy = Y + 2.25 * pr * z
+        DESK_Y[0] = dy
+        rect(Ctx(c, 0), -20, dy, 580, 1000, (0.62, 0.48, 0.34), 3510, lw=2.6)
+        c.set_source_rgb(0.72, 0.58, 0.42); c.rectangle(-20, dy, 580, 16); c.fill()
+        c.set_source_rgb(*INK); c.set_line_width(2.6); c.move_to(-20, dy + 16); c.line_to(560, dy + 16); c.stroke()
     if "_pamhand" in heads and which != "pam":
         heads.pop("_pamhand")
     if "_pamhand" in heads:                                                          # her phone, held up: INVITATION
@@ -634,10 +648,26 @@ def desk_shot(k, sh, heads):
             c_.set_source_rgb(0.55, 0.16, 0.46); c_.select_font_face("Lilita One"); c_.set_font_size(6.5)
             c_.move_to(-17, -14); c_.show_text("INVITATION")
             c_.set_source_rgb(*INK); c_.set_font_size(9); c_.move_to(-17, 6); c_.show_text("FATHER")
-        c.save(); c.translate(x, y - 40); c.scale(z * 0.55, z * 0.55); oc.phone(Ctx(c, 0), 0, 0, 1.0, scr); c.restore()
+        bz = sh["state"].get("buzz", 0.0)                                          # stage 7: it buzzes; then face down
+        down = sh["state"].get("phone_down", False)
+        if down:                                                                   # v10: SLAPPED face down on the desk
+            px_, py_ = x - 70, DESK_Y[0] + 6
+            gs.protect(c, "the phone, face down", px_ - 44 * z * 0.55, py_ - 16, px_ + 44 * z * 0.55, py_ + 16)
+            c.save(); c.translate(px_, py_); c.scale(z * 0.55, z * 0.55)
+            rect(Ctx(c, 0), -44, -10, 88, 18, (0.08, 0.09, 0.12), 3502, lw=2.4)
+            c.set_source_rgba(1, 1, 1, 0.25); c.rectangle(-40, -9, 76, 3); c.fill()
+            c.set_source_rgb(0.3, 0.3, 0.32); c.arc(30, -2, 3, 0, 2 * math.pi); c.fill()     # the camera: its back
+            c.restore()
+            c.set_source_rgb(*INK); c.set_line_width(2.4); c.set_line_cap(1)               # the slap
+            for a in (-2.6, -1.9, -1.2):
+                c.move_to(px_ + 60 * math.cos(a), py_ - 6 + 34 * math.sin(a)); c.line_to(px_ + 80 * math.cos(a), py_ - 6 + 46 * math.sin(a)); c.stroke()
+        else:
+            c.save(); c.translate(x + bz, y - 40); c.scale(z * 0.55, z * 0.55)
+            oc.phone(Ctx(c, 0), 0, 0, 1.0, scr); c.restore()
     return cam
 
 
+DESK_Y = [0.0]                                             # the desk top in 3.6 (screen y), for the phone slapped on it
 ROBOT_CAM = [None]                                         # a camera forced on the robot shots (the planted fault)
 _VIS = []
 
