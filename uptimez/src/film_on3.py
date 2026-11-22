@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v36 (v1 to v35 pinned). v36: the fight bill redrawn as a prop (poster_on3); no hairline down him in 5.1c (a hard clip edge). v35: the end fades straight to black, not through red. v34: 4.3 is two pictures (he asks; she names the price in her own close picture, 4.3b); no white drawing on a hit. v33: the first glove's flight is six drawings with a trail; 7.2b plays to its end, the Referee in front of the robot. v32: awake, the CV carries the real photograph (episode 10's); the gown's collar is off his mouth in 8.2. v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v37 (v1 to v36 pinned). v37: the punching glove lands on his cheek (both eyes seen); a sign cut by the frame's edge is not drawn; the white after the last punch is shorter. v36: the fight bill redrawn as a prop (poster_on3); no hairline down him in 5.1c (a hard clip edge). v35: the end fades straight to black, not through red. v34: 4.3 is two pictures (he asks; she names the price in her own close picture, 4.3b); no white drawing on a hit. v33: the first glove's flight is six drawings with a trail; 7.2b plays to its end, the Referee in front of the robot. v32: awake, the CV carries the real photograph (episode 10's); the gown's collar is off his mouth in 8.2. v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1890,7 +1890,7 @@ def _grey29(surf):
 
 
 _hit75 = 0.75
-FILM = [("7.5", d + 0.5, _hold75(fn, _hit75)) if n == "7.5" else ("4.1", d, _down41(fn)) if n == "4.1" else ("4.4a", 2.0, _s44a_29) if n == "4.4a" else (n, d, fn)
+FILM = [("7.5", d + 0.33, _hold75(fn, _hit75)) if n == "7.5" else ("4.1", d, _down41(fn)) if n == "4.1" else ("4.4a", 2.0, _s44a_29) if n == "4.4a" else (n, d, fn)
         for n, d, fn in FILM]
 
 
@@ -1954,9 +1954,64 @@ def _s43_27(t):
 FILM = [("4.3", 3.3, _s43_27) if n == "4.3" else (n, d, fn) for n, d, fn in FILM]
 
 
+# ---- v37 (an outside frame review, Tomas's decisions): the glove on his cheek, both eyes seen; signs whole in the frame or out
+# of it; a shorter white ----
+def _consts(fn, m):
+    co_ = fn.__code__
+    assert all(any(type(v) is type(k_) and v == k_ for v in co_.co_consts) for k_ in m), (fn.__name__, co_.co_consts)
+    fn.__code__ = co_.replace(co_consts=tuple(next((m[k_] for k_ in m if type(v) is type(k_) and v == k_), v) for v in co_.co_consts))
+
+
+_consts(rr2.shot_75, {500: 606, 300.0: 352.0})               # the last (and first) punch: lower and further out, on the cheek
+_consts(s55, {500: 606, 300.0: 352.0, 470: 570, 250: 300})   # the same in 5.5, and its burst with it
+
+
+def _cut_by_frame(c, x0, y0, x1, y1, m=26):
+    """Is this box (user units) cut by the frame's edge (or within m of it: the camera creeps in up to 8 %)? Wholly out is not cut."""
+    pts = [c.user_to_device(x, y) for x, y in ((x0, y0), (x1, y0), (x0, y1), (x1, y1))]      # (the surface's own scale, 2 at 1080, is not in this: these are 540x960 units)
+    xs, ys = [p_[0] for p_ in pts], [p_[1] for p_ in pts]
+    if max(xs) < 0 or min(xs) > 540 or max(ys) < 0 or min(ys) > 960:
+        return False
+    return min(xs) < m or max(xs) > 540 - m or min(ys) < 0 or max(ys) > 960
+
+
+def _whole_bill(k, x, y, s=1.0, seed=0):
+    if not _cut_by_frame(k.c, x - 14, y - 34, x - 14 + 96 * 1.3 * s, y - 34 + 136 * 1.3 * s):
+        _po36.bill(k, x, y, s, seed)
+
+
+import props_on3 as pr
+_plan37_0 = pr.plan_hung
+
+
+def _whole_plan(k, x, y, s=1.0, seed=0, top=None, title=False):
+    if mo.CLOCK.get("shot") != "7.3" and s < 2 and _cut_by_frame(k.c, x - 8 * s, y + 6 * s, x + 100 * s, y + 104 * s):
+        return None
+    return _plan37_0(k, x, y, s, seed, top=top, title=title)
+
+
+pr.plan_hung = _whole_plan
+_card37_0 = so3.card
+
+
+def _whole_card(k, x, y, s=1.0, *a, **kw):
+    if mo.CLOCK.get("shot") == "5.1a2" and _cut_by_frame(k.c, x - 84 * s, y - 92 * s, x + 84 * s, y, m=4):
+        return None
+    return _card37_0(k, x, y, s, *a, **kw)
+
+
+so3.card = _whole_card
+_fn_wall = [f_ for f_ in vars(st).values() if callable(f_) and getattr(f_, "__module__", "") == st.__name__ and '"ARENA"' in (inspect.getsource(f_) if hasattr(f_, "__code__") else "")]
+assert len(_fn_wall) == 1, _fn_wall
+_srcw = inspect.getsource(_fn_wall[0])
+_a37 = '    rect(k, DOOR_X - 74, G - 392, 148, 44, (0.06, 0.06, 0.07), 6, shadow=False, lw=3)\n    kit.text(k, "ARENA", DOOR_X, G - 370, 26, (0.96, 0.96, 0.92), bold=True)\n'
+assert _a37 in _srcw
+st.CUT37 = _cut_by_frame
+exec(_srcw.replace(_a37, "    if not CUT37(k.c, DOOR_X - 74, G - 392, DOOR_X + 74, G - 348):\n    " + _a37.replace("\n    kit.text", "\n        kit.text")), st.__dict__)
+
 # ---- v36 (Tomas): the fight bill is a prop of its own (poster_on3.bill): the glove, VS and the robot's head no longer touch ----
 import poster_on3 as _po36
-st.poster2 = _po36.bill
+st.poster2 = _whole_bill                                    # v37 (was _po36.bill)
 
 # ---- v35 (Tomas: "fade straight to black"): the end went through a flat red ("looks like a glitch", both whole-film viewers) ----
 def _s85_35(t):

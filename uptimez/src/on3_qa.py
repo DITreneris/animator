@@ -96,7 +96,22 @@ def main(film, timing, ref=None):
         ps = [float(re.search(r"psnr_avg:([\d.inf]+)", l).group(1).replace("inf", "99")) for l in open("/tmp/on3_psnr.log")]
         ok = min(ps) >= 30
         print("SCALE   %s  against the 540 master: PSNR mean %.1f dB, lowest %.1f dB (frame %d)" % ("PASS" if ok else "FAIL", sum(ps) / len(ps), min(ps), ps.index(min(ps)))); bad += [] if ok else ["scale"]
-    print("NOT CHECKED: text boxes in the safe area, tails, bubbles on faces (no worker for this film yet)")
+    tl, mo_ = T.get("tails"), T.get("mouths", {})
+    if tl is None:
+        print("TAILS   FAIL  the build recorded no tails"); bad += ["tails"]
+    else:
+        # the mouth is found on the drawing (the speaker drawn mouth open and mouth shut, the difference), not taken from the numbers it was drawn with
+        EXEMPT = {"CLIENT 4.3": "his back is to us: the tail goes to the side of his hood (Tomas, 22 Nov)", "DON 6.4": "he walks out with his back to us, then the folder fills the frame"}
+        lost = [k_ for k_, v_ in mo_.items() if v_ is None and k_ not in EXEMPT]
+        for k_ in EXEMPT:
+            print("          exempt: %s: %s" % (k_, EXEMPT[k_]))
+        far = [t_ for t_ in tl if not (0.2 * t_[5] <= abs(t_[1] - t_[3]) <= 0.6 * t_[5] and abs(t_[2] - t_[4]) <= 0.2 * t_[5])]
+        seen = {l[3] for l in T["lines"] if l[2] in ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")}
+        none = sorted(seen - {t_[0] for t_ in tl})
+        ok = not lost and not far
+        print("TAILS   %s  %d tail positions over %d lines end beside the drawn mouth; mouth not found: %s; off the cheek: %d; on-screen lines without a measured tail: %s" % (
+            "PASS" if ok else "FAIL", len(tl), len({t_[0] for t_ in tl}), lost or "none", len(far), none or "none")); bad += [] if ok else ["tails"]
+    print("NOT CHECKED: text boxes in the safe area, bubbles on faces, signs at the frame's edge (no worker; a sign cut by the edge is not drawn, film v37)")
     return bad
 
 

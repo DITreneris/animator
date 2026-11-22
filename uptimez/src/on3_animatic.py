@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v31"
+V = "v32"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -114,7 +114,7 @@ def takes():
     client = lambda t, f: bc.norm(sob.warm(so.pitch(so.dry(t, cv, csp * f), csem)))
     import on3_narr_clean as nc
     say = {"CLIENT": client, "MOM": lambda t, f: bc.mom(t, f), "SOFIA": lambda t, f: bc.sofia(t, f), "ROBOT": lambda t, f: bc.robot(t, 1.12 * f),
-           "DON": lambda t, f: bc.norm(so.dry(t, "am_michael", 1.08 * f)),          # v6: Don's voice 1 of his audition; the narrator has am_onyx
+           "DON": lambda t, f: bc.don(t, 1.0 * f),                                   # v32 (Tomas: "give Don his voice back"): the series' Don, am_onyx (he had am_michael at 1.08 since v6, when the narrator had his)
            "PAM": lambda t, f: bc.norm(so.dry(t, pv, 1.0 * f)), "REFEREE": lambda t, f: bc.norm(so.dry(t, "bm_george", 1.05 * f))}
     meta, log = {}, {}
     for shot, ls in LINES.items():
@@ -290,9 +290,11 @@ def mix(shots, lines, total):
     return np.tanh(out * 1.6) / 1.6, fx
 
 
+MOUTH_AT = {("MOM", "4.3b"): (250, 560, 70)}                 # a mouth measured on the drawing (open against shut), and the head's half-width: for those the film does not lip-sync
+OFF_AT = {"2.2": (250, 470), "4.4a": (24, 610), "7.3": ("R", 250)}   # v32: a speaker out of the frame has no tail; the bubble sits at the edge they are at
 MOM_AT = {"4.3": (322, 338), "4.3b": (268, 562), "5.4": (268, 562), "7.4": (268, 562),       # her cheek, level with her mouth, where she is on the screen
-          "2.2": (330, 600), "2.4": (536, 420), "4.4a": (318, 880, -1)}   # v25: her sleeve, under the ticket she pushes       # out of sight: the tail goes to the car, or off the edge she is at
-CLIENT_AT = {"4.3": (96, 302)}
+          "2.4": (536, 420)}   # v25: her sleeve, under the ticket she pushes       # out of sight: the tail goes to the car, or off the edge she is at
+CLIENT_AT = {"4.3": (188, 468)}                              # v32: the side of his hood, where his mouth would be (his back is to us)
 SOFIA_AT = {"2.6": (412, 462, 1), "5.1a": (440, 630)}        # (x, y) or (x, y, side): which side of the tip the bubble sits                              # he speaks with his back to us: the tail goes to his hood
 
 
@@ -326,7 +328,7 @@ def _card(c, text, y0=100):
 _BOX = {}                                                    # v22: (line, shot) -> where its bubble was put on its first drawing
 
 
-def _bubble(c, text, tip, top=100, avoid=(), key=None):
+def _bubble(c, text, tip, top=100, avoid=(), key=None, mouth_r=None, at=None):
     """A spoken line: a white bubble, black edge; its tail to the speaker's cheek, level with the mouth. tip None: the
     speaker is out of the frame: no tail, at the top right. v7: avoid: boxes (x0, y0, x1, y1) of every head on the
     screen; the bubble takes the first place, nearest the speaker, that covers none of them and stays in the safe area."""
@@ -355,6 +357,8 @@ def _bubble(c, text, tip, top=100, avoid=(), key=None):
         return all(bx + w < x0 or bx > x1 or by + h < y0 or by > y1 for x0, y0, x1, y1 in avoid)
     if key in _BOX:                                          # v22 (Tomas: "the bubbles jump when they move; it is hard to read"): the bubble stays where it
         rows, w, h, bx, by, side = _BOX[key]                 # was first put for this line in this shot; only its tail follows the mouth
+    elif tip is None and at is not None:
+        bx, by, side = (522 - w - 6 if at[0] == "R" else at[0]), at[1], 1
     elif tip is None:
         cands = [(522 - w - 6, top + 10), (24, top + 10), (522 - w - 6, top + 90), (24, top + 90)]
         bx, by = next((p for p in cands if clear(*p)), cands[0]); side = 1
@@ -369,7 +373,22 @@ def _bubble(c, text, tip, top=100, avoid=(), key=None):
         bx, by, side = next((p for p in cands if clear(p[0], p[1]) and p[1] + h < tip[1] - 30), cands[0])
     if key is not None:
         _BOX.setdefault(key, (rows, w, h, bx, by, side))
-    if tip is not None:
+    if tip is not None and mouth_r:
+        # v32: the tail ends BESIDE the mouth as drawn, on the cheek, and comes round the outside of the head (hat, hair) to it
+        r = mouth_r
+        side = side if side in (1, -1) else 1
+        if bx + w / 2 < tip[0] - 0.2 * r:
+            side = -1
+        elif bx + w / 2 > tip[0] + 0.2 * r:
+            side = 1
+        end = (tip[0] + side * 0.36 * r, tip[1])
+        tx = min(bx + w - 26, max(bx + 26, tip[0] + side * 1.35 * r))
+        cx_, cy_ = tip[0] + side * 1.55 * r, tip[1] - 0.25 * r
+        c.new_path(); c.move_to(tx - 13, by + h - 4); c.curve_to(tx - 13, by + h + 0.5 * (cy_ - by - h), cx_ - side * 4, cy_, end[0], end[1])
+        c.curve_to(cx_ + side * 14, cy_ - 6, tx + 13, by + h + 0.5 * (cy_ - by - h), tx + 13, by + h - 4); c.close_path()
+        c.set_source_rgb(1, 1, 1); c.fill_preserve(); c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(3); c.set_line_join(1); c.stroke()
+        TAILS.append((text, round(end[0], 1), round(end[1], 1), round(tip[0], 1), round(tip[1], 1), round(r, 1)))
+    elif tip is not None:
         tx = min(bx + w - 26, max(bx + 26, tip[0] + side * 30))
         c.new_path(); c.move_to(tx - 13, by + h - 4); c.line_to(tip[0], tip[1]); c.line_to(tx + 13, by + h - 4); c.close_path()
         c.set_source_rgb(1, 1, 1); c.fill_preserve(); c.set_source_rgb(0.06, 0.06, 0.07); c.set_line_width(3); c.set_line_join(1); c.stroke()
@@ -402,9 +421,22 @@ def _heads(shot):
     return out
 
 
+MOUTH_OFF, MOUTH_R, TAILS = {}, [None], []
+
+
 def _tip(who, shot):
+    MOUTH_R[0] = None
     heads, zoom = fm.mo.CLOCK.get("heads") or {}, fm.mo.CLOCK.get("zoom")
-    if who in heads and not (who == "CLIENT" and shot in CLIENT_AT) and not (who == "SOFIA" and shot == "5.1a" and False):
+    if (who, shot) in MOUTH_AT:
+        mx, my, r = MOUTH_AT[(who, shot)]
+        MOUTH_R[0] = r
+        p = (mx, my)
+    elif who in heads and MOUTH_OFF.get((who, shot)):           # v32: the mouth as drawn (found by drawing it open and shut), carried by the tracked head
+        hx, hy, sc = heads[who]
+        dx, dy = MOUTH_OFF[(who, shot)]
+        MOUTH_R[0] = 62 * sc * (zoom[1] if zoom else 1.0)
+        p = (hx + dx, hy + dy)
+    elif who in heads and not (who == "CLIENT" and shot in CLIENT_AT) and not (who == "SOFIA" and shot == "5.1a" and False):
         hx, hy, sc = heads[who]
         side = 1 if hx < 270 else -1
         p = (hx + side * 30 * sc, hy + 30 * sc)
@@ -431,7 +463,8 @@ def _text(surf, shot, now):
             top = _card(c, text) + 6
     for who, text in now:
         if who != "N" and text not in NO_BUBBLE:
-            _bubble(c, text, _tip(who, shot), top, _heads(shot), key=(text, shot))
+            tip = _tip(who, shot)
+            _bubble(c, text, tip, top, _heads(shot), key=(text, shot), mouth_r=MOUTH_R[0], at=OFF_AT.get(shot) if tip is None else None)
     return s
 
 
@@ -445,6 +478,28 @@ def build(out):
         def f(t, fn=fn, base=base, st=st, name=name):
             T = st + t
             fm.mo.CLOCK["T_ext"] = T                                    # the clock runs on through a held drawing: they breathe
+            for a, b_, who, text, key_ in lines:              # v32: where is this speaker's mouth on this drawing? Draw it open and shut and look
+                if a <= T < b_ and who in SEEN and (who, name) not in MOUTH_OFF:
+                    pics = []
+                    for vis in ("A", "M"):
+                        fm.mo.CLOCK["T_ext"] = T; fm.mo.CLOCK["say"] = {who: vis}
+                        p_ = fn(min(t, base - 1.0 / FPS))
+                        z_ = p_.get_height() // 960
+                        pics.append(np.ndarray((p_.get_height(), p_.get_width(), 4), np.uint8, p_.get_data())[::z_, ::z_, 1].astype(np.int16))
+                    ys, xs = np.where(np.abs(pics[0] - pics[1]) > 36)
+                    hd = (fm.mo.CLOCK.get("heads") or {}).get(who)
+                    if len(xs) >= 6 and hd:
+                        mx, my = (xs.min() + xs.max()) / 2.0, (ys.min() + ys.max()) / 2.0
+                        zm = fm.mo.CLOCK.get("zoom")
+                        if zm:                                # back from the crept-in frame to the tracker's units
+                            (fx_, fy_), zz = zm
+                            mx, my = fx_ + (mx - fx_) / zz, fy_ + (my - fy_) / zz
+                        MOUTH_OFF[(who, name)] = (mx - hd[0], my - hd[1])
+                    else:
+                        MOUTH_OFF[(who, name)] = None
+            for k_ in [k_ for k_, v_ in MOUTH_OFF.items() if v_ is None]:
+                pass
+            fm.mo.CLOCK["T_ext"] = T
             fm.mo.CLOCK["say"] = {who: _mouth(key_, T - a, text) for a, b_, who, text, key_ in lines if a <= T < b_ and who in SEEN}
             s = fn(min(t, base - 1.0 / FPS))
             return _text(s, name, [(who, SPLIT[k_][0] if k_ in SPLIT and T - a < SPLIT[k_][1] else text) for a, b_, who, text, k_ in lines if a - 0.05 <= T < b_ + 0.15])
@@ -464,7 +519,7 @@ def build(out):
                            "-af", ln2, "-ar", "48000", "-c:a", "aac", "-b:a", "160k", out])
     os.remove(silent); os.remove(wav)
     json.dump({"length": round(total, 3), "shots": [(n, s_, round(d_, 3), round(b_, 3)) for n, s_, d_, _, b_ in shots],
-               "lines": lines, "effects": fx, "held": held}, open("on3_animatic_timing_%s.json" % V, "w"), indent=1)
+               "lines": lines, "effects": fx, "held": held, "tails": sorted(set(TAILS)), "mouths": {"%s %s" % k_: v_ for k_, v_ in MOUTH_OFF.items()}}, open("on3_animatic_timing_%s.json" % V, "w"), indent=1)
     return total, held, lines
 
 
