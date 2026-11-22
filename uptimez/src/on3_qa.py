@@ -54,7 +54,11 @@ def speech(film, T, garble=False):
         if w0 < t0 - 0.2:                                     # a short line is also heard on its own: the line before can eat its window
             wins += [(t0 - 0.10 + d0, e + d1) for d0, d1 in ((0.0, 0.0), (-0.05, 0.15), (0.05, -0.10))]
         for wa, wb in wins:
-            got = oq.transcribe(rec, a, wa, wb); have = oq._words(NUM(got))
+            got = oq.transcribe(rec, a, wa, wb)
+            g_ = oq._words(got)
+            if len(g_) >= 6 and len(set(zip(g_, g_[1:]))) <= 2:   # the recognizer looped ("I always I always I always"): void, hear a longer window
+                got = oq.transcribe(rec, a, wa, wb + 0.45)
+            have = oq._words(NUM(got))
             w0 = wa
             if w0 < t0 - 0.2:
                 have = have[-(len(want) + 2):]

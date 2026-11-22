@@ -27,7 +27,7 @@ import sound_xmas as sx
 import ring_rough_on3 as rr
 import film_on3 as fm
 
-V = "v29"
+V = "v30"
 SR = so.SR
 VOICES = "on3_voices/animatic_" + V
 FPS = 30
@@ -48,7 +48,8 @@ LINES = {                                                    # v6: the lines, pr
     "3.2": [("N", "I make my own fire.", "n6", 0.1)],
     "3.4d": [("DON", "Just looking.", "d1", 0.15)],
     "4.1": [("N", "If you want to survive, you need to bargain.", "n6b", 0.15)],     # v21 (Tomas: "is it in its place? maybe after Just looking."): on his way in to her desk, as the set-up of "How much?" / "I name my price."; the alley's reveal of Don plays without a voice over it
-    "4.3": [("CLIENT", "How much?", "c1", 0.3), ("MOM", "One hundred bucks.", "m3", 0.3)],
+    "4.3": [("CLIENT", "How much?", "c1", 0.3)],
+    "4.3b": [("MOM", "One hundred bucks.", "m3", 0.3)],                 # v30: her own close picture
     "4.4": [("N", "I name my price.", "n7", 0.6)],
     "4.4a": [("MOM", "Your ticket. You're fighting.", "m4", 0.1)],
     "4.4t": [("N", "I don't believe in signs.", "n7b", 0.15)],
@@ -151,7 +152,7 @@ def takes():
 
 SEEN = ("CLIENT", "PAM", "REFEREE", "SOFIA", "DON")
 NO_BUBBLE = ("Human approval required.",)                    # v16: the robot's own screen says it, in its view of him (the same words twice)
-HOLD_N = ("4.3", "4.4a")  # v23 (Tomas, option 1): 4.3 waits until she has named the price: over 4.4 her line read as his;                                          # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
+HOLD_N = ("4.3", "4.3b", "4.4a")  # v23 (Tomas, option 1): 4.3 waits until she has named the price: over 4.4 her line read as his;                                          # v7: a narration line that must end before the next shot (the robot speaks on its first frame)                      # their mouths are on the screen: the shot waits for the line
 _ENV = {}
 
 
@@ -289,7 +290,7 @@ def mix(shots, lines, total):
     return np.tanh(out * 1.6) / 1.6, fx
 
 
-MOM_AT = {"4.3": (322, 338), "5.4": (268, 562), "7.4": (268, 562),       # her cheek, level with her mouth, where she is on the screen
+MOM_AT = {"4.3": (322, 338), "4.3b": (268, 562), "5.4": (268, 562), "7.4": (268, 562),       # her cheek, level with her mouth, where she is on the screen
           "2.2": (330, 600), "2.4": (536, 420), "4.4a": (318, 880, -1)}   # v25: her sleeve, under the ticket she pushes       # out of sight: the tail goes to the car, or off the edge she is at
 CLIENT_AT = {"4.3": (96, 302)}
 SOFIA_AT = {"2.6": (412, 462, 1), "5.1a": (440, 630)}        # (x, y) or (x, y, side): which side of the tip the bubble sits                              # he speaks with his back to us: the tail goes to his hood

@@ -1,4 +1,4 @@
-"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v33 (v1 to v32 pinned). v33: the first glove's flight is six drawings with a trail; 7.2b plays to its end, the Referee in front of the robot. v32: awake, the CV carries the real photograph (episode 10's); the gown's collar is off his mouth in 8.2. v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
+"""OFFICE NOIR 3: the whole film as one moving rough (21 Nov), v34 (v1 to v33 pinned). v34: 4.3 is two pictures (he asks; she names the price in her own close picture, 4.3b); no white drawing on a hit. v33: the first glove's flight is six drawings with a trail; 7.2b plays to its end, the Referee in front of the robot. v32: awake, the CV carries the real photograph (episode 10's); the gown's collar is off his mouth in 8.2. v31: the first glove flies in from outside the frame; her photograph is the ring girl's own face and Don holds it up beside her (6.3); the robot does not get up in 7.2b; a hit flashes, the robot recoils, the crowd jumps higher; the robe's hem, the belt and the antenna swing after a hit; the Referee and the card girl step. v30: the punch that opens the film lands in the narrator's pause (1.1, 1.9 s); a hit stops the drawing, shakes the frame and lifts the crowd (7.2, 5.5); the last glove waits clear of his face. v29: the last punch held (7.5); 4.1 lower under the card; her hand pushes the ticket in 4.4a; Pam's arm out to him in 6.1; no hem stripe on his knees. v28: the punch that opens the film is held: 1.1 is 1.2 s (the hit was 0.13 s). v27: at her door (4.4, 4.4t) he stands a little further off, his head under the narration card. v26: in 4.3 his glove comes up empty (the hundred was in it before he asked the price). v25 (cold tests 58 and 59): he SITS on his stool in 6.1, 6.3 and the start of 7.1 (stool, knees under the robe, boots on the canvas); the LAST ROUND card passes above his head; in 7.2b the Referee walks in and the robot rights itself in the open, 1.55 s. v24 (Tomas: "sizes across the whole series, by proportions"; he chose the series' size): the Client is drawn at the size The Onboarding stands him (0.985, was 0.70): a head taller than Don; the robot grows with him; the card girl is the others' scale and walks inside the ropes; the close views of him alone keep their framing; 7.2, 7.2b and 7.3 are re-aimed for the new sizes. v23: the robot covers up in 7.2 (no jab without approval), 7.2b opens on the wide tail, Don's back is a lit figure. v22 (the second half of the boxing
 scene: blocks C and D): 6.2a and 6.2b are shorter; 6.2c Don keeps a foot on the canvas as he comes over the rope (he
 hung in the air); 6.3 the folder he lifts has her photograph on it, and the ring girl in his glass first has the
 photograph's own smile; 6.4 the stamp, then Don walks out under the plan the whole way to the door while the Client
@@ -1555,7 +1555,7 @@ def _weight(fn, hits, stop=0.10, shake=0.30, amp=6.0, bob=0.6, recoil=False, fla
 
 
 _HITS30 = {"7.2": (0.58, 1.66), "5.5": (0.68,)}
-FILM = [(n, d + 0.10 * len(_HITS30[n]) * (n != "5.5"), _weight(fn, _HITS30[n], stop=0.0 if n == "5.5" else 0.10, recoil=n == "7.2", flash=n == "7.2")) if n in _HITS30 else (n, d, fn) for n, d, fn in FILM]
+FILM = [(n, d + 0.10 * len(_HITS30[n]) * (n != "5.5"), _weight(fn, _HITS30[n], stop=0.0 if n == "5.5" else 0.10, recoil=n == "7.2", flash=False)) if n in _HITS30 else (n, d, fn) for n, d, fn in FILM]
 
 # ---- v31 (Tomas, /grill-me) ----
 # the first glove comes from outside the frame: the film's first (and last) drawing is his face alone
@@ -1951,6 +1951,22 @@ def _s43_27(t):
 
 
 FILM = [("4.3", 3.3, _s43_27) if n == "4.3" else (n, d, fn) for n, d, fn in FILM]
+
+
+# v34 (Tomas, after the whole-film test: 4.3 "the worst stretch", one picture for both lines): two pictures. He asks over
+# his shoulder (4.3, 1.5 s); she names the price in her own close picture (4.3b): she looks up from her cards at him.
+def _s43b_34(t):
+    u = ramp(t, 0.10, 0.22)
+    talk = 0.30 <= t < 1.20 and int(t * 7) % 2 == 0
+    return of.front(note=False, look=(0.15 * u, 0.85 - 1.0 * u), mouth="open" if talk else None, cards=False)                # no cards up yet: she deals them in 4.4b
+
+
+_F34 = []
+for _n, _d, _fn in FILM:
+    _F34.append(("4.3", 1.5, _fn) if _n == "4.3" else (_n, _d, _fn))
+    if _n == "4.3":
+        _F34.append(("4.3b", 1.6, _s43b_34))
+FILM = _F34
 
 # ---- v25: he SITS (cold tests 58 and 59, all four viewers: "no stool, no knees, no lap… the standing figure slid down the
 # frame", so Pam and Don looked too big beside him). The stool, his shins and boots on the canvas, his body lowered onto
