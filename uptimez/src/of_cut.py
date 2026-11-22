@@ -1,6 +1,6 @@
 """THE OFFER (episode 13), stage 8: the rough cut and its G5 QA.
 
-The five scenes (of_film.py, drawn on the timeline's grid) joined frame by frame on the master sound (of_sound_v2.wav);
+The five scenes (of_film.py, drawn on the timeline's grid) joined frame by frame on the master sound (of_sound_v3.wav);
 each scene is placed at its own start on the 30 fps grid, so the picture cannot drift from the sound across the film.
 Then G5, measured on the final file; the build fails on any miss:
 
@@ -24,7 +24,7 @@ import soundfile as sf
 from PIL import Image
 import of_scenes as sc
 
-VERSION = 2
+VERSION = 4
 TMP = "/tmp/of_cut"
 FRAMES = "/tmp/of_film/s%d"                                 # each scene's drawings, as of_film left them (or a copy in TMP)
 FPS = 30
@@ -42,7 +42,7 @@ def scene_dirs():
 def assemble():
     """-> (the frame list on the global grid, the sound's length). Each scene starts at round(start * 30)."""
     tm = sc._timing()
-    a, sr = sf.read(os.path.join(sc.OUT, "of_sound_v2.wav"))
+    a, sr = sf.read(os.path.join(sc.OUT, "of_sound_v3.wav"))
     total = len(a) / sr
     starts = [int(round(tm[shots[0]["id"]]["start"] * FPS)) for _, _, _, shots in sc.SCENES] + [int(round(total * FPS))]
     seq = []
@@ -68,7 +68,7 @@ def encode(seq):
     m1080 = os.path.join(TMP, "of_roughcut_v%d_1080.mp4" % VERSION)
     m540 = os.path.join(sc.OUT, "of_roughcut_v%d_540.mp4" % VERSION)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS), "-i", os.path.join(d, "f%05d.png"),
-                    "-i", os.path.join(sc.OUT, "of_sound_v2.wav"), "-vf", "format=yuv420p", "-c:v", "libx264", "-crf", "18",
+                    "-i", os.path.join(sc.OUT, "of_sound_v3.wav"), "-vf", "format=yuv420p", "-c:v", "libx264", "-crf", "18",
                     "-preset", "veryfast"] + TAGS + ["-c:a", "aac", "-b:a", "192k", "-shortest", m1080], check=True)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", m1080, "-vf", "scale=540:960:flags=lanczos,format=yuv420p",
                     "-c:v", "libx264", "-crf", "20", "-preset", "veryfast"] + TAGS + ["-c:a", "copy", m540], check=True)
@@ -94,14 +94,26 @@ def frame_at(path, i, out):
 
 
 def loop_diff(f0, fl):
-    """the pixels where the last frame differs from frame 0, outside the plan (the burn on 7 is the one change)."""
-    x0, y0 = sc.gs.to_frame(sc.gs.FRAME0, sc.BOXES["the plan"][0], sc.BOXES["the plan"][1])
-    x1, y1 = sc.gs.to_frame(sc.gs.FRAME0, sc.BOXES["the plan"][2], sc.BOXES["the plan"][3])
-    k = f0.shape[1] / 540.0
-    m = np.ones(f0.shape[:2], bool)
-    m[max(0, int(y0 * k) - 8):int(y1 * k) + 8, max(0, int(x0 * k) - 8):int(x1 * k) + 8] = False
+    """v3 (22 Nov: the loop is now an action, not a still): frame 0 is the bodyguard's fist up over the roof, the last
+    frame the same bodyguard holding the lamp for the legs. The SET must match exactly (walls, car, plan but its burn,
+    the doorway, the floor); the people may differ: the bodyguard's column, and the legs and the lamp under the car.
+    -> the pixels that differ outside those."""
+    import of_set as gs
     if f0.shape != fl.shape:
         return np.ones(f0.shape[:2], bool)
+    k = f0.shape[1] / 540.0
+    cam = sc.CAR_CAM
+    def box(x0, y0, x1, y1):
+        X0, Y0 = (x0 - cam[0]) * cam[2] + 270, (y0 - cam[1]) * cam[2] + 480
+        X1, Y1 = (x1 - cam[0]) * cam[2] + 270, (y1 - cam[1]) * cam[2] + 480
+        return max(0, int(X0 * k)), max(0, int(Y0 * k)), int(X1 * k), int(Y1 * k)
+    gx, gf = sc.BLOCK[1]["g1"]
+    lx, ly = gs.CREEPER
+    m = np.ones(f0.shape[:2], bool)
+    for b in (box(*sc.BOXES["the plan"]),                                       # the burn on 7
+              box(gx - 90, gf - 300, gx + 150, gf + 20),                         # the bodyguard: fist up / lamp held
+              box(lx - 110, gs.SILL - 10, gs.LAMP_AT[0] + 90, ly + 120)):      # the legs (they tap) and the lamp
+        m[b[1]:b[3], b[0]:b[2]] = False
     return (np.abs(f0 - fl).max(axis=2) > 40) & m
 
 
@@ -170,7 +182,7 @@ def validate():
         "untagged colour": ["-c", "copy", "-bsf:v", "h264_metadata=colour_primaries=2:transfer_characteristics=2:matrix_coefficients=2"],
         "540 wide": ["-vf", "scale=540:960", "-c:a", "copy"],
         "flash at frame 0": ["-vf", "drawbox=x=0:y=0:w=iw:h=ih:color=white:t=fill:enable='eq(n,0)'", "-c:a", "copy"],
-        "loop broken (the last frame: the creeper out)": ["-vf", "drawbox=x=300:y=1250:w=420:h=160:color=0x1d2a44:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
+        "loop broken (the last frame: the set changed)": ["-vf", "drawbox=x=560:y=420:w=400:h=200:color=0x2e5f8a:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
     }
     ok = True
     for name, args in cases.items():

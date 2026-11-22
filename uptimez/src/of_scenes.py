@@ -75,32 +75,26 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
+TIMING = "of_timing_v4.json"                               # v8 (22 Nov): the joke at 0:00
+
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
-        S("0.1", "WIDE", "wide", "**FRAME 0.** The bay: the car on stands, the legs on the creeper, the lamp on the floor, the radio, "
-          "the plan under GARAGE 7, the roller door up on the bright street.", action="the legs work", fx="radio, low"),
-        S("0.2", "WIDE", "wide", "SAME FRAME. Headlights sweep the wall; a deep engine stops outside. A hand comes out, feels for a "
-          "wrench. **The watch.**", action="the hand takes the wrench", reaction="the legs don't move", fx="engine stops; clank",
-          state=dict(sweep=True)),
-        S("0.3", "LOW", (160, 846, 5.0), "LOW, floor level. In the doorway's light: two pairs of black shoes, shoulder to shoulder; "
-          "they step apart; between them, a smaller polished pair: Father.", action="they step apart", cast=("father", "g1", "g2"),
-          state=dict(doorway=True)),
+        S("0.8", "MEDIUM", CAR_CAM, "**FRAME 0 (v8, the joke at 0:00).** MEDIUM on the car: Bodyguard 1's fist already up over the "
+          "roof; it SLAMS down. **The car rocks on its stands over the legs underneath.** A stand scrapes.",
+          action="the SLAM; the car rocks", reaction="the legs jolt", cast=("g1",), state=dict(lean=True, tilt=-0.045),
+          fx="the slam; the stand scrapes"),
+        S("0.9", "CLOSE", "under", "UNDER THE CAR, as 0.5. The sump a hand above his face, swaying. He doesn't look out, doesn't "
+          "raise his voice.", line='CLIENT: "Off the car."', action="the sump sways", reaction="he stays flat",
+          state=dict(sway=True)),
+        S("0.10", "MEDIUM", CAR_CAM, "SAME FRAME as 0.8 (v8). **The hand snaps off the roof**, two drawings; he steps back. "
+          "Only then does he look left, to Father.", action="the hand off at once", reaction="he looks to Father", cast=("g1",)),
+        S("0.6", "CLOSE", ["father"], "CLOSE, Father. Eyes up from under his brows, chin down. No answer.",
+          reaction="no answer", cast=("father",)),
         S("0.4", "HIGH", (318, 860, 2.0), "HIGH, over Father's shoulder, down at the legs. Bodyguard 1's sleeve holds the phone down: "
           "the one-star post, **DELETE POST**, his thumb over it.", action="the thumb hovers", reaction="the legs go on: a clank",
           state=dict(phone="delete"), fx="clank"),
         S("0.5", "CLOSE", "under", "UNDER THE CAR, close. The Client on his back, lit by the lamp, working. He doesn't look out.",
           line='CLIENT: "Is it wrong?"', action="he works", reaction="he doesn't look out"),
-        S("0.6", "CLOSE", ["father"], "CLOSE, Father. Eyes up from under his brows, chin down. No answer.",
-          reaction="no answer", cast=("father",)),
-        S("0.8", "MEDIUM", CAR_CAM, "MEDIUM on the car (v7). Bodyguard 1 leans one big hand on the roof. **The car rocks on its stands over "
-          "the man underneath.** A stand scrapes. The legs stop.", action="the hand on the roof; the car rocks",
-          reaction="the legs stop", cast=("g1",), state=dict(lean=True, tilt=-0.045), fx="the stand scrapes"),
-        S("0.9", "CLOSE", "under", "UNDER THE CAR, as 0.5. The sump a hand above his face, swaying. He doesn't look out, doesn't "
-          "raise his voice.", line='CLIENT: "Off the car."', action="the sump sways", reaction="he stays flat",
-          state=dict(sway=True)),
-        S("0.10", "TWO-SHOT", ["g1", "father"], "TWO-SHOT (v7). The hand comes off the roof at once. Only then does he look at Father. "
-          "**Father has seen it.**", action="the hand comes off", reaction="Father has seen it", cast=("father", "g1"),
-          state=dict(zmax=1.7)),
     ]),
     ("2 · The Lighter", "Same bay.", 2, [
         S("1.1", "TWO-SHOT", PLAN_FRAME, "GARAGE 7 painted, the plan, and bodyguard 2 behind the car. His finger to one square: "
@@ -181,8 +175,10 @@ SCENES = [
     ("5 · Frame 0", "The garage.", 5, [
         S("4.1", "INSERT", (112, 640, 1.9), "INSERT, the doorway, the bright street. Father's hand, walking out, the phone buzzing: "
           "DONNIE. He turns it face down against his palm without stopping.", action="face down", state=dict(insert="donnie")),
-        S("4.2", "WIDE", "wide", "HARD CUT. **FRAME 0'S DRAWING**, nobody else; the only difference: **the burn mark on GARAGE 7**. "
-          "The engine outside pulls away. Cut to 0.1.", state=dict(burn=1.0), fx="the car pulls away; the radio runs on"),
+        S("4.2", "MEDIUM", CAR_CAM, "HARD CUT. **0.8's FRAME** (v8): the bodyguard, alone, holding the work lamp down for the legs "
+          "under the car. Father gone. The burn mark on GARAGE 7. Then frame 0's fist slams the roof again: the loop.",
+          action="he holds the lamp", cast=("g1",), state=dict(burn=1.0, lamp_up=True, moved=dict(g1=(206, 862))),
+          fx="the car pulls away; the radio runs on"),
     ]),
 ]
 
@@ -191,7 +187,7 @@ KNOWN = {}   # (shot, check text) -> why it is allowed. None yet.
 
 # --- drawing ---------------------------------------------------------------------------------------------------------
 def _timing():
-    d = json.load(open(os.path.join(OUT, "of_timing_v3.json")))
+    d = json.load(open(os.path.join(OUT, TIMING)))
     return {s["shot"]: s for s in d["shots"]}
 
 
@@ -203,7 +199,8 @@ POSES = {
     "0.4": dict(g1=dict(phone="delete")),
     "0.6": dict(father=dict(face="low", look=(1, 0))),
     "0.8": dict(g1=dict(targets=["roof"], push=True)),          # hand flat on the roof, arm out
-    "0.10": dict(father=dict(look=(1, -0.1), face="hard"), g1=dict(targets=["off_l", "off_r"], turn=-1.0, back=26)),
+    "0.10": dict(g1=dict(targets=["off_l", "off_r"], turn=-1.0, back=26)),
+    "4.2": dict(g1=dict(targets_xy=[(264, 792)], lamp=True, lamp_ang=3.0)),       # v8: the lamp held down for the legs
     "1.1": dict(g2=dict(targets=["bay7_point"], point=True)),
     "1.2": dict(g2=dict(targets=["lighter"], lighter=1.0)),
     "1.3": dict(father=dict(look=(1, 0)), g2=dict(targets=["lighter"], lighter=1.0), client=dict(kind="sit", look=(1, -0.6))),
@@ -295,7 +292,7 @@ def _cast_draw(k, n, scene, sh, heads):
                 c.save(); c.translate(496, 706); c.scale(34, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
                 gs.lamp(k, hx + 4, hy - 6, ang=2.5, lit=True)                     # the cage down-left, into the bay
             else:
-                gs.lamp(k, hx - 8, hy + 22, ang=-1.3)
+                gs.lamp(k, hx - 8, hy + 22, ang=ps.get("lamp_ang", -1.3), lit=ps.get("lamp_lit", False) or "lamp_ang" in ps)
             gs.protect(c, "the lamp in his hand", hx - 40, hy - 10, hx + 30, hy + 50)
         if "lighter" in ps:
             hx, hy = tg[0]
@@ -316,6 +313,12 @@ def _cast_draw(k, n, scene, sh, heads):
                     for j in range(3):
                         c_.rectangle(-15 + i * 11, -14 + j * 11, 8, 8); c_.fill()
             oc.phone(k, hx, hy - 10, 0.75, cal, ang=-0.1)
+        if ps.get("impact"):                                                  # stage 7: the SLAM, lines off the hand
+            hx, hy = tg[0]
+            c.set_source_rgb(*INK); c.set_line_width(3.2); c.set_line_cap(1)
+            for a_ in (-2.6, -2.0, -1.4, -0.8, -0.3):
+                r0, r1 = 26, 26 + 26 * ps["impact"]
+                c.move_to(hx + r0 * math.cos(a_), hy + r0 * math.sin(a_)); c.line_to(hx + r1 * math.cos(a_), hy + r1 * math.sin(a_)); c.stroke()
         if ps.get("push"):                                                    # the flat hand pressing the roof
             hx, hy = tg[0]
             ellipse(k, hx, hy - 2, 18, 7, (0.92, 0.74, 0.60), 3400, lw=2)
@@ -390,8 +393,9 @@ def garage_shot(k, sh, scene, heads, cam):
         for n in front_names:
             _cast_draw(k, n, scene, sh, heads)
     gs.LID_BEHIND[0] = any(POSES.get(sh["id"], {}).get("client", {}).get("kind") == "bent" for _ in (0,))
+    gs.LEGS_WORK[0] = st.get("legs_work", 0.0)                            # v8: the knee taps while he works
     gs.garage(k, burn=st.get("burn", 0.0), legs_out=legs_out, bonnet=bon,
-              lamp_on_floor=scene in (1, 2, 5), behind=behind, front=front, tilt=st.get("tilt", 0.0))
+              lamp_on_floor=scene in (1, 2, 5) and not st.get("lamp_up"), behind=behind, front=front, tilt=st.get("tilt", 0.0))
     gs.LID_BEHIND[0] = False
     c = k.c
     if st.get("running"):                                                 # v9: 2.8e, the car runs: lights on, a puff of exhaust

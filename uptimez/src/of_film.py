@@ -18,7 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 4, 2: 7, 3: 4, 4: 7, 5: 2}                                   # each scene's current version (new versions, new files)
+VER = {1: 6, 2: 9, 3: 5, 4: 8, 5: 4}
+SOUND = "of_sound_v3.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -201,6 +202,33 @@ def s42(t, L):                                             # frame 0's drawing; 
     return (dict(sweep_x=160 - 420 * u) if 0 < u < 1 else {}), {}
 
 
+# --- v3 opening (22 Nov, decided): the joke at 0:00. SLAM; "Off the car."; the hand snaps off, in the SAME frame -------
+def s08_slam(t, L):
+    import of_set as gs
+    x, f = sc.BLOCK[1]["g1"]
+    rx, ry = sc._pt("roof", x, f)
+    if t < 0.07:                                           # frame 0: the hand already up, coming down
+        return dict(tilt=0.0, legs_jolt=0.0), dict(g1=dict(targets_xy=[(rx - 10, ry - 70 + 300 * t)], push=False))
+    ph = (t - 0.07) / 0.28
+    a = -0.19 * abs(math.sin(ph * math.pi)) if ph < 2 else -0.19 * abs(math.sin(ph * math.pi)) * math.exp(-(ph - 2) * 1.5)
+    imp = max(0.0, 1 - (t - 0.07) / 0.25)
+    return dict(tilt=a, legs_jolt=-60 * a), dict(g1=dict(targets_xy=[(rx, ry)], push=True, impact=imp))
+
+
+def s010_same(t, L):                                       # the SAME frame as the slam: the hand snaps off; he steps back
+    x, f = sc.BLOCK[1]["g1"]
+    roof, off = sc._pt("roof", x, f), sc._pt("off_r", x, f)
+    u = om.hold(t / 0.13)                                  # two drawings
+    back = -30 * om.hold((t - 0.12) / 0.20)
+    turn = -1.0 * om.hold((t - 0.45) / 0.20)              # then he looks left, to Father (off screen)
+    return dict(_cam=sc.CAR_CAM, _cast=("g1",)), dict(g1=dict(targets_xy=[om.lerp(roof, off, u)], back=back, turn=turn, push=False))
+
+
+def s42_service(t, L):                                     # the last frame (and the loop): the bodyguard holding the lamp for
+    x, f = sc.BLOCK[1]["g1"]                               # the legs; Father gone; the burn on 7. Then frame 0 slams again.
+    return dict(legs_work=math.sin(t * 2 * math.pi * 1.2)), dict(g1=dict(targets_xy=[(x + 58, f - 70)], lamp=True, lamp_ang=3.0, push=False))
+
+
 MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14,
           "2.1": s21, "2.2": s22, "2.3b": s23b, "2.5": s25, "2.7": s27, "2.8c": s28c, "2.8d": s28d, "2.8e": s28e,
           "2.9": s29,
@@ -253,6 +281,11 @@ for _sid, _fn in om.turn():
     MOTION[_sid] = _fn
 for _sid, _fn in om.rock():
     MOTION[_sid] = _fn
+MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
+MOTION["0.10"] = s010_same
+MOTION["4.2"] = s42_service
+MOTION["0.4"] = lambda t, L: (dict(legs_work=math.sin(t * 2 * math.pi * 1.2)), {})    # the knee taps: he works on
+MOTION["0.6"] = lambda t, L: (dict(legs_work=math.sin(t * 2 * math.pi * 1.2)), {})
 
 
 # --- the lips: the take's loudness per drawing -> a mouth code ---------------------------------------------------------
@@ -358,7 +391,7 @@ def render_scene(n):
                 sheet.append((sid, tm[sid]["start"] + t - t0, surf))
     probs = held_only(probs)
     dur = k / FPS
-    a, sr = sf.read(os.path.join(sc.OUT, "of_sound_v2.wav"))
+    a, sr = sf.read(os.path.join(sc.OUT, SOUND))
     seg = a[int(t0 * sr):int((t0 + dur) * sr)]
     wav = os.path.join(TMP, "s%d.wav" % n)
     sf.write(wav, seg, sr)
