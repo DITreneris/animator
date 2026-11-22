@@ -583,7 +583,7 @@ def desk_shot(k, sh, heads):
     def robot(k_, o):
         if sh["state"].get("don_edge"):                                # 3.4 (v7): the throne slid in at the right edge
             c_ = k_.c
-            c_.save(); c_.translate(dl.RX + 66 - CH[0], 0)
+            c_.save(); c_.translate(dl.RX + DON_EDGE[0] - CH[0], 0)
             don(k_, o)
             c_.restore()
         else:
@@ -611,6 +611,7 @@ def desk_shot(k, sh, heads):
     else:
         shot = dl.shot("3.6", [dl.hp(652, F + 6, dl.PS)], pam, "", chair=False)
     cam = dl.draw(shot, k)
+    DON_FAULTS[:] = don_rule({n: (CH[2] if n == "don" else rs if n == "robot" else dl.PS) for n in drawn})
     for name, h in drawn.items():
         if which == "wide" or name == which:
             heads[name] = h
@@ -684,9 +685,47 @@ def visor_point():
     return _VIS[0]
 
 
+DON_FAULTS = []                                            # the Don rule's faults for the last desk frame
+DON_EDGE = [60]                                            # 3.4: how far right of the robot the throne slides in
+ROBOT_S = 0.48                                             # v10 (22 Nov, decided): the front-desk set's canon (fs_set4.HOME);
+                                                           # the storyboard's 0.40 made it a gnome beside the throne
+
+
+# --- the series rule "DON is always the tallest and widest" (22 Nov, decided: checked wherever Don shares a frame) -------
+UNIT_H = {"don": 358, "robot": 310, "pam": 331, "client": 458, "father": 366, "g1": 455, "g2": 455}
+UNIT_W = {"don": 145, "robot": 132, "pam": 143, "client": 254, "father": 129, "g1": 218, "g2": 218}
+# standing height and width at scale 1.0, measured from each rig's drawing (22 Nov: Don 215 px at 0.60, robot 149 at 0.48,
+# Pam 179 at 0.54, the Client 238 and 132 wide at 0.52, Father 227 at 0.62, a bodyguard 255 at 0.56)
+
+
+def don_rule(cast):
+    """cast: {name: scale} for everyone in one frame. -> faults: anyone taller or wider than Don, standing, beside him."""
+    if "don" not in cast:
+        return []
+    dh, dw = UNIT_H["don"] * cast["don"], UNIT_W["don"] * cast["don"]
+    out = []
+    for n, s_ in cast.items():
+        if n == "don" or n not in UNIT_H:
+            continue
+        if UNIT_H[n] * s_ > dh + 1:
+            out.append("DON RULE: %s is taller than Don (%d vs %d px at 1.0 zoom)" % (n, UNIT_H[n] * s_, dh))
+        if UNIT_W[n] * s_ > dw + 1:
+            out.append("DON RULE: %s is wider than Don (%d vs %d px)" % (n, UNIT_W[n] * s_, dw))
+    return out
+
+
+def don_rule_validate():
+    """the check on a planted fault: the Client (0.52) beside Don (0.60) must fail; the office cast must pass."""
+    office = {"don": 0.60, "robot": ROBOT_S, "pam": 0.54}
+    planted = dict(office, client=0.52)
+    ok = not don_rule(office) and any("client is taller" in m for m in don_rule(planted))
+    print("don_rule: office", don_rule(office) or "pass", "| planted Client:", don_rule(planted))
+    return ok
+
+
 def sb_sc(n):
     import fs_storyboard as sb
-    return sb.SC[n]
+    return ROBOT_S if n == "robot" else sb.SC[n]
 
 
 BOXES = {"GARAGE 7": gs.SIGN, "the plan": (gs.PLAN[0] - 86, gs.PLAN[1] - 72, gs.PLAN[0] + 86, gs.PLAN[1] + 66)}
@@ -828,6 +867,8 @@ def render(sh, scene):
     f = dict(cam=cam, heads=heads_set, scene=dict(text=text), bubbles=[], shot=sh["id"])
     msgs = uz.check_signs(f) + (uz.check_scale(f) if sh["cam"] not in ("under", "insert") else [])
     if sh["cam"] == "desk":
+        msgs += list(DON_FAULTS)
+    if sh["cam"] == "desk":
         msgs += ["SIGN cut by the frame: %s" % n for n in ("portrait+plaque", "calendar") if cf.sign_state(cam, cf.SIGNS[n]) == "CUT"]
     if sh["cam"] not in ("under", "insert", "desk"):
         msgs += ["SIGN %s: %s" % (n, box_state(cam, b)) for n, b in BOXES.items() if box_state(cam, b) == "CUT"]
@@ -945,7 +986,7 @@ def main(out=OUT):
     print("all layout frames pass")
 
 
-if __name__ == "__main__" and not (len(sys.argv) > 1 and sys.argv[1] in ("board", "zones-validate")):
+if __name__ == "__main__" and not (len(sys.argv) > 1 and sys.argv[1] in ("board", "zones-validate", "don-validate")):
     main(sys.argv[1] if len(sys.argv) > 1 else OUT)
 
 
@@ -1139,3 +1180,7 @@ def zones_validate():
 
 if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "zones-validate":
     sys.exit(0 if zones_validate() else 1)
+
+
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "don-validate":
+    sys.exit(0 if don_rule_validate() else 1)

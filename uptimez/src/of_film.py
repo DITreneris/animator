@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 3, 2: 6, 3: 3, 4: 3, 5: 1}                                   # each scene's current version (new versions, new files)
+VER = {1: 3, 2: 6, 3: 3, 4: 4, 5: 1}                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
