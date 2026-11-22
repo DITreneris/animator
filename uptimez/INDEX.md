@@ -6,7 +6,7 @@ A map of every document in `uptimez/`, so a person, worker or agent can find the
 
 | # | Document | What it's for | Authority |
 |---|---|---|---|
-| 1 | [`STORYLINE.md`](STORYLINE.md) | **The series bible.** Premise, world rules (why Find returns 0), the four leads (want, private lie, contradiction, silent reaction, moral line), the supporting cast, relationships, Season 1 in three acts, episode rules, canon locks | **Canon.** Overrides anything older |
+| 1 | [`STORYLINE.md`](STORYLINE.md) | **The series bible.** Premise, world rules (why Find returns 0), the four leads (want, private lie, contradiction, silent reaction, moral line), the supporting cast, relationships, Season 1 in four acts, episode rules, canon locks | **Canon.** Overrides anything older |
 | 2 | [`CLAUDE.md`](CLAUDE.md) | **How to work here:** gates, production rules, QA, rules for bubbles and tails, how Tomas wants decisions asked | Process |
 | 3 | [`README.md`](README.md) | Cast table, brand, every episode (synopsis + files + how it's built) | Episode facts |
 | 4 | [`../docs/lessons.md`](../docs/lessons.md) | What went wrong before and the rule it produced, by episode | Craft rules |
@@ -16,7 +16,7 @@ A map of every document in `uptimez/`, so a person, worker or agent can find the
 
 | Document | Contents |
 |---|---|
-| [`STORYLINE.md`](STORYLINE.md) | v3.2, current (17 Nov): Act B around the blueprint, in line with episode 9 as built |
+| [`STORYLINE.md`](STORYLINE.md) | v3.3, current (22 Nov): Act D, *Civil War* (episodes 13–17), after an outside review; v3.2 (17 Nov): Act B around the blueprint, in line with episode 9 as built |
 | [`series/front-desk-set.md`](series/front-desk-set.md) | The front desk set v4: zones A/B/C, depth, home positions, the way out from behind the counter, camera setups S1–S6; the room from episode 10 on |
 | [`series/storyline-v3.md`](series/storyline-v3.md) | v3: after three outside showrunner reviews (character engines, relationships, world rules) |
 | [`series/storyline-v1.md`](series/storyline-v1.md) | v1: the first canon cleanup (early cast as prequel shorts; one promoted robot; Mom hired; Sofía flirts upward; calendar order; the one-client spine) |
