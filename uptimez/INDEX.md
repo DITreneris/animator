@@ -7,6 +7,7 @@ A map of every document in `uptimez/`, so a person, worker or agent can find the
 | # | Document | What it's for | Authority |
 |---|---|---|---|
 | 1 | [`STORYLINE.md`](STORYLINE.md) | **The series bible.** Premise, world rules (why Find returns 0), the four leads (want, private lie, contradiction, silent reaction, moral line), the supporting cast, relationships, Season 1 in four acts, episode rules, canon locks | **Canon.** Overrides anything older |
+| [`series/production-process.md`](series/production-process.md) | v1, current (22 Nov): how an episode goes from script to final film; stages, checks, Tomas's five stops, version budgets |
 | 2 | [`CLAUDE.md`](CLAUDE.md) | **How to work here:** gates, production rules, QA, rules for bubbles and tails, how Tomas wants decisions asked | Process |
 | 3 | [`README.md`](README.md) | Cast table, brand, every episode (synopsis + files + how it's built) | Episode facts |
 | 4 | [`../docs/lessons.md`](../docs/lessons.md) | What went wrong before and the rule it produced, by episode | Craft rules |
