@@ -83,7 +83,7 @@ SCENES = [
           "roof; it SLAMS down. **The car rocks on its stands over the legs underneath.** A stand scrapes.",
           action="the SLAM; the car rocks", reaction="the legs jolt", cast=("g1",), state=dict(lean=True, tilt=-0.045),
           fx="the slam; the stand scrapes"),
-        S("0.9", "CLOSE", "under", "UNDER THE CAR, as 0.5. The sump a hand above his face, swaying. He doesn't look out, doesn't "
+        S("0.9", "CLOSE", "under", "UNDER THE CAR, from above, closer than 0.5 (v11; the side profile was dropped). The sump a hand above his face, swaying. He doesn't look out, doesn't "
           "raise his voice.", line='CLIENT: "Off the car."', action="the sump sways", reaction="he stays flat",
           state=dict(sway=True)),
         S("0.10", "MEDIUM", CAR_CAM, "SAME FRAME as 0.8 (v8). **The hand snaps off the roof**, two drawings; he steps back. "
@@ -93,7 +93,8 @@ SCENES = [
         S("0.4", "HIGH", (318, 860, 2.0), "HIGH, over Father's shoulder, down at the legs. Bodyguard 1's sleeve holds the phone down: "
           "the one-star post, **DELETE POST**, his thumb over it.", action="the thumb hovers", reaction="the legs go on: a clank",
           state=dict(phone="delete"), fx="clank"),
-        S("0.5", "CLOSE", "under", "UNDER THE CAR, close. The Client on his back, lit by the lamp, working. He doesn't look out.",
+        S("0.5", "CLOSE", "under", "UNDER THE CAR, from above (v10, the other view: 0.9 is the side): the whole of him on the "
+          "creeper, the underside cut away over his chest, both hands up at a bolt. He doesn't look out.", state=dict(view="top"),
           line='CLIENT: "Is it wrong?"', action="he works", reaction="he doesn't look out"),
     ]),
     ("2 · The Lighter", "Same bay.", 2, [
@@ -313,6 +314,10 @@ def _cast_draw(k, n, scene, sh, heads):
                     for j in range(3):
                         c_.rectangle(-15 + i * 11, -14 + j * 11, 8, 8); c_.fill()
             oc.phone(k, hx, hy - 10, 0.75, cal, ang=-0.1)
+        if ps.get("dent"):                                                    # v10: the roof gives under the palm, 2 drawings
+            hx, hy = tg[0]
+            c.set_source_rgb(*INK); c.set_line_width(2.4); c.new_path()
+            c.move_to(hx - 34, hy + 4); c.curve_to(hx - 14, hy + 14, hx + 14, hy + 14, hx + 34, hy + 4); c.stroke()
         if ps.get("impact"):                                                  # stage 7: the SLAM, lines off the hand
             hx, hy = tg[0]
             c.set_source_rgb(*INK); c.set_line_width(3.2); c.set_line_cap(1)
@@ -483,16 +488,18 @@ def under_shot(k, sh, heads):
     c = k.c
     c.set_source_rgb(0.16, 0.17, 0.19); c.paint()                                  # the car's underside
     sway = sh["state"].get("sway_v", 16 if sh["state"].get("sway") else 0)
-    c.save(); c.translate(sway * 0.3, abs(sway) * 1.4); c.rotate(0.004 * sway)       # v6: it drops toward his face
-    rect(k, 120, 230, 300, 120, (0.30, 0.30, 0.32), 3420, lw=2.6)                  # the sump
-    c.set_source_rgb(*INK); c.set_line_width(5)
-    for x in (60, 480):
-        c.move_to(x, 140); c.line_to(x + 20, 380); c.stroke()
-    c.restore()
     g = cairo.RadialGradient(470, 900, 20, 470, 900, 520)
     g.add_color_stop_rgba(0, 1.0, 0.92, 0.6, 0.55); g.add_color_stop_rgba(1, 1.0, 0.92, 0.6, 0.0)
     c.set_source(g); c.paint()
-    heads["client"] = oc.client_lying(k, 1.6, sway=sway, wrench_up=True)
+    if sh["state"].get("view") == "top" or sh["id"] == "0.9":                   # v10: the overhead (v11: 0.9 too, closer:
+        zt = 1.0 if sh["state"].get("view") == "top" else 1.55                    # the side profile looked wrong)
+        zx = 300 if zt == 1.0 else 200                                            # 0.9: his face and hands, not his boots
+        c.save(); c.translate(300, 500); c.scale(zt, zt); c.translate(-zx, -500)
+        hx_, hy_, hr_ = oc.client_top(k, sway=sway, wrench_t=sh["state"].get("wrench_t", 0.0))
+        c.restore()
+        heads["client"] = ((hx_ - zx) * zt + 300, (hy_ - 500) * zt + 500, hr_ * zt)
+    else:
+        heads["client"] = oc.client_under(k, 1.6, sway=sway, wrench_t=sh["state"].get("wrench_t", 0.0))   # v9: the side cutaway
 
 
 def insert_shot(k, sh):

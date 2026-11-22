@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 6, 2: 9, 3: 5, 4: 8, 5: 4}
+VER = {1: 7, 2: 10, 3: 5, 4: 8, 5: 5}
 SOUND = "of_sound_v3.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -206,13 +206,17 @@ def s42(t, L):                                             # frame 0's drawing; 
 def s08_slam(t, L):
     import of_set as gs
     x, f = sc.BLOCK[1]["g1"]
-    rx, ry = sc._pt("roof", x, f)
+    rx, ry = 322, 652                                     # v10: the roof's TOP (the "roof" point sat at the pillar)
     if t < 0.07:                                           # frame 0: the hand already up, coming down
         return dict(tilt=0.0, legs_jolt=0.0), dict(g1=dict(targets_xy=[(rx - 10, ry - 70 + 300 * t)], push=False))
     ph = (t - 0.07) / 0.28
     a = -0.19 * abs(math.sin(ph * math.pi)) if ph < 2 else -0.19 * abs(math.sin(ph * math.pi)) * math.exp(-(ph - 2) * 1.5)
     imp = max(0.0, 1 - (t - 0.07) / 0.25)
-    return dict(tilt=a, legs_jolt=-60 * a), dict(g1=dict(targets_xy=[(rx, ry)], push=True, impact=imp))
+    px, py = gs.STANDS[1], gs.SILL + 50                     # v9: the palm rides the roof as the car tips (it hung in the air)
+    hx = px + (rx - px) * math.cos(a) - (ry - py) * math.sin(a)
+    hy = py + (rx - px) * math.sin(a) + (ry - py) * math.cos(a)
+    return dict(tilt=a, legs_jolt=-60 * a), dict(g1=dict(targets_xy=[(hx, hy + 2)], push=True, impact=imp,
+                                                         dent=1.0 if 0.07 <= t < 0.17 else 0.0))
 
 
 def s010_same(t, L):                                       # the SAME frame as the slam: the hand snaps off; he steps back
@@ -281,6 +285,13 @@ for _sid, _fn in om.turn():
     MOTION[_sid] = _fn
 for _sid, _fn in om.rock():
     MOTION[_sid] = _fn
+def s09_work(t, L):                                       # the sump sways; he finishes one small turn, stops, then the line
+    st, po = om.rock()[1][1](t, L)
+    st = dict(st, wrench_t=math.pi * min(1.0, t / 0.35))
+    return st, po
+
+
+MOTION["0.9"] = s09_work
 MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
 MOTION["0.10"] = s010_same
 MOTION["4.2"] = s42_service

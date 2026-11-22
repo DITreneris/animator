@@ -238,6 +238,91 @@ def client_lying(k, s=1.6, sway=0.0, wrench_up=False):
     return head
 
 
+def client_under(k, s=1.6, sway=0.0, look=(1.0, 0.6), wrench_t=0.0):
+    """v3 (22 Nov, after the 5/10 audit): UNDER THE CAR, a SIDE cutaway, in frame units: the classic mechanic's view.
+    He lies on his back on the creeper (client_of.profile laid down: head left, face up), the car's underside above
+    him (the floor pan, the exhaust pipe, a bracket bolted to it, a wheel at the edge). BOTH arms up into it: the far
+    hand holds the pipe, the near hand's wrench sits ON the bolt; his face tipped up to it. sway: the underside drops
+    toward his face (the slam). wrench_t: the wrench's small turn while he works."""
+    import client_of as cof
+    c = k.c
+    dy = abs(sway) * 1.2
+    T = (730, 640)                                                                         # his feet (off the right edge)
+    # the underside, above him
+    c.save(); c.translate(sway * 0.3, dy)
+    rect(k, -20, 250, 580, 70, (0.22, 0.23, 0.26), 3529, lw=3)                              # the floor pan
+    ellipse(k, 40, 300, 110, 110, (0.07, 0.07, 0.08), 3530, lw=3)                          # a wheel, cut by the edge
+    ellipse(k, 40, 300, 50, 50, (0.42, 0.43, 0.46), 3531, lw=2.4)
+    for col, lw in ((INK, 22), ((0.42, 0.43, 0.46), 16)):                                 # the exhaust pipe, under the pan
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+        c.move_to(120, 360); c.line_to(560, 352); c.stroke()
+    for hx_ in (150, 470):                                                                # its rubber hangers up to the pan
+        c.set_source_rgb(*INK); c.set_line_width(6); c.move_to(hx_, 318); c.line_to(hx_, 350); c.stroke()
+    rect(k, 410, 334, 130, 48, (0.34, 0.35, 0.38), 3527, lw=2.6)                           # the muffler: a fat can on it
+    c.set_source_rgb(0.25, 0.26, 0.29); c.set_line_width(2)
+    for mx in (440, 475, 510):
+        c.move_to(mx, 336); c.line_to(mx, 380); c.stroke()
+    rect(k, 268, 316, 96, 92, (0.38, 0.39, 0.42), 3532, lw=2.6)                             # the bracket, bolted up
+    for bx in (292, 340):
+        ellipse(k, bx, 392, 10, 10, (0.72, 0.73, 0.76), 3533 + bx, lw=2)
+        c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(bx - 5, 392); c.line_to(bx + 5, 392); c.stroke()
+    c.restore()
+    bolt = (292 + sway * 0.3, 392 + dy)
+    rect(k, 40, T[1] + 26, 700, 22, (0.24, 0.24, 0.26), 3528, lw=2)                          # the creeper under his back
+    # him, laid down: local (x, y) -> frame (T.x + y, T.y - x)
+    L = lambda X, Y: (-(Y - T[1]), X - T[0])
+    near = (bolt[0] + 30, bolt[1] + 74)                                                    # the wrench fist, a wrench's length below
+    far = (190, 372 + dy)                                                                  # the far hand on the pipe
+    c.save(); c.translate(*T); c.rotate(-math.pi / 2)
+    o = cof.profile(k, 0, 0, s, facing=1, look_up=0.0, hands=[L(*near), L(*far)])
+    c.restore()
+    hx, hy = o["head"]
+    r = 55 * s
+    head = (T[0] + hy + 0.30 * r, T[1] - hx + 0.10 * r, 0.6 * r)                            # the tail's aim: his cheek (the face points up)
+    a_ = -1.3 + 0.3 * math.sin(wrench_t)
+    for col, lw in ((INK, 14), ((0.72, 0.74, 0.76), 9)):                                   # the wrench, fist to bolt
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+        c.move_to(near[0] - 4, near[1] - 16); c.line_to(bolt[0], bolt[1] + 12); c.stroke()
+    c.set_source_rgb(*INK); c.set_line_width(3.5); c.new_path(); c.arc(bolt[0], bolt[1], 14, a_, a_ + 4.6); c.stroke()
+    return head
+
+
+def client_top(k, sway=0.0, wrench_t=0.0, s=1.12):
+    """v10 (22 Nov): UNDER THE CAR, from above (frame units): the car drawn as a dashed cutaway outline with its four
+    wheels, and inside it the WHOLE of him on the creeper, head left, boots right; the pipe and a bracket over his
+    chest (translucent); both hands up at the bolt, the wrench ON it; his eyes on it."""
+    c = k.c
+    dy = abs(sway) * 0.8
+    cx, cy = 300, 560                                                                      # his middle
+    c.save(); c.translate(sway * 0.3, dy)                                                  # the car above him, cut away
+    for (wx, wy) in ((40, 360), (40, 760), (470, 360), (470, 760)):
+        rect(k, wx - 30, wy - 55, 60, 110, (0.06, 0.06, 0.07), 3560 + wx + wy, lw=2.4)       # the wheels
+    c.set_source_rgba(0.55, 0.65, 0.85, 0.12); c.rectangle(20, 300, 500, 520); c.fill()
+    c.set_source_rgb(0.50, 0.58, 0.75); c.set_line_width(3); c.set_dash([14, 10]); c.rectangle(20, 300, 500, 520); c.stroke(); c.set_dash([])
+    c.restore()
+    rect(k, 60, cy - 78, 470, 156, (0.24, 0.24, 0.26), 3550, lw=2.4)                        # the creeper
+    X = lambda sx, sy: (cy - sy, sx - cx)                                                  # frame -> his laid-down frame
+    bolt = (262, 478 + dy)
+    hands = [X(bolt[0] - 26, bolt[1] + 34), X(bolt[0] + 26, bolt[1] + 30)]
+    c.save(); c.translate(cx, cy); c.rotate(-math.pi / 2)
+    o = client(k, 0, 372 * s * 0.5 + 40, s, look=(-0.6, -1), targets=hands)
+    c.restore()
+    hx, hy = o["head"]
+    head = (cx + hy, cy - hx, 55 * s)
+    c.save(); c.translate(sway * 0.3, dy)                                                  # the pipe and the bracket over his chest
+    for col, lw in ((INK, 18), ((0.42, 0.43, 0.46), 12)):
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.move_to(110, 440); c.line_to(500, 436); c.stroke()
+    rect(k, 236, 446, 56, 44, (0.38, 0.39, 0.42), 3552, lw=2.2)
+    c.restore()
+    ellipse(k, bolt[0], bolt[1], 8, 8, (0.72, 0.73, 0.76), 3553, lw=1.8)
+    a_ = -1.3 + 0.3 * math.sin(wrench_t)
+    for col, lw in ((INK, 11), ((0.72, 0.74, 0.76), 7)):
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+        c.move_to(bolt[0] + 24, bolt[1] + 30); c.line_to(bolt[0] + 4, bolt[1] + 8); c.stroke()
+    c.set_source_rgb(*INK); c.set_line_width(3); c.new_path(); c.arc(bolt[0], bolt[1], 11, a_, a_ + 4.6); c.stroke()
+    return head
+
+
 def watch_pose(x, feet, s):
     """the left wrist up at his chest, turned: the watch face to his eyes."""
     hip = feet + co.HIP * s

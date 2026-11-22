@@ -317,6 +317,8 @@ def legs(k, out=0.0):
     cut(k, [(-16, -10), (6, -12), (20, -2), (20, 6), (-16, 6)], BOOT, shadow=False, lw=2)
     c.set_source_rgb(*INK); c.rectangle(-16, 4, 36, 4); c.fill()
     c.restore()
+    rect(k, lx - 26, hip_y - 8, 52, 18, NAVY_T, 3083, lw=2)                                     # v3: the seat of the trousers,
+    c.set_source_rgb(0.25, 0.17, 0.10); c.rectangle(lx - 26, hip_y - 10, 52, 6); c.fill()      # the belt: one body, two legs
     c.save(); c.rectangle(CAR_X[0], SILL - 4, CAR_X[1] - CAR_X[0], 120); c.clip()             # only in the gap under the body
     c.save(); c.translate(lx + 6, SILL + 4); c.scale(1.0, 0.55)                               # the hips go into the dark under
     g = cairo.RadialGradient(0, 0, 10, 0, 0, 110)                                              # the car: a soft pool, between the
