@@ -454,7 +454,7 @@ def build(out):
     sf.write(wav, audio.astype(np.float32), SR)
     rr.SHOTS, rr.FN = tuple(SH), FN
     rr.render(silent)
-    ln = "loudnorm=I=-15:TP=-1.5:LRA=11"                         # v5: two passes: measure, then set, so the level lands on -15
+    ln = "loudnorm=I=-15:TP=%s:LRA=11" % os.environ.get("ON3_TP", "-1.5")                         # v5: two passes: measure, then set, so the level lands on -15
     r = subprocess.run(["ffmpeg", "-hide_banner", "-i", wav, "-af", ln + ":print_format=json", "-f", "null", "-"], capture_output=True, text=True).stderr
     j = json.loads(r[r.rindex("{"):r.rindex("}") + 1])
     ln2 = ln + ":measured_I=%s:measured_TP=%s:measured_LRA=%s:measured_thresh=%s:offset=%s:linear=true" % (
