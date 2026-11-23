@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v6.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v7.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -830,7 +830,8 @@ def desk_shot(k, sh, heads):
 
     def pam(k_, o):
         don(k_, o)
-        q = pb.pam(k_, 652, F + 6, dl.PS, sh["state"].get("pam_pose", (-8, 0, 140, 60)), "neutral", look=sh["state"].get("pam_look", (0.4, 0.6)), glasses="up")
+        q = pb.pam(k_, 652, F + 6, dl.PS, sh["state"].get("pam_pose", (-8, 0, 140, 60)), sh["state"].get("pam_face", "neutral"),
+                   look=sh["state"].get("pam_look", (0.4, 0.6)), glasses=sh["state"].get("pam_glasses", "up"))   # v8: face, glasses per drawing
         heads["_pamhand"] = q["hands"][1]
         drawn["pam"] = (q["head"][0], q["head"][1], 50 * dl.PS)
     vis = visor_point()

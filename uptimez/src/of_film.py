@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 13, 2: 18, 3: 14, 4: 16, 5: 13}
-SOUND = "of_sound_v6.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 14, 2: 19, 3: 15, 4: 17, 5: 14}
+SOUND = "of_sound_v7.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -215,14 +215,19 @@ def s35(t, L):                                             # he follows the look
     return {}, {}
 
 
-def s36(t, L):                                             # buzz; the phone, filling the frame; she looks at Don; face down
-    if t < 0.22:                                           # v3: shorter buzz and insert, so face down HOLDS 0.6 s
-        return dict(buzz=4 * math.sin(t * 2 * math.pi * 18) if t > 0.03 else 0.0), {}
-    if t < 0.67:
+def s36(t, L):                                             # v4 (23 Nov, decided, 2.6 s): buzz; glasses DOWN; the invitation,
+    if t < 0.22:                                           # readable; a small smile (she knows); her eyes to Don, held 0.5 s;
+        return dict(buzz=4 * math.sin(t * 2 * math.pi * 18) if t > 0.03 else 0.0, pam_look=(0.4, 0.8)), {}   # back; face down
+    if t < 0.45:
+        return dict(pam_look=(0.4, 0.8), pam_glasses="up" if t < 0.33 else "low"), {}
+    if t < 1.40:
         return dict(_cam="insert", insert="invite"), {}
-    if t < 0.80:
-        return dict(pam_look=(-1, 0.2)), {}                    # she looks at Don, the phone still up
-    return dict(pam_look=(1, 0.3) if t > 1.10 else (-1, 0.2), phone_down=True, pam_pose=(-8, 0, 40, 40)), {}    # then away
+    g = dict(pam_glasses="low")
+    if t < 1.65:
+        return dict(g, pam_look=(0.4, 0.8), pam_face="proud"), {}          # reads it again; the corner of her mouth goes up
+    if t < 2.15:
+        return dict(g, pam_look=(-1, 0.2), pam_face="proud"), {}           # her eyes to Don, held
+    return dict(g, pam_look=(1, 0.3) if t > 2.35 else (-1, 0.2), pam_face="proud", phone_down=True, pam_pose=(-8, 0, 40, 40)), {}
 
 
 def s37(t, L):                                             # the smile is gone; he grabs the phone; DAD; the sweat comes back
