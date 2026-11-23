@@ -1,8 +1,8 @@
 # Pick a Side: the script, v3
 
-UptimeZ Inc. · episode 14 · *Civil War* 2 of 5 · 23 Nov · Stop 1 passed on v2 (23 Nov). **v3 takes the dialogue audit and Tomas's /grill-me (23 Nov), below; it changes four lines and four shots, nothing in the structure.** v1 and v2 are kept. Written by hand from concept v3.2 (approved) and floor plan v2. From stage 4 on, `src/ps_scenes.py` will generate the script; this one is kept as the plan it starts from. Times are estimates until the voices are recorded (stage 2).
+UptimeZ Inc. · episode 14 · *Civil War* 2 of 5 · 23 Nov · Stop 1 passed on v2 (23 Nov). **The throne keeps its own $49,999 price tag from 12; the PAID BY DAD tag of v1–v2 is dropped (Tomas, 23 Nov).** **v3 takes the dialogue audit and Tomas's /grill-me (23 Nov), below; it changes four lines and four shots, nothing in the structure.** v1 and v2 are kept. Written by hand from concept v3.2 (approved) and floor plan v2. From stage 4 on, `src/ps_scenes.py` will generate the script; this one is kept as the plan it starts from. Times are estimates until the voices are recorded (stage 2).
 
-**About 61 s, 35 shots, 14 lines.** The front desk v4 with the v6 throne tag (PAID BY DAD), the tape at world x 560, the blinds on the glass door; plus Father's booth from 12. FRI 12 on the wall calendar: the same day as 11, 12 and 13, minutes after 13's office scene.
+**About 61 s, 35 shots, 14 lines.** The front desk v4 with the throne's $49,999 price tag from 12, the tape at world x 560, the blinds on the glass door; plus Father's booth from 12. FRI 12 on the wall calendar: the same day as 11, 12 and 13, minutes after 13's office scene.
 
 ## What changed from v2 (dialogue audit + /grill-me, 23 Nov)
 
@@ -69,7 +69,7 @@ The front desk, zones B and C.
 | Shot | At | s | Size · setup | Picture | Action → reaction | Line | Sound |
 |---|---|---|---|---|---|---|---|
 | 2.1 | 0:07.6 | 1.6 | LOW · S4 | Floor level. **The tape rips across the floor toward the camera, straight through the group**: three pairs of feet hop apart (Pam's flats left, Sofía's heels right, Mom's shoes stay on it) | the tape → the feet hop | — | the long tape SCREECH |
-| 2.2 | 0:09.2 | 1.4 | MEDIUM · S3 | Don passes the throne; the red **PAID BY DAD** tag swings at the crown. He sees it, and spins the throne so the tag faces the wall | the spin → he doesn't look back | — | the casters spin |
+| 2.2 | 0:09.2 | 1.4 | MEDIUM · S3 | Don passes the throne; its **$49,999** price tag (from 12) swings at the crown. He sees it, and spins the throne so the tag faces the wall | the spin → he doesn't look back | — | the casters spin |
 | 2.3 | 0:10.6 | 1.6 | MEDIUM · S3 | Don stamps on his half, the roll pointed at each of them in turn like a weapon. On the tape: **DON** and an arrow | the roll points → they stiffen | DON: "Pick a side." | — |
 | 2.4 | 0:12.2 | 1.4 | WIDE · S1 | **Pam** steps over to Don first, quickly. **Her phone stays on the counter, across the line** (face up, dark) | Pam crosses → her phone stays | — | — |
 | 2.5 | 0:13.6 | 1.6 | TWO-SHOT · S3 | Don and Pam. He **salutes** her, solemn; she half returns it with her cup hand, then hides a small smile in the cup | the salute → her half salute, the smile | DON: "Pam. My general." | — |

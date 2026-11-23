@@ -4,7 +4,7 @@ visor shows a sun when the room goes dark; Don's office gag at the line replaces
 the irony in bodies (Pam reaching across the line to her phone, Mom turned away).
 The front desk v4 (fs_set4.py), drawn empty, with the CEO throne (dh_props.ceo_chair) on Don's mark, and on top:
 the tape line, who stands where in the five key beats, and the ways they move. Nothing in fs_set4 or dh_props changes.
-python3 ps_plan.py [out_dir] -> ps_plan_v2.png"""
+python3 ps_plan.py [out_dir] -> ps_plan_v3.png"""
 import os
 import sys
 import math
@@ -119,7 +119,7 @@ def phone_glow(c, x, y):
     c.save(); c.set_source_rgba(0.6, 0.9, 1.0, 0.9); c.rectangle(x - 9, y - 15, 18, 30); c.fill(); c.restore()
 
 
-def tag(c, x, y, text="PAID BY DAD"):
+def tag(c, x, y, text="$49,999"):
     c.save(); c.set_source_rgb(0.85, 0.12, 0.12); c.rectangle(x, y, 92, 22); c.fill()
     c.set_source_rgb(1, 1, 1); c.select_font_face("Inter", 0, 1); c.set_font_size(12); c.move_to(x + 6, y + 15)
     c.show_text(text); c.restore()
@@ -205,7 +205,7 @@ def sheet(d):
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
     c = cairo.Context(s); k = kit.Ctx(c, 0)
     c.set_source_rgb(0.97, 0.96, 0.93); c.paint()
-    corp(c, "PICK A SIDE  ·  floor plan v2  ·  the front desk v4 + the tape", gap, 52, 32, brand.NAVY, True)
+    corp(c, "PICK A SIDE  ·  floor plan v3  ·  the front desk v4 + the tape", gap, 52, 32, brand.NAVY, True)
     wrap(c, "The line at world x %d: Don keeps the door, the robot and his throne; Father's side gets the counter, the work, "
             "Pam's phone and Don's own office door. Discs: D Don, P Pam, M Mom, S Sofía, R robot, B2 bodyguard 2. "
             "Dashed: moves. Solid: looks." % LINE_X, gap, 86, 17, W - 2 * gap)
@@ -219,7 +219,7 @@ def sheet(d):
         c.set_source_rgb(0.2, 0.2, 0.2); c.set_line_width(1); c.rectangle(x, y, PW, PH); c.stroke()
         corp(c, title, x, y + PH + 26, 17, brand.NAVY, True)
         wrap(c, note, x, y + PH + 50, 13, PW)
-    out = os.path.join(d, "ps_plan_v2.png"); s.write_to_png(out); return out
+    out = os.path.join(d, "ps_plan_v3.png"); s.write_to_png(out); return out
 
 
 if __name__ == "__main__":

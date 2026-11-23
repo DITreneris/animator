@@ -33,26 +33,6 @@ def _T(c, s, x, y, size, col=INK, bold=True, center=True):
     c.move_to(x - (e.x_advance / 2 if center else 0), y); c.show_text(s)
 
 
-TAG = [None]          # v6 (23 Nov, episode 13 v9 on): opt-in text for a red tag hung from the crown's left point; None draws as v5
-
-
-def _tag(k, text):
-    """A red swing ticket on a gold cord off the crown's left point, narrow and close in, so a close-up holds it whole
-    (chair units)."""
-    c = k.c
-    for col, w in ((INK, 4.2), (GOLD, 2.4)):
-        c.set_source_rgb(*col); c.set_line_width(w); c.move_to(-50, -420); c.curve_to(-60, -424, -70, -428, -80, -430); c.stroke()
-    c.save(); c.translate(-92, -392); c.rotate(0.10)
-    cut(k, [(-27, -40), (20, -40), (27, -33), (27, 40), (-27, 40)], (0.84, 0.10, 0.12), lw=2.2)
-    ellipse(k, 13, -29, 4, 4, (0.97, 0.94, 0.88), 2090, shadow=False, lw=1.4)
-    lines = text.split("\n")
-    c.set_source_rgb(1, 1, 1); c.select_font_face("Lilita One")
-    for i, ln in enumerate(lines):
-        c.set_font_size(13)
-        e = c.text_extents(ln); c.move_to(-e.x_advance / 2, 8 + (i - (len(lines) - 1) / 2) * 20); c.show_text(ln)
-    c.restore()
-
-
 def ceo_chair(k, x, feet, s=1.0, seed=2000, lean=0.0, sink=0.0, puff=False, seat_drop=0.0):
     """v2 (after the props review): a throne. The back a quarter wider and taller, a few big buttons, ONE big crown, and
     a height lever with a red knob. sink 0..1: the gas lift lets go and the seat drops 46 units (frame 0: DAD rings, he
@@ -107,8 +87,6 @@ def ceo_chair(k, x, feet, s=1.0, seed=2000, lean=0.0, sink=0.0, puff=False, seat
                 c.move_to(sx * 96, y0); c.line_to(sx * (96 + ln), y1); c.stroke()
                 c.set_source_rgb(1, 1, 1); c.set_line_width(4)
                 c.move_to(sx * 96, y0); c.line_to(sx * (96 + ln), y1); c.stroke()
-    if TAG[0]:
-        _tag(k, TAG[0])
     c.restore()
     return {"arm": (x + 94 * s, feet - (178 - drop) * s), "seat": (x, feet - (110 - drop) * s), "top": feet - (448 - drop) * s}
 
