@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 17, 2: 21, 3: 17, 4: 20, 5: 17}
+VER = {1: 17, 2: 21, 3: 18, 4: 20, 5: 17}
 SOUND = "of_sound_v8.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15

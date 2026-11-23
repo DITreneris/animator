@@ -415,14 +415,15 @@ def _cast_draw(k, n, scene, sh, heads):
             import client_ob as co_
             H, _ = oc.guard_arm_front(k, x, f, CS, False, (tx, ty), co_skin(), hand=False, from_elbow=False,
                                       upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
-            oc.phone_grip(k, H[0], H[1], 0.6, None, ang=(0.9 if pu < 0.6 else 0.9 - 1.0 * (pu - 0.6) / 0.4), skin=co_skin())
-        elif kind == "phone_out":
+            oc.phone_grip(k, H[0], H[1], 0.6, None, ang=(0.9 if pu < 0.6 else 0.9 - 1.0 * (pu - 0.6) / 0.4), skin=co_skin(),
+                          thumb=1)                                               # v2 (23 Nov, Tomas, 0:38): his right hand — the
+        elif kind == "phone_out":                                               # thumb was on the far edge, crossed over his own fingers
             tx, ty = x - 66, f - 158                                             # v5 (23 Nov): the whole phone inside the frame
             o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)])
             import client_ob as co_                                              # v6: his arm again in ONE piece (the rig's broke under the phone)
             H, _ = oc.guard_arm_front(k, x, f, CS, False, (tx, ty), co_skin(), hand=False, from_elbow=False,
                                       upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
-            oc.phone_grip(k, H[0], H[1], 0.6, None, ang=-0.1, skin=co_skin())
+            oc.phone_grip(k, H[0], H[1], 0.6, None, ang=-0.1, skin=co_skin(), thumb=1)   # v2: same fix, same arm
         elif kind == "slam":
             sy = ps.get("slam_y", 0.0)                                       # stage 7: the hands come down with the lid
             o = oc.client(k, x, f, CS, look=(-1, 0.6), targets=[(x - 64, 668 - sy), (x - 40, 664 - sy)])
