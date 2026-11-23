@@ -275,9 +275,11 @@ def _cast_draw(k, n, scene, sh, heads):
                 dx_, dy_ = k_.c.user_to_device(hx_, hy_)
                 return None if math.hypot(dx_ - pd_[0], dy_ - pd_[1]) < pt_ else hk(k_, hx_, hy_, *a_)
             _kit.HAND[0] = _pskip
+        dc.FATHER_STEP[0] = st.get("father_step")                                # v1 (23 Nov): his feet, when he walks
         try:
             o = oc.father(k, x, f, FS, face=ps.get("face", "hard"), look=ps.get("look", (1, 0)), targets=ps.get("targets_xy", ()))
         finally:
+            dc.FATHER_STEP[0] = None
             _kit.HAND[0] = hk
         heads[n] = (o["head"][0], o["head"][1], 50 * FS)
         if ps.get("phone_donnie") and ps.get("targets_xy"):                  # v1 (23 Nov): DONNIE calling, in his hand, he looks at it
@@ -466,6 +468,10 @@ def _lamp_in_hand(k, ps, hx, hy, arm=None):
         gs.lamp(k, hx - 8, hy + 22, ang=la_, lit=ps.get("lamp_lit", False) or "lamp_ang" in ps)
         _oc.handle_grip(k, hx - 8 + 26 * math.cos(la_), hy + 22 + 26 * math.sin(la_), 24, la_ + math.pi / 2, co_skin())   # v3: held
     gs.protect(c, "the lamp in his hand", hx - 40, hy - 10, hx + 30, hy + 50)
+    if ps.get("napkin"):                                                     # v1 (23 Nov, the mid-film gag): a white napkin
+        cut(Ctx(c, 0) if False else k, [(hx + 4, hy + 6), (hx + 30, hy + 2), (hx + 34, hy + 46), (hx + 22, hy + 52), (hx + 8, hy + 44)],
+            (0.98, 0.98, 0.96), lw=2)                                         # over his forearm: he serves the lamp like a waiter
+        c.set_source_rgb(0.80, 0.80, 0.80); c.set_line_width(1.4); c.move_to(hx + 18, hy + 6); c.line_to(hx + 20, hy + 48); c.stroke()
 
 
 def held_lighter(k, hx, hy, flame, lid, skin):
@@ -536,6 +542,11 @@ def garage_shot(k, sh, scene, heads, cam):
               lamp_on_floor=scene in (1, 2, 5) and (not st.get("lamp_up") or st.get("lamp_floor")), behind=behind, front=front, tilt=st.get("tilt", 0.0))
     gs.LID_BEHIND[0] = False
     c = k.c
+    if st.get("lamp_fly") is not None:                                    # v1 (23 Nov): the lamp in the air, onto its floor spot
+        w_ = st["lamp_fly"]
+        x0_, y0_ = BLOCK[1]["g1"][0] + 50, BLOCK[1]["g1"][1] - 60
+        x1_, y1_ = gs.LAMP_AT
+        gs.lamp(k, x0_ + (x1_ - x0_) * w_, y0_ + (y1_ - y0_) * w_ - 70 * 4 * w_ * (1 - w_), ang=-0.5 + 2.5 * (1 - w_), lit=True)
     if st.get("running"):                                                 # v9: 2.8e, the car runs: lights on, a puff of exhaust
         r_ = st["running"]
         x0_, x1_ = gs.CAR_X
@@ -693,6 +704,7 @@ def insert_shot(k, sh):
         ellipse(k, px_, py_, 14, 14, (0.85, 0.12, 0.12), 3497, lw=2.4)                  # the red pin
         gs.protect(c, "the fresh plan", 60, 290, 470, 660)
     elif kind == "bay":                                                            # v1 (23 Nov, decided A): his hands in the lamp's light
+        c.save(); c.translate(250, 360); c.scale(1.12, 1.12); c.translate(-250, -270)   # v5 (decided): the bay fills the frame
         c.set_source_rgb(0.10, 0.10, 0.11); c.paint()                                  # the bay, dark; all of it inside the safe area
         bu = sh["state"].get("bay_u", 1.0)
         g_ = cairo.RadialGradient(240, 340, 10, 240, 340, 230)                         # the lamp's pool, on the engine and his hands
@@ -772,6 +784,7 @@ def insert_shot(k, sh):
         cut(k, [(-30, -8), (30, -12), (40, 50), (8, 90), (-26, 62)], (0.82, 0.30, 0.22), 3476, lw=2.2)
         c.restore()
         gs.protect(c, "his hands in the light", 60, 150, 440, 460)
+        c.restore()
     elif kind == "key":                                                            # the steering column, the key, his fingers
         c.set_source_rgb(0.16, 0.16, 0.18); c.paint()
         c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(46); c.set_line_cap(1)

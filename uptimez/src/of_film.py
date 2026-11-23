@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 16, 2: 20, 3: 16, 4: 18, 5: 15}
+VER = {1: 17, 2: 21, 3: 17, 4: 19, 5: 16}
 SOUND = "of_sound_v8.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -150,10 +150,19 @@ def s28e(t, L):                                            # the key turns; a co
     return dict(key_u=ku, run=run), {}
 
 
-def s29(t, L):                                             # on his way to the door
-    u = t / L
-    x = 280 - 52 * u
-    return dict(_cam=WALK_CAM, moved=dict(father=(x, 880 - 4 * abs(math.sin(t * math.pi * 2.2))), g2=(120, 872))), {}
+STEP_T = 0.5                                               # v2 (23 Nov, decided): a step every 0.5 s, feet planted
+
+
+def s29(t, L):                                             # on his way to the door: real steps. Each step: the back foot lifts and
+    import dh_cast as dc                                   # swings past; the body moves only while a foot is in the air; the
+    n = int(t / STEP_T); ph = (t % STEP_T) / STEP_T         # planted foot does not slide (it moves with the body by 0)
+    stride = 26.0
+    x = 280 - stride * (n + ease(min(1.0, ph / 0.7)))
+    lift = 10 * math.sin(math.pi * min(1.0, ph / 0.7))
+    a = -stride / 2 + stride * ease(min(1.0, ph / 0.7))     # the swing foot from behind to ahead (body units, left is ahead)
+    feet = [(-a * 0.9, lift), (0.0, 0.0)] if n % 2 == 0 else [(0.0, 0.0), (-a * 0.9, lift)]
+    bob = 3 * math.sin(math.pi * min(1.0, ph / 0.7))
+    return dict(_cam=WALK_CAM, father_step=feet, moved=dict(father=(x, 880 - bob), g2=(120, 872))), {}
 
 
 WALK_CAM = (290, 780, 1.3)                                 # locked: he walks through the frame (a following camera jumped)
@@ -301,10 +310,14 @@ def s42_service(t, L):                                     # the last frame (and
     if t > 0.55:                                           # done: his hands down; he stands at the wall, as in frame 0
         v_ = ease((t - 0.55) / 0.35)
         g2 = dict(targets_xy=[om.lerp((372, 590), (380, 760), v_), om.lerp((448, 590), (440, 760), v_)], turn=0.0) if v_ < 1 else dict(turn=0.0)
-    if t < 0.9:
+    if t < 0.7:
         g1 = dict(targets_xy=[(x + 58, f - 70)], lamp=True, lamp_ang=3.0, push=False)
+    elif t < 1.0:                                          # v5 (decided): he lobs it underarm onto its spot on the floor, 0.3 s
+        w_ = (t - 0.7) / 0.3
+        g1 = dict(targets_xy=[om.lerp((x + 58, f - 70), (x + 40, f - 120), w_)], push=False, lamp=False)
+        st["lamp_fly"] = w_
     else:
-        v = ease((t - 0.9) / 0.5)
+        v = ease((t - 1.0) / 0.4)
         g1 = dict(targets_xy=[om.lerp((x + 40, f - 120), (322 - 10, 652 - 70), v)], push=False, lamp=False)
         st["lamp_floor"] = True
     return st, dict(g1=g1, g2=g2)
@@ -387,7 +400,7 @@ def s34b(t, L):                                            # v9: turned to Don, 
 
 def s35b(t, L):                                            # v9: he turns to the counter: "Pam?"
     u = ease(t / 0.25)
-    return dict(don_over=dict(look=(0.2 + 0.8 * u, 0.4 - 0.4 * u))), {}
+    return dict(don_over=dict(look=(0.2 + 1.8 * u, 0.4 - 0.4 * u))), {}   # v10: the eyes all the way to the counter
 
 
 def s36b(t, L):                                            # v9: MEETING IN 4:59 ... 4:58, ticking
