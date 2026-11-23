@@ -225,7 +225,8 @@ def star(c, x, y, r, col=BADGE):
 CROSSBELT = [True]                 # v3 (23 Nov, Tomas: "drop it"): False in layouts v2; cold viewers read it as a wand
 DON_POSES = {"stop": ((-8, 0, 92, -6), ("relax", "palm")),        # 3.1 a white glove held out flat: traffic, wait
              "wave": ((-8, 0, 70, 70), ("relax", "palm")),         # 3.1/3.4 waving the car on
-             "stand": ((-8, 0, 8, 0), ("relax", "relax"))}
+             "stand": ((-8, 0, 8, 0), ("relax", "relax")),
+             "inspect": ((-110, -50, 8, 0), ("palm", "relax"))}     # v4b, 3.3: the white glove held up at his eye: clean
 
 
 def don_cop(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistle_in=True):
