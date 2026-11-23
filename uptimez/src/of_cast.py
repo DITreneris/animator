@@ -369,7 +369,11 @@ def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wi
 def client_bent(k, x, feet, s, look=(-1, 0), hands=None, lean=0.75, head34=None):
     """bent over the engine bay (to his front, screen left): client_of v2's true profile, tipped from the hips."""
     import client_of as cof
-    o = cof.profile(k, x, feet, s, facing=-1, lean=lean, hands=hands, head34=head34)
+    cof.MOUTH34[0] = MOUTH[0] if head34 is not None else None                         # v3 (23 Nov): his lines lip-synced
+    try:
+        o = cof.profile(k, x, feet, s, facing=-1, lean=lean, hands=hands, head34=head34)
+    finally:
+        cof.MOUTH34[0] = None
     hip = feet + co.HIP * s
     hx, hy = o["head"]                                                        # the head, tipped forward with him
     rx, ry = hx - x, hy - hip

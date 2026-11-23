@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 20, 2: 24, 3: 21, 4: 24, 5: 20}
-SOUND = "of_sound_v10.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 21, 2: 25, 3: 22, 4: 25, 5: 21}
+SOUND = "of_sound_v11.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -111,7 +111,12 @@ def _work(t):
     return math.sin(t * 2 * math.pi * 1.3)
 
 
-def s21(t, L):                                             # Father speaks to him; he keeps working
+CUT_21 = 1.9                                              # v2 (23 Nov, cold tests 3 of 3: "4 s of one frame, I'd scroll"):
+
+
+def s21(t, L):                                             # Father speaks to him; he keeps working. CLOSE on Father first, then
+    if t < CUT_21:                                         # the two-shot: the line goes on over the cut, the Client never looks up
+        return dict(_cam=sc.FATHER_LAMP, _cast=("father", "g2")), dict(client=dict(kind="bent", work=_work(t)))
     return {}, dict(client=dict(kind="bent", work=_work(t)))
 
 
@@ -326,6 +331,9 @@ def s42_service(t, L):                                     # the last frame (and
 def s24(t, L):                                             # v1 (23 Nov audit, decided): Father acts the question. He leans
     ln = 0.035 * ease(min(1.0, max(0.0, (t - 0.5) / 0.6)))  # in toward the Client as he asks; the brow goes up on "company?"
     face = "hard" if t < 2.35 else ("brow" if t < 3.05 else "hard")   # v2: the mouth comes from the take
+    if t >= 1.5:                                           # v3 (cold tests 3 of 3: it drags): CUT to the medium, the question
+        return (dict(_cam=(467, 872, 1.80), _cast=("father", "client")),   # lands on the Client, at the engine (2.1's two-shot)
+                dict(father=dict(face=face, lean=ln, look=(1, 0)), client=dict(kind="bent", work=_work(t))))
     return {}, dict(father=dict(face=face, lean=ln, look=(1, 0)))
 
 
@@ -368,8 +376,8 @@ def s23(t, L):
     u3 = om.hold((t - 0.55) / 0.30)
     st = dict(moved=dict(g1=LAMP_G1), front_of_car=("g1",))
     if t >= 0.7:                                           # v7 (23 Nov, decided): CUT IN, 0.9 s: his hands in the light; the bolt comes free
-        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 1.1 else 0.0,
-                    bolt_out=ease((t - 1.1) / 0.3), bay_u=1.0), {}
+        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 1.35 else 0.0,
+                    bolt_out=ease((t - 1.35) / 0.3), bay_u=1.0), {}     # v8 (timing v11): the cut-in 1.2 s, the bolt later
     if u3 > 0:
         gh = om.lerp(out_, LAMP_IN_BAY, u3)
         return st, dict(client=dict(kind="bent", hand_back=False, work=math.sin(t * 2 * math.pi * 1.3) if t > 0.9 else 0.0),
@@ -391,7 +399,9 @@ RUN_CAM = (350, 790, 1.25)                                 # the whole car, nose
 
 
 MOTION["2.3"] = s23
-MOTION["2.8e"] = s28e2
+MOTION["1.3"] = lambda t, L: s13(t * 1.3 / 1.6, L)   # v3 (timing v11, cold tests 3 of 3 "too fast"): the throw, the roll-out
+                                                    # and the sit-up at 0.8x speed
+MOTION["2.8e"] = lambda t, L: s28e2(max(0.0, t - 0.3), L)   # v10 (timing v11): his fingers on the key 0.3 s, then the turn
 for _sid, _fn in om.veto():
     MOTION[_sid] = _fn
 _s15 = MOTION.get("1.5")
@@ -431,7 +441,13 @@ def s36b(t, L):                                            # v9: MEETING IN 4:59
 MOTION["3.4b"] = s34b
 MOTION["3.5b"] = s35b
 MOTION["3.6b"] = s36b
-MOTION["0.9"] = s09_work
+def s09_wide(t, L):                                       # v2 (23 Nov, decided): 0.8's frame held; his hand still on the roof,
+    x, f = sc.BLOCK[1]["g1"]                               # the knee under the car taps; the voice from under it
+    return dict(_cam=sc.CAR_CAM, _cast=("g1",), legs_work=math.sin(t * 2 * math.pi * 1.4)), \
+        dict(g1=dict(targets_xy=[(322, 654)], push=True))   # the palm flat on the roof's top, as 0.8 left it
+
+
+MOTION["0.9"] = s09_wide
 MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
 MOTION["0.10"] = s010_same
 MOTION["4.2"] = s42_service
@@ -609,6 +625,7 @@ def _at_wall(r):
 
 MOTION["0.8"] = lambda t, L, f_=MOTION.get("0.8", s08_slam): _at_wall(f_(t, L))
 MOTION["0.10"] = lambda t, L, f_=MOTION.get("0.10", s010_same): _at_wall(f_(t, L))
+MOTION["0.9"] = lambda t, L, f_=MOTION.get("0.9", s09_wide): _at_wall(f_(t, L))   # v2: the same picture as 0.8
 DOOR_CAM = (168, 700, 1.9)                                # v1 (23 Nov, decided): the doorway, Father in it, held
 
 

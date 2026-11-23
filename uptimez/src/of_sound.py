@@ -175,7 +175,7 @@ def room(total):
 
 # --- the mix ----------------------------------------------------------------------------------------------------------
 def timing():
-    d = json.load(open(os.path.join(OUT, "of_timing_v10.json")))
+    d = json.load(open(os.path.join(OUT, "of_timing_v11.json")))
     return {s["shot"]: s for s in d["shots"]}, d["total"]
 
 
@@ -201,7 +201,7 @@ def mix():
         k = int(0.03 * SR); seg[:k] *= np.linspace(0, 1, k); seg[-k:] *= np.linspace(1, 0, k)
         put(rad, seg, a, 1.0)
     rad_g = np.ones(n)                                                   # the engine drowns it for a moment (2.8e)
-    i0, i1 = int(T("2.8e") * SR), int((T("2.8e") + 1.0) * SR)
+    i0, i1 = int((T("2.8e") + 0.3) * SR), int((T("2.8e") + 1.3) * SR)
     rad_g[i0:i1] = 0.35
     rad *= rad_g
     # effects, at the script's places
@@ -213,12 +213,12 @@ def mix():
     put(fxb, lighter_click(), T("1.2") + 0.05, 0.75)
     put(fxb, whoosh(0.4), T("1.2") + 0.42, 0.55)                          # v4: the 7 catches
     put(fxb, crackle(1.4), T("1.2") + 0.45, 0.30)                         # it burns up the plan
-    put(fxb, whoosh(0.35), T("1.3") + 0.15, 0.45)                         # torn off and flung
-    put(fxb, crackle(3.0), T("1.3") + 0.50, 0.32)                         # on the floor by his boot
+    put(fxb, whoosh(0.35), T("1.3") + 0.18, 0.45)                         # torn off and flung
+    put(fxb, crackle(3.0), T("1.3") + 0.62, 0.32)                         # on the floor by his boot
     put(fxb, flame(E("1.5") + 0.5 - T("1.2")), T("1.2") + 0.08, 0.10)
     put(fxb, lighter_shut(), T("1.7") + 0.22, 0.70)
     put(fxb, slam(), T("2.8d") + 0.30, 0.85)
-    put(fxb, start_engine(1.6), T("2.8e") + 0.10, 0.55)
+    put(fxb, start_engine(1.6), T("2.8e") + 0.40, 0.55)   # v11: a beat on the key first
     put(fxb, chime_happy(), T("3.0") + 0.10, 0.45)                       # v5: over the UptimeZ doors
     for k_ in (0.05, 0.65):                                                # the visor's countdown ticks
         put(fxb, si.clank()[: int(0.05 * SR)], T("3.6b") + k_, 0.25)
@@ -273,7 +273,7 @@ def master(a, target=-14.0, tp=-2.6):          # AAC adds about 0.9 dB
     stays under tp (lessons: the AAC overshoot is checked on the final file too)."""
     from scipy.signal import resample_poly
     from scipy.ndimage import minimum_filter1d
-    path = os.path.join(OUT, "of_sound_v10.wav")
+    path = os.path.join(OUT, "of_sound_v11.wav")
     g = 1.0
     x = a / (np.abs(a).max() + 1e-9) * 0.5
     for _ in range(6):
@@ -298,7 +298,7 @@ def check(lines, path=None, out=None):
     path: another mix to check (the rough cut's decoded AAC); out: where the json goes."""
     import of_voices as ov
     import sound_fs as sfs
-    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v10.wav"))
+    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v11.wav"))
     if a.ndim > 1:
         a = a.mean(axis=1)
     r = ov.recognizer()
@@ -325,7 +325,7 @@ def check(lines, path=None, out=None):
         prev = (t0, line.split(":", 1)[1] if ":" in line else line)
         res[sid] = dict(line=line, heard=heard, ok=ok)
         print("%-5s %d/3  %-48s | %s" % (sid, ok, line[:48], heard[0]), flush=True)
-    json.dump(res, open(out or os.path.join(OUT, "of_sound_v10_check.json"), "w"), indent=1)
+    json.dump(res, open(out or os.path.join(OUT, "of_sound_v11_check.json"), "w"), indent=1)
     return res
 
 
@@ -338,7 +338,7 @@ def levels(path):
 if __name__ == "__main__":
     a, lines, total = mix()
     master(a)
-    I, P = levels(os.path.join(OUT, "of_sound_v10.wav"))
+    I, P = levels(os.path.join(OUT, "of_sound_v11.wav"))
     print("master: %.1f s, %.1f LUFS, true peak %.1f dBTP" % (total, I, P))
     res = check(lines)
     KNOWN = {"2.6": "\"And then?\" is heard \"On then\" in 2 of 3 windows in the mix (1 of 3 dry at stop 2 without context): "

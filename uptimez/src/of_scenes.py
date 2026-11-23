@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v10.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v11.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -83,9 +83,10 @@ SCENES = [
           "roof; it SLAMS down. **The car rocks on its stands over the legs underneath.** A stand scrapes.",
           action="the SLAM; the car rocks", reaction="the legs jolt", cast=("g1",), state=dict(lean=True, tilt=-0.045),
           fx="the slam; the stand scrapes"),
-        S("0.9", "CLOSE", "under", "UNDER THE CAR, from above, closer than 0.5 (v11; the side profile was dropped). The sump a hand above his face, swaying. He doesn't look out, doesn't "
-          "raise his voice.", line='CLIENT: "Off the car."', action="the sump sways", reaction="he stays flat",
-          state=dict(sway=True)),
+        S("0.9", "MEDIUM", CAR_CAM, "v13 (23 Nov, cold tests 3 of 3, decided): **0.8's FRAME, held**: the hand still on the roof, "
+          "the voice from under the car, the tail into the dark by his hips. He doesn't roll out, doesn't raise his voice.",
+          line='CLIENT: "Off the car."', action="the knee taps", reaction="the hand stays, for now", cast=("g1",),
+          state=dict(voice_at=(300, 790))),
         S("0.10", "MEDIUM", CAR_CAM, "SAME FRAME as 0.8 (v8). **The hand snaps off the roof**, two drawings; he steps back. "
           "Only then does he look left, to Father.", action="the hand off at once", reaction="he looks to Father", cast=("g1",)),
         S("0.6", "CLOSE", ["father"], "CLOSE, Father. Eyes up from under his brows, chin down. No answer.",
@@ -1524,6 +1525,9 @@ def board_frame(sh, scene, bubble=True):
     if sh["cam"] == "desk":                                           # the desk frame's heads are in set units already mapped
         fc = {n: ((v[0] - cam[0]) * cam[2] + 270, (v[1] - cam[1]) * cam[2] + 480, v[2] * cam[2]) for n, v in f["heads"].items()}
         fc = {("don" if n in ("don", "seat") else n): v for n, v in fc.items()}
+    va_ = sh["state"].get("voice_at")                                 # v13 (23 Nov, cold tests 3 of 3, decided): a voice from a
+    if va_:                                                           # place we see but a face we don't (under the car): the tail
+        fc[who] = ((va_[0] - cam[0]) * cam[2] + 270, (va_[1] - cam[1]) * cam[2] + 480, 14.0)   # goes INTO that dark
     if who not in fc:
         return surf, msgs + ["BUBBLE: %s speaks but is not in the frame" % who]
     head = fc[who]
@@ -1542,6 +1546,8 @@ def board_frame(sh, scene, bubble=True):
             (head[0] + 0.30 * head[2], head[1] - 0.50 * head[2], 10)  # face's middle; the tip on the cheek beside it
     if who == "robot":                                                # to the visor's rim, never across its card
         tail = (head[0] - head[2] * 0.62, head[1] - head[2] * 0.62, 2)
+    if va_:
+        tail = (head[0], head[1], 2)
     others = [v for n, v in fc.items() if n != who]
     before = np.ndarray((1920, 1080, 4), np.uint8, surf.get_data()).copy()
     c = cairo.Context(surf); c.scale(1, 1)
@@ -1560,12 +1566,15 @@ def board_frame(sh, scene, bubble=True):
         probs.append("BUBBLE %s: no tail drawn" % sh["id"])
     else:
         tx, ty = xs[i] / 2.0, ys[i] / 2.0
-        if who != "robot" and not _skin_near(before, xs[i], ys[i], 6):
+        if va_:
+            if math.hypot(xs[i] / 2.0 - head[0], ys[i] / 2.0 - head[1]) > 22:
+                probs.append("TAIL %s: the tip (%d, %d) is not at the voice (%d, %d)" % (sh["id"], xs[i] / 2, ys[i] / 2, head[0], head[1]))
+        elif who != "robot" and not _skin_near(before, xs[i], ys[i], 6):
             probs.append("TAIL %s: the tip (%d, %d) is not beside skin (hair, wall or collar)" % (sh["id"], tx, ty))
         hx, hy, r = head
         if who == "robot" and math.hypot(tx - hx, ty - hy) > 1.0 * r:
             probs.append("TAIL %s: the tip (%d, %d) is not on the visor" % (sh["id"], tx, ty))
-        if who != "robot" and sh["cam"] != "under" and not (hy - 0.1 * r <= ty <= hy + 1.4 * r):
+        if who != "robot" and sh["cam"] != "under" and not va_ and not (hy - 0.1 * r <= ty <= hy + 1.4 * r):
             probs.append("TAIL %s: the tip (%d, %d) is not at mouth height (face %d, %d, r %d)" % (sh["id"], tx, ty, hx, hy, r))
     x0, y0, x1, y1 = box
     if x0 < 18 or y0 < 96 or x1 > 522 or y1 > 720:
