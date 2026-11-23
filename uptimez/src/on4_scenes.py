@@ -1,4 +1,8 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v3 (23 Nov; v1, v2 pinned). v3: Don the traffic cop v4b (on4_cast.don_cop2: the
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v4 = board v1 (23 Nov; v1-v3 pinned). After the layout review ("Tobulinam"):
+the blocking sheet is generated from the shots' own positions; 3.1-3.2 closer (1.5); 3.2 her silhouette lit from behind by
+the headlights, an impact burst at her knees, her palm open; 3.3 in two keys (3.3a the glove flat on the bonnet at the car's
+visible front corner, 3.3b the glove up at his eye) and her small wave; 3.4 the rear door reads (the wheel arch, the tail
+lamp); 3.6 she sits up, a hand to her mask; the CV drawn. v3 (23 Nov): v3: Don the traffic cop v4b (on4_cast.don_cop2: the
 cap, the shield, the STOP / GO paddle; Tomas: "more serious, and a comic prop"). 3.1: STOP flashed at Pam's side, GO to the
 car, she stops dead in its path. 3.2: GO raised to the car as it rolls into her. 3.3: Don on the far side of the car, his
 back to her, the car between them, his glove on the bonnet, his eyes on it (cold test v2: he read as helping her).
@@ -43,6 +47,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "board v1: 3.1-3.2 closer; 3.2 lit from behind, the impact at her knees, her palm open; 3.3 in two keys (glove on the bonnet, glove at his eye) and her small wave; 3.4 the rear door reads; 3.6 she sits up, a hand to her mask.",
     "v3: Don the traffic cop with the STOP / GO paddle; 3.1 STOP at Pam's side, GO to the car, so she stops in its path; 3.3 Don on the far side of the car, the car between them.",
     "v2 (stop 3): 3.2-3.3 restaged after the cold test; Don's crossbelt dropped; the crossing lamp's post lit; bigger characters in the wides and at S6; the stage, the back seat and the fire escape drawn.",
     "Script v4 is the plan: 5.2 is the plan and the UptimeZ card, 3.1 the car's turn at the junction.",
@@ -285,6 +290,8 @@ def P(who, *a, **kw):
 
 ARM_UP = (-8, 0) + oc.pm.ik(1, 30, oc.HY - 150)             # 7.1 / 6.5: one arm up on its elbow, the hand open
 HAND_STOP = (-8, 0) + oc.pm.ik(1, 80, oc.HY + 10)          # 3.2: one hand up at the headlights
+oc.CAT_POSES.setdefault("stop_palm", (HAND_STOP, ("relax_s", "palm")))      # board v1: the palm open at the car
+oc.CAT_POSES.setdefault("mask_fix", ((-8, 0) + oc.pm.ik(1, 34, oc.HY - 6), ("relax_s", "point")))   # 3.6: a finger to the mask
 DON_REACH = (-70, 20, 8, 0)                                # 3.3: his screen-left arm out and down to the bumper
 
 
@@ -307,7 +314,12 @@ def draw_cast(k, cast):
         if lean:
             k.c.save(); k.c.translate(a[0], a[1]); k.c.rotate(lean); k.c.translate(-a[0], -a[1])
         if who == "pam_cat":
+            cy = kw.pop("clip_y", None)
+            if cy is not None:                               # 3.6: sitting: only her top half rises from the road
+                k.c.save(); k.c.rectangle(-2000, -2000, 5000, cy + 2000); k.c.clip()
             o = oc.pam_cat(k, *a, **kw)
+            if cy is not None:
+                k.c.restore()
         elif who == "pam_from_behind":                       # her back to us: the figure, the face covered by the back of
             o = oc.pam_cat(k, *a, **kw)                      # the head (her dark bob) and the ears
             hx, hy = o["head"]; s_ = a[2]
@@ -396,6 +408,33 @@ def _impact(k, x, y):                                      # 3.2: the bump: star
         c.move_to(x + dx * 0.8, y + dy); c.line_to(x + dx, y + dy + 30); c.stroke()
 
 
+def _burst(k, x, y, r=26):                                 # the impact: a white jagged star where the bumper meets her
+    c = k.c; c.new_path()
+    for i in range(16):
+        a = i * math.pi / 8; rr = r if i % 2 == 0 else r * 0.45
+        (c.move_to if i == 0 else c.line_to)(x + math.cos(a) * rr, y + math.sin(a) * rr)
+    c.close_path(); c.set_source_rgb(1, 1, 1); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
+
+
+def _wave(k):                                              # 3.3b: her flung hand lifts off the road, open: a small wave
+    import on4_lying as ly
+    import hands_ps as hp
+    x0, y = ly.HEAD[0] + 34, ly.BACK_Y
+    hp.draw(k, "palm", x0 - 104, y - 26, 30, oc.GLOVE_DARK, (0.0, -1.0), -1)
+    c = k.c; c.set_source_rgb(1, 1, 1); c.set_line_width(3)
+    for dx in (-22, 22):
+        c.move_to(x0 - 104 + dx, y - 50); c.line_to(x0 - 104 + dx * 1.4, y - 62); c.stroke()
+
+
+def _sit_legs(k):                                          # 3.6: sitting: her legs out along the road toward us, apart
+    for (hx, fx) in ((196, 120), (246, 330)):
+        st.poly(k, [(hx - 24, 796), (hx + 24, 796), (fx + 30, 930), (fx - 30, 930)], oc.SUIT_LEG, 2.2)
+        st.poly(k, [(fx - 34, 920), (fx + 34, 920), (fx + 30, 975), (fx - 30, 975)], (0.06, 0.06, 0.07), 2.2)   # boots, soles up
+    st.poly(k, [(164, 786), (278, 786), (282, 812), (160, 812)], oc.COAT, 2.0)
+    c = k.c; c.set_source_rgba(0, 0, 0, 0.35)
+    c.save(); c.translate(222, 812); c.scale(120, 14); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+
+
 def _bills(k):
     import on4_lying as ly
     for (x, y, a) in ((360, 520, 0.3), (330, 560, -0.6), (380, 600, 0.9)):
@@ -439,32 +478,40 @@ SCENES = [
           after=lambda k: railing(k, 690), eyeline="down to the car", action="she drops out of frame", reaction="Got you."),
     ]),
     ("03 Ignored victim", [
-        S("3.1", "wide, low", "C_turn", (270, 600, 1.35), "The car swings round at the junction, nose to us; Pam runs onto the crossing after it. "
+        S("3.1", "wide, low", "C_turn", (270, 610, 1.5), "The car swings round at the junction, nose to us; Pam runs onto the crossing after it. "
           "Don flashes STOP at her side without looking at her, flips the paddle, GO to the car; she stops dead in its path.",
           cast=[P("pam_cat", 340, ROAD_Y + 6, 0.62, "hero", "angry", (-0.6, -0.3)),
                 P("don", 150, 700, 0.56, "stop", "confused", (0.2, -1.0), paddle_side="STOP", chin=1)],
           protect=[("the car", (250, 600))], line="Don: Traffic flows.", eyeline="Don to the car; Pam to the car",
           action="STOP at her side, GO to the car", reaction="she obeys: stops in its path"),
-        S("3.2", "same wide, 0.8 s", "C_bump", (270, 600, 1.35), "Her back to us, she faces the headlights, one palm out; the car "
+        S("3.2", "same wide, 0.8 s", "C_bump", (270, 610, 1.5), "Her back to us, she faces the headlights, one palm out; the car "
           "rolls into her at walking pace: the bumper at her knees, she tips back, stars; over backwards onto the stripes.",
-          cast=[P("don", 96, 700, 0.56, "wave", "pleased", (0.6, -0.4), paddle_side="GO", paddle_ang=0.10, whistle_in=True),
-                P("pam_from_behind", 292, ROAD_Y + 10, 0.66, HAND_STOP, "surprised", (0, -0.2), lean=-0.22)],
-          protect=[("bumper", (250, 690)), ("headlights", (250, 630))], after=lambda k: _impact(k, 272, 520),
+          cast=[P("don", 132, 700, 0.56, "wave", "pleased", (0.6, -0.4), paddle_side="GO", paddle_ang=0.10, whistle_in=True),
+                P("pam_from_behind", 292, ROAD_Y + 10, 0.66, "stop_palm", "surprised", (0, -0.2), lean=-0.22)],
+          protect=[("bumper", (250, 690)), ("headlights", (250, 630))], after=lambda k: (_impact(k, 272, 520), _burst(k, 330, 690)),
           action="the bump", reaction="she tips back"),
-        S("3.3", "medium, low", "C_lying", WIDE, "Don, on the far side of the car, rubs a spot on the bonnet and holds his white glove up "
-          "to his eye: clean. Pam in the foreground under the bumper; her small wave. He doesn't see it.",
-          cast=[P("don", 244, 572, 0.58, "inspect", "neutral", (-0.9, -0.5), paddle_side="GO", paddle_ang=0.55, clip_y=488)],
+        S("3.3", "medium, low (a: the glove on the bonnet)", "C_lying", WIDE, "Don walks to the car's front corner, lays his white "
+          "glove flat on the bonnet, rubs one spot. Pam in the foreground under the bumper. He doesn't look at her.",
+          cast=[P("don", 318, 604, 0.62, DON_REACH, "neutral", (-0.8, 0.6), reach_to=(272, 500), reach_hand=0, lean=-0.22,
+                  paddle_side="GO", paddle_ang=0.9)],
+          protect=[("bumper", (170, 586)), ("Don's glove", (272, 500)), ("her face", (112, 610))],
+          line="Don: Not a scratch.", eyeline="Don to the bonnet; Pam to Don",
+          action="the glove on the bonnet", reaction="(she watches him)", after=lying_over),
+        S("3.3b", "same (b: the glove at his eye)", "C_lying", WIDE, "He holds the glove up to his eye: clean. Her small wave: her "
+          "hand lifts off the road. He doesn't see it.",
+          cast=[P("don", 318, 604, 0.62, "inspect", "neutral", (-0.9, -0.5), paddle_side="GO", paddle_ang=0.9)],
           protect=[("bumper", (170, 586)), ("her face", (112, 610))],
-          line="Don: Not a scratch.", eyeline="Don to the bumper and his glove; Pam to Don",
-          action="the glove held up: clean", reaction="her small wave, unseen", after=lying_over),
+          eyeline="Don to his glove; Pam to Don", action="the glove at his eye: clean", reaction="her small wave, unseen",
+          after=lambda k: (lying_over(k), _wave(k))),
         S("3.4", "medium", "cabin", WIDE, "Don waves the car on; the rear window opens: the ringed hand drops a fold of bills into the road.",
           protect=[("ring", (211, 480)), ("bills", (200, 620))], line="Dad: For the boys.", action="the bills dropped",
           reaction="(they fall to her)"),
         S("3.5", "low, close", "lying", WIDE, "The bills land on her; the shadows step over her; a pale glove plucks a bill off her coat; "
           "nobody looks down.", protect=[("her face", (112, 610)), ("the glove", (300, 560))],
           eyeline="each shadow to the bills", action="a glove plucks a bill", reaction="nobody looks down"),
-        S("3.6", "close", "C", (200, 560, 1.9), "She sits up and pushes her mask straight; her eyes follow the car.",
-          cast=[P("pam_cat", 200, 780, 0.84, "sag", "sad", (0.6, -0.3))], line="N: I am like a cat. I have seven lives.",
+        S("3.6", "close, sitting up", "C_low", WIDE, "She sits up and pushes her mask straight; her eyes follow the car.",
+          cast=[P("pam_cat", 220, 900, 0.96, "mask_fix", "sad", (0.6, -0.3), clip_y=800)], line="N: I am like a cat. I have seven lives.",
+          after=_sit_legs,
           eyeline="to the car", action="she sits up", reaction="Six left."),
     ]),
     ("04 False recognition", [
@@ -490,7 +537,7 @@ SCENES = [
     ("06 Ignored star", [
         S("6.1", "medium, low", "stage", WIDE, "She steps into the spotlight and opens the envelope.",
           cast=[P("pam_cat", 225, 700, 0.86, "hero", "proud", (0.3, 0.6), env=True)], eyeline="to the envelope"),
-        S("6.2", "insert", "cv", WIDE, "Sofia's CV, her photograph.", protect=[("photo", (196, 320))], standin=True),
+        S("6.2", "insert", "cv", WIDE, "Sofia's CV, her photograph.", protect=[("photo", (196, 320))]),
         S("6.3", "medium wide", "stage", WIDE, "She lifts it high, the triumph pose, and waits; the music stops.",
           cast=[P("pam_cat", 225, 700, 0.86, "triumph", "proud", (0.3, -0.6))], line="Pam: Well?",
           protect=[("envelope", (270, 420))], eyeline="out to the room"),
@@ -555,14 +602,25 @@ def _loc(k, name):
             car.reflect(k, lambda: car.front(k, 250, 640, 0.52), 640, 0.25, 20)
         if name == "C_bump":
             car.reflect(k, lambda: car.front(k, 250, 702, 1.15), 702, 0.25, 30)
+            g = cairo.RadialGradient(292, 640, 10, 292, 640, 130)       # board v1: the headlights light her from behind
+            g.add_color_stop_rgba(0, 1, 1, 0.95, 0.85); g.add_color_stop_rgba(1, 1, 1, 0.95, 0)
+            k.c.set_source(g); k.c.rectangle(130, 480, 330, 260); k.c.fill()
         return lambda c_: (st.light_c(c_), name == "C_bump" and car.glow(c_, "front", 250, 702, 1.15),
                            name == "C_turn" and car.glow(c_, "front", 250, 640, 0.52))
+    if name == "C_low":                                      # 3.6: low on the road, the crossing behind her
+        import on4_lying as ly
+        loc_c(k); ly.ground(k); return st.light_c
     if name == "C_lying":
         loc_c(k); ly.ground(k)
         car.front(k, 170, 600, 1.15)                         # her body is drawn after the cast (lying_over): Don behind her
         return st.light_c
-    if name == "cabin":
-        loc_c(k); car.c_cabin(k); return None
+    if name == "cabin":                                      # board v1: the rear door reads: its wheel arch, the tail lamp
+        loc_c(k); car.c_cabin(k)
+        c = k.c
+        c.set_source_rgb(0.02, 0.02, 0.03); c.new_path(); c.arc(420, 760, 70, math.pi, 2 * math.pi); c.fill()
+        car._wheel(c, 420, 760, 56)
+        car._rr(c, 500, 520, 14, 60, 5); c.set_source_rgb(*st.NEON); c.fill()
+        return None
     if name == "lying":
         return "surface"
     if name == "front":
@@ -891,35 +949,34 @@ def blocking(out):
     sh = cairo.ImageSurface(cairo.FORMAT_RGB24, 1700, 1100); c = cairo.Context(sh)
     c.set_source_rgb(0.96, 0.95, 0.92); c.paint()
     c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(26)
-    c.move_to(20, 40); c.show_text("Office Noir 4 · blocking v3 · 3.1-3.3: the turn, the bump, the palm on the bumper")
-    moments = [("3.1  the car turns at the junction; Don waves it on; Pam runs onto the crossing",
-                dict(car=(200, 110, "turning"), don=(250, 230), pam=(120, 300), path_car=[(330, 60), (260, 80), (200, 120), (200, 240)],
-                     path_pam=[(40, 300), (120, 300)])),
-               ("3.2  the headlights; one hand up; the bump at walking pace; she goes over backwards",
-                dict(car=(200, 250, "at the crossing"), don=(290, 220), pam=(200, 300), path_pam=[(200, 300), (200, 340)])),
-               ("3.3  Don walks to the bumper, bends, palm on it, checks his glove; her small wave",
-                dict(car=(200, 250, "stopped"), don=(270, 290), pam=(200, 350), path_don=[(290, 220), (270, 290)]))]
-    for i, (lab, m) in enumerate(moments):
-        x0, y0 = 20 + i * 420, 70
+    c.move_to(20, 40); c.show_text("Office Noir 4 · blocking v4 · 3.1-3.3 (generated from the shots; each panel in its shot's own camera)")
+    # board v1: generated from the shots' own positions (frame x, feet y), not drawn by hand
+    CAR = {"C_turn": (250, 640), "C_bump": (250, 702), "C_lying": (170, 600)}
+    def td(x, y):                                            # frame (x, feet) -> the top view: x across, depth from the feet line
+        return 110 + x / 540 * 180, 40 + (y - 560) / 170 * 360
+    for i, sid in enumerate(("3.1", "3.2", "3.3")):
+        sh_ = by[sid]; x0, y0 = 20 + i * 420, 70
         c.set_source_rgb(1, 1, 1); c.rectangle(x0, y0, 400, 440); c.fill()
         _box(c, x0 + 110, y0 + 30, 180, 380, "", (0.75, 0.73, 0.70))
+        sx_, sy_ = td(0, 646); ex_, ey_ = td(0, 712)
         for j in range(7):
-            c.set_source_rgb(1, 1, 1); c.rectangle(x0 + 116 + j * 25, y0 + 280, 14, 50); c.fill()
-        cx, cy, st_ = m["car"]
-        c.set_source_rgb(*CAR_C); c.rectangle(x0 + cx - 30, y0 + cy - 55, 60, 110); c.fill()
-        c.set_source_rgb(1, 1, 0.6); c.rectangle(x0 + cx - 26, y0 + cy + 50, 14, 5); c.fill(); c.rectangle(x0 + cx + 12, y0 + cy + 50, 14, 5); c.fill()
-        for key, col in (("path_car", CAR_C), ("path_pam", PAM_C), ("path_don", DON_C)):
-            if key in m:
-                c.set_source_rgb(*col); c.set_line_width(3); c.set_dash([8, 5]); pts = m[key]
-                c.move_to(x0 + pts[0][0], y0 + pts[0][1])
-                for q in pts[1:]:
-                    c.line_to(x0 + q[0], y0 + q[1])
-                c.stroke(); c.set_dash([])
-        _mark(c, x0 + m["don"][0], y0 + m["don"][1], "Don", DON_C); _mark(c, x0 + m["pam"][0], y0 + m["pam"][1], "Pam", PAM_C)
+            c.set_source_rgb(1, 1, 1); c.rectangle(x0 + 116 + j * 25, y0 + sy_, 14, ey_ - sy_); c.fill()
+        cx, cy = CAR[sh_["loc"]]; tx, ty = td(cx, cy)
+        c.set_source_rgb(*CAR_C); c.rectangle(x0 + tx - 26, y0 + ty - 100, 52, 100); c.fill()
+        c.set_source_rgb(1, 1, 0.6); c.rectangle(x0 + tx - 22, y0 + ty - 4, 12, 4); c.fill(); c.rectangle(x0 + tx + 10, y0 + ty - 4, 12, 4); c.fill()
+        for who, a_, kw_ in sh_["cast"]:
+            mx, my = td(a_[0], a_[1])
+            if who == "don":
+                _mark(c, x0 + mx, y0 + my, "Don" + (" (%s)" % kw_["paddle_side"] if kw_.get("paddle_side") else ""), DON_C)
+            elif who.startswith("pam"):
+                _mark(c, x0 + mx, y0 + my, "Pam", PAM_C)
+        if sh_["loc"] == "C_lying":
+            import on4_lying as ly
+            mx, my = td(ly.HEAD[0] + 120, 690); _mark(c, x0 + mx, y0 + my, "Pam (lying)", PAM_C)
         _cam_icon(c, x0 + 200, y0 + 430, -math.pi / 2, "camera, low")
         c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 0); c.set_font_size(13)
         yy = y0 + 470
-        for ln in _wrap(lab, 52):
+        for ln in _wrap(sid + "  " + sh_["action"] + " -> " + sh_["reaction"], 52):
             c.move_to(x0, yy); c.show_text(ln); yy += 17
     for i, sid in enumerate(("3.1", "3.2", "3.3")):
         s, _ = render(by[sid], 1)
@@ -934,3 +991,41 @@ def blocking(out):
         c.move_to(1290, 120 + j * 20); c.show_text(ln)
     sh.write_to_png(out)
     return out
+
+
+def board(out=OUT, ver=1):
+    """stage 5: one key frame per shot at 540, generated; two sheets at 400 px tiles, numbered with the time, and a phone
+    sheet at 270 px. Neutral copies for the cold viewers go to /tmp/on4_board_cv (frame_NN.png, no names)."""
+    import shutil
+    tm, _ = _timing()
+    shots = [x for _, ss in SCENES for x in ss]
+    surf, probs = [], []
+    cvdir = "/tmp/on4_board_cv"
+    shutil.rmtree(cvdir, ignore_errors=True); os.makedirs(cvdir)
+    for i, sh in enumerate(shots):
+        s_, heads = render(sh, 1)
+        probs += checks(sh, heads)
+        surf.append(s_)
+        s_.write_to_png(os.path.join(cvdir, "frame_%02d.png" % (i + 1)))
+    def sheet_(items, path, tile, cols, labels=True):
+        th = int(tile * 960 / 540)
+        rows = (len(items) + cols - 1) // cols
+        S_ = cairo.ImageSurface(cairo.FORMAT_RGB24, cols * (tile + 12) + 12, rows * (th + 40) + 60)
+        c = cairo.Context(S_); c.set_source_rgb(0.96, 0.95, 0.92); c.paint()
+        c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(22)
+        c.move_to(12, 36); c.show_text("Office Noir 4 · board v%d" % ver)
+        for j, (n, sh) in enumerate(items):
+            x = 12 + (j % cols) * (tile + 12); y = 50 + (j // cols) * (th + 40)
+            c.save(); c.translate(x, y); c.scale(tile / 540, tile / 540); c.set_source_surface(surf[n], 0, 0); c.paint(); c.restore()
+            if labels:
+                t = tm.get(sh["id"].rstrip("b"), {})
+                c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(14 if tile > 300 else 11)
+                c.move_to(x, y + th + 18); c.show_text("%d  %s  %.1f s" % (n + 1, sh["id"], t.get("start", 0)))
+        S_.write_to_png(path)
+        return path
+    items = list(enumerate(shots))
+    half = (len(items) + 1) // 2
+    outs = [sheet_(items[:half], os.path.join(out, "on4_board_v%d_a.png" % ver), 400, 6),
+            sheet_(items[half:], os.path.join(out, "on4_board_v%d_b.png" % ver), 400, 6),
+            sheet_(items, os.path.join(out, "on4_board_v%d_phone.png" % ver), 270, 9)]
+    return outs, probs
