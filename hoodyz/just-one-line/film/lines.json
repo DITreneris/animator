@@ -1,0 +1,44 @@
+[
+ {
+  "name": "h_line",
+  "start": 0.07,
+  "dur": 1.198,
+  "text": "Just one line."
+ },
+ {
+  "name": "ai_onit",
+  "start": 1.45,
+  "dur": 0.472,
+  "text": "On it!"
+ },
+ {
+  "name": "h_one",
+  "start": 2.8,
+  "dur": 1.224,
+  "text": "One line!"
+ },
+ {
+  "name": "ai_almost",
+  "start": 5.03,
+  "dur": 0.634,
+  "text": "Almost done!"
+ },
+ {
+  "name": "harv_ok",
+  "start": 11.0,
+  "dur": 0.883,
+  "text": "Approved."
+ },
+ {
+  "name": "h_but",
+  "start": 11.75,
+  "dur": 2.187,
+  "text": "But that's my"
+ },
+ {
+  "name": "ai_line",
+  "start": 14.95,
+  "dur": 0.692,
+  "text": "Just one line."
+ }
+]
