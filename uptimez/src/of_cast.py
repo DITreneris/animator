@@ -10,6 +10,7 @@ an older module: the rigs are episode 12's (dh_cast, dh_poses) and episodes 9-11
 - don_throne(): Don in the throne with his face, look and arms (the phone held up, DAD), and the sweat.
 - robot(): episode 12's robot_state (the head turn, "turn"), and its visor's screen point for a card."""
 import math
+import cairo
 import kit
 import client_ob as co
 import dh_cast as dc
@@ -20,6 +21,56 @@ from cand_bc import ik, _d
 from kit import INK, rect, ellipse, cut
 
 SHX, SHY = co.SH[0], co.BT + 26                            # the shoulder on the Client's rig (the bodyguards share it)
+TOP_CAR = [True]                                           # v2 (23 Nov): the overhead shows the car's side and the lit floor (False: v1)
+
+# --- one hand per wrist (23 Nov, hand audit, decided) -------------------------------------------------------------------
+# Every hand drawn in a frame is logged in frame units: the rigs' own hands (HAND_LOG) and the grips that are hands
+# themselves (GRIP_LOG: a held phone, a fist round a lamp or a lighter, a clutch). of_scenes.render() resets them per
+# frame and fails the frame on a rig hand under a grip (two hands at one wrist) or a phone thumb on the outer side.
+HAND_LOG, GRIP_LOG = [], []
+HAND_TOL = 16.0                                            # frame units: a rig hand this near a grip is the same wrist
+HELD_OFF = [False]                                         # planted fault: held() draws the rig hands under the grips too
+
+
+def _real(c):
+    return c.get_target().get_width() > 100                # pass 1 of a frame draws on a 4 x 4 scratch surface
+
+
+def log_grip(c, kind, x, y, thumb=None, want=None):
+    if _real(c):
+        GRIP_LOG.append(dict(kind=kind, at=c.user_to_device(x, y), thumb=thumb, want=want))
+
+
+def held(k, draw, where):
+    """draw() draws a rig and returns its record; where(o) -> the points (same user units) where grips will be drawn.
+    The rig's own hands at those points are not drawn (one hand per wrist); its other hands are drawn as they were,
+    straight after the rig. Use it wherever a prop with its own hand (phone_grip, thumb_fist...) is held."""
+    c = k.c
+    base = kit.HAND[0]
+    rec = []
+    kit.HAND[0] = lambda k_, hx, hy, *a: rec.append((k_, k_.c.get_matrix(), hx, hy, a))
+    try:
+        o = draw()
+    finally:
+        kit.HAND[0] = base
+    pts = [c.user_to_device(*p) for p in where(o)]
+    tol = HAND_TOL * 1.6
+    for k_, m, hx, hy, a in rec:
+        cc = k_.c
+        cc.save(); cc.set_matrix(m)
+        dx, dy = cc.user_to_device(hx, hy)
+        if HELD_OFF[0] or not any(math.hypot(dx - px, dy - py) < tol for px, py in pts):
+            base(k_, hx, hy, *a)
+        cc.restore()
+    return o
+
+
+def inner_thumb(x, body_x, back=False):
+    """the thumb's side on a held phone, screen to us: toward the body's middle; with the phone's back to us
+    (at the ear), the other side."""
+    t = 1 if body_x > x else -1
+    return -t if back else t
+
 
 
 def ik_low(sx, sy, tx, ty, ln1, ln2):
@@ -313,6 +364,8 @@ def cartoon_hand(k, hx, hy, w, skin, seed, d, side):
     if abs(skin[0] - skin[2]) < 0.08 and abs(skin[0] - skin[1]) < 0.08:                    # grey: the robot keeps its claw
         ellipse(k, hx, hy, w * 0.6, w * 0.6, skin, seed, shadow=False, lw=2)
         return
+    if _real(c):
+        HAND_LOG.append(c.user_to_device(hx, hy))
     w = w * 1.25
     a = math.atan2(d[1], d[0])
     c.save(); c.translate(hx, hy); c.rotate(a)
@@ -334,6 +387,34 @@ def cartoon_hand(k, hx, hy, w, skin, seed, d, side):
     c.restore()
 
 
+def thumb_fist(k, hx, hy, w, skin, d, point):
+    """v1 (23 Nov, hand audit, decided): cartoon_hand's own fist with the thumb OUT, pointing along `point` (radians,
+    user units): the same wrist, palm, blobs and outline weight as everyone's hand, the fingers curled in, the thumb
+    long. Used for 2.5's thumb jerked away ("Without him.")."""
+    c = k.c
+    log_grip(c, "thumb fist", hx, hy)
+    w = w * 1.25
+    a = math.atan2(d[1], d[0])
+    sk = skin
+    def blob(x, y, rx, ry, rot=0.0):
+        c.save(); c.translate(x, y); c.rotate(rot); c.scale(rx, ry); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
+    c.save(); c.translate(hx, hy)
+    pa = point - a                                                                           # the thumb, in the hand's frame
+    c.rotate(a)
+    c.new_path()                                                                             # the wrist, as cartoon_hand's
+    c.move_to(-0.55 * w, -0.30 * w); c.line_to(0.05 * w, -0.34 * w)
+    c.line_to(0.05 * w, 0.34 * w); c.line_to(-0.55 * w, 0.30 * w); c.close_path()
+    c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
+    tx, ty = 0.18 * w + 0.80 * w * math.cos(pa), 0.80 * w * math.sin(pa)
+    blob(0.18 * w + 0.42 * w * math.cos(pa), 0.42 * w * math.sin(pa), 0.52 * w, 0.18 * w, pa)   # the thumb, out
+    blob(0.18 * w, 0.0, 0.50 * w, 0.46 * w)                                                  # the palm (the fist's back)
+    for j, fy in enumerate((-0.26, 0.0, 0.26)):                                              # three fingers curled IN, short
+        blob(0.52 * w, fy * w, 0.16 * w, 0.15 * w)
+    blob(tx - 0.10 * w * math.cos(pa), ty - 0.10 * w * math.sin(pa), 0.17 * w, 0.15 * w, pa)  # its tip, over the palm's edge
+    c.restore()
+
+
 SKIN_LIGHT = (0.96, 0.80, 0.70)
 
 
@@ -343,30 +424,44 @@ def _capsule(c, x0, y0, x1, y1, w, col):
         c.move_to(x0, y0); c.line_to(x1, y1); c.stroke()
 
 
-def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=SKIN_LIGHT, thumb=-1, wrist=None):
+def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=SKIN_LIGHT, thumb=None, wrist=None, body_x=None, back=False, part="all",
+               ink=1.0):
     """v3 hands (iteration 2): a phone HELD. (x, y) is the PALM (where the arm ends), the phone stands on it: the palm
     behind its lower half, the thumb crossing the front of one edge, three fingertips round the other. No wrist stub:
-    the arm itself runs into the palm."""
+    the arm itself runs into the palm. v4 (23 Nov, hand audit): the thumb's side is COMPUTED from body_x (the holder's
+    middle, same units): toward the body (inner_thumb). A call without body_x, or a thumb= that disagrees, fails G5.
+    part: "back" (the palm only), "front" (the thumb and fingertips only), "all"; an insert that draws its own big
+    phone between the two keeps this same hand. ink: the outline's weight, for a hand drawn very large."""
     c = k.c
+    want = None if body_x is None else inner_thumb(x, body_x, back)
+    if thumb is None:
+        thumb = want if want is not None else -1
+    if part in ("all", "back"):
+        log_grip(c, "phone", x, y, thumb, want)
+        c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+        c.save(); c.scale(26, 22); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()             # the palm, behind
+        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.2 * ink); c.stroke()
+        c.restore()
     py = y - 22 * s                                                                        # the phone's centre, above the palm
-    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
-    c.save(); c.scale(26, 22); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()                 # the palm, behind
-    c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.2); c.stroke()
-    c.restore()
-    phone(k, x + 22 * s * math.sin(ang), py + 22 * s * (1 - math.cos(ang)), s, screen, ang=ang)
-    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
-    tx = 22 * thumb
-    _capsule(c, tx * 1.12, 10, tx * 0.86, -8, 11, skin)                                      # the thumb over the front edge, low (the screen stays readable)
-    for fy in (-30, -16, -2):                                                              # three fingertips round the other
-        c.save(); c.translate(-tx * 1.03, fy); c.scale(8.5, 6.2); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
-        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
-    c.restore()
+    if part == "all":
+        phone(k, x + 22 * s * math.sin(ang), py + 22 * s * (1 - math.cos(ang)), s, screen, ang=ang)
+    if part in ("all", "front"):
+        c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+        tx = 22 * thumb
+        for cc, lw in ((INK, 11 + 4.0 * ink), (skin, 11)):                                  # the thumb over the front edge, low
+            c.set_source_rgb(*cc); c.set_line_width(lw); c.set_line_cap(1)
+            c.move_to(tx * 1.12, 10); c.line_to(tx * 0.86, -8); c.stroke()
+        for fy in (-30, -16, -2):                                                          # three fingertips round the other
+            c.save(); c.translate(-tx * 1.03, fy); c.scale(8.5, 6.2); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+            c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0 * ink); c.stroke()
+        c.restore()
 
 
 def handle_grip(k, x, y, w, ang, skin=SKIN_LIGHT):
     """a fist ROUND a handle (the lamp, the lighter's case): drawn over it; ang: the handle's axis. Four finger bands
     across the handle, the thumb over them, the back of the hand behind."""
     c = k.c
+    log_grip(c, "handle", x, y)
     c.save(); c.translate(x, y); c.rotate(ang)
     for i, fx in enumerate((-0.42, -0.14, 0.14, 0.42)):                                    # the curled fingers, across it
         c.save(); c.translate(fx * w, 0.05 * w); c.scale(0.16 * w, 0.40 * w); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
@@ -379,6 +474,7 @@ def clutch(k, x, y, w, skin=SKIN_LIGHT):
     """v3 (iteration 2): a fist CLUTCHING an edge, (x, y) on the edge's top: the back of the hand on top of it, four
     fingers curling DOWN over its front (long, side by side, the knuckles white), the thumb under it."""
     c = k.c
+    log_grip(c, "clutch", x, y)
     c.save(); c.translate(x, y)
     _capsule(c, -0.60 * w, 0.30 * w, -0.66 * w, 0.62 * w, 0.20 * w, skin)                    # the thumb, under the edge
     c.save(); c.translate(0, -0.18 * w); c.scale(0.60 * w, 0.30 * w); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
@@ -445,11 +541,20 @@ def client_top(k, sway=0.0, wrench_t=0.0, s=1.12):
     c = k.c
     dy = abs(sway) * 0.8
     cx, cy = 300, 560                                                                      # his middle
+    if TOP_CAR[0]:                                                                         # v2 (23 Nov, audit: three rounds of viewers
+        EX = 430                                                                           # read "a man at a dark door"): the car's SIDE
+        c.set_source_rgb(0.74, 0.73, 0.69); c.rectangle(EX, -900, 2400, 2800); c.fill()     # crosses at his knees, as in frame 0: under
+        c.set_source_rgb(0.93, 0.78, 0.22); c.rectangle(EX + 250, -900, 14, 2800); c.fill() # it the dark, past it the lit floor with its
+        g_ = cairo.RadialGradient(EX + 120, 820, 20, EX + 120, 820, 420)                      # yellow line and the lamp's pool, his boots
+        g_.add_color_stop_rgba(0, 1.0, 0.92, 0.6, 0.45); g_.add_color_stop_rgba(1, 1.0, 0.92, 0.6, 0.0)
+        c.set_source(g_); c.rectangle(EX, -900, 2400, 2800); c.fill()                       # on it; the sill in the car's blue, a tyre
+        c.set_source_rgba(0, 0, 0, 0.25); c.rectangle(EX, -900, 40, 2800); c.fill()        # each side of him, half out from under it
     c.save(); c.translate(sway * 0.3, dy)                                                  # the car above him, cut away
-    for (wx, wy) in ((40, 360), (40, 760), (470, 360), (470, 760)):
-        rect(k, wx - 30, wy - 55, 60, 110, (0.06, 0.06, 0.07), 3560 + wx + wy, lw=2.4)       # the wheels
-    c.set_source_rgba(0.55, 0.65, 0.85, 0.12); c.rectangle(20, 300, 500, 520); c.fill()
-    c.set_source_rgb(0.50, 0.58, 0.75); c.set_line_width(3); c.set_dash([14, 10]); c.rectangle(20, 300, 500, 520); c.stroke(); c.set_dash([])
+    if not TOP_CAR[0]:
+        for (wx, wy) in ((40, 360), (40, 760), (470, 360), (470, 760)):
+            rect(k, wx - 30, wy - 55, 60, 110, (0.06, 0.06, 0.07), 3560 + wx + wy, lw=2.4)       # the wheels
+        c.set_source_rgba(0.55, 0.65, 0.85, 0.12); c.rectangle(20, 300, 500, 520); c.fill()
+        c.set_source_rgb(0.50, 0.58, 0.75); c.set_line_width(3); c.set_dash([14, 10]); c.rectangle(20, 300, 500, 520); c.stroke(); c.set_dash([])
     c.restore()
     rect(k, 60, cy - 78, 470, 156, (0.24, 0.24, 0.26), 3550, lw=2.4)                        # the creeper
     X = lambda sx, sy: (cy - sy, sx - cx)                                                  # frame -> his laid-down frame
@@ -460,9 +565,22 @@ def client_top(k, sway=0.0, wrench_t=0.0, s=1.12):
     c.restore()
     hx, hy = o["head"]
     head = (cx + hy, cy - hx, 55 * s)
+    if TOP_CAR[0]:                                                                         # v2: the sill and the tyres OVER him (the car
+        EX = 430                                                                           # is nearer the camera than he is): his knees
+        c.save(); c.translate(sway * 0.3, dy)                                              # go in under the blue, the boots stay out
+        c.set_source_rgba(0, 0, 0, 0.35); c.rectangle(EX, -900, 26, 2800); c.fill()        # the sill's shadow on his legs
+        rect(k, EX - 46, -900, 46, 2800, (0.17, 0.36, 0.62), 3558, lw=3)
+        c.set_source_rgb(0.30, 0.50, 0.76); c.rectangle(EX - 40, -900, 10, 2800); c.fill()  # its highlight
+        for wy in (300, 820):
+            rect(k, EX - 44, wy - 70, 80, 140, (0.08, 0.08, 0.09), 3560 + wy, lw=3)           # the tyres, half out
+            c.set_source_rgb(0.32, 0.32, 0.34); c.set_line_width(5)
+            for j in range(5):
+                c.move_to(EX - 38, wy - 52 + j * 26); c.line_to(EX + 30, wy - 52 + j * 26); c.stroke()
+        c.restore()
     c.save(); c.translate(sway * 0.3, dy)                                                  # the pipe and the bracket over his chest
     for col, lw in ((INK, 18), ((0.42, 0.43, 0.46), 12)):
-        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.move_to(110, 440); c.line_to(500, 436); c.stroke()
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.move_to(110, 440)
+        c.line_to(360 if TOP_CAR[0] else 500, 437); c.stroke()                             # v2: the pipe ends under the sill
     rect(k, 236, 446, 56, 44, (0.38, 0.39, 0.42), 3552, lw=2.2)
     c.restore()
     ellipse(k, bolt[0], bolt[1], 8, 8, (0.72, 0.73, 0.76), 3553, lw=1.8)
@@ -489,7 +607,9 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
     feet = seat_y - dq.WAIST * s
     c.save(); c.rectangle(x - 200 * s, seat_y - 400 * s, 400 * s, 400 * s + 2); c.clip()
     c.save(); c.translate(x, seat_y); c.rotate(-0.10 * forward); c.translate(-x, -seat_y)
-    o = sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=look)
+    draw_d = lambda: sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=look)
+    o = held(k, draw_d, lambda o_: list(o_["hands"][:2])) if phone_dad else draw_d()   # v5 (hand audit): the phone and the clutch
+                                                                                        # are his hands there: one hand per wrist
     c.restore()
     c.restore()
     c.save(); c.translate(x, seat_y); c.scale(s, s)
@@ -512,9 +632,9 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
             e = c_.text_extents("DAD"); c_.move_to(-e.x_advance / 2, -2); c_.show_text("DAD")
             c_.set_font_size(8); e = c_.text_extents("calling…"); c_.move_to(-e.x_advance / 2, 12); c_.show_text("calling…")
         if phone_ear:                                                           # v4 (23 Nov, Office Noir 3's lessons 245/399): his own arm
-            phone_grip(k, px + 6 * s, py, s * 0.85, None, ang=0.12, thumb=1)        # its BACK to us, against his head: on a call              # from the outer shoulder, elbow out, the phone where the pose's hand is
+            phone_grip(k, px + 6 * s, py, s * 0.85, None, ang=0.12, body_x=x, back=True)   # its BACK to us, against his head: on a call              # from the outer shoulder, elbow out, the phone where the pose's hand is
         else:
-            phone_grip(k, px, py, s * 0.95, scr, ang=0.05, thumb=-1)
+            phone_grip(k, px, py, s * 0.95, scr, ang=0.05, body_x=x)
         rx, ry = o["hands"][1]                                                  # v3: the other hand clutches the throne's arm
         clutch(k, rx, ry, 30 * s)
     return o
