@@ -8,7 +8,7 @@ These rules apply to the episodes in this folder only, not to the rest of the re
 - **MY AI**: his cheerful companion robot, a perfectionist director with an irritable side in small doses; never a villain. Its antenna is its mood gauge.
 - **Eva**: tech lover, charmed by competence, sharp and amused; walks the dog. Voice Kokoro af_heart.
 - **The cat**: the recurring runner. **HARV**: strict, professorial, the AI Hoody trained; the recurring antagonist, not the bad guy.
-- The series signature is the label switch in the title bar (HIS DATE → ITS DATE, HIS TRIP → ITS TRIP); pop it big for half a second.
+- The series signature is the label switch in the title bar (HIS DATE → ITS DATE, HIS TRIP → ITS TRIP); pop it big for half a second. **Tomas decides per episode:** Thank You v2 keeps one label (HIS THANKS) for the whole film.
 
 ## Gates (run them in order; use the `animation-episode-gates` skill)
 
@@ -21,11 +21,12 @@ These rules apply to the episodes in this folder only, not to the rest of the re
    - **Held props sit in the hands:** compute the hand positions (`hand_at`) and put the handle, guitar or rose there. If the pose can't reach, change the pose.
    - **No floating limbs:** a hand comes out of a sleeve, and the sleeve out of the body or the frame edge. A close-up holding a guitar shows the arms.
    - **Props measured on every frame, not looked at:** wrap the prop's draw call, render the whole film and print its position per shot; compare with the prop timeline. A shot that draws its own copy of a prop is how they drift.
-   - **The bottom ~250 px belong to the app** (caption, likes, buttons): keep the story above ~1700 px; anchor a camera push-in at the ground line.
+   - **The apps' dead zones** (Reels, TikTok and Shorts combined, at 1080×1920): every text box inside **x 60-960, y 210-1600**, measured on every frame including a bubble's pop and anything drawn under the camera's push; keep the story above ~1700 px and anchor a push-in at the ground line. Each episode registers its text boxes and runs a safe-zone gate (see `thank-you/v2/safe.py`).
+   - **Speech tails:** one style per film; the speaker is named in the shot list, never picked by the builder; a tail ends beside the speaker's face (Hoody: 20 px beside the ear at mouth height; robots: from the side to the face screen, never via the antenna), measured per frame; a robot's antenna glows while it talks.
    - **Text is fitted by measuring** it against its card or plate, with 30 px margins; crop every label at full size to check nothing covers it.
 5. **Motion check** (`python3 hoodyz/motion.py film.mp4 cuts.json`): no shot under ~0.8 unless it is a deliberate hold (a deadpan, a reaction held after the gag). A reaction is a take, not a face swap. Everyone breathes.
 6. **Cold mute test on every rough** (`cold-viewer-mute-test` skill): two fresh viewers, both get 4 of 5 beats. They are a smoke test: they find faults inside the structure and never replace a structure Tomas chose.
-7. **QA that fails the build** (`python3 hoodyz/qa.py film.mp4 FRAMES lines.json`, exits 1 on any miss): 1080×1920, 30 fps, true peak ≤ −1 dBTP after AAC, −14 to −16 LUFS, speech recognition on every line in the mix, BT.709 tags. Re-run it after **every** mix change: a louder bed can mask a line. Safe zones and the loop seam are still checked by eye.
+7. **QA that fails the build** (`python3 hoodyz/qa.py film.mp4 FRAMES lines.json`, exits 1 on any miss): 1080×1920, 30 fps, true peak ≤ −1 dBTP after AAC, −14 to −16 LUFS, speech recognition on every line in the mix, BT.709 tags. Re-run it after **every** mix change: a louder bed can mask a line. Safe zones are measured by the episode's safe-zone gate; the loop seam is diffed (frame 0 against the last frame).
 8. **Audit triage:** ok / partial / fail table, what correlates, protect-list check, at most two rounds.
 9. **Tomas watches before anything merges.** A PR stays open until he says so; no agent verdict counts as approval.
 
