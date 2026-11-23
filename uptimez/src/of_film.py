@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 23, 2: 27, 3: 24, 4: 27, 5: 23}
-SOUND = "of_sound_v12.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 27, 2: 27, 3: 27, 4: 27, 5: 27}
+SOUND = "of_sound_v13.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -139,8 +139,18 @@ def s27(t, L):                                             # the phone out of th
     return {}, dict(client=dict(kind="pocket", pocket_u=min(1.0, t / 0.55)))   # v5: pocket, wipe, out
 
 
-def s28c(t, L):                                            # one nod: down and back up
-    return {}, dict(father=dict(face="low" if 0.25 < t < 0.7 else "hard"))
+GAG_AT = 1.1                                               # v2 (23 Nov, decided: the mid-film gag): after "Done.", CUT to
+
+
+def s28c(t, L):                                            # one nod: down and back up. Then the gag: bodyguard 2, behind
+    if t < GAG_AT:                                         # Father, is looking PAM up for himself; Father's eyes go to him;
+        return {}, dict(father=dict(face="low" if 0.25 < t < 0.7 else "hard"))   # the phone goes down
+    u = t - GAG_AT
+    x2, f2 = 120, 872
+    up, dn = (x2 + 30, f2 - 150), (x2 + 22, f2 - 96)
+    hold = dict(targets_xy=[up], phone="pam") if u < 0.75 else dict(targets_xy=[om.lerp(up, dn, ease((u - 0.75) / 0.2))])
+    return (dict(_cam=CAL_CAM, _cast=("father", "g2"), moved=dict(father=(214, 880), g2=(x2, f2))),
+            dict(father=dict(face="hard" if u < 0.35 else "brow", look=(1, 0) if u < 0.35 else (-1.6, 0.2)), g2=hold))
 
 
 def s28d(t, L):                                            # SLAM
@@ -348,13 +358,11 @@ def s26(t, L):                                             # v1: "And then?" -- 
     return {}, dict(father=dict(face=face, lean=ln, look=(1, 0)))
 
 
-def s28f(t, L):                                            # v1 (23 Nov audit, decided: the gag held, 2.0 s): the bonnet is shut,
-    if t < 0.6 or t > 1.7:                                 # nothing left to light, and he still searches it with the lamp:
-        u = 0.0                                            # still; a slow sweep, down and across the shut bonnet; still again
-    else:
-        u = math.sin(math.pi * (t - 0.6) / 1.1)
-    dx = -34 * math.sin(2 * math.pi * (t - 0.6) / 1.1) if 0.6 <= t <= 1.7 else 0.0
-    return {}, dict(g1=dict(targets=["lamp"], lamp="held", lamp_dx=dx, lamp_dy=16 * u, turn=0.25 * u))
+def s28f(t, L):                                            # v2 (23 Nov, cold test 3 of 3: "a suit holds a lamp and nothing
+    dn = ease((t - 0.35) / 0.25) - ease((t - 1.25) / 0.25)   # happens"; decided: make it a gag): the bonnet is shut and he
+    off = ease((t - 0.85) / 0.15)                          # is still lighting it. He LOOKS DOWN at the lamp, the light
+    return {}, dict(g1=dict(targets=["lamp"], lamp="held", cone_side=max(0.03, 1.0 - off),   # clicks off, he looks up at us
+                            turn=0.01 - 0.5 * dn, look_down=10 * dn))
 
 
 MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14,
@@ -431,7 +439,8 @@ def s09_work(t, L):                                       # the sump sways; he f
 
 
 def s34b(t, L):                                            # v9: turned to Don, it glows as it talks
-    return dict(visor_glow=_loud("3.4b", t)), {}
+    lo = _loud("3.4b", t)
+    return dict(visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4))), {}   # v10: it bobs as it talks
 
 
 def s35b(t, L):                                            # v9: he turns to the counter: "Pam?"
@@ -638,8 +647,9 @@ DOOR_CAM = (168, 700, 1.9)                                # v1 (23 Nov, decided)
 
 
 def s06_arrive(t, L):                                      # Father in the doorway, the black car behind him: he has arrived.
-    return (dict(_cam=DOOR_CAM, _cast=("father",), black_car=True, moved=dict(father=(156, F_ + 26))),
-            dict(father=dict(face="low", look=(1, 0.3))))
+    u = ease((t - 0.45) / 0.3)                             # v2 (cold test 3 of 3: "a statue"): his eyes go from the room down
+    return (dict(_cam=DOOR_CAM, _cast=("father",), black_car=True, moved=dict(father=(156, F_ + 26))),   # to the legs, he leans
+            dict(father=dict(face="low" if u < 0.9 else "brow", look=(1 - 0.4 * u, 0.3 + 1.1 * u), lean=0.03 * u)))
 
 
 F_ = sc.F

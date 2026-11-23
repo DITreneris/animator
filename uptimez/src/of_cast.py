@@ -42,7 +42,7 @@ def log_grip(c, kind, x, y, thumb=None, want=None):
         GRIP_LOG.append(dict(kind=kind, at=c.user_to_device(x, y), thumb=thumb, want=want))
 
 
-def held(k, draw, where):
+def held(k, draw, where, alt=None):
     """draw() draws a rig and returns its record; where(o) -> the points (same user units) where grips will be drawn.
     The rig's own hands at those points are not drawn (one hand per wrist); its other hands are drawn as they were,
     straight after the rig. Use it wherever a prop with its own hand (phone_grip, thumb_fist...) is held."""
@@ -62,6 +62,8 @@ def held(k, draw, where):
         dx, dy = cc.user_to_device(hx, hy)
         if HELD_OFF[0] or not any(math.hypot(dx - px, dy - py) < tol for px, py in pts):
             base(k_, hx, hy, *a)
+        elif alt is not None:                               # v2: another hand there instead (a quiet hand for a clasp)
+            alt(k_, hx, hy, *a)
         cc.restore()
     return o
 
@@ -79,6 +81,15 @@ def ps_hand(k, g, x, y, w, skin, d=(1.0, 0.0), arm=1, rot=None):
         c.save(); c.translate(x, y); c.rotate(rot)
         hp.draw(k, g, 0, 0, w, skin, (0.0, 0.0), arm)
         c.restore()
+
+
+def quiet_hand(k_, hx, hy, w, skin, seed, d, side):
+    """a rig hand at rest, as the series draws it (hands_ps "quiet": one mitten, two finger lines): for clasped hands,
+    where two full hands read as a pile of fingers."""
+    import hands_ps as hp
+    if _real(k_.c):
+        HAND_LOG.append(k_.c.user_to_device(hx, hy))
+    hp.draw(k_, "quiet", hx, hy, w * 1.25, skin, d, side)
 
 
 def inner_thumb(x, body_x, back=False):
