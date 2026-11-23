@@ -1,4 +1,6 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v9 = board v6 (23 Nov; v1-v8 pinned). After the board v5 audit ("improve"):
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v9b = board v7 (23 Nov): 2.3 redrawn with owners (board v6: his finger read
+as "a grabber pole", the ring as "a coin"): the series' hand pointing, his sleeve, watch and jaw; Dad's flat hand, the ring on a
+finger. v9 = board v6: After the board v5 audit ("improve"):
 timing v2 generated from this file (the shots' own durations, a/b keys splitting their shot), 4.3 1.5 s shorter, the rota
 held 2 s; the impact burst at the bumper; a red heart seal on both envelopes (dream and office); faces at the turns (the
 rig's real faces: "sad" and "surprised" drew no change); 7.1 an open hand. v8 = board v5: Board v4's G4: the light leaving her
@@ -182,21 +184,23 @@ def cv_insert(k):
 
 
 def knee_insert(k):
-    """STAND-IN, 2.3: the envelope on the Client's knee, his finger on it, his watch; the ringed hand flat on the seat."""
+    """2.3 (board v7): through the window, close: the envelope on the Client's knee, HIS hand (the series' hand, a finger
+    on it; his sleeve and watch; his jaw at the top), and Dad's hand flat on the seat with the gold ring ON a finger."""
     import dh_cast as dc
+    import hands_ps as hp
     c = k.c
+    SK = (0.87, 0.70, 0.58)
     c.set_source_rgb(0.10, 0.10, 0.11); c.paint()
     st.poly(k, [(-10, 520), (330, 470), (360, 700), (-10, 720)], (0.20, 0.22, 0.28), 2.4)      # his knee and thigh
-    oc.envelope(k, 200, 520, 2.6)
-    st.poly(k, [(330, 300), (430, 260), (470, 330), (360, 380)], (0.20, 0.22, 0.28), 2.4)      # his sleeve
-    kit.ellipse(k, 316, 400, 40, 30, (0.87, 0.70, 0.58), 7101, shadow=False, lw=2.2)           # his hand,
-    c.set_source_rgb(*INK); c.set_line_width(16); c.set_line_cap(1); c.move_to(290, 420); c.line_to(250, 476); c.stroke()
-    c.set_source_rgb(0.87, 0.70, 0.58); c.set_line_width(12); c.move_to(290, 420); c.line_to(250, 476); c.stroke()
-    c.set_line_cap(0)
-    st.poly(k, [(352, 372), (372, 362), (380, 384), (360, 392)], (0.85, 0.80, 0.55), 1.4)    # the watch
-    st.poly(k, [(560, 600), (430, 620), (434, 680), (560, 690)], dc.VELVET, 2.4)            # Dad's cuff, his hand flat
-    kit.ellipse(k, 400, 650, 44, 26, dc.SKIN_F, 7102, shadow=False, lw=2.2)
-    dc.ring(k, 392, 640, 1.4)
+    oc.envelope(k, 200, 540, 2.6)
+    hp.draw(k, "point", 300, 452, 110, SK, (-0.55, 0.85), 1)                                   # his finger on the envelope
+    st.poly(k, [(560, 110), (336, 372), (392, 428), (560, 250)], (0.20, 0.22, 0.28), 2.4)      # his sleeve, from him, to the wrist
+    st.poly(k, [(340, 384), (362, 366), (384, 388), (362, 406)], (0.85, 0.80, 0.55), 1.6)      # the watch at the cuff
+    c.new_path(); c.arc(470, 30, 130, 0.25, math.pi - 0.25); c.set_source_rgb(*SK); c.fill_preserve()
+    c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()                                   # his jaw, at the top
+    st.poly(k, [(560, 610), (440, 630), (444, 690), (560, 700)], dc.VELVET, 2.4)               # Dad's cuff,
+    hp.draw(k, "palm", 400, 660, 96, dc.SKIN_F, (-1.0, 0.0), -1)                                # his hand flat on the seat,
+    dc.ring(k, 372, 652, 2.6)                                                                   # the ring on a finger, big
 
 
 def knee_coat(k, env=True, hand=True):
@@ -606,7 +610,7 @@ SCENES = [
                 P("father", 370, 596, 0.78, (-20, 30, 20, -30), "hard", (-0.6, 0.6))],
           eyeline="both to the envelope", after=_into_coat),
         S("2.3", "insert, 1.2 s", "knee", WIDE, "Through the window: the envelope on the Client's knee, his finger taps it twice; the "
-          "ringed hand lays itself flat on the seat: agreed.", protect=[("envelope", (200, 520)), ("ring", (392, 640))],
+          "ringed hand lays itself flat on the seat: agreed.", protect=[("envelope", (200, 540)), ("ring", (372, 652))],
           line="The Client: Mine until it's done.", action="two taps", reaction="the ringed hand flat: agreed"),
         S("2.4", "close", "escape", WIDE, "Her eyes narrow; she swings onto the ladder and drops out of frame.",
           cast=[P("pam_cat", 270, 900, 0.96, "hero", "peer", (0.4, 0.6))], line="N: I know where to see what others do not see.",
@@ -1172,7 +1176,7 @@ def write_timing_v2(out=OUT):
     return p, d["length"]
 
 
-def board(out=OUT, ver=6):
+def board(out=OUT, ver=7):
     """stage 5: one key frame per shot at 540, generated; two sheets at 400 px tiles, numbered with the time, and a phone
     sheet at 270 px. Neutral copies for the cold viewers go to /tmp/on4_board_cv (frame_NN.png, no names)."""
     import shutil
