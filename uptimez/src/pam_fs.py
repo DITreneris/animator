@@ -53,7 +53,10 @@ def _arm_pushed(inner):
         for i, dx in enumerate((-5, 2)):
             ellipse(k, dx, 0, 6, w * 0.66, col, seed + 20 + i, shadow=False, lw=1.8)
         c.restore()
-        ellipse(k, hx, hy, w * 0.6, w * 0.6, skin, seed, shadow=False, lw=2)
+        if kit.HAND[0]:                                    # an episode's own hand (opt-in)
+            kit.HAND[0](k, hx, hy, w, skin, seed, (math.sin(math.radians(a1 + a2)), math.cos(math.radians(a1 + a2))), 1 if a2 >= 0 else -1)
+        else:
+            ellipse(k, hx, hy, w * 0.6, w * 0.6, skin, seed, shadow=False, lw=2)
         return hx, hy
     return arm
 

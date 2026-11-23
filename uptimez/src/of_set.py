@@ -147,6 +147,54 @@ def flames(c, x, y, size, t, seed=0):
         c.arc(x + size * 0.6 * math.sin(i * 2.1 + t), y - size * (0.6 + 1.4 * a_), 1.8, 0, 2 * math.pi); c.fill()
 
 
+WALL_C = (0.86, 0.86, 0.80)
+
+
+def _rag(c, cx, cy, rx, ry, seed, n=22, amp=0.28):
+    import random
+    rnd = random.Random(seed)
+    c.new_path()
+    for i in range(n):
+        a_ = 2 * math.pi * i / n
+        r_ = 1 + amp * (rnd.random() - 0.5)
+        (c.move_to if i == 0 else c.line_to)(cx + math.cos(a_) * rx * r_, cy + math.sin(a_) * ry * r_)
+    c.close_path()
+
+
+def burnt_row(c, f):
+    """the plan's lower row eaten by the fire (f 0..1 grows it; 1 the result that stays): soot climbing to MY GARAGES,
+    a charred black field over 6, 7 and 8 with a brown rim, holes to the wall (7 gone, 6 and 8 half), curled paper
+    lips, the bottom edge burnt away. Set units."""
+    if f <= 0:
+        return
+    cx, cy = 385, 552
+    g = cairo.LinearGradient(0, 580, 0, 462)                                                 # soot, up the plan
+    g.add_color_stop_rgba(0, 0.08, 0.06, 0.05, 0.75 * f); g.add_color_stop_rgba(1, 0.08, 0.06, 0.05, 0.0)
+    c.set_source(g)
+    c.new_path(); c.move_to(348, 580)
+    c.curve_to(352, 540, 368, 510, 372, 470 + 70 * (1 - f)); c.curve_to(384, 500, 392, 480, 398, 462 + 80 * (1 - f))
+    c.curve_to(404, 500, 418, 520, 428, 580); c.close_path(); c.fill()
+    _rag(c, cx, cy, 56 * f, 34 * f, 61, amp=0.34)                                               # the brown scorch rim
+    c.set_source_rgb(0.52, 0.32, 0.12); c.fill()
+    _rag(c, cx, cy, 46 * f, 27 * f, 62, amp=0.30)                                               # the black char
+    c.set_source_rgb(0.10, 0.07, 0.05); c.fill()
+    if f > 0.45:                                                                              # holes through to the wall
+        h = (f - 0.45) / 0.55
+        for (hx, hy, rx, ry, sd) in ((384, 552, 15, 18, 63), (360, 556, 8, 11, 64), (409, 554, 9, 12, 65)):
+            _rag(c, hx, hy, rx * h, ry * h, sd, n=16, amp=0.5)
+            c.set_source_rgb(*WALL_C); c.fill_preserve()
+            c.set_source_rgb(0.20, 0.12, 0.06); c.set_line_width(2.4); c.stroke()
+        for (lx, ly, a_) in ((371, 540, -0.6), (397, 540, 0.6), (352, 546, -0.3), (420, 546, 0.4), (384, 572, 3.1)):
+            c.save(); c.translate(lx, ly); c.rotate(a_)                                       # curled paper lips
+            c.new_path(); c.move_to(-5 * h, 0); c.curve_to(-3 * h, -7 * h, 3 * h, -7 * h, 5 * h, 0); c.close_path()
+            c.set_source_rgb(0.97, 0.95, 0.88); c.fill_preserve()
+            c.set_source_rgb(0.42, 0.25, 0.10); c.set_line_width(1.2); c.stroke()
+            c.restore()
+    if f >= 1.0:                                                                              # the bottom edge, burnt away
+        _rag(c, cx, 594, 50, 14, 66, n=18, amp=0.6)
+        c.set_source_rgb(*WALL_C); c.fill()
+
+
 def plan(k, burn=0.0):
     """episode 11's plan, whole (the 7 taped in, MY GARAGES on the tape), pinned to the wall. burn: 0 none, 0..1 the
     flame browning GARAGE 7's corner, 1 the mark that stays (1.7 on, and the last frame)."""
@@ -162,42 +210,9 @@ def plan(k, burn=0.0):
     finally:
         c.restore()
         cp.PROPS4[0], cp.TITLE_TAPE[0], cp._bg = old
-    if burn > 0:
-        bx_, by_ = bay7()
-        protect(c, "the burn on 7", bx_ - 6 - BURN_R, by_ - 4 - BURN_R, bx_ - 6 + BURN_R, by_ - 4 + BURN_R)
-    if burn > 0:                                   # v2: a charred patch, black at the heart, a ragged brown edge
-        import random
-        bx, by = bay7()
-        f = min(1.0, burn)
-        rnd = random.Random(7)
-        rr = [1 + 0.22 * (rnd.random() - 0.5) for _ in range(18)]
-        for col, rad in (((0.55, 0.33, 0.12), BURN_R * f), (BURN, BURN_R * 0.80 * f), ((0.10, 0.06, 0.03), BURN_R * 0.55 * f)):
-            if rad < 1:
-                continue
-            c.new_path()
-            for i, q in enumerate(rr):
-                a_ = 2 * math.pi * i / len(rr)
-                (c.move_to if i == 0 else c.line_to)(bx - 6 + math.cos(a_) * rad * q, by - 4 + math.sin(a_) * rad * q * 0.9)
-            c.close_path(); c.set_source_rgb(*col); c.fill_preserve()
-            if col == (0.55, 0.33, 0.12):
-                c.set_source_rgb(*INK); c.set_line_width(1.4); c.stroke()
-            c.new_path()
-    if burn >= TORN_AT:                                                                    # v9: the 7 torn off, a charred hole
-        import random
-        rnd = random.Random(77)
-        x0, y0, x1, y1 = 371, 533, 398, 569
-        pts = []
-        for i in range(16):
-            a_ = 2 * math.pi * i / 16
-            r_ = 1 + 0.18 * (rnd.random() - 0.5)
-            pts.append(((x0 + x1) / 2 + math.cos(a_) * (x1 - x0) * 0.62 * r_, (y0 + y1) / 2 + math.sin(a_) * (y1 - y0) * 0.60 * r_))
-        for col, kk in (((0.50, 0.30, 0.12), 1.25), ((0.12, 0.08, 0.05), 1.0)):
-            c.new_path()
-            cx_, cy_ = (x0 + x1) / 2, (y0 + y1) / 2
-            for i, (qx, qy) in enumerate(pts):
-                (c.move_to if i == 0 else c.line_to)(cx_ + (qx - cx_) * kk, cy_ + (qy - cy_) * kk)
-            c.close_path(); c.set_source_rgb(*col); c.fill()
-        c.set_source_rgb(0.86, 0.86, 0.80); c.rectangle(x0 + 4, y0 + 6, x1 - x0 - 8, y1 - y0 - 12); c.fill()   # the wall behind
+    if burn > 0:                                   # v3 (23 Nov, "just a stupid stain"): the lower row BURNT
+        protect(c, "the burnt row", 330, 462, 440, 596)
+        burnt_row(c, min(1.0, burn / TORN_AT))
     if FIRE[0] > 0:                                                                       # v9: the flame on the plan, growing
         bx, by = bay7()
         flames(c, bx - 10, by + 2, 18 + 56 * FIRE[0], FIRE[1], seed=7)            # up the plan, over 6 and 8

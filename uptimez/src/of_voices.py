@@ -33,6 +33,8 @@ LINES = [
     ("2.9", "FATHER", "Put it in the calendar.", None),
     ("3.2", "ROBOT", "New meeting. Agenda: without him.", None),
     ("3.3", "DON", "Without who?", None),
+    ("3.4b", "ROBOT", "Calendar says... you'll see.", "Calendar says. You'll see."),     # v3 (23 Nov): nobody answers
+    ("3.5b", "DON", "Pam?", None),
 ]
 LEAD, TAIL = 0.15, 0.35          # a line starts 0.15 s into its shot and leaves 0.35 s after it
 

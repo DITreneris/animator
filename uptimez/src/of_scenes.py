@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v4.json"                               # v8 (22 Nov): the joke at 0:00
+TIMING = "of_timing_v5.json"                               # v8 (22 Nov): the joke at 0:00
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -156,6 +156,8 @@ SCENES = [
           state=dict(bonnet=0.0, burn=1.0, phone2=True, zmax=1.7, moved=dict(father=(214, 880), g2=(120, 872)))),
     ]),
     ("4 · The Calendar", "The front desk, UptimeZ. The same minute.", 4, [
+        S("3.0", "EXT", "insert", "v9 (23 Nov): **UptimeZ Inc.**, the glass doors, the logo on the glass, the lobby lit behind. "
+          "The calendar's chime starts here.", fx="chime", state=dict(insert="uptimez")),
         S("3.1", "WIDE", "desk", "HARD CUT. THE FRONT DESK, wide: Don on the throne, feet up, the crown behind his head; the robot "
           "at its station by the door; Pam at the counter. A cheerful **chime**.", fx="chime", state=dict(desk="wide")),
         S("3.2", "CLOSE", "desk", "CLOSE, the robot. Its visor: one line, **WITHOUT HIM**. Delighted.",
@@ -164,13 +166,19 @@ SCENES = [
           line='DON: "Without who?"', state=dict(desk="don", don="happy")),
         S("3.4", "CLOSE", "desk", "CLOSE, the robot. **ITS HEAD TURNS, SLOWLY**, to Don. Still smiling. **The peak: hold it.**",
           action="the head turns", state=dict(desk="robot", turn=True)),
+        S("3.4b", "CLOSE", "desk", "v9: CLOSE, the robot, turned to Don, still smiling. It doesn't say who.",
+          line='ROBOT: "Calendar says... you\'ll see."', state=dict(desk="robot", turn=True)),
         S("3.5", "CLOSE", "desk", "CLOSE, Don, as 3.3. He follows the look down, to himself. The smile goes in one drawing.",
           reaction="the smile goes", state=dict(desk="don", don="stiff")),
+        S("3.5b", "CLOSE", "desk", "v9: CLOSE, Don, as 3.3. He turns to the counter, to Pam. Nobody has told him.",
+          line='DON: "Pam?"', state=dict(desk="don", don="stiff")),
         S("3.6", "CLOSE", "desk", "CLOSE, Pam at the counter. Her phone buzzes: **INVITATION, from FATHER**. She reads it, looks "
           "at Don, turns the phone **face down**. (Inside its 1.4 s: 0.45 s on the phone, filling the frame; then face down, held 0.6 s.)",
           action="the phone, face down", fx="buzz", state=dict(desk="pam"),
           then=S("3.6 insert", "INSERT", "insert", "the phone: INVITATION, from FATHER", state=dict(insert="invite"))),
-        S("3.7", "CLOSE", "desk", "CLOSE, Don, as 3.3. He grabs his phone off the throne's arm and dials DAD. The sweat comes back.",
+        S("3.6b", "CLOSE", "desk", "v9: CLOSE, the robot's visor: **MEETING IN 4:59**, 4:58. Ticking.",
+          action="the countdown", fx="tick", state=dict(desk="robot", turn=True, visor=True, count=299)),
+        S("3.7", "CLOSE", "desk", "CLOSE, Don, as 3.3. He calls DAD. It rings. And rings. Nobody answers. The sweat comes back.",
           action="he dials DAD", state=dict(desk="don", don="panic")),
     ]),
     ("5 · Frame 0", "The garage.", 5, [
@@ -511,6 +519,30 @@ def insert_shot(k, sh):
         gs.insert_card(k)
     elif kind == "invite":
         gs.insert_invite(k)
+    elif kind == "uptimez":                                                        # v9: the building, so we know where we are
+        import brand
+        st = sh["state"]
+        c.set_source_rgb(0.62, 0.78, 0.92); c.paint()                                  # the sky
+        rect(k, -20, 120, 580, 900, (0.86, 0.87, 0.90), 3700, lw=3)                     # the building's front
+        for wy in (150,):                                                              # its upper windows
+            for wx in (30, 150, 270, 390):
+                rect(k, wx, wy, 100, 60, (0.55, 0.70, 0.86), 3701 + wx + wy, shadow=False, lw=2)
+        rect(k, 20, 240, 500, 120, (1.0, 1.0, 1.0), 3710, lw=3)                        # the sign over the doors (clear of the buttons)
+        c.save(); c.translate(44, 258); w_ = brand.lockup(c, 0, 0, 84); c.restore()
+        gs.protect(c, "the UptimeZ sign", 20, 240, 520, 360)
+        g = cairo.LinearGradient(0, 460, 0, 900)                                       # the lobby behind the glass, lit
+        g.add_color_stop_rgb(0, 1.0, 0.93, 0.72); g.add_color_stop_rgb(1, 0.98, 0.84, 0.58)
+        c.set_source(g); c.rectangle(40, 460, 460, 440); c.fill()
+        c.set_source_rgb(*INK); c.set_line_width(4); c.rectangle(40, 460, 460, 440); c.stroke()
+        c.move_to(270, 460); c.line_to(270, 900); c.stroke()                           # two glass doors
+        for dx in (240, 300):
+            c.set_line_width(7); c.move_to(dx, 640); c.line_to(dx, 720); c.stroke()     # their handles
+        c.set_source_rgba(1, 1, 1, 0.45); c.set_line_width(14)                          # glass glare
+        for gx in (90, 330):
+            c.move_to(gx, 860); c.line_to(gx + 90, 500); c.stroke()
+        c.save(); c.translate(225, 520); brand.mark(c, 0, 0, 90); c.restore()            # the mark on the glass
+        gs.protect(c, "the mark on the glass", 225, 520, 315, 610)
+        rect(k, 0, 900, 540, 60, (0.48, 0.49, 0.52), 3720, shadow=False, lw=2)           # the pavement
     elif kind == "key":                                                            # the steering column, the key, his fingers
         c.set_source_rgb(0.16, 0.16, 0.18); c.paint()
         c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(46); c.set_line_cap(1)
@@ -640,7 +672,7 @@ def desk_shot(k, sh, heads):
         sx, sy = heads.pop("_screen")
         x, y = (sx - cam[0]) * z + 270, (sy - cam[1]) * z + 480
         r = 50 * rs * z
-        gs.protect(c, "WITHOUT HIM on the visor", x - 0.82 * r, y - 0.82 * r, x + 0.82 * r, y + 0.82 * r)
+        gs.protect(c, "the visor's line", x - 0.82 * r, y - 0.82 * r, x + 0.82 * r, y + 0.82 * r)
         c.set_source_rgb(0.08, 0.12, 0.22); c.arc(x, y, 0.82 * r, 0, 2 * math.pi); c.fill()
         gl = sh["state"].get("visor_glow", 0.0)                                  # stage 7: it glows as it talks
         if gl:
@@ -648,8 +680,13 @@ def desk_shot(k, sh, heads):
             g_.add_color_stop_rgba(0, 0.35, 0.85, 0.95, 0.35 * gl); g_.add_color_stop_rgba(1, 0.35, 0.85, 0.95, 0.0)
             c.set_source(g_); c.arc(x, y, 0.82 * r, 0, 2 * math.pi); c.fill()
         vk = sh["state"].get("visor_k", 1.0)                                     # stage 7: the line pops on
-        gs.T(c, "WITHOUT", x, y - 0.04 * r, 0.30 * r * vk, col=(0.35, 0.85, 0.95))
-        gs.T(c, "HIM", x, y + 0.40 * r, 0.40 * r * vk, col=(0.35, 0.85, 0.95))
+        if sh["state"].get("count") is not None:                                   # v9: MEETING IN 4:59, counting down
+            n_ = int(sh["state"]["count"])
+            gs.T(c, "MEETING IN", x, y - 0.12 * r, 0.17 * r, col=(0.35, 0.85, 0.95))
+            gs.T(c, "%d:%02d" % (n_ // 60, n_ % 60), x, y + 0.42 * r, 0.42 * r, col=(1.0, 0.45, 0.35))
+        else:
+            gs.T(c, "WITHOUT", x, y - 0.04 * r, 0.30 * r * vk, col=(0.35, 0.85, 0.95))
+            gs.T(c, "HIM", x, y + 0.40 * r, 0.40 * r * vk, col=(0.35, 0.85, 0.95))
     heads.pop("_screen", None)
     if which == "pam" and "pam" in heads:                                              # v10: the desk in front of her
         px, py, pr = heads["pam"]
@@ -706,7 +743,10 @@ def visor_point():
 
 WIDE_CAM = [(450, 660, 0.95)]                         # 3.1 (v10): the cast as big as the button column allows
 DON_FAULTS = []                                            # the Don rule's faults for the last desk frame
-DON_EDGE = [60]                                            # 3.4: how far right of the robot the throne slides in
+DON_EDGE = [90]                                            # v9: with the robot at 0.66, the throne further right: both faces clear                                            # 3.4: how far right of the robot the throne slides in
+import kit as _kit
+import of_cast as _oc
+_kit.HAND[0] = _oc.cartoon_hand                            # v11 (23 Nov, decided): one cartoon hand for everyone, episode 13 only
 ROBOT_S = 0.66                                             # v11 (22 Nov, Tomas): the largest the Don rule allows (95 % of his height). The storyboard's 0.40
                                                            # and the set's 0.48 both read as a gnome, "a rat", beside the throne
 

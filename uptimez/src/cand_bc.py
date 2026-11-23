@@ -48,9 +48,14 @@ def limb(k, sx, sy, a1, a2, ln1, ln2, w1, w2, col1, col2, skin, hand_r, seed, ha
     the middle (w1 * bulge) and narrows to the elbow."""
     ex, ey = sx + _d(a1)[0] * ln1, sy + _d(a1)[1] * ln1
     hx, hy = ex + _d(a1 + a2)[0] * ln2, ey + _d(a1 + a2)[1] * ln2
+    import kit as _kit
     if hand_first:
-        ellipse(k, hx + _d(a1 + a2)[0] * hand_off, hy + _d(a1 + a2)[1] * hand_off, hand_r, hand_r, skin, seed,
-                shadow=False, lw=2)
+        if _kit.HAND[0]:                                                # an episode's own hand (opt-in)
+            _kit.HAND[0](k, hx + _d(a1 + a2)[0] * hand_off, hy + _d(a1 + a2)[1] * hand_off, hand_r / 0.6, skin, seed,
+                         _d(a1 + a2), 1 if a2 >= 0 else -1)
+        else:
+            ellipse(k, hx + _d(a1 + a2)[0] * hand_off, hy + _d(a1 + a2)[1] * hand_off, hand_r, hand_r, skin, seed,
+                    shadow=False, lw=2)
     ang = math.atan2(hy - ey, hx - ex)
     nx, ny = -math.sin(ang) * w2 / 2, math.cos(ang) * w2 / 2
     cut(k, [(ex + nx, ey + ny), (hx + nx * 0.86, hy + ny * 0.86), (hx - nx * 0.86, hy - ny * 0.86), (ex - nx, ey - ny)],
@@ -104,7 +109,10 @@ def limb(k, sx, sy, a1, a2, ln1, ln2, w1, w2, col1, col2, skin, hand_r, seed, ha
         cut(k, [(ex + px * hw - ux * cw, ey + py * hw - uy * cw), (ex + px * hw, ey + py * hw), (ex - px * hw, ey - py * hw),
                 (ex - px * hw - ux * cw, ey - py * hw - uy * cw)], col, shadow=False, lw=1.8)
     if not hand_first:
-        ellipse(k, hx, hy, hand_r, hand_r, skin, seed, shadow=False, lw=2)
+        if _kit.HAND[0]:
+            _kit.HAND[0](k, hx, hy, hand_r / 0.6, skin, seed, _d(a1 + a2), 1 if a2 >= 0 else -1)
+        else:
+            ellipse(k, hx, hy, hand_r, hand_r, skin, seed, shadow=False, lw=2)
     return hx, hy
 
 

@@ -175,7 +175,7 @@ def room(total):
 
 # --- the mix ----------------------------------------------------------------------------------------------------------
 def timing():
-    d = json.load(open(os.path.join(OUT, "of_timing_v4.json")))
+    d = json.load(open(os.path.join(OUT, "of_timing_v5.json")))
     return {s["shot"]: s for s in d["shots"]}, d["total"]
 
 
@@ -194,7 +194,7 @@ def mix():
     n = int(total * SR)
     fxb, mus, voc, rad = (np.zeros(n) for _ in range(4))
     # the radio: through the garage, under everything there; out in the office; loops across the seam
-    garage = [(0.0, T("3.1")), (T("4.1"), total)]
+    garage = [(0.0, T("3.0")), (T("4.1"), total)]
     rr = radio(total + 2.0)
     for a, b in garage:
         seg = rr[int(a * SR):int(b * SR)].copy()
@@ -218,15 +218,17 @@ def mix():
     put(fxb, lighter_shut(), T("1.7") + 0.22, 0.70)
     put(fxb, slam(), T("2.8d") + 0.30, 0.85)
     put(fxb, start_engine(1.6), T("2.8e") + 0.10, 0.55)
-    put(fxb, chime_happy(), T("3.1") + 0.05, 0.45)
+    put(fxb, chime_happy(), T("3.0") + 0.10, 0.45)                       # v5: over the UptimeZ doors
+    for k_ in (0.05, 0.65):                                                # the visor's countdown ticks
+        put(fxb, si.clank()[: int(0.05 * SR)], T("3.6b") + k_, 0.25)
     put(fxb, bm.buzz_phone(0.9), T("3.6") + 0.05, 0.40)
-    put(fxb, ring_out(1.3), T("3.7") + 0.15, 0.30)
+    put(fxb, ring_out(1.6), T("3.7") + 0.15, 0.30)                        # v5: it rings, and rings; nobody answers
     put(fxb, bm.buzz_phone(0.7), T("4.1") + 0.05, 0.35)
     put(fxb, car_door(), E("4.1") - 0.30, 0.45)
     put(fxb, pull_away(1.6), T("4.2"), 0.45)
     # music: in after the doors (0.3), cut dead on the click (1.2), back after "Done." (2.8c), out at the office cut
     bed = fm.bed("B", total + 1.0)
-    for a, b in ((T("0.6"), T("1.2") + 0.05), (E("2.8c"), T("3.1"))):
+    for a, b in ((T("0.6"), T("1.2") + 0.05), (E("2.8c"), T("3.0"))):
         seg = bed[int(a * SR):int(b * SR)].copy()
         k = int(0.6 * SR); seg[:k] *= np.linspace(0, 1, k)
         seg[-int(0.01 * SR):] *= np.linspace(1, 0, int(0.01 * SR))         # dead stop (lesson 107)
@@ -270,7 +272,7 @@ def master(a, target=-14.0, tp=-2.6):          # AAC adds about 0.9 dB
     stays under tp (lessons: the AAC overshoot is checked on the final file too)."""
     from scipy.signal import resample_poly
     from scipy.ndimage import minimum_filter1d
-    path = os.path.join(OUT, "of_sound_v4.wav")
+    path = os.path.join(OUT, "of_sound_v5.wav")
     g = 1.0
     x = a / (np.abs(a).max() + 1e-9) * 0.5
     for _ in range(6):
@@ -295,7 +297,7 @@ def check(lines, path=None, out=None):
     path: another mix to check (the rough cut's decoded AAC); out: where the json goes."""
     import of_voices as ov
     import sound_fs as sfs
-    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v4.wav"))
+    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v5.wav"))
     if a.ndim > 1:
         a = a.mean(axis=1)
     r = ov.recognizer()
@@ -322,7 +324,7 @@ def check(lines, path=None, out=None):
         prev = (t0, line.split(":", 1)[1] if ":" in line else line)
         res[sid] = dict(line=line, heard=heard, ok=ok)
         print("%-5s %d/3  %-48s | %s" % (sid, ok, line[:48], heard[0]), flush=True)
-    json.dump(res, open(out or os.path.join(OUT, "of_sound_v4_check.json"), "w"), indent=1)
+    json.dump(res, open(out or os.path.join(OUT, "of_sound_v5_check.json"), "w"), indent=1)
     return res
 
 
@@ -335,7 +337,7 @@ def levels(path):
 if __name__ == "__main__":
     a, lines, total = mix()
     master(a)
-    I, P = levels(os.path.join(OUT, "of_sound_v4.wav"))
+    I, P = levels(os.path.join(OUT, "of_sound_v5.wav"))
     print("master: %.1f s, %.1f LUFS, true peak %.1f dBTP" % (total, I, P))
     res = check(lines)
     KNOWN = {"2.6": "\"And then?\" is heard \"On then\" in 2 of 3 windows in the mix (1 of 3 dry at stop 2 without context): "

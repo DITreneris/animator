@@ -96,7 +96,10 @@ def arm(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
     cap = [(sx + h * math.cos(b0 + 2 * dd * i / 4.0), sy + h * math.sin(b0 + 2 * dd * i / 4.0)) for i in range(4, -1, -1)]
     pts = cap + inner + [(hx + sg * n2[0] * h, hy + sg * n2[1] * h), (hx - sg * n2[0] * h, hy - sg * n2[1] * h)] + outer[::-1]
     cut(k, pts, col, shadow=False, lw=2)
-    ellipse(k, hx, hy, w * 0.6, w * 0.6, skin, seed, shadow=False, lw=2)
+    if kit.HAND[0]:                                        # an episode's own hand (opt-in)
+        kit.HAND[0](k, hx, hy, w, skin, seed, d2, 1 if a2 >= 0 else -1)
+    else:
+        ellipse(k, hx, hy, w * 0.6, w * 0.6, skin, seed, shadow=False, lw=2)
     return hx, hy
 
 

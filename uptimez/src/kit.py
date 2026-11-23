@@ -263,6 +263,9 @@ ARM_POSES = {  # (left upper, left fore, right upper, right fore) degrees; 0 = d
 }
 
 
+HAND = [None]                                              # opt-in hand drawer: f(k, hx, hy, w, skin, seed, dir, side)
+
+
 def arm(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
     c = k.c
     d = lambda a: (math.sin(math.radians(a)), math.cos(math.radians(a)))
@@ -272,7 +275,10 @@ def arm(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
         ang = math.atan2(by - ay, bx - ax)
         nx, ny = -math.sin(ang) * w / 2, math.cos(ang) * w / 2
         cut(k, [(ax + nx, ay + ny), (bx + nx, by + ny), (bx - nx, by - ny), (ax - nx, ay - ny)], col, shadow=False, lw=2)
-    ellipse(k, hx, hy, w * 0.6, w * 0.6, skin, seed, shadow=False, lw=2)
+    if HAND[0]:                                            # an episode's own hand (opt-in; episode 13 sets it)
+        HAND[0](k, hx, hy, w, skin, seed, d(a1 + a2), 1 if a2 >= 0 else -1)
+    else:
+        ellipse(k, hx, hy, w * 0.6, w * 0.6, skin, seed, shadow=False, lw=2)
     return hx, hy
 
 

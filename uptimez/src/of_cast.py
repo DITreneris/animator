@@ -238,6 +238,27 @@ def client_lying(k, s=1.6, sway=0.0, wrench_up=False):
     return head
 
 
+def cartoon_hand(k, hx, hy, w, skin, seed, d, side):
+    """episode 13's hand for everyone (23 Nov, decided): a chunky cartoon hand, a palm, three fingers and a thumb,
+    a bold outline, turned along the forearm (d) with the thumb on the elbow's inner side."""
+    c = k.c
+    w = w * 1.25                                                                             # a touch bigger than the old ball
+    a = math.atan2(d[1], d[0])
+    c.save(); c.translate(hx, hy); c.rotate(a)
+    sk = skin
+    def blob(x, y, rx, ry, rot=0.0):
+        c.save(); c.translate(x, y); c.rotate(rot); c.scale(rx, ry); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
+    blob(0.10 * w, side * 0.48 * w, 0.30 * w, 0.17 * w, side * 0.7)                         # the thumb
+    for j, fy in enumerate((-0.30, 0.0, 0.30)):                                              # three fingers, curled
+        blob(0.62 * w, fy * w, 0.26 * w, 0.17 * w)
+    blob(0.18 * w, 0.0, 0.50 * w, 0.46 * w)                                                  # the palm, over the knuckles' roots
+    c.set_source_rgb(*INK); c.set_line_width(1.4)                                            # the knuckle creases
+    for fy in (-0.15, 0.15):
+        c.move_to(0.48 * w, fy * w); c.line_to(0.64 * w, fy * w); c.stroke()
+    c.restore()
+
+
 def client_under(k, s=1.6, sway=0.0, look=(1.0, 0.6), wrench_t=0.0):
     """v3 (22 Nov, after the 5/10 audit): UNDER THE CAR, a SIDE cutaway, in frame units: the classic mechanic's view.
     He lies on his back on the creeper (client_of.profile laid down: head left, face up), the car's underside above

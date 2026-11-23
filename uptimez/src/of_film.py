@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 7, 2: 11, 3: 6, 4: 8, 5: 6}
-SOUND = "of_sound_v4.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 8, 2: 12, 3: 7, 4: 10, 5: 7}
+SOUND = "of_sound_v5.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -322,6 +322,22 @@ def s09_work(t, L):                                       # the sump sways; he f
     return st, po
 
 
+def s34b(t, L):                                            # v9: turned to Don, it glows as it talks
+    return dict(visor_glow=_loud("3.4b", t)), {}
+
+
+def s35b(t, L):                                            # v9: he turns to the counter: "Pam?"
+    u = ease(t / 0.25)
+    return dict(don_over=dict(look=(0.2 + 0.8 * u, 0.4 - 0.4 * u))), {}
+
+
+def s36b(t, L):                                            # v9: MEETING IN 4:59 ... 4:58, ticking
+    return dict(count=299 - int(t / 0.6)), {}
+
+
+MOTION["3.4b"] = s34b
+MOTION["3.5b"] = s35b
+MOTION["3.6b"] = s36b
 MOTION["0.9"] = s09_work
 MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
 MOTION["0.10"] = s010_same

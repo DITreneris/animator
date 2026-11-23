@@ -153,5 +153,27 @@
    "without who."
   ],
   "ok": 3
+ },
+ "3.4b": {
+  "who": "ROBOT",
+  "text": "Calendar says... you'll see.",
+  "len": 1.28,
+  "asr": [
+   "Calendar says you'll see.",
+   "Calendar says you'll see.",
+   "calendar says you'll see."
+  ],
+  "ok": 3
+ },
+ "3.5b": {
+  "who": "DON",
+  "text": "Pam?",
+  "len": 0.52,
+  "asr": [
+   "PAM",
+   "Pam",
+   "(static)"
+  ],
+  "ok": 2
  }
 }
