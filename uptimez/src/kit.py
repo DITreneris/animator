@@ -264,6 +264,7 @@ ARM_POSES = {  # (left upper, left fore, right upper, right fore) degrees; 0 = d
 
 
 HAND = [None]                                              # opt-in hand drawer: f(k, hx, hy, w, skin, seed, dir, side)
+ARM_RIM = [None]                                           # opt-in: (r, g, b) of a rim drawn along dark sleeves
 
 
 def arm(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
@@ -275,6 +276,9 @@ def arm(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
         ang = math.atan2(by - ay, bx - ax)
         nx, ny = -math.sin(ang) * w / 2, math.cos(ang) * w / 2
         cut(k, [(ax + nx, ay + ny), (bx + nx, by + ny), (bx - nx, by - ny), (ax - nx, ay - ny)], col, shadow=False, lw=2)
+        if ARM_RIM[0] and sum(col) < 0.6:                  # opt-in (episode 13): a grey rim, so a black sleeve reads on a black suit
+            c.new_path(); c.move_to(ax + nx, ay + ny); c.line_to(bx + nx, by + ny); c.move_to(bx - nx, by - ny); c.line_to(ax - nx, ay - ny)
+            c.set_source_rgb(*ARM_RIM[0]); c.set_line_width(2.2); c.stroke()
     if HAND[0]:                                            # with the episode hand: a rounded elbow, not a corner
         c.new_path(); c.arc(ex, ey, w / 2 - 1.0, 0, 2 * math.pi); c.set_source_rgb(*col); c.fill()
     if HAND[0]:                                            # an episode's own hand (opt-in; episode 13 sets it)

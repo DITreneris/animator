@@ -24,7 +24,7 @@ import soundfile as sf
 from PIL import Image
 import of_scenes as sc
 
-VERSION = 11
+VERSION = 12
 TMP = "/tmp/of_cut"
 FRAMES = "/tmp/of_film/s%d"                                 # each scene's drawings, as of_film left them (or a copy in TMP)
 FPS = 30
@@ -32,10 +32,14 @@ TAGS = ["-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt70
 
 
 def scene_dirs():
+    """v2 (23 Nov): ALWAYS the drawings of_film just rendered. v1 preferred a copy in TMP, and a stale copy from 09:05
+    went into rough cuts v10 and v11 unseen (lesson 152). A scene whose folder is missing or empty stops the cut."""
     out = []
     for n in range(1, len(sc.SCENES) + 1):
-        d = os.path.join(TMP, "s%d" % n)
-        out.append(d if os.path.isdir(d) and os.listdir(d) else FRAMES % n)
+        d = FRAMES % n
+        if not (os.path.isdir(d) and os.listdir(d)):
+            raise SystemExit("scene %d: no drawings in %s; render it with of_film.py %d" % (n, d, n))
+        out.append(d)
     return out
 
 

@@ -22,6 +22,26 @@ from kit import INK, rect, ellipse, cut
 SHX, SHY = co.SH[0], co.BT + 26                            # the shoulder on the Client's rig (the bodyguards share it)
 
 
+def ik_low(sx, sy, tx, ty, ln1, ln2):
+    """v1 (23 Nov): ik with the elbow BELOW the line to the hand (a forearm that rises to a held prop, so the prop stands
+    on the fist and never covers the forearm)."""
+    vx, vy = tx - sx, ty - sy
+    D = max(abs(ln1 - ln2) + 0.5, min(math.hypot(vx, vy), ln1 + ln2 - 0.5))
+    angD = math.degrees(math.atan2(vx, vy))
+    al = math.degrees(math.acos((ln1 * ln1 + D * D - ln2 * ln2) / (2 * ln1 * D)))
+    be = math.degrees(math.acos((ln1 * ln1 + ln2 * ln2 - D * D) / (2 * ln1 * ln2)))
+    best = None
+    for sg in (1, -1):
+        a1 = angD + sg * al
+        ey = sy + math.cos(math.radians(a1)) * ln1
+        if best is None or ey > best[0]:
+            best = (ey, a1, -sg * (180 - be))
+    return best[1], best[2]
+
+
+ELBOW_LOW = [False]                                        # v1 (23 Nov): set while a guard holds a prop up in front of him
+
+
 def arms_to(x, feet, s, flip=False, targets=(), rest=None):
     """targets: points (X, Y) in set units for the hands; each goes to the nearer free shoulder. rest: the pose of an
     arm with no target (default: hanging)."""
@@ -30,7 +50,7 @@ def arms_to(x, feet, s, flip=False, targets=(), rest=None):
     for X, Y in targets:
         tx, ty = (X - x) / s * m, (Y - feet) / s
         side = min((sd for sd in free if free[sd] is None), key=lambda sd: abs(sd * SHX - tx))
-        free[side] = ik(side * SHX, SHY, tx, ty, co.LN1, co.LN2, side)
+        free[side] = ik_low(side * SHX, SHY, tx, ty, co.LN1, co.LN2) if ELBOW_LOW[0] else ik(side * SHX, SHY, tx, ty, co.LN1, co.LN2, side)
     out = []
     for side in (-1, 1):
         out += list(free[side] or (rest[0:2] if side == -1 and rest else rest[2:4] if rest else (side * -4, 2)))
@@ -253,10 +273,10 @@ def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wi
     return o
 
 
-def client_bent(k, x, feet, s, look=(-1, 0), hands=None, lean=0.75):
+def client_bent(k, x, feet, s, look=(-1, 0), hands=None, lean=0.75, head34=None):
     """bent over the engine bay (to his front, screen left): client_of v2's true profile, tipped from the hips."""
     import client_of as cof
-    o = cof.profile(k, x, feet, s, facing=-1, lean=lean, hands=hands)
+    o = cof.profile(k, x, feet, s, facing=-1, lean=lean, hands=hands, head34=head34)
     hip = feet + co.HIP * s
     hx, hy = o["head"]                                                        # the head, tipped forward with him
     rx, ry = hx - x, hy - hip

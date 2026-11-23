@@ -310,12 +310,29 @@ def car(k, bonnet=0.0, tilt=0.0):
     if bonnet > 0:                                   # v2: the engine bay open, the lid up on its hinge at the screen
         hx, hy = x0 + 292, 676
         cut(k, [(hx + 2, hy + 2), (x1 - 20, 694), (x1 - 4, 712), (hx + 14, 712)], (0.12, 0.12, 0.14), shadow=False, lw=2)
-        c.set_source_rgb(*STEEL_D); c.rectangle(hx + 24, 698, 30, 10); c.fill()            # the engine, a hint
+        # v3 (23 Nov, audit "the bay is empty"): an engine you can name at a glance: the block, the air filter, a yellow cap, the bolt
+        rect(k, hx + 6, 688, 62, 24, (0.50, 0.51, 0.54), 3080, shadow=False, lw=1.8)         # the block
+        for i in range(3):                                                                     # its plug leads
+            c.set_source_rgb(0.85, 0.15, 0.12); c.set_line_width(2.2); c.move_to(hx + 14 + i * 12, 688); c.line_to(hx + 10 + i * 12, 680); c.stroke()
+        ellipse(k, hx + 30, 683, 18, 7, (0.18, 0.18, 0.20), 3081, shadow=False, lw=1.6)       # the air filter, round, on top
+        c.set_source_rgb(0.15, 0.15, 0.16); c.set_line_width(5); c.set_line_cap(1)               # a black hose
+        c.move_to(hx + 46, 686); c.curve_to(hx + 58, 678, hx + 70, 682, hx + 74, 694); c.stroke()
+        ellipse(k, hx + 62, 694, 5.5, 4, (0.98, 0.80, 0.12), 3082, shadow=False, lw=1.4)      # the yellow oil cap
+        bx_, by_ = BAY_BOLT_PRE
+        ellipse(k, bx_, by_, 4.5, 4, (0.80, 0.82, 0.85), 3083, shadow=False, lw=1.4)         # the bolt he works on
         if not LID_BEHIND[0]:
             lid(k, bonnet, squashed=False)
     c.restore()
     if tilt:
         c.restore()
+
+
+BAY_BOLT_PRE = (494, 702)                                  # v3: the bolt in the bay, in the car's unsquashed units
+
+
+def bay_bolt():
+    """the bolt, where it is drawn (the car's squash applied)."""
+    return BAY_BOLT_PRE[0], SILL - (SILL - BAY_BOLT_PRE[1]) * CAR_SQUASH
 
 
 LID_BEHIND = [False]                                       # v6 (opt-in): the open lid drawn behind whoever works at the bay
@@ -329,8 +346,17 @@ def lid(k, bonnet, squashed=True):
     if squashed:
         c.save(); c.translate(0, SILL); c.scale(1, CAR_SQUASH); c.translate(0, -SILL)
     c.save(); c.translate(hx, hy); c.rotate(-1.45 * bonnet)
-    cut(k, [(0, 0), (x1 - 16 - hx, 8), (x1 - 16 - hx, 34), (0, 24)], CAR_L, lw=2.4)          # v5: a lid you can see
+    L_ = x1 - 16 - hx                                                                        # v6 (23 Nov, audit "a door or glass"):
+    cut(k, [(0, 0), (L_, 8), (L_, 34), (0, 24)], CAR, lw=2.6)                                # the car's own blue, thicker,
+    cut(k, [(0, 15), (L_, 23), (L_, 34), (0, 24)], CAR_D, shadow=False, lw=1.8)              # its dark underside toward the bay
+    c.set_source_rgb(*INK); c.arc(0, 12, 4, 0, 2 * math.pi); c.fill()                        # the hinge
+    px_, py_ = L_ * 0.78, 30
     c.restore()
+    a_ = -1.45 * bonnet                                                                      # the prop rod, from the bay's front edge up to it
+    rx_, ry_ = hx + px_ * math.cos(a_) - py_ * math.sin(a_), hy + px_ * math.sin(a_) + py_ * math.cos(a_)
+    c.set_source_rgb(*INK); c.set_line_width(3.2); c.set_line_cap(1)
+    c.move_to(x1 - 24, 696); c.line_to(rx_, ry_); c.stroke()
+    c.set_source_rgb(0.70, 0.72, 0.75); c.set_line_width(1.6); c.move_to(x1 - 24, 696); c.line_to(rx_, ry_); c.stroke()
     if squashed:
         c.restore()
 
@@ -394,7 +420,7 @@ def legs(k, out=0.0):
     c.set_source_rgba(0, 0, 0, 0.18); c.rectangle(CAR_X[0] + 20, SILL + 4, CAR_X[1] - CAR_X[0] - 40, 46); c.fill()   # under the car
 
 
-def lamp(k, x=None, y=None, ang=-0.5, lit=True):
+def lamp(k, x=None, y=None, ang=-0.5, lit=True, hang=None, glow=True):
     """the caged work lamp on its cable (lying on the floor in frame 0). v3 (22 Nov: Tomas read v2 as "a rat": a dark
     body, a round head, a thin curved tail): an ORANGE handle with a hanging hook, a bright bulb inside a wire cage, and a
     thick orange cable running straight out of the frame, never curling like a tail."""
@@ -406,8 +432,13 @@ def lamp(k, x=None, y=None, ang=-0.5, lit=True):
     hx_, hy_ = x + 42 * ca, y + 42 * sa                                                       # the handle's end
     for col, lw in ((INK, 9), (ORANGE, 6)):                                                  # the cable: thick, straight out
         c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
-        c.move_to(hx_, hy_); c.line_to(hx_ + 60 * ca + 14, hy_ + 60 * sa + 10); c.line_to(hx_ + 900 * ca + 200, hy_ + 900 * sa + 120); c.stroke()
-    if lit:
+        c.move_to(hx_, hy_)
+        if hang is not None:                                                                 # v4 (23 Nov): held, it hangs to the floor and runs off behind him
+            c.curve_to(hx_ + 10, hy_ + 40, hx_ + 30, hang, hx_ + 70, hang); c.line_to(hx_ + 700, hang)
+        else:
+            c.line_to(hx_ + 60 * ca + 14, hy_ + 60 * sa + 10); c.line_to(hx_ + 900 * ca + 200, hy_ + 900 * sa + 120)
+        c.stroke()
+    if lit and glow:
         g = cairo.RadialGradient(x, y, 4, x, y, 90)
         g.add_color_stop_rgba(0, 1.0, 0.95, 0.70, 0.55); g.add_color_stop_rgba(1, 1.0, 0.95, 0.70, 0.0)
         c.set_source(g); c.arc(x, y, 90, 0, 2 * math.pi); c.fill()
@@ -435,7 +466,7 @@ def garage(k, burn=0.0, legs_out=None, bonnet=0.0, lamp_on_floor=True, behind=No
         lid(k, bonnet)
     if behind:
         behind(k)
-    rect(k, 560, F - 40, 18, 22, (0.90, 0.90, 0.86), 3095, shadow=False, lw=1.4)             # the socket
+    rect(k, 702, F - 40, 18, 22, (0.90, 0.90, 0.86), 3095, shadow=False, lw=1.4)             # the socket (v2, 23 Nov: out from behind the veto's lighter)
     car(k, bonnet, tilt)
     if legs_out is not None:
         legs(k, legs_out)
@@ -470,8 +501,12 @@ def sheet(k, burn):
         if p < 1.0:
             flames(c, x, y, 44 * (1 - p) + 6, FIRE[1] + 1.5, seed=9)
     elif burn >= TORN_AT and SHEET[0] is None:
-        c.set_source_rgba(0.10, 0.08, 0.06, 0.65)                                         # the ash, after
-        c.save(); c.translate(x, y); c.scale(1.0, 0.4); c.arc(0, 0, 16, 0, 2 * math.pi); c.restore(); c.fill()
+        # v2 (23 Nov, audit "Father floats over his shadow"): ash, not a smooth dark oval: a charred scrap, a curl, flakes
+        cut(k, [(x - 16, y - 2), (x - 4, y - 7), (x + 12, y - 5), (x + 17, y + 2), (x + 3, y + 6), (x - 12, y + 5)], (0.16, 0.12, 0.09),
+            shadow=False, lw=1.4)
+        c.set_source_rgb(0.12, 0.10, 0.08)
+        for dx, dy, r in ((-24, 4, 2.6), (22, -3, 2.2), (27, 5, 1.8), (-20, -5, 1.6)):     # flakes round it
+            c.new_path(); c.arc(x + dx, y + dy, r, 0, 2 * math.pi); c.fill()
 
 
 def frame(k, cam=FRAME0, draw=garage, **kw):
