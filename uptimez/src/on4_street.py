@@ -28,7 +28,7 @@ import engine_on as eng
 import on_set as ons
 
 NEON = (0.93, 0.13, 0.22)
-ZEBRA = ["v4"]                    # v5 (23 Nov, opt-in): the crossing's stripes flat, in the road's perspective
+ZEBRA = ["v4"]                    # v5 (23 Nov, opt-in): the stripes flat, in the road's perspective; v6: raised above y 720
 GOLD = (0.98, 0.80, 0.36)
 INK = (0.06, 0.06, 0.07)
 CREAM = (0.90, 0.85, 0.70)
@@ -422,6 +422,17 @@ def setup_c(k):
         for i in range(7):                                                                 # the zebra crossing
             x0 = -10 + i * 66
             poly(k, [(x0 + 4, 760), (x0 + 44, 760), (x0 + 44, 830), (x0 - 6, 830)], (0.93, 0.92, 0.88), 1.4)
+    elif ZEBRA[0] == "v6":                     # v6 (Tomas's pick, 23 Nov): the crossing raised to y 646-712, above the
+        def edge(y):                           # phone's caption zone; seven bands spread across the road's own width
+            u = (960 - y) / 354.0
+            return -20 + 170 * u, 470 - 140 * u
+        c.save(); road(); c.clip()
+        for i in range(7):
+            pts = []
+            for y, a, b in ((646, i / 7.0 + 0.02, i / 7.0 + 0.10), (712, i / 7.0 + 0.02, i / 7.0 + 0.10)):
+                l, r = edge(y); pts.append((l + (r - l) * a, y)); pts.append((l + (r - l) * b, y))
+            poly(k, [pts[0], pts[1], pts[3], pts[2]], (0.93, 0.92, 0.88), 1.2)
+        c.restore()
     else:                                      # v5: flat bands painted on the road, in its perspective (VP 249,400),
         VP = (249, 400)                        # clipped to the road: read as paint, not as blocks standing on it
         c.save(); road(); c.clip()
