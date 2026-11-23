@@ -1,0 +1,588 @@
+[
+{
+"scene": 6,
+"n": 12,
+"text": "Mom! I'm...",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"449",
+"272"
+],
+"box": [
+385,
+109,
+519,
+221
+]
+},
+{
+"scene": 6,
+"n": 13,
+"text": "Mom! I'm...",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"456",
+"273"
+],
+"box": [
+385,
+109,
+519,
+221
+]
+},
+{
+"scene": 6,
+"n": 14,
+"text": "Mom! I'm...",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"449",
+"272"
+],
+"box": [
+385,
+109,
+519,
+221
+]
+},
+{
+"scene": 6,
+"n": 15,
+"text": "Mom! I'm...",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"449",
+"272"
+],
+"box": [
+385,
+109,
+519,
+221
+]
+},
+{
+"scene": 6,
+"n": 16,
+"text": "Mom! I'm...",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"449",
+"272"
+],
+"box": [
+385,
+109,
+519,
+221
+]
+},
+{
+"scene": 6,
+"n": 17,
+"text": "Mom! I'm...",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"449",
+"272"
+],
+"box": [
+385,
+109,
+519,
+221
+]
+},
+{
+"scene": 6,
+"n": 18,
+"text": "Mom! I'm...",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"449",
+"272"
+],
+"box": [
+385,
+109,
+519,
+221
+]
+},
+{
+"scene": 6,
+"n": 19,
+"text": "Mom! I'm...",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"449",
+"272"
+],
+"box": [
+385,
+109,
+519,
+221
+]
+},
+{
+"scene": 6,
+"n": 20,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"385",
+"273"
+],
+"box": [
+385,
+101,
+505,
+213
+]
+},
+{
+"scene": 6,
+"n": 21,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"392",
+"273"
+],
+"box": [
+393,
+101,
+513,
+213
+]
+},
+{
+"scene": 6,
+"n": 22,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"385",
+"273"
+],
+"box": [
+393,
+101,
+513,
+214
+]
+},
+{
+"scene": 6,
+"n": 23,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"392",
+"273"
+],
+"box": [
+393,
+101,
+513,
+213
+]
+},
+{
+"scene": 6,
+"n": 24,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"385",
+"273"
+],
+"box": [
+393,
+101,
+513,
+214
+]
+},
+{
+"scene": 6,
+"n": 25,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"392",
+"273"
+],
+"box": [
+393,
+101,
+513,
+213
+]
+},
+{
+"scene": 6,
+"n": 26,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"385",
+"273"
+],
+"box": [
+393,
+101,
+513,
+214
+]
+},
+{
+"scene": 6,
+"n": 27,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"392",
+"273"
+],
+"box": [
+393,
+101,
+513,
+213
+]
+},
+{
+"scene": 6,
+"n": 28,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"385",
+"273"
+],
+"box": [
+393,
+101,
+513,
+214
+]
+},
+{
+"scene": 6,
+"n": 29,
+"text": "...the CEO!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"392",
+"273"
+],
+"box": [
+393,
+101,
+513,
+213
+]
+},
+{
+"scene": 6,
+"n": 36,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 37,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 38,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 39,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 40,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 41,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 42,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 43,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 44,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 45,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 46,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 47,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 48,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 49,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 50,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+385,
+199,
+594
+]
+},
+{
+"scene": 6,
+"n": 51,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+393,
+199,
+602
+]
+},
+{
+"scene": 6,
+"n": 52,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+393,
+199,
+602
+]
+},
+{
+"scene": 6,
+"n": 53,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+393,
+199,
+602
+]
+},
+{
+"scene": 6,
+"n": 54,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+393,
+199,
+602
+]
+},
+{
+"scene": 6,
+"n": 55,
+"text": "Then stand like one, Donnie.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+393,
+199,
+602
+]
+}
+]

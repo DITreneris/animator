@@ -29,11 +29,13 @@ import cs_anim as A
 from cs_board import S, at, base, calendar_on
 from kit import Ctx, INK, ellipse, rect
 
-V = "v9"                                                   # v2: Don's reach by IK; v3: the reply "Our AI does not lose files."
+V = "v10"                                                  # v10 (23 Nov, Tomas): the reply is "Stupid human." and a clown
+V_PREV = "v9"                                                   # v2: Don's reach by IK; v3: the reply "Our AI does not lose files."
                                                            # (script v14). v1, v2 kept in cs_scene1_v1.py, cs_scene1_v2.py
 DPS = 12
 SR = 48000
-TAKES = "cs_voices/film_v5"                                # v5: + the post (Client) and the reply (robot), read aloud
+TAKES = "cs_voices/film_v6"                                # v6: 1.4b is "Stupid human." (0.94 s, Whisper 3/3)
+TAKES_PREV = "cs_voices/film_v5"                                # v5: + the post (Client) and the reply (robot), read aloud
 HI = [2]
 
 # the pose with the phone in the right hand at the chest (kit's convention; Mom's own IK, her left on the bag side)
@@ -89,6 +91,8 @@ def phone_held(k, hx, hy, s, ang=-0.15, lit=True, buzz=False, d=0, seed=900):
     c = k.c
     sc = s / 0.55
     j = (0.9 if d % 2 else -0.9) if buzz else 0.0
+    _LASTPH[0] = (hx, hy, hx + j, hy - 8 * sc, ang, sc)
+    PH_DEV.append(c.user_to_device(hx, hy))                                         # where a hand holds a phone (GRIP)
     c.save(); c.translate(hx + j, hy - 8 * sc); c.rotate(ang); c.scale(sc, sc)
     if lit:                                                                       # the screen's light, up toward the face
         g = cairo.RadialGradient(0, -14, 0, 0, -14, 26)
@@ -107,7 +111,48 @@ def phone_held(k, hx, hy, s, ang=-0.15, lit=True, buzz=False, d=0, seed=900):
             c.stroke()
 
 
+GRIP = [False]                                              # 23 Nov (hand audit 2): the phone HELD, ep 13's phone_grip
+_LASTPH = [None]
+PH_DEV = []                                                 # this drawing's held phones, device px (a first pass finds them)
+PH_PREV = []                                                # ... from the first pass: the hook draws no hand there                                            # (hand x, y, phone x, y, angle, scale) of the last phone_held
+
+
+def _cap(c, x0, y0, x1, y1, w, col):
+    for cc, lw in ((INK, w + 1.6), (col, w)):
+        c.set_source_rgb(*cc); c.set_line_width(lw); c.set_line_cap(1); c.move_to(x0, y0); c.line_to(x1, y1); c.stroke()
+    c.set_line_cap(0)
+
+
+def grip_rect(k, skin, x0, y0, w, h, side=1):
+    """In the held object's own frame (its rectangle x0, y0, w, h, upright): the palm behind its lower edge (only what
+    shows past it), the thumb across the front of one edge, low, three fingertips round the other edge."""
+    c = k.c
+    f = w / 14.0
+    cx, by, hw = x0 + w / 2.0, y0 + h, w / 2.0
+    c.save()
+    c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+    c.rectangle(cx - 80 * f, by - 80 * f, 160 * f, 160 * f); c.rectangle(x0, y0, w, h); c.clip()
+    c.save(); c.translate(cx + side * 1.0 * f, by - 2.0 * f); c.scale(9.0 * f, 6.5 * f); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.2); c.stroke()
+    c.restore()
+    _cap(c, cx + side * (hw + 2 * f), by - 1 * f, cx + side * (hw - 4 * f), by - 7 * f, 4.4 * f, skin)    # the thumb
+    for fy in (13.0, 8.4, 3.8):                                                                       # three fingertips
+        c.save(); c.translate(cx - side * (hw + 0.6 * f), by - fy * f); c.scale(3.0 * f, 2.2 * f); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.1); c.stroke()
+
+
+def grip(k, skin, side=1):
+    """Over the last phone_held (ep 13's phone_grip, lesson 192): the phone HELD."""
+    c = k.c
+    hx, hy, px, py, ang, sc = _LASTPH[0]
+    c.save(); c.translate(px, py); c.rotate(ang); c.scale(sc, sc)
+    grip_rect(k, skin, -7, -12, 14, 24, side)
+    c.restore()
+
+
 def fist(k, hx, hy, s, skin, seed):
+    if GRIP[0] and _LASTPH[0] and abs(_LASTPH[0][0] - hx) < 1 and abs(_LASTPH[0][1] - hy) < 1:
+        return grip(k, skin)
     sc = s / 0.55
     ellipse(k, hx, hy, 6 * sc, 6.5 * sc, skin, seed, shadow=False, lw=1.4)
     ellipse(k, hx - 6.5 * sc, hy - 7 * sc, 2.2 * sc, 3.4 * sc, skin, seed + 1, shadow=False, lw=1.0)  # the thumb round its side
@@ -295,7 +340,7 @@ def don_reach(r, press=False):
 
 # ---- 1.4b the reply posts ----------------------------------------------------------------------------------------------
 
-N14b = 35                                                  # v5: the robot reads it as it lands (2.15 s)
+N14b = 26                                                  # v10: "Stupid human." (0.94 s) lands, then a hold to read it
 REPLY_AT = 5 / 12.0
 
 
@@ -341,15 +386,40 @@ def draw(fn, d):
     if HI[0] > 1:
         s.set_device_scale(HI[0], HI[0])
     c = cairo.Context(s); k = Ctx(c, 0)
+    if GRIP[0]:                                                                           # a first pass: where are the phones held?
+        s0 = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540 * HI[0], 960 * HI[0])
+        if HI[0] > 1:
+            s0.set_device_scale(HI[0], HI[0])
+        c0 = cairo.Context(s0); PH_DEV.clear(); PH_PREV.clear()
+        sb.bg(c0); sb.HEADS.clear(); sb.AVOID.clear()
+        _draw_in(fn, Ctx(c0, 0), d)
+        PH_PREV[:] = PH_DEV
+    PH_DEV.clear()
     sb.bg(c); sb.HEADS.clear(); sb.AVOID.clear()
-    old = cp.PROPS4[0], cp.REAL_PAM[0], cp.REPLY_TXT[0]
-    cp.PROPS4[0] = cp.REAL_PAM[0] = True; cp.REPLY_TXT[0] = cp.REPLY_V15                 # v4: "Shut off!" (script v15)
+    _draw_in(fn, k, d)
+    PH_PREV.clear()
+    return s
+
+
+CUR_D = [0]
+
+
+def _draw_in(fn, k, d):
+    CUR_D[0] = d
+    ch = sys.modules.get("cs_hands")
+    if ch is not None and kit.HAND[0] is ch.hook:                                         # the shot's hand states
+        ch.begin_fn(fn)
+    hp = sys.modules.get("hands_ps")
+    if hp is not None:                                                                    # each pass counts its hands from 0
+        hp._N[0] = 0; hp.LATE.clear(); hp.DIRS.clear()
+    old = cp.PROPS4[0], cp.REAL_PAM[0], cp.REPLY_TXT[0], cp.FIT2[0]
+    cp.PROPS4[0] = cp.REAL_PAM[0] = True; cp.REPLY_TXT[0] = cp.REPLY_V18                 # v10: "Stupid human." and the clown (script v18)
+    cp.FIT2[0] = True                                                                     # v10: every line inside the screen
     try:
         with A.b3._ep11v3():
             fn(k, d)
     finally:
-        cp.PROPS4[0], cp.REAL_PAM[0], cp.REPLY_TXT[0] = old
-    return s
+        cp.PROPS4[0], cp.REAL_PAM[0], cp.REPLY_TXT[0], cp.FIT2[0] = old
 
 
 def schedule():

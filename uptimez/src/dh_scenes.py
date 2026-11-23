@@ -25,12 +25,17 @@ def _phone_in_hand(k, d, lit=True, side=1, at_ear=False):
     c = k.c
     if at_ear:                                             # flat against the side of his head, the hand over it
         hx, hy = d["head"][0] + 31, d["head"][1] + 2
-        kit.ellipse(k, hx + 3, hy + 9, 8, 9, kit.PEOPLE["DON"]["skin"], 3402, shadow=False, lw=1.6)
+        import hands2 as _h2
+        if not _h2.ON[0]:
+            kit.ellipse(k, hx + 3, hy + 9, 8, 9, kit.PEOPLE["DON"]["skin"], 3402, shadow=False, lw=1.6)
     c.save(); c.translate(hx - 4 if not at_ear else hx, hy - 8 if not at_ear else hy - 6); c.rotate(-0.25 if not at_ear else 0.12)
     kit.rect(k, -7, -14, 14, 27, (0.06, 0.06, 0.08), 3401, lw=1.6)
     if lit:
         c.set_source_rgb(0.55, 0.80, 1.0); c.rectangle(-5, -11, 3, 21); c.fill()
     c.restore()
+    import hands2 as _h2
+    if at_ear and _h2.ON[0]:                               # 23 Nov: his fingers round the phone, at his ear
+        _h2.hand(k, hx + 4, hy + 22, -1.5708 + 0.15, 18, kit.PEOPLE["DON"]["skin"], "grip", 1, 3402)
 
 
 def _don_call(face, lit=True, lowered=False, sunk_chair=True):
@@ -234,6 +239,16 @@ def s3_thumb(k, c):
         c.set_source_rgb(0.30, 0.75, 0.95); c.set_line_width(5); c.new_path(); c.arc(270, 470, r_, 0.4, 2.74); c.stroke()
     da.dp._T(c, "APPROVE", 270, 640, 34, col=(0.80, 0.88, 0.95))
     skin = kit.PEOPLE["DON"]["skin"]
+    import hands2 as _h2
+    if _h2.ON[0]:                                          # 23 Nov: his hand, a fist, the thumb pressing; his shirt sleeve from the right
+        import math as _m
+        w = 120; u = w * 0.86 * 1.22; tip = (300, 452)
+        ang = _m.atan2(-0.42, -1.0)
+        wx, wy = tip[0] - _m.cos(ang) * u * 1.02 + _m.sin(ang) * u * 0.2, tip[1] - _m.sin(ang) * u * 1.02 - _m.cos(ang) * u * 0.2
+        _h2.arm(k, 700, wy + 140 * 0.42 * 1.0 + 60, wx, wy, w, (0.98, 0.98, 0.96), skin, cuff=None, pose="press", side=1, seed=3501)
+        for dx, dy in ((wx + 70, wy + 34), (wx + 92, wy + 52), (wx + 58, wy + 56)):       # the ketchup on his sleeve
+            kit.ellipse(k, dx, dy, 12, 9, (0.85, 0.16, 0.10), 3510 + int(dx), shadow=False, lw=1.6)
+        return
     kit.cut(k, [(560, 520), (420, 470), (300, 430), (262, 446), (270, 500), (400, 560), (560, 640)], skin, lw=4)     # his thumb, from the right
     kit.cut(k, [(280, 436), (306, 430), (316, 458), (288, 468)], (0.98, 0.93, 0.88), shadow=False, lw=2)                # the nail
     kit.cut(k, [(470, 470), (560, 500), (560, 660), (450, 600)], (0.98, 0.98, 0.96), lw=4)                             # the cuff
@@ -398,7 +413,10 @@ TOUR = ((474, F + 26), (378, F + 8))                       # v2: Don in front of
 SHRED_X = 514
 
 
+dp.TAG[0] = True                                           # 22 Nov: the price tag on the throne, in every scene
 dp.MOTTO[0] = True                                         # 22 Nov: the booth's neon motto (scene 1)
+dp.STARS_FIT[0] = True                                     # 22 Nov: the phone's empty stars inside its screen (they ran onto the bezel)
+dp.REPLY_V18[0] = True                                     # 23 Nov: "Stupid human." and a clown (Tomas)
 
 
 # 22 Nov: the phone lies on the throne's arm from scene 2 to the end (the last frame is frame 0: it rings there).
@@ -533,9 +551,9 @@ S4 = [
     ("6.1'", 1.3, dl.shot("s4f", [dl.hd(506, F + 26, 0.60), HV], s4_tour, "", chair=False, cam=TWO4),
      "SAME FRAME, second drawing. Without losing the smile Don takes one step sideways and is standing in front of it, arms a little out. The noise goes on behind him.",
      "DON: \"...transparency.\""),
-    ("6.1''", 2.05, dl.shot("s4g", [dl.hd(480, F + 26, 0.60), HV], s4_card, "", chair=False, cam=TWO4),
+    ("6.1''", 1.5, dl.shot("s4g", [dl.hd(480, F + 26, 0.60), HV], s4_card, "", chair=False, cam=TWO4),
      "SAME FRAME, third drawing. He slaps a big gold sticker on the man's chest, right over his COFFEE SERVICE pass: PREMIUM. The visitor looks down at it.",
-     "DON: \"Lifetime Premium. On us.\""),
+     "DON: \"Premium. On us.\""),
     ("6.2", 1.85, dl.shot("s4h", [da.RH], da._rb("idle"), "", zmax=3.6, chair=False),
      "CLOSE, the robot at its station by the door. Helpful. We cut away before it has finished.", "ROBOT: \"Premium search is non-functional.\""),
     ("6.3", 1.75, dl.shot("s4i", [dl.hd(480, F + 26, 0.60)], s4_life, "", chair=False),
@@ -774,7 +792,7 @@ def s6_zip(k, o):
     c.set_source_rgb(*INK); c.set_line_width(1.6)
     for i in (-4, 1, 6):
         c.move_to(fx - 6 + i, fy - 2); c.line_to(fx - 8 + i, fy + 6); c.stroke()
-    kit.text(k, "eek!", hx - 44, hy - 40, 11, (1, 1, 1))
+    kit.text(k, "eek!", hx + 36, hy - 58, 11, INK)       # 22 Nov: on the other side, clear of the price tag
 
 
 def s6_sofia(k, o):                                       # v2: surer of herself: the CV higher, carried like a ticket

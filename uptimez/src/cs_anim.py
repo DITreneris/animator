@@ -430,6 +430,9 @@ MIC_CAM9 = (484, 640, 3.8)                                 # v9 (Tomas): 5.4b cl
 def _m6_1b7_text(k, d):
     c = k.c
     x0, top, L, Z, ry = 58, 360, 44, 36, 650
+    fit = cp.FIT2[0]                                                                            # v18: same rows as phone2's FIT2
+    if fit:
+        ry = top + 6 * L + 44
     c.set_source_rgb(*cp.LIGHT); c.rectangle(x0 + 2, top - 40, 420, ry - top + 36); c.fill()   # the text area, redrawn by stage
     struck = min(1.0, max(0.0, (d - 3) / 3.0))
     for i, s_ in enumerate(("“Paid $999.", "They lost my", "blueprint.")):
@@ -440,11 +443,14 @@ def _m6_1b7_text(k, d):
             c.set_source_rgb(*cp.RED); c.set_line_width(5)
             c.move_to(x0 + 24, top + (3 + i) * L - 12); c.line_to(x0 + 24 + (12 + ex) * struck, top + (3 + i) * L - 12); c.stroke()
     if d >= 7:
-        cp.T(c, "UPDATE:", x0 + 250, top + 3 * L, 30, col=cp.GRN, center=False)
+        if fit:
+            cp.T(c, "UPDATE:", x0 + 30, top + 5 * L + 6, 34, col=cp.GRN, center=False)
+        else:
+            cp.T(c, "UPDATE:", x0 + 250, top + 3 * L, 30, col=cp.GRN, center=False)
     if d >= 9:
         txt = "Pam found it."
         n = len(txt) if d >= 12 else (4, 8, 11)[d - 9]
-        cp.T(c, txt[:n], x0 + 30, top + 5 * L + 14, 46, col=(0.55, 0.16, 0.46), center=False)
+        cp.T(c, txt[:n], x0 + 30, top + (6 * L + 20 if fit else 5 * L + 14), 46, col=(0.55, 0.16, 0.46), center=False)
     c.set_source_rgba(*cp.LIGHT, 0.6); c.rectangle(x0 + 10, ry, 404, 140); c.fill()               # the old reply steps back
     if d <= 15:                                                                                 # the thumb, below the text
         y = 850 + (10 if (4 <= d <= 12 and d % 2) else 0) + max(0, d - 12) * 60

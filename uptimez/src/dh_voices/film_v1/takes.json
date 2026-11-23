@@ -233,14 +233,17 @@
  },
  "6.1b": {
   "who": "DON",
-  "text": "Lifetime Premium. On us.",
-  "len": 1.89,
+  "text": "Premium. On us.",
+  "len": 1.16,
   "asr": [
-   "Lifetime premium on us.",
-   "Lifetime Premium on us.",
-   "lifetime premium on us."
+   "Premium on us.",
+   "Premium on us.",
+   "Premium on us."
   ],
-  "ok": 3
+  "ok": 3,
+  "given": [
+   "Premium. On us."
+  ]
  },
  "6.2": {
   "who": "ROBOT",

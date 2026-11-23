@@ -1,0 +1,1662 @@
+[
+{
+"scene": 3,
+"n": 2,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"286"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 3,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"286"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 4,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"288"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 5,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"289"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 6,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"291"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 7,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"292"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 8,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"293"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 9,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"294"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 10,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"294"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 11,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"294"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 12,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"293"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 13,
+"text": "Make it green.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"371",
+"292"
+],
+"box": [
+129,
+101,
+374,
+177
+]
+},
+{
+"scene": 3,
+"n": 17,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"293"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 18,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"304"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 19,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"293"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 20,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"304"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 21,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"293"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 22,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"304"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 23,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"293"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 24,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"304"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 25,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"293"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 26,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"304"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 27,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"293"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 28,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"304"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 29,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"293"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 30,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"304"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 31,
+"text": "Human approval required.",
+"kind": "antenna",
+"fails": [],
+"tip": [
+"266",
+"293"
+],
+"box": [
+223,
+97,
+400,
+247
+]
+},
+{
+"scene": 3,
+"n": 32,
+"text": "Approved.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+233,
+97,
+461,
+173
+]
+},
+{
+"scene": 3,
+"n": 33,
+"text": "Approved.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+233,
+97,
+461,
+173
+]
+},
+{
+"scene": 3,
+"n": 34,
+"text": "Approved.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+233,
+97,
+461,
+173
+]
+},
+{
+"scene": 3,
+"n": 35,
+"text": "Approved.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+233,
+97,
+461,
+173
+]
+},
+{
+"scene": 3,
+"n": 36,
+"text": "Approved.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+233,
+97,
+461,
+173
+]
+},
+{
+"scene": 3,
+"n": 37,
+"text": "Approved.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+233,
+97,
+461,
+173
+]
+},
+{
+"scene": 3,
+"n": 48,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 49,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 50,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 51,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 52,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 53,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 54,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 55,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 56,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 57,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"307",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (252 px)"
+]
+},
+{
+"scene": 3,
+"n": 58,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"304",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (257 px)"
+]
+},
+{
+"scene": 3,
+"n": 59,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"304",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (257 px)"
+]
+},
+{
+"scene": 3,
+"n": 60,
+"text": "It's still one.",
+"kind": "face",
+"fails": [],
+"tip": [
+"304",
+"457"
+],
+"box": [
+113,
+141,
+333,
+217
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (257 px)"
+]
+},
+{
+"scene": 3,
+"n": 63,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"430"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 64,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"430"
+],
+"box": [
+89,
+109,
+327,
+223
+]
+},
+{
+"scene": 3,
+"n": 65,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"430"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 66,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"430"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 67,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"428"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 68,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"425"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 69,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"426"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 70,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"424"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 71,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"421"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 72,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"422"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 73,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"422"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 74,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"423"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 75,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"422"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 76,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"424"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 77,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"425"
+],
+"box": [
+89,
+109,
+327,
+223
+]
+},
+{
+"scene": 3,
+"n": 78,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"427"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 79,
+"text": "Green is all he sees.",
+"kind": "face",
+"fails": [],
+"tip": [
+"224",
+"426"
+],
+"box": [
+89,
+109,
+327,
+222
+]
+},
+{
+"scene": 3,
+"n": 84,
+"text": "He once fired a man...",
+"kind": "face",
+"fails": [],
+"tip": [
+"193",
+"359"
+],
+"box": [
+361,
+101,
+520,
+249
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (53 px)"
+]
+},
+{
+"scene": 3,
+"n": 85,
+"text": "He once fired a man...",
+"kind": "face",
+"fails": [],
+"tip": [
+"193",
+"381"
+],
+"box": [
+361,
+101,
+520,
+249
+]
+},
+{
+"scene": 3,
+"n": 86,
+"text": "He once fired a man...",
+"kind": "face",
+"fails": [],
+"tip": [
+"193",
+"381"
+],
+"box": [
+361,
+101,
+520,
+249
+]
+},
+{
+"scene": 3,
+"n": 87,
+"text": "He once fired a man...",
+"kind": "face",
+"fails": [],
+"tip": [
+"191",
+"381"
+],
+"box": [
+361,
+101,
+520,
+249
+]
+},
+{
+"scene": 3,
+"n": 88,
+"text": "He once fired a man...",
+"kind": "face",
+"fails": [],
+"tip": [
+"191",
+"381"
+],
+"box": [
+361,
+101,
+520,
+249
+]
+},
+{
+"scene": 3,
+"n": 89,
+"text": "He once fired a man...",
+"kind": "face",
+"fails": [],
+"tip": [
+"193",
+"381"
+],
+"box": [
+361,
+101,
+520,
+249
+]
+},
+{
+"scene": 3,
+"n": 90,
+"text": "He once fired a man...",
+"kind": "face",
+"fails": [],
+"tip": [
+"193",
+"381"
+],
+"box": [
+361,
+101,
+520,
+249
+]
+},
+{
+"scene": 3,
+"n": 91,
+"text": "He once fired a man...",
+"kind": "face",
+"fails": [],
+"tip": [
+"193",
+"381"
+],
+"box": [
+361,
+101,
+520,
+249
+]
+},
+{
+"scene": 3,
+"n": 92,
+"text": "He once fired a man...",
+"kind": "face",
+"fails": [],
+"tip": [
+"193",
+"381"
+],
+"box": [
+361,
+101,
+520,
+249
+]
+},
+{
+"scene": 3,
+"n": 93,
+"text": "...for sitting in that chair.",
+"kind": "face",
+"fails": [],
+"tip": [
+"193",
+"378"
+],
+"box": [
+261,
+273,
+395,
+452
+],
+"warn": [
+"tail crosses the speaker off skin (earring or chain, tier 2) (54 px)"
+]
+},
+{
+"scene": 3,
+"n": 94,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 95,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 96,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 97,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 98,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 99,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 100,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 101,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 102,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 103,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 104,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 105,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 106,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 107,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 108,
+"text": "...for sitting in that chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+17,
+105,
+190,
+314
+]
+},
+{
+"scene": 3,
+"n": 122,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 123,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 124,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 125,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 126,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 127,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 128,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 129,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 130,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 131,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 132,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 133,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+},
+{
+"scene": 3,
+"n": 134,
+"text": "Different chair.",
+"kind": "card",
+"fails": [],
+"tip": null,
+"box": [
+177,
+523,
+372,
+656
+]
+}
+]

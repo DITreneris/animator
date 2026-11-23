@@ -33,6 +33,57 @@ def _T(c, s, x, y, size, col=INK, bold=True, center=True):
     c.move_to(x - (e.x_advance / 2 if center else 0), y); c.show_text(s)
 
 
+TAG_STYLE = ["A"]                                          # "A": a swing ticket under the crown's left point. "B": under the left armrest.
+                                                           # "v1": the first one (a flat card on one straight line), kept so its renders rebuild
+
+
+def _price_tag(k, style, seed):
+    """The throne's price, still on it (chair-local units, inside the chair's lean). v2 (22 Nov, Tomas: it hung badly and
+    looked stuck on): a shop's swing ticket. It hangs straight DOWN from a loop of gold cord tied round something real (a
+    crown point or the armrest), two strands meeting at a brass eyelet in the middle of its top edge; a card with a shadow,
+    the throne's own outline weight, a gold rule, the series' lettering. TAG_ANG swings the card and its cord from the knot."""
+    c = k.c
+    if style == "v1":
+        c.save(); c.translate(-56, -428); c.rotate(TAG_ANG[0])
+        c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(0, 0); c.line_to(-40, 44); c.stroke()
+        c.translate(-48, 66); c.rotate(-0.10)
+        cut(k, [(-40, -24), (30, -24), (42, -8), (42, 24), (-40, 24)], (0.99, 0.97, 0.90), lw=2.2)
+        ellipse(k, 30, -12, 4, 4, (0.45, 0.42, 0.38), seed + 60, shadow=False, lw=1.2)
+        _T(c, "$49,999", -1, 9, 19, col=(0.80, 0.10, 0.12))
+        c.restore()
+        return
+    kx, ky, ln = ((-52, -404, 30) if style == "A" else (-94, -160, 26))      # the knot, and the cord's length
+    CORD, CORD_D = (0.93, 0.76, 0.28), (0.55, 0.40, 0.10)
+    # the loop round the crown's point (or the arm), behind the knot
+    c.set_line_cap(1)
+    for col, lw in ((INK, 6.5), (CORD, 3.5)):
+        c.set_source_rgb(*col); c.set_line_width(lw)
+        c.save(); c.translate(kx, ky - 7); c.scale(1, 0.55); c.arc(0, 0, 11, 0, 2 * math.pi); c.restore(); c.stroke()
+    c.save(); c.translate(kx, ky); c.rotate(TAG_ANG[0])
+    W, H = 92, 54
+    for col, lw in ((INK, 5.5), (CORD, 3.0)):                                # two strands, a little slack in each
+        c.set_source_rgb(*col); c.set_line_width(lw)
+        for sx in (-1, 1):
+            c.move_to(0, 0); c.curve_to(sx * 9, ln * 0.35, sx * 7, ln * 0.8, 0, ln + 9); c.stroke()
+    ellipse(k, 0, 0, 5, 4.5, CORD, seed + 61, shadow=False, lw=1.8)          # the knot
+    c.translate(0, ln)
+    cut(k, [(-W / 2, 8), (-W / 2 + 10, 0), (W / 2 - 10, 0), (W / 2, 8), (W / 2, H), (-W / 2, H)], (0.99, 0.97, 0.90), lw=2.6)   # the card, its top corners cut
+    c.set_source_rgb(*CORD_D); c.set_line_width(1.6)                         # a gold rule inside its edge
+    c.move_to(-W / 2 + 6, 13); c.line_to(W / 2 - 6, 13); c.line_to(W / 2 - 6, H - 6); c.line_to(-W / 2 + 6, H - 6); c.close_path(); c.stroke()
+    ellipse(k, 0, 8, 5.5, 5.5, CORD, seed + 62, shadow=False, lw=1.8)        # the eyelet, brass
+    ellipse(k, 0, 8, 2.2, 2.2, (0.20, 0.16, 0.10), seed + 63, shadow=False, outline=False)
+    c.select_font_face(kit.FONT); c.set_font_size(23)
+    e = c.text_extents("$49,999")
+    c.set_source_rgb(0.72, 0.08, 0.12); c.move_to(-e.x_advance / 2, 41); c.show_text("$49,999")
+    c.restore()
+
+
+TAG = [False]                                              # opt-in (22 Nov, Tomas: "add price tag"): the price still hanging off the crown
+REPLY_V18 = [False]                                        # opt-in (23 Nov, Tomas): the reply is "Stupid human." and a clown
+STARS_FIT = [False]                                        # opt-in (v8): the phone's empty stars kept inside its screen
+TAG_ANG = [0.0]                                            # its swing, radians, for the animation
+
+
 def ceo_chair(k, x, feet, s=1.0, seed=2000, lean=0.0, sink=0.0, puff=False, seat_drop=0.0):
     """v2 (after the props review): a throne. The back a quarter wider and taller, a few big buttons, ONE big crown, and
     a height lever with a red knob. sink 0..1: the gas lift lets go and the seat drops 46 units (frame 0: DAD rings, he
@@ -79,6 +130,8 @@ def ceo_chair(k, x, feet, s=1.0, seed=2000, lean=0.0, sink=0.0, puff=False, seat
         cut(k, [(sx * 72, -178), (sx * 114, -178), (sx * 116, -160), (sx * 74, -160)], LEATHER, lw=2.2)
     c.set_source_rgba(*GOLD_L, 0.9); c.set_line_width(2.8)
     c.move_to(-85, -236); c.curve_to(-80, -296, -66, -336, -36, -358); c.stroke()
+    if TAG[0]:
+        _price_tag(k, TAG_STYLE[0], seed)
     if puff:                                                                 # PSSSH: the air out both sides, in front
         c.rotate(-lean); c.translate(0, -drop)
         for sx in (-1, 1):
@@ -319,6 +372,8 @@ def booth(k, seed=2500, tap=0.0, face_down=False, post="simple"):
         if post == "simple":                                 # v3: what a phone screen can carry: one red star, two words
             for i in range(5):
                 cx_, r_ = (-34 + i * 21, 17) if i == 0 else (-34 + 18 + i * 17.5, 8)
+                if STARS_FIT[0] and i:                       # v8: the four empty stars inside the screen (it is -58..58)
+                    cx_ = -20 + i * 16
                 c.new_path()
                 for j in range(10):
                     a = -math.pi / 2 + j * math.pi / 5
@@ -330,7 +385,12 @@ def booth(k, seed=2500, tap=0.0, face_down=False, post="simple"):
                 c.set_source_rgb(*(RED if i == 0 else (0.6, 0.6, 0.62))); c.set_line_width(1.6); c.stroke()
             c.set_source_rgb(0.90, 0.93, 0.97); c.rectangle(-54, -22, 108, 100); c.fill()
             _T(c, "UptimeZ:", -46, -2, 12, center=False)
-            _T(c, "Shut", -46, 32, 34, col=RED, center=False); _T(c, "off!", -46, 66, 34, col=RED, center=False)
+            if REPLY_V18[0]:
+                import clown as _cl
+                _T(c, "Stupid", -46, 22, 24, col=RED, center=False); _T(c, "human.", -46, 46, 24, col=RED, center=False)
+                _cl.clown(c, 36, -7, 12)                                 # beside "UptimeZ:", clear of the words and his ring hand
+            else:
+                _T(c, "Shut", -46, 32, 34, col=RED, center=False); _T(c, "off!", -46, 66, 34, col=RED, center=False)
         else:
             _T(c, "10 GARAGES", -50, -78, 13, center=False)
             for i in range(5):                                                                # one star
@@ -347,13 +407,26 @@ def booth(k, seed=2500, tap=0.0, face_down=False, post="simple"):
             _T(c, "They lost my", -50, -22, 12.5, center=False, bold=False); _T(c, "blueprint.", -50, -6, 12.5, center=False, bold=False)
             c.set_source_rgb(0.90, 0.93, 0.97); c.rectangle(-52, 12, 104, 60); c.fill()
             _T(c, "UptimeZ:", -46, 30, 11, center=False)
-            _T(c, "Shut off!", -46, 48, 16, col=RED, center=False); _T(c, "Our AI does not lose files!", -46, 63, 7.6, center=False)
+            if REPLY_V18[0]:
+                import clown as _cl
+                _T(c, "Stupid human.", -46, 50, 15, col=RED, center=False); _cl.clown(c, 40, 44, 9)
+            else:
+                _T(c, "Shut off!", -46, 48, 16, col=RED, center=False); _T(c, "Our AI does not lose files!", -46, 63, 7.6, center=False)
     c.restore()
-    ellipse(k, 150, 690, 40, 34, (0.90, 0.69, 0.55), seed + 4, shadow=False, lw=2.6)       # the guard's hand
+    import hands2 as _h2
+    if _h2.ON[0]:                                                                          # 23 Nov: his fingers round the phone's edge
+        _h2.hand(k, 96, 690, 0.0, 70, (0.90, 0.69, 0.55), "grip", -1, seed + 4)
+    else:
+        ellipse(k, 150, 690, 40, 34, (0.90, 0.69, 0.55), seed + 4, shadow=False, lw=2.6)       # the guard's hand
     # Father's hand: on the table, the ring; one finger taps the post
     hx, hy = 410, 700
     cut(k, [(560, 640), (470, 650), (462, 742), (560, 760)], dc.VELVET, lw=3)
     cut(k, [(472, 652), (444, 656), (438, 738), (464, 742)], (0.96, 0.96, 0.93), shadow=False, lw=2.2)
+    if _h2.ON[0]:                                                                          # 23 Nov: a hand, the index tapping the post
+        c.save(); c.translate(452, hy); c.rotate(math.pi - 0.18 * tap)
+        _h2.hand(k, 0, 0, 0.0, 78, dc.SKIN_F, "point", 1, seed + 6)
+        c.restore()
+        return
     ellipse(k, hx, hy, 46, 38, dc.SKIN_F, seed + 6, shadow=False, lw=2.6)
     for i, ln in enumerate((50, 58, 54, 44)):
         up = (14 * tap if i == 0 else 0)

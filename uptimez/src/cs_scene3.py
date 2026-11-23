@@ -245,6 +245,10 @@ def finger(k, x, y, ang=0.15):
     """His thick oily finger from below, the olive sleeve behind it."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang)
+    import hands2 as _h2
+    if _h2.ON[0]:                                                                  # 23 Nov: a hand, the index out, from his sleeve
+        _h2.arm(k, 0, 600, 0, 128, 80, (0.42, 0.44, 0.24), SKIN_CL, cuff=(0.98, 0.97, 0.94), pose="point", side=1, seed=951)
+        c.restore(); return
     rect(k, -40, 120, 80, 400, (0.42, 0.44, 0.24), 951, lw=3)                       # the sleeve
     rect(k, -32, 100, 64, 30, (0.98, 0.97, 0.94), 952, shadow=False, lw=2.5)       # the cuff
     rect(k, -26, 0, 52, 110, SKIN_CL, 953, shadow=False, lw=3)                       # the finger

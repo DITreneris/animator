@@ -1,0 +1,1600 @@
+[
+{
+"scene": 1,
+"n": 28,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"203",
+"79"
+],
+"box": [
+17,
+117,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 29,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"203",
+"77"
+],
+"box": [
+17,
+117,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 30,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"214",
+"78"
+],
+"box": [
+17,
+110,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 31,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"200",
+"77"
+],
+"box": [
+17,
+117,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 32,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"197",
+"76"
+],
+"box": [
+17,
+117,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 33,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"198",
+"75"
+],
+"box": [
+17,
+114,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 34,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"197",
+"75"
+],
+"box": [
+17,
+117,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 35,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"197",
+"74"
+],
+"box": [
+17,
+116,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 36,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"199",
+"73"
+],
+"box": [
+17,
+117,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 37,
+"text": "Donnie.",
+"kind": "face",
+"fails": [],
+"tip": [
+"205",
+"73"
+],
+"box": [
+17,
+117,
+172,
+193
+]
+},
+{
+"scene": 1,
+"n": 39,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"283"
+],
+"box": [
+361,
+101,
+511,
+251
+]
+},
+{
+"scene": 1,
+"n": 40,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"285"
+],
+"box": [
+361,
+101,
+511,
+251
+]
+},
+{
+"scene": 1,
+"n": 41,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"288"
+],
+"box": [
+361,
+101,
+511,
+251
+]
+},
+{
+"scene": 1,
+"n": 42,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"288"
+],
+"box": [
+361,
+101,
+511,
+251
+]
+},
+{
+"scene": 1,
+"n": 43,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"290"
+],
+"box": [
+361,
+101,
+511,
+251
+]
+},
+{
+"scene": 1,
+"n": 44,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"289"
+],
+"box": [
+301,
+93,
+447,
+243
+]
+},
+{
+"scene": 1,
+"n": 45,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"289"
+],
+"box": [
+301,
+93,
+447,
+243
+]
+},
+{
+"scene": 1,
+"n": 46,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"289"
+],
+"box": [
+301,
+93,
+447,
+243
+]
+},
+{
+"scene": 1,
+"n": 47,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"287"
+],
+"box": [
+301,
+93,
+447,
+243
+]
+},
+{
+"scene": 1,
+"n": 48,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"285"
+],
+"box": [
+361,
+101,
+511,
+251
+]
+},
+{
+"scene": 1,
+"n": 49,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"283"
+],
+"box": [
+361,
+101,
+511,
+251
+]
+},
+{
+"scene": 1,
+"n": 50,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"283"
+],
+"box": [
+361,
+101,
+511,
+251
+]
+},
+{
+"scene": 1,
+"n": 51,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"280"
+],
+"box": [
+361,
+101,
+511,
+251
+]
+},
+{
+"scene": 1,
+"n": 52,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"280"
+],
+"box": [
+361,
+93,
+511,
+243
+]
+},
+{
+"scene": 1,
+"n": 53,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"280"
+],
+"box": [
+361,
+93,
+511,
+243
+]
+},
+{
+"scene": 1,
+"n": 54,
+"text": "Dad! Great timing!",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"280"
+],
+"box": [
+361,
+93,
+511,
+243
+]
+},
+{
+"scene": 1,
+"n": 59,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"197",
+"80"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 60,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"203",
+"78"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 61,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"197",
+"79"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 62,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"207",
+"78"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 63,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"196",
+"77"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 64,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"200",
+"77"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 65,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"198",
+"74"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 66,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"196",
+"75"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 67,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"199",
+"74"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 68,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"195",
+"72"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 69,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"195",
+"74"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 70,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"213",
+"73"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 71,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"196",
+"70"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 72,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"196",
+"70"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 73,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"196",
+"69"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 74,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"181",
+"79"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 75,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"187",
+"79"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 76,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"181",
+"78"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 77,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"185",
+"78"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 78,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"185",
+"78"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 79,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"185",
+"78"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 80,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"185",
+"78"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 81,
+"text": "My men go in first.",
+"kind": "face",
+"fails": [],
+"tip": [
+"185",
+"78"
+],
+"box": [
+17,
+149,
+207,
+262
+]
+},
+{
+"scene": 1,
+"n": 82,
+"text": "I arrive at five.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"239",
+"288"
+],
+"box": [
+297,
+125,
+485,
+238
+]
+},
+{
+"scene": 1,
+"n": 83,
+"text": "I arrive at five.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"239",
+"287"
+],
+"box": [
+297,
+125,
+485,
+238
+]
+},
+{
+"scene": 1,
+"n": 84,
+"text": "I arrive at five.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"286"
+],
+"box": [
+297,
+125,
+485,
+238
+]
+},
+{
+"scene": 1,
+"n": 85,
+"text": "I arrive at five.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"284"
+],
+"box": [
+297,
+125,
+485,
+238
+]
+},
+{
+"scene": 1,
+"n": 86,
+"text": "I arrive at five.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"282"
+],
+"box": [
+297,
+125,
+485,
+238
+]
+},
+{
+"scene": 1,
+"n": 87,
+"text": "I arrive at five.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"280"
+],
+"box": [
+297,
+125,
+485,
+238
+]
+},
+{
+"scene": 1,
+"n": 88,
+"text": "I arrive at five.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"280"
+],
+"box": [
+297,
+125,
+485,
+238
+]
+},
+{
+"scene": 1,
+"n": 89,
+"text": "I arrive at five.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"239",
+"279"
+],
+"box": [
+297,
+117,
+485,
+230
+]
+},
+{
+"scene": 1,
+"n": 90,
+"text": "I arrive at five.",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"239",
+"279"
+],
+"box": [
+297,
+117,
+485,
+230
+]
+},
+{
+"scene": 1,
+"n": 91,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"211",
+"399"
+],
+"box": [
+17,
+285,
+153,
+472
+]
+},
+{
+"scene": 1,
+"n": 92,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"211",
+"400"
+],
+"box": [
+17,
+285,
+153,
+472
+]
+},
+{
+"scene": 1,
+"n": 93,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"219",
+"408"
+],
+"box": [
+17,
+285,
+153,
+472
+]
+},
+{
+"scene": 1,
+"n": 94,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"211",
+"404"
+],
+"box": [
+17,
+285,
+153,
+472
+]
+},
+{
+"scene": 1,
+"n": 95,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"219",
+"410"
+],
+"box": [
+17,
+285,
+153,
+472
+]
+},
+{
+"scene": 1,
+"n": 96,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"219",
+"411"
+],
+"box": [
+17,
+285,
+153,
+472
+]
+},
+{
+"scene": 1,
+"n": 97,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"220",
+"413"
+],
+"box": [
+17,
+285,
+153,
+472
+]
+},
+{
+"scene": 1,
+"n": 98,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"219",
+"412"
+],
+"box": [
+17,
+285,
+153,
+472
+]
+},
+{
+"scene": 1,
+"n": 99,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"212",
+"406"
+],
+"box": [
+17,
+285,
+153,
+472
+]
+},
+{
+"scene": 1,
+"n": 100,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"213",
+"407"
+],
+"box": [
+25,
+285,
+161,
+472
+]
+},
+{
+"scene": 1,
+"n": 101,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"213",
+"406"
+],
+"box": [
+25,
+285,
+161,
+472
+]
+},
+{
+"scene": 1,
+"n": 102,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"211",
+"402"
+],
+"box": [
+25,
+285,
+161,
+472
+]
+},
+{
+"scene": 1,
+"n": 103,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"211",
+"403"
+],
+"box": [
+25,
+285,
+161,
+472
+]
+},
+{
+"scene": 1,
+"n": 104,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"219",
+"407"
+],
+"box": [
+25,
+285,
+161,
+472
+]
+},
+{
+"scene": 1,
+"n": 105,
+"text": "I arrive at five.",
+"kind": "face",
+"fails": [],
+"tip": [
+"213",
+"401"
+],
+"box": [
+25,
+285,
+161,
+472
+]
+},
+{
+"scene": 1,
+"n": 109,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"281"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 110,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"281"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 111,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"283"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 112,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"285"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 113,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"287"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 114,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"289"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 115,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"289"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 116,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"289"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 117,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"289"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 118,
+"text": "Tomorrow?",
+"kind": "overhead",
+"fails": [],
+"tip": [
+"240",
+"289"
+],
+"box": [
+301,
+157,
+507,
+233
+]
+},
+{
+"scene": 1,
+"n": 122,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"197",
+"79"
+],
+"box": [
+17,
+103,
+163,
+185
+]
+},
+{
+"scene": 1,
+"n": 123,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"203",
+"78"
+],
+"box": [
+17,
+114,
+163,
+193
+]
+},
+{
+"scene": 1,
+"n": 124,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"200",
+"78"
+],
+"box": [
+17,
+117,
+163,
+193
+]
+},
+{
+"scene": 1,
+"n": 125,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"207",
+"77"
+],
+"box": [
+17,
+113,
+163,
+193
+]
+},
+{
+"scene": 1,
+"n": 126,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"197",
+"76"
+],
+"box": [
+17,
+117,
+163,
+193
+]
+},
+{
+"scene": 1,
+"n": 127,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"200",
+"76"
+],
+"box": [
+17,
+117,
+163,
+193
+]
+},
+{
+"scene": 1,
+"n": 128,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"199",
+"74"
+],
+"box": [
+17,
+117,
+163,
+193
+]
+},
+{
+"scene": 1,
+"n": 129,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"197",
+"74"
+],
+"box": [
+17,
+117,
+163,
+193
+]
+},
+{
+"scene": 1,
+"n": 130,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"198",
+"74"
+],
+"box": [
+17,
+117,
+163,
+193
+]
+},
+{
+"scene": 1,
+"n": 131,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"196",
+"72"
+],
+"box": [
+17,
+117,
+163,
+193
+]
+},
+{
+"scene": 1,
+"n": 132,
+"text": "Today.",
+"kind": "face",
+"fails": [],
+"tip": [
+"196",
+"75"
+],
+"box": [
+17,
+117,
+163,
+193
+]
+}
+]

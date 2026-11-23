@@ -13,6 +13,13 @@ These rules apply to the UptimeZ episodes in `uptimez/` only, not to Hoodyz (`..
 
 Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) use Rush, Max, the laptop AI and Cache, and are outside the main storyline.
 
+## Before writing any code (after Daddy's Home v2, 22 Nov)
+
+1. **Collect the lessons first.** Grep `../docs/lessons.md` for the topic (bubbles, tails, signs, mouths, scale...), write every rule that applies into the episode folder as `<episode>-<topic>-lessons-vN.md` with line numbers, and send it to Tomas before building.
+2. **Reuse what was approved.** Search `src/` and `git log origin/main` for a film where the same problem was solved and reviewed (bubbles: `bc_sb.bubble` / `measure`, checks: `qa_bc.py`). Name the file being reused. Write new code only if nothing exists, and say so to Tomas first.
+3. **Look before sending.** Open at least six frames at full size, with crops of the details the change touches (where a tail meets its box, the tip on the cheek). A checker that passes is not a reason to send; the frames are.
+4. **Stop when it isn't converging.** After one hour or two full check runs without the faults going down, stop and report to Tomas instead of patching on.
+
 ## Working with Tomas
 
 - **"/grill-me"** means ask the decisions as multiple choice before building (AskUserQuestion, recommended option first), then build exactly what was picked.
@@ -52,7 +59,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | Loudness | True peak ≤ −1 dBTP and −14 to −16 LUFS, measured on the final AAC (limit around 0.60; AAC overshoots) |
 | Speech | Whisper on every line inside the final mix, three windows per line; a lone word gets the previous line as context; score by words or letters (it runs "Pam a heart" together) |
 | Text | Every bubble, card and shout inside the safe area (18, 96, 522, 820 at 540×960) and off the right-hand button rail. Speech bubbles never cover a face. Narration and cards go at the top, under the bar (y 96): the bottom quarter is where TikTok, Reels and Shorts put captions, even inside the safe area |
-| Tails | Each tail ends beside the mouth **drawn in that frame**, curving round outside the head. Off-screen speakers get no tail (a caption, a screen readout or a quoted card instead) |
+| Tails | The box beside the face, level with the mouth, and a **short** tail (10–20 px past the box, lessons 174, 325) whose tip lands on the cheek's outline at mouth height, never on the mouth, over the eyes or on hair; aimed at the mouth **drawn in that frame**. A tail may bend only to clear the head; never a long tail wrapped round it. No wall beside the face: reframe the shot (lesson 358). Off-screen speakers only get a quoted card with the name, no tail. Reuse `bc_sb.bubble` and `qa_bc.py` |
 | Frame 0 | Complete (no flash, nothing scaling in), held at least 0.4 s before the camera moves, and the last frame leads back into it. The sound runs through the seam: no dead stop before frame 0 (a fade of 0.3 s at most) |
 | Size | **1080 renders are not committed** (`uptimez/**/*_1080.mp4` is in `.gitignore`); `build.sh` rebuilds them and they're delivered directly. The 540 previews, covers and sheets are committed. The 1080 files committed before 17 Nov stay tracked |
 

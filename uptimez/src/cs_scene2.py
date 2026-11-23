@@ -124,7 +124,13 @@ def s2_1(k, d):
         rect(k_, -6, -12, 12, 24, s1.PHONE, 971, lw=1.3)
         c.restore()
         sk = kit.PEOPLE["DON"]["skin"]
-        ellipse(k_, hx, hy + 8, 5.2, 5.6, sk, 972, shadow=False, lw=1.2)          # his fingers round it
+        if s1.GRIP[0]:                                                             # 23 Nov: held from its top end (his arm
+            s1.PH_DEV.append(c.user_to_device(hx, hy))                             # comes down to it), ep 13's grip turned over
+            c.save(); c.translate(hx + 3, hy + 14); c.rotate(-0.12 + math.pi)
+            s1.grip_rect(k_, sk, -6, -12, 12, 24, side=1)
+            c.restore()
+        else:
+            ellipse(k_, hx, hy + 8, 5.2, 5.6, sk, 972, shadow=False, lw=1.2)      # his fingers round it
         if 0 <= d - FLICK_AT + 2 <= 6:                                             # his other hand on the boom, over it
             gx, gy = _grip(pts)
             ellipse(k_, gx, gy, 5.0, 5.4, sk, 973, shadow=False, lw=1.2)

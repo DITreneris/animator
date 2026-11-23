@@ -1,17 +1,8 @@
-# One Star — script v18 (line by line, with the shot list)
+# One Star — script v17 (line by line, with the shot list)
 
 **Title (20 Nov, Tomas): "One Star"**, after the post at 0:01 and the last line, "Still one star." The working title "Customer Success" survives as Don's line at the handshake; the folder and file names keep it (`customer-success/`, `cs_*`) so nothing built breaks.
 
-UptimeZ Inc. · episode 11 · 20 Nov · for review · scripts v1–v17 are kept
-
-**v18, 21 Nov: one wall calendar in the series** (Tomas, /grill-me, after comparing with First Search film v30 on main):
-
-| Change | In the film |
-|---|---|
-| **First Search's calendar, as it is** | The same drawing (`fs_film30.calendar`, called from `cs_cal.wall`), the same place: right of the portrait (was my own redraw, by the door, NOV · FRI · 20) |
-| **THU 11, then FRI 12** | First Search ends on MON 8. One Star's post and call are Thursday the 11th; **3.2a (new, 0.8 s)**: the page tears off and falls, FRI 12; then he walks in at 9:00. The last wide (6.6) shows FRI 12, the first (1.1) THU 11: the loop's cut also turns the day back |
-| 2.1 | Still opens on the calendar (now just up and right of Don), a shorter pan |
-| main merged | The branch was already in main; main's newer set code is in (the wall logo is gone, as in First Search) |
+UptimeZ Inc. · episode 11 · 20 Nov · for review · scripts v1–v16 are kept
 
 **v17, 21 Nov: after the whole film's cold test** (`cs_cold_test_film_v1.md`; Tomas):
 
@@ -22,6 +13,17 @@ UptimeZ Inc. · episode 11 · 20 Nov · for review · scripts v1–v17 are kept
 | **Trims** | 1.2 a second shorter (his read of the post 12% faster, `film_v5`); 3.1 and 4.2 a third of a second each. The film: 61.1 s |
 | **Sound** | Episode 9's sparse vibes (bed A), cut by the buzz / on "Is this a joke?" / for "Still one star.", back on "Approved." / as the 7 goes in / for the loop. 99 effects, a faint room tone, the voices in the room (short reverb) |
 | Small | "dialing…" on Don's phone; the note "finds things" bigger, in Pam's purple; FOUND BY: larger |
+
+**v18, 23 Nov: the company's reply is "Stupid human." and a clown** (Tomas: "Shut off!" is not English and not an insult; "it must insult the client, that is the point"; picked from Shut up / Stupid human / Cry more / Skill issue, then the clown emoji):
+
+| Where | Was | Now |
+|---|---|---|
+| 1.4 insert, the reply under his post | UptimeZ: "Shut off! Our AI does not lose files!" | UptimeZ: **"Stupid human."** 🤡 (the clown drawn in the series' style, not an emoji font) |
+| 1.4b, the robot reads its reply as it posts | ROBOT: "Shut off! Our AI does not lose files!" | ROBOT: **"Stupid human."**, flat and polite |
+| 6.2 / 6.3b, the phone again | "Shut off! Our AI does not lose files!" under his UPDATE | **"Stupid human."** 🤡 under his UPDATE |
+| Daddy's Home, Father's phone (booth, 0.3–0.7) | UptimeZ: Shut off! | UptimeZ: **Stupid human.** 🤡 |
+
+Wherever this script below still says "Shut off! Our AI does not lose files!", read "Stupid human." 🤡.
 
 **v16, 20 Nov: the post and the reply read aloud** (Tomas: "Garage message should be said in the Client's voice. Robot answers Shut off!"):
 
