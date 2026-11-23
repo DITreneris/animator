@@ -1,0 +1,24 @@
+{
+ "shots": [
+  {
+   "shot": "5.1",
+   "line": {
+    "key": "5.1",
+    "who": "CLIENT",
+    "text": "Your number.",
+    "t0": 1.0,
+    "t1": 1.813
+   }
+  },
+  {
+   "shot": "5.4d",
+   "line": {
+    "key": "5.4d",
+    "who": "DON",
+    "text": "Customer success.",
+    "t0": 9.833,
+    "t1": 11.19
+   }
+  }
+ ]
+}

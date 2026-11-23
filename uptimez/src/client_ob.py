@@ -76,6 +76,9 @@ LOOKS = {
 }
 
 
+NO_FOB = [False]                                           # fs v32: the 0:48 shot leaves the car fob off
+
+
 def _ik(side, tx, ty):
     return ik(side * SH[0], SH[1], tx, ty, LN1, LN2, side)
 
@@ -296,13 +299,14 @@ def client(k, x, feet, s=1.0, pose="arrive", face="confident", look=(0, 0), seed
     c.set_source_rgb(*TROUSERS_DARK); c.set_line_width(1.8)
     c.move_to(-42, HIP + 30); c.line_to(-39, -16); c.stroke()
     c.move_to(46, HIP + 30); c.line_to(54, -16); c.stroke()
-    c.save(); c.translate(-30, HIP + 8); c.rotate(0.10)                       # his car's fob, at his belt
-    c.set_source_rgb(*INK); c.set_line_width(2.2); c.move_to(0, -8); c.line_to(0, 6); c.stroke()
-    c.set_source_rgb(*STEEL); c.set_line_width(2.6); c.arc(0, 9, 5.5, 0, 2 * math.pi); c.stroke()
-    rect(k, -8, 13, 16, 26, (0.14, 0.14, 0.17), seed + 30, shadow=False, lw=1.5)
-    c.set_source_rgb(*STEEL); c.arc(0, 21, 3.4, 0, 2 * math.pi); c.fill()
-    c.set_source_rgb(0.85, 0.22, 0.20); c.arc(0, 31, 2.4, 0, 2 * math.pi); c.fill()
-    c.restore()
+    if not NO_FOB[0]:                                                          # (fs v32: off for one shot)
+     c.save(); c.translate(-30, HIP + 8); c.rotate(0.10)                       # his car's fob, at his belt
+     c.set_source_rgb(*INK); c.set_line_width(2.2); c.move_to(0, -8); c.line_to(0, 6); c.stroke()
+     c.set_source_rgb(*STEEL); c.set_line_width(2.6); c.arc(0, 9, 5.5, 0, 2 * math.pi); c.stroke()
+     rect(k, -8, 13, 16, 26, (0.14, 0.14, 0.17), seed + 30, shadow=False, lw=1.5)
+     c.set_source_rgb(*STEEL); c.arc(0, 21, 3.4, 0, 2 * math.pi); c.fill()
+     c.set_source_rgb(0.85, 0.22, 0.20); c.arc(0, 31, 2.4, 0, 2 * math.pi); c.fill()
+     c.restore()
     c.translate(-4, HIP); c.rotate(TILT); c.translate(0, -HIP)                # the upper body, over the straight leg
     bt = BT
     rect(k, -27, bt - 22, 54, 30, SKIN, seed + 5, shadow=False, lw=2)         # the neck: as wide as his jaw

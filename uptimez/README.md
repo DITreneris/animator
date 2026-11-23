@@ -20,7 +20,7 @@ The prequel shorts here are mostly **540×960 animatics** (30 fps, about 15 s): 
 | **THE ROBOT** | One machine, reassigned: Don's desk robot (*Day One*) → cafeteria waiter (*I Will Replace You*) → HR (from *Raises for Everyone*) | Every statement and stamp technically true; needs human approval for money, access and commitments | Pitched and filtered per episode |
 | **MOM** | Don's mother; Assistant to Don since *The Best Candidate* | Curlers, an old shouting voice; Don shrinks when she enters | Voice F: `bf_alice` + `bm_lewis`, aged |
 | **THE CLIENT** | Owner of ten garages (from *The Onboarding*) | The first real customer; not an idiot. Olive work jacket, VISITOR badge, a head taller than Don | `am_fenrir` −4 semitones |
-| **FATHER** | The investor (from episode 14, planned) | Holds the majority share; can replace the CEO | not cast yet |
+| **FATHER** | The investor, a nightclub kingpin (from episode 12, *Daddy's Home*, in concept) | Holds the majority share; can replace the CEO | not cast yet |
 
 ### Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*)
 
@@ -229,16 +229,16 @@ New Year special. SOFÍA dreams she is a femme fatale in a black-and-white city 
 
 | File | Version | Notes |
 |---|---|---|
-| `on2_film_v27_1080.mp4` | **release v27 (current, 18 Nov)**, not committed | 1080×1920, native 1080, 80.1 s, 30 fps, BT.709, −15.0 LUFS, −2.4 dBTP, 16/16 lines heard by Whisper, the last drawing is the first. Rebuild with `./uptimez/build.sh on2` |
-| `on2_motion_test_v27.mp4` | v27, 540 preview | v25: the first Noir's look (blinds on the walls under the people, a side light, lighter faces, typewriter narration cards at the top); v26: the money, the pour and the office lit; v27: the arms in the bar against smoke. v24 is the last before the new look |
-| `office-noir-2-script-v5.md` | script (current) | Line by line with the shot list, as of v24; v1–v4 and concepts v1–v4 kept |
+| `on2_film_v28_1080.mp4` | **release v28 (current, 20 Nov)**, not committed | 1080×1920, native 1080, 79.2 s, 30 fps, BT.709, −15.0 LUFS, −2.5 dBTP, 16/16 lines heard by Whisper, the last drawing is the first. Rebuild with `./uptimez/build.sh on2`. v27 (18 Nov) was the release before |
+| `on2_motion_test_v28.mp4` | v28, 540 preview | v28: a joke by 0:01, the first gunshot at 1.0 s (1.1 is 0.75 s); v25: the first Noir's look (blinds on the walls under the people, a side light, lighter faces, typewriter narration cards at the top); v26: the money, the pour and the office lit; v27: the arms in the bar against smoke. v24 is the last before the new look |
+| `office-noir-2-script-v6.md` | script (current) | Line by line with the shot list, as of v28 (the look of v25–v27, the new opening); v1–v5 and concepts v1–v4 kept |
 | `on2_shotboard_v8.png` | shot board | One frame from each of the 48 set-ups of v24 |
 | `on2_cover_v3.png` (v1, v2 kept) | cover | Her face close, her eyes on the Shadow, his lit hand on her shoulder; OFFICE NOIR 2 label, "The Shadow of Fate". Checked at feed size (120 px) |
 | `on2_anim_mute_test_v8.md`, `on2_board_mute_test_v1.md`, `_v4.md`, `on2_pacing_test_v15.md` | tests | Cold mute tests of the board and the animation; the cold pacing test |
 | `on1_vs_on2_*.png`, `on2_look_proto_v1.png`, `on2_look_v25_six.png`, `on2_v25_sixteen.png`, `on2_v26_fixed_frames.png` | look | Why the first Noir looked better, and the before/after of the new look |
 | `on2_board_v1..v7.png`, `on2_board_mute_v*`, `on2_cast_v1..v5.png` (+ phone), `on2_don_back_v1.png`, `on2_shadow_hat_v1.png`, `on2_two_men_v1.png`, `on2_animatic_v1.mp4`, `on2_narration_*` | development | Board, cast, animatic, narration auditions (A2 chosen) |
 
-Built from `src/`: `on2_motion.py` (timing, the picture, the release; `_v1`…`_v26` kept), `on2_motion_b5.py` and `on2_motion_b68.py` (beats 05 and 06–08), `on2_board.py` (sets), `noir2_cast.py` (the cast in noir), `on2_sound.py` (the takes in `src/on2_voices/`, the mixes), `engine_on.py` (the noir pass; TONE v3 is the new look, `engine_on_v2.py` keeps Office Noir unchanged), `thumb_on2.py` (the cover), `on2_mute_anim.py` (sheets for the cold tests).
+Built from `src/`: `on2_motion.py` (timing, the picture, the release; `_v1`…`_v27` kept), `on2_motion_b5.py` and `on2_motion_b68.py` (beats 05 and 06–08), `on2_board.py` (sets), `noir2_cast.py` (the cast in noir), `on2_sound.py` (the takes in `src/on2_voices/`, the mixes), `engine_on.py` (the noir pass; TONE v3 is the new look, `engine_on_v2.py` keeps Office Noir unchanged), `thumb_on2.py` (the cover), `on2_mute_anim.py` (sheets for the cold tests).
 
 ### The Best Candidate — [`the-best-candidate/`](the-best-candidate/)
 
@@ -276,12 +276,32 @@ Built from `src/` (`*_ob`, `ob_anim.py`, `qa_ob*.py`); `./uptimez/build.sh ob`.
 
 ### First Search — [`first-search/`](first-search/)
 
-Episode 10, **in development: concept only.** The Client comes back to the same room, under his own framed photograph: the bank needs his plan on Friday. Don sells him Premium, "Guaranteed by Friday"; the search returns 0 RESULTS; Sofía says the red looks bad, and Don has the zero turned green. "You said I'd never lose anything again." "We fixed the red." Pam, at the back, tapes his plan together and says nothing.
+Episode 10, **built: film v35 (21 Nov), 62.9 s.** The Client needs his blueprint by Friday. Don sells him a guarantee, takes his $999, posts the win, and has the robot paint the empty search result green. Sofía plasters the cracked portrait, Pam writes STUPID on the robot's back and tapes the plan, Mom scrubs the bump off Don's head with a licked thumb. On Friday the plan is shredded strips; "See you in court." On Monday the portrait is whole again.
 
 | File | Notes |
 |---|---|
-| `first-search-concept-v6.md` | **Current.** Seven beats, nine lines, 42–44 s: opens on the red zero, the portrait falls on Don's head at 1.2 s, "It's the red. It looks bad.", the held shot of four looks, Mom's "Young man.", the near-shred |
-| `first-search-concept-v1..v5.md`, `first-search-premise-v1..v3.md` | Kept |
+| `first-search-film-v35.md` | **Current.** The film as built: every shot with its time and line, the running props, the hand-off to episode 11, the version history |
+| `fs_film35_540.mp4` | **Film v35**, 540 (the 1080 is rebuilt, not committed). 62.9 s, −15.2 LUFS, peak −2.2 dBFS, the last frame leads into frame 0 (only the calendar differs: MON 1 / MON 8) |
+| `fs_timing_film3..35.json` | Each film's shot timing (QA and Whisper read it) |
+| `first-search-script-v10.md` | The production script the film started from; the film grew past it (the threat and the court, the post, the lipstick, the flashback, the huddle). Scripts v1–v9 kept |
+| `first-search-concept-v1..v6.md`, `first-search-premise-v1..v3.md` | Kept |
+| `fs_shot_design_v1.md`, `fs_shot_list_v2.md`, `cold_test_v11/`, `cold_test_v12/` | Board-stage staging and cold tests |
+
+Built from `src/` (`fs_film35.py`, over `fs_film5.py` … `fs_film34.py`, all kept; `fs_storyboard.py`, `fs_set.py`, `fs_anim.py`, `fs_animatic.py`, voices in `src/fs_voices/film_v13`): `cd src && python3 fs_film35.py ../first-search 1080`. `FS_ONLY=C,U` renders only those shots.
+
+### One Star — [`customer-success/`](customer-success/)
+
+Episode 11, **rough cut v5; not final.** Thursday the 11th: every phone in the office buzzes with the Client's post, one star, "Paid $999. They lost my blueprint. My lawyer will call." The robot drafts a reply and Don approves it unread: "Shut off! Our AI does not lose files!" Don phones him: "Nine o'clock. Your office." Friday the 12th, Don presents a plan "recovered" by the AI; the Client: "Is this a joke?" At the door Pam unrolls the plan she taped together, with a hole at bay 7, and the strip from his own pocket fills it. Robot: "The result was obtained by a h-human." He asks for her number and saves it: "finds things". Don: "Customer success." The post gets "UPDATE: Pam found it."; Sofía: "Still one star." Don reads his phone and puffs up. The folder and file names keep the working title (`customer-success/`, `cs_*`).
+
+| File | Notes |
+|---|---|
+| `one_star_rough_v5_540.mp4` | **Rough cut v5 (21 Nov)**, 540: 61.9 s, 14 lines, −15.7 LUFS, −2.7 dBTP, Whisper 14 of 14. Two cold viewers answered all six direct questions (`cs_cold_test_film_v2.md`). The wall calendar is First Search's (THU 11 → FRI 12). The 1080 file is rebuilt, not committed |
+| `one_star_rough_v4_540.mp4` | Rough v4: before the shared calendar |
+| `customer-success-script-v18.md` | **Current script**, line by line with the shot list and the protect list; v14–v17 kept |
+| `one-star-layout-v1.md`, `-v2.md`, `cs_layout_v*_scene3..6.png` | The layout pass: every scene laid out before it was animated |
+| `cs_motion_test_v8.md`, `cs_cold_test_film_v1.md`, `-v2.md` | Motion tests v8–v10 and the two cold tests of the whole film |
+
+Built from `src/` (`cs_scene1.py` … `cs_scene6.py`, `cs_film.py`, `cs_frame.py` for scale and dead zones, `cs_sfx.py`, `cs_cal.py`, `sound_cs.py`): `python3 cs_film.py ../customer-success rough_v5`. **Still open:** Tomas's listen with sound, the final master and the cover.
 
 ### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
 

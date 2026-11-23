@@ -1,0 +1,378 @@
+{
+ "_don_f0": 95,
+ "father_A_donnie": {
+  "len": 0.82,
+  "asr": [
+   "Barney",
+   "Don",
+   "Donnie"
+  ],
+  "ok": 1
+ },
+ "father_A_people": {
+  "len": 3.32,
+  "asr": [
+   "My people come first 5 o'clock.",
+   "My people come first five o'clock.",
+   "My people come first five o'clock."
+  ],
+  "ok": 3
+ },
+ "father_A_today": {
+  "len": 0.8,
+  "asr": [
+   "",
+   "so marry",
+   ""
+  ],
+  "ok": 0
+ },
+ "father_A_approved": {
+  "len": 1.02,
+  "asr": [
+   "Approved",
+   "Approve",
+   "Approved"
+  ],
+  "ok": 3
+ },
+ "father_A_green": {
+  "len": 2.35,
+  "asr": [
+   "I I I I I I I",
+   "I I I I I I I I I I I I I I I",
+   "I I I I I I I I I I I I I I I"
+  ],
+  "ok": 0
+ },
+ "father_A_money": {
+  "len": 1.89,
+  "asr": [
+   "good find good find",
+   "Good find my money",
+   "good"
+  ],
+  "ok": 1
+ },
+ "father_A_answer": {
+  "len": 1.11,
+  "asr": [
+   "answer it",
+   "answer it",
+   "answer it"
+  ],
+  "ok": 3
+ },
+ "father_A": {
+  "f0": 81,
+  "total": 11.32,
+  "lines_ok": 3,
+  "of": 7
+ },
+ "father_B_donnie": {
+  "len": 0.82,
+  "asr": [
+   "Donnie",
+   "D D D D D D",
+   "Donnie"
+  ],
+  "ok": 2
+ },
+ "father_B_people": {
+  "len": 3.6,
+  "asr": [
+   "My people come first, five o'clock.",
+   "My people come first five o'clock",
+   "My people come first, five o'clock."
+  ],
+  "ok": 3
+ },
+ "father_B_today": {
+  "len": 0.88,
+  "asr": [
+   "today",
+   "today to bay",
+   "today"
+  ],
+  "ok": 2
+ },
+ "father_B_approved": {
+  "len": 1.1,
+  "asr": [
+   "approved",
+   "approved.",
+   "approved"
+  ],
+  "ok": 3
+ },
+ "father_B_green": {
+  "len": 2.43,
+  "asr": [
+   "I I I I I I I",
+   "I prefer green and cash.",
+   "I I I I I I I I"
+  ],
+  "ok": 1
+ },
+ "father_B_money": {
+  "len": 2.13,
+  "asr": [
+   "Good find my money.",
+   "Good find Good find",
+   "good"
+  ],
+  "ok": 1
+ },
+ "father_B_answer": {
+  "len": 0.95,
+  "asr": [
+   "answer it",
+   "answer it",
+   "answer it"
+  ],
+  "ok": 3
+ },
+ "father_B": {
+  "f0": 100,
+  "total": 11.9,
+  "lines_ok": 5,
+  "of": 7
+ },
+ "father_C_donnie": {
+  "len": 1.1,
+  "asr": [
+   "Dommie!",
+   "Dommie",
+   "Dummy!"
+  ],
+  "ok": 0
+ },
+ "father_C_people": {
+  "len": 3.77,
+  "asr": [
+   "My people come first, five o'clock.",
+   "My people come first five o'clock",
+   "My people come first, five o'clock."
+  ],
+  "ok": 3
+ },
+ "father_C_today": {
+  "len": 1.13,
+  "asr": [
+   "today",
+   "today",
+   "today"
+  ],
+  "ok": 3
+ },
+ "father_C_approved": {
+  "len": 1.23,
+  "asr": [
+   "Approved.",
+   "Approved.",
+   "Approved."
+  ],
+  "ok": 3
+ },
+ "father_C_green": {
+  "len": 2.82,
+  "asr": [
+   "I prefer green in cash.",
+   "I prefer green in cash.",
+   "I prefer green in cash."
+  ],
+  "ok": 3
+ },
+ "father_C_money": {
+  "len": 2.29,
+  "asr": [
+   "Good find my money.",
+   "Good find my money",
+   "Good find my money."
+  ],
+  "ok": 3
+ },
+ "father_C_answer": {
+  "len": 1.33,
+  "asr": [
+   "Answer it.",
+   "Answer it.",
+   "Answer it."
+  ],
+  "ok": 3
+ },
+ "father_C": {
+  "f0": 122,
+  "total": 13.66,
+  "lines_ok": 6,
+  "of": 7
+ },
+ "father_D_donnie": {
+  "len": 0.94,
+  "asr": [
+   "Donnie",
+   "Donnie",
+   "Donnie"
+  ],
+  "ok": 3
+ },
+ "father_D_people": {
+  "len": 3.98,
+  "asr": [
+   "My people come first. Five o'clock.",
+   "My people come first five o'clock",
+   "My people come first. 5 o'clock."
+  ],
+  "ok": 3
+ },
+ "father_D_today": {
+  "len": 1.1,
+  "asr": [
+   "Well today",
+   "Today",
+   "Well today"
+  ],
+  "ok": 1
+ },
+ "father_D_approved": {
+  "len": 1.27,
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "ok": 3
+ },
+ "father_D_green": {
+  "len": 2.9,
+  "asr": [
+   "I prefer green and cash.",
+   "I prefer green and cash.",
+   "I prefer green and cash."
+  ],
+  "ok": 3
+ },
+ "father_D_money": {
+  "len": 2.21,
+  "asr": [
+   "Good find my money.",
+   "Good find my money",
+   "Good find my money."
+  ],
+  "ok": 3
+ },
+ "father_D_answer": {
+  "len": 1.21,
+  "asr": [
+   "I answer it",
+   "I answer it",
+   "I'm sure it"
+  ],
+  "ok": 2
+ },
+ "father_D": {
+  "f0": 83,
+  "total": 13.6,
+  "lines_ok": 6,
+  "of": 7
+ },
+ "visitor_A_inspect": {
+  "len": 1.72,
+  "asr": [
+   "I'm here to inspect the machine.",
+   "I'm here to inspect the machine.",
+   "I'm here to inspect the machine."
+  ],
+  "ok": 3
+ },
+ "visitor_A_fixed": {
+  "len": 0.58,
+  "asr": [
+   "Vixed",
+   "V V V V V",
+   "VIXED"
+  ],
+  "ok": 0
+ },
+ "visitor_A_coffee": {
+  "len": 1.02,
+  "asr": [
+   "Coffee Machine",
+   "Coffee machine",
+   "Coffee Machine"
+  ],
+  "ok": 3
+ },
+ "visitor_A": {
+  "f0": 128,
+  "total": 3.32,
+  "lines_ok": 2,
+  "of": 3
+ },
+ "visitor_B_inspect": {
+  "len": 2.1,
+  "asr": [
+   "I'm here to inspect the machine.",
+   "I'm here to inspect the machine.",
+   "I'm here to inspect the machine."
+  ],
+  "ok": 3
+ },
+ "visitor_B_fixed": {
+  "len": 0.72,
+  "asr": [
+   "Wext",
+   "We",
+   "Vexter"
+  ],
+  "ok": 0
+ },
+ "visitor_B_coffee": {
+  "len": 1.22,
+  "asr": [
+   "Coffee Coffee Coffee Coffee Coffee Coffee Coffee",
+   "Coffee Coffee Coffee Coffee",
+   "Coffee machine."
+  ],
+  "ok": 1
+ },
+ "visitor_B": {
+  "f0": 122,
+  "total": 4.05,
+  "lines_ok": 1,
+  "of": 3
+ },
+ "visitor_C_inspect": {
+  "len": 1.61,
+  "asr": [
+   "I'm here to inspect the machine.",
+   "I'm here to inspect the machine.",
+   "I'm here to inspect the machine."
+  ],
+  "ok": 3
+ },
+ "visitor_C_fixed": {
+  "len": 0.58,
+  "asr": [
+   "Wexner",
+   "Vexena",
+   "Wexner."
+  ],
+  "ok": 0
+ },
+ "visitor_C_coffee": {
+  "len": 0.99,
+  "asr": [
+   "coffee machine",
+   "coffee machine",
+   "Coffee machine"
+  ],
+  "ok": 3
+ },
+ "visitor_C": {
+  "f0": 111,
+  "total": 3.19,
+  "lines_ok": 2,
+  "of": 3
+ }
+}

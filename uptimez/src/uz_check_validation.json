@@ -1,0 +1,216 @@
+[
+ [
+  "film_v37",
+  "v37 as shipped (scaled to 1080)",
+  "pass",
+  "must pass",
+  "OK",
+  1886,
+  []
+ ],
+ [
+  "film_540",
+  "the 540 copy sent as the master",
+  "FAIL",
+  "must fail",
+  "OK",
+  1886,
+  [
+   "FORMAT: 540x960 at 30/1"
+  ]
+ ],
+ [
+  "film_loud",
+  "the mix 6 dB hot",
+  "FAIL",
+  "must fail",
+  "OK",
+  1886,
+  [
+   "SOUND: -10.5 LUFS (wants -16 to -14)",
+   "SOUND: true peak 3.4 dBTP (wants <= -1)"
+  ]
+ ],
+ [
+  "film_seam",
+  "cut at 0:40: the last frame is not frame 0",
+  "FAIL",
+  "must fail",
+  "OK",
+  1200,
+  [
+   "LOOP: the last frame differs from frame 0 by 40.4/255 on average (wants <= 3.0)"
+  ]
+ ],
+ [
+  "film_untagged",
+  "the colour tags left unspecified",
+  "FAIL",
+  "must fail",
+  "OK",
+  1886,
+  [
+   "FORMAT: color_space is None, not bt709",
+   "FORMAT: color_primaries is None, not bt709",
+   "FORMAT: color_transfer is None, not bt709"
+  ]
+ ],
+ [
+  "signs_v35",
+  "SHRE 0:06, DO 0:27, R FIR 0:29, T CLIENT 0:43",
+  "FAIL",
+  "must fail",
+  "OK",
+  220,
+  [
+   "SIGN cut by the frame: 'DON \u00b7 CEO' at (479, -5, 553, 18) (for 35 frames)",
+   "SIGN cut by the frame: 'OUR FIRST CLIENT' at (-108, 347, 101, 394) (for 68 frames)",
+   "SIGN cut by the frame: 'OUR FIRST CLIENT' at (19, 722, 561, 842) (for 9 frames)",
+   "SIGN cut by the frame: 'SHRED' at (510, 629, 545, 640) (for 63 frames)"
+  ]
+ ],
+ [
+  "signs_v36",
+  "the same shots, fixed in v36",
+  "pass",
+  "must pass",
+  "OK",
+  220,
+  []
+ ],
+ [
+  "tails_v35",
+  "tails on hair, curls and crowns",
+  "FAIL",
+  "must fail",
+  "OK",
+  492,
+  [
+   "TAIL above the mouth (hair, curl, crown) of client: 'Friday, the bank. I need my blueprint.' tip (79, 413), face (106, 423, 49)",
+   "TAIL above the mouth (hair, curl, crown) of client: 'Friday. Or I sue.' tip (356, 389), face (264, 395, 78)",
+   "TAIL above the mouth (hair, curl, crown) of don: 'Approved.' tip (504, 299), face (419, 309, 82)",
+   "TAIL above the mouth (hair, curl, crown) of don: 'Can you make the zero green?' tip (461, 308), face (396, 310, 80)",
+   "TAIL above the mouth (hair, curl, crown) of don: 'Garage eleven. Guaranteed by Friday.' tip (187, 355), face (281, 355, 100)",
+   "TAIL above the mouth (hair, curl, crown) of don: 'Where is his blueprint?' tip (437, 575), face (357, 586, 80)"
+  ]
+ ],
+ [
+  "tails_v36",
+  "tails beside the mouth",
+  "pass",
+  "must pass",
+  "OK",
+  492,
+  []
+ ],
+ [
+  "strays_v36",
+  "Mom's step dashes at 0:36",
+  "FAIL",
+  "must fail",
+  "OK",
+  20,
+  [
+   "STRAY marks (2 strokes) with no one near them at (513, 661)",
+   "STRAY marks (2 strokes) with no one near them at (513, 741)",
+   "STRAY marks (2 strokes) with no one near them at (518, 664)",
+   "STRAY marks (2 strokes) with no one near them at (518, 745)",
+   "STRAY marks (2 strokes) with no one near them at (518, 746)",
+   "STRAY marks (2 strokes) with no one near them at (519, 665)"
+  ]
+ ],
+ [
+  "strays_v37",
+  "the dashes turned off",
+  "pass",
+  "must pass",
+  "OK",
+  20,
+  []
+ ],
+ [
+  "limbs_v36",
+  "Pam's three arms at 0:42",
+  "FAIL",
+  "must fail",
+  "OK",
+  68,
+  [
+   "LIMBS: pam has 3 arms"
+  ]
+ ],
+ [
+  "limbs_v37",
+  "her right body arm clipped below the shoulders",
+  "pass",
+  "must pass",
+  "OK",
+  68,
+  []
+ ],
+ [
+  "text_v36",
+  "the bubbles of four shots, where they were drawn",
+  "pass",
+  "must pass",
+  "OK",
+  220,
+  []
+ ],
+ [
+  "text_up",
+  "the same bubbles pushed 140 px up, into the top bar",
+  "FAIL",
+  "must fail",
+  "OK",
+  220,
+  [
+   "TEXT outside the safe area: 'Machines.' at (359, -37, 492, -14) (for 36 frames)"
+  ]
+ ],
+ [
+  "scale_v36",
+  "the faces of four shots, where they were framed",
+  "pass",
+  "must pass",
+  "OK",
+  220,
+  []
+ ],
+ [
+  "scale_low",
+  "the same shots, the camera 330 px higher",
+  "FAIL",
+  "must fail",
+  "OK",
+  220,
+  [
+   "SCALE: client's face in the bottom quarter (y 749)",
+   "SCALE: client's face in the bottom quarter (y 750)",
+   "SCALE: client's face in the bottom quarter (y 751)",
+   "SCALE: client's face in the bottom quarter (y 752)",
+   "SCALE: client's face in the bottom quarter (y 753)",
+   "SCALE: client's face in the bottom quarter (y 754)"
+  ]
+ ],
+ [
+  "map_v33",
+  "the payoff drawn by film 4's show, not show19",
+  "FAIL",
+  "must fail",
+  "OK",
+  24,
+  [
+   "MAP: show does not call show19; it calls collections.abc.Mapping.get, contextlib.ExitStack.__enter__, contextlib.ExitStack.__exit__, contextlib._BaseExitStack.__init__, contextlib._BaseExitStack.callba"
+  ]
+ ],
+ [
+  "map_v34",
+  "show19 restored",
+  "pass",
+  "must pass",
+  "OK",
+  24,
+  []
+ ]
+]

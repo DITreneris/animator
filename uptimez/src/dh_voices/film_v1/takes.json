@@ -1,0 +1,436 @@
+{
+ "0.3": {
+  "who": "FATHER",
+  "text": "Donnie.",
+  "len": 0.82,
+  "asr": [
+   "Donnie",
+   "D D D D D D",
+   "Donnie"
+  ],
+  "ok": 2
+ },
+ "0.4": {
+  "who": "DON",
+  "text": "Dad! Great timing!",
+  "len": 1.32,
+  "asr": [
+   "Dad, great timing.",
+   "Dad, great timing.",
+   "Dad, great timing."
+  ],
+  "ok": 3
+ },
+ "0.5": {
+  "who": "FATHER",
+  "text": "My men go in first. I arrive at five.",
+  "len": 3.86,
+  "asr": [
+   "My men go in first. I arrive at five.",
+   "My men go in first. I arrive at five.",
+   "My men go in first. I arrive at five."
+  ],
+  "ok": 3
+ },
+ "0.6": {
+  "who": "DON",
+  "text": "Tomorrow?",
+  "len": 0.8,
+  "asr": [
+   "tomorrow",
+   "tomorrow",
+   "tomorrow"
+  ],
+  "ok": 3
+ },
+ "0.7": {
+  "who": "FATHER",
+  "text": "Today.",
+  "len": 0.88,
+  "asr": [
+   "today",
+   "today",
+   "today"
+  ],
+  "ok": 3
+ },
+ "1.2": {
+  "who": "DON",
+  "text": "Brace yourselves. Dad is coming.",
+  "len": 1.88,
+  "asr": [
+   "Brace yourselves, dad is coming.",
+   "Brace yourselves, dad is coming.",
+   "Brace yourselves, dad is coming."
+  ],
+  "ok": 3,
+  "given": [
+   "Brace yourselves. Dad is coming."
+  ]
+ },
+ "1.3": {
+  "who": "SOFIA",
+  "text": "Is he coming alone?",
+  "len": 0.97,
+  "asr": [
+   "Is he coming alone?",
+   "Is he coming alone?",
+   "Is he coming alone?"
+  ],
+  "ok": 3
+ },
+ "2.2": {
+  "who": "DON",
+  "text": "I didn't steal anything!",
+  "len": 1.31,
+  "asr": [
+   "I didn't steal anything.",
+   "I didn't steal anything.",
+   "I didn't steal anything."
+  ],
+  "ok": 3
+ },
+ "2.3": {
+  "who": "DON",
+  "text": "The money was invested.",
+  "len": 1.48,
+  "asr": [
+   "The money was invested.",
+   "The money was invested.",
+   "The money was invested."
+  ],
+  "ok": 3
+ },
+ "2.4": {
+  "who": "PAM",
+  "text": "Into what?",
+  "len": 0.94,
+  "asr": [
+   "into water",
+   "into what?",
+   "into what?"
+  ],
+  "ok": 2
+ },
+ "3.1": {
+  "who": "DON",
+  "text": "Make it green.",
+  "len": 1.02,
+  "asr": [
+   "Make it groan.",
+   "Make it groan",
+   "Make it groan."
+  ],
+  "ok": 0,
+  "given": [
+   "Make it green."
+  ],
+  "note": "Tomas, 21 Nov: the line stays. Whisper hears groan/grind in every read, alone and in context; the bubble and the star turning green carry it. A known exception in the speech check."
+ },
+ "3.2": {
+  "who": "ROBOT",
+  "text": "Human approval required.",
+  "len": 1.42,
+  "asr": [
+   "Human approval required.",
+   "Human approval required.",
+   "Human approval required."
+  ],
+  "ok": 3
+ },
+ "3.3": {
+  "who": "DON",
+  "text": "Approved.",
+  "len": 0.72,
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "ok": 3
+ },
+ "3.4": {
+  "who": "PAM",
+  "text": "It's still one.",
+  "len": 1.01,
+  "asr": [
+   "It's still one.",
+   "It's still one.",
+   "It's still one."
+  ],
+  "ok": 3
+ },
+ "3.5": {
+  "who": "DON",
+  "text": "Green is all he sees.",
+  "len": 1.45,
+  "asr": [
+   "Green as all he sees.",
+   "Green as all he sees.",
+   "Green as all he sees."
+  ],
+  "ok": 3,
+  "given": [
+   "Green is all he sees."
+  ],
+  "was": "He won't count.",
+  "note": "'He only sees green.' came out as 'grain' in five reads; with green first it is clear"
+ },
+ "4.1": {
+  "who": "MOM",
+  "text": "He once fired a man for sitting in that chair.",
+  "len": 2.65,
+  "asr": [
+   "He once fired a man for sitting in that chair.",
+   "He once fired a man for sitting in that chair.",
+   "He once fired a man for sitting in that chair."
+  ],
+  "ok": 3
+ },
+ "4.3": {
+  "who": "MOM",
+  "text": "Different chair.",
+  "len": 1.12,
+  "asr": [
+   "Different chair",
+   "Different chair",
+   "Different chair."
+  ],
+  "ok": 3
+ },
+ "5.2": {
+  "who": "VISITOR",
+  "text": "I'm here to inspect the machine.",
+  "len": 1.72,
+  "asr": [
+   "I'm here to inspect the machine.",
+   "I'm here to inspect the machine.",
+   "I'm here to inspect the machine."
+  ],
+  "ok": 3
+ },
+ "5.3": {
+  "who": "DON",
+  "text": "Of course. We've been expecting you.",
+  "len": 1.87,
+  "asr": [
+   "Of course, we've been expecting you.",
+   "Of course, we've been expecting you.",
+   "Of course, we've been expecting you."
+  ],
+  "ok": 3
+ },
+ "6.1a": {
+  "who": "DON",
+  "text": "Complete transparency.",
+  "len": 1.54,
+  "asr": [
+   "Complete transparency.",
+   "complete transparency",
+   "complete transparency."
+  ],
+  "ok": 3
+ },
+ "6.1b": {
+  "who": "DON",
+  "text": "Lifetime Premium. On us.",
+  "len": 1.89,
+  "asr": [
+   "Lifetime premium on us.",
+   "Lifetime Premium on us.",
+   "lifetime premium on us."
+  ],
+  "ok": 3
+ },
+ "6.2": {
+  "who": "ROBOT",
+  "text": "Premium search is non-functional.",
+  "len": 1.9,
+  "asr": [
+   "Premium search is non-functional.",
+   "Premium search is non-functional.",
+   "Premium search is non-functional."
+  ],
+  "ok": 3
+ },
+ "6.3": {
+  "who": "DON",
+  "text": "Then make it lifetime.",
+  "len": 1.56,
+  "asr": [
+   "then make it lifetime.",
+   "Then make it lifetime.",
+   "then make it lifetime."
+  ],
+  "ok": 3
+ },
+ "7.3b": {
+  "who": "ROBOT",
+  "text": "CEO responsible.",
+  "len": 1.51,
+  "asr": [
+   "CEO responsible",
+   "CEO responsible",
+   "CEO responsible"
+  ],
+  "ok": 3,
+  "was": "Incident logged. CEO responsible."
+ },
+ "7.4": {
+  "who": "VISITOR",
+  "text": "All clear.",
+  "len": 0.76,
+  "asr": [
+   "All clear",
+   "All clear.",
+   "All clear."
+  ],
+  "ok": 3
+ },
+ "7.5": {
+  "who": "DON",
+  "text": "The company?",
+  "len": 0.8,
+  "asr": [
+   "The company",
+   "The company",
+   "The company"
+  ],
+  "ok": 3
+ },
+ "7.6": {
+  "who": "VISITOR",
+  "text": "The coffee machine.",
+  "len": 1.16,
+  "asr": [
+   "The coffee machine.",
+   "The coffee machine",
+   "The coffee machine"
+  ],
+  "ok": 3
+ },
+ "8.2": {
+  "who": "DON",
+  "text": "Mom! I'm the CEO!",
+  "len": 1.53,
+  "asr": [
+   "Mom, I'm the CEO.",
+   "Mom, I'm the CEO.",
+   "Mom, I'm the CEO."
+  ],
+  "ok": 3
+ },
+ "8.3": {
+  "who": "MOM",
+  "text": "Then stand like one, Donnie.",
+  "len": 1.7,
+  "asr": [
+   "Then stand like one Donnie.",
+   "Then stand like one Donnie.",
+   "then stand like one Donny."
+  ],
+  "ok": 3
+ },
+ "9.3": {
+  "who": "ROBOT",
+  "text": "Visitor detected. Human approval required.",
+  "len": 2.39,
+  "asr": [
+   "visitor detected, human approval required.",
+   "Visit our detected human approval required.",
+   "visitor detected, human approval required."
+  ],
+  "ok": 3
+ },
+ "9.4": {
+  "who": "FATHER",
+  "text": "Approved.",
+  "len": 1.1,
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "ok": 3
+ },
+ "9.5": {
+  "who": "ROBOT",
+  "text": "Welcome, majority shareholder.",
+  "len": 1.65,
+  "asr": [
+   "Welcome majority shareholder.",
+   "Welcome majority shareholder.",
+   "Welcome Majority Shareholder."
+  ],
+  "ok": 3
+ },
+ "10.1": {
+  "who": "FATHER",
+  "text": "I prefer green in cash.",
+  "len": 2.22,
+  "asr": [
+   "I prefer green and cash.",
+   "I prefer green and cash.",
+   "I prefer green and cash"
+  ],
+  "ok": 3,
+  "given": [
+   "I prefer green in cash!"
+  ]
+ },
+ "10.2": {
+  "who": "FATHER",
+  "text": "You said it finds anything.",
+  "len": 3.22,
+  "asr": [
+   "You said it finds anything.",
+   "You said it finds anything.",
+   "You said it finds anything."
+  ],
+  "ok": 3,
+  "given": [
+   "You said",
+   "it finds anything."
+  ]
+ },
+ "10.4a": {
+  "who": "FATHER",
+  "text": "Good. Find my money.",
+  "len": 2.97,
+  "asr": [
+   "Good. Find my money.",
+   "Good. Find my money.",
+   "Good. Find my money."
+  ],
+  "ok": 3,
+  "given": [
+   "Good.",
+   "Find. My money."
+  ]
+ },
+ "11.6": {
+  "who": "FATHER",
+  "text": "Answer it.",
+  "len": 0.95,
+  "asr": [
+   "answer it",
+   "answer it",
+   "answer it"
+  ],
+  "ok": 3
+ },
+ "7.8": {
+  "who": "PAM",
+  "text": "Some inspect. Others drink.",
+  "len": 1.87,
+  "asr": [
+   "Some inspect others drinky.",
+   "Some inspect others drinky.",
+   "Some inspect others drinky."
+  ],
+  "ok": 3,
+  "given": [
+   "Some inspect. Others drink."
+  ]
+ }
+}

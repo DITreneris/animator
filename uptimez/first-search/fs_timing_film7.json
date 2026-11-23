@@ -1,0 +1,330 @@
+[
+ {
+  "shot": "open",
+  "start": 0.0,
+  "len": 4.6,
+  "of": "A",
+  "drawing": "open",
+  "take": null
+ },
+ {
+  "shot": "flirt",
+  "start": 4.6,
+  "len": 0.9,
+  "of": "S",
+  "drawing": "flirt",
+  "take": null
+ },
+ {
+  "shot": "b",
+  "start": 5.5,
+  "len": 2.942,
+  "of": "B",
+  "drawing": "bshot",
+  "take": "1.2"
+ },
+ {
+  "shot": "c1",
+  "start": 8.442,
+  "len": 0.5,
+  "of": "C",
+  "drawing": "2.2",
+  "take": null
+ },
+ {
+  "shot": "c2",
+  "start": 8.942,
+  "len": 2.994,
+  "of": "C",
+  "drawing": "2.2",
+  "take": "2.2"
+ },
+ {
+  "shot": "c3",
+  "start": 11.936,
+  "len": 0.5,
+  "of": "C",
+  "drawing": "2.2",
+  "take": null
+ },
+ {
+  "shot": "paid",
+  "start": 12.436,
+  "len": 2.036,
+  "of": "D",
+  "drawing": "paid",
+  "take": "t1"
+ },
+ {
+  "shot": "red",
+  "start": 14.472,
+  "len": 1.9,
+  "of": "E0",
+  "drawing": "term",
+  "take": null
+ },
+ {
+  "shot": "fright",
+  "start": 16.372,
+  "len": 0.8,
+  "of": "E",
+  "drawing": "fright",
+  "take": null
+ },
+ {
+  "shot": "nothing",
+  "start": 17.172,
+  "len": 1.302,
+  "of": "E",
+  "drawing": "3.3",
+  "take": "3.3"
+ },
+ {
+  "shot": "f1",
+  "start": 18.474,
+  "len": 2.216,
+  "of": "F",
+  "drawing": "4.1",
+  "take": "4.1"
+ },
+ {
+  "shot": "f2",
+  "start": 20.69,
+  "len": 2.746,
+  "of": "F",
+  "drawing": "4.1",
+  "take": "4.2"
+ },
+ {
+  "shot": "f3",
+  "start": 23.436,
+  "len": 1.3,
+  "of": "F",
+  "drawing": "4.1",
+  "take": "4.3"
+ },
+ {
+  "shot": "wipe",
+  "start": 24.736,
+  "len": 1.0,
+  "of": "G",
+  "drawing": "4.5",
+  "take": null
+ },
+ {
+  "shot": "machines",
+  "start": 25.736,
+  "len": 1.466,
+  "of": "L",
+  "drawing": "momdesk",
+  "take": "6.1b"
+ },
+ {
+  "shot": "plaster",
+  "start": 27.202,
+  "len": 0.9,
+  "of": "E2",
+  "drawing": "3.4",
+  "take": null
+ },
+ {
+  "shot": "post",
+  "start": 28.102,
+  "len": 1.0,
+  "of": "M",
+  "drawing": "6.2a",
+  "take": null
+ },
+ {
+  "shot": "comments",
+  "start": 29.102,
+  "len": 1.2,
+  "of": "M",
+  "drawing": "6.2b",
+  "take": null
+ },
+ {
+  "shot": "hussy",
+  "start": 30.302,
+  "len": 1.397,
+  "of": "L2",
+  "drawing": "momdesk",
+  "take": "7.5"
+ },
+ {
+  "shot": "youngman",
+  "start": 31.699,
+  "len": 1.745,
+  "of": "N",
+  "drawing": "7.1",
+  "take": "7.1"
+ },
+ {
+  "shot": "round",
+  "start": 33.444,
+  "len": 0.7,
+  "of": "O",
+  "drawing": "7.2",
+  "take": null
+ },
+ {
+  "shot": "lick",
+  "start": 34.144,
+  "len": 0.9,
+  "of": "O2",
+  "drawing": "tlick",
+  "take": null
+ },
+ {
+  "shot": "travel",
+  "start": 35.044,
+  "len": 0.5,
+  "of": "O2",
+  "drawing": "ttravel",
+  "take": null
+ },
+ {
+  "shot": "scrub",
+  "start": 35.544,
+  "len": 1.2,
+  "of": "O2",
+  "drawing": "tscrub",
+  "take": null
+ },
+ {
+  "shot": "eww",
+  "start": 36.744,
+  "len": 1.466,
+  "of": "P",
+  "drawing": "7.4",
+  "take": "7.4"
+ },
+ {
+  "shot": "week",
+  "start": 38.21,
+  "len": 2.8,
+  "of": "T",
+  "drawing": "week",
+  "take": null
+ },
+ {
+  "shot": "ret",
+  "start": 41.01,
+  "len": 1.0,
+  "of": "RET",
+  "drawing": "ret",
+  "take": null
+ },
+ {
+  "shot": "h1",
+  "start": 42.01,
+  "len": 0.7,
+  "of": "H",
+  "drawing": "h51",
+  "take": null
+ },
+ {
+  "shot": "h2",
+  "start": 42.71,
+  "len": 1.84,
+  "of": "H",
+  "drawing": "h51",
+  "take": "5.2"
+ },
+ {
+  "shot": "glance",
+  "start": 44.55,
+  "len": 0.5,
+  "of": "I",
+  "drawing": "5.2b",
+  "take": null
+ },
+ {
+  "shot": "memory",
+  "start": 45.05,
+  "len": 1.0,
+  "of": "J",
+  "drawing": "memory",
+  "take": null
+ },
+ {
+  "shot": "x1",
+  "start": 46.05,
+  "len": 1.726,
+  "of": "X",
+  "drawing": "huddle",
+  "take": "x1"
+ },
+ {
+  "shot": "x2",
+  "start": 47.776,
+  "len": 1.318,
+  "of": "X",
+  "drawing": "huddle2",
+  "take": "x2"
+ },
+ {
+  "shot": "x3",
+  "start": 49.094,
+  "len": 1.492,
+  "of": "X3",
+  "drawing": "robot",
+  "take": "x3"
+ },
+ {
+  "shot": "hug",
+  "start": 50.586,
+  "len": 1.862,
+  "of": "Q",
+  "drawing": "hug",
+  "take": "8.1"
+ },
+ {
+  "shot": "show",
+  "start": 52.448,
+  "len": 1.1,
+  "of": "R",
+  "drawing": "show",
+  "take": null
+ },
+ {
+  "shot": "fury",
+  "start": 53.548,
+  "len": 1.557,
+  "of": "R",
+  "drawing": "fury",
+  "take": "t2"
+ },
+ {
+  "shot": "leave",
+  "start": 55.105,
+  "len": 1.3,
+  "of": "OUT",
+  "drawing": "leave",
+  "take": null
+ },
+ {
+  "shot": "heal",
+  "start": 56.405,
+  "len": 1.2,
+  "of": "U",
+  "drawing": "9.3",
+  "take": null
+ },
+ {
+  "shot": "zero",
+  "start": 57.605,
+  "len": 1.6,
+  "of": "U",
+  "drawing": "9.4",
+  "take": null
+ },
+ {
+  "shot": "shake",
+  "start": 59.205,
+  "len": 0.35,
+  "of": "U",
+  "drawing": "9.5",
+  "take": null
+ }
+]

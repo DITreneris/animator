@@ -34,3 +34,16 @@ S1 the master (far front, A+B) · S2 A front · S3 B front · S4 B low, close un
 - The same cast on both sides of a cut; the camera moves, people don't vanish.
 - Catch an entrance mid-step (a foot still behind the counter's end).
 - The camera has to visit C early if Pam's or Mom's thread matters.
+
+## v5: two props for episode 12 (*Daddy's Home*), opt-in
+
+Nothing in `fs_set4.py` changed. The props are drawn through a shot's own hooks (`back`, `extra`), so episodes 10 and 11 draw as before. Positions are in `src/dh_props.py`.
+
+| Prop | Where (world x, y, scale) | Zone | Its one job |
+|---|---|---|---|
+| **The CEO chair** (`dh_props.ceo_chair`) | 452, F+8, 0.60: on Don's mark, under OUR FIRST CLIENT | B | The money. Don sits in it in frame 0 with his feet on the shredder, stands in front of it, pushes it away, and the robot looks at it at the end. On casters, so it rolls back |
+| **The coffee machine** (`dh_props.coffee_machine`) | 770, F−166, 0.62: on the counter top between Pam and Mom | C | What the visitor has really come for. Four states: broken (OUT OF ORDER), rattle, pop, ok |
+
+**Why:** the concept had Don at a desk, and this set gives him none; the chair replaces it and plants the evidence in the first shot. The machine sits by Pam so that her motive (an empty cup) and its cause are in one frame.
+
+The club booth (`dh_props.booth`) is a separate full-frame drawing, not part of this set.

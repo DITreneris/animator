@@ -1,0 +1,430 @@
+"""THE OFFER (episode 13): the cast's key poses for layout v2 (the poses each shot's action needs). Nothing here changes
+an older module: the rigs are episode 12's (dh_cast, dh_poses) and episodes 9-11's (client_ob), driven from outside.
+
+- arms_to(): the four arm angles that put a rig's hands on points in set units (cand_bc.ik), either hand by nearness.
+- guard(): a bodyguard with his hands where the shot needs them, and his head turned (turn -1..1: the face, the
+  glasses and the earpiece slide to that side; the head's outline stays).
+- father(): as episode 12 (face "hard", "low", "talk", "brow"; look), with hands placed.
+- client_*: STAND-INS until Tomas's redraw (22 Nov): lying under the car, bent under the bonnet, the watch, the phone
+  held out, sat on the creeper. Same rig (client_ob), the face "plain" with the lids lower.
+- don_throne(): Don in the throne with his face, look and arms (the phone held up, DAD), and the sweat.
+- robot(): episode 12's robot_state (the head turn, "turn"), and its visor's screen point for a card."""
+import math
+import kit
+import client_ob as co
+import dh_cast as dc
+import dh_poses as dq
+import dh_props as dp
+import fs_storyboard as sb
+from cand_bc import ik, _d
+from kit import INK, rect, ellipse, cut
+
+SHX, SHY = co.SH[0], co.BT + 26                            # the shoulder on the Client's rig (the bodyguards share it)
+
+
+def arms_to(x, feet, s, flip=False, targets=(), rest=None):
+    """targets: points (X, Y) in set units for the hands; each goes to the nearer free shoulder. rest: the pose of an
+    arm with no target (default: hanging)."""
+    m = -1 if flip else 1
+    free = {-1: None, 1: None}
+    for X, Y in targets:
+        tx, ty = (X - x) / s * m, (Y - feet) / s
+        side = min((sd for sd in free if free[sd] is None), key=lambda sd: abs(sd * SHX - tx))
+        free[side] = ik(side * SHX, SHY, tx, ty, co.LN1, co.LN2, side)
+    out = []
+    for side in (-1, 1):
+        out += list(free[side] or (rest[0:2] if side == -1 and rest else rest[2:4] if rest else (side * -4, 2)))
+    return tuple(out)
+
+
+def guard(k, x, feet, s, flip=False, targets=(), turn=0.0, seed=1600):
+    pose = arms_to(x, feet, s, flip, targets, rest=dc.GUARD_POSE) if targets else None
+    o = dc.guard(k, x, feet, s, pose=pose, flip=flip, seed=seed)
+    if turn:
+        _turn_head(k, x, feet, s, flip, turn, seed)
+    return o
+
+
+def _turn_head(k, x, feet, s, flip, turn, seed):
+    """the head again over itself, the features slid toward `turn` (screen units: -1 left, 1 right)."""
+    c = k.c
+    hy = co.HY
+    m = -1 if flip else 1
+    c.save(); c.translate(x, feet); c.scale(s, s)
+    c.translate(0, hy + 55); c.scale(co.HEAD, co.HEAD); c.translate(0, -(hy + 55))
+    pts = co._head_pts(k, hy, seed + 20)
+    cut(k, pts, co.SKIN)
+    hair = (0.13, 0.11, 0.10)
+    cut(k, [(-47, hy - 4), (-49, hy - 30), (-38, hy - 52), (-10, hy - 62), (22, hy - 60), (44, hy - 46), (49, hy - 26),
+            (47, hy - 4), (42, hy - 24), (26, hy - 38), (0, hy - 41), (-26, hy - 38), (-42, hy - 24)], hair, shadow=False, lw=2)
+    dx = 22 * turn
+    ex_ = 44 if turn < 0 else -44                                                  # the ear on the side he turns from
+    ellipse(k, ex_, hy + 2, 7.5, 12, co.SKIN, seed + 27, shadow=False, lw=2)
+    c.save(); c.translate(dx, 0)
+    co._face(k, hy + 4, "plain", (turn, 0), None, seed + 30, "none")
+    for sx in (-1, 1):
+        sq = 0.75 if sx * turn < 0 else 1.0                                       # the far lens, foreshortened
+        cut(k, [(sx * 4, hy - 12), (sx * 4 + sx * 34 * sq, hy - 13), (sx * 4 + sx * 32 * sq, hy + 8), (sx * 4 + sx * 16 * sq, hy + 13),
+                (sx * 6, hy + 8)], (0.03, 0.03, 0.04), shadow=False, lw=2)
+    c.set_source_rgb(0.03, 0.03, 0.04); c.set_line_width(4)
+    c.move_to(-6, hy - 9); c.line_to(6, hy - 9); c.stroke()
+    c.restore()
+    c.restore()
+
+
+def father(k, x, feet, s, face="hard", look=(1, 0), targets=()):
+    pose = "stand"
+    if targets:
+        # Father is Don's rig (kit.person, h 1.12): its shoulders at (+-40, -300 h + 92), arms 48 + 48
+        h = 1.12
+        sy = -300 * h + 78 + 14
+        free = {}
+        for X, Y in targets:
+            tx, ty = (X - x) / s, (Y - feet) / s
+            side = -1 if tx < 0 else 1
+            free[side] = ik(side * 40, sy, tx, ty, 48, 48, side)
+        pose = tuple(list(free.get(-1, (-8, 0))) + list(free.get(1, (8, 0))))
+    dc.BROW_UP[0] = 14 if face == "brow2" else 9; dc.BROW_DARK[0] = face == "brow2"                                # v8: his one move, big enough to read
+    try:
+        o = dc.father(k, x, feet, s, pose=pose, face="brow" if face == "brow2" else face, look=look)
+    finally:
+        dc.BROW_UP[0] = 9; dc.BROW_DARK[0] = False
+    _stubble(k, o["head"], s, low=face == "low")
+    return o
+
+
+def _stubble(k, head, s, low=False):
+    """episode 13 only (22 Nov, decided: 3 of 4 cold viewers read him as a woman): a grey shadow on the jaw and the
+    upper lip, so the face reads as a man's. Drawn over dh_cast's father; episode 12 is untouched."""
+    c = k.c
+    hx, hy = head
+    c.save(); c.translate(hx, hy + (6 if low else 0) * s); c.scale(s, s)
+    sh = (0.40, 0.38, 0.38, 0.32)
+    c.new_path()                                                     # the jaw, under the mouth, cheek to cheek
+    c.move_to(-36, 22); c.curve_to(-34, 38, -18, 45, 0, 45); c.curve_to(18, 45, 34, 38, 36, 22)
+    c.curve_to(28, 30, 18, 36, 0, 37); c.curve_to(-18, 36, -28, 30, -36, 22); c.close_path()
+    c.set_source_rgba(*sh); c.fill()
+    c.new_path()                                                     # the upper lip
+    c.move_to(-13, 25); c.curve_to(-6, 22, 6, 22, 13, 25); c.line_to(12, 28); c.curve_to(5, 26.5, -5, 26.5, -12, 28); c.close_path()
+    c.set_source_rgba(*sh); c.fill()
+    c.set_source_rgba(0.28, 0.26, 0.26, 0.6)                         # the stipple, on the jaw only
+    import random
+    rnd = random.Random(1313)
+    n = 0
+    while n < 46:
+        px, py = rnd.uniform(-35, 35), rnd.uniform(24, 44)
+        edge_top = 22 + 15 * (1 - (abs(px) / 36) ** 2)               # under the inner curve
+        edge_bot = 45 - 23 * (abs(px) / 36) ** 2
+        if not (edge_top <= py <= edge_bot):
+            continue
+        n += 1
+        c.arc(px, py, 1.0, 0, 2 * math.pi); c.fill()
+    c.restore()
+
+
+def _narrow(fn):
+    def f(*a, **kw):
+        old = co.FACES["plain"]
+        co.FACES["plain"] = dict(old, lid=0.30, eye=9.8)                      # the lids lower: not wide-eyed
+        try:
+            return fn(*a, **kw)
+        finally:
+            co.FACES["plain"] = old
+    return f
+
+
+MOUTH = [None]                                             # the film's lip sync: a mouth code for the Client this drawing
+
+
+@_narrow
+def client(k, x, feet, s, look=(-1, 0), targets=(), clip_hip=False, face="bored"):
+    pose = arms_to(x, feet, s, False, targets) if targets else "open"
+    c = k.c
+    if clip_hip:
+        hip = feet + co.HIP * s
+        c.save(); c.rectangle(x - 300, hip - 500, 600, 506); c.clip()
+    import client_of as cof                                   # the garage outfit (client_of v1, 22 Nov)
+    o = cof.client(k, x, feet, s, pose, face, look=look, mouth=MOUTH[0])
+    if clip_hip:
+        c.restore()
+    return o
+
+
+def rag(k, x, y, s=1.0):
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(s, s)
+    cut(k, [(-16, -8), (-4, -14), (12, -10), (18, 2), (8, 12), (-6, 10), (-18, 4)], (0.92, 0.88, 0.80), lw=2)
+    c.set_source_rgba(0.35, 0.30, 0.25, 0.7); c.set_line_width(1.4)
+    for a, b in (((-10, -6), (6, 4)), ((-4, -10), (10, -2)), ((-14, 2), (2, 8))):
+        c.move_to(*a); c.line_to(*b); c.stroke()
+    c.set_source_rgba(0.15, 0.12, 0.10, 0.45)
+    for px, py in ((-6, 0), (8, -4)):
+        c.arc(px, py, 3, 0, 2 * math.pi); c.fill()
+    c.restore()
+
+
+def phone(k, x, y, s, screen=None, ang=0.0, face_out=True):
+    """a phone in a hand; screen: None (its back), or a function(c) drawing in a 40 x 72 box."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    rect(k, -22, -38, 44, 76, (0.08, 0.09, 0.12), 3501, lw=2)
+    if screen and face_out:
+        import of_set as gs_
+        gs_.protect(c, "a phone screen", -22, -38, 22, 38)
+        c.save(); c.rectangle(-19, -34, 38, 68); c.clip()
+        c.set_source_rgb(0.96, 0.97, 0.98); c.paint()
+        screen(c)
+        c.restore()
+    c.restore()
+
+
+def creeper(k, x, y, s=1.0):
+    """the mechanic's creeper, side on: a padded board on four castors."""
+    c = k.c
+    rect(k, x - 70 * s, y - 10 * s, 140 * s, 14 * s, (0.80, 0.16, 0.14), 3510, lw=2.2)
+    rect(k, x - 64 * s, y - 18 * s, 54 * s, 9 * s, (0.20, 0.20, 0.22), 3511, shadow=False, lw=1.6)   # the head pad
+    for wx in (-58, -22, 22, 58):
+        c.set_source_rgb(*INK); c.rectangle(x + wx * s - 2 * s, y + 4 * s, 4 * s, 6 * s); c.fill()
+        ellipse(k, x + wx * s, y + 13 * s, 6 * s, 6 * s, (0.30, 0.30, 0.32), 3512 + wx, shadow=False, lw=1.6)
+
+
+def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wipe=0.0):
+    """sat up on the creeper: the board on the floor, his seat on it, knees up, the rag between his hands."""
+    creeper(k, x - 20, floor - 14, 0.9)
+    seat = floor - 30
+    c = k.c
+    for sx, (kx, fx) in ((-1, (x - 62, x - 90)), (1, (x - 30, x - 56))):           # knees up, feet out to the left
+        for col, lw in ((INK, 30 * s / 0.52), ((0.17, 0.22, 0.34), 25 * s / 0.52)):
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+            c.move_to(x + sx * 8, seat); c.line_to(kx, seat - 44); c.line_to(fx, floor - 6); c.stroke()
+        cut(k, [(fx - 18, floor - 14), (fx + 8, floor - 14), (fx + 10, floor), (fx - 20, floor)], (0.42, 0.27, 0.14), shadow=False, lw=2)
+    hip_feet = seat - co.HIP * s
+    hands = (x - 44 + 10 * wipe, seat - 54 + 3 * wipe)                        # wipe -1..1: the rag worked between the hands
+    o = client(k, x, hip_feet, s, look=look, targets=[(hands[0] - 6, hands[1]), (hands[0] + 10, hands[1] + 4)], clip_hip=True,
+               face=face)
+    if rag_hands:
+        rag(k, hands[0] + 2, hands[1] + 2, 1.1)
+    return o
+
+
+def client_bent(k, x, feet, s, look=(-1, 0), hands=None, lean=0.75):
+    """bent over the engine bay (to his front, screen left): client_of v2's true profile, tipped from the hips."""
+    import client_of as cof
+    o = cof.profile(k, x, feet, s, facing=-1, lean=lean, hands=hands)
+    hip = feet + co.HIP * s
+    hx, hy = o["head"]                                                        # the head, tipped forward with him
+    rx, ry = hx - x, hy - hip
+    o["head"] = (x + rx * math.cos(-lean) - ry * math.sin(-lean), hip + rx * math.sin(-lean) + ry * math.cos(-lean))
+    mx, my = -47 * s * cof.co.HEAD, (cof.co.HY + 34 * cof.co.HEAD) * s - co.HIP * s   # the mouth, at the front of the profile
+    o["mouth"] = (x + mx * math.cos(-lean) - my * math.sin(-lean), hip + mx * math.sin(-lean) + my * math.cos(-lean))
+    return o
+
+
+def client_lying(k, s=1.6, sway=0.0, wrench_up=False):
+    """UNDER THE CAR (frame units): on his back, head left, face up into the light; the wrench hand by the sump."""
+    c = k.c
+    c.save(); c.translate(270, 560); c.rotate(-math.pi / 2)
+    o = client(k, 0, -80 + 372 * s, s, look=(0, -1))
+    c.restore()
+    hx, hy = o["head"]
+    head = (270 + hy, 560 - hx, 55 * s)
+    if wrench_up:                                                              # his hand up at the sump, the wrench in it
+        wx, wy = 330 + sway, 380
+        c.set_source_rgb(0.40, 0.45, 0.33); c.set_line_width(34); c.set_line_cap(1)
+        c.move_to(360, 520); c.line_to(wx, wy + 30); c.stroke()
+        ellipse(k, wx, wy + 14, 22, 20, co.SKIN, 3520, lw=2.2)
+        c.set_source_rgb(0.66, 0.68, 0.70); c.set_line_width(9); c.move_to(wx - 4, wy); c.line_to(wx - 30, wy - 60); c.stroke()
+        c.set_source_rgb(*INK); c.set_line_width(2); c.arc(wx - 32, wy - 64, 10, 0.8, 5.5); c.stroke()
+    return head
+
+
+def cartoon_hand(k, hx, hy, w, skin, seed, d, side):
+    """episode 13's hand for everyone (23 Nov, decided): a chunky cartoon hand, a palm, three fingers and a thumb,
+    a bold outline, turned along the forearm (d) with the thumb on the elbow's inner side."""
+    c = k.c
+    if abs(skin[0] - skin[2]) < 0.08 and abs(skin[0] - skin[1]) < 0.08:                    # grey: the robot keeps its claw
+        ellipse(k, hx, hy, w * 0.6, w * 0.6, skin, seed, shadow=False, lw=2)
+        return
+    w = w * 1.25
+    a = math.atan2(d[1], d[0])
+    c.save(); c.translate(hx, hy); c.rotate(a)
+    sk = skin
+    def blob(x, y, rx, ry, rot=0.0):
+        c.save(); c.translate(x, y); c.rotate(rot); c.scale(rx, ry); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
+    c.new_path()                                                                             # the wrist: out of the sleeve,
+    c.move_to(-0.55 * w, -0.30 * w); c.line_to(0.05 * w, -0.34 * w)                         # narrower than the forearm
+    c.line_to(0.05 * w, 0.34 * w); c.line_to(-0.55 * w, 0.30 * w); c.close_path()
+    c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
+    blob(0.10 * w, side * 0.48 * w, 0.30 * w, 0.17 * w, side * 0.7)                         # the thumb
+    for j, fy in enumerate((-0.30, 0.0, 0.30)):                                              # three fingers, curled
+        blob(0.62 * w, fy * w, 0.26 * w, 0.17 * w)
+    blob(0.18 * w, 0.0, 0.50 * w, 0.46 * w)                                                  # the palm, over the knuckles' roots
+    c.set_source_rgb(*INK); c.set_line_width(1.4)                                            # the knuckle creases
+    for fy in (-0.15, 0.15):
+        c.move_to(0.48 * w, fy * w); c.line_to(0.64 * w, fy * w); c.stroke()
+    c.restore()
+
+
+def client_under(k, s=1.6, sway=0.0, look=(1.0, 0.6), wrench_t=0.0):
+    """v3 (22 Nov, after the 5/10 audit): UNDER THE CAR, a SIDE cutaway, in frame units: the classic mechanic's view.
+    He lies on his back on the creeper (client_of.profile laid down: head left, face up), the car's underside above
+    him (the floor pan, the exhaust pipe, a bracket bolted to it, a wheel at the edge). BOTH arms up into it: the far
+    hand holds the pipe, the near hand's wrench sits ON the bolt; his face tipped up to it. sway: the underside drops
+    toward his face (the slam). wrench_t: the wrench's small turn while he works."""
+    import client_of as cof
+    c = k.c
+    dy = abs(sway) * 1.2
+    T = (730, 640)                                                                         # his feet (off the right edge)
+    # the underside, above him
+    c.save(); c.translate(sway * 0.3, dy)
+    rect(k, -20, 250, 580, 70, (0.22, 0.23, 0.26), 3529, lw=3)                              # the floor pan
+    ellipse(k, 40, 300, 110, 110, (0.07, 0.07, 0.08), 3530, lw=3)                          # a wheel, cut by the edge
+    ellipse(k, 40, 300, 50, 50, (0.42, 0.43, 0.46), 3531, lw=2.4)
+    for col, lw in ((INK, 22), ((0.42, 0.43, 0.46), 16)):                                 # the exhaust pipe, under the pan
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+        c.move_to(120, 360); c.line_to(560, 352); c.stroke()
+    for hx_ in (150, 470):                                                                # its rubber hangers up to the pan
+        c.set_source_rgb(*INK); c.set_line_width(6); c.move_to(hx_, 318); c.line_to(hx_, 350); c.stroke()
+    rect(k, 410, 334, 130, 48, (0.34, 0.35, 0.38), 3527, lw=2.6)                           # the muffler: a fat can on it
+    c.set_source_rgb(0.25, 0.26, 0.29); c.set_line_width(2)
+    for mx in (440, 475, 510):
+        c.move_to(mx, 336); c.line_to(mx, 380); c.stroke()
+    rect(k, 268, 316, 96, 92, (0.38, 0.39, 0.42), 3532, lw=2.6)                             # the bracket, bolted up
+    for bx in (292, 340):
+        ellipse(k, bx, 392, 10, 10, (0.72, 0.73, 0.76), 3533 + bx, lw=2)
+        c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(bx - 5, 392); c.line_to(bx + 5, 392); c.stroke()
+    c.restore()
+    bolt = (292 + sway * 0.3, 392 + dy)
+    rect(k, 40, T[1] + 26, 700, 22, (0.24, 0.24, 0.26), 3528, lw=2)                          # the creeper under his back
+    # him, laid down: local (x, y) -> frame (T.x + y, T.y - x)
+    L = lambda X, Y: (-(Y - T[1]), X - T[0])
+    near = (bolt[0] + 30, bolt[1] + 74)                                                    # the wrench fist, a wrench's length below
+    far = (190, 372 + dy)                                                                  # the far hand on the pipe
+    c.save(); c.translate(*T); c.rotate(-math.pi / 2)
+    o = cof.profile(k, 0, 0, s, facing=1, look_up=0.0, hands=[L(*near), L(*far)])
+    c.restore()
+    hx, hy = o["head"]
+    r = 55 * s
+    head = (T[0] + hy + 0.30 * r, T[1] - hx + 0.10 * r, 0.6 * r)                            # the tail's aim: his cheek (the face points up)
+    a_ = -1.3 + 0.3 * math.sin(wrench_t)
+    for col, lw in ((INK, 14), ((0.72, 0.74, 0.76), 9)):                                   # the wrench, fist to bolt
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+        c.move_to(near[0] - 4, near[1] - 16); c.line_to(bolt[0], bolt[1] + 12); c.stroke()
+    c.set_source_rgb(*INK); c.set_line_width(3.5); c.new_path(); c.arc(bolt[0], bolt[1], 14, a_, a_ + 4.6); c.stroke()
+    return head
+
+
+def client_top(k, sway=0.0, wrench_t=0.0, s=1.12):
+    """v10 (22 Nov): UNDER THE CAR, from above (frame units): the car drawn as a dashed cutaway outline with its four
+    wheels, and inside it the WHOLE of him on the creeper, head left, boots right; the pipe and a bracket over his
+    chest (translucent); both hands up at the bolt, the wrench ON it; his eyes on it."""
+    c = k.c
+    dy = abs(sway) * 0.8
+    cx, cy = 300, 560                                                                      # his middle
+    c.save(); c.translate(sway * 0.3, dy)                                                  # the car above him, cut away
+    for (wx, wy) in ((40, 360), (40, 760), (470, 360), (470, 760)):
+        rect(k, wx - 30, wy - 55, 60, 110, (0.06, 0.06, 0.07), 3560 + wx + wy, lw=2.4)       # the wheels
+    c.set_source_rgba(0.55, 0.65, 0.85, 0.12); c.rectangle(20, 300, 500, 520); c.fill()
+    c.set_source_rgb(0.50, 0.58, 0.75); c.set_line_width(3); c.set_dash([14, 10]); c.rectangle(20, 300, 500, 520); c.stroke(); c.set_dash([])
+    c.restore()
+    rect(k, 60, cy - 78, 470, 156, (0.24, 0.24, 0.26), 3550, lw=2.4)                        # the creeper
+    X = lambda sx, sy: (cy - sy, sx - cx)                                                  # frame -> his laid-down frame
+    bolt = (262, 478 + dy)
+    hands = [X(bolt[0] - 26, bolt[1] + 34), X(bolt[0] + 26, bolt[1] + 30)]
+    c.save(); c.translate(cx, cy); c.rotate(-math.pi / 2)
+    o = client(k, 0, 372 * s * 0.5 + 40, s, look=(-0.6, -1), targets=hands)
+    c.restore()
+    hx, hy = o["head"]
+    head = (cx + hy, cy - hx, 55 * s)
+    c.save(); c.translate(sway * 0.3, dy)                                                  # the pipe and the bracket over his chest
+    for col, lw in ((INK, 18), ((0.42, 0.43, 0.46), 12)):
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.move_to(110, 440); c.line_to(500, 436); c.stroke()
+    rect(k, 236, 446, 56, 44, (0.38, 0.39, 0.42), 3552, lw=2.2)
+    c.restore()
+    ellipse(k, bolt[0], bolt[1], 8, 8, (0.72, 0.73, 0.76), 3553, lw=1.8)
+    a_ = -1.3 + 0.3 * math.sin(wrench_t)
+    for col, lw in ((INK, 11), ((0.72, 0.74, 0.76), 7)):
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+        c.move_to(bolt[0] + 24, bolt[1] + 30); c.line_to(bolt[0] + 4, bolt[1] + 8); c.stroke()
+    c.set_source_rgb(*INK); c.set_line_width(3); c.new_path(); c.arc(bolt[0], bolt[1], 11, a_, a_ + 4.6); c.stroke()
+    return head
+
+
+def watch_pose(x, feet, s):
+    """the left wrist up at his chest, turned: the watch face to his eyes."""
+    hip = feet + co.HIP * s
+    return [(x + 22, hip - 74)]                                                    # his watch hand (screen right)
+
+
+def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, phone_dad=False, forward=0.0, phone_ear=False):
+    """Don in the throne: dq.don_seated's own drawing, with his arms and face set (pose: kit angles); forward: he sits up."""
+    c = k.c
+    cs = s
+    dp.ceo_chair(k, x, floor, cs)
+    seat_y = floor - 110 * cs + 4 * s
+    feet = seat_y - dq.WAIST * s
+    c.save(); c.rectangle(x - 200 * s, seat_y - 400 * s, 400 * s, 400 * s + 2); c.clip()
+    c.save(); c.translate(x, seat_y); c.rotate(-0.10 * forward); c.translate(-x, -seat_y)
+    o = sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=look)
+    c.restore()
+    c.restore()
+    c.save(); c.translate(x, seat_y); c.scale(s, s)
+    dq._leg(k, [(14, -8), (92, -22), (176, -58)], 30, 3203)
+    dq._leg(k, [(-10, -8), (82, -6), (172, -40)], 30, 3204)
+    dq._shoe(k, 186, -62, 1.5, 0.35, 3205); dq._shoe(k, 184, -36, 1.5, 0.20, 3206)
+    c.restore()
+    hx, hy = o["head"]
+    for i in range(sweat):                                                     # the sweat: big drops
+        dx, dy = ((40, -30), (-42, -20), (30, 6))[i]
+        c.save(); c.translate(hx + dx * s, hy + dy * s); c.scale(s * 1.5, s * 1.5)
+        c.move_to(0, -9); c.curve_to(7, 0, 6, 7, 0, 7); c.curve_to(-6, 7, -7, 0, 0, -9); c.close_path()
+        c.set_source_rgb(0.62, 0.84, 0.95); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+        c.restore()
+    if phone_dad:
+        px, py = o["hands"][0]
+        def scr(c_):
+            c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
+            c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(15)
+            e = c_.text_extents("DAD"); c_.move_to(-e.x_advance / 2, -2); c_.show_text("DAD")
+            c_.set_font_size(8); e = c_.text_extents("calling…"); c_.move_to(-e.x_advance / 2, 12); c_.show_text("calling…")
+        if phone_ear:                                                           # v2 (22 Nov): at his ear, a call
+            phone(k, hx - 66 * s, hy + 12 * s, s * 1.05, scr, ang=-0.12)   # beside the face, not over it
+            for col, lw in ((INK, 26 * s), ((0.97, 0.97, 0.95), 21 * s)):          # his arm up to it, the white sleeve
+                c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+                c.move_to(hx - 34 * s, hy + 112 * s); c.curve_to(hx - 78 * s, hy + 104 * s, hx - 80 * s, hy + 80 * s, hx - 72 * s, hy + 60 * s); c.stroke()
+            cartoon_hand(k, hx - 70 * s, hy + 44 * s, 22 * s, (0.96, 0.80, 0.70), 7700, (0.15, -1.0), -1)   # v2: HIS hand holds it there
+        else:
+            phone(k, px + 4 * s, py - 30 * s, s * 1.15, scr, ang=0.05)
+    return o
+
+
+TURN_DX = 34                                               # the head's slide at a full turn (ep 12 used 14: too small)
+
+
+def robot(k, x, feet, s, turn=0.0):
+    """turn 0..1: its head turning toward Don (episode 12's 10.5a at 1); the smile never changes."""
+    if turn <= 0:
+        return dq.robot_state(k, x, feet, s, "idle")
+    o = dq.rm.robot(k, x, feet, s, (0.0, 0, 0, (-8, 0), (8, 0)), "eager", (turn, 0), 1, head_dx=TURN_DX * turn * 0.5, head_rot=0.0)
+    _visor_turn(k, o["screen"], 50 * s, turn)                  # v2: the face on the visor turns, not just slides
+    return o
+
+
+def _visor_turn(k, scr, r, u):
+    """its screen face turned toward screen right by u (0..1): the eyes and the smile slide to the visor's edge, the far
+    eye narrows, the smile turns into a side-on curve. The same eager smile throughout."""
+    c = k.c
+    sx, sy = scr
+    c.set_source_rgb(0.09, 0.12, 0.24); c.arc(sx, sy, 0.86 * r, 0, 2 * math.pi); c.fill()
+    cx = sx + 0.46 * r * u
+    cyan = (0.45, 0.92, 1.0)
+    for e, side in ((-1, "far"), (1, "near")):
+        ex = cx + e * 0.30 * r * (1 - 0.45 * u)
+        wx = 0.13 * r * ((1 - 0.65 * u) if side == "far" else 1.0)
+        c.save(); c.translate(ex, sy - 0.10 * r); c.scale(max(0.2, wx), 0.13 * r)
+        c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgba(*cyan, 0.35); c.fill_preserve() if False else None
+        c.set_source_rgb(*cyan); c.fill()
+    c.set_source_rgb(*cyan); c.set_line_width(0.07 * r); c.set_line_cap(1)
+    c.new_path(); c.arc(cx + 0.06 * r * u, sy + 0.12 * r, 0.24 * r, 0.25 + 0.35 * u, math.pi - 0.25 - 0.15 * u); c.stroke()

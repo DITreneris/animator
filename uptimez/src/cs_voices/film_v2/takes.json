@@ -1,0 +1,197 @@
+{
+ "1.4r": {
+  "who": "ROBOT",
+  "text": "Reply drafted. Human approval required.",
+  "len": 2.368,
+  "f0": 141,
+  "rms": 0.111,
+  "peak": 1.104,
+  "source": "film_v1 6.9r",
+  "asr": [
+   "Reply drafted, human approval required.",
+   "Reply drafted, human approval required.",
+   "Reply drafted, human approval required."
+  ],
+  "asr_ok": 3
+ },
+ "1.4d": {
+  "who": "DON",
+  "text": "Approved.",
+  "len": 0.718,
+  "f0": 93,
+  "rms": 0.112,
+  "peak": 0.584,
+  "source": "film_v1 6.9d",
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "asr_ok": 3
+ },
+ "2.1": {
+  "who": "DON",
+  "text": "Let's fix this together.",
+  "len": 1.499,
+  "f0": 94,
+  "rms": 0.112,
+  "peak": 0.776,
+  "source": "kokoro",
+  "asr": [
+   "Let's fix this together.",
+   "Let's fix this together.",
+   "Let's fix this together."
+  ],
+  "asr_ok": 3
+ },
+ "2.2": {
+  "who": "CLIENT",
+  "text": "Nine o'clock. Your office.",
+  "len": 1.696,
+  "f0": 142,
+  "rms": 0.162,
+  "peak": 0.8,
+  "source": "kokoro",
+  "asr": [
+   "9 o'clock your office.",
+   "9 o'clock your office",
+   "9 o'clock your office."
+  ],
+  "asr_ok": 3
+ },
+ "3.1r": {
+  "who": "ROBOT",
+  "text": "Blueprint generated. Human approval required.",
+  "len": 2.439,
+  "f0": 139,
+  "rms": 0.111,
+  "peak": 1.423,
+  "source": "kokoro",
+  "asr": [
+   "Blueprint-generated human approval required.",
+   "Blueprint-generated human approval required.",
+   "Blueprint-generated human approval required."
+  ],
+  "asr_ok": 3
+ },
+ "3.1d": {
+  "who": "DON",
+  "text": "Approved.",
+  "len": 0.718,
+  "f0": 93,
+  "rms": 0.112,
+  "peak": 0.584,
+  "source": "film_v1 5.3",
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "asr_ok": 3
+ },
+ "3.3": {
+  "who": "DON",
+  "text": "Recovered.",
+  "len": 0.835,
+  "f0": 101,
+  "rms": 0.112,
+  "peak": 0.8,
+  "source": "kokoro",
+  "asr": [
+   "recovered",
+   "recovered",
+   "recovered."
+  ],
+  "asr_ok": 3
+ },
+ "3.5": {
+  "who": "CLIENT",
+  "text": "I have ten garages.",
+  "len": 1.548,
+  "f0": 123,
+  "rms": 0.112,
+  "peak": 0.689,
+  "source": "kokoro",
+  "asr": [
+   "I have 10 garages.",
+   "I have 10 garages.",
+   "I have 10 garages."
+  ],
+  "asr_ok": 3
+ },
+ "4.4": {
+  "who": "ROBOT",
+  "text": "The result was obtained by a h-human.",
+  "len": 2.18,
+  "f0": 153,
+  "rms": 0.111,
+  "peak": 1.344,
+  "source": "film_v1 4.4",
+  "asr": [
+   "The result was obtained by a H, human.",
+   "The result was obtained by a H human.",
+   "The result was obtained by a H, human."
+  ],
+  "asr_ok": 3
+ },
+ "5.1": {
+  "who": "CLIENT",
+  "text": "Your number.",
+  "len": 0.813,
+  "f0": 142,
+  "rms": 0.115,
+  "peak": 0.7,
+  "source": "film_v1 6.1",
+  "asr": [
+   "your number",
+   "Your number",
+   "Your number."
+  ],
+  "asr_ok": 3
+ },
+ "5.4s": {
+  "who": "SOFIA",
+  "text": "He's not looking at you.",
+  "len": 1.154,
+  "f0": 197,
+  "rms": 0.101,
+  "peak": 0.484,
+  "source": "film_v1 5.4",
+  "asr": [
+   "He's not looking at you",
+   "He's not looking at you.",
+   "He's not looking at you."
+  ],
+  "asr_ok": 3
+ },
+ "5.4d": {
+  "who": "DON",
+  "text": "Customer success.",
+  "len": 1.357,
+  "f0": 101,
+  "rms": 0.112,
+  "peak": 0.725,
+  "source": "film_v1 6.5",
+  "asr": [
+   "Customer success.",
+   "Customer success",
+   "Customer success."
+  ],
+  "asr_ok": 3
+ },
+ "6.5": {
+  "who": "SOFIA",
+  "text": "Nobody noticed.",
+  "len": 0.959,
+  "f0": 203,
+  "rms": 0.102,
+  "peak": 0.466,
+  "source": "film_v1 6.11",
+  "asr": [
+   "Nobody noticed.",
+   "Nobody noticed.",
+   "Nobody noticed."
+  ],
+  "asr_ok": 3
+ }
+}

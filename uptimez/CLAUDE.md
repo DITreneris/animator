@@ -7,7 +7,7 @@ These rules apply to the UptimeZ episodes in `uptimez/` only, not to Hoodyz (`..
 - **UptimeZ Find** returns 0 RESULTS because no customer data was ever connected. No script fixes it by accident.
 - **Don**, CEO, sells for real and believes his own pitch; he approves instead of investigating. **Sofía** wants authority independent of Don, rejects him, and never fakes a record. **Pam** can't stop fixing things, loves Don unrequited, and uses strategic silence.
 - **The robot** (desk robot → waiter → HR) is technically true in every statement and stamp. It acts alone only within its permissions, and needs human approval for money, access, commitments and system changes.
-- **Mom** works at UptimeZ as Assistant to Don and is used sparingly. **The Client** owns ten garages and is not an idiot. **Father** is the investor and arrives in episode 14.
+- **Mom** works at UptimeZ as Assistant to Don and is used sparingly. **The Client** owns ten garages and is not an idiot. **Father** is the investor and arrives in episode 12 (*Daddy's Home*): a nightclub kingpin, calm, never funny on purpose, with two silent bodyguards.
 - **Every episode:** one comic mechanism from two competing desires; the image loops while the story advances; status moves in every scene; it works on mute.
 
 Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) use Rush, Max, the laptop AI and Cache, and are outside the main storyline.
@@ -21,6 +21,8 @@ Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) us
 
 ## Gates
 
+**How an episode is made, stage by stage** (scene file as the one source, checks that fail the build, Tomas's five stops, version budgets): [`series/production-process.md`](series/production-process.md).
+
 The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/skills/` are written for Hoodyz; don't apply their series check here.
 
 | Gate | Pass |
@@ -28,7 +30,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | G0 Series check | Two characters' wants collide; one comic mechanism; one iconic image; the image loops while the story advances; status moves. Check against STORYLINE.md |
 | G1 Protect list | The five things that make the episode, written in the script doc |
 | G2 Shot list | An action shot and a reaction shot per beat, with size and eyeline |
-| G3 Composition | Faces under the title bar, signs whole or out of frame, signs legible at 270 px |
+| G3 Composition | Faces under the title bar, signs whole or out of frame, signs legible at 270 px. Faces **and every story prop** (declared with `of_set.protect()`) out of the dead zones (y > 720; x > 470 between y 380 and 860), measured where the rig drew them, never from typed head points (lessons 124–126). The board is looked at under the mock app overlay |
 | G4 Cold mute test | Fresh viewers who have never seen the script (people, or new subagents shown frames only) tell back at least 4 of 5 beats |
 | G5 QA worker | Fails the build on any miss (below) |
 | G6 Audit triage | At most two review rounds, then go back to premises or test on viewers |
@@ -39,6 +41,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 - Pin the previous file as `_vN` before changing it. A pinned file imports the pinned modules it was built with.
 - After any change, rebuild the approved sheets, covers and renders and **compare md5**. They must be byte-identical.
 - New renders get new names; the release a README calls current is replaced only when it's approved.
+- **A drawing map's later entry wins.** After replacing a shot's drawing, check that the map points at the new function (print it, or assert it) and look at that shot in the render: two fixes in First Search were overwritten for ten versions (lesson 109).
 
 ## Render and QA standard (G5)
 
@@ -49,7 +52,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | Speech | Whisper on every line inside the final mix, three windows per line; a lone word gets the previous line as context; score by words or letters (it runs "Pam a heart" together) |
 | Text | Every bubble, card and shout inside the safe area (18, 96, 522, 820 at 540×960) and off the right-hand button rail. Speech bubbles never cover a face. Narration and cards go at the top, under the bar (y 96): the bottom quarter is where TikTok, Reels and Shorts put captions, even inside the safe area |
 | Tails | Each tail ends beside the mouth **drawn in that frame**, curving round outside the head. Off-screen speakers get no tail (a caption, a screen readout or a quoted card instead) |
-| Frame 0 | Complete (no flash, nothing scaling in), and the last frame leads back into it |
+| Frame 0 | Complete (no flash, nothing scaling in), held at least 0.4 s before the camera moves, and the last frame leads back into it. The sound runs through the seam: no dead stop before frame 0 (a fade of 0.3 s at most) |
 | Size | **1080 renders are not committed** (`uptimez/**/*_1080.mp4` is in `.gitignore`); `build.sh` rebuilds them and they're delivered directly. The 540 previews, covers and sheets are committed. The 1080 files committed before 17 Nov stay tracked |
 
 Validate every new check on a known failure first; a check that always passes is worse than none.

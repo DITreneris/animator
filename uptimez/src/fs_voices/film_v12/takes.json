@@ -1,0 +1,213 @@
+{
+ "1.2": {
+  "who": "CLIENT",
+  "text": "Friday, the bank. I need my blueprint.",
+  "len": 2.492,
+  "f0": 114,
+  "rms": 0.111,
+  "peak": 0.847,
+  "asr": [
+   "Friday the bank I need my blueprint.",
+   "Friday the bank I need my blueprint.",
+   "Friday the bank I need my blueprint."
+  ],
+  "asr_ok": 3
+ },
+ "2.2": {
+  "who": "DON",
+  "text": "Garage eleven. Guaranteed by Friday.",
+  "len": 2.544,
+  "f0": 91,
+  "rms": 0.111,
+  "peak": 0.82,
+  "asr": [
+   "Garage 11 guaranteed by Friday.",
+   "Garaz 11 guaranteed by Friday.",
+   "Garage 11 guaranteed by Friday."
+  ],
+  "asr_ok": 3
+ },
+ "3.3": {
+  "who": "SOFIA",
+  "text": "It found nothing.",
+  "len": 0.852,
+  "f0": 210,
+  "rms": 0.102,
+  "peak": 0.589,
+  "asr": [
+   "It found nothing.",
+   "It found nothing.",
+   "It found nothing."
+  ],
+  "asr_ok": 3
+ },
+ "4.1": {
+  "who": "DON",
+  "text": "Can you make the zero green?",
+  "len": 1.766,
+  "f0": 93,
+  "rms": 0.111,
+  "peak": 0.623,
+  "asr": [
+   "Can you make the zero green?",
+   "Can you make the zero green?",
+   "Can you make the zero green?"
+  ],
+  "asr_ok": 3
+ },
+ "4.2": {
+  "who": "ROBOT",
+  "text": "Interface change. Human approval required.",
+  "len": 2.296,
+  "f0": 145,
+  "rms": 0.111,
+  "peak": 1.296,
+  "asr": [
+   "Interface change, human approval required.",
+   "Interface change, human approval required.",
+   "Interface change, human approval required."
+  ],
+  "asr_ok": 3
+ },
+ "4.3": {
+  "who": "DON",
+  "text": "Approved.",
+  "len": 0.718,
+  "f0": 93,
+  "rms": 0.112,
+  "peak": 0.584,
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "asr_ok": 3
+ },
+ "5.2": {
+  "who": "CLIENT",
+  "text": "Where's my blueprint?",
+  "len": 1.39,
+  "f0": 121,
+  "rms": 0.113,
+  "peak": 0.91,
+  "asr": [
+   "Where's my blueprint?",
+   "Where's my blueprint?",
+   "Where's my blueprint?"
+  ],
+  "asr_ok": 3
+ },
+ "5.3": {
+  "who": "DON",
+  "text": "The zero's green.",
+  "len": 1.364,
+  "f0": 88,
+  "rms": 0.111,
+  "peak": 0.571,
+  "asr": [
+   "The zeros green.",
+   "The zeros green",
+   "The zero's green."
+  ],
+  "asr_ok": 3
+ },
+ "7.1": {
+  "who": "MOM",
+  "text": "Young man.",
+  "len": 1.295,
+  "f0": 181,
+  "rms": 0.125,
+  "peak": 0.742,
+  "asr": [
+   "young man",
+   "A young man",
+   "young man"
+  ],
+  "asr_ok": 3
+ },
+ "7.4": {
+  "who": "PAM+SOFIA",
+  "text": "Eww.",
+  "len": 1.016,
+  "rms": 0.098,
+  "peak": 0.537,
+  "source": "happy-compliance (sound_xmas LINES: SOF/PAM Eww.)"
+ },
+ "6.1b": {
+  "who": "MOM",
+  "text": "Machines.",
+  "len": 1.016,
+  "f0": 206,
+  "rms": 0.092,
+  "peak": 0.608,
+  "asr": [
+   "machines",
+   "machines",
+   "machines"
+  ],
+  "asr_ok": 3
+ },
+ "7.5": {
+  "who": "MOM",
+  "text": "That hussy.",
+  "len": 0.947,
+  "f0": 174,
+  "rms": 0.096,
+  "peak": 0.629,
+  "asr": [
+   "that hussy.",
+   "That hussy",
+   "that hussy."
+  ],
+  "asr_ok": 3
+ },
+ "8.1": {
+  "who": "MOM",
+  "text": "Pam has a plan.",
+  "len": 1.412,
+  "f0": 194,
+  "rms": 0.121,
+  "peak": 0.772,
+  "asr": [
+   "Pam has a plan.",
+   "Pam has a plan.",
+   "Pam has a plan."
+  ],
+  "asr_ok": 3
+ },
+ "x1": {
+  "who": "DON",
+  "text": "Where is his blueprint?",
+  "len": 1.276,
+  "rms": 0.112,
+  "peak": 0.588
+ },
+ "x2": {
+  "who": "SOFIA",
+  "text": "Ask the machine.",
+  "len": 0.868,
+  "rms": 0.112,
+  "peak": 0.708
+ },
+ "x3": {
+  "who": "ROBOT",
+  "text": "Zero results.",
+  "len": 1.042,
+  "rms": 0.111,
+  "peak": 0.794
+ },
+ "t1": {
+  "who": "CLIENT",
+  "text": "Friday. Or I sue.",
+  "len": 1.586,
+  "rms": 0.113,
+  "peak": 0.693
+ },
+ "t2": {
+  "who": "CLIENT",
+  "text": "See you in court.",
+  "len": 1.107,
+  "rms": 0.115,
+  "peak": 0.773
+ }
+}

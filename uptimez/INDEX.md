@@ -6,7 +6,8 @@ A map of every document in `uptimez/`, so a person, worker or agent can find the
 
 | # | Document | What it's for | Authority |
 |---|---|---|---|
-| 1 | [`STORYLINE.md`](STORYLINE.md) | **The series bible.** Premise, world rules (why Find returns 0), the four leads (want, private lie, contradiction, silent reaction, moral line), the supporting cast, relationships, Season 1 in three acts, episode rules, canon locks | **Canon.** Overrides anything older |
+| 1 | [`STORYLINE.md`](STORYLINE.md) | **The series bible.** Premise, world rules (why Find returns 0), the four leads (want, private lie, contradiction, silent reaction, moral line), the supporting cast, relationships, Season 1 in four acts, episode rules, canon locks | **Canon.** Overrides anything older |
+| [`series/production-process.md`](series/production-process.md) | v1, current (22 Nov): how an episode goes from script to final film; stages, checks, Tomas's five stops, version budgets |
 | 2 | [`CLAUDE.md`](CLAUDE.md) | **How to work here:** gates, production rules, QA, rules for bubbles and tails, how Tomas wants decisions asked | Process |
 | 3 | [`README.md`](README.md) | Cast table, brand, every episode (synopsis + files + how it's built) | Episode facts |
 | 4 | [`../docs/lessons.md`](../docs/lessons.md) | What went wrong before and the rule it produced, by episode | Craft rules |
@@ -16,7 +17,7 @@ A map of every document in `uptimez/`, so a person, worker or agent can find the
 
 | Document | Contents |
 |---|---|
-| [`STORYLINE.md`](STORYLINE.md) | v3.2, current (17 Nov): Act B around the blueprint, in line with episode 9 as built |
+| [`STORYLINE.md`](STORYLINE.md) | v3.3, current (22 Nov): Act D, *Civil War* (episodes 13–17), after an outside review; v3.2 (17 Nov): Act B around the blueprint, in line with episode 9 as built |
 | [`series/front-desk-set.md`](series/front-desk-set.md) | The front desk set v4: zones A/B/C, depth, home positions, the way out from behind the counter, camera setups S1–S6; the room from episode 10 on |
 | [`series/storyline-v3.md`](series/storyline-v3.md) | v3: after three outside showrunner reviews (character engines, relationships, world rules) |
 | [`series/storyline-v1.md`](series/storyline-v1.md) | v1: the first canon cleanup (early cast as prequel shorts; one promoted robot; Mom hired; Sofía flirts upward; calendar order; the one-client spine) |
@@ -39,10 +40,11 @@ Episodes in **story order** (STORYLINE.md, Season 1). Each folder holds its rend
 | 5 | *Secret Santa* | [`secret-santa/`](secret-santa/) | README section |
 | 6 | *Happy Compliance* (Christmas Eve) | [`happy-compliance/`](happy-compliance/) | README section |
 | 7 | *Office Noir: The Secret of a Stolen Heart* | [`office-noir/`](office-noir/) | README section |
-| — | *Office Noir 2: The Shadow of Fate* (New Year special) | [`office-noir-2/`](office-noir-2/) | `office-noir-2-script-v5.md` (current); concepts v1–v4; README section |
+| — | *Office Noir 2: The Shadow of Fate* (New Year special) | [`office-noir-2/`](office-noir-2/) | `office-noir-2-script-v6.md` (current, release v28); concepts v1–v4; README section |
 | 8 | *The Best Candidate* | [`the-best-candidate/`](the-best-candidate/) | `the-best-candidate-interview-script-v1.md` … `v6.md` (v6 is current) |
 | 9 | *The Onboarding* | [`the-onboarding/`](the-onboarding/) | `the-onboarding-script-v11.md` (current, line by line with the shot list; animation v19 changes are in `src/ob_anim.py`); concepts v1–v9; `storyline-proposal-act-b.md` (a proposal; STORYLINE v3.2 decides). Release: `uptimez_ob_anim_v10.mp4` |
-| 10 | *First Search* | [`first-search/`](first-search/) | `first-search-concept-v6.md` (current: the portrait falls on Don at 1.2 s; ends on the near-shred); concepts v1–v5 and premises v1–v3 kept |
+| 10 | *First Search* | [`first-search/`](first-search/) | `first-search-film-v35.md` (current: the film as built, shot by shot); film `fs_film35_540.mp4` (62.9 s); script v10 is the plan it started from; scripts v1–v9, concepts v1–v6 and premises v1–v3 kept |
+| 11 | *One Star* (working title: Customer Success) | [`customer-success/`](customer-success/) | `customer-success-script-v18.md` (current, line by line with the shot list); `one-star-layout-v2.md`; test notes `cs_motion_test_v8.md`, `cs_cold_test_film_v1.md`, `cs_cold_test_film_v2.md`. Rough cut: `one_star_rough_v5_540.mp4` |
 | — | *Saved Locally* (retired) | [`history/saved-locally/`](history/saved-locally/) | its own README |
 
 ## Characters and brand
