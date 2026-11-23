@@ -1,4 +1,8 @@
-"""OFFICE NOIR 4: the awake props, v1 (23 Nov). Stage 3, script v4 beats 7-8 (the front desk set, zone C, morning, colour).
+"""OFFICE NOIR 4: the awake props, v2 (23 Nov; v1 pinned as on4_props_v1.py). v2 after the props review: Sofia's mug is
+its own object (tall, black, a lipstick print on the OUTSIDE of the rim) so the eighth reads without counting; the row is
+laid out from its last place back, so the eighth sits clear of the button rail; 8.2 is the set itself through a camera
+that puts the lamp's head on frame 0's streetlamp (the counter, the monitor, the cups under the rota in frame);
+INTERNAL MAIL bigger. v1: Stage 3, script v4 beats 7-8 (the front desk set, zone C, morning, colour).
 Opt-in: nothing in fs_set4.py changes; a shot draws these through its own hooks, as Daddy's Home's props were (lesson 108).
 
   counter_lamp(k, x, base, s, on)   the loop's join (8.2-8.3): a small lamp on the counter built like frame 0's streetlamp
@@ -20,7 +24,8 @@ import on4_street as st
 
 F = 800
 LAMP = (668, F - 162, 1.0)                  # on the counter between Pam's monitor and the candy; its head hangs left
-CUPS = (690, F - 150, 0.50, 7, 22)          # x0, base, scale, n, step: along the counter's front edge
+CUPS = (676, F - 150, 0.50, 7, 18)          # x0, base, scale, n, step: along the counter's front edge (v2: 806, the
+                                            # eighth, ends at frame x ~433 in S6, clear of the rail at 470)
 ENV = (0.93, 0.82, 0.58)                    # the dream envelope's warm tone (on4_cast.envelope)
 ENV_D = (0.74, 0.58, 0.34)
 PAPER = (0.99, 0.99, 0.97)
@@ -77,7 +82,28 @@ def cups(k, x0=None, base=None, s=None, n=None, step=None, eighth=False):
     for i in range(n):
         cup(k, x0 + i * step, base + (i % 2) * 2, s)
     if eighth:
-        cup(k, x0 + n * step + 4, base + 1, s * 1.05, lipstick=True)
+        sofia_mug(k, x0 + n * step + 4 * s / 0.5, base + 1, s)
+
+
+def sofia_mug(k, x, base, s=1.0):
+    """Hers, not one of the seven: taller, black, a red lipstick print on the outside of the rim, off-centre."""
+    c = k.c
+    c.save(); c.translate(x, base); c.scale(s, s)
+    c.save(); c.scale(1, 0.3); c.new_path(); c.arc(0, 0, 17, 0, 2 * math.pi); c.restore()
+    c.set_source_rgba(0, 0, 0, 0.18); c.fill()
+    c.new_path(); c.arc(15, -22, 10, -math.pi / 2, math.pi / 2); c.set_source_rgb(*INK); c.set_line_width(7); c.stroke()
+    c.new_path(); c.arc(15, -22, 10, -math.pi / 2, math.pi / 2); c.set_source_rgb(0.16, 0.16, 0.18); c.set_line_width(4); c.stroke()
+    _rr(c, -14, -44, 28, 44, 4); _fs(c, (0.16, 0.16, 0.18), 2.0)
+    c.save(); c.translate(0, -44); c.scale(14, 3.4); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    _fs(c, (0.10, 0.10, 0.11), 1.4)
+    c.save(); c.translate(-5, -37); c.rotate(-0.18); c.scale(1.15, 1.15)                    # the kiss: two lips, outside
+    c.set_source_rgb(*RED)
+    c.new_path(); c.move_to(-8, 0); c.curve_to(-6, -5, -2, -5, 0, -2.5); c.curve_to(2, -5, 6, -5, 8, 0)
+    c.curve_to(4, 1.2, -4, 1.2, -8, 0); c.close_path(); c.fill()                                   # the upper lip
+    c.new_path(); c.move_to(-7.5, 1.4); c.curve_to(-4, 2.6, 4, 2.6, 7.5, 1.4); c.curve_to(5, 6.5, -5, 6.5, -7.5, 1.4)
+    c.close_path(); c.fill()                                                                       # the lower lip
+    c.restore()
+    c.restore()
 
 
 def envelope(k, x, y, s=1.0, ang=0.0, open_=False, sheet=0.0):
@@ -91,7 +117,7 @@ def envelope(k, x, y, s=1.0, ang=0.0, open_=False, sheet=0.0):
         c.set_source_rgb(*ENV_D); c.rectangle(-80, -110, 160, 8); c.fill()
     c.set_source_rgb(*ENV_D); c.set_line_width(1.4)                                                         # the flap
     c.move_to(-80, -76); c.line_to(80, -76); c.stroke()
-    kit.text(k, "INTERNAL MAIL", 0, -92, 16, (0.42, 0.28, 0.14), bold=True)
+    kit.text(k, "INTERNAL MAIL", 0, -90, 21, (0.42, 0.28, 0.14), bold=True)
     c.new_path(); c.arc(0, -66, 6, 0, 2 * math.pi); _fs(c, ENV_D, 1.2)                                       # button,
     c.new_path(); c.arc(0, -46, 6, 0, 2 * math.pi); _fs(c, ENV_D, 1.2)                                       # button
     c.set_source_rgb(0.30, 0.22, 0.14); c.set_line_width(1.2)                                                # the string
@@ -149,14 +175,38 @@ def s6(k, eighth=False):
 
 
 def lamp_match(k):
-    """8.2 -> 8.3: the counter lamp close, its head where frame 0's streetlamp hangs (on4_street.A_LAMP)."""
+    """8.2's end: the camera has pushed in from S6 (8.1, the counter, the cups under the rota) until the lamp's head hangs
+    where frame 0's streetlamp hangs (on4_street.A_LAMP); the room goes dark round it as the rain starts, so the cut to
+    the night street (8.3 = frame 0) keeps only the lamp. The push carries the context: it is the desk lamp."""
+    import fs_set4 as fs4
+    import dh_props as dp
     c = k.c
-    c.set_source_rgb(0.72, 0.66, 0.56); c.paint()
+    z = 2.4
+    hx, hy = LAMP[0] - 40, LAMP[1] - 90
     ax, ay = st.A_LAMP
-    s = 2.4
-    counter_lamp(k, ax + 40 * s, ay + 90 * s, s)
-    c.set_source_rgb(0.60, 0.48, 0.34); c.rectangle(0, ay + 90 * s, 540, 960); c.fill()
-    c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(0, ay + 90 * s); c.line_to(540, ay + 90 * s); c.stroke()
+    c.save(); c.translate(ax, ay); c.scale(z, z); c.translate(-hx, -hy)
+    fs4.draw_set(k, {"mom_front": lambda k: (cups(k, eighth=True), counter_lamp(k, *LAMP))})
+    c.restore()
+    g = cairo.RadialGradient(ax, ay + 20, 90, ax, ay + 20, 470)
+    g.add_color_stop_rgba(0, 0, 0, 0, 0.0); g.add_color_stop_rgba(0.40, 0.02, 0.02, 0.04, 0.85); g.add_color_stop_rgba(1, 0.02, 0.02, 0.04, 0.97)
+    c.set_source(g); c.paint()
+    st.lamp_head(k, ax, ay, 0.62 * z)                                   # the head over the dark, as in frame 0
+
+
+def s6_rota(k):
+    """8.1 / 8.2's start: S6, eight (Sofia's mug at the end), the rota laid over the cups."""
+    import fs_set4 as fs4
+    import fs_storyboard_v17 as sb
+    import dh_props as dp
+    c = k.c
+    c.save(); sb.view(c, 720, 600, 1.6)
+    def props(k):
+        dp.coffee_machine(k, 770, F - 166, 0.62, "ok")
+        counter_lamp(k, *LAMP)
+        cups(k, eighth=True)
+        rota(k, 734, F - 168, 0.30, 0.12)
+    fs4.draw_set(k, {"mom_front": props})
+    c.restore()
 
 
 def frame0(k):
@@ -178,22 +228,22 @@ def cups_close(k):
     c.set_source_rgb(0.93, 0.89, 0.80); c.rectangle(0, 470, 540, 120); c.fill()
     c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(0, 590); c.line_to(540, 590); c.stroke()
     c.set_source_rgb(0.86, 0.80, 0.68); c.rectangle(0, 590, 540, 370); c.fill()
-    cups(k, 40, 560, 1.4, 7, 58, eighth=True)
+    cups(k, 52, 560, 1.15, 7, 44, eighth=True)            # the eighth ends by x 440, clear of the rail
 
 
-def sheet(out="../office-noir-4/on4_props_sheet_v1.png", phone="../office-noir-4/on4_props_phone_v1.png"):
+def sheet(out="../office-noir-4/on4_props_sheet_v2.png", phone="../office-noir-4/on4_props_phone_v2.png"):
     panels = [(_frame(lambda k: s6(k, False)), "7.1 S6: the lamp, seven cups, the machine"),
-              (_frame(lambda k: s6(k, True)), "8.1 S6: eight cups (Sofia's mug)"),
-              (_frame(lamp_match), "8.2: the counter lamp, close"),
+              (_frame(s6_rota), "8.1 / 8.2 start: Sofia's mug, the rota over the cups"),
+              (_frame(lamp_match), "8.2 end: pushed in to the lamp, the room goes dark"),
               (st.render("A", 2, True), "8.3 = frame 0: the streetlamp"),
               (_frame(insert74), "7.4: INTERNAL MAIL, the COFFEE ROTA"),
-              (_frame(cups_close), "the cups, close: the eighth has lipstick")]
+              (_frame(cups_close), "the cups, close: the eighth is hers")]
     cols = 3
     W_, H_ = cols * 560 + 20, 70 + 2 * (960 + 50)
     sh = cairo.ImageSurface(cairo.FORMAT_RGB24, W_, H_); c = cairo.Context(sh)
     c.set_source_rgb(0.93, 0.92, 0.89); c.paint()
     c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(26)
-    c.move_to(20, 42); c.show_text("Office Noir 4: the awake props, v1 (zone C; dead zones in red)")
+    c.move_to(20, 42); c.show_text("Office Noir 4: the awake props, v2 (Sofia's own mug; the eighth clear of the rail; dead zones in red)")
     for i, (s, lab) in enumerate(panels):
         x = 20 + (i % cols) * 560; y = 70 + (i // cols) * 1010
         c.set_source_surface(s, x, y); c.paint()
