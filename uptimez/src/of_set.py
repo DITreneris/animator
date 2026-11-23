@@ -784,10 +784,10 @@ def insert_invite(k):
     rect(k, x0 + 30, y0 + 220, w - 60, 330, (0.97, 0.94, 0.86), 3130, lw=2.4)
     T(c, "INVITATION", cx, y0 + 330, 58, col=(0.55, 0.16, 0.46))
     T(c, "from", cx, y0 + 410, 30, col=(0.42, 0.44, 0.50), font="Inter")
-    T(c, "FATHER", cx, y0 + 470, 52)
+    T(c, "DAD", cx, y0 + 470, 52)                              # v3: DAD not FATHER — the same word Don calls in 3.7 (lesson 163)
     rect(k, x0 + 70, y0 + 556, w - 140, 76, cp.GRN, 3131, shadow=False, lw=2)          # v2: clear of the captions
     T(c, "ACCEPT", cx, y0 + 608, 38, col=(1, 1, 1))
-    protect(c, "INVITATION from FATHER", x0 + 60, y0 + 220, x0 + w - 60, y0 + 634)
+    protect(c, "INVITATION from DAD", x0 + 60, y0 + 220, x0 + w - 60, y0 + 634)
 
 
 def sheet_props(out):

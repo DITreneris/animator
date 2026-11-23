@@ -691,6 +691,13 @@ def insert_shot(k, sh):
         Z_, CX_, CY_ = 2.45, 408, 520                                                  # pushes the red pin into its top-left corner
         c.save(); c.translate(270, 480); c.scale(Z_, Z_); c.translate(-CX_, -CY_)
         gs.room(k); gs.plan(k, 0.0)
+        import acts_ob as _ac                                                    # v3 (23 Nov, Tomas: 3b) — a DIFFERENT bay ringed, not 7
+        _bx, _by, _bw, _bh = [b[1:] for b in _ac._bays() if b[0] == 3][0]         # again: this plan is a new target, not the old one
+        _tx = gs.PLAN[0] + (_bx + _bw / 2) * gs.PLAN[2]                           # healed. Tagged DON, not a bare number: it ties
+        _ty = gs.PLAN[1] + (_by + _bh / 2) * gs.PLAN[2]                           # straight to the "without him" meeting (lesson 163).
+        c.set_source_rgb(0.85, 0.12, 0.12); c.set_line_width(4.5)
+        c.arc(_tx, _ty, 22, 0, 2 * math.pi); c.stroke()
+        gs.T(c, "DON", _tx, _ty + 40, 15, col=(0.85, 0.12, 0.12))
         c.restore()
         px_, py_ = (334 - CX_) * Z_ + 270, (452 - CY_) * Z_ + 480
         for col, lw in ((INK, 86), ((0.11, 0.11, 0.13), 78)):                             # his sleeve, up from the frame's foot
@@ -899,9 +906,32 @@ def desk_shot(k, sh, heads):
                    look=sh["state"].get("pam_look", (0.4, 0.6)), glasses=sh["state"].get("pam_glasses", "up"))   # v8: face, glasses per drawing
         heads["_pamhand"] = q["hands"][1]
         drawn["pam"] = (q["head"][0], q["head"][1], 50 * dl.PS)
+    def office_dressing(k_):
+        """v18: the office read 'bare, placeholder-like' to 3 cold viewers vs. the garage's clutter (lesson 163).
+        Tomas: augalas, uptimez. A floor plant right of Pam's counter, the UPTIMEZ wordmark on the wall left of the
+        portrait. Background layer: drawn before the cast so they occlude it, not the other way round."""
+        c = k_.c
+        px, py = 672, F + 6                                              # v2: pulled in from 712 — the leaves touched the frame edge
+
+        c.set_source_rgb(0.47, 0.33, 0.22); c.rectangle(px - 20, py - 46, 40, 46); c.fill()
+        c.set_source_rgb(0.40, 0.27, 0.18); c.set_line_width(2); c.rectangle(px - 20, py - 46, 40, 46); c.stroke()
+        c.set_source_rgb(0.56, 0.40, 0.27); c.rectangle(px - 24, py - 50, 48, 8); c.fill()
+        leaf = (0.24, 0.52, 0.30)
+        for ang, ln in ((-0.9, 58), (-0.25, 72), (0.3, 70), (0.85, 56)):
+            c.set_source_rgb(*leaf); c.set_line_width(10); c.set_line_cap(1)
+            c.move_to(px, py - 50)
+            c.curve_to(px + 14 * math.sin(ang), py - 50 - ln * 0.5, px + 26 * math.sin(ang), py - 50 - ln * 0.85,
+                       px + 30 * math.sin(ang), py - 50 - ln)
+            c.stroke()
+        sx, sy = 292, 350                                                 # the wordmark, a small plaque left of the portrait
+        c.set_source_rgb(0.97, 0.96, 0.92); c.rectangle(sx - 46, sy - 20, 92, 40); c.fill()
+        c.set_source_rgb(*INK); c.set_line_width(2); c.rectangle(sx - 46, sy - 20, 92, 40); c.stroke()
+        gs.T(c, "UPTIMEZ", sx, sy, 15, col=(0.16, 0.42, 0.55))
+
     vis = visor_point()
     if which == "wide":
         def wide(k_, o):
+            office_dressing(k_)
             pam(k_, o); r = oc.robot(k_, dl.RX, F + 4, rs)
             drawn["robot"] = (r["screen"][0], r["screen"][1], 50 * rs)
         shot = dl.shot("3.1", [dl.h_seat(), vis, dl.hp(652, F + 6, dl.PS)], wide, "", rb=False, chair=False,
@@ -962,7 +992,8 @@ def desk_shot(k, sh, heads):
             c_.set_source_rgb(0.97, 0.94, 0.86); c_.rectangle(-19, -34, 38, 68); c_.fill()
             c_.set_source_rgb(0.55, 0.16, 0.46); c_.select_font_face("Lilita One"); c_.set_font_size(6.5)
             c_.move_to(-17, -14); c_.show_text("INVITATION")
-            c_.set_source_rgb(*INK); c_.set_font_size(9); c_.move_to(-17, 6); c_.show_text("FATHER")
+            c_.set_source_rgb(*INK); c_.set_font_size(9); c_.move_to(-17, 6); c_.show_text("DAD")  # v18: DAD not FATHER — it has
+            # to read as the same man Don later calls DAD (lesson 163: 2/3 cold viewers had to guess who "him" was)
         bz = sh["state"].get("buzz", 0.0)                                          # stage 7: it buzzes; then face down
         down = sh["state"].get("phone_down", False)
         if down:                                                                   # v10: SLAPPED face down on the desk
