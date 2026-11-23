@@ -141,13 +141,26 @@ def coat_details(k, x, feet, s):
     c.restore()
 
 
+ENV_SEAL = [False]                 # board v6 (opt-in): a small red heart seal where the flap meets, as on the office envelope
+
+
 def envelope(k, x, y, s, open_=False):
     """The dream's envelope (the warm tone) held by its edge."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(-0.12); c.scale(s, s)
     cut(k, [(-30, -22), (30, -22), (30, 20), (-30, 20)], (0.93, 0.82, 0.58), shadow=False, lw=2)
     c.set_source_rgb(*INK); c.set_line_width(1.6); c.move_to(-30, -22); c.line_to(0, 2); c.line_to(30, -22); c.stroke()
+    if ENV_SEAL[0]:
+        seal(c, 0, 4, 7)
     c.restore()
+
+
+def seal(c, x, y, r):
+    """the red heart seal (the series' neon red, kept by the grade)"""
+    c.new_path(); c.move_to(x, y + r * 0.9)
+    c.curve_to(x - r * 1.5, y - r * 0.2, x - r * 0.6, y - r * 1.3, x, y - r * 0.45)
+    c.curve_to(x + r * 0.6, y - r * 1.3, x + r * 1.5, y - r * 0.2, x, y + r * 0.9); c.close_path()
+    c.set_source_rgb(0.93, 0.13, 0.22); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(max(1.0, r * 0.18)); c.stroke()
 
 
 def pam_cat(k, x, feet, s=0.54, pose="hero", face="proud", look=(0, 0), seed=40, env=False):

@@ -1,4 +1,7 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v8 = board v5 (23 Nov; v1-v7 pinned). Board v4's G4: the light leaving her
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v9 = board v6 (23 Nov; v1-v8 pinned). After the board v5 audit ("improve"):
+timing v2 generated from this file (the shots' own durations, a/b keys splitting their shot), 4.3 1.5 s shorter, the rota
+held 2 s; the impact burst at the bumper; a red heart seal on both envelopes (dream and office); faces at the turns (the
+rig's real faces: "sad" and "surprised" drew no change); 7.1 an open hand. v8 = board v5: Board v4's G4: the light leaving her
 misread a third time, so by Tomas's rule 6.4 and 6.5 are cut: 6.3 (the triumph, the music stops, nobody turns) carries
 "ignored", and 6.6 is her alone on the dark stage. Sofia in 1.1-1.2 unimpressed, eyes on her phone (read as "shocked by
 Pam"). v7 = board v4: Tomas's picks after board v3:
@@ -62,6 +65,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "board v6: timing v2 from the scene file (a/b keys); 4.3 -1.5 s, the rota 2.0 s; the burst at the bumper; the heart seal on both envelopes; faces at the turns; 7.1 an open hand.",
     "board v5: 6.4 and 6.5 cut (the light leaving her misread three times); 6.3 carries it, 6.6 alone on the dark stage; Sofia unimpressed, eyes on her phone, in 1.1-1.2.",
     "board v4: the CV is Office Noir 3's sheet with her photograph big and SOFIA; 6.5 the beam seen swinging off Pam to the card table, Pam in the dark half; 2.3b merged into 2.2 (his own coat, Pam's ears at the window).",
     "board v3: Office Noir 3's hat shadow on the lit wall threatens Sofia in 1.1, Pam's punch slides it down in 1.2 (0:01); Sofia's CV is Office Noir 3's sheet; the inserts have owners; 2.1 side view; 4.2 cut (4.3 +1.4 s); 8.2 darker.",
@@ -367,7 +371,10 @@ def P(who, *a, **kw):
     return (who, a, kw)
 
 
-ARM_UP = (-8, 0) + oc.pm.ik(1, 30, oc.HY - 150)             # 7.1 / 6.5: one arm up on its elbow, the hand open
+ARM_UP = (-8, 0) + oc.pm.ik(1, 30, oc.HY - 150)
+import pm_ps as _pmps
+_pmps.P_HANDS.setdefault("arm_up_open", ("relax", "palm"))  # board v6: the raised hand open (read as a fist)
+kit.ARM_POSES.setdefault("arm_up_open", ARM_UP)             # 7.1 / 6.5: one arm up on its elbow, the hand open
 HAND_STOP = (-8, 0) + oc.pm.ik(1, 80, oc.HY + 10)          # 3.2: one hand up at the headlights
 oc.CAT_POSES.setdefault("punch", (oc.pm.ik(-1, -150, oc.BT + 10) + (8, 0), ("fist", "relax_s")))   # 1.2: the punch at the wall
 oc.CAT_POSES.setdefault("stop_palm", (HAND_STOP, ("relax_s", "palm")))      # board v1: the palm open at the car
@@ -576,22 +583,22 @@ SCENES = [
           before=lambda k: wall_shadow(k, "aim")),
         S("1.2", "wide, low", "A", WIDE, "0:01. Pam's punch: the shadow slides down the wall. Sofia sidesteps Pam like a puddle and "
           "walks on, past the camera; she never looks up.",
-          cast=A_SHADOW() + [P("pam_cat", 220, 730, 0.84, "punch", "angry", (-0.8, -0.3)),
+          cast=A_SHADOW() + [P("pam_cat", 220, 730, 0.84, "punch", "peer", (-0.8, -0.3)),
                               P("sofia", 380, 820, 0.70, "hold", "appraise", (0.2, 1.0))],
           action="the punch; Sofia sidesteps her (the 0:01 joke)", reaction="the shadow slides down; nobody thanks her",
           before=lambda k: wall_shadow(k, slide=0.55), after=lambda k: _burst(k, 150, 520, 30)),
         S("1.3", "close", "A", (220, 560, 1.9), "The pose holds; her eyes follow Sofia out; the pose sags; she pulls her coat straight.",
-          cast=[P("pam_cat", 220, 730, 0.84, "sag", "sad", (0.8, 0.2))], line="N: I know how to survive.",
+          cast=[P("pam_cat", 220, 730, 0.84, "sag", "fade", (0.8, 0.2))], line="N: I know how to survive.",
           action="the pose sags", reaction="Fine. (to where Sofia went)"),
         S("1.4", "wide", "A_tail", WIDE, "The shadows peel off the cobbles and run up the street to a pair of taillights; she turns to follow.",
           cast=[P("thug1", 300, 600, 0.26, "open", seed=4111), P("thug2", 340, 590, 0.24, "open", seed=4112),
-                P("pam_cat", 200, 760, 0.84, "hero", "surprised", (0.6, -0.6))],
+                P("pam_cat", 200, 760, 0.84, "hero", "approve", (0.6, -0.6))],
           eyeline="Pam to the taillights", action="the shadows run", reaction="Where are you going?"),
     ]),
     ("02 The witness", [
         S("2.1", "high, from the side", "B_escape", WIDE, "Pam-Cat on the fire escape, looking down; below in the lane the car, two "
           "bare-headed shadows at its rear window; one pale glove points back down the lane.",
-          cast=[P("thug1", 262, 578, 0.20, "open", seed=4121), P("pam_cat", 130, 420, 0.64, "hero", "angry", (0.7, 0.9))],
+          cast=[P("thug1", 262, 578, 0.20, "open", seed=4121), P("pam_cat", 130, 420, 0.64, "hero", "peer", (0.7, 0.9))],
           protect=[("the car", (300, 560))], after=lambda k: railing(k, 380), eyeline="down to the car"),
         S("2.2", "medium, through the window", "back_seat", WIDE, "The back seat: the Client, whole; beside him a velvet sleeve, "
           "a ringed hand on a knee, a chin (the window's top cuts Dad at the chin).",
@@ -602,13 +609,13 @@ SCENES = [
           "ringed hand lays itself flat on the seat: agreed.", protect=[("envelope", (200, 520)), ("ring", (392, 640))],
           line="The Client: Mine until it's done.", action="two taps", reaction="the ringed hand flat: agreed"),
         S("2.4", "close", "escape", WIDE, "Her eyes narrow; she swings onto the ladder and drops out of frame.",
-          cast=[P("pam_cat", 270, 900, 0.96, "hero", "angry", (0.4, 0.6))], line="N: I know where to see what others do not see.",
+          cast=[P("pam_cat", 270, 900, 0.96, "hero", "peer", (0.4, 0.6))], line="N: I know where to see what others do not see.",
           after=lambda k: railing(k, 690), eyeline="down to the car", action="she drops out of frame", reaction="Got you."),
     ]),
     ("03 Ignored victim", [
         S("3.1", "wide, low", "C_turn", (270, 610, 1.5), "The car swings round at the junction, nose to us; Pam runs onto the crossing after it. "
           "Don flashes STOP at her side without looking at her, flips the paddle, GO to the car; she stops dead in its path.",
-          cast=[P("pam_cat", 340, ROAD_Y + 6, 0.62, "hero", "angry", (-0.6, -0.3)),
+          cast=[P("pam_cat", 340, ROAD_Y + 6, 0.62, "hero", "peer", (-0.6, -0.3)),
                 P("don", 150, 700, 0.56, "stop", "confused", (0.2, -1.0), paddle_side="STOP", chin=1)],
           protect=[("the car", (250, 600))], line="Don: Traffic flows.", eyeline="Don to the car; Pam to the car",
           action="STOP at her side, GO to the car", reaction="she obeys: stops in its path"),
@@ -616,7 +623,7 @@ SCENES = [
           "rolls into her at walking pace: the bumper at her knees, she tips back, stars; over backwards onto the stripes.",
           cast=[P("don", 132, 700, 0.56, "wave", "pleased", (0.6, -0.4), paddle_side="GO", paddle_ang=0.10, whistle_in=True),
                 P("pam_from_behind", 292, ROAD_Y + 10, 0.66, "stop_palm", "surprised", (0, -0.2), lean=-0.22)],
-          protect=[("bumper", (250, 690)), ("headlights", (250, 630))], after=lambda k: (_impact(k, 272, 520), _burst(k, 330, 690)),
+          protect=[("bumper", (250, 690)), ("headlights", (250, 630))], after=lambda k: (_burst(k, 300, 664, 34), _impact(k, 272, 520)),
           action="the bump", reaction="she tips back"),
         S("3.3", "medium, low (a: the glove on the bonnet)", "C_lying", WIDE, "Don walks to the car's front corner, lays his white "
           "glove flat on the bonnet, rubs one spot. Pam in the foreground under the bumper. He doesn't look at her.",
@@ -638,24 +645,24 @@ SCENES = [
           "nobody looks down.", protect=[("her face", (112, 610)), ("the glove", (300, 560))],
           eyeline="each shadow to the bills", action="a glove plucks a bill", reaction="nobody looks down"),
         S("3.6", "close, sitting up", "C_low", WIDE, "She sits up and pushes her mask straight; her eyes follow the car.",
-          cast=[P("pam_cat", 220, 900, 0.96, "mask_fix", "sad", (0.6, -0.3), clip_y=800)], line="N: I am like a cat. I have seven lives.",
+          cast=[P("pam_cat", 220, 900, 0.96, "mask_fix", "doubt", (0.6, -0.3), clip_y=800)], line="N: I am like a cat. I have seven lives.",
           after=_sit_legs,
           eyeline="to the car", action="she sits up", reaction="Six left."),
     ]),
     ("04 False recognition", [
         S("4.1", "wide, low angle", "front", WIDE, "A new place, held: the car parked and empty, the club door, the marquee coming on line "
-          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 330, 712, 0.62, "hero", "surprised", (0, -1))],
+          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 330, 712, 0.62, "hero", "approve", (0, -1))],
           protect=[("marquee", (270, 340)), ("the car", (150, 680))], line="Pam: There you are.", eyeline="to the car, then up"),
         S("4.3", "medium, under the sign", "front", (300, 520, 1.5), "She points up at the sign, then at herself; turns to show "
           "someone: the street is empty. A small smile anyway; she pats her ears up and pushes the door.",
-          cast=[P("pam_cat", 300, 712, 0.62, "point_up", "happy", (0.4, -1))], protect=[("ONLY FOR YOU", (270, 416))],
+          cast=[P("pam_cat", 300, 712, 0.62, "point_up", "proud", (0.4, -1))], protect=[("ONLY FOR YOU", (270, 416))],
           eyeline="to the sign, then to nobody", action="the point at the sign, at herself", reaction="Finally."),
     ]),
     ("05 The club", [
         S("5.1", "wide", "hall", WIDE, "Inside: the booth, the game table, the stage at the end. The Client and the ringed hand over the "
           "plan; the spotlight on the empty stage.", eyeline="both to the plan"),
         S("5.3", "medium", "hall", (160, 610, 1.9), "Pam-Cat walks to the booth; her gloved hand goes into the Client's coat and comes out "
-          "with the envelope by its edge. Neither man looks up.", cast=[P("pam_cat", 250, 716, 0.46, "lift", "sly", (-0.8, 0.4))],
+          "with the envelope by its edge. Neither man looks up.", cast=[P("pam_cat", 250, 716, 0.46, "lift", "peer", (-0.8, 0.4))],
           line="Pam: Easy.", eyeline="Pam to the coat; the men to the plan", action="the lift", reaction="neither looks up"),
         S("5.3b", "insert (b: the lift)", "coat_lift", WIDE, "Her black glove draws the envelope out of his coat by its edge.",
           protect=[("envelope", (300, 470))], action="the lift", reaction="(he doesn't look)"),
@@ -668,29 +675,29 @@ SCENES = [
           cast=[P("pam_cat", 225, 700, 0.86, "triumph", "proud", (0.3, -0.6))], line="Pam: Well?",
           protect=[("envelope", (270, 420))], eyeline="out to the room"),
         S("6.6", "close, the stage dark", "stage_dark", WIDE, "Her arm comes slowly down; she tucks the envelope in and pats it twice.",
-          cast=[P("pam_cat", 250, 930, 1.20, "sag", "sad", (0.2, 0.4), env=True)], reaction="Of course."),
+          cast=[P("pam_cat", 250, 930, 1.20, "sag", "fade", (0.2, 0.4), env=True)], reaction="Of course."),
     ]),
     ("07 Awake", [
         S("7.1", "S6, the counter's end", "desk7", (714, 606, 2.0), "The match: the shape of 6.5. Pam asleep on the counter, the mask "
           "over her eyes, one arm up, the hand open. The lamp, seven cups, the machine.",
-          cast=[P("pam_awake", 692, 760, 0.50, "down", "neutral", (0, 0), ARM_UP)], dream=False,
+          cast=[P("pam_awake", 692, 760, 0.50, "down", "neutral", (0, 0), "arm_up_open")], dream=False,
           protect=[("her hand", (713, 660)), ("cups", (730, 650))]),
         S("7.2", "S6", "desk7", (714, 606, 2.0), "Sofia comes round the counter's end mid-step, eyes on her phone; posts the envelope "
           "into Pam's raised hand; sets her mug at the end of the row. Clink. Walks on.",
-          cast=[P("pam_awake", 692, 760, 0.50, "down", "neutral", (0, 0), ARM_UP), P("sofia", 600, 806, 0.47, "hold", "neutral", (0.2, 0.7))],
+          cast=[P("pam_awake", 692, 760, 0.50, "down", "neutral", (0, 0), "arm_up_open"), P("sofia", 600, 806, 0.47, "hold", "neutral", (0.2, 0.7))],
           line="SOFIA: Only for you.", eyeline="Sofia to her phone, never to Pam", after=_sofia_post, dream=False,
           protect=[("envelope", (706, 510))], action="the posting", reaction="the fingers close on it"),
         S("7.3", "close", "desk7", (692, 640, 3.0), "The clink wakes her; she pushes the mask up, ears up; she looks at her hand.",
-          cast=[P("pam_awake", 692, 735, 0.50, "up", "surprised", (0.4, -0.6), ARM_UP)], dream=False, eyeline="to her hand"),
+          cast=[P("pam_awake", 692, 735, 0.50, "up", "approve", (0.4, -0.6), "arm_up_open")], dream=False, eyeline="to her hand"),
         S("7.4", "insert, top band", "rota", WIDE, "INTERNAL MAIL; the COFFEE ROTA: MON to SUN, PAM on every line.",
           protect=[("rota", (270, 300))], dream=False),
         S("7.5", "close, Pam and the sheet", "desk7", (700, 620, 2.4), "Her fingertip goes down the rows to the seventh PAM. Stops. Hold 0.6 s.",
-          cast=[P("pam_awake", 692, 735, 0.50, "up", "sad", (-0.3, 0.8), "stand")], after=_rota_held, dream=False,
+          cast=[P("pam_awake", 692, 735, 0.50, "up", "doubt", (-0.3, 0.8), "stand")], after=_rota_held, dream=False,
           protect=[("rota", (706, 668))], eyeline="to the sheet", reaction="Only for me."),
     ]),
     ("08 Back to the dream", [
         S("8.1", "S6", "desk8", (714, 606, 2.0), "She lays the rota over the cups, pulls the mask back down, head on her arm.",
-          cast=[P("pam_awake", 692, 764, 0.50, "down", "neutral", (0, 0.4), "stand")], dream=False, reaction="Back to work."),
+          cast=[P("pam_awake", 692, 764, 0.50, "down", "hopeful", (0, 0.4), "stand")], dream=False, reaction="Back to work."),
         S("8.2", "close (push in)", "lampclose", WIDE, "The counter lamp; the room goes dark; rain begins under it. Its head is frame 0's "
           "streetlamp: the loop.", protect=[("lamp", st.A_LAMP)], dream=False),
     ]),
@@ -831,7 +838,7 @@ def _desk(k, sh, eighth):
 
 
 def render(sh, scale=1):
-    oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"
+    oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W * scale, H * scale); s.set_device_scale(scale, scale)
     c = cairo.Context(s); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
@@ -887,14 +894,28 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"5.3": 4.6, "4.3": 4.4, "6.3": 3.4, "6.6": 3.3}                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"5.3": 4.6, "4.3": 2.9, "6.3": 3.4, "6.6": 3.3, "7.4": 2.0}                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():
+    """timing v2 (board v6): the shots' own durations (v1's takes, DUR's changes), laid end to end in SCENES' order; a/b
+    keys split their shot's time in half. Lines keep their place inside their shot."""
     d = json.load(open(os.path.join(OUT, TIMING)))
-    tm = {s["shot"]: dict(s) for s in d["shots"]}
+    v1 = {s["shot"]: dict(s) for s in d["shots"]}
     for k_, v in DUR.items():
-        tm[k_]["dur"] = v
+        v1[k_]["dur"] = v
+    tm, t = {}, 0.0
+    ids = [x["id"] for _, ss in SCENES for x in ss]
+    for i_ in ids:
+        base = i_.rstrip("b")
+        if base not in v1:
+            continue
+        has_b = (base + "b") in ids
+        dur = v1[base]["dur"] / (2 if has_b else 1)
+        e = dict(v1[base]); e["start"] = round(t, 2); e["dur"] = round(dur, 2)
+        tm[i_] = e
+        t += dur
+    d = dict(d); d["length"] = round(t, 2)
     return tm, d
 
 
@@ -1144,7 +1165,14 @@ def blocking(out):
     return out
 
 
-def board(out=OUT, ver=5):
+def write_timing_v2(out=OUT):
+    tm, d = _timing()
+    d = dict(d); d["script"] = "office-noir-4-script-v13.md (generated)"; d["shots"] = [dict(v, shot=k) for k, v in tm.items()]
+    p = os.path.join(out, "on4_timing_v2.json"); json.dump(d, open(p, "w"), indent=1)
+    return p, d["length"]
+
+
+def board(out=OUT, ver=6):
     """stage 5: one key frame per shot at 540, generated; two sheets at 400 px tiles, numbered with the time, and a phone
     sheet at 270 px. Neutral copies for the cold viewers go to /tmp/on4_board_cv (frame_NN.png, no names)."""
     import shutil
@@ -1169,9 +1197,10 @@ def board(out=OUT, ver=5):
             x = 12 + (j % cols) * (tile + 12); y = 50 + (j // cols) * (th + 40)
             c.save(); c.translate(x, y); c.scale(tile / 540, tile / 540); c.set_source_surface(surf[n], 0, 0); c.paint(); c.restore()
             if labels:
-                t = tm.get(sh["id"].rstrip("b"), {})
+                t = tm.get(sh["id"], {})
                 c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(14 if tile > 300 else 11)
-                c.move_to(x, y + th + 18); c.show_text("%d  %s  %.1f s" % (n + 1, sh["id"], t.get("start", 0)))
+                lab = sh["id"] + ("" if sh["id"].endswith("b") or (sh["id"] + "b") not in [z["id"] for z in shots] else "a")
+                c.move_to(x, y + th + 18); c.show_text("%d  %s  %.1f s" % (n + 1, lab, t.get("start", 0)))
         S_.write_to_png(path)
         return path
     items = list(enumerate(shots))
