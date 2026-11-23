@@ -9,7 +9,7 @@ These rules apply to the UptimeZ episodes in `uptimez/` only, not to Hoodyz (`..
 - **The robot** (desk robot → waiter → HR) is technically true in every statement and stamp. It acts alone only within its permissions, and needs human approval for money, access, commitments and system changes.
 - **Mom** works at UptimeZ as Assistant to Don and is used sparingly. **The Client** owns ten garages and is not an idiot. **Father** is the investor and arrives in episode 12 (*Daddy's Home*): a nightclub kingpin, calm, never funny on purpose, with two silent bodyguards.
 - **Every episode:** one comic mechanism from two competing desires; the image loops while the story advances; status moves in every scene; it works on mute; the first joke is physical and lands by 0:01.
-- **Civil War (13–17):** power is the gold CEO throne (PAID BY DAD from 13 on); the two camps are a tape line on the office floor (from 14). Corporate words stay in the background; mechanisms are physical.
+- **Civil War (13–17):** power is the gold CEO throne with its $49,999 price tag (from 12); the two camps are a tape line on the office floor (from 14). Corporate words stay in the background; mechanisms are physical.
 
 Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) use Rush, Max, the laptop AI and Cache, and are outside the main storyline.
 
