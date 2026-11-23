@@ -1,4 +1,7 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v4 = board v1 (23 Nov; v1-v3 pinned). After the layout review ("Tobulinam"):
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v5 = board v2 (23 Nov; v1-v4 pinned). After the board's G4 (2 of 5) and
+Tomas's picks: 5.2 cut (its second to the lift); the envelope's journey in inserts (2.3 on his knee, 2.3b into his coat,
+5.3b her glove draws it out of his coat); 6.2 Sofia's photograph big (the face from 1.2); 6.5 the beam swinging from her
+to the card table, seen whole, the room's backs to her; Sofia holds her phone, not a clipboard. v4 = board v1: After the layout review ("Tobulinam"):
 the blocking sheet is generated from the shots' own positions; 3.1-3.2 closer (1.5); 3.2 her silhouette lit from behind by
 the headlights, an impact burst at her knees, her palm open; 3.3 in two keys (3.3a the glove flat on the bonnet at the car's
 visible front corner, 3.3b the glove up at his eye) and her small wave; 3.4 the rear door reads (the wheel arch, the tail
@@ -47,6 +50,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "board v2: 5.2 cut (5.3 +1.0 s); the envelope's journey in inserts (2.3, 2.3b, 5.3b); 6.2 Sofia's photograph big; 6.5 the beam seen leaving her for the card table; Sofia's phone.",
     "board v1: 3.1-3.2 closer; 3.2 lit from behind, the impact at her knees, her palm open; 3.3 in two keys (glove on the bonnet, glove at his eye) and her small wave; 3.4 the rear door reads; 3.6 she sits up, a hand to her mask.",
     "v3: Don the traffic cop with the STOP / GO paddle; 3.1 STOP at Pam's side, GO to the car, so she stops in its path; 3.3 Don on the far side of the car, the car between them.",
     "v2 (stop 3): 3.2-3.3 restaged after the cold test; Don's crossbelt dropped; the crossing lamp's post lit; bigger characters in the wides and at S6; the stage, the back seat and the fire escape drawn.",
@@ -121,17 +125,20 @@ def stage(k, lit="pam"):
 
 
 def cv_insert(k):
-    """STAND-IN: Sofia's CV in the envelope's warm light; her photograph is her own face (the dream's drawing, lesson 160)."""
+    """6.2 (board v2): Sofia's CV, her photograph big: the face that walked past Pam in 1.2 (the dream's drawing, lesson 160)."""
     import sofia_dh as sd
     c = k.c
     c.set_source_rgb(0.10, 0.08, 0.08); c.paint()
-    kit.cut(k, [(110, 170), (430, 160), (440, 600), (120, 610)], (0.99, 0.98, 0.95), shadow=False, lw=2.2)
-    kit.text(k, "CURRICULUM VITAE", 300, 220, 22, INK, bold=True)
-    kit.cut(k, [(140, 250), (250, 248), (252, 390), (142, 392)], (0.86, 0.84, 0.80), shadow=False, lw=1.6)
-    c.save(); c.rectangle(142, 250, 110, 140); c.clip(); sd.sofia(k, 196, 560, 0.62, "hold", "smile", (0, 0)); c.restore()
-    kit.text(k, "SOFIA", 340, 300, 34, INK, bold=True)
-    for i in range(7):
-        c.set_source_rgb(0.6, 0.6, 0.62); c.set_line_width(3); c.move_to(150, 430 + i * 22); c.line_to(400 - (i % 3) * 40, 430 + i * 22); c.stroke()
+    kit.cut(k, [(70, 150), (470, 140), (478, 690), (78, 700)], (0.99, 0.98, 0.95), shadow=False, lw=2.2)
+    kit.text(k, "CURRICULUM VITAE", 274, 196, 24, INK, bold=True)
+    kit.cut(k, [(120, 226), (424, 220), (428, 560), (124, 566)], (0.86, 0.84, 0.80), shadow=False, lw=2)
+    c.save(); c.new_path(); c.move_to(120, 226); c.line_to(424, 220); c.line_to(428, 560); c.line_to(124, 566); c.close_path(); c.clip()
+    c.push_group(); o = sd.sofia(k, 0, 0, 1.9, "hold", "smile", (0, 0), tablet_kind=None); c.pop_group()
+    hx, hy = o["head"]                                       # put her face in the middle of the photograph
+    sd.sofia(k, 274 - hx, 400 - hy, 1.9, "hold", "smile", (0, 0), tablet_kind=None); c.restore()
+    kit.text(k, "SOFIA", 274, 612, 40, INK, bold=True)
+    for i in range(3):
+        c.set_source_rgb(0.6, 0.6, 0.62); c.set_line_width(3); c.move_to(130, 640 + i * 18); c.line_to(420 - i * 40, 640 + i * 18); c.stroke()
 
 
 def knee_insert(k):
@@ -150,6 +157,30 @@ def knee_insert(k):
     st.poly(k, [(560, 600), (430, 620), (434, 680), (560, 690)], dc.VELVET, 2.4)            # Dad's cuff, his hand flat
     kit.ellipse(k, 400, 650, 44, 26, dc.SKIN_F, 7102, shadow=False, lw=2.2)
     dc.ring(k, 392, 640, 1.4)
+
+
+def knee_coat(k, env=True, hand=True):
+    """2.3b: the Client's coat open, the envelope half into the inside pocket, his hand flat on it."""
+    c = k.c
+    c.set_source_rgb(0.10, 0.10, 0.11); c.paint()
+    st.poly(k, [(40, 120), (520, 120), (520, 900), (40, 900)], (0.20, 0.22, 0.28), 2.4)          # his coat, close
+    st.poly(k, [(150, 120), (300, 120), (280, 760), (200, 760)], (0.95, 0.95, 0.93), 2.0)        # the shirt
+    st.poly(k, [(300, 120), (470, 300), (420, 900), (280, 760)], (0.16, 0.17, 0.22), 2.4)        # the lapel held open
+    st.poly(k, [(300, 380), (440, 380), (436, 420), (300, 420)], (0.08, 0.08, 0.10), 1.6)        # the pocket's mouth
+    if env:
+        oc.envelope(k, 360, 360, 2.4)                                                             # half in
+    st.poly(k, [(296, 400), (444, 400), (440, 520), (300, 520)], (0.16, 0.17, 0.22), 2.0)        # the pocket over it
+    if hand:
+        kit.ellipse(k, 250, 460, 60, 40, (0.87, 0.70, 0.58), 7111, shadow=False, lw=2.2)          # his hand, patting
+
+
+def coat_lift(k):
+    """5.3b: the same coat, in the club light; her black glove draws the envelope out by its edge."""
+    import hands_ps as hp
+    knee_coat(k, env=False, hand=False)
+    c = k.c
+    oc.envelope(k, 330, 330, 2.4)                                                                 # out of the pocket, by its edge
+    hp.draw(k, "grab", 380, 270, 70, oc.GLOVE_DARK, (0.6, -0.8), 1)
 
 
 def spot_insert(k):
@@ -199,7 +230,7 @@ def stage_front(k, lit=True):
         c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
 
 
-def room_reverse(k):
+def room_reverse(k, beam=False):
     """6.5 / 6.6, from behind her on the stage, into the room: the swung spotlight's pool on the card table, the two
     shadows dealing, the booth's velvet wall with its neon line behind them, the Client and the ringed hand over the plan."""
     import client_ob as co
@@ -221,6 +252,12 @@ def room_reverse(k):
     st.poly(k, [(170, 560), (410, 560), (420, 584), (160, 584)], (0.10, 0.10, 0.11), 2.0)       # the card table
     for i, x in enumerate((210, 250, 300, 350)):
         st.poly(k, [(x, 556), (x + 22, 556), (x + 24, 566), (x - 2, 566)], (0.97, 0.97, 0.95), 1.0)
+    if beam:                                                 # board v2: the beam itself, from the lamp on the stage behind her
+        c.set_source_rgba(1, 1, 0.92, 0.32)                  # (top left, the glove on its handle) down onto the card table
+        c.move_to(40, 60); c.line_to(150, 560); c.line_to(420, 560); c.line_to(80, 40); c.close_path(); c.fill()
+        st.poly(k, [(10, 20), (96, 30), (88, 84), (4, 70)], (0.22, 0.22, 0.24), 2.0)            # the lamp, swung away
+        import hands_ps as hp
+        hp.draw(k, "grab", 100, 40, 40, st.GLOVE, (0.0, 1.0), 1)
     st.poly(k, [(-10, 700), (550, 700), (550, 960), (-10, 960)], (0.30, 0.21, 0.13), 2.0)       # the stage's boards, ours
     for i in range(16):
         st.bulb(c, 14 + i * 34, 704, 4)
@@ -338,8 +375,12 @@ def draw_cast(k, cast):
             o = oc.don_cop2(k, *a, **kw)
             if clip_y is not None:
                 k.c.restore()
-        elif who == "sofia":
+        elif who == "sofia":                                  # board v2: her phone, not the clipboard (read as one)
+            kw.setdefault("tablet_kind", None)
             o = sd.sofia(k, *a, **kw)
+            hx, hy = o["hands"][1]; s_ = a[2]
+            car._rr(k.c, hx - 9 * s_ * 2, hy - 30 * s_ * 2, 18 * s_ * 2, 32 * s_ * 2, 4 * s_ * 2); car._fs(k.c, (0.10, 0.10, 0.12), 1.6)
+            car._rr(k.c, hx - 7 * s_ * 2, hy - 27 * s_ * 2, 14 * s_ * 2, 24 * s_ * 2, 3 * s_ * 2); k.c.set_source_rgb(0.75, 0.88, 1.0); k.c.fill()
         elif who == "client":
             o = co.client(k, *a, **kw)
         elif who == "father":
@@ -469,10 +510,12 @@ SCENES = [
           "a ringed hand on a knee, a chin (the window's top cuts Dad at the chin).",
           cast=[P("client", 170, 820, 0.66, "open", "plain", look=(0.7, 0.4), roll=False, badge=False),
                 P("father", 370, 640, 0.78, (-20, 30, 20, -30), "hard", (-0.6, 0.6))],
-          eyeline="both to the envelope"),
-        S("2.3", "insert, 1.2 s", "knee", WIDE, "The envelope on his knee; his finger taps it twice; into his coat; the ringed hand flat "
-          "on the seat: agreed.", protect=[("envelope", (200, 520)), ("ring", (392, 640))],
+          eyeline="both to the envelope", after=lambda k: oc.envelope(k, 200, 680, 1.4)),
+        S("2.3", "insert, 1.2 s", "knee", WIDE, "Through the window: the envelope on the Client's knee, his finger taps it twice; the "
+          "ringed hand lays itself flat on the seat: agreed.", protect=[("envelope", (200, 520)), ("ring", (392, 640))],
           line="The Client: Mine until it's done.", action="two taps", reaction="the ringed hand flat: agreed"),
+        S("2.3b", "insert (b: into his coat)", "knee_coat", WIDE, "It slides into his own coat, inside left, his hand patting it flat.",
+          protect=[("envelope", (250, 430))], action="into his coat", reaction="(Pam is watching)"),
         S("2.4", "close", "escape", WIDE, "Her eyes narrow; she swings onto the ladder and drops out of frame.",
           cast=[P("pam_cat", 270, 900, 0.96, "hero", "angry", (0.4, 0.6))], line="N: I know where to see what others do not see.",
           after=lambda k: railing(k, 690), eyeline="down to the car", action="she drops out of frame", reaction="Got you."),
@@ -528,11 +571,11 @@ SCENES = [
     ("05 The club", [
         S("5.1", "wide", "hall", WIDE, "Inside: the booth, the game table, the stage at the end. The Client and the ringed hand over the "
           "plan; the spotlight on the empty stage.", eyeline="both to the plan"),
-        S("5.2", "insert, 1 s", "plan", WIDE, "The MY GARAGES plan; the ringed hand lays the UPTIMEZ card across the middle and lifts away.",
-          protect=[("card", (262, 392)), ("ring", (394, 484))]),
         S("5.3", "medium", "hall", (160, 610, 1.9), "Pam-Cat walks to the booth; her gloved hand goes into the Client's coat and comes out "
           "with the envelope by its edge. Neither man looks up.", cast=[P("pam_cat", 250, 716, 0.46, "lift", "sly", (-0.8, 0.4))],
           line="Pam: Easy.", eyeline="Pam to the coat; the men to the plan", action="the lift", reaction="neither looks up"),
+        S("5.3b", "insert (b: the lift)", "coat_lift", WIDE, "Her black glove draws the envelope out of his coat by its edge.",
+          protect=[("envelope", (300, 470))], action="the lift", reaction="(he doesn't look)"),
     ]),
     ("06 Ignored star", [
         S("6.1", "medium, low", "stage", WIDE, "She steps into the spotlight and opens the envelope.",
@@ -543,7 +586,8 @@ SCENES = [
           protect=[("envelope", (270, 420))], eyeline="out to the room"),
         S("6.4", "insert, 0.7 s", "spot", WIDE, "A pale glove from the top of the frame rests on the spotlight's handle and swings it away.",
           protect=[("glove", (410, 440))]),
-        S("6.5", "wide, held 1 s", "stage_table", WIDE, "The light is on the card table; Pam a black shape against the lit room, arm up.",
+        S("6.5", "wide, held 1 s", "stage_beam", WIDE, "The beam swings off her onto the card table; Pam a black shape against the lit room, arm "
+          "still up; the room's backs to her.",
           cast=[P("pam_black", 250, 930, 1.20, "triumph", "proud", (0.3, -0.6))], eyeline="THE SHOT AND THE COVER"),
         S("6.6", "close, rim-lit", "stage_table", WIDE, "Her arm comes slowly down; she tucks the envelope in and pats it twice.",
           cast=[P("pam_cat", 250, 930, 1.20, "sag", "sad", (0.2, 0.4), env=True)], reaction="Of course."),
@@ -633,6 +677,12 @@ def _loc(k, name):
         stage_front(k, True); return lambda c_: ons.vignette(c_, 0.55)
     if name == "stage_table":
         room_reverse(k); return lambda c_: ons.vignette(c_, 0.5)
+    if name == "stage_beam":
+        room_reverse(k, beam=True); return lambda c_: ons.vignette(c_, 0.5)
+    if name == "knee_coat":
+        knee_coat(k); return None
+    if name == "coat_lift":
+        coat_lift(k); return lambda c_: ons.vignette(c_, 0.5)
     if name == "spot":
         spot_insert(k); return None
     if name == "cv":
@@ -742,9 +792,15 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
+DUR = {"5.3": 4.6}                                         # board v2: 5.2 cut, its second to the lift
+
+
 def _timing():
     d = json.load(open(os.path.join(OUT, TIMING)))
-    return {s["shot"]: s for s in d["shots"]}, d
+    tm = {s["shot"]: dict(s) for s in d["shots"]}
+    for k_, v in DUR.items():
+        tm[k_]["dur"] = v
+    return tm, d
 
 
 def script(out):
@@ -993,7 +1049,7 @@ def blocking(out):
     return out
 
 
-def board(out=OUT, ver=1):
+def board(out=OUT, ver=2):
     """stage 5: one key frame per shot at 540, generated; two sheets at 400 px tiles, numbered with the time, and a phone
     sheet at 270 px. Neutral copies for the cold viewers go to /tmp/on4_board_cv (frame_NN.png, no names)."""
     import shutil
