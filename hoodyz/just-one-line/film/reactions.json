@@ -18,10 +18,10 @@
   "dur": 0.6
  },
  {
-  "name": "h_mmph",
-  "start": 4.15,
+  "name": "h_mmph_cut",
+  "start": 4.38,
   "gain": 0.5,
-  "dur": 0.6
+  "dur": 0.35
  },
  {
   "name": "h_oof",
@@ -46,5 +46,11 @@
   "start": 13.95,
   "gain": 0.45,
   "dur": 0.977
+ },
+ {
+  "name": "h_grunts_cut",
+  "start": 2.72,
+  "gain": 0.5,
+  "dur": 0.45
  }
 ]

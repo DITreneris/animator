@@ -7,13 +7,13 @@
  },
  {
   "name": "ai_onit",
-  "start": 1.45,
+  "start": 1.3,
   "dur": 0.472,
   "text": "On it!"
  },
  {
   "name": "h_one",
-  "start": 2.8,
+  "start": 3.15,
   "dur": 1.224,
   "text": "One line!"
  },

@@ -95,7 +95,7 @@ add(fx, Hs + 2, P(thud(.8), clank() * .5), .45)
 for t in range(5, 24, 5): add(fx, Hs + t, clank(), .2)
 add(fx, Hs + 22, np.sin(2 * np.pi * 3000 * T(.3)) * np.exp(-T(.3) * 12), .12)
 add(fx, Hs + 35, whoosh(.15), .25); add(fx, Hs + 40, P(thud(1.1), hp(noise(.05, 80)) * .6), .55)
-add(fx, Hs + 50, whoosh(.18), .2); add(fx, Hs + 56, thud(.5), .35)
+add(fx, Hs + 41, whoosh(.2), .2); add(fx, Hs + 56, whoosh(.18), .2); add(fx, Hs + 66, thud(.5), .35)
 # ---- J: slurps; K: the card, the twitch
 J = FM.START['J']
 for t in (20, 40): add(fx, J + t, lowpass(noise(.35, 6) * (1 + np.sin(2 * np.pi * 30 * T(.35))), 1200), .25)

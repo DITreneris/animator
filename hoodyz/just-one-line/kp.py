@@ -109,7 +109,7 @@ def briefcase(c, x, y, s=1.0):
     c.save(); c.translate(x, y); c.scale(s, s)
     c.arc(0, -70, 26, math.pi, 2 * math.pi); c.set_source_rgb(*INK); c.set_line_width(10); c.stroke()
     rr(c, -80, -70, 160, 110, 12); fs(c, hx('3a2a22'), 6)
-    rr(c, -40, -40, 80, 26, 6); fs(c, WHITE, 4); txt(c, 'HOODY', 0, -27, 16, INK, lw=0)
+    rr(c, -62, -46, 124, 36, 8); fs(c, WHITE, 4); txt(c, 'HOODY', 0, -28, 26, INK, lw=0)        # the tag reads on a phone
     c.restore()
 
 def lines(c, pts, n=3, col=INK, a=.55, w=6):

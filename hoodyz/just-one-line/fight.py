@@ -224,10 +224,10 @@ def frame(f, cnt=None, tick=None, cam=None, extra=None, overlay=None, bar=True):
             elif t < 13: u = io((t - 9) / 4); fist = (lerp(shR[0] + 50, shR[0] - 70, u), lerp(shR[1] + 40, shR[1] - 50, u))   # cocked back by his ear
             elif t < tb: u = ((t - 13) / (tb - 13)) ** 2; fist = (lerp(shR[0] - 70, CH[0], u), lerp(shR[1] - 50, CH[1], u))     # accelerating
             elif t < tb + 3: fist = CH                                    # contact: the chart, where its head just was
-            else: fist = (head[0] + 70 + 14 * math.sin(t * 2.6), head[1] + 95)                                             # shaking the hurt hand
+            else: fist = (shR[0] + 150 + 26 * math.sin(t * 2.6), shR[1] + 10 + 30 * math.cos(t * 2.6))                    # shaking the hurt hand, out to the side
             P.hoody_arm(c, shR, fist, HS, pref=P.DOWN, hand='grip' if t < tb + 3 else 'palm')
             if t < tb: P.hoody_arm(c, shL, (shL[0] + 70, shL[1] - 30), HS, pref=P.DOWN, hand='grip')                     # guard up
-            else: P.hoody_arm(c, shL, (head[0] + 40, head[1] + 140), HS, pref=P.DOWN, hand='palm')                         # holding the hurt wrist
+            else: P.hoody_arm(c, shL, (shR[0] + 40, shR[1] + 70), HS, pref=P.DOWN, hand='palm')                           # holding his arm
             if 13 <= t < tb: speed(c, fist[0] - 30, fist[1] + 10, fist[0] - 200, fist[1] + 60, 3)
             if tb <= t < tb + 3: burst(c, CH[0], CH[1], 70, 8)
             if t >= tb + 3:
