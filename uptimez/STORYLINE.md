@@ -1,8 +1,8 @@
-# UptimeZ Inc. — STORYLINE (series bible, v3.2)
+# UptimeZ Inc. — STORYLINE (series bible, v3.3)
 
 **99.9% uptime. 0% findability.**
 
-v3 took in three outside reviews (17 Nov) and Tomas's decisions on each. **v3.1** rebuilds Act B around the strongest thing we already have, the Client's **blueprint** from *The Onboarding* concept, instead of rewriting episode 9 to fit the plan. **v3.2** brings Act B in line with episode 9 as built (animation v10) and episode 10's concept v2. v1–v3 are kept in [`series/`](series/).
+v3 took in three outside reviews (17 Nov) and Tomas's decisions on each. **v3.1** rebuilds Act B around the strongest thing we already have, the Client's **blueprint** from *The Onboarding* concept, instead of rewriting episode 9 to fit the plan. **v3.2** brings Act B in line with episode 9 as built (animation v10) and episode 10's concept v2. v1–v3 are kept in [`series/`](series/). **v3.3** (22 Nov) takes in an outside review, *Civil War*, and Tomas's decisions on it: Act C is episode 12, and **Act D, Civil War (13–17)**, splits the company into two camps, with Sofía and the robot as the swing votes and a coffee-machine explosion as the finale; The Demonstration, The Refund, Permission to Succeed and Renewal Day are replaced or folded in.
 
 ## In one line
 
@@ -121,17 +121,30 @@ People who are exceptionally good at one thing, disastrously bad at another, and
 | 10 | **First Search** (built, film v35) | In episode 9's room, under his own framed photograph. The Client walks in and the slam drops the portrait on Don's head. "Friday, the bank. I need my blueprint." Don: "Garage eleven. Guaranteed by Friday." He pays $999, the robot photographs them, Don posts the win. "Friday. Or I sue." The search: 0 RESULTS, red. Sofía: "It found nothing." "Can you make the zero green?" "Approved." All week the robot retries; Pam writes STUPID in lipstick on its back. Friday: "Where's my blueprint?" Don remembers the shredder. "Ask the machine." "Zero results." Mom: "Pam has a plan." Pam shows the taped plan; "See you in court." | **Everybody fixes the surface, never the problem:** Sofía plasters the portrait, Don greens the zero, Pam tapes the plan, and Mom, where Don learned it, scrubs the bump off his head with a licked thumb ("Young man."). Mom calls Sofía a hussy and backs Pam | The Client has threatened to sue and has seen Pam's taped plan (bay 7 a hole; the strip is in his pocket). The portrait heals on its own. The calendar: MON 1 → MON 8 |
 | 11 | **One Star** (rough cut v5; working title was Customer Success) | Picks up after episode 10's "See you in court." Thursday: the Client's one-star post, "They lost my blueprint. My lawyer will call." Don approves the robot's reply unread: "Shut off! Our AI does not lose files!" Friday at nine, Don presents a plan "recovered" by AI: "Is this a joke?" Pam stops him at the door with the plan she taped; the strip from his own pocket fills bay 7. Robot: "The result was obtained by a h-human." | **The Client asks for Pam's number and saves it: "finds things".** Don, eyes shut: "Customer success." The post gets "UPDATE: Pam found it."; Pam comments "Some post. Others find." Sofía: "Still one star." | The post is public and still one star, with the company's denial above "Pam found it." The Client has Pam's number. Don reads it all as praise. Friday the 12th |
 
-**Act C: The price (episodes 12–16).** Keeping the client forces everyone to choose what matters more. These are working titles, to be decided after cold viewers have seen 9–11.
+**Act C: The price (episode 12).** Keeping the client forces everyone to choose what matters more.
 
 | # | Episode | Pressure |
 |---|---|---|
 | 12 | **Daddy's Home** (concept v3) | The one-star post reaches **Father, the investor**, through his bodyguard. He arrives today at five, "my people first". The office mistakes the coffee-machine repairman for his man and shows him everything. Father: "I prefer green in cash." / "Find my money." The robot turns to the CEO chair. It ends with the money in Don's CEO chair, and the robot has seen it. Sofía's CV is in a bodyguard's pocket; DAD rings again: "Answer it." |
-| 13 | The Demonstration | Father wants to see the thing that "can find anything" find his money. Carried over: the robot finds the real fix (the integration) and Don refuses the cost; Pam rescuing him again becomes the bottleneck |
-| 14 | The Refund | The Client returns. Carried over: he threatens to cancel; Sofía can exploit the crisis or protect the relationship |
-| 15 | Permission to Succeed | Carried over from the old 14: Father moves on Don's chair, and Mom must choose between protecting her son and protecting his position. *To be developed* |
-| 16 | Renewal Day | Pam's value becomes undeniable in money; Sofía faces a real choice, not another flirtation |
 
-**The planned finale (not locked): THE HUMAN ALGORITHM.** The Client knowingly pays for Pam's work, not for UptimeZ Find. Don: "AI-powered customer intelligence." Robot: "No AI was involved." Don: "Approved." The revenue is real; the product claim is still false.
+**Act D: Civil War (episodes 13–17, decided 22 Nov).** Father found his money in Don's chair (12); he goes to the man whose one-star post brought him (11), and the company splits into two camps: **Don's** (Don, Pam by love, Mom by blood) and **Father's** (Father, the Client). **Sofía and the robot are the swing votes:** Sofía takes whoever gives her real authority; the robot obeys both the CEO and the majority owner, and every order "requires verification". Each episode is 60–90 s with one comic mechanism. Working titles; lines are drafts.
+
+| # | Episode | Pressure |
+|---|---|---|
+| 13 | **The Offer** (replaces The Demonstration) | The Client's garage. Father with two bodyguards: "It would be a shame if they burned." (a bluff) The Client: "Then you'd lose your only customer." Father, for the first time, half a smile: "How would you run his company?" "Without him." His condition: **Pam** (he has her number since 11). Find still finds nothing. Don learns of it from the robot, which files the meeting in the calendar: MEETING: FATHER × CLIENT |
+| 14 | **Pick a Side** | Don's secret loyalty meeting: the robot prints the attendance list and logs it as a board meeting, and Father, with his monitoring rights, gets the notice. The most secret plot in the world is the most transparent organisation in the world. Ends: Father offers Sofía real authority (COO), her CV from his bodyguard's pocket (12) |
+| 15 | **The Double Agent** (takes in Permission to Succeed) | Sofía works for both camps; Pam is the first to see she is playing a third game. The robot gives each camp different, true documents by their access rights; everyone decides on half the truth. Mom must sign for one side: her son or his chair. Don: "You're with me." Father: "I own you." Robot: "Both statements require verification." Ends: "CEO review tomorrow." |
+| 16 | **Hostile Takeover** (takes in Renewal Day) | Both camps bid for Pam (HAND OF THE CEO since 12): Don asks for loyalty, Father offers a real role; Pam won't choose until the Client is safe. Don: "You said you'd always be on my side." Pam: "I am. That's why I won't let you do this." To impress Father, Don has the robot ready the coffee machine for the final meeting: "Maximum pressure." Robot: "Safety limit override. Human approval required." Don, not reading: "Approved." |
+| 17 | **The Big Bang** (finale) | The final meeting; the Client brings an offer that could save the company. **The coffee machine blows up** (planted in 12: the POP, the $80 invoice nobody paid). Smoke, silence; the Client is gone. Robot: "Customer status: terminated." No one gets what they wanted. **Open:** how the Client survived, and how the arc ends |
+
+**Civil War: decided and open.**
+
+- **Decided:** the catastrophe is the coffee machine, caused by Don's unread "Approved." and the $80 nobody paid, not by anyone's plan to kill; Don's "solution" stays vanity, never a murder plot. The Client is taken for dead in 17 and is alive. His condition for Father is Pam, not a data connection: Find never works in this arc. Every episode 60–90 s.
+- **Open:** why the Client survived (to be planted before 17); the arc's ending (THE HUMAN ALGORITHM below is one candidate; Don losing the chair is another); whether Father stays after the arc.
+- **Folded in:** The Demonstration (13) is replaced by The Offer; The Refund is not needed (the Client is a player in every episode); Permission to Succeed goes into 15, Renewal Day into 16.
+- **Bodyguards** stay supporting cast, not new recurring characters with arcs.
+
+**A candidate finale (not locked): THE HUMAN ALGORITHM.** The Client knowingly pays for Pam's work, not for UptimeZ Find. Don: "AI-powered customer intelligence." Robot: "No AI was involved." Don: "Approved." The revenue is real; the product claim is still false.
 
 **Season 2's question:** how does a company scale an AI product when its actual technology is Pam?
 
@@ -157,8 +170,8 @@ People who are exceptionally good at one thing, disastrously bad at another, and
 |---|---|---|
 | UptimeZ Find finds nothing because no data was ever connected | Don never fixes his vanity, but changes tactics | Does Sofía leave UptimeZ? |
 | Don sells for real and believes his own pitch | Sofía usually keeps control, and occasionally loses it | Does Pam ever seriously challenge Don? |
-| The robot reports facts, acts only within its permissions, and every stamp is technically true | Pam's hidden work slowly becomes real power | Does the Client become a regular? |
-| Sofía wants authority independent of Don, rejects him, and never fakes a record | "DONNIE!" is a weapon, not a weekly line | Is Father a recurring villain? (one strong appearance first) |
+| The robot reports facts, acts only within its permissions, and every stamp is technically true | Pam's hidden work slowly becomes real power | Does the Client come back to UptimeZ after 17? |
+| Sofía wants authority independent of Don, rejects him, and never fakes a record | "DONNIE!" is a weapon, not a weekly line | Does Father stay after Civil War (17)? |
 | Pam's competence and her love for Don pull against each other | The robot keeps getting reassigned | Does Find ever work? Not in this arc |
 | Father is the investor; Mom knows it | Running gags appear, but none is compulsory | Does Don stay CEO? Not guaranteed |
 | Consequences carry from episode to episode | | |

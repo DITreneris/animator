@@ -21,6 +21,8 @@ Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) us
 
 ## Gates
 
+**How an episode is made, stage by stage** (scene file as the one source, checks that fail the build, Tomas's five stops, version budgets): [`series/production-process.md`](series/production-process.md).
+
 The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/skills/` are written for Hoodyz; don't apply their series check here.
 
 | Gate | Pass |
@@ -28,7 +30,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | G0 Series check | Two characters' wants collide; one comic mechanism; one iconic image; the image loops while the story advances; status moves. Check against STORYLINE.md |
 | G1 Protect list | The five things that make the episode, written in the script doc |
 | G2 Shot list | An action shot and a reaction shot per beat, with size and eyeline |
-| G3 Composition | Faces under the title bar, signs whole or out of frame, signs legible at 270 px |
+| G3 Composition | Faces under the title bar, signs whole or out of frame, signs legible at 270 px. Faces **and every story prop** (declared with `of_set.protect()`) out of the dead zones (y > 720; x > 470 between y 380 and 860), measured where the rig drew them, never from typed head points (lessons 124–126). The board is looked at under the mock app overlay |
 | G4 Cold mute test | Fresh viewers who have never seen the script (people, or new subagents shown frames only) tell back at least 4 of 5 beats |
 | G5 QA worker | Fails the build on any miss (below) |
 | G6 Audit triage | At most two review rounds, then go back to premises or test on viewers |

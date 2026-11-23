@@ -1,0 +1,179 @@
+{
+ "0.5": {
+  "who": "CLIENT",
+  "text": "Is it wrong?",
+  "len": 0.72,
+  "asr": [
+   "Is it wrong?",
+   "Is it wrong?",
+   "Is it wrong?"
+  ],
+  "ok": 3
+ },
+ "0.9": {
+  "who": "CLIENT",
+  "text": "Off the car.",
+  "len": 0.93,
+  "asr": [
+   "off off off",
+   "Off Off Off Off Off Off Off",
+   "",
+   "[with the line before] is it is it is it is it is is it is is",
+   "[with the line before] Is it wrong? Off the car.",
+   "[with the line before] Is it wrong? Off the car."
+  ],
+  "ok": 2
+ },
+ "1.4": {
+  "who": "CLIENT",
+  "text": "Burn them. Your son loses his only customer.",
+  "len": 3.11,
+  "asr": [
+   "Burn them, your son loses his only customer.",
+   "Burn them, your son loses his only customer.",
+   "Burn them, your son loses his only customer."
+  ],
+  "ok": 3
+ },
+ "2.1": {
+  "who": "FATHER",
+  "text": "My son says his machine finds anything.",
+  "len": 3.67,
+  "asr": [
+   "My son says his machine finds anything.",
+   "My son says his machine finds anything.",
+   "My son says his machine finds anything."
+  ],
+  "ok": 3
+ },
+ "2.2": {
+  "who": "CLIENT",
+  "text": "It found nothing.",
+  "len": 1.03,
+  "asr": [
+   "It found nothing.",
+   "It found nothing.",
+   "it found"
+  ],
+  "ok": 2
+ },
+ "2.4": {
+  "who": "FATHER",
+  "text": "How would you run his company?",
+  "len": 2.47,
+  "asr": [
+   "How How How How How How How",
+   "How How How How How How How How How How How How How How How How",
+   "How How How How How How How How",
+   "[with the line before] It found nothing. How would you run his company?",
+   "[with the line before] It found nothing. How would you run his company?",
+   "[with the line before] It found nothing. How would you run his company?"
+  ],
+  "ok": 3
+ },
+ "2.5": {
+  "who": "CLIENT",
+  "text": "Without him.",
+  "len": 0.79,
+  "asr": [
+   "without him.",
+   "Without Him",
+   "without him."
+  ],
+  "ok": 3
+ },
+ "2.6": {
+  "who": "FATHER",
+  "text": "And then?",
+  "len": 0.9,
+  "asr": [
+   "on then",
+   "And then",
+   "on then.",
+   "[with the line before] Without him, on then.",
+   "[with the line before] Without him, on then.",
+   "[with the line before] Without him. On then."
+  ],
+  "ok": 3
+ },
+ "2.8b": {
+  "who": "CLIENT",
+  "text": "One month. I ask. She finds it.",
+  "len": 1.99,
+  "asr": [
+   "One month I ask she finds it.",
+   "One month I ask she finds it.",
+   "One month I ask she finds it."
+  ],
+  "ok": 3
+ },
+ "2.8c": {
+  "who": "FATHER",
+  "text": "Done.",
+  "len": 0.75,
+  "asr": [
+   "Done.",
+   "Done Done Done Done Done Done",
+   "Done!"
+  ],
+  "ok": 2
+ },
+ "2.9": {
+  "who": "FATHER",
+  "text": "Put it in the calendar.",
+  "len": 1.97,
+  "asr": [
+   "Put Put Put Put Put Put",
+   "Put Put Put Put Put Put Put Put Put Put Put Put Put",
+   "put put put put put put put",
+   "[with the line before] Done. Put it in the calendar.",
+   "[with the line before] Done. Put it in the calendar.",
+   "[with the line before] Done. Put it in the calendar."
+  ],
+  "ok": 3
+ },
+ "3.2": {
+  "who": "ROBOT",
+  "text": "New meeting. Agenda: without him.",
+  "len": 1.82,
+  "asr": [
+   "New meeting, agenda without him.",
+   "New meeting, agenda without him.",
+   "New meeting, agenda without him."
+  ],
+  "ok": 3
+ },
+ "3.3": {
+  "who": "DON",
+  "text": "Without who?",
+  "len": 0.8,
+  "asr": [
+   "without who.",
+   "Without who?",
+   "without who."
+  ],
+  "ok": 3
+ },
+ "3.4b": {
+  "who": "ROBOT",
+  "text": "Calendar says... you'll see.",
+  "len": 1.28,
+  "asr": [
+   "Calendar says you'll see.",
+   "Calendar says you'll see.",
+   "calendar says you'll see."
+  ],
+  "ok": 3
+ },
+ "3.5b": {
+  "who": "DON",
+  "text": "Pam?",
+  "len": 0.52,
+  "asr": [
+   "PAM",
+   "Pam",
+   "(static)"
+  ],
+  "ok": 2
+ }
+}

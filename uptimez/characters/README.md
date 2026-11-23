@@ -17,3 +17,5 @@ Secret Santa: `uptimez-sofia-ss-v1..v2-sheet.png` (crystal teardrop earrings, a 
 Office Noir: `uptimez-don-on-v1..v2-sheet.png` / `-phone.png` (fedora, trench, the noir tone test `-v2-tone.png`; hat C with a bent brim and a squint), `uptimez-mom-on-v1..v2` (curlers, robe, the shadow silhouette), `uptimez-sofia-on-v1..v2` (femme fatale in grey with red lips), `uptimez-pam-on-v1..v3` (the canon Pam in noir).
 
 Christmas v2: `uptimez-pam-xmas-v3-sheet.png` and `-v4-sheet.png` (canon head with the streak, readers on the chain and rose lips under the home-made superhero costume; v4 pressed lips, a fond glance, "over", the mask up and its drop).
+
+The Offer (episode 13 on), the Client in his own garage: `uptimez-client-of-v1-sheet.png`. Same man as `client_ob.py` v3 (the office look stays), now in navy overalls peeled to the waist with the sleeves knotted, a white T-shirt, bare oily forearms, the watch, and a red rag hanging from his back pocket. New faces for the episode: bored (at rest), listen, glance (to the watch), stare. Drawn by `src/client_of.py`; the episode's stand-in poses (`of_cast.py`) wear it. Not yet: a true side view.
