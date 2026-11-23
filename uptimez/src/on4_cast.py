@@ -255,6 +255,98 @@ def don_cop(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistl
     return o
 
 
+# ---- v4 (23 Nov, Tomas: "more serious, and a comic prop"): a real traffic cop, and the STOP / GO paddle -------------------
+NEON = (0.93, 0.13, 0.22)                   # on4_street.NEON: the accent pass keys on it
+CAP_WHITE = (0.95, 0.95, 0.93)
+CAP_BAND = (0.10, 0.11, 0.16)
+SILVER = (0.80, 0.81, 0.84)
+GO_GREEN = (0.16, 0.58, 0.32)
+
+
+def traffic_cap(k, hx, hy, s):
+    """A real traffic policeman's peaked cap, his size: a white top, a dark band, a black visor, a silver badge."""
+    c = k.c
+    c.save(); c.translate(hx, hy - 44 * s); c.scale(s, s)
+    cut(k, [(-50, 0), (-60, -30), (-44, -44), (44, -44), (60, -30), (50, 0)], CAP_WHITE, shadow=False, lw=2.4)   # the top
+    cut(k, [(-50, 0), (50, 0), (50, 16), (-50, 16)], CAP_BAND, shadow=False, lw=2.2)                              # the band
+    c.move_to(-46, 14); c.curve_to(-26, 34, 26, 34, 46, 14); c.close_path()                                        # the visor
+    c.set_source_rgb(0.04, 0.04, 0.06); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.2); c.stroke()
+    c.move_to(0, -28); c.line_to(11, -22); c.line_to(10, -8); c.line_to(0, -1); c.line_to(-10, -8); c.line_to(-11, -22)
+    c.close_path(); c.set_source_rgb(*SILVER); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+    c.restore()
+
+
+def shield(c, x, y, r):
+    """the metal badge on his vest (no star: it read as 'a star he's holding')."""
+    c.save(); c.translate(x, y); c.scale(r / 44, r / 44)
+    c.move_to(0, -22); c.line_to(18, -14); c.line_to(16, 8); c.line_to(0, 22); c.line_to(-16, 8); c.line_to(-18, -14); c.close_path()
+    c.set_source_rgb(*SILVER); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
+    c.restore()
+
+
+def paddle(k, x, y, s, side="STOP", ang=0.0):
+    """The comic prop: a round STOP / GO paddle on a short pole, (x, y) = the grip. STOP is the series' neon red, so it
+    stays red in the noir grade; GO is green (grey in the grade, the white letters carry it)."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    c.set_source_rgb(*INK); c.set_line_width(9); c.move_to(0, 10); c.line_to(0, -96); c.stroke()
+    c.set_source_rgb(0.85, 0.85, 0.86); c.set_line_width(5); c.move_to(0, 10); c.line_to(0, -96); c.stroke()
+    c.new_path(); c.arc(0, -134, 44, 0, 2 * math.pi)
+    c.set_source_rgb(*(NEON if side == "STOP" else GO_GREEN)); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3); c.stroke()
+    c.new_path(); c.arc(0, -134, 37, 0, 2 * math.pi); c.set_source_rgb(1, 1, 1); c.set_line_width(3); c.stroke()
+    kit.text(k, side, 0, -134 + 9, 24 if side == "STOP" else 30, (1, 1, 1), bold=True)
+    c.restore()
+
+
+def don_cop2(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistle_in=False, paddle_side=None, paddle_ang=0.0):
+    """v4 Don the traffic cop (opt-in; don_cop is untouched): the cap, the silver shield, white gloves, the whistle on its
+    cord (in his mouth on the toot), and the STOP / GO paddle in his screen-right hand."""
+    c = k.c
+    p, hands = DON_POSES.get(pose, (pose, None))
+    import fs_storyboard as sb_
+    def body():                                                       # no headset in the dream (Office Noir took it off too);
+        with _swap((hp, "hand", _wrap_white(hp.hand)), (sb_, "don_signs", lambda *a, **kw: None)):   # the cap covers his hair
+            return don_ps.don(k, x, feet, s, p, face, look, hands=hands)
+    o = None
+    if paddle_side:                                                   # find the hand, lay the paddle there, draw him over it
+        c.push_group(); o = body(); c.pop_group()
+        rx, ry = o["hands"][1]
+        paddle(k, rx, ry, s * 1.1, paddle_side, paddle_ang)
+    o = body()
+    hx, hy = o["head"]
+    shield(c, hx - 44 * s, hy + 106 * s, 20 * s)
+    c.set_source_rgb(0.30, 0.30, 0.32); c.set_line_width(2.4 * s)
+    if whistle_in:
+        c.move_to(hx + 12 * s, hy + 34 * s); c.curve_to(hx + 30 * s, hy + 60 * s, hx + 26 * s, hy + 80 * s, hx + 14 * s, hy + 90 * s); c.stroke()
+        whistle(c, hx + 10 * s, hy + 31 * s, s * 1.3)
+    else:
+        c.move_to(hx - 18 * s, hy + 80 * s); c.curve_to(hx - 10 * s, hy + 120 * s, hx + 6 * s, hy + 130 * s, hx + 14 * s, hy + 132 * s); c.stroke()
+        whistle(c, hx + 18 * s, hy + 134 * s, s)
+    traffic_cap(k, hx, hy, s)
+    return o
+
+
+def don_sheet(out="../office-noir-4/on4_don_v4.png"):
+    """Don v4: the traffic cop, serious; the paddle's gag: STOP to Pam, GO to the car."""
+    import on4_street as st_
+    W_, H_ = 4 * 300 + 40, 640
+    s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W_ * 2, H_ * 2); s.set_device_scale(2, 2)
+    c = cairo.Context(s); k = Ctx(c, 0)
+    c.set_source_rgb(0.58, 0.58, 0.60); c.paint()
+    labs = [("the cop (no paddle)", dict(pose="stand")),
+            ("3.1 STOP to Pam", dict(pose="stop", paddle_side="STOP", paddle_ang=0.0)),
+            ("3.1 GO to the car", dict(pose="wave", paddle_side="GO", paddle_ang=0.25, whistle_in=True)),
+            ("3.3 the paddle down", dict(pose="stand", paddle_side="STOP", paddle_ang=2.9, face="neutral"))]
+    for i, (lab, kw) in enumerate(labs):
+        don_cop2(k, 150 + i * 300, 600, 0.95, look=(0.6, 0) if i != 2 else (-0.6, 0), **kw)
+    eng.TONE = "v3"; eng.accent_pass(s, [(NEON, 1.0)])
+    c = cairo.Context(s); c.set_source_rgb(0, 0, 0); c.select_font_face("Inter", 0, 1); c.set_font_size(18)
+    for i, (lab, kw) in enumerate(labs):
+        c.move_to(20 + i * 300, 30); c.show_text(lab)
+    s.write_to_png(out)
+    return out
+
+
 def _wrap_white(orig):
     def h(k, hx, hy, w, skin, seed, d, side):
         return orig(k, hx, hy, w, GLOVE_WHITE, seed, d, side)
