@@ -28,6 +28,7 @@ import engine_on as eng
 import on_set as ons
 
 NEON = (0.93, 0.13, 0.22)
+C_POST = ["v4"]                   # v7 (opt-in): the double lamp's post lit
 ZEBRA = ["v4"]                    # v5 (23 Nov, opt-in): the stripes flat, in the road's perspective; v6: raised above y 720
 GOLD = (0.98, 0.80, 0.36)
 INK = (0.06, 0.06, 0.07)
@@ -409,6 +410,10 @@ def setup_c(k):
     poly(k, [R.at(0, 0), R.at(1, 0), (R.at(1, 0)[0], R.at(1, 0)[1] - 6), (R.at(0, 0)[0], R.at(0, 0)[1] - 22)], TILE, 1.6)
     poly(k, R.quad(0.0, 1.0, 0.85, 1.0), (0.55, 0.52, 0.46), 1.4)
     px, pb, pt = 372, 700, 300                               # the double-headed lamp
+    if C_POST[0] != "v4":                                    # v7 (Tomas, 23 Nov): the post and its arm lit against the sky,
+        c.set_source_rgb(0.62, 0.62, 0.64); c.set_line_width(10)   # so the two heads hang from something (cold viewers read
+        c.move_to(px, pb); c.line_to(px, pt); c.stroke()     # them as headlights, eyes, moons)
+        c.set_line_width(6); c.move_to(px - 50, pt + 6); c.curve_to(px - 20, pt - 12, px + 20, pt - 12, px + 50, pt + 6); c.stroke()
     c.set_source_rgb(*INK); c.set_line_width(6); c.move_to(px, pb); c.line_to(px, pt); c.stroke()
     c.set_line_width(3); c.move_to(px - 50, pt + 6); c.curve_to(px - 20, pt - 12, px + 20, pt - 12, px + 50, pt + 6); c.stroke()
     lamp_head(k, px - 50, pt + 10, 0.6); lamp_head(k, px + 50, pt + 10, 0.6)

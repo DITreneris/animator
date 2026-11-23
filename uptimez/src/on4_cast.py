@@ -222,6 +222,7 @@ def star(c, x, y, r, col=BADGE):
     c.close_path(); c.set_source_rgb(*col); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.4); c.stroke()
 
 
+CROSSBELT = [True]                 # v3 (23 Nov, Tomas: "drop it"): False in layouts v2; cold viewers read it as a wand
 DON_POSES = {"stop": ((-8, 0, 92, -6), ("relax", "palm")),        # 3.1 a white glove held out flat: traffic, wait
              "wave": ((-8, 0, 70, 70), ("relax", "palm")),         # 3.1/3.4 waving the car on
              "stand": ((-8, 0, 8, 0), ("relax", "relax"))}
@@ -235,10 +236,11 @@ def don_cop(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistl
         o = don_ps.don(k, x, feet, s, p, face, look, hands=hands)
     hx, hy = o["head"]
     c = k.c
-    c.set_source_rgb(*INK); c.set_line_width(13 * s); c.set_line_cap(0)              # the crossbelt
-    c.move_to(hx + 40 * s, hy + 66 * s); c.line_to(hx - 34 * s, hy + 196 * s); c.stroke()
-    c.set_source_rgb(*GLOVE_WHITE); c.set_line_width(10 * s)
-    c.move_to(hx + 40 * s, hy + 66 * s); c.line_to(hx - 34 * s, hy + 196 * s); c.stroke()
+    if CROSSBELT[0]:                                                                  # the crossbelt (v3: off; read as a wand)
+        c.set_source_rgb(*INK); c.set_line_width(13 * s); c.set_line_cap(0)
+        c.move_to(hx + 40 * s, hy + 66 * s); c.line_to(hx - 34 * s, hy + 196 * s); c.stroke()
+        c.set_source_rgb(*GLOVE_WHITE); c.set_line_width(10 * s)
+        c.move_to(hx + 40 * s, hy + 66 * s); c.line_to(hx - 34 * s, hy + 196 * s); c.stroke()
     star(c, hx - 44 * s, hy + 104 * s, 22 * s)
     c.set_source_rgb(0.30, 0.30, 0.32); c.set_line_width(2.4 * s)                    # the cord, from the whistle to the neck
     if whistle_in:

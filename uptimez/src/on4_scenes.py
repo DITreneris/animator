@@ -1,11 +1,16 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v1 (stage 4, series/production-process.md, 23 Nov). From here on this file
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v2 (23 Nov; v1 pinned as on4_scenes_v1.py). v2, Tomas's picks at stop 3:
+3.2-3.3 restaged after the cold test (0 of 4 read: the bump unseen, Don read as blaming her): 3.2 Pam from behind facing the
+headlights, the bumper at her knees, tipping back; 3.3 the bumper right over her head, Don bent to it, palm flat, eyes on
+his glove. Don's crossbelt dropped (read as a wand). The crossing lamp's post lit (its heads read as headlights, eyes).
+Bigger characters in the wides and at S6. The stage, the back seat and the fire escape drawn (no longer stand-ins).
+v1 (stage 4, series/production-process.md, 23 Nov). From here on this file
 is the episode: every shot with its time and line, its location and camera, who is in frame and where, the props that
 must stay out of the dead zones, the action and the reaction. Generated from it, never edited by hand:
 
-  python3 on4_scenes.py [out]  ->  office-noir-4-script-v5.md     the script (generated)
-                                   on4_layout_s<N>_v1.png          a layout sheet per beat: every shot at 270, with its checks
-                                   on4_shotplan_v1.png             the top-down shot plan (locations, cameras, the table)
-                                   on4_blocking_v1.png             the blocking sheet for the hardest beat (3.2-3.3)
+  python3 on4_scenes.py [out]  ->  office-noir-4-script-v6.md     the script (generated)
+                                   on4_layout_s<N>_v2.png          a layout sheet per beat: every shot at 270, with its checks
+                                   on4_shotplan_v2.png             the top-down shot plan (locations, cameras, the table)
+                                   on4_blocking_v2.png             the blocking sheet for the hardest beat (3.2-3.3)
                                    on4_test_32_v1.png, _33_v1.png  two real camera frames of it, for the cold viewers
   The build exits 1 on a check that fails and is not in KNOWN with its reason.
 
@@ -34,6 +39,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "v2 (stop 3): 3.2-3.3 restaged after the cold test; Don's crossbelt dropped; the crossing lamp's post lit; bigger characters in the wides and at S6; the stage, the back seat and the fire escape drawn.",
     "Script v4 is the plan: 5.2 is the plan and the UptimeZ card, 3.1 the car's turn at the junction.",
     "The crossing is raised to y 646-712 (on4_street ZEBRA v6, Tomas's pick): the bump, her head and the bills above y 720.",
     "8.2 is a push in from S6 to the lamp; the room goes dark round it; its head ends where frame 0's streetlamp hangs.",
@@ -50,7 +56,7 @@ def loc_b(k):
 
 
 def loc_c(k):
-    st.ZEBRA[0] = "v6"
+    st.ZEBRA[0] = "v6"; st.C_POST[0] = "v7"
     try:
         st.setup_c(k)
     finally:
@@ -71,7 +77,7 @@ def back_seat(k):
     car.cabin(k, 40, 640, 1.5, 1.0, hand=False)
 
 
-BS_WIN = (40, 640, 1.5)                                      # the window's bottom left and scale (car.cabin)
+BS_WIN = (20, 700, 1.66)                                      # the window's bottom left and scale (car.cabin)
 
 
 def bs_clip(c):
@@ -148,6 +154,125 @@ def spot_insert(k):
     hp.draw(k, "grab", 410, 440, 120, st.GLOVE, (0.0, 1.0), 1)
 
 
+
+# --- v2: the locations drawn (were stand-ins) -------------------------------------------------------------------------------
+VELV = (0.36, 0.08, 0.12)
+
+
+def stage_front(k, lit=True):
+    """6.1 / 6.3, from the room: the velvet curtain, the boards with a strip of bulbs on their edge, the spotlight on its
+    stand at stage right, its cone on her (lit) or swung away (dark)."""
+    c = k.c
+    c.set_source_rgb(0.05, 0.05, 0.06); c.paint()
+    for i, x in enumerate(range(-20, 560, 40)):              # the curtain's folds
+        g = cairo.LinearGradient(x, 0, x + 40, 0)
+        g.add_color_stop_rgb(0, *[v * 0.55 for v in VELV]); g.add_color_stop_rgb(0.5, *VELV); g.add_color_stop_rgb(1, *[v * 0.55 for v in VELV])
+        c.set_source(g); c.rectangle(x, 0, 40, 640); c.fill()
+    st.poly(k, [(-10, 0), (550, 0), (550, 70), (-10, 70)], (0.22, 0.05, 0.08), 2.0)            # the pelmet
+    for i in range(14):
+        st.bulb(c, 20 + i * 39, 60, 4)
+    st.poly(k, [(-10, 640), (550, 640), (550, 700), (-10, 700)], (0.45, 0.32, 0.20), 2.2)       # the boards
+    for x in range(0, 540, 60):
+        c.set_source_rgb(0.30, 0.20, 0.12); c.set_line_width(1.4); c.move_to(x, 640); c.line_to(x - 20, 700); c.stroke()
+    for i in range(16):                                      # the footlights on the edge
+        st.bulb(c, 14 + i * 34, 704, 4)
+    st.poly(k, [(-10, 710), (550, 710), (550, 960), (-10, 960)], (0.06, 0.06, 0.07), 1.5)
+    c.set_source_rgb(*INK); c.set_line_width(6); c.move_to(466, 640); c.line_to(466, 330); c.stroke()   # the stand
+    c.move_to(440, 640); c.line_to(492, 640); c.stroke()
+    st.poly(k, [(430, 300), (494, 312), (486, 352), (424, 338)], (0.22, 0.22, 0.24), 2.0)       # the lamp
+    c.set_source_rgb(*INK); c.set_line_width(5); c.move_to(488, 330); c.line_to(512, 330); c.stroke()   # its handle
+    if lit:
+        c.set_source_rgba(1, 1, 0.92, 0.28)
+        c.move_to(428, 322); c.line_to(90, 700); c.line_to(360, 700); c.line_to(432, 344); c.close_path(); c.fill()
+        c.save(); c.translate(225, 690); c.scale(130, 16)
+        g = cairo.RadialGradient(0, 0, 0, 0, 0, 1); g.add_color_stop_rgba(0, 1, 1, 0.92, 0.55); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
+        c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+
+
+def room_reverse(k):
+    """6.5 / 6.6, from behind her on the stage, into the room: the swung spotlight's pool on the card table, the two
+    shadows dealing, the booth's velvet wall with its neon line behind them, the Client and the ringed hand over the plan."""
+    import client_ob as co
+    import dh_cast as dc
+    c = k.c
+    c.set_source_rgb(0.05, 0.05, 0.06); c.paint()
+    st.poly(k, [(-10, 200), (550, 200), (550, 620), (-10, 620)], (0.20, 0.06, 0.09), 1.8)      # the booth wall, velvet
+    for x in range(10, 540, 28):
+        c.set_source_rgb(0.28, 0.08, 0.12); c.rectangle(x, 210, 16, 400); c.fill()
+    c.set_source_rgb(*st.NEON); c.set_line_width(4); c.move_to(-10, 236); c.line_to(550, 236); c.stroke()
+    g = cairo.RadialGradient(290, 520, 10, 290, 520, 260)                                          # the pool on the table
+    g.add_color_stop_rgba(0, 1, 1, 0.92, 0.85); g.add_color_stop_rgba(0.6, 1, 1, 0.92, 0.35); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
+    c.set_source(g); c.rectangle(0, 200, 540, 520); c.fill()
+    co.client(k, 120, 600, 0.40, "open", "plain", look=(0.6, 0.6), roll=False, badge=False)
+    st.poly(k, [(560, 540), (440, 556), (444, 600), (560, 600)], dc.VELVET, 2.2)                # only Dad's cuff and ring
+    kit.ellipse(k, 420, 574, 36, 24, dc.SKIN_F, 7401, shadow=False, lw=2.0); dc.ring(k, 414, 566, 1.1)
+    for x in (220, 360):
+        st.thug(k, x, 640, 0.34, (-40, 60, 40, -60), seed=4800 + x, hands=("relax", "relax"))
+    st.poly(k, [(170, 560), (410, 560), (420, 584), (160, 584)], (0.10, 0.10, 0.11), 2.0)       # the card table
+    for i, x in enumerate((210, 250, 300, 350)):
+        st.poly(k, [(x, 556), (x + 22, 556), (x + 24, 566), (x - 2, 566)], (0.97, 0.97, 0.95), 1.0)
+    st.poly(k, [(-10, 700), (550, 700), (550, 960), (-10, 960)], (0.30, 0.21, 0.13), 2.0)       # the stage's boards, ours
+    for i in range(16):
+        st.bulb(c, 14 + i * 34, 704, 4)
+
+
+def lane_above(k):
+    """2.1, high: down from the fire escape into the lane. The cobbles running away, the car's roof from above (its rear
+    window down, two bare heads and a pale glove at it), the iron grating in the foreground."""
+    c = k.c
+    c.set_source_rgb(0.10, 0.10, 0.11); c.paint()
+    st.poly(k, [(60, 200), (480, 200), (540, 960), (0, 960)], st.ROAD, 2.0)                    # the lane, from above
+    st.setts(k, lambda: (c.new_path(), c.move_to(60, 200), c.line_to(480, 200), c.line_to(540, 960), c.line_to(0, 960), c.close_path()),
+             200, 960, 60, 480, 0, 540, seed=88)
+    st.poly(k, [(-10, 0), (60, 200), (0, 960), (-10, 960)], st.CREAM_SH, 2.0)                  # the walls
+    st.poly(k, [(550, 0), (480, 200), (540, 960), (550, 960)], st.CREAM_SH, 2.0)
+    cx, cy = 300, 470                                                                          # the car from above
+    car._rr(c, cx - 70, cy - 160, 140, 320, 40); car._fs(c, car.BODY, 2.4)
+    car._rr(c, cx - 56, cy - 110, 112, 60, 12); car._fs(c, car.GLASS, 1.6)                     # the windscreen
+    car._rr(c, cx - 58, cy - 40, 116, 120, 16); car._fs(c, (0.10, 0.10, 0.12), 1.6)            # the roof
+    car._rr(c, cx - 56, cy + 86, 112, 50, 12); car._fs(c, car.GLASS, 1.6)                      # the rear glass
+    for sx in (-1, 1):
+        c.set_source_rgb(*st.NEON); c.rectangle(cx + sx * 56 - 6, cy + 156, 12, 6); c.fill()  # the taillights
+    for (hx, hy) in ((cx + 96, cy + 40), (cx + 112, cy + 80)):                                 # two bare heads at its window
+        kit.ellipse(k, hx, hy, 34, 30, (0.04, 0.04, 0.05), int(hx), shadow=False, lw=1.6)
+    import hands_ps as hp
+    hp.draw(k, "point", cx + 70, cy + 60, 34, st.GLOVE, (0.0, 1.0), -1)                        # one glove points down the lane
+    c.set_source_rgb(*INK)                                                                     # the grating, ours
+    for i in range(-4, 16):
+        c.set_line_width(5); c.move_to(-20 + i * 44, 960); c.line_to(140 + i * 44, 640); c.stroke()
+    c.set_line_width(10); c.move_to(-10, 640); c.line_to(560, 640); c.stroke()
+
+
+def fire_escape_close(k):
+    """2.4, close: her on the fire escape; the brick wall and a dark window behind, the railing at her waist, the ladder."""
+    c = k.c
+    c.set_source_rgb(0.30, 0.28, 0.27); c.paint()
+    for row in range(0, 30):
+        y = row * 32
+        for col in range(-1, 12):
+            x = col * 64 + (32 if row % 2 else 0)
+            c.set_source_rgb(0.20, 0.19, 0.18); c.set_line_width(2); c.rectangle(x, y, 64, 32); c.stroke()
+    st.poly(k, [(300, 150), (470, 150), (470, 420), (300, 420)], (0.05, 0.05, 0.06), 2.4)       # a dark window
+    c.set_source_rgb(0.4, 0.4, 0.42); c.set_line_width(3); c.move_to(385, 150); c.line_to(385, 420); c.stroke()
+
+
+def railing(k, y=640):
+    c = k.c
+    c.set_source_rgb(*INK)
+    c.rectangle(-10, y - 6, 560, 12); c.fill(); c.rectangle(-10, y + 70, 560, 14); c.fill()
+    for x in range(10, 550, 34):
+        c.rectangle(x, y, 5, 80); c.fill()
+    c.set_line_width(6); c.move_to(80, 0); c.line_to(80, y + 90); c.stroke(); c.move_to(130, 0); c.line_to(130, y + 90); c.stroke()
+    for yy in range(20, y, 40):
+        c.move_to(80, yy); c.line_to(130, yy); c.stroke()
+
+
+def back_seat2(k):
+    """2.2: the rear door from outside, window down, the cabin lit warm: cream seats, starlit roof; the people are drawn
+    inside the window (clipped), the window's top edge cuts Dad at the chin; his ringed hand on the seat between them."""
+    car.cabin(k, 20, 700, 1.66, 1.0, hand=False)
+
+
 # --- the cast, in frame units ----------------------------------------------------------------------------------------------
 def P(who, *a, **kw):
     return (who, a, kw)
@@ -173,8 +298,16 @@ def draw_cast(k, cast):
             a = (a[0] + tx - hx, a[1] + ty - hy) + tuple(a[2:])
             cast[i] = (who, a, kw)
     for who, a, kw in cast:
+        kw = dict(kw); lean = kw.pop("lean", 0.0)
+        if lean:
+            k.c.save(); k.c.translate(a[0], a[1]); k.c.rotate(lean); k.c.translate(-a[0], -a[1])
         if who == "pam_cat":
             o = oc.pam_cat(k, *a, **kw)
+        elif who == "pam_from_behind":                       # her back to us: the figure, the face covered by the back of
+            o = oc.pam_cat(k, *a, **kw)                      # the head (her dark bob) and the ears
+            hx, hy = o["head"]; s_ = a[2]
+            kit.ellipse(k, hx, hy - 4 * s_, 62 * s_, 58 * s_, (0.14, 0.12, 0.14), 7301, shadow=False, lw=2.4)
+            oc.ears(k, hx, hy, s_)
         elif who == "pam_black":                             # 6.5: a black shape against the lit wall
             c = k.c
             c.push_group(); o = oc.pam_cat(k, *a, **kw); g = c.pop_group()
@@ -195,6 +328,16 @@ def draw_cast(k, cast):
             st.cast(k, *a, **kw); o = {}
         else:
             raise ValueError(who)
+        if lean:
+            k.c.restore()
+            if o and "head" in o:                           # the rig's points, rotated with the figure
+                ca, sa = math.cos(lean), math.sin(lean)
+                def rot(p):
+                    dx, dy = p[0] - a[0], p[1] - a[1]
+                    return (a[0] + dx * ca - dy * sa, a[1] + dx * sa + dy * ca)
+                o = dict(o); o["head"] = rot(o["head"])
+                if "hands" in o:
+                    o["hands"] = [rot(h) for h in o["hands"]]
         out[who] = o
     return out
 
@@ -214,8 +357,8 @@ ROAD_Y = 712                                               # the crossing's near
 
 def _ears_back(k):                                         # 2.1: the back of her head, her ears, in the foreground
     c = k.c
-    kit.ellipse(k, 120, 640, 120, 110, (0.06, 0.06, 0.07), 7201, shadow=False, lw=2.4)
-    oc.ears(k, 120, 640, 1.3)
+    kit.ellipse(k, 96, 660, 150, 140, (0.10, 0.09, 0.10), 7201, shadow=False, lw=2.4)
+    oc.ears(k, 96, 660, 1.6)
 
 
 HANDS = {}
@@ -227,12 +370,20 @@ def _sofia_post(k):                                        # 7.2: the envelope g
 
 
 def _rota_held(k):                                         # 7.5: the sheet in her hands, close
-    pr.rota(k, 650, pr.F - 216, 0.46, -0.05)
+    pr.rota(k, 706, 668, 0.28, -0.05)                      # held low in her hands, under her face
 
 
 def lying_over(k):                                         # 3.3: her body over Don's feet (he stands behind her)
     import on4_lying as ly
     ly.body(k); ly.head(k, *ly.HEAD, ly.ANG)
+
+
+def _impact(k, x, y):                                      # 3.2: the bump: stars round her head, two impact lines
+    import on4_lying as ly
+    ly.stars(k.c, x, y, 1.0, 0.0)
+    c = k.c; c.set_source_rgb(1, 1, 1); c.set_line_width(4)
+    for dx, dy in ((-70, 150), (70, 150), (-90, 110), (90, 110)):
+        c.move_to(x + dx * 0.8, y + dy); c.line_to(x + dx, y + dy + 30); c.stroke()
 
 
 def _bills(k):
@@ -245,55 +396,55 @@ SCENES = [
     ("01 Ignored hero", [
         S("1.1", "wide, low", "A", WIDE, "Frame 0, held 0.5 s. The streetlamp, the neon heart. Pam-Cat in the hero pose, "
           "eyes back over her shoulder; two shadows flat on the cobbles; Sofia one step behind, eyes on her phone.",
-          cast=A_SHADOW() + [P("sofia", 330, 640, 0.40, "hold", "neutral", (0, 0.6)),
-                              P("pam_cat", 230, 720, 0.62, "hero", "proud", (0.6, -0.1))],
+          cast=A_SHADOW() + [P("sofia", 330, 650, 0.50, "hold", "neutral", (0, 0.6)),
+                              P("pam_cat", 220, 730, 0.84, "hero", "proud", (0.6, -0.1))],
           protect=[("streetlamp", st.A_LAMP), ("heart", (342, 266))], eyeline="Pam back to Sofia; Sofia to her phone",
           action="(held)", reaction="Pam: Here it comes."),
         S("1.2", "wide, low", "A", WIDE, "0:01. Sofia sidesteps Pam like a puddle and walks on, past the camera; she never looks up.",
-          cast=A_SHADOW() + [P("pam_cat", 230, 720, 0.62, "hero", "proud", (0.6, -0.1)),
-                              P("sofia", 380, 800, 0.56, "hold", "neutral", (0, 0.6))],
+          cast=A_SHADOW() + [P("pam_cat", 220, 730, 0.84, "hero", "proud", (0.6, -0.1)),
+                              P("sofia", 380, 820, 0.70, "hold", "neutral", (0, 0.6))],
           action="Sofia sidesteps her (the 0:01 joke)", reaction="the hero pose held at nobody"),
-        S("1.3", "close", "A", (230, 600, 2.1), "The pose holds; her eyes follow Sofia out; the pose sags; she pulls her coat straight.",
-          cast=[P("pam_cat", 230, 720, 0.62, "sag", "sad", (0.8, 0.2))], line="N: I know how to survive.",
+        S("1.3", "close", "A", (220, 560, 1.9), "The pose holds; her eyes follow Sofia out; the pose sags; she pulls her coat straight.",
+          cast=[P("pam_cat", 220, 730, 0.84, "sag", "sad", (0.8, 0.2))], line="N: I know how to survive.",
           action="the pose sags", reaction="Fine. (to where Sofia went)"),
         S("1.4", "wide", "A_tail", WIDE, "The shadows peel off the cobbles and run up the street to a pair of taillights; she turns to follow.",
           cast=[P("thug1", 300, 600, 0.26, "open", seed=4111), P("thug2", 340, 590, 0.24, "open", seed=4112),
-                P("pam_cat", 200, 740, 0.64, "hero", "surprised", (0.6, -0.6))],
+                P("pam_cat", 200, 760, 0.84, "hero", "surprised", (0.6, -0.6))],
           eyeline="Pam to the taillights", action="the shadows run", reaction="Where are you going?"),
     ]),
     ("02 The witness", [
-        S("2.1", "high, over her shoulder", "B_high", WIDE, "Her cat ears in the foreground on the fire escape; below, the car; "
-          "the shadows at its rear window; one pale glove points back down the street.",
-          cast=[P("thug1", 270, 578, 0.18, "open", seed=4121), P("thug2", 330, 578, 0.18, (-8, 0, 60, -30), seed=4122)],
-          protect=[("the car", (300, 560))], standin=True, after=_ears_back, eyeline="down to the car"),
+        S("2.1", "high, over her shoulder", "above", WIDE, "Her cat ears in the foreground on the fire escape; below, the car "
+          "from above; two bare heads at its rear window; one pale glove points back down the lane.",
+          protect=[("the car", (300, 470)), ("the glove", (370, 530))], after=_ears_back, eyeline="down to the car"),
         S("2.2", "medium, through the window", "back_seat", WIDE, "The back seat: the Client, whole; beside him a velvet sleeve, "
           "a ringed hand on a knee, a chin (the window's top cuts Dad at the chin).",
-          cast=[P("client", 170, 760, 0.52, "open", "plain", look=(0.7, 0.4), roll=False, badge=False),
-                P("father", 380, 760, 0.60, (-20, 30, 20, -30), "hard", (-0.6, 0.6))],
-          standin=True, eyeline="both to the envelope"),
+          cast=[P("client", 170, 820, 0.66, "open", "plain", look=(0.7, 0.4), roll=False, badge=False),
+                P("father", 370, 640, 0.78, (-20, 30, 20, -30), "hard", (-0.6, 0.6))],
+          eyeline="both to the envelope"),
         S("2.3", "insert, 1.2 s", "knee", WIDE, "The envelope on his knee; his finger taps it twice; into his coat; the ringed hand flat "
-          "on the seat: agreed.", protect=[("envelope", (200, 520)), ("ring", (392, 640))], standin=True,
+          "on the seat: agreed.", protect=[("envelope", (200, 520)), ("ring", (392, 640))],
           line="The Client: Mine until it's done.", action="two taps", reaction="the ringed hand flat: agreed"),
-        S("2.4", "close", "B_high", (220, 560, 1.7), "Her eyes narrow; she swings onto the ladder and drops out of frame.",
-          cast=[P("pam_cat", 220, 760, 0.62, "hero", "angry", (0.4, 0.6))], line="N: I know where to see what others do not see.",
-          standin=True, eyeline="down to the car", action="she drops out of frame", reaction="Got you."),
+        S("2.4", "close", "escape", WIDE, "Her eyes narrow; she swings onto the ladder and drops out of frame.",
+          cast=[P("pam_cat", 270, 900, 0.96, "hero", "angry", (0.4, 0.6))], line="N: I know where to see what others do not see.",
+          after=lambda k: railing(k, 690), eyeline="down to the car", action="she drops out of frame", reaction="Got you."),
     ]),
     ("03 Ignored victim", [
         S("3.1", "wide, low", "C_turn", (270, 600, 1.35), "The car swings round at the junction, nose to us; Pam runs onto the crossing after it; "
           "in the middle Don, turned away from her, waves it through.",
-          cast=[P("don", 380, 690, 0.46, "wave", "neutral", (0.6, -0.3)),
-                P("pam_cat", 130, ROAD_Y, 0.52, "hero", "angry", (0.8, -0.3))],
+          cast=[P("don", 390, 700, 0.56, "wave", "neutral", (0.6, -0.3)),
+                P("pam_cat", 130, ROAD_Y + 6, 0.62, "hero", "angry", (0.8, -0.3))],
           protect=[("the car", (250, 600))], line="Don: Traffic flows.", eyeline="Don to the car; Pam to the car",
           action="the car turns; Don waves it on", reaction="Pam runs after it"),
-        S("3.2", "same wide, 0.8 s", "C_bump", (270, 600, 1.35), "She sees the headlights, stops, one hand up; the car rolls into her at walking pace: "
-          "the bump, stars; she goes over backwards onto the stripes.",
-          cast=[P("pam_cat", 250, ROAD_Y + 6, 0.52, HAND_STOP, "surprised", (0, -0.2)),
-                P("don", 380, 690, 0.46, "wave", "neutral", (-0.6, -0.3))],
-          protect=[("bumper", (250, 690)), ("headlights", (250, 640))], action="the bump", reaction="she goes over backwards"),
+        S("3.2", "same wide, 0.8 s", "C_bump", (270, 600, 1.35), "Her back to us, she faces the headlights, one palm out; the car "
+          "rolls into her at walking pace: the bumper at her knees, she tips back, stars; over backwards onto the stripes.",
+          cast=[P("don", 410, 700, 0.56, "wave", "neutral", (0.7, -0.3)),
+                P("pam_from_behind", 250, ROAD_Y + 10, 0.66, HAND_STOP, "surprised", (0, -0.2), lean=-0.22)],
+          protect=[("bumper", (250, 690)), ("headlights", (250, 630))], after=lambda k: _impact(k, 230, 520),
+          action="the bump", reaction="she tips back"),
         S("3.3", "medium, low", "C_lying", WIDE, "Don walks over, bends, a flat palm on the bumper, rubs one spot, looks at his glove: "
           "clean. Pam's face in the foreground; she lifts one hand off the road, a small wave. He doesn't see it.",
-          cast=[P("don", 330, 640, 0.56, DON_REACH, "neutral", (-0.7, 0.6), reach_to=(250, 562), reach_hand=0)],
-          protect=[("bumper", (150, 590)), ("Don's palm", (262, 560)), ("her face", (112, 610))],
+          cast=[P("don", 380, 600, 0.66, DON_REACH, "neutral", (-1.0, 0.1), reach_to=(236, 556), reach_hand=0, lean=-0.30)],
+          protect=[("bumper", (170, 586)), ("Don's palm", (236, 556)), ("her face", (112, 610))],
           line="Don: Not a scratch.", eyeline="Don to the bumper and his glove; Pam to Don",
           action="the palm on the bumper", reaction="her small wave, unseen", after=lying_over),
         S("3.4", "medium", "cabin", WIDE, "Don waves the car on; the rear window opens: the ringed hand drops a fold of bills into the road.",
@@ -303,18 +454,18 @@ SCENES = [
           "nobody looks down.", protect=[("her face", (112, 610)), ("the glove", (300, 560))],
           eyeline="each shadow to the bills", action="a glove plucks a bill", reaction="nobody looks down"),
         S("3.6", "close", "C", (200, 560, 1.9), "She sits up and pushes her mask straight; her eyes follow the car.",
-          cast=[P("pam_cat", 200, 760, 0.62, "sag", "sad", (0.6, -0.3))], line="N: I am like a cat. I have seven lives.",
+          cast=[P("pam_cat", 200, 780, 0.84, "sag", "sad", (0.6, -0.3))], line="N: I am like a cat. I have seven lives.",
           eyeline="to the car", action="she sits up", reaction="Six left."),
     ]),
     ("04 False recognition", [
         S("4.1", "wide, low angle", "front", WIDE, "A new place, held: the car parked and empty, the club door, the marquee coming on line "
-          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 330, 700, 0.50, "hero", "surprised", (0, -1))],
+          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 330, 712, 0.62, "hero", "surprised", (0, -1))],
           protect=[("marquee", (270, 340)), ("the car", (150, 680))], line="Pam: There you are.", eyeline="to the car, then up"),
         S("4.2", "insert, top band", "front", (270, 345, 1.15), "The marquee: PAM-CAT · the bulb strip · ONLY FOR YOU.",
           protect=[("marquee", (270, 345))]),
         S("4.3", "medium, under the sign", "front", (300, 520, 1.5), "She points up at the sign, then at herself; turns to show "
           "someone: the street is empty. A small smile anyway; she pats her ears up and pushes the door.",
-          cast=[P("pam_cat", 300, 700, 0.50, "point_up", "happy", (0.4, -1))], protect=[("ONLY FOR YOU", (270, 416))],
+          cast=[P("pam_cat", 300, 712, 0.62, "point_up", "happy", (0.4, -1))], protect=[("ONLY FOR YOU", (270, 416))],
           eyeline="to the sign, then to nobody", action="the point at the sign, at herself", reaction="Finally."),
     ]),
     ("05 The club", [
@@ -328,24 +479,24 @@ SCENES = [
     ]),
     ("06 Ignored star", [
         S("6.1", "medium, low", "stage", WIDE, "She steps into the spotlight and opens the envelope.",
-          cast=[P("pam_cat", 230, 700, 0.66, "hero", "proud", (0.3, 0.6), env=True)], standin=True, eyeline="to the envelope"),
+          cast=[P("pam_cat", 225, 700, 0.86, "hero", "proud", (0.3, 0.6), env=True)], eyeline="to the envelope"),
         S("6.2", "insert", "cv", WIDE, "Sofia's CV, her photograph.", protect=[("photo", (196, 320))], standin=True),
         S("6.3", "medium wide", "stage", WIDE, "She lifts it high, the triumph pose, and waits; the music stops.",
-          cast=[P("pam_cat", 230, 700, 0.66, "triumph", "proud", (0.3, -0.6))], standin=True, line="Pam: Well?",
+          cast=[P("pam_cat", 225, 700, 0.86, "triumph", "proud", (0.3, -0.6))], line="Pam: Well?",
           protect=[("envelope", (270, 420))], eyeline="out to the room"),
         S("6.4", "insert, 0.7 s", "spot", WIDE, "A pale glove from the top of the frame rests on the spotlight's handle and swings it away.",
-          protect=[("glove", (410, 440))], standin=True),
+          protect=[("glove", (410, 440))]),
         S("6.5", "wide, held 1 s", "stage_table", WIDE, "The light is on the card table; Pam a black shape against the lit room, arm up.",
-          cast=[P("pam_black", 230, 760, 0.66, "triumph", "proud", (0.3, -0.6))], standin=True, eyeline="THE SHOT AND THE COVER"),
-        S("6.6", "close, rim-lit", "stage_table", (230, 560, 1.7), "Her arm comes slowly down; she tucks the envelope in and pats it twice.",
-          cast=[P("pam_cat", 230, 760, 0.66, "sag", "sad", (0.2, 0.4), env=True)], standin=True, reaction="Of course."),
+          cast=[P("pam_black", 250, 930, 1.20, "triumph", "proud", (0.3, -0.6))], eyeline="THE SHOT AND THE COVER"),
+        S("6.6", "close, rim-lit", "stage_table", WIDE, "Her arm comes slowly down; she tucks the envelope in and pats it twice.",
+          cast=[P("pam_cat", 250, 930, 1.20, "sag", "sad", (0.2, 0.4), env=True)], reaction="Of course."),
     ]),
     ("07 Awake", [
-        S("7.1", "S6, the counter's end", "desk7", (720, 600, 1.6), "The match: the shape of 6.5. Pam asleep on the counter, the mask "
+        S("7.1", "S6, the counter's end", "desk7", (714, 606, 2.0), "The match: the shape of 6.5. Pam asleep on the counter, the mask "
           "over her eyes, one arm up, the hand open. The lamp, seven cups, the machine.",
           cast=[P("pam_awake", 692, 760, 0.50, "down", "neutral", (0, 0), ARM_UP)], dream=False,
           protect=[("her hand", (713, 660)), ("cups", (730, 650))]),
-        S("7.2", "S6", "desk7", (720, 600, 1.6), "Sofia comes round the counter's end mid-step, eyes on her phone; posts the envelope "
+        S("7.2", "S6", "desk7", (714, 606, 2.0), "Sofia comes round the counter's end mid-step, eyes on her phone; posts the envelope "
           "into Pam's raised hand; sets her mug at the end of the row. Clink. Walks on.",
           cast=[P("pam_awake", 692, 760, 0.50, "down", "neutral", (0, 0), ARM_UP), P("sofia", 600, 806, 0.47, "hold", "neutral", (0.2, 0.7))],
           line="SOFIA: Only for you.", eyeline="Sofia to her phone, never to Pam", after=_sofia_post, dream=False,
@@ -354,12 +505,12 @@ SCENES = [
           cast=[P("pam_awake", 692, 735, 0.50, "up", "surprised", (0.4, -0.6), ARM_UP)], dream=False, eyeline="to her hand"),
         S("7.4", "insert, top band", "rota", WIDE, "INTERNAL MAIL; the COFFEE ROTA: MON to SUN, PAM on every line.",
           protect=[("rota", (270, 300))], dream=False),
-        S("7.5", "close, Pam and the sheet", "desk7", (672, 640, 2.6), "Her fingertip goes down the rows to the seventh PAM. Stops. Hold 0.6 s.",
+        S("7.5", "close, Pam and the sheet", "desk7", (700, 620, 2.4), "Her fingertip goes down the rows to the seventh PAM. Stops. Hold 0.6 s.",
           cast=[P("pam_awake", 692, 735, 0.50, "up", "sad", (-0.3, 0.8), "stand")], after=_rota_held, dream=False,
-          protect=[("rota", (650, 584))], eyeline="to the sheet", reaction="Only for me."),
+          protect=[("rota", (706, 668))], eyeline="to the sheet", reaction="Only for me."),
     ]),
     ("08 Back to the dream", [
-        S("8.1", "S6", "desk8", (720, 600, 1.6), "She lays the rota over the cups, pulls the mask back down, head on her arm.",
+        S("8.1", "S6", "desk8", (714, 606, 2.0), "She lays the rota over the cups, pulls the mask back down, head on her arm.",
           cast=[P("pam_awake", 692, 764, 0.50, "down", "neutral", (0, 0.4), "stand")], dream=False, reaction="Back to work."),
         S("8.2", "close (push in)", "lampclose", WIDE, "The counter lamp; the room goes dark; rain begins under it. Its head is frame 0's "
           "streetlamp: the loop.", protect=[("lamp", st.A_LAMP)], dream=False),
@@ -380,8 +531,12 @@ def _loc(k, name):
         loc_a(k, taillights=True); return st.light_a
     if name == "B_high":
         loc_b(k); fire_escape(k); return st.light_b
+    if name == "above":
+        lane_above(k); return lambda c_: ons.vignette(c_, 0.6)
+    if name == "escape":
+        fire_escape_close(k); return lambda c_: ons.vignette(c_, 0.5)
     if name == "back_seat":
-        back_seat(k); return None
+        back_seat2(k); return None
     if name == "knee":
         knee_insert(k); return None
     if name in ("C", "C_turn", "C_bump"):
@@ -389,12 +544,12 @@ def _loc(k, name):
         if name == "C_turn":
             car.c_turn(k)
         if name == "C_bump":
-            car.reflect(k, lambda: car.front(k, 250, 700, 0.95), 700, 0.25, 30)
-        return lambda c_: (st.light_c(c_), name == "C_bump" and car.glow(c_, "front", 250, 700, 0.95),
+            car.reflect(k, lambda: car.front(k, 250, 702, 1.15), 702, 0.25, 30)
+        return lambda c_: (st.light_c(c_), name == "C_bump" and car.glow(c_, "front", 250, 702, 1.15),
                            name == "C_turn" and car.glow_three_q(c_, 250, 640, 0.62, "front"))
     if name == "C_lying":
-        st.setup_c(k); ly.ground(k)
-        car.front(k, 150, 596, 1.05)                         # her body is drawn after the cast (lying_over): Don behind her
+        loc_c(k); ly.ground(k)
+        car.front(k, 170, 600, 1.15)                         # her body is drawn after the cast (lying_over): Don behind her
         return st.light_c
     if name == "cabin":
         loc_c(k); car.c_cabin(k); return None
@@ -407,9 +562,9 @@ def _loc(k, name):
     if name == "plan":
         cl.PLAN_CARD[0] = "v7"; cl.plan_insert(k); return cl.light_inside
     if name == "stage":
-        stage(k, "pam"); return lambda c_: ons.vignette(c_, 0.6)
+        stage_front(k, True); return lambda c_: ons.vignette(c_, 0.55)
     if name == "stage_table":
-        stage(k, "table"); return lambda c_: ons.vignette(c_, 0.5)
+        room_reverse(k); return lambda c_: ons.vignette(c_, 0.5)
     if name == "spot":
         spot_insert(k); return None
     if name == "cv":
@@ -454,7 +609,7 @@ def _desk(k, sh, eighth):
         pam_over(k_)
         dp.coffee_machine(k_, 770, pr.F - 166, 0.62, "ok")
         pr.counter_lamp(k_, *pr.LAMP)
-        pr.cups(k_, eighth=eighth)
+        pr.cups(k_, x0=668, eighth=eighth)
         if sh["id"] == "8.1":
             pr.rota(k_, 734, pr.F - 168, 0.30, 0.12)
         heads.update(draw_cast(k_, front))
@@ -465,6 +620,7 @@ def _desk(k, sh, eighth):
 
 
 def render(sh, scale=1):
+    oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W * scale, H * scale); s.set_device_scale(scale, scale)
     c = cairo.Context(s); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
@@ -525,7 +681,7 @@ def _timing():
 
 def script(out):
     tm, d = _timing()
-    L = ["# Office Noir 4: Seven Lives — script v5 (GENERATED from src/on4_scenes.py; do not edit by hand)", "",
+    L = ["# Office Noir 4: Seven Lives — script v6 (GENERATED from src/on4_scenes.py; do not edit by hand)", "",
          "Length %.2f s (timing %s, narration %s). Changes against v4:" % (d["length"], TIMING, d["narration"]), ""]
     L += ["- " + x for x in CHANGES] + [""]
     for title, shots in SCENES:
@@ -549,7 +705,7 @@ def layout_sheet(i, title, shots, out):
     sheet = cairo.ImageSurface(cairo.FORMAT_RGB24, max(Wd, 900), 70 + 480 + 200)
     c = cairo.Context(sheet); c.set_source_rgb(0.96, 0.95, 0.92); c.paint()
     c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(24)
-    c.move_to(20, 40); c.show_text("Office Noir 4 · layouts v1 · %s" % title)
+    c.move_to(20, 40); c.show_text("Office Noir 4 · layouts v2 · %s" % title)
     allp = []
     for j, sh in enumerate(shots):
         s, heads = render(sh, 1)
@@ -587,9 +743,9 @@ def _wrap(t, n):
 
 def main(out=OUT):
     probs = []
-    print(script(os.path.join(out, "office-noir-4-script-v5.md")))
+    print(script(os.path.join(out, "office-noir-4-script-v6.md")))
     for i, (title, shots) in enumerate(SCENES):
-        p = os.path.join(out, "on4_layout_s%d_v1.png" % (i + 1))
+        p = os.path.join(out, "on4_layout_s%d_v2.png" % (i + 1))
         probs += layout_sheet(i + 1, title, shots, p)
         print(p)
     for p in probs:
@@ -641,7 +797,7 @@ def shotplan(out):
     sh = cairo.ImageSurface(cairo.FORMAT_RGB24, 1800, 1500); c = cairo.Context(sh)
     c.set_source_rgb(0.96, 0.95, 0.92); c.paint()
     c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(26)
-    c.move_to(20, 40); c.show_text("Office Noir 4 · shot plan v1 (top down: locations, cameras, who stands where)")
+    c.move_to(20, 40); c.show_text("Office Noir 4 · shot plan v2 (top down: locations, cameras, who stands where)")
     def panel(x0, y0, title):
         c.set_source_rgb(1, 1, 1); c.rectangle(x0, y0, 400, 420); c.fill()
         c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(16); c.move_to(x0 + 10, y0 + 22); c.show_text(title)
@@ -653,7 +809,7 @@ def shotplan(out):
     _mark(c, x0 + 200, y0 + 90, "taillights (1.4)", (0.9, 0.1, 0.2))
     _cam_icon(c, x0 + 200, y0 + 390, -math.pi / 2, "1.1 1.2 1.4 (low)"); _cam_icon(c, x0 + 120, y0 + 350, -1.2, "1.3")
     # B: the lane's end, from the fire escape
-    x0 = 440; panel(x0, y0, "B  the lane's end (2.1, 2.4; stand-in fire escape)")
+    x0 = 440; panel(x0, y0, "B  the lane from the fire escape (2.1, 2.4)")
     _box(c, x0 + 40, y0 + 40, 70, 340, "houses"); _box(c, x0 + 290, y0 + 40, 70, 340, "wall")
     _box(c, x0 + 170, y0 + 70, 60, 30, "the car", (0.3, 0.3, 0.3)); _mark(c, x0 + 160, y0 + 120, "shadows", SHAD_C)
     _box(c, x0 + 40, y0 + 330, 120, 20, "fire escape", (0.2, 0.2, 0.2)); _mark(c, x0 + 100, y0 + 320, "Pam-Cat", PAM_C)
@@ -672,12 +828,12 @@ def shotplan(out):
     _box(c, x0 + 60, y0 + 200, 130, 40, "the car, parked", (0.3, 0.3, 0.3)); _mark(c, x0 + 250, y0 + 190, "Pam-Cat", PAM_C)
     _cam_icon(c, x0 + 200, y0 + 390, -math.pi / 2, "4.1 low; 4.2; 4.3")
     # the hall
-    x0, y0 = 20, 500; panel(x0, y0, "the hall (5.1, 5.3; the stage 6.x is a stand-in)")
+    x0, y0 = 20, 500; panel(x0, y0, "the hall (5.1, 5.3)")
     _box(c, x0 + 40, y0 + 240, 140, 80, "booth: Client, Dad"); _box(c, x0 + 220, y0 + 220, 110, 70, "game table, 2 shadows")
     _box(c, x0 + 150, y0 + 40, 100, 50, "stage, spotlight"); _mark(c, x0 + 200, y0 + 260, "Pam-Cat (5.3)", PAM_C)
     _cam_icon(c, x0 + 200, y0 + 395, -math.pi / 2, "5.1"); _cam_icon(c, x0 + 330, y0 + 360, -2.4, "5.3")
     # the stage
-    x0 = 440; panel(x0, y0, "the stage (6.1-6.6, stand-in)")
+    x0 = 440; panel(x0, y0, "the stage (6.1-6.4) and its reverse (6.5, 6.6)")
     _box(c, x0 + 40, y0 + 60, 320, 30, "curtain"); _box(c, x0 + 40, y0 + 90, 320, 120, "boards")
     _mark(c, x0 + 150, y0 + 150, "Pam-Cat", PAM_C); _mark(c, x0 + 320, y0 + 140, "spotlight", (0.9, 0.7, 0.1))
     _box(c, x0 + 120, y0 + 280, 160, 50, "card table (lit in 6.5)")
@@ -703,7 +859,7 @@ def shotplan(out):
     c.set_source_rgb(0.75, 0.35, 0.0); c.move_to(x0 + 10, yy + 14); c.show_text("orange: stand-in location, not drawn yet")
     # time by zone
     c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(16); c.move_to(20, 960); c.show_text("time by location (s)")
-    order = ["A", "A_tail", "B_high", "back_seat", "knee", "C_turn", "C_bump", "C_lying", "cabin", "lying", "C", "front", "hall", "plan", "stage", "cv", "spot", "stage_table", "desk7", "rota", "desk8", "lampclose"]
+    order = ["A", "A_tail", "B_high", "above", "escape", "back_seat", "knee", "C_turn", "C_bump", "C_lying", "cabin", "lying", "C", "front", "hall", "plan", "stage", "cv", "spot", "stage_table", "desk7", "rota", "desk8", "lampclose"]
     total = sum(t["dur"] for t in tm.values())
     for title, shots in SCENES:
         for s_ in shots:
@@ -725,7 +881,7 @@ def blocking(out):
     sh = cairo.ImageSurface(cairo.FORMAT_RGB24, 1700, 1100); c = cairo.Context(sh)
     c.set_source_rgb(0.96, 0.95, 0.92); c.paint()
     c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(26)
-    c.move_to(20, 40); c.show_text("Office Noir 4 · blocking v1 · 3.1-3.3: the turn, the bump, the palm on the bumper")
+    c.move_to(20, 40); c.show_text("Office Noir 4 · blocking v2 · 3.1-3.3: the turn, the bump, the palm on the bumper")
     moments = [("3.1  the car turns at the junction; Don waves it on; Pam runs onto the crossing",
                 dict(car=(200, 110, "turning"), don=(250, 230), pam=(120, 300), path_car=[(330, 60), (260, 80), (200, 120), (200, 240)],
                      path_pam=[(40, 300), (120, 300)])),
