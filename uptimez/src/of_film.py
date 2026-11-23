@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 19, 2: 23, 3: 20, 4: 22, 5: 19}
-SOUND = "of_sound_v9.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 20, 2: 24, 3: 21, 4: 23, 5: 20}
+SOUND = "of_sound_v10.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -44,7 +44,7 @@ def s03(t, L):                                             # two pairs of black 
 
 
 def s11(t, L):                                             # the finger goes to 7; then he looks round at the real bay
-    turn = 0.9 * ease((t - 0.70) / 0.30)
+    turn = 0.9 * ease((t - 0.50) / 0.30)                  # v2 (timing v10, 1.0 s): the look round, earlier
     return {}, dict(g2=dict(targets=["bay7_point"], point=ease(t / 0.40) > 0.5, turn=turn))
 
 
@@ -205,7 +205,7 @@ def _veto(t16, t17):
 # --- scene 4, The Calendar ---------------------------------------------------------------------------------------------
 def _loud(sid, t):
     m = mouth_at(sid, t)
-    return {None: 0.0, "M": 0.15, "C": 0.45, "E": 0.7, "O": 0.85, "A": 1.0}[m]
+    return {None: 0.0, "M": 0.15, "F": 0.3, "C": 0.45, "U": 0.5, "E": 0.7, "O": 0.85, "A": 1.0}.get(m, 0.5)   # v2: every viseme
 
 
 def s32(t, L):                                             # the visor: the line pops on, and glows as it talks
@@ -325,13 +325,13 @@ def s42_service(t, L):                                     # the last frame (and
 
 def s24(t, L):                                             # v1 (23 Nov audit, decided): Father acts the question. He leans
     ln = 0.035 * ease(min(1.0, max(0.0, (t - 0.5) / 0.6)))  # in toward the Client as he asks; the brow goes up on "company?"
-    face = "talk" if t < 2.35 else ("brow" if t < 3.05 else "hard")
+    face = "hard" if t < 2.35 else ("brow" if t < 3.05 else "hard")   # v2: the mouth comes from the take
     return {}, dict(father=dict(face=face, lean=ln, look=(1, 0)))
 
 
 def s26(t, L):                                             # v1: "And then?" -- the lean in, then the big brow after the line,
     ln = 0.045 * ease(min(1.0, t / 0.4))                   # held: business, waiting
-    face = "talk" if t < 1.1 else "brow2"
+    face = "hard" if t < 1.1 else "brow2"
     return {}, dict(father=dict(face=face, lean=ln, look=(1, 0)))
 
 
@@ -442,8 +442,14 @@ MOTION["0.4"] = lambda t, L: (dict(legs_work=math.sin(t * 2 * math.pi * 1.2)), {
 _TAKE = {}
 
 
+VISEME = {"A": "M", "B": "C", "C": "E", "D": "A", "E": "O", "F": "U", "G": "F", "H": "E", "X": None}   # Rhubarb -> our mouths
+_CUES = {}
+
+
 def mouth_at(sid, t):
-    """the mouth for the speaker of shot sid, t seconds into the shot (None: not speaking)."""
+    """the mouth for the speaker of shot sid, t seconds into the shot (None: not speaking). v2 (23 Nov, decided): the
+    take's own mouth shapes (Rhubarb Lip Sync, of_voices/visemes/<shot>.json, phonetic, with the line's text), held
+    to the drawing; the loudness rule only where a take has no cue track."""
     if sid not in sc.SAY:
         return None
     if sid not in _TAKE:
@@ -452,6 +458,16 @@ def mouth_at(sid, t):
     a, sr = _TAKE[sid]
     tt = t - LEAD
     if tt < 0 or tt > len(a) / sr:
+        return None
+    vp = os.path.join(TAKES, "..", "visemes", "%s.json" % sid)
+    if sid not in _CUES and os.path.exists(vp):
+        import json as _json
+        _CUES[sid] = _json.load(open(vp))["mouthCues"]
+    if sid in _CUES:
+        mid = tt + 0.5 / DPS                                   # the middle of this drawing
+        for cu in _CUES[sid]:
+            if cu["start"] <= mid < cu["end"]:
+                return VISEME.get(cu["value"])
         return None
     i0, i1 = int(tt * sr), int((tt + 1.0 / DPS) * sr)
     seg = a[i0:max(i1, i0 + 1)]
@@ -528,7 +544,12 @@ def render_scene(n):
                     base[who] = dict(base.get(who, {}), **ps)
                 sc.POSES[sid] = base
             who = sc.SAY.get(sid, (None,))[0]
-            oc.MOUTH[0] = mouth_at(sid, t) if who == "client" else None
+            oc.NOW[0] = st0 + t                                    # v1 (23 Nov): the film's clock, for blinks and breaths
+            oc.LOOP_T[0] = sc._timing_total()
+            mc_ = mouth_at(sid, t)
+            oc.MOUTH[0] = mc_ if who == "client" else None
+            oc.FATHER_MOUTH[0] = mc_ if who == "father" else None
+            oc.DON_MOUTH[0] = mc_ if who == "don" else None
             try:
                 if sid in SPLIT:                                    # v12 (cold tests 3 of 3): two short bubbles, not one long
                     fr_, parts = SPLIT[sid]
@@ -538,7 +559,7 @@ def render_scene(n):
                     sh = dict(sh, state=dict(sh["state"], say_txt=parts[0] if u_ < fr_ else parts[1]))
                 surf, p = sc.board_frame(sh, scene, bubble=bubble_on(sid, t))
             finally:
-                oc.MOUTH[0] = None
+                oc.MOUTH[0] = oc.FATHER_MOUTH[0] = oc.DON_MOUTH[0] = None
                 if saved is None:
                     sc.POSES.pop(sid, None)
                 else:

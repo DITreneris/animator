@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v9.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v10.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -196,6 +196,10 @@ KNOWN = {}   # (shot, check text) -> why it is allowed. None yet.
 
 
 # --- drawing ---------------------------------------------------------------------------------------------------------
+def _timing_total():
+    return json.load(open(os.path.join(OUT, TIMING)))["total"]
+
+
 def _timing():
     d = json.load(open(os.path.join(OUT, TIMING)))
     return {s["shot"]: s for s in d["shots"]}
@@ -218,14 +222,14 @@ POSES = {
     "1.5": dict(g2=dict(targets=["lighter"], lighter=1.0, turn=-1.0)),
     "1.6": dict(father=dict(face="brow", look=(1, -0.2))),
     "1.7": dict(g2=dict(turn=-1.0)),          # v5 (23 Nov): the lighter is the veto's front_lighter now; its old second copy hid behind his sleeve
-    "2.1": dict(father=dict(face="talk", look=(1, 0)), client=dict(kind="bent")),
+    "2.1": dict(father=dict(face="hard", look=(1, 0)), client=dict(kind="bent")),   # v2: the mouth from the take
     "2.2": dict(client=dict(kind="bent")),
     "2.3": dict(father=dict(look=(1, -0.2)), client=dict(kind="bent", hand_back=True), g1=dict(targets=["handoff"])),
     "2.3b": dict(father=dict(look=(1, -0.5)), g1=dict(targets=["lamp"], lamp="held")),
-    "2.4": dict(father=dict(face="talk", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
+    "2.4": dict(father=dict(face="hard", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
     "2.5": dict(client=dict(kind="watch", look=(1.9, 2.0), face="glance")),
     "2.6a": dict(father=dict(face="hard", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
-    "2.6": dict(father=dict(face="talk", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
+    "2.6": dict(father=dict(face="hard", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
     "2.7": dict(client=dict(kind="pocket", look=(-0.4, 0.8))),
     "2.8b": dict(client=dict(kind="phone_out", look=(-1, 0))),
     "2.8c": dict(father=dict(face="low", look=(1, 0)), client=dict(kind="phone_out", look=(-1, 0)), g1=dict(targets=["lamp"], lamp="held")),
@@ -248,6 +252,25 @@ MOUTH_AT = {}                                              # mouths a pose knows
 
 
 def _cast_draw(k, n, scene, sh, heads):
+    """v2 (23 Nov, decided: no frozen frames): every cast member breathes, about his feet; his head point follows."""
+    b_ = _oc.breath(n)
+    if not b_:
+        return _cast_draw0(k, n, scene, sh, heads)
+    pos = dict(BLOCK[0] if sh["state"].get("doorway") else BLOCK[scene], **sh["state"].get("moved", {}))
+    x, f = pos.get(n, (0, F))
+    c = k.c
+    c.save(); c.translate(x, f); c.scale(1.0, 1.0 + b_); c.translate(-x, -f)
+    try:
+        r = _cast_draw0(k, n, scene, sh, heads)
+    finally:
+        c.restore()
+    if n in heads:
+        hx_, hy_, hr_ = heads[n]
+        heads[n] = (hx_, f + (hy_ - f) * (1.0 + b_), hr_)
+    return r
+
+
+def _cast_draw0(k, n, scene, sh, heads):
     import dh_cast as dc
     import of_cast as oc
     st = sh["state"]
@@ -670,7 +693,8 @@ def dc_velvet():
     return dc.VELVET
 
 
-UPRIGHT = [True]                                           # v12: the overhead turned so he lies head-up
+UPRIGHT = [False]                                         # v14 (23 Nov, Tomas + 2 cold viewers: lying ACROSS tells the
+# story, 'he answers from under the car'; upright read as a man behind a counter)                                           # v12: the overhead turned so he lies head-up
 KSCALE = [1.0]                                             # the overhead is drawn in frame units
 
 
@@ -686,6 +710,8 @@ def under_shot(k, sh, heads):
     if sh["state"].get("view") == "top" or sh["id"] == "0.9":                   # v10: the overhead (v11: 0.9 too, closer:
         zt = 1.0 if sh["state"].get("view") == "top" else 1.30                    # the side profile looked wrong; v12, 23 Nov
         zx = 300 if zt == 1.0 else 230                                            # audit: 1.55 -> 1.30, so the car's sill and a tyre
+        if not UPRIGHT[0]:                                                        # v13 (23 Nov, Tomas: horizontal): lying ACROSS the
+            zt, zx = (1.22, 262) if sh["state"].get("view") == "top" else (1.40, 250)   # frame, tight: face to sill, tyres at the edge
         R_ = UPRIGHT[0]                                                           # v12 (23 Nov, cold tests 3 of 3: "sideways"):
         c.save()                                                                  # turned a quarter: his head UP the frame
         if R_:

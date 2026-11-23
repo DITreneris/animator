@@ -1,6 +1,6 @@
 """THE OFFER (episode 13), stage 8: the rough cut and its G5 QA.
 
-The five scenes (of_film.py, drawn on the timeline's grid) joined frame by frame on the master sound (of_sound_v9.wav);
+The five scenes (of_film.py, drawn on the timeline's grid) joined frame by frame on the master sound (of_sound_v10.wav);
 each scene is placed at its own start on the 30 fps grid, so the picture cannot drift from the sound across the film.
 Then G5, measured on the final file; the build fails on any miss:
 
@@ -24,7 +24,7 @@ import soundfile as sf
 from PIL import Image
 import of_scenes as sc
 
-VERSION = 21
+VERSION = 22
 TMP = "/tmp/of_cut"
 FRAMES = "/tmp/of_film/s%d"                                 # each scene's drawings, as of_film left them (or a copy in TMP)
 FPS = 30
@@ -46,7 +46,7 @@ def scene_dirs():
 def assemble():
     """-> (the frame list on the global grid, the sound's length). Each scene starts at round(start * 30)."""
     tm = sc._timing()
-    a, sr = sf.read(os.path.join(sc.OUT, "of_sound_v9.wav"))
+    a, sr = sf.read(os.path.join(sc.OUT, "of_sound_v10.wav"))
     total = len(a) / sr
     starts = [int(round(tm[shots[0]["id"]]["start"] * FPS)) for _, _, _, shots in sc.SCENES] + [int(round(total * FPS))]
     seq = []
@@ -57,8 +57,9 @@ def assemble():
             print("scene %d starts at frame %d, the grid says %d" % (n + 1, len(seq), starts[n]))
         got = [os.path.join(d, f) for f in fr][:want]
         got += [got[-1]] * (want - len(got))                # hold the last drawing (at most a frame or two)
-        if abs(len(fr) - want) > 2:
-            print("WARN scene %d: %d frames drawn, %d on the grid" % (n + 1, len(fr), want))
+        if abs(len(fr) - want) > 2:                         # v3 (23 Nov): a scene that crashed mid-render left a part of its
+            raise SystemExit("scene %d: %d frames drawn, %d on the grid; render it again (of_film.py %d)"   # drawings, and
+                             % (n + 1, len(fr), want, n + 1))   # v22's first cut held its last one for 13 s with G5 passing
         seq += got
     return seq, total
 
@@ -72,7 +73,7 @@ def encode(seq):
     m1080 = os.path.join(TMP, "of_roughcut_v%d_1080.mp4" % VERSION)
     m540 = os.path.join(sc.OUT, "of_roughcut_v%d_540.mp4" % VERSION)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS), "-i", os.path.join(d, "f%05d.png"),
-                    "-i", os.path.join(sc.OUT, "of_sound_v9.wav"), "-vf", "format=yuv420p", "-c:v", "libx264", "-crf", "18",
+                    "-i", os.path.join(sc.OUT, "of_sound_v10.wav"), "-vf", "format=yuv420p", "-c:v", "libx264", "-crf", "18",
                     "-preset", "veryfast"] + TAGS + ["-c:a", "aac", "-b:a", "192k", "-shortest", m1080], check=True)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", m1080, "-vf", "scale=540:960:flags=lanczos,format=yuv420p",
                     "-c:v", "libx264", "-crf", "20", "-preset", "veryfast"] + TAGS + ["-c:a", "copy", m540], check=True)

@@ -202,10 +202,11 @@ def father(k, x, feet, s, face="hard", look=(1, 0), targets=()):
             free[side] = ik(side * 40, sy, tx, ty, 48, 48, side)
         pose = tuple(list(free.get(-1, (-8, 0))) + list(free.get(1, (8, 0))))
     dc.BROW_UP[0] = 14 if face == "brow2" else 9; dc.BROW_DARK[0] = face == "brow2"                                # v8: his one move, big enough to read
+    dc.MOUTH_CODE[0] = FATHER_MOUTH[0]; dc.BLINK[0] = blink("father")
     try:
         o = dc.father(k, x, feet, s, pose=pose, face="brow" if face == "brow2" else face, look=look)
     finally:
-        dc.BROW_UP[0] = 9; dc.BROW_DARK[0] = False
+        dc.BROW_UP[0] = 9; dc.BROW_DARK[0] = False; dc.MOUTH_CODE[0] = None; dc.BLINK[0] = False
     _stubble(k, o["head"], s, low=face == "low")
     return o
 
@@ -251,6 +252,36 @@ def _narrow(fn):
 
 
 MOUTH = [None]                                             # the film's lip sync: a mouth code for the Client this drawing
+FATHER_MOUTH = [None]; DON_MOUTH = [None]                  # v2 (23 Nov, decided): lip sync for every speaker with a mouth
+NOW = [None]                                               # v1 (23 Nov, decided: no frozen frames): the film's clock this drawing
+
+
+LOOP_T = [None]                                            # the film's length: breaths fit it a whole number of times (the loop)
+
+
+def _fit(period):
+    T = LOOP_T[0]
+    return T / max(1, round(T / period)) if T else period
+
+
+def blink(name):
+    """a blink, 2 drawings, on each face's own clock (the film's time, so a cut doesn't reset it); never in the
+    first or the last half second (frame 0 and the loop's last frame stay the same drawing)."""
+    if NOW[0] is None:
+        return False
+    if NOW[0] < 0.5 or (LOOP_T[0] and NOW[0] > LOOP_T[0] - 0.5):
+        return False
+    period, off = {"client": (3.3, 0.4), "father": (4.1, 1.7), "don": (2.9, 2.2)}.get(name, (3.7, 0.0))
+    return (NOW[0] + off) % period < 0.13
+
+
+def breath(name):
+    """a slow breath, the body taller by up to 0.7 % about the feet, each on its own phase."""
+    if NOW[0] is None:
+        return 0.0
+    ph = {"client": 0.0, "father": 1.3, "g1": 2.1, "g2": 0.7, "don": 1.9, "pam": 2.6, "robot": 0.0}.get(name, 0.5)
+    P = _fit(3.4)                                          # a whole number of breaths in the film: the loop's join holds
+    return 0.007 * math.sin(2 * math.pi * (NOW[0] + ph * P / 3.4) / P) if name != "robot" else 0.0
 
 
 @_narrow
@@ -261,7 +292,16 @@ def client(k, x, feet, s, look=(-1, 0), targets=(), clip_hip=False, face="bored"
         hip = feet + co.HIP * s
         c.save(); c.rectangle(x - 300, hip - 500, 600, 506); c.clip()
     import client_of as cof                                   # the garage outfit (client_of v1, 22 Nov)
-    o = cof.client(k, x, feet, s, pose, face, look=look, mouth=MOUTH[0])
+    old_f = old_g = None
+    if blink("client"):                                       # v1 (23 Nov): his blink, every lid shut for 2 drawings
+        old_f, old_g = dict(co.FACES), dict(cof.FACES)        # (the garage faces are client_of's own table)
+        co.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in co.FACES.items()})
+        cof.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in cof.FACES.items()})
+    try:
+        o = cof.client(k, x, feet, s, pose, face, look=look, mouth=MOUTH[0])
+    finally:
+        if old_f is not None:
+            co.FACES.clear(); co.FACES.update(old_f); cof.FACES.clear(); cof.FACES.update(old_g)
     if clip_hip:
         c.restore()
     return o
@@ -607,8 +647,17 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
     feet = seat_y - dq.WAIST * s
     c.save(); c.rectangle(x - 200 * s, seat_y - 400 * s, 400 * s, 400 * s + 2); c.clip()
     c.save(); c.translate(x, seat_y); c.rotate(-0.10 * forward); c.translate(-x, -seat_y)
-    draw_d = lambda: sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=look)
+    br_ = breath("don")                                                                 # v7 (23 Nov): he breathes in the throne
+    def draw_d():
+        c.save(); c.translate(x, seat_y); c.scale(1.0, 1.0 + br_); c.translate(-x, -seat_y)
+        try:
+            return sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=look)
+        finally:
+            c.restore()
     o = held(k, draw_d, lambda o_: list(o_["hands"][:2])) if phone_dad else draw_d()   # v5 (hand audit): the phone and the clutch
+    if DON_MOUTH[0]:                                                                    # v6 (23 Nov): his lines lip-synced,
+        import iwry_mouths as im_                                                       # in the head's own (leaning) frame
+        im_.don_mouth(k, o["head"], DON_MOUTH[0])
                                                                                         # are his hands there: one hand per wrist
     c.restore()
     c.restore()

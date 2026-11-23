@@ -175,7 +175,7 @@ def room(total):
 
 # --- the mix ----------------------------------------------------------------------------------------------------------
 def timing():
-    d = json.load(open(os.path.join(OUT, "of_timing_v9.json")))
+    d = json.load(open(os.path.join(OUT, "of_timing_v10.json")))
     return {s["shot"]: s for s in d["shots"]}, d["total"]
 
 
@@ -209,7 +209,7 @@ def mix():
     for k in (0.10, 0.38):
         put(fxb, scrape(0.4), T("0.8") + k, 0.40); put(fxb, creak_car(0.4), T("0.8") + k, 0.25)
     put(fxb, car_door(), T("0.6") + 0.05, 0.40)                          # v6: Father has arrived (his car door, outside)
-    put(fxb, si.clank(), T("0.4") + 1.0, 0.35)
+    put(fxb, si.clank(), T("0.4") + 0.7, 0.35)                           # v10: the shot is 1.0 s
     put(fxb, lighter_click(), T("1.2") + 0.05, 0.75)
     put(fxb, whoosh(0.4), T("1.2") + 0.42, 0.55)                          # v4: the 7 catches
     put(fxb, crackle(1.4), T("1.2") + 0.45, 0.30)                         # it burns up the plan
@@ -223,7 +223,7 @@ def mix():
     for k_ in (0.05, 0.65):                                                # the visor's countdown ticks
         put(fxb, si.clank()[: int(0.05 * SR)], T("3.6b") + k_, 0.25)
     put(fxb, bm.buzz_phone(0.9), T("3.6") + 0.05, 0.40)
-    put(fxb, ring_out(1.6), T("3.7") + 0.15, 0.30)                        # v5: it rings, and rings; nobody answers
+    put(fxb, ring_out(1.25), T("3.7") + 0.15, 0.30)                        # v5: it rings, and rings; nobody answers
     put(fxb, bm.buzz_phone(0.7), T("4.1") + 0.05, 0.35)
     put(fxb, car_door(), E("4.1") - 0.30, 0.45)
     put(fxb, pull_away(1.6), T("4.2"), 0.45)
@@ -273,7 +273,7 @@ def master(a, target=-14.0, tp=-2.6):          # AAC adds about 0.9 dB
     stays under tp (lessons: the AAC overshoot is checked on the final file too)."""
     from scipy.signal import resample_poly
     from scipy.ndimage import minimum_filter1d
-    path = os.path.join(OUT, "of_sound_v9.wav")
+    path = os.path.join(OUT, "of_sound_v10.wav")
     g = 1.0
     x = a / (np.abs(a).max() + 1e-9) * 0.5
     for _ in range(6):
@@ -298,7 +298,7 @@ def check(lines, path=None, out=None):
     path: another mix to check (the rough cut's decoded AAC); out: where the json goes."""
     import of_voices as ov
     import sound_fs as sfs
-    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v9.wav"))
+    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v10.wav"))
     if a.ndim > 1:
         a = a.mean(axis=1)
     r = ov.recognizer()
@@ -325,7 +325,7 @@ def check(lines, path=None, out=None):
         prev = (t0, line.split(":", 1)[1] if ":" in line else line)
         res[sid] = dict(line=line, heard=heard, ok=ok)
         print("%-5s %d/3  %-48s | %s" % (sid, ok, line[:48], heard[0]), flush=True)
-    json.dump(res, open(out or os.path.join(OUT, "of_sound_v9_check.json"), "w"), indent=1)
+    json.dump(res, open(out or os.path.join(OUT, "of_sound_v10_check.json"), "w"), indent=1)
     return res
 
 
@@ -338,7 +338,7 @@ def levels(path):
 if __name__ == "__main__":
     a, lines, total = mix()
     master(a)
-    I, P = levels(os.path.join(OUT, "of_sound_v9.wav"))
+    I, P = levels(os.path.join(OUT, "of_sound_v10.wav"))
     print("master: %.1f s, %.1f LUFS, true peak %.1f dBTP" % (total, I, P))
     res = check(lines)
     KNOWN = {"2.6": "\"And then?\" is heard \"On then\" in 2 of 3 windows in the mix (1 of 3 dry at stop 2 without context): "

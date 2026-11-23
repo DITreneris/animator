@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "soundFile": "/tmp/rh_2.8c.wav",
+    "duration": 0.75
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.06, "value": "B" },
+    { "start": 0.06, "end": 0.33, "value": "C" },
+    { "start": 0.33, "end": 0.40, "value": "B" },
+    { "start": 0.40, "end": 0.47, "value": "F" },
+    { "start": 0.47, "end": 0.66, "value": "A" },
+    { "start": 0.66, "end": 0.74, "value": "B" },
+    { "start": 0.74, "end": 0.75, "value": "X" }
+  ]
+}
