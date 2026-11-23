@@ -47,3 +47,16 @@ Nothing in `fs_set4.py` changed. The props are drawn through a shot's own hooks 
 **Why:** the concept had Don at a desk, and this set gives him none; the chair replaces it and plants the evidence in the first shot. The machine sits by Pam so that her motive (an empty cup) and its cause are in one frame.
 
 The club booth (`dh_props.booth`) is a separate full-frame drawing, not part of this set.
+
+## Episode 14 (*Pick a Side*): the set's additions (`src/ps_set.py`, 23 Nov)
+
+All drawn on top of the front desk v4 by `ps_set.room()`; nothing in `fs_set4.py`, `set_ob.py` or `dh_props.py` changes, and earlier episodes rebuild as before.
+
+- **The glass door is shut** for this episode (fs_set4 draws it 85 % open; `ps_set` passes `open_=0` for its own frames only).
+- **Blinds** on the glass: white horizontal slats on a rail, a cord each side (Don's left at x 32, the robot's right at x 164); states up, down (0..1, the room dims), torn (the rail hangs from its left bracket, the slats are on Don), rehung.
+- **The tape** at world x 560 from the back wall to the camera, "DON" and an arrow into his side in black marker. Left = Don's side (zones A, B), right = Father's (C). Never in S2's knees-up framing (1.1, 6.2).
+- **The throne's $49,999 tag** on a string from the crown. Drawn here for the first time: episode 12's film has no tag.
+- **The robot's card** (v2, from 2.1b): a white inventory card clipped on the throne's back, a cyan barcode, **OWNER: INVESTOR**. Spun (2.2 on), the throne is drawn from behind: the tag's blank back, the card to the room.
+- **Pam's phone** face up at the counter's left end (640, 640): dark, or lit; its close (5.7) reads INVITATION · DAD.
+- **The step stool** (5.3–5.6) and **Father's booth** as in 12 with the Client's oily handprint (4.3).
+- **v3** (set audit, 23 Nov): every state change made bigger than the object: the tape 40 % wider with a dark edge; torn keeps 3 crooked slats on the broken rail and a short cord; rehung has one bent slat (Pam's repair); the price tag 1.5x; the cords shorter, Don's pull white, the robot's grey; Pam's phone is episode 13's invitation card exactly (cream, purple INVITATION, black DAD); the handprint 1.5x.
