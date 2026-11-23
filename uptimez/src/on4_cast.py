@@ -291,6 +291,14 @@ def paddle(k, x, y, s, side="STOP", ang=0.0):
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
     c.set_source_rgb(*INK); c.set_line_width(9); c.move_to(0, 10); c.line_to(0, -96); c.stroke()
     c.set_source_rgb(0.85, 0.85, 0.86); c.set_line_width(5); c.move_to(0, 10); c.line_to(0, -96); c.stroke()
+    if side == "EDGE":                                                # mid-flip: the disc edge-on, a thin ellipse
+        c.save(); c.translate(0, -134); c.scale(7, 44); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgb(0.85, 0.85, 0.86); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3); c.stroke()
+        for dx in (-26, 26):                                          # two short turn arcs
+            c.new_path(); c.arc(0, -134, 52, math.pi * (1.15 if dx < 0 else -0.15), math.pi * (1.4 if dx < 0 else 0.1))
+            c.set_line_width(3); c.stroke()
+        c.restore()
+        return
     c.new_path(); c.arc(0, -134, 44, 0, 2 * math.pi)
     c.set_source_rgb(*(NEON if side == "STOP" else GO_GREEN)); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3); c.stroke()
     c.new_path(); c.arc(0, -134, 37, 0, 2 * math.pi); c.set_source_rgb(1, 1, 1); c.set_line_width(3); c.stroke()
@@ -298,15 +306,18 @@ def paddle(k, x, y, s, side="STOP", ang=0.0):
     c.restore()
 
 
-def don_cop2(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistle_in=False, paddle_side=None, paddle_ang=0.0):
+def don_cop2(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistle_in=False, paddle_side=None, paddle_ang=0.0,
+             chin=0, grip=True):
     """v4 Don the traffic cop (opt-in; don_cop is untouched): the cap, the silver shield, white gloves, the whistle on its
     cord (in his mouth on the toot), and the STOP / GO paddle in his screen-right hand."""
     c = k.c
     p, hands = DON_POSES.get(pose, (pose, None))
+    if paddle_side and grip:                                          # v4b: with the paddle the hand is a grip, always
+        hands = ((hands or ("relax", "relax"))[0], "grab")
     import fs_storyboard as sb_
     def body():                                                       # no headset in the dream (Office Noir took it off too);
         with _swap((hp, "hand", _wrap_white(hp.hand)), (sb_, "don_signs", lambda *a, **kw: None)):   # the cap covers his hair
-            return don_ps.don(k, x, feet, s, p, face, look, hands=hands)
+            return don_ps.don(k, x, feet, s, p, face, look, hands=hands, chin=chin)
     o = None
     if paddle_side:                                                   # find the hand, lay the paddle there, draw him over it
         c.push_group(); o = body(); c.pop_group()
@@ -314,11 +325,18 @@ def don_cop2(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whist
         paddle(k, rx, ry, s * 1.1, paddle_side, paddle_ang)
     o = body()
     hx, hy = o["head"]
-    shield(c, hx - 44 * s, hy + 106 * s, 20 * s)
+    shield(c, hx - 26 * s, hy + 112 * s, 18 * s)
     c.set_source_rgb(0.30, 0.30, 0.32); c.set_line_width(2.4 * s)
-    if whistle_in:
-        c.move_to(hx + 12 * s, hy + 34 * s); c.curve_to(hx + 30 * s, hy + 60 * s, hx + 26 * s, hy + 80 * s, hx + 14 * s, hy + 90 * s); c.stroke()
-        whistle(c, hx + 10 * s, hy + 31 * s, s * 1.3)
+    if whistle_in:                                                    # v4b: the toot reads: the cord runs to his chest, the
+        c.set_line_width(3 * s)                                       # whistle big, cheeks puffed, two toot lines
+        c.move_to(hx + 4 * s, hy + 36 * s); c.curve_to(hx + 2 * s, hy + 70 * s, hx - 10 * s, hy + 100 * s, hx - 18 * s, hy + 120 * s); c.stroke()
+        whistle(c, hx + 8 * s, hy + 33 * s, s * 1.9)
+        c.set_source_rgb(*INK); c.set_line_width(2.4 * s)
+        for sx in (-1, 1):
+            c.new_path(); c.arc(hx + sx * 30 * s, hy + 26 * s, 9 * s, -0.6 if sx > 0 else math.pi - 0.6, 0.6 if sx > 0 else math.pi + 0.6); c.stroke()
+        c.set_line_width(3 * s)
+        for dy in (-10, 6):
+            c.move_to(hx + 36 * s, hy + (30 + dy) * s); c.line_to(hx + 58 * s, hy + (24 + dy * 1.6) * s); c.stroke()
     else:
         c.move_to(hx - 18 * s, hy + 80 * s); c.curve_to(hx - 10 * s, hy + 120 * s, hx + 6 * s, hy + 130 * s, hx + 14 * s, hy + 132 * s); c.stroke()
         whistle(c, hx + 18 * s, hy + 134 * s, s)
@@ -326,23 +344,27 @@ def don_cop2(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whist
     return o
 
 
-def don_sheet(out="../office-noir-4/on4_don_v4.png"):
-    """Don v4: the traffic cop, serious; the paddle's gag: STOP to Pam, GO to the car."""
-    import on4_street as st_
-    W_, H_ = 4 * 300 + 40, 640
+def don_sheet(out="../office-noir-4/on4_don_v5.png"):
+    """Don v4b, the paddle's choreography for 3.1-3.3: STOP raised to Pam's side, the flip (edge-on), GO raised to the car
+    with the toot, GO lowered at rest. One grip point; the faces stern, pleased, bored; his eyes on the car throughout
+    (nobody looks at her). In the sheet Pam is to his right (the paddle's side) and the car to his left."""
+    W_, H_ = 4 * 300 + 40, 660
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W_ * 2, H_ * 2); s.set_device_scale(2, 2)
     c = cairo.Context(s); k = Ctx(c, 0)
     c.set_source_rgb(0.58, 0.58, 0.60); c.paint()
-    labs = [("the cop (no paddle)", dict(pose="stand")),
-            ("3.1 STOP to Pam", dict(pose="stop", paddle_side="STOP", paddle_ang=0.0)),
-            ("3.1 GO to the car", dict(pose="wave", paddle_side="GO", paddle_ang=0.25, whistle_in=True)),
-            ("3.3 the paddle down", dict(pose="stand", paddle_side="STOP", paddle_ang=2.9, face="neutral"))]
-    for i, (lab, kw) in enumerate(labs):
-        don_cop2(k, 150 + i * 300, 600, 0.95, look=(0.6, 0) if i != 2 else (-0.6, 0), **kw)
+    labs = [("1 STOP at Pam's side", "stern; eyes on the car", dict(pose="stop", paddle_side="STOP", face="confused", chin=1, look=(-0.8, 0))),
+            ("2 the flip", "edge-on, one drawing", dict(pose=(-8, 0, 92, -40), paddle_side="EDGE", face="confused", chin=1, look=(-0.8, 0))),
+            ("3 GO to the car", "the toot; pleased", dict(pose="wave", paddle_side="GO", paddle_ang=0.25, whistle_in=True, face="pleased", look=(-0.8, -0.2))),
+            ("4 GO at rest", "bored: 'Not a scratch.'", dict(pose="stand", paddle_side="GO", paddle_ang=0.55, face="neutral", look=(-0.7, 0.4)))]
+    for i, (lab, sub, kw) in enumerate(labs):
+        don_cop2(k, 150 + i * 300, 610, 0.95, **kw)
     eng.TONE = "v3"; eng.accent_pass(s, [(NEON, 1.0)])
-    c = cairo.Context(s); c.set_source_rgb(0, 0, 0); c.select_font_face("Inter", 0, 1); c.set_font_size(18)
-    for i, (lab, kw) in enumerate(labs):
-        c.move_to(20 + i * 300, 30); c.show_text(lab)
+    c = cairo.Context(s); c.set_source_rgb(0, 0, 0); c.select_font_face("Inter", 0, 1)
+    for i, (lab, sub, kw) in enumerate(labs):
+        c.set_font_size(18); c.move_to(20 + i * 300, 30); c.show_text(lab)
+        c.select_font_face("Inter", 0, 0); c.set_font_size(14); c.move_to(20 + i * 300, 50); c.show_text(sub); c.select_font_face("Inter", 0, 1)
+    c.set_font_size(15); c.move_to(20, 646); c.show_text("<- the car (his eyes)")
+    c.move_to(W_ - 220, 646); c.show_text("Pam (the paddle's side) ->")
     s.write_to_png(out)
     return out
 
