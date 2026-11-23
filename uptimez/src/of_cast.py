@@ -656,8 +656,11 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
             c.restore()
     o = held(k, draw_d, lambda o_: list(o_["hands"][:2])) if phone_dad else draw_d()   # v5 (hand audit): the phone and the clutch
     if DON_MOUTH[0]:                                                                    # v6 (23 Nov): his lines lip-synced,
-        import iwry_mouths as im_                                                       # in the head's own (leaning) frame
-        im_.don_mouth(k, o["head"], DON_MOUTH[0])
+        import iwry_mouths as im_                                                       # in the head's own (leaning) frame;
+        hx_, hy_ = o["head"]                                                            # v7 (Tomas, 0:47: "the lips jump out"):
+        c.save(); c.translate(hx_, hy_); c.scale(s, s)                                  # at HIS scale (0.6), not 1.0 (don_mouth
+        im_.mouth(k, 0, 32, DON_MOUTH[0], kit.PEOPLE["DON"]["skin"], erase=(20, 15), seed=530)   # assumes a full-size Don)
+        c.restore()
                                                                                         # are his hands there: one hand per wrist
     c.restore()
     c.restore()

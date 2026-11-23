@@ -168,7 +168,8 @@ SCENES = [
         S("3.4", "CLOSE", "desk", "CLOSE, the robot. **ITS HEAD TURNS, SLOWLY**, to Don. Still smiling. **The peak: hold it.**",
           action="the head turns", state=dict(desk="robot", turn=True)),
         S("3.4b", "CLOSE", "desk", "v9: CLOSE, the robot, turned to Don, still smiling. It doesn't say who.",
-          line='ROBOT: "Calendar says... you\'ll see."', state=dict(desk="robot", turn=True)),
+          line='ROBOT: "Calendar says... you\'ll see."', state=dict(desk="robot", turn=True, don_edge=True)),   # v10 (Tomas, 0:49:
+          # "he flies away, only the robot is left"): the throne stays where 3.4 slid it in; the robot is turned TO him
         S("3.5", "CLOSE", "desk", "CLOSE, Don, as 3.3. He follows the look down, to himself. The smile goes in one drawing.",
           reaction="the smile goes", state=dict(desk="don", don="stiff")),
         S("3.5b", "CLOSE", "desk", "v9: CLOSE, Don, as 3.3. He turns to the counter, to Pam. Nobody has told him.",
