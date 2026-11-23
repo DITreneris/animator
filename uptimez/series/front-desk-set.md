@@ -50,4 +50,4 @@ The club booth (`dh_props.booth`) is a separate full-frame drawing, not part of 
 
 ## v6: the throne's PAID BY DAD tag (episode 13 v9 on), opt-in
 
-`dh_props.TAG` (default `None`, so episode 12 draws as before; `dh_props_v5.py` is the pinned v5). Set to `"PAID\nBY DAD"` by `of_scenes.py` for episode 13's office shots (rough cut v9) and from then on for the Civil War. A narrow red swing ticket pinned to the crown's left point, above Don's head and clear of it, whole in every close-up of the throne (checked in 3.1, 3.3, 3.5, 3.7). **Why:** STORYLINE v3.4: the throne is power in the Civil War, and it isn't Don's any more.
+`dh_props.TAG` (default `None`, so episode 12 draws as before; `dh_props_v5.py` is the pinned v5). To be set to `"PAID\nBY DAD"` for the Civil War: by episode 13's own branch for its office shots (requested, not done here), and by episode 14's scene file. A narrow red swing ticket pinned to the crown's left point, above Don's head and clear of it, whole in every close-up of the throne (tested on The Offer v8's 3.1, 3.3, 3.5, 3.7). **Why:** STORYLINE v3.4: the throne is power in the Civil War, and it isn't Don's any more.

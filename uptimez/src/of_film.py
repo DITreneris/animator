@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 8, 2: 12, 3: 7, 4: 11, 5: 7}                     # v9 cut: scene 4 v11 (PAID BY DAD on the throne)
+VER = {1: 9, 2: 13, 3: 8, 4: 11, 5: 8}
 SOUND = "of_sound_v5.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15

@@ -51,7 +51,7 @@ def limb(k, sx, sy, a1, a2, ln1, ln2, w1, w2, col1, col2, skin, hand_r, seed, ha
     import kit as _kit
     if hand_first:
         if _kit.HAND[0]:                                                # an episode's own hand (opt-in)
-            _kit.HAND[0](k, hx + _d(a1 + a2)[0] * hand_off, hy + _d(a1 + a2)[1] * hand_off, hand_r / 0.6, skin, seed,
+            _kit.HAND[0](k, hx + _d(a1 + a2)[0] * hand_off, hy + _d(a1 + a2)[1] * hand_off, hand_r / 0.6 * 0.8, skin, seed,
                          _d(a1 + a2), 1 if a2 >= 0 else -1)
         else:
             ellipse(k, hx + _d(a1 + a2)[0] * hand_off, hy + _d(a1 + a2)[1] * hand_off, hand_r, hand_r, skin, seed,
@@ -110,7 +110,7 @@ def limb(k, sx, sy, a1, a2, ln1, ln2, w1, w2, col1, col2, skin, hand_r, seed, ha
                 (ex - px * hw - ux * cw, ey - py * hw - uy * cw)], col, shadow=False, lw=1.8)
     if not hand_first:
         if _kit.HAND[0]:
-            _kit.HAND[0](k, hx, hy, hand_r / 0.6, skin, seed, _d(a1 + a2), 1 if a2 >= 0 else -1)
+            _kit.HAND[0](k, hx, hy, hand_r / 0.6 * 0.8, skin, seed, _d(a1 + a2), 1 if a2 >= 0 else -1)   # v2: 20 % smaller (heavy rigs)
         else:
             ellipse(k, hx, hy, hand_r, hand_r, skin, seed, shadow=False, lw=2)
     return hx, hy
