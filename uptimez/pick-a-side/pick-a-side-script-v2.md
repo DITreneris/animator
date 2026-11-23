@@ -1,6 +1,6 @@
 # Pick a Side: the script, v2
 
-UptimeZ Inc. · episode 14 · *Civil War* 2 of 5 · 23 Nov · **stage 1, for stop 1.** v2 takes Tomas's three answers (23 Nov), below. v1 is kept. Written by hand from concept v3.2 (approved) and floor plan v2. From stage 4 on, `src/ps_scenes.py` will generate the script; this one is kept as the plan it starts from. Times are estimates until the voices are recorded (stage 2).
+UptimeZ Inc. · episode 14 · *Civil War* 2 of 5 · 23 Nov · **Stop 1 PASSED: approved by Tomas, 23 Nov.** v2 takes Tomas's three answers (23 Nov), below. v1 is kept. Written by hand from concept v3.2 (approved) and floor plan v2. From stage 4 on, `src/ps_scenes.py` will generate the script; this one is kept as the plan it starts from. Times are estimates until the voices are recorded (stage 2).
 
 **About 59 s, 35 shots, 13 lines.** The front desk v4 with the v6 throne tag (PAID BY DAD), the tape at world x 560, the blinds on the glass door; plus Father's booth from 12. FRI 12 on the wall calendar: the same day as 11, 12 and 13, minutes after 13's office scene.
 
