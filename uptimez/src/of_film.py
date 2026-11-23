@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 7, 2: 10, 3: 5, 4: 8, 5: 5}
-SOUND = "of_sound_v3.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 7, 2: 11, 3: 6, 4: 8, 5: 6}
+SOUND = "of_sound_v4.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -48,26 +48,48 @@ def s11(t, L):                                             # the finger goes to 
     return {}, dict(g2=dict(targets=["bay7_point"], point=ease(t / 0.40) > 0.5, turn=turn))
 
 
-def s12(t, L):                                             # the lighter comes up; CLICK; the flame; the paper browns
+def _T(sid, t):
+    return sc._timing()[sid]["start"] + t
+
+
+LAND_AT = ("1.3", 0.50)                                    # the burning 7 lands by his boot
+FLOOR_BURN = 3.2                                           # and burns out in this long
+
+
+def _floor(sid, t):
+    p = (_T(sid, t) - _T(*LAND_AT)) / FLOOR_BURN
+    return None if p < 0 else min(1.0, p)
+
+
+def s12(t, L):                                             # v2 (23 Nov): the lighter; CLICK; the 7 CATCHES and the fire climbs
     up = ease(t / 0.30)
     lit = t > 0.35
     import of_set as gs
     bx, by = gs.bay7()
     hand = (bx + 2, by + 92 + 60 * (1 - up))
-    return dict(burn=0.4 * ease((t - 0.45) / 0.80)), dict(g2=dict(targets_xy=[hand], lighter=1.0 if lit else 0.0,
-                                                                   lid=1.0 if t > 0.25 else 0.0))
+    f = ease((t - 0.42) / 0.80)
+    return dict(burn=0.7 * f, fire=f, fire_t=_T("1.2", t)), dict(g2=dict(targets_xy=[hand], lighter=1.0 if lit else 0.0,
+                                                                          lid=1.0 if t > 0.25 else 0.0))
 
 
-def s13(t, L):                                             # the creeper rolls out; he sits up; the rag; the flame; the watch
-    import of_set as gs
-    if t < 0.45:
-        return dict(_cast=("father", "g1", "g2"), sit=False, legs_out_v=gs.LEGS_OUT * ease(t / 0.40), burn=0.5), {}
-    look = (1, -0.6) if t < 0.95 else (0.9, 2.0)              # to the flame, then down at the watch
-    return dict(burn=0.6), dict(client=dict(kind="sit", look=look, face="glance" if t >= 0.95 else "bored"))
+def s13(t, L):                                             # v2: he TEARS the burning 7 off and flings it over the car: it lands by
+    import of_set as gs                                    # the boot (the boot doesn't move); then the creeper rolls out past it;
+    bx, by = gs.bay7()                                     # he sits up, looks at the fire by his feet, then at his watch
+    ft = _T("1.3", t)
+    fly = None if t < 0.15 else min(1.0, (t - 0.15) / 0.35)
+    st = dict(burn=0.7 if t < 0.15 else 0.8, fire=1.0 if t < 0.15 else 0.25, fire_t=ft,
+              sheet_fly=fly if (fly is not None and fly < 1.0) else None, sheet_floor=_floor("1.3", t))
+    g2 = dict(targets_xy=[(bx - 6, by - 20) if t < 0.15 else (bx + 30, by - 70)], lighter=1.0, lid=1.0)
+    if t < 0.88:
+        out = gs.LEGS_OUT * ease((t - 0.55) / 0.30)
+        return dict(st, _cast=("father", "g1", "g2"), sit=False, legs_out_v=out), dict(g2=g2)
+    look = (0.6, 1.0) if t < 1.10 else (0.9, 2.0)              # at the fire by his feet, then down at the watch
+    return st, dict(g2=g2, client=dict(kind="sit", look=look, face="glance" if t >= 1.10 else "bored"))
 
 
 def s14(t, L):                                             # "Burn them...": he wipes his hands on the rag as he talks
-    return {}, dict(client=dict(kind="sit", look=(-1, -0.2), wipe=math.sin(t * 2 * math.pi * 0.9)))
+    return dict(sheet_floor=_floor("1.4", t), fire_t=_T("1.4", t), burn=0.8), \
+        dict(client=dict(kind="sit", look=(-1, -0.2), wipe=math.sin(t * 2 * math.pi * 0.9)))
 
 
 # --- scene 3, The Offer ----------------------------------------------------------------------------------------------
@@ -279,6 +301,15 @@ MOTION["2.3"] = s23
 MOTION["2.8e"] = s28e2
 for _sid, _fn in om.veto():
     MOTION[_sid] = _fn
+_s15 = MOTION.get("1.5")
+
+
+def s15_fire(t, L):                                        # the plan still smoulders at the hole while he turns to Father
+    st, po = _s15(t, L) if _s15 else ({}, {})
+    return dict(st, burn=0.8, fire=0.15, fire_t=_T("1.5", t)), po
+
+
+MOTION["1.5"] = s15_fire
 MOTION["1.6"] = lambda t, L: _veto(t, None)
 MOTION["1.7"] = lambda t, L: _veto(None, t)
 for _sid, _fn in om.turn():

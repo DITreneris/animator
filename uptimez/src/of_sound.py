@@ -14,6 +14,7 @@ The effects follow the script's sound notes:
 Music (lesson 107): one sparse bed in the garage, cut dead on the lighter's click and back in after "Done."; the office
 gets the chime and silence."""
 import json
+import math
 import os
 import subprocess
 import numpy as np
@@ -123,6 +124,20 @@ def flame(d):
     return a + crackle * 0.6
 
 
+def whoosh(d=0.35):
+    """the paper catching / thrown: a band of noise swelling and dying."""
+    n = lp(noise(d), 6) - lp(noise(d), 40)
+    return n * np.sin(np.linspace(0, math.pi, len(n))) ** 1.5
+
+
+def crackle(d):
+    """burning paper: noise with sparse pops."""
+    rng = np.random.default_rng(13)
+    a = hp(noise(d), 3) * 0.25
+    pops = (rng.random(len(a)) > 0.9993).astype(float) * rng.uniform(0.5, 1.0, len(a))
+    return a + lp(pops, 2) * 2.5
+
+
 def slam():
     t = t_(0.6)
     a = np.sin(2 * np.pi * 85 * t) * np.exp(-t * 12) + lp(noise(0.6), 8) * np.exp(-t * 25)
@@ -195,6 +210,10 @@ def mix():
         put(fxb, scrape(0.4), T("0.8") + k, 0.40); put(fxb, creak_car(0.4), T("0.8") + k, 0.25)
     put(fxb, si.clank(), T("0.4") + 1.0, 0.35)
     put(fxb, lighter_click(), T("1.2") + 0.05, 0.75)
+    put(fxb, whoosh(0.4), T("1.2") + 0.42, 0.55)                          # v4: the 7 catches
+    put(fxb, crackle(1.4), T("1.2") + 0.45, 0.30)                         # it burns up the plan
+    put(fxb, whoosh(0.35), T("1.3") + 0.15, 0.45)                         # torn off and flung
+    put(fxb, crackle(3.0), T("1.3") + 0.50, 0.32)                         # on the floor by his boot
     put(fxb, flame(E("1.5") + 0.5 - T("1.2")), T("1.2") + 0.08, 0.10)
     put(fxb, lighter_shut(), T("1.7") + 0.22, 0.70)
     put(fxb, slam(), T("2.8d") + 0.30, 0.85)
@@ -251,7 +270,7 @@ def master(a, target=-14.0, tp=-2.6):          # AAC adds about 0.9 dB
     stays under tp (lessons: the AAC overshoot is checked on the final file too)."""
     from scipy.signal import resample_poly
     from scipy.ndimage import minimum_filter1d
-    path = os.path.join(OUT, "of_sound_v3.wav")
+    path = os.path.join(OUT, "of_sound_v4.wav")
     g = 1.0
     x = a / (np.abs(a).max() + 1e-9) * 0.5
     for _ in range(6):
@@ -276,7 +295,7 @@ def check(lines, path=None, out=None):
     path: another mix to check (the rough cut's decoded AAC); out: where the json goes."""
     import of_voices as ov
     import sound_fs as sfs
-    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v3.wav"))
+    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v4.wav"))
     if a.ndim > 1:
         a = a.mean(axis=1)
     r = ov.recognizer()
@@ -303,7 +322,7 @@ def check(lines, path=None, out=None):
         prev = (t0, line.split(":", 1)[1] if ":" in line else line)
         res[sid] = dict(line=line, heard=heard, ok=ok)
         print("%-5s %d/3  %-48s | %s" % (sid, ok, line[:48], heard[0]), flush=True)
-    json.dump(res, open(out or os.path.join(OUT, "of_sound_v3_check.json"), "w"), indent=1)
+    json.dump(res, open(out or os.path.join(OUT, "of_sound_v4_check.json"), "w"), indent=1)
     return res
 
 
@@ -316,7 +335,7 @@ def levels(path):
 if __name__ == "__main__":
     a, lines, total = mix()
     master(a)
-    I, P = levels(os.path.join(OUT, "of_sound_v3.wav"))
+    I, P = levels(os.path.join(OUT, "of_sound_v4.wav"))
     print("master: %.1f s, %.1f LUFS, true peak %.1f dBTP" % (total, I, P))
     res = check(lines)
     KNOWN = {"2.6": "\"And then?\" is heard \"On then\" in 2 of 3 windows in the mix (1 of 3 dry at stop 2 without context): "

@@ -117,6 +117,36 @@ def sign(k, burn=False):
     T(c, "GARAGE 7", (x0 + x1) / 2, y1 - 16, 50, col=(0.97, 0.97, 0.93))
 
 
+FIRE = [0.0, 0.0]                  # v9 (23 Nov, decided: it really burns): the flame's size on the plan (0..1) and the clock
+SHEET = [None, None]               # the burning 7 torn off: (flight 0..1) over the car, then (on the floor 0..1) burning out
+TORN_AT = 0.75                     # burn >= this: the 7 is torn off the plan (a charred hole stays)
+SHEET_LAND = (394, 902)            # where it lands: by his right boot
+
+
+def flames(c, x, y, size, t, seed=0):
+    """cartoon fire: five flickering tongues (red, orange, yellow), smoke, a few embers. size: the tallest tongue."""
+    import random
+    rnd = random.Random(seed)
+    for i in range(3):                                                                      # smoke, rising, behind
+        a_ = (t * 0.9 + i / 3.0) % 1.0
+        c.set_source_rgba(0.30, 0.30, 0.32, 0.45 * (1 - a_))
+        c.arc(x + 8 * math.sin(t * 2 + i), y - size * (1.0 + 1.6 * a_), size * (0.25 + 0.45 * a_), 0, 2 * math.pi); c.fill()
+    for col, k_ in (((0.86, 0.20, 0.08), 1.0), ((0.98, 0.55, 0.10), 0.75), ((1.0, 0.90, 0.40), 0.45)):
+        for j in range(5):
+            ph = rnd.random() * 6.28
+            h = size * k_ * (0.55 + 0.45 * abs(math.sin(t * (7 + j) + ph))) * (1.0 if j == 2 else 0.75)
+            w = size * 0.22 * k_
+            bx = x + (j - 2) * size * 0.22 * k_
+            c.new_path(); c.move_to(bx - w, y)
+            c.curve_to(bx - w, y - h * 0.5, bx + 0.3 * w * math.sin(t * 9 + j), y - h * 0.8, bx + 0.25 * w * math.sin(t * 11 + j), y - h)
+            c.curve_to(bx + w * 0.4, y - h * 0.6, bx + w, y - h * 0.4, bx + w, y)
+            c.close_path(); c.set_source_rgb(*col); c.fill()
+    for i in range(4):                                                                      # embers
+        a_ = (t * 1.3 + i * 0.27) % 1.0
+        c.set_source_rgba(1.0, 0.65, 0.2, 1 - a_)
+        c.arc(x + size * 0.6 * math.sin(i * 2.1 + t), y - size * (0.6 + 1.4 * a_), 1.8, 0, 2 * math.pi); c.fill()
+
+
 def plan(k, burn=0.0):
     """episode 11's plan, whole (the 7 taped in, MY GARAGES on the tape), pinned to the wall. burn: 0 none, 0..1 the
     flame browning GARAGE 7's corner, 1 the mark that stays (1.7 on, and the last frame)."""
@@ -152,6 +182,25 @@ def plan(k, burn=0.0):
             if col == (0.55, 0.33, 0.12):
                 c.set_source_rgb(*INK); c.set_line_width(1.4); c.stroke()
             c.new_path()
+    if burn >= TORN_AT:                                                                    # v9: the 7 torn off, a charred hole
+        import random
+        rnd = random.Random(77)
+        x0, y0, x1, y1 = 371, 533, 398, 569
+        pts = []
+        for i in range(16):
+            a_ = 2 * math.pi * i / 16
+            r_ = 1 + 0.18 * (rnd.random() - 0.5)
+            pts.append(((x0 + x1) / 2 + math.cos(a_) * (x1 - x0) * 0.62 * r_, (y0 + y1) / 2 + math.sin(a_) * (y1 - y0) * 0.60 * r_))
+        for col, kk in (((0.50, 0.30, 0.12), 1.25), ((0.12, 0.08, 0.05), 1.0)):
+            c.new_path()
+            cx_, cy_ = (x0 + x1) / 2, (y0 + y1) / 2
+            for i, (qx, qy) in enumerate(pts):
+                (c.move_to if i == 0 else c.line_to)(cx_ + (qx - cx_) * kk, cy_ + (qy - cy_) * kk)
+            c.close_path(); c.set_source_rgb(*col); c.fill()
+        c.set_source_rgb(0.86, 0.86, 0.80); c.rectangle(x0 + 4, y0 + 6, x1 - x0 - 8, y1 - y0 - 12); c.fill()   # the wall behind
+    if FIRE[0] > 0:                                                                       # v9: the flame on the plan, growing
+        bx, by = bay7()
+        flames(c, bx - 10, by + 2, 18 + 56 * FIRE[0], FIRE[1], seed=7)            # up the plan, over 6 and 8
     for (dx, dy) in ((-74, -64), (74, -64), (-74, 56), (74, 56)):                         # the drawing pins
         c.set_source_rgb(*RED); c.arc(px + dx * s / 1.2, py + dy * s / 1.2, 4.2, 0, 2 * math.pi); c.fill_preserve()
         c.set_source_rgb(*INK); c.set_line_width(1.2); c.stroke()
@@ -377,9 +426,37 @@ def garage(k, burn=0.0, legs_out=None, bonnet=0.0, lamp_on_floor=True, behind=No
         legs(k, legs_out)
     if lamp_on_floor:
         lamp(k)
+    sheet(k, burn)
     if front:
         front(k)
     cabinet(k)
+    if SHEET[0] is not None and SHEET[0] < 1.0:                                             # in the air, over the car
+        u = SHEET[0]
+        sx0, sy0 = 385, 552
+        x = sx0 + (SHEET_LAND[0] - sx0) * u
+        y = sy0 + (SHEET_LAND[1] - sy0) * u - 220 * 4 * u * (1 - u)
+        c.save(); c.translate(x, y); c.rotate(4.5 * u)
+        rect(k, -13, -16, 26, 32, (0.93, 0.90, 0.80), 3600, lw=1.8)
+        c.set_source_rgb(0.12, 0.08, 0.05); c.rectangle(-13, -16, 26, 10); c.fill()
+        c.restore()
+        flames(c, x, y - 10, 26, FIRE[1] + 3, seed=8)
+
+
+def sheet(k, burn):
+    """the burning 7 on the floor by his boot (SHEET[1]: 0 just landed .. 1 ash), or its ash once it has burnt out."""
+    c = k.c
+    x, y = SHEET_LAND
+    if SHEET[1] is not None:
+        p = SHEET[1]
+        c.save(); c.translate(x, y); c.scale(1.0, 0.45)
+        c.set_source_rgb(*((0.93, 0.90, 0.80) if p < 0.5 else (0.25, 0.18, 0.12)))
+        c.rectangle(-18 * (1 - 0.5 * p), -18 * (1 - 0.5 * p), 36 * (1 - 0.5 * p), 36 * (1 - 0.5 * p)); c.fill()
+        c.restore()
+        if p < 1.0:
+            flames(c, x, y, 44 * (1 - p) + 6, FIRE[1] + 1.5, seed=9)
+    elif burn >= TORN_AT and SHEET[0] is None:
+        c.set_source_rgba(0.10, 0.08, 0.06, 0.65)                                         # the ash, after
+        c.save(); c.translate(x, y); c.scale(1.0, 0.4); c.arc(0, 0, 16, 0, 2 * math.pi); c.restore(); c.fill()
 
 
 def frame(k, cam=FRAME0, draw=garage, **kw):

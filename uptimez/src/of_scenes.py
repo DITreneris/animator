@@ -399,6 +399,8 @@ def garage_shot(k, sh, scene, heads, cam):
             _cast_draw(k, n, scene, sh, heads)
     gs.LID_BEHIND[0] = any(POSES.get(sh["id"], {}).get("client", {}).get("kind") == "bent" for _ in (0,))
     gs.LEGS_WORK[0] = st.get("legs_work", 0.0)                            # v8: the knee taps while he works
+    gs.FIRE[0], gs.FIRE[1] = st.get("fire", 0.0), st.get("fire_t", 0.0)       # v9: the fire, the sheet
+    gs.SHEET[0], gs.SHEET[1] = st.get("sheet_fly"), st.get("sheet_floor")
     gs.garage(k, burn=st.get("burn", 0.0), legs_out=legs_out, bonnet=bon,
               lamp_on_floor=scene in (1, 2, 5) and not st.get("lamp_up"), behind=behind, front=front, tilt=st.get("tilt", 0.0))
     gs.LID_BEHIND[0] = False
