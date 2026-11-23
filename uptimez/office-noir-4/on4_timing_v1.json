@@ -1,0 +1,376 @@
+{
+ "script": "office-noir-4-script-v3.md",
+ "narration": "A",
+ "narration_note": "Pam's own voice, 2 semitones down, slower",
+ "remark": false,
+ "length": 70.04,
+ "lines": {
+  "n1": {
+   "key": "n1",
+   "shot": "1.3",
+   "who": "PAM_N",
+   "kind": "A",
+   "text": "i know how to survive",
+   "len": 1.71,
+   "asr": [
+    "I know how to survive.",
+    "I know how to survive.",
+    "I know how to survive."
+   ],
+   "ok": 3,
+   "phrases": [
+    {
+     "phrase": "I know how to survive.",
+     "speed": 0.9,
+     "pitch_start": 206.9,
+     "pitch_end": 165.5,
+     "falls": true
+    }
+   ],
+   "saturated": 0.0
+  },
+  "n2": {
+   "key": "n2",
+   "shot": "2.4",
+   "who": "PAM_N",
+   "kind": "A",
+   "text": "i know where to see what others do not see",
+   "len": 3.48,
+   "asr": [
+    "I know where to see. What others do not see.",
+    "I know where to see. What others do not see.",
+    "I know where to see. What others do not see."
+   ],
+   "ok": 3,
+   "phrases": [
+    {
+     "phrase": "I know where to see",
+     "speed": 0.9,
+     "pitch_start": 204.3,
+     "pitch_end": 158.9,
+     "falls": true
+    },
+    {
+     "phrase": "what others do not see.",
+     "speed": 0.9,
+     "pitch_start": 206.9,
+     "pitch_end": 154.6,
+     "falls": true
+    }
+   ],
+   "saturated": 0.0
+  },
+  "n3": {
+   "key": "n3",
+   "shot": "3.6",
+   "who": "PAM_N",
+   "kind": "A",
+   "text": "i am like a cat i have seven lives",
+   "len": 3.75,
+   "asr": [
+    "I am like a cat. I have seven lives.",
+    "I am like a cat. I have seven lives.",
+    "I am like a cat. I have seven lives."
+   ],
+   "ok": 3,
+   "phrases": [
+    {
+     "phrase": "I am like a cat.",
+     "speed": 0.9,
+     "pitch_start": 201.7,
+     "pitch_end": 186.8,
+     "falls": true
+    },
+    {
+     "phrase": "I have seven lives.",
+     "speed": 0.9,
+     "pitch_start": 207.8,
+     "pitch_end": 160.5,
+     "falls": true
+    }
+   ],
+   "saturated": 0.0
+  },
+  "s1": {
+   "key": "s1",
+   "shot": "7.2",
+   "who": "SOFIA",
+   "kind": null,
+   "text": "only for you",
+   "len": 0.78,
+   "asr": [
+    "only for you.",
+    "Only for you.",
+    "only for you."
+   ],
+   "ok": 3,
+   "phrases": [
+    {
+     "phrase": "Only for you.",
+     "speed": 1.0,
+     "pitch_start": 237.6,
+     "pitch_end": 190.5,
+     "falls": true
+    }
+   ],
+   "saturated": 0.01
+  }
+ },
+ "shots": [
+  {
+   "shot": "1.1",
+   "start": 0.0,
+   "planned": 1.0,
+   "what": "Frame 0. Pam-Cat's hero pose, Sofia walking at her",
+   "dur": 1.0
+  },
+  {
+   "shot": "1.2",
+   "start": 1.0,
+   "planned": 1.6,
+   "what": "0:01 Sofia sidesteps her",
+   "dur": 1.6
+  },
+  {
+   "shot": "1.3",
+   "start": 2.6,
+   "planned": 2.6,
+   "what": "The pose sags",
+   "line": "n1",
+   "who": "PAM_N",
+   "text": "i know how to survive",
+   "line_start": 3.3,
+   "line_len": 1.71,
+   "asr_ok": 3,
+   "dur": 2.91
+  },
+  {
+   "shot": "1.4",
+   "start": 5.51,
+   "planned": 2.8,
+   "what": "The shadows run to the taillights",
+   "dur": 2.8
+  },
+  {
+   "shot": "2.1",
+   "start": 8.31,
+   "planned": 2.2,
+   "what": "The fire escape, the car below",
+   "dur": 2.2
+  },
+  {
+   "shot": "2.2",
+   "start": 10.51,
+   "planned": 1.6,
+   "what": "The back seat",
+   "dur": 1.6
+  },
+  {
+   "shot": "2.3",
+   "start": 12.11,
+   "planned": 2.0,
+   "what": "Insert: two taps, into his coat",
+   "dur": 2.0
+  },
+  {
+   "shot": "2.4",
+   "start": 14.11,
+   "planned": 3.2,
+   "what": "Pam drops down the ladder",
+   "line": "n2",
+   "who": "PAM_N",
+   "text": "i know where to see what others do not see",
+   "line_start": 14.41,
+   "line_len": 3.48,
+   "asr_ok": 3,
+   "dur": 4.28
+  },
+  {
+   "shot": "3.1",
+   "start": 18.39,
+   "planned": 2.4,
+   "what": "Don waves the car through",
+   "dur": 2.4
+  },
+  {
+   "shot": "3.2",
+   "start": 20.79,
+   "planned": 1.4,
+   "what": "The bump",
+   "dur": 1.4
+  },
+  {
+   "shot": "3.3",
+   "start": 22.19,
+   "planned": 3.2,
+   "what": "Don wipes the bumper",
+   "dur": 3.2
+  },
+  {
+   "shot": "3.4",
+   "start": 25.39,
+   "planned": 1.8,
+   "what": "The ringed hand drops the bills",
+   "dur": 1.8
+  },
+  {
+   "shot": "3.5",
+   "start": 27.19,
+   "planned": 2.0,
+   "what": "They step over her",
+   "dur": 2.0
+  },
+  {
+   "shot": "3.6",
+   "start": 29.19,
+   "planned": 2.8,
+   "what": "She sits up",
+   "line": "n3",
+   "who": "PAM_N",
+   "text": "i am like a cat i have seven lives",
+   "line_start": 29.69,
+   "line_len": 3.75,
+   "asr_ok": 3,
+   "dur": 4.75
+  },
+  {
+   "shot": "4.1",
+   "start": 33.94,
+   "planned": 2.6,
+   "what": "The club, the marquee lights up",
+   "dur": 2.6
+  },
+  {
+   "shot": "4.2",
+   "start": 36.54,
+   "planned": 1.4,
+   "what": "Insert: the marquee",
+   "dur": 1.4
+  },
+  {
+   "shot": "4.3",
+   "start": 37.94,
+   "planned": 3.0,
+   "what": "She points at it, at herself",
+   "dur": 3.0
+  },
+  {
+   "shot": "5.1",
+   "start": 40.94,
+   "planned": 2.0,
+   "what": "The club inside",
+   "dur": 2.0
+  },
+  {
+   "shot": "5.2",
+   "start": 42.94,
+   "planned": 1.0,
+   "what": "Insert: the map",
+   "dur": 1.0
+  },
+  {
+   "shot": "5.3",
+   "start": 43.94,
+   "planned": 3.6,
+   "what": "The lift from the coat",
+   "dur": 3.6
+  },
+  {
+   "shot": "6.1",
+   "start": 47.54,
+   "planned": 1.4,
+   "what": "Into the spotlight",
+   "dur": 1.4
+  },
+  {
+   "shot": "6.2",
+   "start": 48.94,
+   "planned": 1.2,
+   "what": "Insert: Sofia's CV",
+   "dur": 1.2
+  },
+  {
+   "shot": "6.3",
+   "start": 50.14,
+   "planned": 2.0,
+   "what": "The triumph pose; the music stops",
+   "dur": 2.0
+  },
+  {
+   "shot": "6.4",
+   "start": 52.14,
+   "planned": 0.9,
+   "what": "Insert: the glove on the lamp",
+   "dur": 0.9
+  },
+  {
+   "shot": "6.5",
+   "start": 53.04,
+   "planned": 1.6,
+   "what": "The light leaves her (the cover)",
+   "dur": 1.6
+  },
+  {
+   "shot": "6.6",
+   "start": 54.64,
+   "planned": 2.2,
+   "what": "Her arm comes down",
+   "dur": 2.2
+  },
+  {
+   "shot": "7.1",
+   "start": 56.84,
+   "planned": 1.4,
+   "what": "Awake: asleep on the counter, arm up",
+   "dur": 1.4
+  },
+  {
+   "shot": "7.2",
+   "start": 58.24,
+   "planned": 3.2,
+   "what": "Sofia posts the envelope",
+   "line": "s1",
+   "who": "SOFIA",
+   "text": "only for you",
+   "line_start": 59.44,
+   "line_len": 0.78,
+   "asr_ok": 3,
+   "dur": 3.2
+  },
+  {
+   "shot": "7.3",
+   "start": 61.44,
+   "planned": 1.4,
+   "what": "She wakes",
+   "dur": 1.4
+  },
+  {
+   "shot": "7.4",
+   "start": 62.84,
+   "planned": 1.6,
+   "what": "Insert: COFFEE ROTA",
+   "dur": 1.6
+  },
+  {
+   "shot": "7.5",
+   "start": 64.44,
+   "planned": 1.8,
+   "what": "She counts the PAMs",
+   "dur": 1.8
+  },
+  {
+   "shot": "8.1",
+   "start": 66.24,
+   "planned": 2.6,
+   "what": "Mask down, head down",
+   "dur": 2.6
+  },
+  {
+   "shot": "8.2",
+   "start": 68.84,
+   "planned": 1.2,
+   "what": "The lamp: the loop",
+   "dur": 1.2
+  }
+ ]
+}
