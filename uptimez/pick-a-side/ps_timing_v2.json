@@ -1,0 +1,508 @@
+{
+ "total": 68.01,
+ "script_total": 62.5,
+ "shots": [
+  {
+   "scene": "Scene 1 \u00b7 The Blind",
+   "shot": "1.1",
+   "script": 1.8,
+   "picture": "**FRAME 0.** The glass door, the blind **up**. Don at the left cord (three-quarter back), the robot at the right cord. Don's hand pulls: the slats rattle down, the room darkens; **\u2600** lights on the robot's visor and its hand pulls them up. Down, up, down, up, each faster",
+   "line": null,
+   "start": 0.0,
+   "len": 1.8,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 1 \u00b7 The Blind",
+   "shot": "1.2",
+   "script": 1.0,
+   "picture": "The whole blind tears off its rail and drops over Don. Pam, Mom and Sof\u00eda mid-room by the counter's end, where the tape will run",
+   "line": null,
+   "start": 1.8,
+   "len": 1.0,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 1 \u00b7 The Blind",
+   "shot": "1.3",
+   "script": 2.2,
+   "picture": "Don under the blind, only his face out. The bare glass behind him. The robot's \u2600 fades to a smile",
+   "line": "DON (whisper): \"This meeting does not exist.\"",
+   "start": 2.8,
+   "len": 2.61,
+   "takes": [
+    "1.3"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.41
+  },
+  {
+   "scene": "Scene 1 \u00b7 The Blind",
+   "shot": "1.4",
+   "script": 2.6,
+   "picture": "Don, the blind over his shoulders like a cape, the tape roll on his wrist. Pam, Mom and Sof\u00eda behind him",
+   "line": "DON: \"My father has a meeting. Without me.\"",
+   "start": 5.41,
+   "len": 2.65,
+   "takes": [
+    "1.4"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.05
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.1",
+   "script": 1.6,
+   "picture": "Floor level. **The tape rips across the floor toward the camera, straight through the group**: three pairs of feet hop apart (Pam's flats left, Sof\u00eda's heels right, Mom's shoes stay on it)",
+   "line": null,
+   "start": 8.06,
+   "len": 1.6,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.2",
+   "script": 1.4,
+   "picture": "Don passes the throne; its **$49,999** price tag (from 12) swings at the crown. He sees it, and spins the throne so the tag faces the wall",
+   "line": null,
+   "start": 9.66,
+   "len": 1.4,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.3",
+   "script": 1.6,
+   "picture": "Don stamps on his half, the roll pointed at each of them in turn like a weapon. On the tape: **DON** and an arrow",
+   "line": "DON: \"Pick a side.\"",
+   "start": 11.06,
+   "len": 1.83,
+   "takes": [
+    "2.3"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.23
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.4",
+   "script": 1.4,
+   "picture": "**Pam** steps over to Don first, quickly. **Her phone stays on the counter, across the line** (face up, dark)",
+   "line": null,
+   "start": 12.89,
+   "len": 1.4,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.5",
+   "script": 1.6,
+   "picture": "Don and Pam. He **salutes** her, solemn; she half returns it with her cup hand, then hides a small smile in the cup",
+   "line": "DON: \"Pam. My general.\"",
+   "start": 14.29,
+   "len": 1.88,
+   "takes": [
+    "2.5"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.28
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.6",
+   "script": 2.2,
+   "picture": "**Mom** plants both feet on the tape; arms folded; she looks at Don",
+   "line": "MOM: \"I don't pick sides, Donnie.\"",
+   "start": 16.17,
+   "len": 2.2,
+   "takes": [
+    "2.6"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.7",
+   "script": 1.0,
+   "picture": "**Sof\u00eda** steps toward Don and stops mid-step",
+   "line": null,
+   "start": 18.37,
+   "len": 1.0,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.8",
+   "script": 1.0,
+   "picture": "**The heel:** her black shoe, heel planted behind the tape, toe on Don's side. Held",
+   "line": null,
+   "start": 19.37,
+   "len": 1.0,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.9",
+   "script": 1.6,
+   "picture": "The robot, at its station. Its visor: a small **barrier with a red light**",
+   "line": "ROBOT: \"Border breach. One heel.\"",
+   "start": 20.37,
+   "len": 1.96,
+   "takes": [
+    "2.9"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.36
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.9b",
+   "script": 1.2,
+   "picture": "Sof\u00eda, the heel still back behind the line, arms loose; she doesn't move it",
+   "line": "SOF\u00cdA: \"Diplomatic heel.\"",
+   "start": 22.33,
+   "len": 1.49,
+   "takes": [
+    "2.9b"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.29
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.10",
+   "script": 2.6,
+   "picture": "Don admiring his line, not listening. The robot rolls onto the tape and **balances on it**, its one wheel on the line, arms out like a tightrope walker (Tomas, robot sheet /grill-me). After \"Both.\", **0.4 s on Don's face**",
+   "line": "DON: \"And you?\" \u00b7 ROBOT: \"Both.\"",
+   "start": 23.82,
+   "len": 2.6,
+   "takes": [
+    "2.10a",
+    "2.10b"
+   ],
+   "take_at": [
+    0.15,
+    1.04
+   ],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.11",
+   "script": 3.6,
+   "picture": "Don pushes it off onto his side; it rolls back onto the tape (1.4 s). Again, quicker (1.0 s). Third push: it comes back at once and **bumps Don**, who has stepped into its path (0.6 s + the stagger)",
+   "line": null,
+   "start": 26.42,
+   "len": 3.6,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 2 \u00b7 The Line",
+   "shot": "2.12",
+   "script": 1.1,
+   "picture": "Sof\u00eda, the heel still back: she **folds her arms** and gives Don one flat look",
+   "line": null,
+   "start": 30.02,
+   "len": 1.1,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 3 \u00b7 The Selfie",
+   "shot": "3.1",
+   "script": 0.8,
+   "picture": "Its arm **telescopes** up out of its side, a phone clamped at the tip. Don swings into his big pose; Mom on the tape beside him, in frame",
+   "line": "ROBOT: \"Smile. Recording.\" \u00b7 MOM: \"Chin up, Donnie.\"",
+   "start": 31.12,
+   "len": 3.01,
+   "takes": [
+    "3.1a",
+    "3.1b"
+   ],
+   "take_at": [
+    0.15,
+    1.52
+   ],
+   "longer": 2.21
+  },
+  {
+   "scene": "Scene 3 \u00b7 The Selfie",
+   "shot": "3.2",
+   "script": 2.0,
+   "picture": "A camera FLASH (a real flash, lesson 114), then **the photo fills the screen**, rendered from this beat's own wide: Don beaming, Pam beside him, Mom on the tape, the robot balancing on the tape, **Sof\u00eda's heel behind the line**, and **a big silhouette behind the door's glass**",
+   "line": null,
+   "start": 34.13,
+   "len": 2.0,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 3 \u00b7 The Selfie",
+   "shot": "3.3",
+   "script": 2.4,
+   "picture": "The robot turns the phone at the tip of its arm to Don: the photo with **PUBLIC POST?** over it (and on its visor)",
+   "line": "ROBOT: \"Public post? Human approval required.\"",
+   "start": 36.13,
+   "len": 2.59,
+   "takes": [
+    "3.3"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.19
+  },
+  {
+   "scene": "Scene 3 \u00b7 The Selfie",
+   "shot": "3.4",
+   "script": 1.0,
+   "picture": "Don, still posing, eyes on his own reflection, thumb on the robot's pad without looking",
+   "line": "DON: \"Approved.\"",
+   "start": 38.72,
+   "len": 1.22,
+   "takes": [
+    "3.4"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.22
+  },
+  {
+   "scene": "Scene 3 \u00b7 The Selfie",
+   "shot": "3.5",
+   "script": 1.0,
+   "picture": "PUBLIC POST? slides up and away; **#TeamDon \ud83e\udd1d** comes in under it, posted",
+   "line": null,
+   "start": 39.94,
+   "len": 1.0,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 3 \u00b7 The Selfie",
+   "shot": "3.6",
+   "script": 1.6,
+   "picture": "**DING** behind the glass: the silhouette lifts a glowing phone to its face. In the foreground Don still smiles",
+   "line": null,
+   "start": 40.94,
+   "len": 1.6,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 3 \u00b7 The Selfie",
+   "shot": "3.7",
+   "script": 2.4,
+   "picture": "Pam sees the glow. Her mouth opens to warn him; she looks at Don posing; her cup comes up to her chin (her mouth stays visible for the bubble's tail)",
+   "line": "PAM (under her breath, into her cup): \"Some pose. Others notice.\"",
+   "start": 42.54,
+   "len": 2.4,
+   "takes": [
+    "3.7"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 4 \u00b7 The Booth",
+   "shot": "4.1",
+   "script": 0.6,
+   "picture": "Red neon over the velvet booth: **THE HOUSE ALWAYS COLLECTS** (12's motto; lesson 148)",
+   "line": null,
+   "start": 44.94,
+   "len": 0.6,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 4 \u00b7 The Booth",
+   "shot": "4.2",
+   "script": 2.2,
+   "picture": "The #TeamDon photo. **A black, oily finger stops on Pam first** and leaves a print on her; then it slides across and spreads to zoom on **the heel** (a crop of 3.2: the same shoe, the same angle), **a second print right over the heel**",
+   "line": null,
+   "start": 45.54,
+   "len": 2.2,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 4 \u00b7 The Booth",
+   "shot": "4.3",
+   "script": 1.8,
+   "picture": "**The Client** in the velvet booth in his garage coveralls from 13, **filthy with oil**: oil to the elbows, a black smear on his cheek, the rag over his shoulder. He points at the phone: \"That one.\" **Father** looks at it, then **nods once**: \"Invite her.\"; he doesn't look at the dirt. Bodyguard 1 does, wipes the phone on his sleeve, and sends. The Client sits back: **a black handprint on the velvet**; he checks his watch",
+   "line": "CLIENT: \"That one.\" \u00b7 FATHER: \"Invite her.\"",
+   "start": 47.74,
+   "len": 2.93,
+   "takes": [
+    "4.3a",
+    "4.3b"
+   ],
+   "take_at": [
+    0.15,
+    1.13
+   ],
+   "longer": 1.13
+  },
+  {
+   "scene": "Scene 5 \u00b7 The Door",
+   "shot": "5.1",
+   "script": 1.4,
+   "picture": "Outside the glass: bodyguard 2's phone buzzes; he takes Sof\u00eda's CV from his breast pocket (from 12)",
+   "line": null,
+   "start": 50.67,
+   "len": 1.4,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 5 \u00b7 The Door",
+   "shot": "5.2",
+   "script": 1.6,
+   "picture": "Her CV (the circled number, the lipstick phone); **a gold pen writes C-O-O-?** across the top, stroke by stroke (lesson 100)",
+   "line": null,
+   "start": 52.07,
+   "len": 1.6,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 5 \u00b7 The Door",
+   "shot": "5.3",
+   "script": 2.4,
+   "picture": "A knock. The robot opens the door. Pam, on a step stool, is re-hanging the blind beside it. Sof\u00eda walks upstage to the door. Don in the right foreground, at the line, his back to all of it",
+   "line": "ROBOT: \"Welcome.\"",
+   "start": 53.67,
+   "len": 2.4,
+   "takes": [
+    "5.3"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 5 \u00b7 The Door",
+   "shot": "5.4",
+   "script": 2.8,
+   "picture": "**The office gag.** Don looks right at his own office door, DON \u00b7 CEO, **across the tape**. A foot lifts and hovers over the line (held 0.6 s); he puts it back; he straightens his vest as if nothing happened",
+   "line": null,
+   "start": 56.07,
+   "len": 2.8,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 5 \u00b7 The Door",
+   "shot": "5.5",
+   "script": 1.2,
+   "picture": "At the door: the CV into Sof\u00eda's hand, **COO?** up. Held",
+   "line": null,
+   "start": 58.87,
+   "len": 1.2,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 5 \u00b7 The Door",
+   "shot": "5.6",
+   "script": 2.4,
+   "picture": "Pam on the stool in the foreground, the blind in her hands: **she saw COO?**. Beyond her, **Sof\u00eda steps across the tape** to Father's side",
+   "line": "PAM (under her breath): \"Some draw lines. Others cross them.\"",
+   "start": 60.07,
+   "len": 2.54,
+   "takes": [
+    "5.6"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.14
+  },
+  {
+   "scene": "Scene 5 \u00b7 The Door",
+   "shot": "5.7",
+   "script": 1.4,
+   "picture": "Sof\u00eda, back across the line at the counter. Pam's phone lights up beside her hand: **INVITATION \u00b7 DAD** (0.6 s on the screen inside the shot). She looks up, across the room, at Pam",
+   "line": null,
+   "start": 62.61,
+   "len": 1.4,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 6 \u00b7 Everyone",
+   "shot": "6.1",
+   "script": 3.0,
+   "picture": "Don alone in front, facing the camera, sincere. Behind him: **Pam's hand reaching across the line to her lit phone**, Mom turned away on the tape, **Sof\u00eda on Father's side, COO? in hand**, the robot at the cord. No glance, no realisation",
+   "line": "DON: \"Everyone's with me.\"",
+   "start": 64.01,
+   "len": 3.0,
+   "takes": [
+    "6.1"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.0
+  },
+  {
+   "scene": "Scene 6 \u00b7 Everyone",
+   "shot": "6.2",
+   "script": 1.0,
+   "picture": "The robot's hand yanks the cord: **the blinds shoot up**; **Don's hand comes in on the left cord** and grabs it (he is back at his cord, as in frame 0). Cut to 1.1",
+   "line": null,
+   "start": 67.01,
+   "len": 1.0,
+   "takes": [],
+   "take_at": [],
+   "longer": 0.0
+  }
+ ]
+}
