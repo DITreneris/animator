@@ -1,4 +1,9 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v5 = board v2 (23 Nov; v1-v4 pinned). After the board's G4 (2 of 5) and
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v6 = board v3 (23 Nov; v1-v5 pinned). Tomas's picks after board v2's
+G4 (about 3 of 5) and Office Noir 3's lessons: the threat is Office Noir 3's hat shadow on the lit wall (alley_on3.shadow_man,
+never a face, lesson 47); 1.1 it raises its knife over Sofia, 1.2 (0:01) Pam's punch, it slides down the wall and Sofia walks
+past; the bare-headed bodies stay for the car, the crossing and the club, and they follow the money. Sofia's CV is Office
+Noir 3's own sheet (garage_on3.cv: her photo clipped, 555 0142 circled); the inserts have owners (his watch and jaw, her
+sleeve and ear); 2.1 is a side view from the fire escape; 4.2 cut; 8.2 darker. v5 = board v2: After the board's G4 (2 of 5) and
 Tomas's picks: 5.2 cut (its second to the lift); the envelope's journey in inserts (2.3 on his knee, 2.3b into his coat,
 5.3b her glove draws it out of his coat); 6.2 Sofia's photograph big (the face from 1.2); 6.5 the beam swinging from her
 to the card table, seen whole, the room's backs to her; Sofia holds her phone, not a clipboard. v4 = board v1: After the layout review ("Tobulinam"):
@@ -50,6 +55,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "board v3: Office Noir 3's hat shadow on the lit wall threatens Sofia in 1.1, Pam's punch slides it down in 1.2 (0:01); Sofia's CV is Office Noir 3's sheet; the inserts have owners; 2.1 side view; 4.2 cut (4.3 +1.4 s); 8.2 darker.",
     "board v2: 5.2 cut (5.3 +1.0 s); the envelope's journey in inserts (2.3, 2.3b, 5.3b); 6.2 Sofia's photograph big; 6.5 the beam seen leaving her for the card table; Sofia's phone.",
     "board v1: 3.1-3.2 closer; 3.2 lit from behind, the impact at her knees, her palm open; 3.3 in two keys (glove on the bonnet, glove at his eye) and her small wave; 3.4 the rear door reads; 3.6 she sits up, a hand to her mask.",
     "v3: Don the traffic cop with the STOP / GO paddle; 3.1 STOP at Pam's side, GO to the car, so she stops in its path; 3.3 Don on the far side of the car, the car between them.",
@@ -125,20 +131,13 @@ def stage(k, lit="pam"):
 
 
 def cv_insert(k):
-    """6.2 (board v2): Sofia's CV, her photograph big: the face that walked past Pam in 1.2 (the dream's drawing, lesson 160)."""
-    import sofia_dh as sd
+    """6.2 (board v3, Tomas: continuity): Office Noir 3's own CV (garage_on3.cv: her photograph clipped to the corner, CV,
+    555 0142 circled), big, out of the dream envelope. The face is Sofia's, who walked past Pam in 1.2."""
+    import garage_on3 as g3
     c = k.c
     c.set_source_rgb(0.10, 0.08, 0.08); c.paint()
-    kit.cut(k, [(70, 150), (470, 140), (478, 690), (78, 700)], (0.99, 0.98, 0.95), shadow=False, lw=2.2)
-    kit.text(k, "CURRICULUM VITAE", 274, 196, 24, INK, bold=True)
-    kit.cut(k, [(120, 226), (424, 220), (428, 560), (124, 566)], (0.86, 0.84, 0.80), shadow=False, lw=2)
-    c.save(); c.new_path(); c.move_to(120, 226); c.line_to(424, 220); c.line_to(428, 560); c.line_to(124, 566); c.close_path(); c.clip()
-    c.push_group(); o = sd.sofia(k, 0, 0, 1.9, "hold", "smile", (0, 0), tablet_kind=None); c.pop_group()
-    hx, hy = o["head"]                                       # put her face in the middle of the photograph
-    sd.sofia(k, 274 - hx, 400 - hy, 1.9, "hold", "smile", (0, 0), tablet_kind=None); c.restore()
-    kit.text(k, "SOFIA", 274, 612, 40, INK, bold=True)
-    for i in range(3):
-        c.set_source_rgb(0.6, 0.6, 0.62); c.set_line_width(3); c.move_to(130, 640 + i * 18); c.line_to(420 - i * 40, 640 + i * 18); c.stroke()
+    oc.envelope(k, 270, 720, 3.0)
+    g3.cv(k, 270, 400, 2.5, -0.04, photo=True)
 
 
 def knee_insert(k):
@@ -170,8 +169,12 @@ def knee_coat(k, env=True, hand=True):
     if env:
         oc.envelope(k, 360, 360, 2.4)                                                             # half in
     st.poly(k, [(296, 400), (444, 400), (440, 520), (300, 520)], (0.16, 0.17, 0.22), 2.0)        # the pocket over it
-    if hand:
-        kit.ellipse(k, 250, 460, 60, 40, (0.87, 0.70, 0.58), 7111, shadow=False, lw=2.2)          # his hand, patting
+    if hand:                                                 # board v3: whose: his cuff and watch on the patting hand, his jaw
+        st.poly(k, [(100, 560), (200, 470), (240, 500), (140, 600)], (0.20, 0.22, 0.28), 2.2)      # his sleeve
+        kit.ellipse(k, 250, 460, 60, 40, (0.87, 0.70, 0.58), 7111, shadow=False, lw=2.2)
+        st.poly(k, [(196, 474), (218, 452), (236, 470), (214, 492)], (0.85, 0.80, 0.55), 1.6)    # the watch
+    c.new_path(); c.arc(430, 60, 120, 0.2, math.pi - 0.2); c.set_source_rgb(0.87, 0.70, 0.58); c.fill_preserve()
+    c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()                                      # his jaw, at the top
 
 
 def coat_lift(k):
@@ -180,7 +183,9 @@ def coat_lift(k):
     knee_coat(k, env=False, hand=False)
     c = k.c
     oc.envelope(k, 330, 330, 2.4)                                                                 # out of the pocket, by its edge
+    st.poly(k, [(560, 120), (420, 210), (450, 300), (560, 230)], oc.COAT, 2.4)                 # board v3: her coat sleeve,
     hp.draw(k, "grab", 380, 270, 70, oc.GLOVE_DARK, (0.6, -0.8), 1)
+    oc.ears(k, 500, 120, 1.3)                                                                     # and a cat ear, at the edge
 
 
 def spot_insert(k):
@@ -327,6 +332,7 @@ def P(who, *a, **kw):
 
 ARM_UP = (-8, 0) + oc.pm.ik(1, 30, oc.HY - 150)             # 7.1 / 6.5: one arm up on its elbow, the hand open
 HAND_STOP = (-8, 0) + oc.pm.ik(1, 80, oc.HY + 10)          # 3.2: one hand up at the headlights
+oc.CAT_POSES.setdefault("punch", (oc.pm.ik(-1, -150, oc.BT + 10) + (8, 0), ("fist", "relax_s")))   # 1.2: the punch at the wall
 oc.CAT_POSES.setdefault("stop_palm", (HAND_STOP, ("relax_s", "palm")))      # board v1: the palm open at the car
 oc.CAT_POSES.setdefault("mask_fix", ((-8, 0) + oc.pm.ik(1, 34, oc.HY - 6), ("relax_s", "point")))   # 3.6: a finger to the mask
 DON_REACH = (-70, 20, 8, 0)                                # 3.3: his screen-left arm out and down to the bumper
@@ -407,10 +413,10 @@ def draw_cast(k, cast):
 
 # --- the shots --------------------------------------------------------------------------------------------------------------
 def S(id_, size, loc, cam, picture, cast=(), protect=(), line="", action="", reaction="", eyeline="", standin=False,
-      after=None, dream=True):
+      after=None, dream=True, before=None):
     """cam: (fx, fy, z): the frame point to the middle of the picture, zoom. protect: story props, frame units."""
     return dict(id=id_, size=size, loc=loc, cam=cam, picture=picture, cast=tuple(cast), protect=tuple(protect), line=line,
-                action=action, reaction=reaction, eyeline=eyeline, standin=standin, after=after, dream=dream)
+                action=action, reaction=reaction, eyeline=eyeline, standin=standin, after=after, dream=dream, before=before)
 
 
 WIDE = (270, 480, 1.0)
@@ -476,6 +482,20 @@ def _sit_legs(k):                                          # 3.6: sitting: her l
     c.save(); c.translate(222, 812); c.scale(120, 14); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
 
 
+def wall_shadow(k, state="aim", slide=0.0):
+    """Office Noir 3's shadow (alley_on3.shadow_man: hat, coat, never a face) cast on the lane's lit left wall, its knife
+    toward Sofia (aim), or punched and sliding down the wall (slide 0..1). A pool of lamp light on the wall behind it."""
+    import alley_on3 as al
+    c = k.c
+    c.save(); c.new_path(); c.move_to(-20, 40); c.line_to(196, 300); c.line_to(196, 640); c.line_to(-20, 860); c.close_path(); c.clip()
+    g = cairo.RadialGradient(110, 470, 20, 110, 470, 240)
+    g.add_color_stop_rgba(0, 1, 1, 0.95, 0.55); g.add_color_stop_rgba(1, 1, 1, 0.95, 0)
+    c.set_source(g); c.paint()
+    c.save(); c.translate(110, 690 + slide * 120); c.rotate(slide * 0.5); c.translate(-110, -(690 + slide * 120))
+    al.shadow_man(k, 110, 690 + slide * 120, 0.92, "knife", "down" if slide else state, flip=True)
+    c.restore(); c.restore()
+
+
 def _bills(k):
     import on4_lying as ly
     for (x, y, a) in ((360, 520, 0.3), (330, 560, -0.6), (380, 600, 0.9)):
@@ -484,16 +504,19 @@ def _bills(k):
 
 SCENES = [
     ("01 Ignored hero", [
-        S("1.1", "wide, low", "A", WIDE, "Frame 0, held 0.5 s. The streetlamp, the neon heart. Pam-Cat in the hero pose, "
-          "eyes back over her shoulder; two shadows flat on the cobbles; Sofia one step behind, eyes on her phone.",
+        S("1.1", "wide, low", "A", WIDE, "Frame 0, held 0.5 s. The streetlamp, the neon heart. On the lit wall a hat shadow raises "
+          "its knife over Sofia, who walks on, eyes on her phone; Pam-Cat in the hero pose between them; two shadows flat on the cobbles.",
           cast=A_SHADOW() + [P("sofia", 330, 650, 0.50, "hold", "neutral", (0, 0.6)),
-                              P("pam_cat", 220, 730, 0.84, "hero", "proud", (0.6, -0.1))],
-          protect=[("streetlamp", st.A_LAMP), ("heart", (342, 266))], eyeline="Pam back to Sofia; Sofia to her phone",
-          action="(held)", reaction="Pam: Here it comes."),
-        S("1.2", "wide, low", "A", WIDE, "0:01. Sofia sidesteps Pam like a puddle and walks on, past the camera; she never looks up.",
-          cast=A_SHADOW() + [P("pam_cat", 220, 730, 0.84, "hero", "proud", (0.6, -0.1)),
+                              P("pam_cat", 220, 730, 0.84, "hero", "proud", (-0.6, -0.4))],
+          protect=[("streetlamp", st.A_LAMP), ("heart", (342, 266)), ("the shadow's knife", (230, 400))],
+          eyeline="Pam to the shadow; Sofia to her phone", action="(held: the threat)", reaction="Pam: Here it comes.",
+          before=lambda k: wall_shadow(k, "aim")),
+        S("1.2", "wide, low", "A", WIDE, "0:01. Pam's punch: the shadow slides down the wall. Sofia sidesteps Pam like a puddle and "
+          "walks on, past the camera; she never looks up.",
+          cast=A_SHADOW() + [P("pam_cat", 220, 730, 0.84, "punch", "angry", (-0.8, -0.3)),
                               P("sofia", 380, 820, 0.70, "hold", "neutral", (0, 0.6))],
-          action="Sofia sidesteps her (the 0:01 joke)", reaction="the hero pose held at nobody"),
+          action="the punch; Sofia sidesteps her (the 0:01 joke)", reaction="the shadow slides down; nobody thanks her",
+          before=lambda k: wall_shadow(k, slide=0.55), after=lambda k: _burst(k, 150, 520, 30)),
         S("1.3", "close", "A", (220, 560, 1.9), "The pose holds; her eyes follow Sofia out; the pose sags; she pulls her coat straight.",
           cast=[P("pam_cat", 220, 730, 0.84, "sag", "sad", (0.8, 0.2))], line="N: I know how to survive.",
           action="the pose sags", reaction="Fine. (to where Sofia went)"),
@@ -503,9 +526,10 @@ SCENES = [
           eyeline="Pam to the taillights", action="the shadows run", reaction="Where are you going?"),
     ]),
     ("02 The witness", [
-        S("2.1", "high, over her shoulder", "above", WIDE, "Her cat ears in the foreground on the fire escape; below, the car "
-          "from above; two bare heads at its rear window; one pale glove points back down the lane.",
-          protect=[("the car", (300, 470)), ("the glove", (370, 530))], after=_ears_back, eyeline="down to the car"),
+        S("2.1", "high, from the side", "B_escape", WIDE, "Pam-Cat on the fire escape, looking down; below in the lane the car, two "
+          "bare-headed shadows at its rear window; one pale glove points back down the lane.",
+          cast=[P("thug1", 262, 578, 0.20, "open", seed=4121), P("pam_cat", 130, 420, 0.64, "hero", "angry", (0.7, 0.9))],
+          protect=[("the car", (300, 560))], after=lambda k: railing(k, 380), eyeline="down to the car"),
         S("2.2", "medium, through the window", "back_seat", WIDE, "The back seat: the Client, whole; beside him a velvet sleeve, "
           "a ringed hand on a knee, a chin (the window's top cuts Dad at the chin).",
           cast=[P("client", 170, 820, 0.66, "open", "plain", look=(0.7, 0.4), roll=False, badge=False),
@@ -561,8 +585,6 @@ SCENES = [
         S("4.1", "wide, low angle", "front", WIDE, "A new place, held: the car parked and empty, the club door, the marquee coming on line "
           "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 330, 712, 0.62, "hero", "surprised", (0, -1))],
           protect=[("marquee", (270, 340)), ("the car", (150, 680))], line="Pam: There you are.", eyeline="to the car, then up"),
-        S("4.2", "insert, top band", "front", (270, 345, 1.15), "The marquee: PAM-CAT · the bulb strip · ONLY FOR YOU.",
-          protect=[("marquee", (270, 345))]),
         S("4.3", "medium, under the sign", "front", (300, 520, 1.5), "She points up at the sign, then at herself; turns to show "
           "someone: the street is empty. A small smile anyway; she pats her ears up and pushes the door.",
           cast=[P("pam_cat", 300, 712, 0.62, "point_up", "happy", (0.4, -1))], protect=[("ONLY FOR YOU", (270, 416))],
@@ -632,6 +654,15 @@ def _loc(k, name):
         loc_a(k, taillights=True); return st.light_a
     if name == "B_high":
         loc_b(k); fire_escape(k); return st.light_b
+    if name == "B_escape":                                   # board v3: the lane, the fire escape's platform high at the left
+        loc_b(k)
+        st.poly(k, [(-10, 0), (240, 0), (240, 420), (-10, 420)], (0.30, 0.28, 0.27), 2.0)         # the wall she's on
+        for row in range(0, 14):
+            for col in range(-1, 5):
+                k.c.set_source_rgb(0.20, 0.19, 0.18); k.c.set_line_width(1.6)
+                k.c.rectangle(col * 60 + (30 if row % 2 else 0), row * 30, 60, 30); k.c.stroke()
+        st.poly(k, [(-10, 412), (250, 412), (250, 426), (-10, 426)], INK, 1.4)                    # the platform
+        return st.light_b
     if name == "above":
         lane_above(k); return lambda c_: ons.vignette(c_, 0.6)
     if name == "escape":
@@ -693,8 +724,12 @@ def _loc(k, name):
         return "desk8"
     if name == "rota":
         pr.insert74(k); return None
-    if name == "lampclose":
-        pr.lamp_match(k); return None
+    if name == "lampclose":                                  # board v3: darker round the lamp (the SHRED label showed)
+        pr.lamp_match(k)
+        g = cairo.RadialGradient(st.A_LAMP[0], st.A_LAMP[1] + 20, 120, st.A_LAMP[0], st.A_LAMP[1] + 20, 420)
+        g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0.01, 0.01, 0.02, 0.98)
+        k.c.set_source(g); k.c.paint()
+        return None
     raise ValueError(name)
 
 
@@ -761,6 +796,8 @@ def render(sh, scale=1):
             c.restore(); c.clip()
             heads = draw_cast(k, sh["cast"]); c.reset_clip()
         else:
+            if sh.get("before"):
+                sh["before"](k)
             heads = draw_cast(k, sh["cast"])
         if sh["after"]:
             sh["after"](k)
@@ -792,7 +829,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"5.3": 4.6}                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"5.3": 4.6, "4.3": 4.4}                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():
@@ -1049,7 +1086,7 @@ def blocking(out):
     return out
 
 
-def board(out=OUT, ver=2):
+def board(out=OUT, ver=3):
     """stage 5: one key frame per shot at 540, generated; two sheets at 400 px tiles, numbered with the time, and a phone
     sheet at 270 px. Neutral copies for the cold viewers go to /tmp/on4_board_cv (frame_NN.png, no names)."""
     import shutil
