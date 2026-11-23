@@ -8,7 +8,8 @@ These rules apply to the UptimeZ episodes in `uptimez/` only, not to Hoodyz (`..
 - **Don**, CEO, sells for real and believes his own pitch; he approves instead of investigating. **Sofía** wants authority independent of Don, rejects him, and never fakes a record. **Pam** can't stop fixing things, loves Don unrequited, and uses strategic silence.
 - **The robot** (desk robot → waiter → HR) is technically true in every statement and stamp. It acts alone only within its permissions, and needs human approval for money, access, commitments and system changes.
 - **Mom** works at UptimeZ as Assistant to Don and is used sparingly. **The Client** owns ten garages and is not an idiot. **Father** is the investor and arrives in episode 12 (*Daddy's Home*): a nightclub kingpin, calm, never funny on purpose, with two silent bodyguards.
-- **Every episode:** one comic mechanism from two competing desires; the image loops while the story advances; status moves in every scene; it works on mute.
+- **Every episode:** one comic mechanism from two competing desires; the image loops while the story advances; status moves in every scene; it works on mute; the first joke is physical and lands by 0:01.
+- **Civil War (13–17):** power is the gold CEO throne with its $49,999 price tag (from 12); the two camps are a tape line on the office floor (from 14). Corporate words stay in the background; mechanisms are physical.
 
 Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) use Rush, Max, the laptop AI and Cache, and are outside the main storyline.
 
@@ -27,7 +28,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 
 | Gate | Pass |
 |---|---|
-| G0 Series check | Two characters' wants collide; one comic mechanism; one iconic image; the image loops while the story advances; status moves. Check against STORYLINE.md |
+| G0 Series check | Two characters' wants collide; one comic mechanism; one iconic image; the image loops while the story advances; status moves. Check against STORYLINE.md. **The first joke lands by 0:01 and is physical** (decided 23 Nov): an action readable with no sound and no reading; name it and its frame. A verbal or sign joke may come second (lesson 141) |
 | G1 Protect list | The five things that make the episode, written in the script doc |
 | G2 Shot list | An action shot and a reaction shot per beat, with size and eyeline |
 | G3 Composition | Faces under the title bar, signs whole or out of frame, signs legible at 270 px. Faces **and every story prop** (declared with `of_set.protect()`) out of the dead zones (y > 720; x > 470 between y 380 and 860), measured where the rig drew them, never from typed head points (lessons 124–126). The board is looked at under the mock app overlay |
