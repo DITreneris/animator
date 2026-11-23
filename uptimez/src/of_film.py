@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 9, 2: 13, 3: 8, 4: 11, 5: 8}
+VER = {1: 10, 2: 14, 3: 9, 4: 12, 5: 9}
 SOUND = "of_sound_v5.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -153,7 +153,7 @@ def _veto(t16, t17):
     """one continuous two-shot over 1.6 + 1.7: the lighter comes down to him; the brow; his hand; two fingers; SNAP."""
     st = dict(_cast=("father", "g2"), _cam=["father", "g2"], moved=dict(father=VETO_AT), burn=0.8 if t17 is None else 1.0)
     rest = (VETO_AT[0] + 30, 800)
-    lid_pt = (VETO_L[0] - 2, VETO_L[1] - 38)
+    lid_pt = (VETO_L[0] - 14, VETO_L[1] - 20)                # v5: his WRIST; the flat palm lies across the lid
     if t17 is None:
         t = t16
         d = ease(t / 0.30)
@@ -161,14 +161,14 @@ def _veto(t16, t17):
         u = ease((t - 0.40) / 0.35)
         hand = [om.lerp(rest, (lid_pt[0] + 30 * (1 - d), lid_pt[1] - 50 * (1 - d)), u)] if u > 0 else []
         return st, dict(father=dict(face="brow2" if t > 0.15 else "hard", look=(1, -0.4), targets_xy=hand,
-                                    two_fingers=u > 0.9, front_lighter=(lx, ly, 1.0, 1.0)),
+                                    palm=u > 0.9, front_lighter=(lx, ly, 1.0, 1.0)),
                         g2=dict(targets_xy=[(VETO_L[0] + 40, VETO_L[1] - 20)], turn=-1.0))
     t = t17
     lid = 1.0 - ease((t - 0.05) / 0.10)                      # SNAP, under his two fingers
     off = ease((t - 0.64) / 0.06)                             # v10: the two fingers HELD on the shut lid, 0.5 s
     hand = [om.lerp(lid_pt, rest, off)] if off < 0.95 else []
     return st, dict(father=dict(face="brow2" if t < 0.4 else "hard", look=(1, -0.4), targets_xy=hand,
-                                two_fingers=off < 0.5, front_lighter=(VETO_L[0], VETO_L[1], 1.0 if lid > 0.6 else 0.0, lid)),
+                                palm=off < 0.5, front_lighter=(VETO_L[0], VETO_L[1], 1.0 if lid > 0.6 else 0.0, lid)),
                     g2=dict(targets_xy=[(VETO_L[0] + 40, VETO_L[1] - 20)], turn=-1.0))
 
 

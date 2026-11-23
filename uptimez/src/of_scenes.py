@@ -216,7 +216,7 @@ POSES = {
     "1.4": dict(client=dict(kind="sit", look=(-1, -0.2))),
     "1.5": dict(g2=dict(targets=["lighter"], lighter=1.0, turn=-1.0)),
     "1.6": dict(father=dict(face="brow", look=(1, -0.2))),
-    "1.7": dict(g2=dict(targets=["lighter"], lighter=0.0, turn=-1.0)),                      # shutting it, looking at Father
+    "1.7": dict(g2=dict(turn=-1.0)),          # v5 (23 Nov): the lighter is the veto's front_lighter now; its old second copy hid behind his sleeve
     "2.1": dict(father=dict(face="talk", look=(1, 0)), client=dict(kind="bent")),
     "2.2": dict(client=dict(kind="bent")),
     "2.3": dict(father=dict(look=(1, -0.2)), client=dict(kind="bent", hand_back=True), g1=dict(targets=["handoff"])),
@@ -259,18 +259,38 @@ def _cast_draw(k, n, scene, sh, heads):
         if ps.get("front_lighter"):                                           # v9 veto: bodyguard 2's arm over the roof, to him
             lx, ly, fl, ld = ps["front_lighter"]
             gs.protect(c, "the lighter", lx - 22, ly - 60, lx + 22, ly + 56)
-            for col, lw in ((INK, 30), ((0.11, 0.11, 0.13), 25)):                 # his sleeve, up to his shoulder over the roof
+            sk = (0.92, 0.74, 0.60)
+            fx, fy = lx + 2, ly + 47                                             # v5 (23 Nov, simplified): the lighter STANDS on his fist
+            for col, lw in (((0.45, 0.45, 0.50), 30), ((0.11, 0.11, 0.13), 25)):  # his sleeve, from the fist up to his shoulder
                 c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
-                c.move_to(lx + 26, ly + 30); c.line_to(448, 652); c.stroke()
-            gs.lighter(k, lx, ly, 0.75, fl, hand=False, lid=ld)
-            oc.cartoon_hand(k, lx + 22, ly + 30, 15, (0.92, 0.74, 0.60), 3460, (-0.6, -0.8), 1)   # his hand round the case
-        o = oc.father(k, x, f, FS, face=ps.get("face", "hard"), look=ps.get("look", (1, 0)), targets=ps.get("targets_xy", ()))
+                c.set_line_join(1); c.move_to(fx + 14, fy + 6); c.line_to(474, 742); c.line_to(448, 652); c.stroke()   # an elbow, out right
+            c.save(); c.translate(fx + 16, fy + 7); c.rotate(math.atan2(742 - fy - 7, 474 - fx - 16))
+            rect(k, -2, -13, 9, 26, (0.97, 0.97, 0.95), 3461, shadow=False, lw=1.6)              # his white cuff at the fist
+            c.restore()
+            c.save(); c.translate(fx, fy); c.scale(19, 12); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()   # the fist, under the case
+            c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.2); c.stroke()
+            gs.lighter(k, lx, ly, 0.55, fl, hand=False, lid=ld)                     # v4: palm-sized
+            for i, dx in enumerate((-10, -2, 6)):                                # three fingertips over the case's foot
+                c.save(); c.translate(lx + dx, ly + 40); c.scale(5, 6.5); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+                c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.8); c.stroke()
+            oc._capsule(c, lx - 15, fy - 6, lx - 15, ly + 31, 5, sk)               # the thumb up the case's side
+        hk = _kit.HAND[0]
+        if ps.get("palm"):
+            _kit.HAND[0] = lambda *a_, **k_: None                               # v5: the flat palm below IS his hand
+        try:
+            o = oc.father(k, x, f, FS, face=ps.get("face", "hard"), look=ps.get("look", (1, 0)), targets=ps.get("targets_xy", ()))
+        finally:
+            _kit.HAND[0] = hk
         heads[n] = (o["head"][0], o["head"][1], 50 * FS)
-        if ps.get("two_fingers") and ps.get("targets_xy"):                     # the veto: two fingers on the lid
-            hx, hy = ps["targets_xy"][0]
-            for dx in (-5, 5):                                                   # pointing DOWN, pressing the lid shut
-                c.set_source_rgb(*INK); c.set_line_width(9); c.set_line_cap(1); c.move_to(hx + dx, hy - 2); c.line_to(hx + dx, hy + 16); c.stroke()
-                c.set_source_rgb(*dc.SKIN_F); c.set_line_width(6); c.move_to(hx + dx, hy - 2); c.line_to(hx + dx, hy + 16); c.stroke()
+        if ps.get("palm") and ps.get("targets_xy"):                          # v5 (23 Nov, simplified): his WHOLE palm flat on the lid
+            hx, hy = ps["targets_xy"][0]                                         # (hx, hy): where his arm ends; the palm covers the rig's own hand
+            sk = dc.SKIN_F
+            c.save(); c.translate(hx + 14, hy); c.scale(22, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()   # the palm, flat, across the top
+            c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.2); c.stroke()
+            c.set_source_rgb(*INK); c.set_line_width(1.6)
+            for dy in (-2.5, 1.5):                                               # the fingers' seams, at the far end
+                c.move_to(hx + 24, hy + dy); c.line_to(hx + 34, hy + dy); c.stroke()
+            oc._capsule(c, hx + 2, hy + 5, hx + 10, hy + 10, 4.5, sk)               # the thumb, down the near side
     elif n in ("g1", "g2"):
         x, f = pos[n]
         x -= ps.get("back", 0)
@@ -280,7 +300,8 @@ def _cast_draw(k, n, scene, sh, heads):
         o = oc.guard(k, x, f, GS, flip=flip, targets=tg, turn=ps.get("turn", 0.0), seed=1600 if n == "g1" else 1640)
         heads[n] = (o["head"][0], o["head"][1], 55 * GS)
         if ps.get("lamp"):
-            hx, hy = ps.get("lamp_xy") or tg[0]
+            want = ps.get("lamp_xy") or tg[0]                                    # v4: the hand that reached for it
+            hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
             if ps.get("cone"):                                       # v3: held high, pointing down into the bay
                 cx0, cy0 = hx - 2, hy + 24
                 g_ = cairo.LinearGradient(cx0, cy0, cx0, 712)
@@ -300,8 +321,11 @@ def _cast_draw(k, n, scene, sh, heads):
                 c.set_source_rgba(1.0, 0.95, 0.65, 0.55 * cs)                          # the pool of light on his hands
                 c.save(); c.translate(496, 706); c.scale(34, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
                 gs.lamp(k, hx + 4, hy - 6, ang=2.5, lit=True)                     # the cage down-left, into the bay
+                oc.handle_grip(k, hx + 4 + 26 * math.cos(2.5), hy - 6 + 26 * math.sin(2.5), 24, 2.5 + math.pi / 2, co_skin())
             else:
-                gs.lamp(k, hx - 8, hy + 22, ang=ps.get("lamp_ang", -1.3), lit=ps.get("lamp_lit", False) or "lamp_ang" in ps)
+                la_ = ps.get("lamp_ang", -1.3)
+                gs.lamp(k, hx - 8, hy + 22, ang=la_, lit=ps.get("lamp_lit", False) or "lamp_ang" in ps)
+                oc.handle_grip(k, hx - 8 + 26 * math.cos(la_), hy + 22 + 26 * math.sin(la_), 24, la_ + math.pi / 2, co_skin())   # v3: held
             gs.protect(c, "the lamp in his hand", hx - 40, hy - 10, hx + 30, hy + 50)
         if "lighter" in ps:
             hx, hy = tg[0]
@@ -321,7 +345,7 @@ def _cast_draw(k, n, scene, sh, heads):
                 for i in range(3):
                     for j in range(3):
                         c_.rectangle(-15 + i * 11, -14 + j * 11, 8, 8); c_.fill()
-            oc.phone(k, hx, hy - 10, 0.75, cal, ang=-0.1)
+            oc.phone_grip(k, hx, hy, 0.6, cal, ang=-0.1, skin=co_skin())                 # v4 hands: held, on his palm
         if ps.get("dent"):                                                    # v10: the roof gives under the palm, 2 drawings
             hx, hy = tg[0]
             c.set_source_rgb(*INK); c.set_line_width(2.4); c.new_path()
@@ -361,13 +385,13 @@ def _cast_draw(k, n, scene, sh, heads):
                           face=ps.get("face", "bored"))
         elif kind == "pocket":
             pu = ps.get("pocket_u", 0.0)                                     # stage 7: out of the pocket, turned round
-            tx, ty = x - 30 - 66 * pu, f - 150
+            tx, ty = x - 30 - 12 * pu, f - 150                                   # v4: held out, inside the frame
             o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)])
-            oc.phone(k, tx - 6 * pu, ty - 2 - 8 * pu, 0.55 + 0.05 * pu, None, ang=0.4 - 0.5 * pu)
+            oc.phone_grip(k, tx, ty, 0.55 + 0.05 * pu, None, ang=0.4 - 0.5 * pu, skin=co_skin())
         elif kind == "phone_out":
-            tx, ty = x - 96, f - 150
+            tx, ty = x - 66, f - 158                                             # v5 (23 Nov): the whole phone inside the frame
             o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)])
-            oc.phone(k, tx - 6, ty - 10, 0.6, None, ang=-0.1)
+            oc.phone_grip(k, tx, ty, 0.6, None, ang=-0.1, skin=co_skin())
         elif kind == "slam":
             sy = ps.get("slam_y", 0.0)                                       # stage 7: the hands come down with the lid
             o = oc.client(k, x, f, CS, look=(-1, 0.6), targets=[(x - 64, 668 - sy), (x - 40, 664 - sy)])
@@ -721,7 +745,7 @@ def desk_shot(k, sh, heads):
                 c.move_to(px_ + 60 * math.cos(a), py_ - 6 + 34 * math.sin(a)); c.line_to(px_ + 80 * math.cos(a), py_ - 6 + 46 * math.sin(a)); c.stroke()
         else:
             c.save(); c.translate(x + bz, y - 40); c.scale(z * 0.55, z * 0.55)
-            oc.phone(Ctx(c, 0), 0, 0, 1.0, scr); c.restore()
+            oc.phone_grip(Ctx(c, 0), 0, 0, 1.0, scr); c.restore()
     return cam
 
 
@@ -781,6 +805,11 @@ def don_rule_validate():
     ok = not don_rule(office) and any("client is taller" in m for m in don_rule(planted))
     print("don_rule: office", don_rule(office) or "pass", "| planted Client:", don_rule(planted))
     return ok
+
+
+def co_skin():
+    import client_ob as co_
+    return co_.SKIN
 
 
 def sb_sc(n):
