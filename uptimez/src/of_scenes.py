@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v7.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v8.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -280,6 +280,14 @@ def _cast_draw(k, n, scene, sh, heads):
         finally:
             _kit.HAND[0] = hk
         heads[n] = (o["head"][0], o["head"][1], 50 * FS)
+        if ps.get("phone_donnie") and ps.get("targets_xy"):                  # v1 (23 Nov): DONNIE calling, in his hand, he looks at it
+            want = ps["targets_xy"][0]
+            hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
+            def scr_d(c_):
+                c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
+                c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
+                e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, -6); c_.show_text("DONNIE")
+            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, scr_d, ang=-0.15, skin=dc.SKIN_F)
         if ps.get("palm") and ps.get("targets_xy"):                          # v6 (23 Nov, motion_on3's hand): palm and fingers in ONE
             hx, hy = ps["targets_xy"][0]                                         # shape, flat across the lid, the fingers pointing on, a thumb
             sk = dc.SKIN_F
@@ -607,6 +615,10 @@ def dc_velvet():
     return dc.VELVET
 
 
+UPRIGHT = [True]                                           # v12: the overhead turned so he lies head-up
+KSCALE = [1.0]                                             # the overhead is drawn in frame units
+
+
 def under_shot(k, sh, heads):
     """UNDER THE CAR: his face up, lit from the lamp's side; the sump a hand above it. In frame units."""
     import of_cast as oc
@@ -619,10 +631,15 @@ def under_shot(k, sh, heads):
     if sh["state"].get("view") == "top" or sh["id"] == "0.9":                   # v10: the overhead (v11: 0.9 too, closer:
         zt = 1.0 if sh["state"].get("view") == "top" else 1.55                    # the side profile looked wrong)
         zx = 300 if zt == 1.0 else 200                                            # 0.9: his face and hands, not his boots
-        c.save(); c.translate(300, 500); c.scale(zt, zt); c.translate(-zx, -500)
+        R_ = UPRIGHT[0]                                                           # v12 (23 Nov, cold tests 3 of 3: "sideways"):
+        c.save()                                                                  # turned a quarter: his head UP the frame
+        if R_:
+            c.translate(270 + (0 if zt == 1.0 else 80), 480); c.rotate(math.pi / 2); c.scale(1.15, 1.15); c.translate(-270, -480)
+        c.translate(300, 500); c.scale(zt, zt); c.translate(-zx, -500)
         hx_, hy_, hr_ = oc.client_top(k, sway=sway, wrench_t=sh["state"].get("wrench_t", 0.0))
+        dev = c.user_to_device(hx_, hy_); rr = math.hypot(*c.user_to_device_distance(hr_, 0))
         c.restore()
-        heads["client"] = ((hx_ - zx) * zt + 300, (hy_ - 500) * zt + 500, hr_ * zt)
+        heads["client"] = (dev[0] / KSCALE[0], dev[1] / KSCALE[0], rr / KSCALE[0]) if R_ else ((hx_ - zx) * zt + 300, (hy_ - 500) * zt + 500, hr_ * zt)
     else:
         heads["client"] = oc.client_under(k, 1.6, sway=sway, wrench_t=sh["state"].get("wrench_t", 0.0))   # v9: the side cutaway
 
@@ -658,6 +675,23 @@ def insert_shot(k, sh):
         c.save(); c.translate(225, 520); brand.mark(c, 0, 0, 90); c.restore()            # the mark on the glass
         gs.protect(c, "the mark on the glass", 225, 520, 315, 610)
         rect(k, 0, 900, 540, 60, (0.48, 0.49, 0.52), 3720, shadow=False, lw=2)           # the pavement
+    elif kind == "pin":                                                            # v2 (23 Nov, cold tests 3 of 3: the plan "healed"):
+        u_ = sh["state"].get("pin_u", 1.0)                                             # the WHOLE fresh plan, close; his thumb
+        Z_, CX_, CY_ = 2.45, 408, 520                                                  # pushes the red pin into its top-left corner
+        c.save(); c.translate(270, 480); c.scale(Z_, Z_); c.translate(-CX_, -CY_)
+        gs.room(k); gs.plan(k, 0.0)
+        c.restore()
+        px_, py_ = (334 - CX_) * Z_ + 270, (452 - CY_) * Z_ + 480
+        for col, lw in ((INK, 86), ((0.11, 0.11, 0.13), 78)):                             # his sleeve, up from the frame's foot
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+            c.move_to(px_ - 20, 1000); c.line_to(px_ + 20, py_ + 170 - 30 * u_); c.stroke()
+        c.save(); c.translate(px_ + 18, py_ + 150 - 30 * u_); c.rotate(0.15)
+        rect(k, -44, -12, 88, 26, (0.97, 0.97, 0.95), 3495, shadow=False, lw=2.4)         # the white cuff
+        c.restore()
+        ellipse(k, px_ + 16, py_ + 90 - 30 * u_, 44, 40, (0.92, 0.74, 0.60), 3496, lw=2.6)   # his fist
+        _oc._capsule(c, px_ + 6, py_ + 66 - 30 * u_, px_, py_ + 14 - 14 * u_, 14, (0.92, 0.74, 0.60))   # the thumb, up to the pin
+        ellipse(k, px_, py_, 14, 14, (0.85, 0.12, 0.12), 3497, lw=2.4)                  # the red pin
+        gs.protect(c, "the fresh plan", 60, 290, 470, 660)
     elif kind == "bay":                                                            # v1 (23 Nov, decided A): his hands in the lamp's light
         c.set_source_rgb(0.10, 0.10, 0.11); c.paint()                                  # the bay, dark; all of it inside the safe area
         bu = sh["state"].get("bay_u", 1.0)
@@ -683,23 +717,29 @@ def insert_shot(k, sh):
         bo_ = sh["state"].get("bolt_out", 0.0)                                         # v3 (decided): the bolt comes FREE
         if bo_ > 0:
             c.set_source_rgb(0.08, 0.08, 0.09); c.arc(250, 350, 15, 0, 2 * math.pi); c.fill()   # its hole
-        ellipse(k, 250 + 60 * bo_, 350 - 110 * bo_, 28, 28, (0.62, 0.64, 0.66), 3470, lw=2.4)
-        if bo_ > 0.6:
-            c.set_source_rgb(0.62, 0.64, 0.66); c.set_line_width(14); c.set_line_cap(0)       # its thread, out
-            c.move_to(310, 240 + 26); c.line_to(310, 240 + 70); c.stroke()
+        if bo_ == 0:
+            ellipse(k, 250, 350, 28, 28, (0.62, 0.64, 0.66), 3470, lw=2.4)              # the plug's top, in the block
+
         w_ = sh["state"].get("work", 0.0)
-        c.save(); c.translate(250 + 60 * sh["state"].get("bolt_out", 0.0), 350 - 110 * sh["state"].get("bolt_out", 0.0)); c.rotate(-2.4 + 0.35 * w_)                     # the wrench on it, turning
+        c.save(); c.translate(250, 350); c.rotate(-2.4 + 0.35 * w_ - 0.6 * sh["state"].get("bolt_out", 0.0))       # the wrench on it, turning
         rect(k, -14, -14, 190, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)
         c.restore()
         bo2_ = sh["state"].get("bolt_out", 0.0)
-        hw_ = (250 + 60 * bo2_ + 175 * math.cos(-2.4 + 0.35 * w_), 350 - 110 * bo2_ + 175 * math.sin(-2.4 + 0.35 * w_))   # his fist on the wrench
-        for side, (hx, hy, ex, ey) in enumerate(((hw_[0], hw_[1], -80, 40), (330, 470, 640, 620))):
+        hw_ = (250 + 175 * math.cos(-2.4 + 0.35 * w_ - 0.6 * bo2_), 350 + 175 * math.sin(-2.4 + 0.35 * w_ - 0.6 * bo2_))   # his fist on the wrench
+        fh_ = (330 + (290 - 330) * bo2_, 470 + (250 - 470) * bo2_)                          # v4: the far hand comes up with the plug
+        for side, (hx, hy, ex, ey) in enumerate(((hw_[0], hw_[1], -80, 40), (fh_[0], fh_[1], 640, 620))):
             for col, lw in ((INK, 62), ((0.80, 0.62, 0.50), 56)):                      # the oily forearms, from the frame's edges
                 c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
                 c.move_to(hx, hy); c.line_to(ex, ey); c.stroke()
             c.save(); c.translate(hx + (ex - hx) * 0.70, hy + (ey - hy) * 0.70); c.rotate(math.atan2(ey - hy, ex - hx))
             rect(k, -10, -44, 140, 88, (0.97, 0.97, 0.95), 3472 + side, lw=2.6)          # the white T-shirt sleeves
             c.restore()
+            if side == 1 and bo2_ > 0:                                                # v4: his far fist round the plug
+                ellipse(k, hx, hy, 40, 34, (0.80, 0.62, 0.50), 3490, lw=2.4)
+                c.set_source_rgb(*INK); c.set_line_width(2.2)
+                for d_ in (-12, 0, 12):
+                    c.move_to(hx - 18, hy + d_); c.line_to(hx + 10, hy + d_); c.stroke()
+                continue
             if side == 1:                                                             # v2 (decided): his far hand FLAT on the block
                 c.save(); c.translate(hx, hy); c.rotate(math.atan2(ey - hy, ex - hx) + math.pi)
                 c.new_path(); c.move_to(-34, -26); c.curve_to(10, -32, 60, -26, 70, -10); c.curve_to(74, 6, 60, 22, 10, 26); c.line_to(-34, 26); c.close_path()
@@ -714,6 +754,16 @@ def insert_shot(k, sh):
             for d_ in (-12, 0, 12):
                 c.move_to(hx - 18, hy + d_); c.line_to(hx + 10, hy + d_); c.stroke()
             c.set_source_rgba(0.1, 0.08, 0.05, 0.45); c.arc(hx + 12, hy - 10, 8, 0, 2 * math.pi); c.fill()   # oil
+        if bo2_ > 0:                                                                     # v4 (cold tests 3 of 3: "what did he find?"):
+            px_, py_ = 250 + (290 - 250) * bo2_, 350 + (215 - 350) * bo2_                   # out of the hole comes ONE thing you can
+            c.save(); c.translate(px_, py_); c.rotate(-0.25); c.scale(1.0 + 0.6 * bo2_, 1.0 + 0.6 * bo2_)   # name: a spark plug,
+            rect(k, -12, -70, 24, 50, (0.95, 0.94, 0.90), 3480, lw=2.4)                    # its tip black, cracked through
+            rect(k, -18, -22, 36, 22, (0.70, 0.72, 0.75), 3481, lw=2.2)                     # the hex
+            rect(k, -9, 0, 18, 26, (0.55, 0.56, 0.58), 3482, lw=2)                          # the thread
+            c.set_source_rgb(0.08, 0.07, 0.06); c.rectangle(-9, 18, 18, 10); c.fill()        # soot
+            c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
+            c.move_to(-6, -66); c.line_to(2, -54); c.line_to(-4, -44); c.line_to(5, -30); c.stroke()   # the crack
+            c.restore()
         wx_, wy_ = hw_[0] + (-80 - hw_[0]) * 0.28, hw_[1] + (40 - hw_[1]) * 0.28          # HIS gold watch, on the wrench wrist
         ellipse(k, wx_, wy_, 24, 24, (0.86, 0.68, 0.22), 3477, lw=2.2)
         ellipse(k, wx_, wy_, 15, 15, (0.10, 0.16, 0.14), 3478, lw=1.6)
@@ -788,7 +838,9 @@ def donnie_shot(k, sh, heads):
         c_.set_source_rgb(0.85, 0.12, 0.12); c_.arc(-9, 6, 8, 0, 2 * math.pi); c_.fill()
         c_.set_source_rgb(0.15, 0.75, 0.30); c_.arc(9, 6, 8, 0, 2 * math.pi); c_.fill()
         if st.get("declined"):
-            c_.set_source_rgba(0, 0, 0, 0.55); c_.rectangle(-19, -34, 38, 68); c_.fill()
+            c_.set_source_rgba(0, 0, 0, 0.65); c_.rectangle(-19, -34, 38, 68); c_.fill()
+            c_.set_source_rgb(0.95, 0.25, 0.25); c_.select_font_face("Lilita One"); c_.set_font_size(8.5)
+            e = c_.text_extents("DECLINED"); c_.move_to(-e.x_advance / 2, -20); c_.show_text("DECLINED")
     oc.phone(k, 0, -10, 0.95, None if st.get("donnie_down") else scr2, ang=-0.35)   # face down against his palm
     ellipse(k, 10, 22, 24, 18, dc.SKIN_F, 3441, lw=2)
     if st.get("thumb") and not st.get("donnie_down"):                                # his thumb comes over onto the red button
@@ -1289,6 +1341,7 @@ def board_frame(sh, scene, bubble=True):
     if sh["id"] not in SAY or not bubble:
         return surf, msgs
     who, txt = SAY[sh["id"]]
+    txt = sh["state"].get("say_txt", txt)                             # v12: a long line shown in parts (bigger bubbles)
     fc = uz.faces(f) if sh["cam"] not in ("under",) else {n: tuple(v) for n, v in f["heads"].items()}
     if sh["cam"] == "desk":                                           # the desk frame's heads are in set units already mapped
         fc = {n: ((v[0] - cam[0]) * cam[2] + 270, (v[1] - cam[1]) * cam[2] + 480, v[2] * cam[2]) for n, v in f["heads"].items()}
@@ -1306,8 +1359,9 @@ def board_frame(sh, scene, bubble=True):
         mx, my = MOUTH_AT[who]
         mx, my = (mx - cam[0]) * cam[2] + 270, (my - cam[1]) * cam[2] + 480
         tail = (mx - 2, my - 3, 4)
-    if sh["cam"] == "under":                                          # lying, head to the left: the mouth is to the right
-        tail = (head[0] + 0.30 * head[2], head[1] - 0.50 * head[2], 10)  # of the face's middle; the tip on the cheek above it
+    if sh["cam"] == "under":                                          # v12: head UP the frame (turned): his mouth is below the
+        tail = (head[0] + 0.50 * head[2], head[1] + 0.30 * head[2], 10) if UPRIGHT[0] else \
+            (head[0] + 0.30 * head[2], head[1] - 0.50 * head[2], 10)  # face's middle; the tip on the cheek beside it
     if who == "robot":                                                # to the visor's rim, never across its card
         tail = (head[0] - head[2] * 0.62, head[1] - head[2] * 0.62, 2)
     others = [v for n, v in fc.items() if n != who]

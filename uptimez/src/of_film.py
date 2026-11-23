@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 14, 2: 19, 3: 15, 4: 17, 5: 14}
-SOUND = "of_sound_v7.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 16, 2: 20, 3: 16, 4: 18, 5: 15}
+SOUND = "of_sound_v8.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -234,16 +234,24 @@ def s37(t, L):                                             # the smile is gone; 
     if t < 0.2:
         return dict(don="stiff"), {}
     u = ease((t - 0.2) / 0.3)
-    if t < 0.55:                                           # DAD on the screen, at his chest
+    if t < 1.0:                                            # DAD on the screen, at his chest (v3: held 0.8 s, cold tests 3 of 3)
         return dict(don_over=dict(sweat=1 + int(2 * u), forward=u)), {}
     return dict(don_over=dict(sweat=3, forward=1.0, phone_ear=True, pose=(-72, -108, 30, 10))), {}   # then at his ear
 
 
 # --- scene 5, Frame 0 ------------------------------------------------------------------------------------------------
-def s41(t, L):                                             # his hand going out of the door; DONNIE buzzing; v2 (decided): his
-    th = ease((t - 0.25) / 0.2)                            # thumb on red DECLINE; the screen goes dark; then face down
-    return dict(hand_dx=50 - 70 * t / L, buzz=3 * math.sin(t * 2 * math.pi * 18) if t < 0.45 else 0.0,
-                thumb=th if t < 0.75 else 0.0, declined=t > 0.45, donnie_down=t > 0.75), {}
+def s41(t, L):                                             # v3 (23 Nov, cold tests 3 of 3: "a faceless hand"): FATHER in the
+    if t < 0.9:                                            # doorway, DONNIE buzzing in his hand; he looks at it. Then CLOSE:
+        bz = 2.5 * math.sin(t * 2 * math.pi * 18)          # his thumb on red, DECLINED, face down
+        return (dict(_cam=DOOR_CAM, _cast=("father",), black_car=True, burn=1.0, insert=None, moved=dict(father=(156, F_ + 26))),
+                dict(father=dict(face="low", look=(0.6, 1.2), targets_xy=[(190, F_ - 110)], phone_donnie=True, buzz=bz)))
+    u = t - 0.9
+    th = ease((u - 0.25) / 0.2)
+    return dict(_cam=DONNIE_CAM, hand_dx=0.0, buzz=3 * math.sin(u * 2 * math.pi * 18) if u < 0.3 else 0.0,
+                thumb=th if u < 1.0 else 0.0, declined=u > 0.45, donnie_down=u > 1.05), {}
+
+
+DONNIE_CAM = (98, 668, 3.0)                                # v3: the phone big enough to read on a phone
 
 
 def s42(t, L):                                             # frame 0's drawing; the black car's lights go across the wall, leaving
@@ -282,14 +290,16 @@ NEW_PLAN_G2 = (410, 818)                                   # v3 (23 Nov, decided
 
 def s42_service(t, L):                                     # the last frame (and the loop): the other guard slides a FRESH plan up
     x, f = sc.BLOCK[1]["g1"]                               # over the burnt one ("again"); the lamp man puts the lamp down and
-    u = ease((t - 0.1) / 0.8)                              # his hand comes up over the roof, as in frame 0
+    if t < 0.55:                                           # v4 (cold tests 3 of 3: the plan "healed"): CLOSE, his thumb pins
+        return dict(_cam="insert", insert="pin", pin_u=ease(t / 0.35)), {}   # the fresh plan up
+    u = 1.0                                                # his hand comes up over the roof, as in frame 0
     top = 449 + (586 - 449) * (1 - u)
     hands = [(372, 586 - 0 * u + (top - 449) * 0), (448, 586)]
     st = dict(legs_work=math.sin(t * 2 * math.pi * 1.2), new_plan=u, _cast=("g1", "g2"),
               moved=dict(g1=(206, 862), g2=NEW_PLAN_G2), behind_car=("g2",))
     g2 = dict(targets_xy=[(372, 590), (448, 590)], turn=0.0)
-    if t > 0.95:                                           # done: his hands down; he stands at the wall, as in frame 0
-        v_ = ease((t - 0.95) / 0.3)
+    if t > 0.55:                                           # done: his hands down; he stands at the wall, as in frame 0
+        v_ = ease((t - 0.55) / 0.35)
         g2 = dict(targets_xy=[om.lerp((372, 590), (380, 760), v_), om.lerp((448, 590), (440, 760), v_)], turn=0.0) if v_ < 1 else dict(turn=0.0)
     if t < 0.9:
         g1 = dict(targets_xy=[(x + 58, f - 70)], lamp=True, lamp_ang=3.0, push=False)
@@ -424,6 +434,9 @@ def bubble_on(sid, t):
     return LEAD - 0.02 <= t <= LEAD + len(a) / sr + 1.0 / DPS
 
 
+SPLIT = {"1.4": (0.20, ("Burn them.", "Your son loses his only customer."))}   # v12: where the take splits
+
+
 HOLD_D = 5                                                 # drawings (0.33 s): a prop passing through a zone in a move is fine
 
 
@@ -483,6 +496,12 @@ def render_scene(n):
             who = sc.SAY.get(sid, (None,))[0]
             oc.MOUTH[0] = mouth_at(sid, t) if who == "client" else None
             try:
+                if sid in SPLIT:                                    # v12 (cold tests 3 of 3): two short bubbles, not one long
+                    fr_, parts = SPLIT[sid]
+                    mouth_at(sid, 0.0)
+                    a_, sr_ = _TAKE[sid]
+                    u_ = (t - LEAD) / (len(a_) / sr_)
+                    sh = dict(sh, state=dict(sh["state"], say_txt=parts[0] if u_ < fr_ else parts[1]))
                 surf, p = sc.board_frame(sh, scene, bubble=bubble_on(sid, t))
             finally:
                 oc.MOUTH[0] = None
