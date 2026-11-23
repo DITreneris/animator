@@ -1,4 +1,7 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v7 = board v4 (23 Nov; v1-v6 pinned). Tomas's picks after board v3:
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v8 = board v5 (23 Nov; v1-v7 pinned). Board v4's G4: the light leaving her
+misread a third time, so by Tomas's rule 6.4 and 6.5 are cut: 6.3 (the triumph, the music stops, nobody turns) carries
+"ignored", and 6.6 is her alone on the dark stage. Sofia in 1.1-1.2 unimpressed, eyes on her phone (read as "shocked by
+Pam"). v7 = board v4: Tomas's picks after board v3:
 the CV is Office Noir 3's sheet with her photograph big and SOFIA under it (its own copy, lesson 160; the photograph is
 Office Noir 3's final one, street_on3.her v5); 6.5 one more fix: Pam in the foreground left in the dark half, the beam
 seen swinging off her to the card table (if it fails again it is cut); 2.3b merged into 2.2: the Client slides it into his
@@ -59,6 +62,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "board v5: 6.4 and 6.5 cut (the light leaving her misread three times); 6.3 carries it, 6.6 alone on the dark stage; Sofia unimpressed, eyes on her phone, in 1.1-1.2.",
     "board v4: the CV is Office Noir 3's sheet with her photograph big and SOFIA; 6.5 the beam seen swinging off Pam to the card table, Pam in the dark half; 2.3b merged into 2.2 (his own coat, Pam's ears at the window).",
     "board v3: Office Noir 3's hat shadow on the lit wall threatens Sofia in 1.1, Pam's punch slides it down in 1.2 (0:01); Sofia's CV is Office Noir 3's sheet; the inserts have owners; 2.1 side view; 4.2 cut (4.3 +1.4 s); 8.2 darker.",
     "board v2: 5.2 cut (5.3 +1.0 s); the envelope's journey in inserts (2.3, 2.3b, 5.3b); 6.2 Sofia's photograph big; 6.5 the beam seen leaving her for the card table; Sofia's phone.",
@@ -565,7 +569,7 @@ SCENES = [
     ("01 Ignored hero", [
         S("1.1", "wide, low", "A", WIDE, "Frame 0, held 0.5 s. The streetlamp, the neon heart. On the lit wall a hat shadow raises "
           "its knife over Sofia, who walks on, eyes on her phone; Pam-Cat in the hero pose between them; two shadows flat on the cobbles.",
-          cast=A_SHADOW() + [P("sofia", 330, 650, 0.50, "hold", "neutral", (0, 0.6)),
+          cast=A_SHADOW() + [P("sofia", 330, 650, 0.50, "hold", "appraise", (0.2, 1.0)),
                               P("pam_cat", 220, 730, 0.84, "hero", "proud", (-0.6, -0.4))],
           protect=[("streetlamp", st.A_LAMP), ("heart", (342, 266)), ("the shadow's knife", (230, 400))],
           eyeline="Pam to the shadow; Sofia to her phone", action="(held: the threat)", reaction="Pam: Here it comes.",
@@ -573,7 +577,7 @@ SCENES = [
         S("1.2", "wide, low", "A", WIDE, "0:01. Pam's punch: the shadow slides down the wall. Sofia sidesteps Pam like a puddle and "
           "walks on, past the camera; she never looks up.",
           cast=A_SHADOW() + [P("pam_cat", 220, 730, 0.84, "punch", "angry", (-0.8, -0.3)),
-                              P("sofia", 380, 820, 0.70, "hold", "neutral", (0, 0.6))],
+                              P("sofia", 380, 820, 0.70, "hold", "appraise", (0.2, 1.0))],
           action="the punch; Sofia sidesteps her (the 0:01 joke)", reaction="the shadow slides down; nobody thanks her",
           before=lambda k: wall_shadow(k, slide=0.55), after=lambda k: _burst(k, 150, 520, 30)),
         S("1.3", "close", "A", (220, 560, 1.9), "The pose holds; her eyes follow Sofia out; the pose sags; she pulls her coat straight.",
@@ -663,13 +667,7 @@ SCENES = [
         S("6.3", "medium wide", "stage", WIDE, "She lifts it high, the triumph pose, and waits; the music stops.",
           cast=[P("pam_cat", 225, 700, 0.86, "triumph", "proud", (0.3, -0.6))], line="Pam: Well?",
           protect=[("envelope", (270, 420))], eyeline="out to the room"),
-        S("6.4", "insert, 0.7 s", "spot", WIDE, "A pale glove from the top of the frame rests on the spotlight's handle and swings it away.",
-          protect=[("glove", (410, 440))]),
-        S("6.5", "wide, held 1 s", "stage_beam", WIDE, "The beam swings off her onto the card table; Pam a black shape against the lit room, arm "
-          "still up; the room's backs to her.",
-          cast=[P("pam_cat", 150, 960, 1.20, "triumph", "proud", (0.3, -0.6))], eyeline="THE SHOT AND THE COVER",
-          after=_dark_half),
-        S("6.6", "close, rim-lit", "stage_table", WIDE, "Her arm comes slowly down; she tucks the envelope in and pats it twice.",
+        S("6.6", "close, the stage dark", "stage_dark", WIDE, "Her arm comes slowly down; she tucks the envelope in and pats it twice.",
           cast=[P("pam_cat", 250, 930, 1.20, "sag", "sad", (0.2, 0.4), env=True)], reaction="Of course."),
     ]),
     ("07 Awake", [
@@ -766,6 +764,8 @@ def _loc(k, name):
         stage_front(k, True); return lambda c_: ons.vignette(c_, 0.55)
     if name == "stage_table":
         room_reverse(k); return lambda c_: ons.vignette(c_, 0.5)
+    if name == "stage_dark":
+        stage_front(k, False); return lambda c_: ons.vignette(c_, 0.7)
     if name == "stage_beam":
         room_reverse(k, beam=True); return lambda c_: ons.vignette(c_, 0.5)
     if name == "knee_coat":
@@ -887,7 +887,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"5.3": 4.6, "4.3": 4.4}                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"5.3": 4.6, "4.3": 4.4, "6.3": 3.4, "6.6": 3.3}                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():
@@ -1144,7 +1144,7 @@ def blocking(out):
     return out
 
 
-def board(out=OUT, ver=4):
+def board(out=OUT, ver=5):
     """stage 5: one key frame per shot at 540, generated; two sheets at 400 px tiles, numbered with the time, and a phone
     sheet at 270 px. Neutral copies for the cold viewers go to /tmp/on4_board_cv (frame_NN.png, no names)."""
     import shutil
