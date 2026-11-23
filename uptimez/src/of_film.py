@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 10, 2: 14, 3: 9, 4: 12, 5: 9}
+VER = {1: 10, 2: 15, 3: 10, 4: 13, 5: 9}
 SOUND = "of_sound_v5.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -66,7 +66,7 @@ def s12(t, L):                                             # v2 (23 Nov): the li
     lit = t > 0.35
     import of_set as gs
     bx, by = gs.bay7()
-    hand = (bx + 2, by + 92 + 60 * (1 - up))
+    hand = (bx + 2, by + 18 + sc.LIGHTER_LIFT + 60 * (1 - up))   # v11: the smaller flame still licks the corner of 7
     f = ease((t - 0.42) / 0.80)
     return dict(burn=0.7 * f, fire=f, fire_t=_T("1.2", t)), dict(g2=dict(targets_xy=[hand], lighter=1.0 if lit else 0.0,
                                                                           lid=1.0 if t > 0.25 else 0.0))
@@ -146,30 +146,33 @@ WALK_CAM = (290, 780, 1.3)                                 # locked: he walks th
 
 
 VETO_AT = (345, 880)                                       # v9 (22 Nov, decided): Father shuts the lighter himself
-VETO_L = (406, 732)                                        # the flame's foot, held out to him over the roof
+VETO_L = (394, 694)                                        # the flame's foot, held out to him over the roof
 
 
 def _veto(t16, t17):
-    """one continuous two-shot over 1.6 + 1.7: the lighter comes down to him; the brow; his hand; two fingers; SNAP."""
+    """one continuous two-shot over 1.6 + 1.7: the guard's lighter comes down to him; the brow; his palm on the lid; SNAP.
+    v11 (23 Nov): the lighter is in the guard's OWN hand (Office Noir 3, lesson 399), drawn before Father so his palm is on top."""
+    import of_scenes as sc_
     st = dict(_cast=("father", "g2"), _cam=["father", "g2"], moved=dict(father=VETO_AT), burn=0.8 if t17 is None else 1.0)
     rest = (VETO_AT[0] + 30, 800)
-    lid_pt = (VETO_L[0] - 14, VETO_L[1] - 20)                # v5: his WRIST; the flat palm lies across the lid
+    gh = (VETO_L[0], VETO_L[1] + sc_.LIGHTER_LIFT)            # the guard's hand: the lighter's flame foot at VETO_L
+    lid_pt = (VETO_L[0] - 17, VETO_L[1] - 17)                 # his wrist; the flat palm lies across the shut lid
     if t17 is None:
         t = t16
         d = ease(t / 0.30)
-        lx, ly = VETO_L[0] + 30 * (1 - d), VETO_L[1] - 50 * (1 - d)
+        g = (gh[0] + 34 * (1 - d), gh[1] - 8 * (1 - d))            # v11: in from his side, level, his elbow bent
         u = ease((t - 0.40) / 0.35)
-        hand = [om.lerp(rest, (lid_pt[0] + 30 * (1 - d), lid_pt[1] - 50 * (1 - d)), u)] if u > 0 else []
-        return st, dict(father=dict(face="brow2" if t > 0.15 else "hard", look=(1, -0.4), targets_xy=hand,
-                                    palm=u > 0.9, front_lighter=(lx, ly, 1.0, 1.0)),
-                        g2=dict(targets_xy=[(VETO_L[0] + 40, VETO_L[1] - 20)], turn=-1.0))
+        hand = [om.lerp(rest, (lid_pt[0] + 34 * (1 - d), lid_pt[1] - 8 * (1 - d)), u)] if u > 0 else []
+        return st, dict(father=dict(face="brow2" if t > 0.15 else "hard", look=(1, -0.4), targets_xy=hand, palm=u > 0.9,
+                                    guard_lighter=(g, 1.0, 1.0, (VETO_L[0] + 34 * (1 - d), VETO_L[1] - 8 * (1 - d)))),
+                        g2=dict(targets_xy=[g], turn=-1.0))
     t = t17
-    lid = 1.0 - ease((t - 0.05) / 0.10)                      # SNAP, under his two fingers
-    off = ease((t - 0.64) / 0.06)                             # v10: the two fingers HELD on the shut lid, 0.5 s
+    lid = 1.0 - ease((t - 0.05) / 0.10)                      # SNAP, under his palm
+    off = ease((t - 0.64) / 0.06)                             # the palm HELD on the shut lid, 0.5 s
     hand = [om.lerp(lid_pt, rest, off)] if off < 0.95 else []
-    return st, dict(father=dict(face="brow2" if t < 0.4 else "hard", look=(1, -0.4), targets_xy=hand,
-                                palm=off < 0.5, front_lighter=(VETO_L[0], VETO_L[1], 1.0 if lid > 0.6 else 0.0, lid)),
-                    g2=dict(targets_xy=[(VETO_L[0] + 40, VETO_L[1] - 20)], turn=-1.0))
+    return st, dict(father=dict(face="brow2" if t < 0.4 else "hard", look=(1, -0.4), targets_xy=hand, palm=off < 0.5,
+                                guard_lighter=(gh, 1.0 if lid > 0.6 else 0.0, lid, VETO_L)),
+                    g2=dict(targets_xy=[gh], turn=-1.0))
 
 
 # --- scene 4, The Calendar ---------------------------------------------------------------------------------------------
@@ -210,7 +213,7 @@ def s37(t, L):                                             # the smile is gone; 
     u = ease((t - 0.2) / 0.3)
     if t < 0.55:                                           # DAD on the screen, at his chest
         return dict(don_over=dict(sweat=1 + int(2 * u), forward=u)), {}
-    return dict(don_over=dict(sweat=3, forward=1.0, phone_ear=True, pose=(-150, -110, 30, 10))), {}   # then at his ear
+    return dict(don_over=dict(sweat=3, forward=1.0, phone_ear=True, pose=(-72, -108, 30, 10))), {}   # then at his ear
 
 
 # --- scene 5, Frame 0 ------------------------------------------------------------------------------------------------
@@ -263,7 +266,7 @@ MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14
 HANDS_CAM = (500, 742, 3.0)                                # v9: the cut-in: his hands, working in the light
 
 
-LAMP_IN_BAY = (540, 716)                                   # below his chin, the cage down in the bay: the light on the engine
+LAMP_IN_BAY = (546, 700)                                   # below his chin, the cage down in the bay: the light on the engine
 
 
 def s23(t, L):
@@ -280,7 +283,7 @@ def s23(t, L):
     if u3 > 0:
         gh = om.lerp(out_, LAMP_IN_BAY, u3)
         return st, dict(client=dict(kind="bent", hand_back=False, work=math.sin(t * 2 * math.pi * 1.3) if t > 0.9 else 0.0),
-                        g1=dict(targets_xy=[gh], lamp=True, lamp_xy=gh, cone_side=u3), father=dict(look=(1, -0.2)))
+                        g1=dict(targets_xy=[gh], lamp=True, lamp_xy=gh, cone_side=u3, lamp_front=True), father=dict(look=(1, -0.2)))
     gh = om.lerp(rest, out_, u2)
     return st, dict(client=dict(kind="bent", hand_back=True, hand_back_at=om.lerp(start, out_, u1), lamp_lit=False),
                     g1=dict(targets_xy=[gh]), father=dict(look=(1, -0.2)))

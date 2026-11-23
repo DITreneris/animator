@@ -45,6 +45,52 @@ def guard(k, x, feet, s, flip=False, targets=(), turn=0.0, seed=1600):
     return o
 
 
+def guard_arm_front(k, x, feet, s, flip, target, skin, seed=1660, w=25.0, hand=True, from_elbow=True, upper=None, lower=None, cuff=True, draw=True, short=None):
+    """v2 (23 Nov, Office Noir 3's motion_on3._sleeves, lesson 245): an arm drawn again IN FRONT (the guard behind the
+    car reaching over it, the Client's arm whose rig sleeve breaks): the same IK as arms_to, ONE smooth sleeve, a cuff, the
+    episode's hand. from_elbow: only the forearm (the rig's own upper arm and shoulder stay; a whole front arm read as a
+    pole from his neck). upper/lower: the sleeve's colours (default the black suit). Returns the hand and its direction."""
+    c = k.c
+    m = -1 if flip else 1
+    tx, ty = (target[0] - x) / s * m, (target[1] - feet) / s
+    side = min((-1, 1), key=lambda sd: abs(sd * SHX - tx))
+    a1, a2 = ik(side * SHX, SHY, tx, ty, co.LN1, co.LN2, side)
+    W = lambda px, py: (x + m * px * s, feet + py * s)
+    sx, sy = side * SHX, SHY
+    ex, ey = sx + _d(a1)[0] * co.LN1, sy + _d(a1)[1] * co.LN1
+    hx, hy = ex + _d(a1 + a2)[0] * co.LN2, ey + _d(a1 + a2)[1] * co.LN2
+    qx, qy = ex + (hx - ex) * 0.80, ey + (hy - ey) * 0.80
+    S, E, H, Q = W(sx, sy), W(ex, ey), W(hx, hy), W(qx, qy)
+    if not draw:
+        dx, dy = H[0] - E[0], H[1] - E[1]; L = math.hypot(dx, dy) or 1.0
+        return H, (dx / L, dy / L)
+    up_c = upper or (0.11, 0.11, 0.13)
+    lo_c = lower or up_c
+    if not from_elbow:
+        for col, lw in ((INK, w + 5), (up_c if short is None else lo_c, w)):
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.set_line_join(1)
+            c.new_path(); c.move_to(*S); c.line_to(*E); c.stroke()
+        if short is not None:                                                           # a short sleeve: the shirt to its hem, then skin
+            M = (S[0] + (E[0] - S[0]) * short, S[1] + (E[1] - S[1]) * short)
+            for col, lw, cap in ((INK, w + 5, 0), (up_c, w + 1, 1)):
+                c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(cap)
+                c.new_path(); c.move_to(*S); c.line_to(*M); c.stroke()
+            c.set_line_cap(1)
+    for col, lw in ((INK, w + 5), (lo_c, w)):
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.set_line_join(1)
+        c.new_path(); c.move_to(*E); c.line_to(*(Q if cuff else H)); c.stroke()
+    if not from_elbow:                                                                  # the joint, no seam
+        c.new_path(); c.arc(E[0], E[1], w / 2, 0, 2 * math.pi); c.set_source_rgb(*(up_c if short is None else lo_c)); c.fill()
+    dx, dy = H[0] - E[0], H[1] - E[1]; L = math.hypot(dx, dy) or 1.0; dx, dy = dx / L, dy / L
+    if cuff:
+        for col, lw in ((INK, w + 3), ((0.97, 0.97, 0.95), w - 1)):                      # the white cuff
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0)
+            c.new_path(); c.move_to(Q[0] - dx * (1 if col == INK else 0), Q[1] - dy * (1 if col == INK else 0)); c.line_to(Q[0] + dx * 7, Q[1] + dy * 7); c.stroke()
+    if hand:
+        cartoon_hand(k, H[0], H[1], w * 0.9, skin, seed, (dx, dy), side * m)
+    return H, (dx, dy)
+
+
 def _turn_head(k, x, feet, s, flip, turn, seed):
     """the head again over itself, the features slid toward `turn` (screen units: -1 left, 1 right)."""
     c = k.c
@@ -443,8 +489,8 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
             c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(15)
             e = c_.text_extents("DAD"); c_.move_to(-e.x_advance / 2, -2); c_.show_text("DAD")
             c_.set_font_size(8); e = c_.text_extents("calling…"); c_.move_to(-e.x_advance / 2, 12); c_.show_text("calling…")
-        if phone_ear:                                                           # v3 (23 Nov, simplified): his OWN arm, from the shoulder
-            phone_grip(k, hx - 80 * s, hy + 44 * s, s * 0.8, scr, ang=0.26, thumb=1)   # the palm where the rig's forearm ends, at the ear
+        if phone_ear:                                                           # v4 (23 Nov, Office Noir 3's lessons 245/399): his own arm
+            phone_grip(k, px + 6 * s, py, s * 0.85, None, ang=0.12, thumb=1)        # its BACK to us, against his head: on a call              # from the outer shoulder, elbow out, the phone where the pose's hand is
         else:
             phone_grip(k, px, py, s * 0.95, scr, ang=0.05, thumb=-1)
         rx, ry = o["hands"][1]                                                  # v3: the other hand clutches the throne's arm
