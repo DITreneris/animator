@@ -263,7 +263,7 @@ def _cast_draw(k, n, scene, sh, heads):
                 c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
                 c.move_to(lx + 26, ly + 30); c.line_to(448, 652); c.stroke()
             gs.lighter(k, lx, ly, 0.75, fl, hand=False, lid=ld)
-            ellipse(k, lx + 20, ly + 32, 13, 17, (0.92, 0.74, 0.60), 3460, lw=2)    # his fist round the case
+            oc.cartoon_hand(k, lx + 22, ly + 30, 15, (0.92, 0.74, 0.60), 3460, (-0.6, -0.8), 1)   # his hand round the case
         o = oc.father(k, x, f, FS, face=ps.get("face", "hard"), look=ps.get("look", (1, 0)), targets=ps.get("targets_xy", ()))
         heads[n] = (o["head"][0], o["head"][1], 50 * FS)
         if ps.get("two_fingers") and ps.get("targets_xy"):                     # the veto: two fingers on the lid

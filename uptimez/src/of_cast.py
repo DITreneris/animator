@@ -242,13 +242,20 @@ def cartoon_hand(k, hx, hy, w, skin, seed, d, side):
     """episode 13's hand for everyone (23 Nov, decided): a chunky cartoon hand, a palm, three fingers and a thumb,
     a bold outline, turned along the forearm (d) with the thumb on the elbow's inner side."""
     c = k.c
-    w = w * 1.25                                                                             # a touch bigger than the old ball
+    if abs(skin[0] - skin[2]) < 0.08 and abs(skin[0] - skin[1]) < 0.08:                    # grey: the robot keeps its claw
+        ellipse(k, hx, hy, w * 0.6, w * 0.6, skin, seed, shadow=False, lw=2)
+        return
+    w = w * 1.25
     a = math.atan2(d[1], d[0])
     c.save(); c.translate(hx, hy); c.rotate(a)
     sk = skin
     def blob(x, y, rx, ry, rot=0.0):
         c.save(); c.translate(x, y); c.rotate(rot); c.scale(rx, ry); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
         c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
+    c.new_path()                                                                             # the wrist: out of the sleeve,
+    c.move_to(-0.55 * w, -0.30 * w); c.line_to(0.05 * w, -0.34 * w)                         # narrower than the forearm
+    c.line_to(0.05 * w, 0.34 * w); c.line_to(-0.55 * w, 0.30 * w); c.close_path()
+    c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
     blob(0.10 * w, side * 0.48 * w, 0.30 * w, 0.17 * w, side * 0.7)                         # the thumb
     for j, fy in enumerate((-0.30, 0.0, 0.30)):                                              # three fingers, curled
         blob(0.62 * w, fy * w, 0.26 * w, 0.17 * w)
@@ -383,6 +390,10 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
             c_.set_font_size(8); e = c_.text_extents("calling…"); c_.move_to(-e.x_advance / 2, 12); c_.show_text("calling…")
         if phone_ear:                                                           # v2 (22 Nov): at his ear, a call
             phone(k, hx - 66 * s, hy + 12 * s, s * 1.05, scr, ang=-0.12)   # beside the face, not over it
+            for col, lw in ((INK, 26 * s), ((0.97, 0.97, 0.95), 21 * s)):          # his arm up to it, the white sleeve
+                c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+                c.move_to(hx - 34 * s, hy + 112 * s); c.curve_to(hx - 78 * s, hy + 104 * s, hx - 80 * s, hy + 80 * s, hx - 72 * s, hy + 60 * s); c.stroke()
+            cartoon_hand(k, hx - 70 * s, hy + 44 * s, 22 * s, (0.96, 0.80, 0.70), 7700, (0.15, -1.0), -1)   # v2: HIS hand holds it there
         else:
             phone(k, px + 4 * s, py - 30 * s, s * 1.15, scr, ang=0.05)
     return o
