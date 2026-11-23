@@ -25,6 +25,8 @@ SKIRT, TIGHTS, PUMPS = sm.SKIRT, sm.TIGHTS, sm.PUMPS
 PULLED = [False]                                           # v3, opt-in (Daddy's Home): all of it pulled back into a ponytail
                                                            # drawn by the caller: no back layer, no side locks. sofia_ss_v2.py is pinned
 PENCIL = [False]                                           # v4, opt-in (Daddy's Home): a longer, narrower skirt. sofia_ss_v3.py is pinned
+STILETTO = [None]                                          # v5, opt-in (Pick a Side): a heel colour -> black patent stilettos with that heel; sofia_ss_v4.py is pinned
+SLEEK = [False]                                            # v5, opt-in (Pick a Side): pulled-back hair with one long shine, not three strokes
 SWEPT = [False]                                            # v2, opt-in: all her hair swept over her right shoulder (screen-left)
                                                            # in Hollywood waves; her left ear (screen-right) shows
 NOTE_COVER = sm.NOTE_COVER
@@ -114,10 +116,18 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", look=(0, 0), lag
         c.save(); c.translate(dx_, -lift)
         cut(k, [(sx_ - 8.5, -100 + lift), (sx_ + 8.5, -100 + lift), (sx_ + 6, -60), (sx_ + 7.5, -42), (sx_ + 4.5, -10),
                 (sx_ - 4.5, -10), (sx_ - 7.5, -42), (sx_ - 6, -60)], TIGHTS, shadow=False, lw=1.8)
-        cut(k, [(sx_ - o * 6.5, -8), (sx_ - o * 2.5, -8), (sx_ - o * 3.5, 0), (sx_ - o * 6.5, 0)], PUMPS,
-            shadow=False, lw=1.6)                          # v2: a visible block heel
-        cut(k, [(sx_ - 6, -13), (sx_ + 6, -13), (sx_ + 6 + o * 11, 0), (sx_ - 1 + o * 3, 0), (sx_ - 6, -7)], PUMPS,
-            shadow=False, lw=1.8)
+        if STILETTO[0]:                                    # v5: a thin heel in its colour, a patent shine on the toe
+            cut(k, [(sx_ - o * 8.5, -12), (sx_ - o * 3.0, -12), (sx_ - o * 5.0, 1), (sx_ - o * 7.2, 1)], STILETTO[0],
+                shadow=False, lw=1.4)                      # taller and wider than a pump's heel, so the gold glints
+            cut(k, [(sx_ - 6, -14), (sx_ + 6, -14), (sx_ + 6 + o * 12, 0), (sx_ + o * 2, 0), (sx_ - 6, -7)], PUMPS,
+                shadow=False, lw=1.8)
+            c.set_source_rgba(1, 1, 1, 0.75); c.set_line_width(1.6); c.set_line_cap(1)
+            c.move_to(sx_ + o * 4, -9); c.line_to(sx_ + o * 9, -4); c.stroke()
+        else:
+            cut(k, [(sx_ - o * 6.5, -8), (sx_ - o * 2.5, -8), (sx_ - o * 3.5, 0), (sx_ - o * 6.5, 0)], PUMPS,
+                shadow=False, lw=1.6)                          # v2: a visible block heel
+            cut(k, [(sx_ - 6, -13), (sx_ + 6, -13), (sx_ + 6 + o * 11, 0), (sx_ - 1 + o * 3, 0), (sx_ - 6, -7)], PUMPS,
+                shadow=False, lw=1.8)
         c.restore()
     if PENCIL[0]:
         cut(k, [(-29, body_top + 102), (29, body_top + 102), (41, body_top + 120), (35, -66), (-35, -66),
@@ -176,8 +186,11 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", look=(0, 0), lag
                  [math.pi * (1.03 + 0.94 * i / 11) for i in range(12)]]
         cut(k, crown + [(52, hy - 26), (28, hy - 42), (0, hy - 47), (-28, hy - 42), (-52, hy - 26)], HAIR, shadow=False, lw=2)
         c.set_source_rgb(*HAIR_SHINE); c.set_line_width(3.2); c.set_line_cap(1)
-        for x0 in (-30, -8, 14):
-            c.move_to(x0, hy - 44); c.curve_to(x0 + 6, hy - 52, x0 + 14, hy - 56, x0 + 22, hy - 55); c.stroke()
+        if SLEEK[0]:                                       # v5: one long, smooth shine along the crown
+            c.move_to(-32, hy - 46); c.curve_to(-14, hy - 56, 10, hy - 57, 28, hy - 50); c.stroke()
+        else:
+            for x0 in (-30, -8, 14):
+                c.move_to(x0, hy - 44); c.curve_to(x0 + 6, hy - 52, x0 + 14, hy - 56, x0 + 22, hy - 55); c.stroke()
     else:
         crown = [(math.cos(a_) * 58, hy - 16 + math.sin(a_) * 50) for a_ in
                  [math.pi * (1.05 + 0.9 * i / 11) for i in range(12)]]
