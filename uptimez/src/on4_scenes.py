@@ -1,4 +1,8 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v6 = board v3 (23 Nov; v1-v5 pinned). Tomas's picks after board v2's
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v7 = board v4 (23 Nov; v1-v6 pinned). Tomas's picks after board v3:
+the CV is Office Noir 3's sheet with her photograph big and SOFIA under it (its own copy, lesson 160; the photograph is
+Office Noir 3's final one, street_on3.her v5); 6.5 one more fix: Pam in the foreground left in the dark half, the beam
+seen swinging off her to the card table (if it fails again it is cut); 2.3b merged into 2.2: the Client slides it into his
+own coat, Pam's ears at the window. v6 = board v3: Tomas's picks after board v2's
 G4 (about 3 of 5) and Office Noir 3's lessons: the threat is Office Noir 3's hat shadow on the lit wall (alley_on3.shadow_man,
 never a face, lesson 47); 1.1 it raises its knife over Sofia, 1.2 (0:01) Pam's punch, it slides down the wall and Sofia walks
 past; the bare-headed bodies stay for the car, the crossing and the club, and they follow the money. Sofia's CV is Office
@@ -55,6 +59,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "board v4: the CV is Office Noir 3's sheet with her photograph big and SOFIA; 6.5 the beam seen swinging off Pam to the card table, Pam in the dark half; 2.3b merged into 2.2 (his own coat, Pam's ears at the window).",
     "board v3: Office Noir 3's hat shadow on the lit wall threatens Sofia in 1.1, Pam's punch slides it down in 1.2 (0:01); Sofia's CV is Office Noir 3's sheet; the inserts have owners; 2.1 side view; 4.2 cut (4.3 +1.4 s); 8.2 darker.",
     "board v2: 5.2 cut (5.3 +1.0 s); the envelope's journey in inserts (2.3, 2.3b, 5.3b); 6.2 Sofia's photograph big; 6.5 the beam seen leaving her for the card table; Sofia's phone.",
     "board v1: 3.1-3.2 closer; 3.2 lit from behind, the impact at her knees, her palm open; 3.3 in two keys (glove on the bonnet, glove at his eye) and her small wave; 3.4 the rear door reads; 3.6 she sits up, a hand to her mask.",
@@ -130,14 +135,42 @@ def stage(k, lit="pam"):
         c.move_to(440, 320); c.line_to(120, 700); c.line_to(330, 700); c.line_to(446, 336); c.close_path(); c.fill()
 
 
+def cv_sheet(k, x, y, s=1.0, ang=0.0):
+    """Office Noir 3's CV (garage_on3.cv: CV, lines, 555 0142 circled), its own copy for this episode (lesson 160), with
+    her photograph big and her name under it (board v3: the small photograph read as Pam's own CV)."""
+    import street_on3 as s3
+    import client_on3 as b3
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    kit.rect(k, -70, -100, 140, 200, (0.99, 0.98, 0.95), 5, shadow=True, lw=2.2)
+    kit.text(k, "CV", -46, -72, 26, INK, bold=True)
+    c.save(); c.translate(14, -48); c.rotate(0.06)                                                # the photograph, clipped
+    kit.rect(k, -46, -50, 92, 100, (0.98, 0.98, 0.96), 6, shadow=True, lw=1.8)
+    c.save(); c.rectangle(-42, -46, 84, 82); c.clip(); c.set_source_rgb(0.70, 0.72, 0.76); c.paint()
+    old = s3.V5[0]; s3.V5[0] = True
+    try:
+        s3.her(k, 0, -46 + 200, 0.58, (0, 0))
+    finally:
+        s3.V5[0] = old
+    c.restore()
+    kit.rect(k, -7, -58, 14, 16, (0.70, 0.70, 0.74), 7, shadow=False, lw=1.4)
+    c.restore()
+    kit.text(k, "SOFIA", 0, 28, 24, INK, bold=True)
+    c.set_source_rgb(0.62, 0.62, 0.64); c.set_line_width(4); c.set_line_cap(1)
+    for i, w in enumerate((96, 80, 90)):
+        c.move_to(-50, 42 + i * 11); c.line_to(-50 + w, 41 + i * 11); c.stroke()
+    c.set_line_cap(0)
+    kit.text(k, "555 0142", 0, 86, 19, INK, bold=True)
+    c.set_source_rgb(*b3.KEY); c.set_line_width(3.4); c.save(); c.translate(0, 85); c.scale(60, 16); c.arc(0, 0, 1, 0.3, 6.6); c.restore(); c.stroke()
+    c.restore()
+
+
 def cv_insert(k):
-    """6.2 (board v3, Tomas: continuity): Office Noir 3's own CV (garage_on3.cv: her photograph clipped to the corner, CV,
-    555 0142 circled), big, out of the dream envelope. The face is Sofia's, who walked past Pam in 1.2."""
-    import garage_on3 as g3
+    """6.2 (board v4): Office Noir 3's CV, out of the dream envelope; her photograph big, her name: the blonde of 1.2."""
     c = k.c
     c.set_source_rgb(0.10, 0.08, 0.08); c.paint()
-    oc.envelope(k, 270, 720, 3.0)
-    g3.cv(k, 270, 400, 2.5, -0.04, photo=True)
+    oc.envelope(k, 270, 780, 3.0)
+    cv_sheet(k, 270, 420, 2.6, -0.04)
 
 
 def knee_insert(k):
@@ -496,6 +529,32 @@ def wall_shadow(k, state="aim", slide=0.0):
     c.restore(); c.restore()
 
 
+def _into_coat(k):                                         # 2.2 (board v4): he slides it into his own coat; her ears outside
+    c = k.c
+    oc.envelope(k, 208, 640, 1.1)                                                                  # half into his coat, at his chest
+    c.set_source_rgb(0.24, 0.24, 0.30); c.rectangle(184, 650, 52, 24); c.fill()                   # the lapel over its lower half
+    c.set_source_rgb(*INK); c.set_line_width(2); c.rectangle(184, 650, 52, 24); c.stroke()
+    c.save(); c.translate(500, 470); c.scale(-1, 1)                                                # her ears and the top of her head,
+    kit.ellipse(k, 0, 0, 70, 60, (0.10, 0.09, 0.10), 7501, shadow=False, lw=2.2)                  # at the window's edge, outside
+    oc.ears(k, 0, 0, 0.9)
+    c.restore()
+
+
+def _dark_half(k):                                         # 6.5 (board v4): the light gone from her: the left half dark over
+    c = k.c                                                  # her, the beam's old cone a ghost on her, the swing arc to the table
+    g = cairo.LinearGradient(0, 0, 330, 0)
+    g.add_color_stop_rgba(0, 0, 0, 0, 0.72); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+    c.set_source(g); c.rectangle(0, 0, 330, 960); c.fill()
+    c.set_source_rgba(1, 1, 1, 0.5); c.set_line_width(3); c.set_dash([10, 8])
+    c.move_to(40, 60); c.line_to(150, 420); c.stroke()                                             # where the beam was: on her
+    c.new_path(); c.arc(40, 60, 380, 1.28, 0.95 + 0.0); c.stroke() if False else None
+    c.set_dash([])
+    c.set_source_rgb(1, 1, 1); c.set_line_width(4)                                                 # the swing: an arc with a head
+    c.new_path(); c.arc_negative(40, 60, 330, 1.25, 0.95); c.stroke()
+    ex, ey = 40 + 330 * math.cos(0.95), 60 + 330 * math.sin(0.95)
+    c.move_to(ex, ey); c.line_to(ex - 4, ey - 22); c.stroke(); c.move_to(ex, ey); c.line_to(ex - 22, ey + 4); c.stroke()
+
+
 def _bills(k):
     import on4_lying as ly
     for (x, y, a) in ((360, 520, 0.3), (330, 560, -0.6), (380, 600, 0.9)):
@@ -533,13 +592,11 @@ SCENES = [
         S("2.2", "medium, through the window", "back_seat", WIDE, "The back seat: the Client, whole; beside him a velvet sleeve, "
           "a ringed hand on a knee, a chin (the window's top cuts Dad at the chin).",
           cast=[P("client", 170, 820, 0.66, "open", "plain", look=(0.7, 0.4), roll=False, badge=False),
-                P("father", 370, 640, 0.78, (-20, 30, 20, -30), "hard", (-0.6, 0.6))],
-          eyeline="both to the envelope", after=lambda k: oc.envelope(k, 200, 680, 1.4)),
+                P("father", 370, 596, 0.78, (-20, 30, 20, -30), "hard", (-0.6, 0.6))],
+          eyeline="both to the envelope", after=_into_coat),
         S("2.3", "insert, 1.2 s", "knee", WIDE, "Through the window: the envelope on the Client's knee, his finger taps it twice; the "
           "ringed hand lays itself flat on the seat: agreed.", protect=[("envelope", (200, 520)), ("ring", (392, 640))],
           line="The Client: Mine until it's done.", action="two taps", reaction="the ringed hand flat: agreed"),
-        S("2.3b", "insert (b: into his coat)", "knee_coat", WIDE, "It slides into his own coat, inside left, his hand patting it flat.",
-          protect=[("envelope", (250, 430))], action="into his coat", reaction="(Pam is watching)"),
         S("2.4", "close", "escape", WIDE, "Her eyes narrow; she swings onto the ladder and drops out of frame.",
           cast=[P("pam_cat", 270, 900, 0.96, "hero", "angry", (0.4, 0.6))], line="N: I know where to see what others do not see.",
           after=lambda k: railing(k, 690), eyeline="down to the car", action="she drops out of frame", reaction="Got you."),
@@ -610,7 +667,8 @@ SCENES = [
           protect=[("glove", (410, 440))]),
         S("6.5", "wide, held 1 s", "stage_beam", WIDE, "The beam swings off her onto the card table; Pam a black shape against the lit room, arm "
           "still up; the room's backs to her.",
-          cast=[P("pam_black", 250, 930, 1.20, "triumph", "proud", (0.3, -0.6))], eyeline="THE SHOT AND THE COVER"),
+          cast=[P("pam_cat", 150, 960, 1.20, "triumph", "proud", (0.3, -0.6))], eyeline="THE SHOT AND THE COVER",
+          after=_dark_half),
         S("6.6", "close, rim-lit", "stage_table", WIDE, "Her arm comes slowly down; she tucks the envelope in and pats it twice.",
           cast=[P("pam_cat", 250, 930, 1.20, "sag", "sad", (0.2, 0.4), env=True)], reaction="Of course."),
     ]),
@@ -1086,7 +1144,7 @@ def blocking(out):
     return out
 
 
-def board(out=OUT, ver=3):
+def board(out=OUT, ver=4):
     """stage 5: one key frame per shot at 540, generated; two sheets at 400 px tiles, numbered with the time, and a phone
     sheet at 270 px. Neutral copies for the cold viewers go to /tmp/on4_board_cv (frame_NN.png, no names)."""
     import shutil
