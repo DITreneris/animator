@@ -77,17 +77,17 @@ The front desk, zones B and C.
 | 2.7 | 0:17.4 | 1.0 | MEDIUM · S6 | **Sofía** steps toward Don and stops mid-step | she stops → her eyes go to the door | — | a heel click |
 | 2.8 | 0:18.4 | 1.0 | INSERT | **The heel:** her black shoe, heel planted behind the tape, toe on Don's side. Held | held 0.6 s | — | — |
 | 2.9 | 0:19.4 | 1.6 | CLOSE | The robot, at its station. Its visor: a small **barrier with a red light** | it reports | ROBOT: "Border breach. One heel." | a soft two-tone beep |
-| 2.10 | 0:21.0 | 2.6 | TWO-SHOT · S6 | Don admiring his line, not listening. The robot rolls onto the tape and stops **astride it**, one wheel each side. After "Both.", **0.4 s on Don's face** | the wheels astride → Don's face | DON: "And you?" · ROBOT: "Both." | the wheels squeak |
-| 2.11 | 0:23.6 | 3.6 | MEDIUM · S6 | Don pushes it onto his side; it rolls back astride (1.4 s). Again, quicker (1.0 s). Third push: it comes back at once and **bumps Don**, who has stepped into its path (0.6 s + the stagger) | push, return ×3 → Don staggers | — | squeak, squeak, BONK |
+| 2.10 | 0:21.0 | 2.6 | TWO-SHOT · S6 | Don admiring his line, not listening. The robot rolls onto the tape and **balances on it**, its one wheel on the line, arms out like a tightrope walker (Tomas, robot sheet /grill-me). After "Both.", **0.4 s on Don's face** | the wheel on the line → Don's face | DON: "And you?" · ROBOT: "Both." | the wheels squeak |
+| 2.11 | 0:23.6 | 3.6 | MEDIUM · S6 | Don pushes it off onto his side; it rolls back onto the tape (1.4 s). Again, quicker (1.0 s). Third push: it comes back at once and **bumps Don**, who has stepped into its path (0.6 s + the stagger) | push, return ×3 → Don staggers | — | squeak, squeak, BONK |
 | 2.12 | 0:27.2 | 1.1 | CLOSE · S6 | Sofía, the heel still back: she **folds her arms** and gives Don one flat look | arms fold | — | — |
 
 ## Scene 3 · The Selfie · 0:28.3 · 11.2 s
 
 | Shot | At | s | Size · setup | Picture | Action → reaction | Line | Sound |
 |---|---|---|---|---|---|---|---|
-| 3.1 | 0:28.3 | 0.8 | MEDIUM · S6 | The robot's arm extends up, its camera on the hand. Don swings into his big pose | the arm → Don poses | — | a servo whir |
-| 3.2 | 0:29.1 | 2.0 | INSERT (the photo) | A camera FLASH (a real flash, lesson 114), then **the photo fills the screen**, rendered from this beat's own wide: Don beaming, Pam beside him, Mom on the tape, the robot astride, **Sofía's heel behind the line**, and **a big silhouette behind the door's glass** | the photo → held | — | shutter click |
-| 3.3 | 0:31.1 | 2.4 | CLOSE | The robot, the photo on its screen with **PUBLIC POST?** over it | it asks | ROBOT: "Public post? Human approval required." | — |
+| 3.1 | 0:28.3 | 0.8 | MEDIUM · S6 | Its arm **telescopes** up out of its side, a phone clamped at the tip. Don swings into his big pose | the arm → Don poses | — | a servo whir |
+| 3.2 | 0:29.1 | 2.0 | INSERT (the photo) | A camera FLASH (a real flash, lesson 114), then **the photo fills the screen**, rendered from this beat's own wide: Don beaming, Pam beside him, Mom on the tape, the robot balancing on the tape, **Sofía's heel behind the line**, and **a big silhouette behind the door's glass** | the photo → held | — | shutter click |
+| 3.3 | 0:31.1 | 2.4 | CLOSE | The robot turns the phone at the tip of its arm to Don: the photo with **PUBLIC POST?** over it (and on its visor) | it asks | ROBOT: "Public post? Human approval required." | — |
 | 3.4 | 0:33.5 | 1.0 | CLOSE · S3 | Don, still posing, eyes on his own reflection, thumb on the robot's pad without looking | the thumb | DON: "Approved." | a chime |
 | 3.5 | 0:34.5 | 1.0 | INSERT (the screen) | PUBLIC POST? slides up and away; **#TeamDon 🤝** comes in under it, posted | posted | — | whoosh |
 | 3.6 | 0:35.5 | 1.6 | WIDE · S2 | **DING** behind the glass: the silhouette lifts a glowing phone to its face. In the foreground Don still smiles | the glow → Don smiles on | — | DING (outside, muffled) |
@@ -121,7 +121,7 @@ The front desk.
 
 | Shot | At | s | Size · setup | Picture | Action → reaction | Line | Sound |
 |---|---|---|---|---|---|---|---|
-| 6.1 | 0:57.3 | 3.0 | WIDE · S1, Don forward | Don alone in front, facing the camera, sincere. Behind him: **Pam's hand reaching across the line to her lit phone**, Mom turned away on the tape, **Sofía on Father's side, COO? in hand**, the robot at the cord. No glance, no realisation | his smile → nobody looks at him | DON: "Everyone's with me." | — |
+| 6.1 | 0:57.3 | 3.0 | TWO-PLANE, closer than S1: Don big in front, Sofía readable behind (her face and COO? at phone size; set at the layouts, after the Sofía sheet review) | Don alone in front, facing the camera, sincere. Behind him: **Pam's hand reaching across the line to her lit phone**, Mom turned away on the tape, **Sofía on Father's side, COO? in hand**, the robot at the cord. No glance, no realisation | his smile → nobody looks at him | DON: "Everyone's with me." | — |
 | 6.2 | 1:00.3 | 1.0 | MEDIUM · S2 (1.1's framing) | The robot's hand yanks the cord: **the blinds shoot up**. Cut to 1.1 | up → frame 0 | — | rattle up, into 1.1's rattle down |
 
 ## Props: where each is, shot by shot (lesson 78)
