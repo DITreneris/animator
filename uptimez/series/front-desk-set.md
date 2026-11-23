@@ -47,3 +47,7 @@ Nothing in `fs_set4.py` changed. The props are drawn through a shot's own hooks 
 **Why:** the concept had Don at a desk, and this set gives him none; the chair replaces it and plants the evidence in the first shot. The machine sits by Pam so that her motive (an empty cup) and its cause are in one frame.
 
 The club booth (`dh_props.booth`) is a separate full-frame drawing, not part of this set.
+
+## v6: the throne's PAID BY DAD tag (episode 13 v9 on), opt-in
+
+`dh_props.TAG` (default `None`, so episode 12 draws as before; `dh_props_v5.py` is the pinned v5). Set to `"PAID\nBY DAD"` by `of_scenes.py` for episode 13's office shots (rough cut v9) and from then on for the Civil War. A narrow red swing ticket pinned to the crown's left point, above Don's head and clear of it, whole in every close-up of the throne (checked in 3.1, 3.3, 3.5, 3.7). **Why:** STORYLINE v3.4: the throne is power in the Civil War, and it isn't Don's any more.

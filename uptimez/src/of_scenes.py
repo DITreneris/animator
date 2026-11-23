@@ -21,6 +21,8 @@ import of_set as gs
 import uz_check as uz
 import cs_frame as cf
 from kit import Ctx, INK, rect, ellipse, cut
+import dh_props as _dp
+_dp.TAG[0] = "PAID\nBY DAD"                                # v9 (23 Nov, STORYLINE v3.4): 12's consequence on the throne
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "the-offer")
