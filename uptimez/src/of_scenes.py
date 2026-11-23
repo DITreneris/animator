@@ -465,7 +465,7 @@ def _cast_draw0(k, n, scene, sh, heads):
             import client_ob as co_
             H, D = oc.guard_arm_front(k, x, f, CS, True, (tx, ty), co_skin(), hand=False, from_elbow=False,
                                       upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
-            oc.thumb_fist(k, H[0], H[1], 26.0, co_skin(), D, math.radians(-15 + 25 * tu))   # everyone's hand, thumb out
+            oc.thumb_fist(k, H[0], H[1], 19.0, co_skin(), D, math.radians(-15 + 25 * tu))   # everyone's hand, thumb out
         elif kind == "pocket":
             pu = ps.get("pocket_u", 0.0)                                     # v5 (23 Nov, Tomas: "the hand is strange"): out of the
             P0, P1, P2 = (x - 8, f - 140), (x - 22, f - 106), (x - 66, f - 158)  # top pocket, a wipe on the thigh, held out to
@@ -662,10 +662,13 @@ def garage_shot(k, sh, scene, heads, cam):
         px, py = 300, 812
         for col, lw in ((INK, 46), (dc.SUIT, 40)):                            # the black sleeve, down from above right
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
-            c.move_to(500, 600); c.line_to(px + 66, py - 10); c.stroke()
-        c.save(); c.translate(px + 62, py - 6); c.rotate(-0.55)
+            c.move_to(500, 600); c.line_to(px + 30, py + 50); c.stroke()     # v7 (hand audit): to the palm under the phone
+        c.save(); c.translate(px + 78, py + 16); c.rotate(-0.60)
         rect(k, -24, -8, 48, 16, (0.97, 0.97, 0.94), 3409, shadow=False, lw=1.8)            # his white cuff
         c.restore()
+        S04, A04 = 90 / 44.0, 0.2                                             # v7: the same phone grip as every phone, big
+        gx_, gy_ = px - 22 * S04 * math.sin(A04) * 0 - 45 * math.sin(A04), py + 45 * math.cos(A04)
+        _oc.phone_grip(k, gx_, gy_, S04, ang=A04, skin=(0.92, 0.74, 0.60), body_x=gx_ + 400, part="back", ink=0.6)
         c.save(); c.translate(px, py); c.rotate(0.2); c.scale(1.5, 1.5)
         gs.protect(c, "the DELETE POST phone", -30, -48, 30, 48)
         rect(k, -30, -48, 60, 96, (0.10, 0.11, 0.14), 3410, lw=2)
@@ -678,8 +681,7 @@ def garage_shot(k, sh, scene, heads, cam):
         rect(k, -22, 12, 44, 20, gs.RED, 3411, shadow=False, lw=1.2)
         gs.T(c, "DELETE", 0, 27, 10.5, col=(1, 1, 1))
         c.restore()
-        ellipse(k, px + 48, py + 8, 22, 30, (0.92, 0.74, 0.60), 3412, lw=2)               # his big hand round its side
-        ellipse(k, px + 14, py + 54, 11, 8, (0.92, 0.74, 0.60), 3413, lw=1.6)              # the thumb, over DELETE
+        _oc.phone_grip(k, gx_, gy_, S04, ang=A04, skin=(0.92, 0.74, 0.60), body_x=gx_ + 400, part="front", ink=0.6)   # thumb, fingertips
 
 
 def _star(c, x, y, r):
@@ -791,8 +793,8 @@ def insert_shot(k, sh):
         c.save(); c.translate(px_ + 18, py_ + 150 - 30 * u_); c.rotate(0.15)
         rect(k, -44, -12, 88, 26, (0.97, 0.97, 0.95), 3495, shadow=False, lw=2.4)         # the white cuff
         c.restore()
-        ellipse(k, px_ + 16, py_ + 90 - 30 * u_, 44, 40, (0.92, 0.74, 0.60), 3496, lw=2.6)   # his fist
-        _oc._capsule(c, px_ + 6, py_ + 66 - 30 * u_, px_, py_ + 14 - 14 * u_, 14, (0.92, 0.74, 0.60))   # the thumb, up to the pin
+        _oc.ps_hand(k, "thumb", px_ + 16, py_ + 112 - 26 * u_, 84, (0.92, 0.74, 0.60), rot=0.0, arm=-1)   # v3: the series' thumb,
+                                                                                         # up to the pin (was a ball and a stick)
         ellipse(k, px_, py_, 14, 14, (0.85, 0.12, 0.12), 3497, lw=2.4)                  # the red pin
         gs.protect(c, "the fresh plan", 60, 290, 470, 660)
     elif kind == "bay":                                                            # v1 (23 Nov, decided A): his hands in the lamp's light
@@ -838,25 +840,15 @@ def insert_shot(k, sh):
             c.save(); c.translate(hx + (ex - hx) * 0.70, hy + (ey - hy) * 0.70); c.rotate(math.atan2(ey - hy, ex - hx))
             rect(k, -10, -44, 140, 88, (0.97, 0.97, 0.95), 3472 + side, lw=2.6)          # the white T-shirt sleeves
             c.restore()
+            dl_ = math.hypot(hx - ex, hy - ey); dd_ = ((hx - ex) / dl_, (hy - ey) / dl_)   # v5 (hand audit): the series' hands
             if side == 1 and bo2_ > 0:                                                # v4: his far fist round the plug
-                ellipse(k, hx, hy, 40, 34, (0.80, 0.62, 0.50), 3490, lw=2.4)
-                c.set_source_rgb(*INK); c.set_line_width(2.2)
-                for d_ in (-12, 0, 12):
-                    c.move_to(hx - 18, hy + d_); c.line_to(hx + 10, hy + d_); c.stroke()
+                _oc.ps_hand(k, "fist", hx - 22 * dd_[0], hy - 22 * dd_[1], 70, (0.80, 0.62, 0.50), dd_, 1)
                 continue
             if side == 1:                                                             # v2 (decided): his far hand FLAT on the block
-                c.save(); c.translate(hx, hy); c.rotate(math.atan2(ey - hy, ex - hx) + math.pi)
-                c.new_path(); c.move_to(-34, -26); c.curve_to(10, -32, 60, -26, 70, -10); c.curve_to(74, 6, 60, 22, 10, 26); c.line_to(-34, 26); c.close_path()
-                c.set_source_rgb(0.80, 0.62, 0.50); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()
-                for y0 in (-12, 0, 12):
-                    c.move_to(30, y0); c.line_to(62, y0); c.stroke()
-                c.restore()
+                _oc.ps_hand(k, "palm", hx - 22 * dd_[0], hy - 22 * dd_[1], 66, (0.80, 0.62, 0.50), dd_, 1)   # flat, four fingers
                 c.set_source_rgba(0.1, 0.08, 0.05, 0.45); c.arc(hx + 6, hy + 4, 8, 0, 2 * math.pi); c.fill()
                 continue
-            ellipse(k, hx, hy, 42, 36, (0.80, 0.62, 0.50), 3474 + side, lw=2.4)           # the fist on the wrench
-            c.set_source_rgb(*INK); c.set_line_width(2.2)
-            for d_ in (-12, 0, 12):
-                c.move_to(hx - 18, hy + d_); c.line_to(hx + 10, hy + d_); c.stroke()
+            _oc.ps_hand(k, "fist", hx - 22 * dd_[0], hy - 22 * dd_[1], 72, (0.80, 0.62, 0.50), dd_, -1)   # the fist on the wrench
             c.set_source_rgba(0.1, 0.08, 0.05, 0.45); c.arc(hx + 12, hy - 10, 8, 0, 2 * math.pi); c.fill()   # oil
         if bo2_ > 0:                                                                     # v4 (cold tests 3 of 3: "what did he find?"):
             px_, py_ = 250 + (290 - 250) * bo2_, 350 + (215 - 350) * bo2_                   # out of the hole comes ONE thing you can
@@ -936,11 +928,9 @@ def insert_shot(k, sh):
         cut(k, [(-8, -6), (16, -8), (24, 34), (6, 56), (-12, 40)], (0.82, 0.30, 0.22), 3451, lw=2)
         c.set_source_rgba(0.1, 0.08, 0.05, 0.4); c.arc(6, 24, 7, 0, 2 * math.pi); c.fill()
         c.restore()
-        c.save(); c.translate(kx, ky); c.rotate(a_)
-        for i, (dx, dy) in enumerate(((-30, 6), (-10, -10), (10, -12), (30, -4))):
-            ellipse(k, dx, dy, 14, 28, (0.80, 0.62, 0.50), 3440 + i, lw=2)
-            c.set_source_rgba(0.1, 0.08, 0.05, 0.5); c.arc(dx, dy + 10, 7, 0, 2 * math.pi); c.fill()
-        c.restore()
+        kl_ = math.hypot(kx + 26 - 640, ky + 14 - 600); kd_ = ((kx + 26 - 640) / kl_, (ky + 14 - 600) / kl_)
+        _oc.ps_hand(k, "fist", kx + 26 - 30 * kd_[0], ky + 14 - 30 * kd_[1], 74, (0.80, 0.62, 0.50), kd_, 1)   # v10 (hand audit):
+        c.set_source_rgba(0.1, 0.08, 0.05, 0.5); c.arc(kx + 20, ky + 16, 8, 0, 2 * math.pi); c.fill()         # the series' fist on the key
 
 
 def donnie_shot(k, sh, heads):
@@ -972,14 +962,10 @@ def donnie_shot(k, sh, heads):
             c_.set_source_rgba(0, 0, 0, 0.65); c_.rectangle(-19, -34, 38, 68); c_.fill()
             c_.set_source_rgb(0.95, 0.25, 0.25); c_.select_font_face("Lilita One"); c_.set_font_size(8.5)
             e = c_.text_extents("DECLINED"); c_.move_to(-e.x_advance / 2, -20); c_.show_text("DECLINED")
-    oc.phone(k, 0, -10, 0.95, None if st.get("donnie_down") else scr2, ang=-0.35)   # face down against his palm
-    ellipse(k, 10, 22, 24, 18, dc.SKIN_F, 3441, lw=2)
-    if st.get("thumb") and not st.get("donnie_down"):                                # his thumb comes over onto the red button
-        u_ = st["thumb"]
-        a_ = -0.35
-        bx_, by_ = -9 * math.cos(a_) - 6 * math.sin(a_), -10 + (-9) * math.sin(a_) + 6 * math.cos(a_)
-        tx_, ty_ = 20 + (bx_ - 20) * u_, 14 + (by_ - 14) * u_
-        oc._capsule(c, 22, 20, tx_, ty_, 7, dc.SKIN_F)
+    u_ = st.get("thumb") or 0.0                                                    # v5 (hand audit): the same phone grip as
+    tip = None if st.get("donnie_down") or not u_ else (18.9 + (-9 - 18.9) * u_, -8 + (-16 + 8) * u_)   # every phone; its thumb
+    oc.phone_grip(k, 7.2, 9.6, 0.95, None if st.get("donnie_down") else scr2, ang=-0.35, skin=dc.SKIN_F,   # goes to the red button
+                  body_x=200, thumb_tip=tip)
     c.restore()
 
 

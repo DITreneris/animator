@@ -12,6 +12,8 @@ palm, finger thickness, wrist and outline in every shape:
   v2 (Pam & Mom audit, 23 Nov), new shapes only (the ones above draw exactly as before):
   two_s   two, the fingers 25 % smaller · relax_s  relax, the thumb pressed in · grab  an open C, the thumb apart (to
   pick something up) · tuck  nothing: the hand hidden under the other forearm (folded arms)
+  v3 (One Star hand audit 2, 23 Nov), new shape only: quiet  a hand at rest: one mitten outline, the thumb's edge along
+  its side, two short finger lines (relax read as a fist, "toes")
 Opt-in: kit.HAND[0] = hands_ps.hand, and GEST[0] = ("left shape", "right shape"); arms are drawn screen-left first.
 Nothing else changes: with kit.HAND[0] unset every earlier sheet draws as before.
   python3 hands_ps.py [out]  ->  before/after sheet on Don at character scale"""
@@ -132,6 +134,14 @@ def draw(k, g, hx, hy, w, skin, d, arm):
         _blob(c, 0.20 * w, 0, 0.42 * w, 0.40 * w, skin)
         for fy in (-0.24, -0.08, 0.08, 0.24):
             _cap(c, [(0.40 * w, fy * w), (1.02 * w - abs(fy) * 0.5 * w, fy * w * 1.15)], t * 0.9, skin)
+        c.restore(); return
+    if g == "quiet":                                                  # v3 (One Star audit 2, 23 Nov): a hand at rest. One
+        _cap(c, [(0.12 * w, s_ * 0.26 * w), (0.56 * w, s_ * 0.34 * w)], t * 0.95, skin)   # outline; the thumb first, so the
+        c.save(); c.translate(0.40 * w, 0); c.scale(0.56 * w, 0.40 * w)                   # mitten covers its root and only
+        c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()                          # its outer edge shows along the side
+        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(LW); c.stroke()
+        for fy in (-0.12, 0.10):                                      # two short finger lines at the tips
+            _crease(c, [(0.68 * w, -s_ * fy * w), (0.90 * w, -s_ * fy * w)], 1.3)
         c.restore(); return
     _blob(c, 0.22 * w, 0, 0.46 * w, 0.44 * w, skin)                   # fist, point, relax: the palm
     for fy in (-0.27, 0.0, 0.27):                                     # three curled knuckles

@@ -66,6 +66,21 @@ def held(k, draw, where):
     return o
 
 
+def ps_hand(k, g, x, y, w, skin, d=(1.0, 0.0), arm=1, rot=None):
+    """v1 (23 Nov, Tomas: "we already had the hands"): the SERIES' hand (hands_ps: fist, point, palm, thumb, grab,
+    quiet), for every hand this film draws outside a rig: the close-up inserts and the gestures. d: the forearm's
+    direction into the hand; rot: for the screen-aligned "thumb", turn the whole hand (0: thumb up, pi/2: thumb right)."""
+    import hands_ps as hp
+    c = k.c
+    log_grip(c, "ps " + g, x, y)
+    if rot is None:
+        hp.draw(k, g, x, y, w, skin, d, arm)
+    else:
+        c.save(); c.translate(x, y); c.rotate(rot)
+        hp.draw(k, g, 0, 0, w, skin, (0.0, 0.0), arm)
+        c.restore()
+
+
 def inner_thumb(x, body_x, back=False):
     """the thumb's side on a held phone, screen to us: toward the body's middle; with the phone's back to us
     (at the ear), the other side."""
@@ -434,31 +449,9 @@ def cartoon_hand(k, hx, hy, w, skin, seed, d, side):
 
 
 def thumb_fist(k, hx, hy, w, skin, d, point):
-    """v1 (23 Nov, hand audit, decided): cartoon_hand's own fist with the thumb OUT, pointing along `point` (radians,
-    user units): the same wrist, palm, blobs and outline weight as everyone's hand, the fingers curled in, the thumb
-    long. Used for 2.5's thumb jerked away ("Without him.")."""
-    c = k.c
-    log_grip(c, "thumb fist", hx, hy)
-    w = w * 1.25
-    a = math.atan2(d[1], d[0])
-    sk = skin
-    def blob(x, y, rx, ry, rot=0.0):
-        c.save(); c.translate(x, y); c.rotate(rot); c.scale(rx, ry); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
-        c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
-    c.save(); c.translate(hx, hy)
-    pa = point - a                                                                           # the thumb, in the hand's frame
-    c.rotate(a)
-    c.new_path()                                                                             # the wrist, as cartoon_hand's
-    c.move_to(-0.55 * w, -0.30 * w); c.line_to(0.05 * w, -0.34 * w)
-    c.line_to(0.05 * w, 0.34 * w); c.line_to(-0.55 * w, 0.30 * w); c.close_path()
-    c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
-    tx, ty = 0.18 * w + 0.80 * w * math.cos(pa), 0.80 * w * math.sin(pa)
-    blob(0.18 * w + 0.42 * w * math.cos(pa), 0.42 * w * math.sin(pa), 0.52 * w, 0.18 * w, pa)   # the thumb, out
-    blob(0.18 * w, 0.0, 0.50 * w, 0.46 * w)                                                  # the palm (the fist's back)
-    for j, fy in enumerate((-0.26, 0.0, 0.26)):                                              # three fingers curled IN, short
-        blob(0.52 * w, fy * w, 0.16 * w, 0.15 * w)
-    blob(tx - 0.10 * w * math.cos(pa), ty - 0.10 * w * math.sin(pa), 0.17 * w, 0.15 * w, pa)  # its tip, over the palm's edge
-    c.restore()
+    """v2 (23 Nov): the series' own thumbs-up (hands_ps "thumb"), turned so the thumb points along `point` (radians):
+    2.5's thumb jerked away. v1 was a hand of its own, 1.5x his other hand."""
+    ps_hand(k, "thumb", hx, hy, w, skin, rot=point + math.pi / 2, arm=-1)
 
 
 SKIN_LIGHT = (0.96, 0.80, 0.70)
@@ -471,7 +464,7 @@ def _capsule(c, x0, y0, x1, y1, w, col):
 
 
 def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=SKIN_LIGHT, thumb=None, wrist=None, body_x=None, back=False, part="all",
-               ink=1.0):
+               ink=1.0, thumb_tip=None):
     """v3 hands (iteration 2): a phone HELD. (x, y) is the PALM (where the arm ends), the phone stands on it: the palm
     behind its lower half, the thumb crossing the front of one edge, three fingertips round the other. No wrist stub:
     the arm itself runs into the palm. v4 (23 Nov, hand audit): the thumb's side is COMPUTED from body_x (the holder's
@@ -496,7 +489,7 @@ def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=SKIN_LIGHT, thumb=None, wr
         tx = 22 * thumb
         for cc, lw in ((INK, 11 + 4.0 * ink), (skin, 11)):                                  # the thumb over the front edge, low
             c.set_source_rgb(*cc); c.set_line_width(lw); c.set_line_cap(1)
-            c.move_to(tx * 1.12, 10); c.line_to(tx * 0.86, -8); c.stroke()
+            c.move_to(tx * 1.12, 10); c.line_to(*(thumb_tip or (tx * 0.86, -8))); c.stroke()   # thumb_tip: it presses there
         for fy in (-30, -16, -2):                                                          # three fingertips round the other
             c.save(); c.translate(-tx * 1.03, fy); c.scale(8.5, 6.2); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
             c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0 * ink); c.stroke()
