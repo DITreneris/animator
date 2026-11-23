@@ -47,38 +47,50 @@ def _shut_stage(k):
     return old
 
 
-def room(k, blind="up", u=0.0, tape=False, spun=False, phone="dark", silhouette=False, dim=True):
+def room(k, blind="up", u=0.0, tape=False, spun=False, phone="dark", silhouette=False, dim=True, mark=True, cords=True):
     """The whole front desk, empty (the cast goes on top). blind: up / down (u: how far, 0..1) / torn / rehung."""
     c = k.c
     old = _shut_stage(k)
+    old_scr = s4.fs.screen
+    if NO_SCREEN[0]:
+        s4.fs.screen = lambda *a, **kw: None
     try:
         s4.draw_set(k, {})
     finally:
         st.stage = old
+        s4.fs.screen = old_scr
     if silhouette:
-        behind_glass(k)
+        behind_glass(k, lit=(silhouette == "phone"))
     throne(k, spun)
     if tape:
-        tape_line(k)
+        tape_line(k, mark)
     if phone:
         pam_phone(k, *PHONE_AT, 1.0, lit=(phone == "lit"))
-    blinds(k, blind, u)
+    blinds(k, blind, u, cords=cords)
     if dim and blind == "down" and u > 0:                    # the blinds shut out the street: the room goes dim
         c.set_source_rgba(0.05, 0.05, 0.10, 0.22 * u); c.rectangle(0, 0, 960, 960); c.fill()
 
 
-def behind_glass(k, x=100):
-    """Bodyguard 2 behind the glass (3.2-5.3): a big dark shape."""
+def behind_glass(k, x=100, lit=False):
+    """Bodyguard 2 behind the glass (3.2-5.3): a big dark shape. lit (3.6, board v2): his phone up at his face, its glow
+    lighting it: he is looking at something."""
     c = k.c
     c.save(); c.rectangle(GX0, GY0, GW, GH); c.clip()
     c.set_source_rgba(0.08, 0.08, 0.10, 0.72)
     c.new_path(); c.arc(x, 520, 30, 0, 2 * math.pi); c.fill()
     c.move_to(x - 60, 800); c.line_to(x - 52, 590); c.curve_to(x - 40, 560, x + 40, 560, x + 52, 590)
     c.line_to(x + 60, 800); c.close_path(); c.fill()
+    if lit:
+        g = cairo.RadialGradient(x + 14, 540, 2, x + 14, 540, 60)
+        g.add_color_stop_rgba(0, 0.70, 0.95, 1.0, 0.85); g.add_color_stop_rgba(1, 0.70, 0.95, 1.0, 0.0)
+        c.set_source(g); c.arc(x + 14, 540, 60, 0, 2 * math.pi); c.fill()
+        c.set_source_rgba(0.08, 0.08, 0.10, 0.9); c.set_line_width(16); c.set_line_cap(1)      # his arm up to it
+        c.move_to(x + 40, 640); c.line_to(x + 30, 570); c.stroke()
+        c.set_source_rgb(0.80, 0.97, 1.0); c.rectangle(x + 6, 528, 20, 34); c.fill()
     c.restore()
 
 
-def blinds(k, state="up", u=1.0, seed=4900):
+def blinds(k, state="up", u=1.0, seed=4900, cords=True):
     c = k.c
     top = GY0 - 10
     if state == "torn":                                       # the rail hangs from its left bracket; no slats
@@ -119,6 +131,8 @@ def blinds(k, state="up", u=1.0, seed=4900):
         rect(k, -4, -3, 58, 7, SLAT, seed + 30, shadow=False, lw=1.5)
         c.restore()
     rect(k, GX0 - 8, top, GW + 16, 12, RAIL, seed + 3, shadow=False, lw=2)                     # the rail
+    if not cords:                                             # the motion tests draw the cords to the hands themselves
+        return
     cl = max(bot + 30, top + 190)
     _cord(c, CORD_L, top + 12, cl, pull=PULL)                                                  # Don's cord, a white pull
     _cord(c, CORD_R, top + 12, cl, pull=PULL_R)                                                # the robot's, grey
@@ -131,7 +145,14 @@ def _cord(c, x, y0, y1, swing=0, pull=None):
     c.set_source_rgb(*(pull or PULL)); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.4); c.stroke()
 
 
-def tape_line(k):
+NO_SCREEN = [False]                                         # opt-in (ps_scenes, board v2): the UPTIMEZ FIND screen over the
+                                                            # door taken off: 3 of 3 cold viewers read "blueprint" typed into it
+                                                            # as what brought the blind down
+MARK_SMALL = [False]                                        # opt-in (ps_scenes v2): DON smaller and close beside the tape,
+                                                            # so a close shot holds it whole or not at all (lesson 295)
+
+
+def tape_line(k, mark=True):
     """The tape on the floor: back wall to the camera, splaying with depth; DON and an arrow in marker on his side."""
     c = k.c
     x0, x1 = LINE_X, LINE_X + 34
@@ -139,7 +160,12 @@ def tape_line(k):
     c.set_source_rgb(*TAPE); c.fill_preserve(); c.set_source_rgb(0.30, 0.22, 0.02); c.set_line_width(2.4); c.stroke()
     c.set_source_rgba(1, 1, 1, 0.35); c.set_line_width(1.5)                          # its sheen
     c.move_to(x0 - 1, F + 4); c.line_to(x1 - 6, 958); c.stroke()
-    c.save(); c.translate(x0 - 46, F + 110); c.rotate(-0.04); c.scale(1.0, 0.55)       # in marker, on the floor, his side
+    if not mark:                                                                       # 2.1: the tape just laid, no DON yet
+        return
+    if MARK_SMALL[0]:
+        c.save(); c.translate(x0 + 100 * 28 / 160 - 40, F + 100); c.rotate(-0.04); c.scale(0.50, 0.50 * 0.55)
+    else:
+        c.save(); c.translate(x0 - 46, F + 110); c.rotate(-0.04); c.scale(1.0, 0.55)   # in marker, on the floor, his side
     c.select_font_face("Permanent Marker", 0, 1); c.set_font_size(52); c.set_source_rgb(0.08, 0.08, 0.10)
     e = c.text_extents("DON"); c.move_to(-e.x_advance, 0); c.show_text("DON")
     c.set_line_width(7); c.set_line_cap(1)                                             # the arrow: into his side
