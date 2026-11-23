@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 27, 2: 27, 3: 27, 4: 27, 5: 27}
+VER = {1: 27, 2: 27, 3: 27, 4: 28, 5: 27}
 SOUND = "of_sound_v13.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -272,8 +272,11 @@ def s37(t, L):                                             # the smile is gone; 
 def s41(t, L):                                             # v3 (23 Nov, cold tests 3 of 3: "a faceless hand"): FATHER in the
     if t < 1.1:                                            # doorway, DONNIE buzzing in his hand; he looks at it. Then CLOSE:
         bz = 2.5 * math.sin(t * 2 * math.pi * 18)          # his thumb on red, DECLINED, face down
+        lk = ease((t - 0.1) / 0.3); nd = ease((t - 0.5) / 0.22) - ease((t - 0.82) / 0.22)
         return (dict(_cam=DOOR_CAM, _cast=("father",), black_car=True, burn=1.0, insert=None, moved=dict(father=(156, F_ + 26))),
-                dict(father=dict(face="low", look=(0.6, 1.2), targets_xy=[(190, F_ - 110)], phone_donnie=True, buzz=bz)))
+                dict(father=dict(face="hard" if t < 0.5 else "low" if t < 0.95 else "brow", look=(1 - 0.4 * lk, 0.2 + 1.0 * lk), lean=0.03 * nd,
+                                 targets_xy=[(190, F_ - 110)], phone_donnie=True, buzz=bz)))   # v5 (decided): eyes from the room to
+                                                                                               # the phone, ONE slow nod, brow down
     u = t - 1.1                                            # v4 (timing v12, cold tests 3 of 3 "too fast"): DECLINED held 1.0 s
     th = ease((u - 0.25) / 0.2)
     return dict(_cam=DONNIE_CAM, hand_dx=0.0, buzz=3 * math.sin(u * 2 * math.pi * 18) if u < 0.3 else 0.0,

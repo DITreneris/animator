@@ -24,7 +24,7 @@ import soundfile as sf
 from PIL import Image
 import of_scenes as sc
 
-VERSION = 27
+VERSION = 28
 TMP = "/tmp/of_cut"
 FRAMES = "/tmp/of_film/s%d"                                 # each scene's drawings, as of_film left them (or a copy in TMP)
 FPS = 30
