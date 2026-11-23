@@ -281,7 +281,12 @@ def _cast_draw(k, n, scene, sh, heads):
         if ln_:                                                                  # the whole man tilted about his feet
             c.save(); c.translate(x, f); c.rotate(ln_); c.translate(-x, -f)
         try:
-            o = oc.father(k, x, f, FS, face=ps.get("face", "hard"), look=ps.get("look", (1, 0)), targets=ps.get("targets_xy", ()))
+            draw_f = lambda: oc.father(k, x, f, FS, face=ps.get("face", "hard"), look=ps.get("look", (1, 0)), targets=ps.get("targets_xy", ()))
+            if ps.get("phone_donnie") and ps.get("targets_xy"):                  # v2 (hand audit): the phone's hand is the only one there
+                w_ = ps["targets_xy"][0]
+                o = oc.held(k, draw_f, lambda o_: [min(o_.get("hands") or [w_], key=lambda h: (h[0] - w_[0]) ** 2 + (h[1] - w_[1]) ** 2)])
+            else:
+                o = draw_f()
         finally:
             dc.FATHER_STEP[0] = None
             _kit.HAND[0] = hk
@@ -299,7 +304,7 @@ def _cast_draw(k, n, scene, sh, heads):
                 c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
                 c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
                 e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, -6); c_.show_text("DONNIE")
-            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, scr_d, ang=-0.15, skin=dc.SKIN_F)
+            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, scr_d, ang=-0.15, skin=dc.SKIN_F, body_x=x)
         if ps.get("palm") and ps.get("targets_xy"):                          # v6 (23 Nov, motion_on3's hand): palm and fingers in ONE
             hx, hy = ps["targets_xy"][0]                                         # shape, flat across the lid, the fingers pointing on, a thumb
             sk = dc.SKIN_F
@@ -337,7 +342,17 @@ def _cast_draw(k, n, scene, sh, heads):
             _kit.HAND[0] = _skip
         oc.ELBOW_LOW[0] = bool(ps.get("elbow_low"))
         try:
-            o = oc.guard(k, x, f, GS, flip=flip, targets=tg, turn=ps.get("turn", 0.0), seed=1600 if n == "g1" else 1640)
+            draw_g = lambda: oc.guard(k, x, f, GS, flip=flip, targets=tg, turn=ps.get("turn", 0.0), seed=1600 if n == "g1" else 1640)
+            gl_ = POSES.get(sh["id"], {}).get("father", {}).get("guard_lighter") if n == "g2" else None
+            if ps.get("phone") == "calendar" and tg:                             # v2 (hand audit): one hand per wrist
+                o = oc.held(k, draw_g, lambda o_: [tg[0]])
+            elif "lighter" in ps and tg:                                         # the lighter's fist is that hand, even when the
+                o = oc.held(k, draw_g, lambda o_: [min(o_.get("hands") or [tg[0]],   # target is out of reach (the skip above misses it)
+                                                          key=lambda h: (h[0] - tg[0][0]) ** 2 + (h[1] - tg[0][1]) ** 2)])
+            elif gl_:                                                            # the lighter's fist (drawn with Father) is his hand
+                o = oc.held(k, draw_g, lambda o_: [gl_[0]] + [h for h in (o_.get("hands") or []) if math.hypot(h[0] - gl_[0][0], h[1] - gl_[0][1]) < 40])
+            else:
+                o = draw_g()
         finally:
             _kit.HAND[0] = hk
             oc.ELBOW_LOW[0] = False
@@ -369,7 +384,7 @@ def _cast_draw(k, n, scene, sh, heads):
                 for i in range(3):
                     for j in range(3):
                         c_.rectangle(-15 + i * 11, -14 + j * 11, 8, 8); c_.fill()
-            oc.phone_grip(k, hx, hy, 0.6, cal, ang=-0.1, skin=co_skin())                 # v4 hands: held, on his palm
+            oc.phone_grip(k, hx, hy, 0.6, cal, ang=-0.1, skin=co_skin(), body_x=x)                 # v4 hands: held, on his palm
         if ps.get("dent"):                                                    # v10: the roof gives under the palm, 2 drawings
             hx, hy = tg[0]
             c.set_source_rgb(*INK); c.set_line_width(2.4); c.new_path()
@@ -419,17 +434,12 @@ def _cast_draw(k, n, scene, sh, heads):
             T0, T1 = (x + 30, f - 112), (x + 60, f - 178)   # v2: the RIGHT hand, away from Father
             tx, ty = om_lerp(T0, T1, tu)
             wx, wy = oc.watch_pose(x, f, CS)[0]
-            o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)], face=ps.get("face", "bored"))
+            o = oc.held(k, lambda: oc.client(k, x, f, CS, look=look, targets=[(tx, ty)], face=ps.get("face", "bored")),
+                        lambda o_: [(tx, ty)])                                  # v3 (hand audit): one hand at this wrist
             import client_ob as co_
-            H, _ = oc.guard_arm_front(k, x, f, CS, True, (tx, ty), co_skin(), hand=False, from_elbow=False,
+            H, D = oc.guard_arm_front(k, x, f, CS, True, (tx, ty), co_skin(), hand=False, from_elbow=False,
                                       upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
-            ellipse(k, H[0], H[1] - 3, 20, 20, co_skin(), 3760, lw=2.2)                   # the fist (over the rig's hand)
-            c_ = k.c
-            c_.set_source_rgb(*INK); c_.set_line_width(1.6)
-            for j in range(3):                                                        # its knuckles
-                c_.new_path(); c_.arc(H[0] - 7, H[1] - 8 + j * 8, 4.0, math.pi - 1.2, math.pi + 1.2); c_.stroke()
-            ang_ = math.radians(-15 + 25 * tu - 180 + 180)   # out to the right                                         # the thumb, out to the left and up
-            _oc._capsule(c_, H[0] + 6, H[1] - 6, H[0] + 6 + 17 * math.cos(ang_), H[1] - 6 + 17 * math.sin(ang_), 5.5, co_skin())
+            oc.thumb_fist(k, H[0], H[1], 26.0, co_skin(), D, math.radians(-15 + 25 * tu))   # everyone's hand, thumb out
         elif kind == "pocket":
             pu = ps.get("pocket_u", 0.0)                                     # v5 (23 Nov, Tomas: "the hand is strange"): out of the
             P0, P1, P2 = (x - 8, f - 140), (x - 22, f - 106), (x - 66, f - 158)  # top pocket, a wipe on the thigh, held out to
@@ -439,19 +449,19 @@ def _cast_draw(k, n, scene, sh, heads):
                 tx, ty = P1[0] + 6 * math.sin((pu - 0.4) / 0.2 * 2 * math.pi), P1[1]
             else:
                 tx, ty = om_lerp(P1, P2, (pu - 0.6) / 0.4)
-            o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)])
+            o = oc.held(k, lambda: oc.client(k, x, f, CS, look=look, targets=[(tx, ty)]), lambda o_: [(tx, ty)])
             import client_ob as co_
             H, _ = oc.guard_arm_front(k, x, f, CS, False, (tx, ty), co_skin(), hand=False, from_elbow=False,
                                       upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
             oc.phone_grip(k, H[0], H[1], 0.6, None, ang=(0.9 if pu < 0.6 else 0.9 - 1.0 * (pu - 0.6) / 0.4), skin=co_skin(),
-                          thumb=1)                                               # v2 (23 Nov, Tomas, 0:38): his right hand — the
+                          body_x=x)                                               # v2 (23 Nov, Tomas, 0:38): his right hand — the
         elif kind == "phone_out":                                               # thumb was on the far edge, crossed over his own fingers
             tx, ty = x - 66, f - 158                                             # v5 (23 Nov): the whole phone inside the frame
-            o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)])
+            o = oc.held(k, lambda: oc.client(k, x, f, CS, look=look, targets=[(tx, ty)]), lambda o_: [(tx, ty)])
             import client_ob as co_                                              # v6: his arm again in ONE piece (the rig's broke under the phone)
             H, _ = oc.guard_arm_front(k, x, f, CS, False, (tx, ty), co_skin(), hand=False, from_elbow=False,
                                       upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
-            oc.phone_grip(k, H[0], H[1], 0.6, None, ang=-0.1, skin=co_skin(), thumb=1)   # v2: same fix, same arm
+            oc.phone_grip(k, H[0], H[1], 0.6, None, ang=-0.1, skin=co_skin(), body_x=x)   # v2: same fix, same arm
         elif kind == "slam":
             sy = ps.get("slam_y", 0.0)                                       # stage 7: the hands come down with the lid
             o = oc.client(k, x, f, CS, look=(-1, 0.6), targets=[(x - 64, 668 - sy), (x - 40, 664 - sy)])
@@ -507,6 +517,7 @@ def held_lighter(k, hx, hy, flame, lid, skin):
     """Office Noir 3's lighter_hand, for a hand at (hx, hy): the case stands IN the fist (the fist round its lower half,
     drawn over it), the thumb up its side to the wheel."""
     c = k.c
+    _oc.log_grip(c, "lighter", hx, hy)
     fx, fy = hx, hy - LIGHTER_LIFT
     gs.lighter(k, fx, fy, LIGHTER_S, flame, hand=False, lid=lid)
     c.save(); c.translate(hx, hy - 4); c.scale(12.5, 9.5); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()   # the fist
@@ -697,25 +708,20 @@ def insert_shot(k, sh):
         c.set_source_rgb(*gs.WALL_D); c.rectangle(0, 600, 540, 360); c.fill()
         c.set_source_rgba(0.17, 0.36, 0.62, 0.55); c.new_path(); c.arc(40, 700, 230, 0, 2 * math.pi); c.fill()
         c.save(); c.translate(270, 430); c.rotate(-0.05); c.scale(0.76, 0.76); c.translate(-270, -440)
-        sk_ = co_skin()
-        for col, lw in ((INK, 150), (sk_, 142)):                                   # his forearm, up from the bottom right,
-            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.move_to(300, 930); c.line_to(640, 1260); c.stroke()
-        ellipse(k, 290, 900, 200, 110, sk_, 3480, lw=3)                             # and the palm BEHIND the phone
+        sk_ = co_skin()                                                            # v3 (23 Nov, hand audit, decided): HIS phone grip,
+        S_, PX_, PY_ = 464 / 44.0, 270, 480 + 22 * 464 / 44.0 + 110                   # the same oc.phone_grip as every phone in the film,
+        for col, lw in ((INK, 150), (sk_, 142)):                                   # drawn big: his forearm up from the bottom right,
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.move_to(PX_, PY_); c.line_to(640, 1260); c.stroke()
         c.save(); c.translate(560, 1180); c.rotate(0.75)
-        rect(k, -90, -40, 180, 120, (0.97, 0.97, 0.95), 3485, lw=3)                 # the white T-shirt sleeve
+        rect(k, -90, -40, 180, 120, (0.97, 0.97, 0.95), 3485, lw=3)                 # his white T-shirt sleeve,
         c.restore()
+        _oc.phone_grip(k, PX_, PY_, S_, skin=sk_, body_x=PX_ + 900, part="back", ink=0.34)   # the palm behind (he is off to the right)
         old_bg = cp_._bg; cp_._bg = lambda *a, **kw: None
         try:
-            gs.insert_card(k)
+            gs.insert_card(k)                                                      # the card, PAM finds things
         finally:
             cp_._bg = old_bg
-        for j in range(4):                                                         # his fingers round the right edge
-            ellipse(k, 508, 560 + j * 70, 30, 40, sk_, 3481 + j, lw=2.6)
-            c.set_source_rgba(0.12, 0.10, 0.08, 0.45); c.arc(512, 574 + j * 70, 9, 0, 2 * math.pi); c.fill()
-        _oc._capsule(c, 60, 960, 92, 780, 48, sk_)                                  # the thumb over the left edge, off the text
-        c.set_source_rgba(0.12, 0.10, 0.08, 0.45)
-        for (ox, oy, rr) in ((76, 900, 10), (200, 985, 12), (380, 975, 9)):        # oil on the hand
-            c.new_path(); c.arc(ox, oy, rr, 0, 2 * math.pi); c.fill()
+        _oc.phone_grip(k, PX_, PY_, S_, skin=sk_, body_x=PX_ + 900, part="front", ink=0.34)  # the thumb and the fingertips
         c.restore()
     elif kind == "invite":
         gs.insert_invite(k)
@@ -978,8 +984,12 @@ def desk_shot(k, sh, heads):
 
     def pam(k_, o):
         don(k_, o)
-        q = pb.pam(k_, 652, F + 6, dl.PS, sh["state"].get("pam_pose", (-8, 0, 140, 60)), sh["state"].get("pam_face", "neutral"),
-                   look=sh["state"].get("pam_look", (0.4, 0.6)), glasses=sh["state"].get("pam_glasses", "up"))   # v8: face, glasses per drawing
+        draw_p = lambda: pb.pam(k_, 652, F + 6, dl.PS, sh["state"].get("pam_pose", (-8, 0, 140, 60)), sh["state"].get("pam_face", "neutral"),
+                                look=sh["state"].get("pam_look", (0.4, 0.6)), glasses=sh["state"].get("pam_glasses", "up"))   # v8: face, glasses per drawing
+        if which == "pam" and not sh["state"].get("phone_down", False):          # v9 (hand audit): her phone's hand is the phone grip's
+            q = _oc.held(k_, draw_p, lambda q_: [q_["hands"][1]])
+        else:
+            q = draw_p()
         heads["_pamhand"] = q["hands"][1]
         drawn["pam"] = (q["head"][0], q["head"][1], 50 * dl.PS)
     def office_dressing(k_):
@@ -1084,8 +1094,9 @@ def desk_shot(k, sh, heads):
             for a in (-2.6, -1.9, -1.2):
                 c.move_to(px_ + 60 * math.cos(a), py_ - 6 + 34 * math.sin(a)); c.line_to(px_ + 80 * math.cos(a), py_ - 6 + 46 * math.sin(a)); c.stroke()
         else:
-            c.save(); c.translate(x + bz, y - 40); c.scale(z * 0.55, z * 0.55)
-            oc.phone_grip(Ctx(c, 0), 0, 0, 1.0, scr); c.restore()
+            bxd = (heads["pam"][0] - cam[0]) * z + 270 if "pam" in heads else x - 60   # her middle, on screen
+            c.save(); c.translate(x + bz, y); c.scale(z * 0.55, z * 0.55)            # v9 (hand audit): the palm ON her hand, not 40 above
+            oc.phone_grip(Ctx(c, 0), 0, 0, 1.0, scr, body_x=(bxd - x - bz) / (z * 0.55)); c.restore()
     return cam
 
 
@@ -1244,11 +1255,30 @@ class TextRec(cairo.Context):
         return super().show_text(s)
 
 
+def hand_check():
+    """v1 (23 Nov, hand audit, decided): one hand per wrist, and a held phone's thumb toward the body. Reads the hands
+    the frame really drew (of_cast.HAND_LOG, GRIP_LOG), in frame units."""
+    out = []
+    for g in _oc.GRIP_LOG:
+        gx, gy = g["at"]
+        for hx, hy in _oc.HAND_LOG:
+            if math.hypot(hx - gx, hy - gy) < _oc.HAND_TOL:
+                out.append("HAND two at one wrist: a rig hand under the %s at (%d, %d)" % (g["kind"], gx, gy))
+                break
+        if g["kind"] == "phone":
+            if g["want"] is None:
+                out.append("HAND a phone held without body_x at (%d, %d): its thumb side unchecked" % (gx, gy))
+            elif g["thumb"] != g["want"]:
+                out.append("HAND a phone's thumb on the outer side at (%d, %d)" % (gx, gy))
+    return out
+
+
 def render(sh, scene):
     """-> (surface at 1080, the uz_check frame record, the camera)."""
     surf = cairo.ImageSurface(cairo.FORMAT_RGB24, 1080, 1920)
     surf.set_device_scale(2, 2)
     del gs.PROTECT[:]
+    del _oc.HAND_LOG[:], _oc.GRIP_LOG[:]                          # v1 (23 Nov, hand audit): every hand in this frame
     c = TextRec(surf)
     c.set_source_rgb(1, 1, 1); c.paint()
     k = Ctx(c, 0)
@@ -1303,6 +1333,7 @@ def render(sh, scene):
     if sh["cam"] not in ("under", "insert", "desk"):
         msgs += ["SIGN %s: %s" % (n, box_state(cam, b)) for n, b in BOXES.items() if box_state(cam, b) == "CUT"]
     msgs += zone_check(gs.PROTECT)
+    msgs += hand_check()
     msgs = [m for m in msgs if (sh["id"], m.split(" at ")[0]) not in KNOWN]
     return surf, f, cam, msgs
 
@@ -1416,7 +1447,7 @@ def main(out=OUT):
     print("all layout frames pass")
 
 
-if __name__ == "__main__" and not (len(sys.argv) > 1 and sys.argv[1] in ("board", "zones-validate", "don-validate")):
+if __name__ == "__main__" and not (len(sys.argv) > 1 and sys.argv[1] in ("board", "zones-validate", "don-validate", "hand-validate")):
     main(sys.argv[1] if len(sys.argv) > 1 else OUT)
 
 
@@ -1616,3 +1647,54 @@ if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "zones-valida
 
 if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "don-validate":
     sys.exit(0 if don_rule_validate() else 1)
+
+
+def hand_validate():
+    """v1 (23 Nov, hand audit): the hand gate on planted faults. 2.7 with held() switched off (the rig's hand drawn under
+    the phone) and 3.7 with a phone thumb forced outward must fail; the real frames must pass."""
+    import of_film as ff
+    def frame(sid, t):
+        for title, where, scene, shots in SCENES:
+            for sh0 in shots:
+                if sh0["id"] == sid:
+                    L = _timing()[sid]["len"]
+                    st_over, pose_over = ff.MOTION.get(sid, ff.still)(t, L)
+                    st_over = dict(st_over); cam_ = st_over.pop("_cam", None); st_over.pop("_cast", None)
+                    sh = dict(sh0, state=dict(sh0["state"], **st_over))
+                    if cam_ is not None:
+                        sh["cam"] = cam_
+                    saved = POSES.get(sid)
+                    if pose_over:
+                        base = dict(saved or {})
+                        for who, ps in pose_over.items():
+                            base[who] = dict(base.get(who, {}), **ps)
+                        POSES[sid] = base
+                    try:
+                        return [m for m in render(sh, scene)[3] if m.startswith("HAND")]
+                    finally:
+                        if saved is None:
+                            POSES.pop(sid, None)
+                        else:
+                            POSES[sid] = saved
+    real = frame("2.7", 0.5) + frame("3.7", 0.9) + frame("1.3", 0.6)
+    _oc.HELD_OFF[0] = True
+    try:
+        planted1 = frame("2.7", 0.5)
+    finally:
+        _oc.HELD_OFF[0] = False
+    pg = _oc.phone_grip
+    def wrong(*a, **kw):
+        kw["thumb"] = -_oc.inner_thumb(a[1], kw["body_x"], kw.get("back", False)) if kw.get("body_x") is not None else 1
+        return pg(*a, **kw)
+    _oc.phone_grip = wrong
+    try:
+        planted2 = frame("2.7", 0.5)
+    finally:
+        _oc.phone_grip = pg
+    ok = not real and any("two at one wrist" in m for m in planted1) and any("outer side" in m for m in planted2)
+    print("hand gate: real", real or "pass", "| planted two hands:", planted1, "| planted thumb:", planted2)
+    return ok
+
+
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "hand-validate":
+    sys.exit(0 if hand_validate() else 1)
