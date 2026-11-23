@@ -460,7 +460,19 @@ def lamp(k, x=None, y=None, ang=-0.5, lit=True, hang=None, glow=True):
 def garage(k, burn=0.0, legs_out=None, bonnet=0.0, lamp_on_floor=True, behind=None, front=None, tilt=0.0):
     """the whole set in set units; frame 0 and the last frame: garage(k) and garage(k, burn=1). behind: people in
     the walkway between the wall and the car (drawn before the car); front: people in front of it."""
-    room(k); door(k); sign(k); plan(k, burn); pegboard(k)
+    room(k); door(k); sign(k)
+    if NEW_PLAN[0] is not None and NEW_PLAN[0] >= 1.0:                                      # v2: up: the wall as in frame 0
+        plan(k, 0.0)
+    else:
+        plan(k, burn)
+    if NEW_PLAN[0] is not None and NEW_PLAN[0] < 1.0:                                       # v1: the fresh plan, slid up from below
+        u_ = NEW_PLAN[0]
+        c_ = k.c
+        top_ = 449 + (586 - 449) * (1 - u_)                                                  # its top edge rises to the old plan's top
+        c_.save(); c_.rectangle(300, top_, 220, 586 - top_ + 2); c_.clip()
+        c_.save(); c_.translate(0, (586 - 449) * (1 - u_)); plan(k, 0.0); c_.restore()
+        c_.restore()
+    pegboard(k)                                                                             # v2: the pegboard over its edge, as in frame 0
     c = k.c
     if LID_BEHIND[0] and bonnet > 0:
         lid(k, bonnet)
@@ -488,6 +500,10 @@ def garage(k, burn=0.0, legs_out=None, bonnet=0.0, lamp_on_floor=True, behind=No
         flames(c, x, y - 10, 26, FIRE[1] + 3, seed=8)
 
 
+SMOTHER = [0.0]                                            # v3: 0..1 the rag pressed on the burning 7
+NEW_PLAN = [None]                                          # v1: 0..1 a fresh plan slid up the wall over the burnt one
+
+
 def sheet(k, burn):
     """the burning 7 on the floor by his boot (SHEET[1]: 0 just landed .. 1 ash), or its ash once it has burnt out."""
     c = k.c
@@ -498,15 +514,11 @@ def sheet(k, burn):
         c.set_source_rgb(*((0.93, 0.90, 0.80) if p < 0.5 else (0.25, 0.18, 0.12)))
         c.rectangle(-18 * (1 - 0.5 * p), -18 * (1 - 0.5 * p), 36 * (1 - 0.5 * p), 36 * (1 - 0.5 * p)); c.fill()
         c.restore()
-        if p < 1.0:
+        if p < 1.0 and not SMOTHER[0]:
             flames(c, x, y, 44 * (1 - p) + 6, FIRE[1] + 1.5, seed=9)
-    elif burn >= TORN_AT and SHEET[0] is None:
-        # v2 (23 Nov, audit "Father floats over his shadow"): ash, not a smooth dark oval: a charred scrap, a curl, flakes
-        cut(k, [(x - 16, y - 2), (x - 4, y - 7), (x + 12, y - 5), (x + 17, y + 2), (x + 3, y + 6), (x - 12, y + 5)], (0.16, 0.12, 0.09),
-            shadow=False, lw=1.4)
-        c.set_source_rgb(0.12, 0.10, 0.08)
-        for dx, dy, r in ((-24, 4, 2.6), (22, -3, 2.2), (27, 5, 1.8), (-20, -5, 1.6)):     # flakes round it
-            c.new_path(); c.arc(x + dx, y + dy, r, 0, 2 * math.pi); c.fill()
+        elif SMOTHER[0] and SMOTHER[0] < 1.0:
+            flames(c, x, y, 20 * (1 - SMOTHER[0]) + 2, FIRE[1] + 1.5, seed=9)
+    # v3 (23 Nov, decided): no ash any more: he smothers it with his rag and the rag takes it (the loop's floor is clean)
 
 
 def frame(k, cam=FRAME0, draw=garage, **kw):

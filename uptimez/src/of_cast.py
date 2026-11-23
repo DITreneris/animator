@@ -254,7 +254,7 @@ def creeper(k, x, y, s=1.0):
         ellipse(k, x + wx * s, y + 13 * s, 6 * s, 6 * s, (0.30, 0.30, 0.32), 3512 + wx, shadow=False, lw=1.6)
 
 
-def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wipe=0.0):
+def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wipe=0.0, hands_at=None):
     """sat up on the creeper: the board on the floor, his seat on it, knees up, the rag between his hands."""
     creeper(k, x - 20, floor - 14, 0.9)
     seat = floor - 30
@@ -266,6 +266,8 @@ def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wi
         cut(k, [(fx - 18, floor - 14), (fx + 8, floor - 14), (fx + 10, floor), (fx - 20, floor)], (0.42, 0.27, 0.14), shadow=False, lw=2)
     hip_feet = seat - co.HIP * s
     hands = (x - 44 + 10 * wipe, seat - 54 + 3 * wipe)                        # wipe -1..1: the rag worked between the hands
+    if hands_at is not None:                                                 # v2 (23 Nov): the rag pressed down on the fire
+        hands = hands_at
     o = client(k, x, hip_feet, s, look=look, targets=[(hands[0] - 6, hands[1]), (hands[0] + 10, hands[1] + 4)], clip_hip=True,
                face=face)
     if rag_hands:

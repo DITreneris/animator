@@ -297,7 +297,8 @@ def _cast_draw(k, n, scene, sh, heads):
     elif n in ("g1", "g2"):
         x, f = pos[n]
         x -= ps.get("back", 0)
-        behind = ((n == "g2" and scene == 2) or (n == "g1" and scene == 3)) and n not in st.get("front_of_car", ())
+        behind = (((n == "g2" and scene == 2) or (n == "g1" and scene == 3)) and n not in st.get("front_of_car", ())) \
+            or n in st.get("behind_car", ())
         flip = behind
         tg = ps.get("targets_xy") or [_pt(t, x, f) for t in ps.get("targets", [])]
         hk = _kit.HAND[0]
@@ -365,7 +366,7 @@ def _cast_draw(k, n, scene, sh, heads):
         kind = ps.get("kind", "stand")
         look = ps.get("look", (-1, 0))
         if kind == "sit":
-            o = oc.client_sit(k, x, f, CS, look=look, face=ps.get("face", "bored"), wipe=ps.get("wipe", 0.0))
+            o = oc.client_sit(k, x, f, CS, look=look, face=ps.get("face", "bored"), wipe=ps.get("wipe", 0.0), hands_at=ps.get("hands_at"))
         elif kind == "bent":                                            # v8 (23 Nov, decided): IN FRONT of the car, at its nose, side on,
             bx, bf = BENT_AT                                                # bent over the wing into the bay (client_of.profile, the sheet's
             w = ps.get("work", 0.0)                                          # "bent into the engine"); his whole body seen, feet on the floor
@@ -471,6 +472,7 @@ def garage_shot(k, sh, scene, heads, cam):
                     ]                                                              # v8: the bent Client is in front now
     behind_names.sort(key=lambda n: n != "g1")                         # the lamp man furthest back
     behind_names = [n for n in behind_names if n not in st.get("front_of_car", ())]   # v11 (23 Nov, lesson 292): he steps round the car
+    behind_names += [n for n in st.get("behind_car", ()) if n in sh["cast"] and n not in behind_names]   # v12: at the wall
     front_names = [n for n in sh["cast"] if n not in behind_names]
     if scene == 3:
         legs_out = None
@@ -506,8 +508,9 @@ def garage_shot(k, sh, scene, heads, cam):
     gs.LEGS_WORK[0] = st.get("legs_work", 0.0)                            # v8: the knee taps while he works
     gs.FIRE[0], gs.FIRE[1] = st.get("fire", 0.0), st.get("fire_t", 0.0)       # v9: the fire, the sheet
     gs.SHEET[0], gs.SHEET[1] = st.get("sheet_fly"), st.get("sheet_floor")
+    gs.NEW_PLAN[0] = st.get("new_plan")                                     # v1 (23 Nov, decided): the fresh plan going up
     gs.garage(k, burn=st.get("burn", 0.0), legs_out=legs_out, bonnet=bon,
-              lamp_on_floor=scene in (1, 2, 5) and not st.get("lamp_up"), behind=behind, front=front, tilt=st.get("tilt", 0.0))
+              lamp_on_floor=scene in (1, 2, 5) and (not st.get("lamp_up") or st.get("lamp_floor")), behind=behind, front=front, tilt=st.get("tilt", 0.0))
     gs.LID_BEHIND[0] = False
     c = k.c
     if st.get("running"):                                                 # v9: 2.8e, the car runs: lights on, a puff of exhaust
@@ -662,12 +665,19 @@ def insert_shot(k, sh):
         g2_ = cairo.RadialGradient(250, 350, 10, 250, 350, 200)                        # the light ON the work, soft, over the parts
         g2_.add_color_stop_rgba(0, 1.0, 0.95, 0.70, 0.35); g2_.add_color_stop_rgba(1, 1.0, 0.95, 0.70, 0.0)
         c.set_source(g2_); c.arc(250, 350, 200, 0, 2 * math.pi); c.fill()
-        ellipse(k, 250, 350, 28, 28, (0.62, 0.64, 0.66), 3470, lw=2.4)                 # the bolt
+        bo_ = sh["state"].get("bolt_out", 0.0)                                         # v3 (decided): the bolt comes FREE
+        if bo_ > 0:
+            c.set_source_rgb(0.08, 0.08, 0.09); c.arc(250, 350, 15, 0, 2 * math.pi); c.fill()   # its hole
+        ellipse(k, 250 + 60 * bo_, 350 - 110 * bo_, 28, 28, (0.62, 0.64, 0.66), 3470, lw=2.4)
+        if bo_ > 0.6:
+            c.set_source_rgb(0.62, 0.64, 0.66); c.set_line_width(14); c.set_line_cap(0)       # its thread, out
+            c.move_to(310, 240 + 26); c.line_to(310, 240 + 70); c.stroke()
         w_ = sh["state"].get("work", 0.0)
-        c.save(); c.translate(250, 350); c.rotate(-2.4 + 0.35 * w_)                     # the wrench on it, turning
+        c.save(); c.translate(250 + 60 * sh["state"].get("bolt_out", 0.0), 350 - 110 * sh["state"].get("bolt_out", 0.0)); c.rotate(-2.4 + 0.35 * w_)                     # the wrench on it, turning
         rect(k, -14, -14, 190, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)
         c.restore()
-        hw_ = (250 + 175 * math.cos(-2.4 + 0.35 * w_), 350 + 175 * math.sin(-2.4 + 0.35 * w_))   # his right fist on the wrench's end
+        bo2_ = sh["state"].get("bolt_out", 0.0)
+        hw_ = (250 + 60 * bo2_ + 175 * math.cos(-2.4 + 0.35 * w_), 350 - 110 * bo2_ + 175 * math.sin(-2.4 + 0.35 * w_))   # his fist on the wrench
         for side, (hx, hy, ex, ey) in enumerate(((hw_[0], hw_[1], -80, 40), (330, 470, 640, 620))):
             for col, lw in ((INK, 62), ((0.80, 0.62, 0.50), 56)):                      # the oily forearms, from the frame's edges
                 c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
@@ -750,16 +760,28 @@ def donnie_shot(k, sh, heads):
     c.restore()
     c.set_source_rgba(1.0, 0.98, 0.88, 0.35); c.rectangle(20, F - 330, 180, 330); c.fill()
     st = sh["state"]
-    c.save(); c.translate(132 + st.get("hand_dx", 0.0) + st.get("buzz", 0.0), 690)     # stage 7: walking out; it buzzes
+    c.save(); c.translate(92 + st.get("hand_dx", 0.0) + st.get("buzz", 0.0), 680)      # stage 7: walking out; it buzzes (v2: in frame)
     for col, lw in ((INK, 40), (dc.VELVET, 34)):                                     # his sleeve, velvet, going out
         c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
         c.move_to(110, 60); c.line_to(24, 14); c.stroke()
     def scr(c_):
         c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
         c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
-        e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, 0); c_.show_text("DONNIE")
-    oc.phone(k, 0, -10, 0.95, None if st.get("donnie_down") else scr, ang=-0.35)   # face down against his palm
+        e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, -12); c_.show_text("DONNIE")
+    def scr2(c_):                                                                   # v2 (23 Nov, decided): red DECLINE, green answer
+        scr(c_)
+        c_.set_source_rgb(0.85, 0.12, 0.12); c_.arc(-9, 6, 8, 0, 2 * math.pi); c_.fill()
+        c_.set_source_rgb(0.15, 0.75, 0.30); c_.arc(9, 6, 8, 0, 2 * math.pi); c_.fill()
+        if st.get("declined"):
+            c_.set_source_rgba(0, 0, 0, 0.55); c_.rectangle(-19, -34, 38, 68); c_.fill()
+    oc.phone(k, 0, -10, 0.95, None if st.get("donnie_down") else scr2, ang=-0.35)   # face down against his palm
     ellipse(k, 10, 22, 24, 18, dc.SKIN_F, 3441, lw=2)
+    if st.get("thumb") and not st.get("donnie_down"):                                # his thumb comes over onto the red button
+        u_ = st["thumb"]
+        a_ = -0.35
+        bx_, by_ = -9 * math.cos(a_) - 6 * math.sin(a_), -10 + (-9) * math.sin(a_) + 6 * math.cos(a_)
+        tx_, ty_ = 20 + (bx_ - 20) * u_, 14 + (by_ - 14) * u_
+        oc._capsule(c, 22, 20, tx_, ty_, 7, dc.SKIN_F)
     c.restore()
 
 

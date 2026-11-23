@@ -24,7 +24,7 @@ import soundfile as sf
 from PIL import Image
 import of_scenes as sc
 
-VERSION = 12
+VERSION = 13
 TMP = "/tmp/of_cut"
 FRAMES = "/tmp/of_film/s%d"                                 # each scene's drawings, as of_film left them (or a copy in TMP)
 FPS = 30
@@ -99,7 +99,7 @@ def frame_at(path, i, out):
 
 def loop_diff(f0, fl):
     """v3 (22 Nov: the loop is now an action, not a still): frame 0 is the bodyguard's fist up over the roof, the last
-    frame the same bodyguard holding the lamp for the legs. The SET must match exactly (walls, car, plan but its burn,
+    frame the same bodyguard holding the lamp for the legs. The SET must match exactly (walls, car, the plan (v4),
     the doorway, the floor); the people may differ: the bodyguard's column, and the legs and the lamp under the car.
     -> the pixels that differ outside those."""
     import of_set as gs
@@ -114,8 +114,9 @@ def loop_diff(f0, fl):
     gx, gf = sc.BLOCK[1]["g1"]
     lx, ly = gs.CREEPER
     m = np.ones(f0.shape[:2], bool)
-    for b in (box(*sc.BOXES["the plan"]),                                       # the burn on 7
-              box(gx - 90, gf - 300, gx + 150, gf + 20),                         # the bodyguard: fist up / lamp held
+    for b in (box(gx - 90, gf - 300, gx + 150, gf + 20),                         # the bodyguard: his fist (v4, 23 Nov, decided:
+                                                                                 # the plan is NOT masked any more: a burnt plan
+                                                                                 # at the end and a whole one at frame 0 is a jump)
               box(lx - 110, gs.SILL - 10, gs.LAMP_AT[0] + 90, ly + 120)):      # the legs (they tap) and the lamp
         m[b[1]:b[3], b[0]:b[2]] = False
     return (np.abs(f0 - fl).max(axis=2) > 40) & m
@@ -187,6 +188,7 @@ def validate():
         "540 wide": ["-vf", "scale=540:960", "-c:a", "copy"],
         "flash at frame 0": ["-vf", "drawbox=x=0:y=0:w=iw:h=ih:color=white:t=fill:enable='eq(n,0)'", "-c:a", "copy"],
         "loop broken (the last frame: the set changed)": ["-vf", "drawbox=x=560:y=420:w=400:h=200:color=0x2e5f8a:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
+        "loop broken (the last frame: the plan burnt)": ["-vf", "drawbox=x=600:y=300:w=120:h=100:color=0x3a2410:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
     }
     ok = True
     for name, args in cases.items():

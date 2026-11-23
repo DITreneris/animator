@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 11, 2: 16, 3: 11, 4: 14, 5: 10}
+VER = {1: 12, 2: 17, 3: 12, 4: 15, 5: 12}
 SOUND = "of_sound_v5.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -53,7 +53,7 @@ def _T(sid, t):
 
 
 LAND_AT = ("1.3", 0.50)                                    # the burning 7 lands by his boot
-FLOOR_BURN = 3.2                                           # and burns out in this long
+FLOOR_BURN = 4.6                                           # and burns out in this long
 
 
 def _floor(sid, t):
@@ -87,9 +87,23 @@ def s13(t, L):                                             # v2: he TEARS the bu
     return st, dict(g2=g2, client=dict(kind="sit", look=look, face="glance" if t >= 1.10 else "bored"))
 
 
-def s14(t, L):                                             # "Burn them...": he wipes his hands on the rag as he talks
-    return dict(sheet_floor=_floor("1.4", t), fire_t=_T("1.4", t), burn=0.8), \
-        dict(client=dict(kind="sit", look=(-1, -0.2), wipe=math.sin(t * 2 * math.pi * 0.9)))
+SMOTHER_AT = (2.75, 3.15)                                  # v3 (23 Nov, decided): after the line, the rag on the fire
+
+
+def s14(t, L):                                             # "Burn them...": he wipes his hands on the rag as he talks; then,
+    import of_set as gs                                    # not looking, he presses the rag down on the burning 7 and takes it
+    a, b = SMOTHER_AT
+    gs.SMOTHER[0] = 0.0
+    cl = dict(kind="sit", look=(-1, -0.2), wipe=math.sin(t * 2 * math.pi * 0.9))
+    fl = _floor("1.4", min(t, a))
+    if t >= a:
+        u = ease((t - a) / (b - a))
+        sx, sy = gs.SHEET_LAND
+        cl["hands_at"] = (sx - 4, sy - 10 + 6 * (1 - u)) if t < b + 0.2 else (sx - 30 * min(1, (t - b - 0.2) / 0.2) - 4, sy - 40)
+        gs.SMOTHER[0] = u if t < b else 1.0
+        if t >= b:
+            fl = None
+    return dict(sheet_floor=fl, fire_t=_T("1.4", t), burn=0.8), dict(client=cl)
 
 
 # --- scene 3, The Offer ----------------------------------------------------------------------------------------------
@@ -221,9 +235,10 @@ def s37(t, L):                                             # the smile is gone; 
 
 
 # --- scene 5, Frame 0 ------------------------------------------------------------------------------------------------
-def s41(t, L):                                             # his hand going out of the door; DONNIE buzzing; face down, held
+def s41(t, L):                                             # his hand going out of the door; DONNIE buzzing; v2 (decided): his
+    th = ease((t - 0.25) / 0.2)                            # thumb on red DECLINE; the screen goes dark; then face down
     return dict(hand_dx=50 - 70 * t / L, buzz=3 * math.sin(t * 2 * math.pi * 18) if t < 0.45 else 0.0,
-                donnie_down=t > 0.55), {}
+                thumb=th if t < 0.75 else 0.0, declined=t > 0.45, donnie_down=t > 0.75), {}
 
 
 def s42(t, L):                                             # frame 0's drawing; the black car's lights go across the wall, leaving
@@ -257,9 +272,27 @@ def s010_same(t, L):                                       # the SAME frame as t
     return dict(_cam=sc.CAR_CAM, _cast=("g1",)), dict(g1=dict(targets_xy=[om.lerp(roof, off, u)], back=back, turn=turn, push=False))
 
 
-def s42_service(t, L):                                     # the last frame (and the loop): the bodyguard holding the lamp for
-    x, f = sc.BLOCK[1]["g1"]                               # the legs; Father gone; the burn on 7. Then frame 0 slams again.
-    return dict(legs_work=math.sin(t * 2 * math.pi * 1.2)), dict(g1=dict(targets_xy=[(x + 58, f - 70)], lamp=True, lamp_ang=3.0, push=False))
+NEW_PLAN_G2 = (410, 818)                                   # v3 (23 Nov, decided): the other guard, behind the car, at the wall
+
+
+def s42_service(t, L):                                     # the last frame (and the loop): the other guard slides a FRESH plan up
+    x, f = sc.BLOCK[1]["g1"]                               # over the burnt one ("again"); the lamp man puts the lamp down and
+    u = ease((t - 0.1) / 0.8)                              # his hand comes up over the roof, as in frame 0
+    top = 449 + (586 - 449) * (1 - u)
+    hands = [(372, 586 - 0 * u + (top - 449) * 0), (448, 586)]
+    st = dict(legs_work=math.sin(t * 2 * math.pi * 1.2), new_plan=u, _cast=("g1", "g2"),
+              moved=dict(g1=(206, 862), g2=NEW_PLAN_G2), behind_car=("g2",))
+    g2 = dict(targets_xy=[(372, 590), (448, 590)], turn=0.0)
+    if t > 0.95:                                           # done: his hands down; he stands at the wall, as in frame 0
+        v_ = ease((t - 0.95) / 0.3)
+        g2 = dict(targets_xy=[om.lerp((372, 590), (380, 760), v_), om.lerp((448, 590), (440, 760), v_)], turn=0.0) if v_ < 1 else dict(turn=0.0)
+    if t < 0.9:
+        g1 = dict(targets_xy=[(x + 58, f - 70)], lamp=True, lamp_ang=3.0, push=False)
+    else:
+        v = ease((t - 0.9) / 0.5)
+        g1 = dict(targets_xy=[om.lerp((x + 40, f - 120), (322 - 10, 652 - 70), v)], push=False, lamp=False)
+        st["lamp_floor"] = True
+    return st, dict(g1=g1, g2=g2)
 
 
 MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14,
@@ -285,8 +318,9 @@ def s23(t, L):
     u2 = om.hold((t - 0.30) / 0.22)
     u3 = om.hold((t - 0.55) / 0.30)
     st = dict(moved=dict(g1=LAMP_G1), front_of_car=("g1",))
-    if t >= 1.0:                                           # v6 (23 Nov, decided A): CUT IN: his hands in the light, working
-        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3), bay_u=1.0), {}
+    if t >= 0.7:                                           # v7 (23 Nov, decided): CUT IN, 0.9 s: his hands in the light; the bolt comes free
+        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 1.1 else 0.0,
+                    bolt_out=ease((t - 1.1) / 0.3), bay_u=1.0), {}
     if u3 > 0:
         gh = om.lerp(out_, LAMP_IN_BAY, u3)
         return st, dict(client=dict(kind="bent", hand_back=False, work=math.sin(t * 2 * math.pi * 1.3) if t > 0.9 else 0.0),
@@ -353,7 +387,6 @@ MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the jo
 MOTION["0.10"] = s010_same
 MOTION["4.2"] = s42_service
 MOTION["0.4"] = lambda t, L: (dict(legs_work=math.sin(t * 2 * math.pi * 1.2)), {})    # the knee taps: he works on
-MOTION["0.6"] = lambda t, L: (dict(legs_work=math.sin(t * 2 * math.pi * 1.2)), {})
 
 
 # --- the lips: the take's loudness per drawing -> a mouth code ---------------------------------------------------------
@@ -485,6 +518,21 @@ def render_scene(n):
     return k, dur, probs, m540, m1080
 
 
+def _at_wall(r):
+    """v1 (23 Nov, the loop): bodyguard 2 stands at the wall behind the car from frame 0 (the man who will burn the plan,
+    and who pins the fresh one in the last shot), so the last frame and frame 0 are one picture."""
+    st, po = r
+    st = dict(st, _cast=("g1", "g2"), behind_car=("g2",))
+    st["moved"] = dict(st.get("moved", {}), g2=NEW_PLAN_G2)
+    po = dict(po, g2=dict(turn=0.0))
+    return st, po
+
+
+MOTION["0.8"] = lambda t, L, f_=MOTION.get("0.8", s08_slam): _at_wall(f_(t, L))
+MOTION["0.10"] = lambda t, L, f_=MOTION.get("0.10", s010_same): _at_wall(f_(t, L))
+MOTION["0.6"] = lambda t, L: _at_wall(s010_same(1.35 + t, 1.4))
+
+
 if __name__ == "__main__":
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 1
     k, dur, probs, m540, m1080 = render_scene(n)
@@ -492,3 +540,4 @@ if __name__ == "__main__":
     for q in probs[:20]:
         print("FAIL", q)
     sys.exit(1 if probs else 0)
+
