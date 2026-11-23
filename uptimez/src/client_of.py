@@ -153,7 +153,70 @@ client = _build()
 
 
 # --- the profile (v2): one true side view, for 2.2 (into the engine) and 0.5 / 0.9 (on his back) ---------------------
-def profile(k, x, feet, s=1.0, facing=-1, lean=0.0, face="bored", look_up=0.0, hands=None, seed=960):
+def head34(k, hy, face="bored", look=(0.9, 1.0), seed=900):
+    """v1 (23 Nov; lessons 87 and 88): his head drawn three-quarter, turned toward +x, built from his own parts and
+    measures (client_ob's outline, hair, ear, stubble and face). A turned front drawing only slides a bare head; here the
+    face is drawn in two halves about a centre line moved toward +x: the near half at full width, the far half 0.6 as wide
+    and nearer the middle; only the near ear and the near grey temple; the far edge is the cheek. Client units; the
+    head's neck point is (0, hy + 55), as in client_ob."""
+    c = k.c
+    CX, FAR = 18.0, 0.55                                                        # the face's centre line; the far half's width
+    pts0 = co._head_pts(k, hy, seed + 20)
+
+    def sk(p_):                                                                 # v2 (cold test): an outline that turns: the back of
+        x_, y_ = p_                                                             # the skull full, the far cheek tucked in, the jaw and
+        x_ = x_ * 1.16 if x_ < 0 else x_ * 0.80                                 # chin carried toward the turn; v3: the back of the skull behind the ear
+        if y_ > hy + 16:
+            x_ += 10 * min(1.0, (y_ - hy - 16) / 40)
+        return x_ - 2, y_
+    pts = [sk(q) for q in pts0]
+    far = max(range(len(pts)), key=lambda i: pts[i][0] - abs(pts[i][1] - hy - 8) * 0.3)   # v2: the brow and the nose break the far edge
+    fx_, fy_ = pts[far]
+    pts = pts[:far] + [(fx_, hy - 8), (fx_ + 3, hy + 8), (fx_ + 6, hy + 20), (fx_ + 4, hy + 25), (fx_, hy + 28)] + pts[far + 1:]   # v4: ONE nose line
+    cut(k, pts, co.SKIN, shadow=False)                                          # v4: no offset shadow (it doubled the nose's edge)
+
+    def inside():
+        c.move_to(*pts[0])
+        for q in pts[1:]:
+            c.line_to(*q)
+        c.close_path(); c.clip()
+    c.save(); inside()                                                          # two days' shadow
+    c.set_source_rgba(0.20, 0.15, 0.13, 0.17)
+    c.move_to(-56, hy + 12); c.curve_to(-30, hy + 22, -12, hy + 24, CX - 10, hy + 39)
+    c.curve_to(CX, hy + 25, CX + 16, hy + 25, CX + 22, hy + 37); c.curve_to(CX + 26, hy + 24, 40, hy + 18, 56, hy + 8)
+    c.line_to(56, hy + 72); c.line_to(-56, hy + 72); c.close_path(); c.fill()
+    r = k.rng(seed + 27)                                                        # the stubble's dots, as on his front head
+    c.save(); inside()
+    c.set_source_rgba(0.16, 0.11, 0.10, 0.42); c.set_line_width(1.3); c.set_line_cap(1)
+    for _ in range(26):
+        qx = r.uniform(-42, 42); qy = hy + r.uniform(26, 58)
+        if abs(qx) < 21 and qy < hy + 44:
+            continue
+        qx = CX + qx * (1.0 if qx < 0 else FAR)
+        c.move_to(qx, qy); c.line_to(qx, qy + 2.6); c.stroke()
+    c.restore()
+    c.restore()
+    c.save(); inside()                                                          # the face, in two halves
+    for lo, hi, sc_ in ((-80, CX, 1.0), (CX, 80, FAR)):
+        c.save(); c.rectangle(lo - 0.6, hy - 90, hi - lo + 1.2, 200); c.clip()   # overlap: no seam
+        c.translate(CX, 0); c.scale(sc_, 1)                                     # (v4's squash of the far half split the mouth: out)
+        _face(k, hy + 8, face, look, None, seed + 30, "stubble")                # +4: the features lower, he looks down
+        c.restore()
+    c.restore()
+    hair = [sk(q) for q in [(-47, hy - 2), (-50, hy - 30), (-40, hy - 54), (-10, hy - 66), (24, hy - 64), (46, hy - 46),
+                            (50, hy - 24), (47, hy - 10), (40, hy - 26), (28, hy - 38), (2, hy - 40), (-24, hy - 36),
+                            (-40, hy - 20)]]
+    cut(k, hair, co.HAIR, shadow=False, lw=2)                                   # swept back
+    cut(k, [sk(q) for q in [(-47, hy - 2), (-49, hy - 26), (-41, hy - 30), (-39, hy - 14)]], co.GREY, shadow=False, lw=1.6)   # the near temple
+    c.set_source_rgba(1, 1, 1, 0.20); c.set_line_width(2.6); c.set_line_cap(1)
+    for dy in (0, 9):
+        c.move_to(-36, hy - 46 + dy); c.curve_to(-14, hy - 60 + dy, 10, hy - 60 + dy, 30, hy - 50 + dy); c.stroke()
+    ellipse(k, -30, hy + 4, 6, 9, co.SKIN, seed + 26, shadow=False, lw=2)       # the near ear, on the side of the head
+    c.set_source_rgb(*co.SKIN_DARK); c.set_line_width(1.4)
+    c.new_path(); c.arc(-30, hy + 4, 3.2, 1.8, 4.6); c.stroke()
+
+
+def profile(k, x, feet, s=1.0, facing=-1, lean=0.0, face="bored", look_up=0.0, hands=None, seed=960, head34=None):
     """Side on, facing screen left (facing=-1) or right (1). lean: radians the body tips forward from the hips (0.6:
     over an engine). hands: points in set units for the near hand (his watch hand) and the far hand; None: hanging.
     look_up: 0..1, the head tipped back (lying on his back, looking up at the sump). Returns {"head", "hands"}."""
@@ -205,6 +268,17 @@ def profile(k, x, feet, s=1.0, facing=-1, lean=0.0, face="bored", look_up=0.0, h
     cut(k, [(-34, BT - 4), (20, BT - 8), (52, BT + 30), (62, BT + 82), (52, HIP - 12), (-40, HIP - 12), (-46, BT + 60)], TEE, lw=2.2)
     rect(k, -14, BT - 30, 40, 34, sk, seed + 8, shadow=False, lw=2)              # the neck, thick
     near = arm(hands[0] if hands else None, True)                # under the head: bent over, the arms hang below it
+    if head34 is not None:                                                      # v3 (23 Nov, Tomas: "the profile looks bad"): his OWN
+        c.save(); c.translate(10, HY + 40); c.rotate(0.22); c.translate(-10, -(HY + 40))   # front head, turned three-quarter toward
+        rect(k, -10, HY + 40, 34, 34, co.SKIN, seed + 8, shadow=False, lw=2)     # v5: his neck, into the collar
+        c.translate(8, HY + 55); c.scale(co.HEAD, co.HEAD); c.translate(0, -(HY + 55))   # v4: the DRAWN three-quarter head
+        globals()["head34"](k, HY, face=face, look=(0.9, 1.0), seed=900)
+        c.restore()                                                             # the head's tip
+        c.restore()                                                             # the lean
+        c.restore()                                                             # (x, feet)
+        m = facing
+        tr = lambda p_: (x + m * p_[0] * s, feet + p_[1] * s)
+        return {"head": (x + m * 40 * s, feet + (HY - 4) * s), "hands": [tr(near), tr(far)]}
     # the head, in profile
     c.save(); c.translate(6, HY + 40); c.rotate(-0.9 * look_up); c.scale(co.HEAD, co.HEAD); c.translate(0, -(HY + 40))
     hy = HY

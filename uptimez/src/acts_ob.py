@@ -96,6 +96,12 @@ def arm(k, sx, sy, a1, a2, col, skin, seed, ln=48, w=17):
     cap = [(sx + h * math.cos(b0 + 2 * dd * i / 4.0), sy + h * math.sin(b0 + 2 * dd * i / 4.0)) for i in range(4, -1, -1)]
     pts = cap + inner + [(hx + sg * n2[0] * h, hy + sg * n2[1] * h), (hx - sg * n2[0] * h, hy - sg * n2[1] * h)] + outer[::-1]
     cut(k, pts, col, shadow=False, lw=2)
+    if kit.ARM_RIM[0] and sum(col) < 0.6:                 # opt-in (episode 13): a grey rim, so a black sleeve reads on a black suit
+        c = k.c
+        c.new_path(); c.move_to(*pts[0])
+        for q in pts[1:]:
+            c.line_to(*q)
+        c.close_path(); c.set_source_rgb(*kit.ARM_RIM[0]); c.set_line_width(2.2); c.stroke()
     if kit.HAND[0]:                                        # an episode's own hand (opt-in)
         kit.HAND[0](k, hx, hy, w * 1.15, skin, seed, d2, 1 if a2 >= 0 else -1)
     else:

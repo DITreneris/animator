@@ -69,16 +69,29 @@ def _father_face(k, x, y, face, look, glasses=False, seed=0):
         c.move_to(x - 10, my); c.line_to(x + 10, my); c.stroke()
 
 
+FATHER_STEP = [None]                                       # opt-in: ((dx, lift), (dx, lift)) per foot, or None: standing
+
+
 def _father_costume(k, name, p, body_top, seed):
     c = k.c
     bt = body_top
     waist = bt + 150
-    cut(k, [(-45, waist), (45, waist), (47, 0), (-47, 0)], BLACK, shadow=False, lw=2)       # black trousers, a crease
-    c.set_source_rgb(*BLACK_L); c.set_line_width(1.6)
-    c.move_to(0, waist + 14); c.line_to(0, -4); c.stroke()
-    for sx in (-1, 1):                                                                      # good shoes, shined
-        ellipse(k, sx * 24, -4, 24, 8, (0.06, 0.06, 0.07), seed + 80 + sx, shadow=False, lw=2)
-        c.set_source_rgba(1, 1, 1, 0.5); c.arc(sx * 30, -7, 2.4, 0, 2 * math.pi); c.fill()
+    if FATHER_STEP[0]:                                                                      # opt-in (episode 13, 23 Nov): two legs,
+        steps = FATHER_STEP[0]                                                              # each foot (dx, lift) of its own: a walk
+        cut(k, [(-45, waist), (45, waist), (40, waist + 70), (-40, waist + 70)], BLACK, shadow=False, lw=2)
+        for sx, (dx, lift) in zip((-1, 1), steps):
+            fx = sx * 22 + dx
+            cut(k, [(sx * 2 - 22 + (sx + 1) * 21, waist + 60), (sx * 2 + (sx + 1) * 21, waist + 60),
+                    (fx + 20, -lift - 2), (fx - 20, -lift - 2)], BLACK, shadow=False, lw=2)
+            ellipse(k, fx, -4 - lift, 24, 8, (0.06, 0.06, 0.07), seed + 80 + sx, shadow=False, lw=2)
+            c.set_source_rgba(1, 1, 1, 0.5); c.arc(fx + 6, -7 - lift, 2.4, 0, 2 * math.pi); c.fill()
+    else:
+        cut(k, [(-45, waist), (45, waist), (47, 0), (-47, 0)], BLACK, shadow=False, lw=2)   # black trousers, a crease
+        c.set_source_rgb(*BLACK_L); c.set_line_width(1.6)
+        c.move_to(0, waist + 14); c.line_to(0, -4); c.stroke()
+        for sx in (-1, 1):                                                                  # good shoes, shined
+            ellipse(k, sx * 24, -4, 24, 8, (0.06, 0.06, 0.07), seed + 80 + sx, shadow=False, lw=2)
+            c.set_source_rgba(1, 1, 1, 0.5); c.arc(sx * 30, -7, 2.4, 0, 2 * math.pi); c.fill()
     cut(k, [(-20, bt), (20, bt), (16, waist), (-16, waist)], BLACK, shadow=False, lw=1.6)   # the black shirt
     cut(k, [(0, bt + 40), (-13, bt - 2), (13, bt - 2)], SKIN_F, shadow=False, lw=1.6)       # open at the neck
     for sx in (-1, 1):

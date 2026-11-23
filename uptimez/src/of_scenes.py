@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v5.json"                               # v8 (22 Nov): the joke at 0:00
+TIMING = "of_timing_v8.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -118,10 +118,10 @@ SCENES = [
           action="CLICK shut", reaction="the mark stays", cast=("g2",), state=dict(burn=1.0), fx="CLICK"),
     ]),
     ("3 · The Offer", "Same bay.", 3, [
-        S("2.1", "TWO-SHOT", ["father", "client"], "Father and the Client, the car between them. Father speaks to him. "
+        S("2.1", "TWO-SHOT", (505, 770, 1.30), "Father and the Client, the car between them. Father speaks to him. "
           "**He has only ever spoken to Don.**", line='FATHER: "My son says his machine finds anything."',
           cast=("father", "client", "g2"), state=dict(bonnet=1.0, burn=1.0)),
-        S("2.2", "CLOSE", ["client"], "CLOSE, the Client, back under the bonnet, not looking up.",
+        S("2.2", "CLOSE", (560, 780, 2.9), "CLOSE, the Client, back under the bonnet, not looking up.",
           line='CLIENT: "It found nothing."', cast=("client",), state=dict(bonnet=1.0, burn=1.0)),
         S("2.3", "MEDIUM", LAMP_CAM, "MEDIUM on the handover (v2). Without looking he holds the lamp out behind him; bodyguard 1 "
           "takes it unasked and holds it over the engine. **He is a garage hand now.**", action="the lamp, handed back",
@@ -216,7 +216,7 @@ POSES = {
     "1.4": dict(client=dict(kind="sit", look=(-1, -0.2))),
     "1.5": dict(g2=dict(targets=["lighter"], lighter=1.0, turn=-1.0)),
     "1.6": dict(father=dict(face="brow", look=(1, -0.2))),
-    "1.7": dict(g2=dict(targets=["lighter"], lighter=0.0, turn=-1.0)),                      # shutting it, looking at Father
+    "1.7": dict(g2=dict(turn=-1.0)),          # v5 (23 Nov): the lighter is the veto's front_lighter now; its old second copy hid behind his sleeve
     "2.1": dict(father=dict(face="talk", look=(1, 0)), client=dict(kind="bent")),
     "2.2": dict(client=dict(kind="bent")),
     "2.3": dict(father=dict(look=(1, -0.2)), client=dict(kind="bent", hand_back=True), g1=dict(targets=["handoff"])),
@@ -241,7 +241,7 @@ def _pt(name, x, f):
             "chest_l": (x + 36, f - 118), "off_l": (x - 22, f - 118), "off_r": (x + 26, f - 120)}[name]
 
 
-BENT_AT = (506, 846)                                      # the Client bent over the bay: x, and his feet (hidden by the car)
+BENT_AT = (580, 836)                                      # the Client bent over the bay: x, and his feet (hidden by the car)
 TAIL_K = {"2.9": 0.45}                                     # stage 7: a small face in a wide frame: the tip further in
 MOUTH_AT = {}                                              # mouths a pose knows better than the face point (the profile)
 
@@ -256,57 +256,93 @@ def _cast_draw(k, n, scene, sh, heads):
     if n == "father":
         x, f = pos["father"]
         x += st.get("fshake", 0.0)
-        if ps.get("front_lighter"):                                           # v9 veto: bodyguard 2's arm over the roof, to him
-            lx, ly, fl, ld = ps["front_lighter"]
-            gs.protect(c, "the lighter", lx - 22, ly - 60, lx + 22, ly + 56)
-            for col, lw in ((INK, 30), ((0.11, 0.11, 0.13), 25)):                 # his sleeve, up to his shoulder over the roof
-                c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
-                c.move_to(lx + 26, ly + 30); c.line_to(448, 652); c.stroke()
-            gs.lighter(k, lx, ly, 0.75, fl, hand=False, lid=ld)
-            oc.cartoon_hand(k, lx + 22, ly + 30, 15, (0.92, 0.74, 0.60), 3460, (-0.6, -0.8), 1)   # his hand round the case
-        o = oc.father(k, x, f, FS, face=ps.get("face", "hard"), look=ps.get("look", (1, 0)), targets=ps.get("targets_xy", ()))
+        tgs = list(ps.get("targets_xy") or ())
+        if ps.get("guard_lighter"):                                          # v10 (23 Nov): the guard's own arm over the roof, the lighter in its hand
+            gt, gfl, glid, gexp = ps["guard_lighter"]
+            gx_, gf_ = pos["g2"]
+            gpo = POSES.get(sh["id"], {}).get("g2", {})
+            gx_ -= gpo.get("back", 0)
+            H, _ = oc.guard_arm_front(k, gx_, gf_, GS, scene == 2, gt, (0.92, 0.74, 0.60), hand=False, from_elbow=False)
+            gs.protect(c, "the lighter", H[0] - 14, H[1] - LIGHTER_LIFT - 40, H[0] + 14, H[1] - 4)
+            fx_, fy_ = held_lighter(k, H[0], H[1], gfl, glid, (0.92, 0.74, 0.60))
+            ox_, oy_ = fx_ - gexp[0], fy_ - gexp[1]                           # where the lid really is: his palm goes there
+            tgs = [(a_ + ox_, b_ + oy_) for a_, b_ in tgs]
+            ps = dict(ps, targets_xy=tgs)
+        hk = _kit.HAND[0]
+        if ps.get("palm") and ps.get("targets_xy"):                          # v5: the flat palm below IS his hand; ONLY that hand
+            pd_ = c.user_to_device(*ps["targets_xy"][0]); pt_ = math.hypot(*c.user_to_device_distance(30, 0))
+            def _pskip(k_, hx_, hy_, *a_):
+                dx_, dy_ = k_.c.user_to_device(hx_, hy_)
+                return None if math.hypot(dx_ - pd_[0], dy_ - pd_[1]) < pt_ else hk(k_, hx_, hy_, *a_)
+            _kit.HAND[0] = _pskip
+        dc.FATHER_STEP[0] = st.get("father_step")                                # v1 (23 Nov): his feet, when he walks
+        try:
+            o = oc.father(k, x, f, FS, face=ps.get("face", "hard"), look=ps.get("look", (1, 0)), targets=ps.get("targets_xy", ()))
+        finally:
+            dc.FATHER_STEP[0] = None
+            _kit.HAND[0] = hk
         heads[n] = (o["head"][0], o["head"][1], 50 * FS)
-        if ps.get("two_fingers") and ps.get("targets_xy"):                     # the veto: two fingers on the lid
-            hx, hy = ps["targets_xy"][0]
-            for dx in (-5, 5):                                                   # pointing DOWN, pressing the lid shut
-                c.set_source_rgb(*INK); c.set_line_width(9); c.set_line_cap(1); c.move_to(hx + dx, hy - 2); c.line_to(hx + dx, hy + 16); c.stroke()
-                c.set_source_rgb(*dc.SKIN_F); c.set_line_width(6); c.move_to(hx + dx, hy - 2); c.line_to(hx + dx, hy + 16); c.stroke()
+        if ps.get("phone_donnie") and ps.get("targets_xy"):                  # v1 (23 Nov): DONNIE calling, in his hand, he looks at it
+            want = ps["targets_xy"][0]
+            hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
+            def scr_d(c_):
+                c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
+                c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
+                e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, -6); c_.show_text("DONNIE")
+            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, scr_d, ang=-0.15, skin=dc.SKIN_F)
+        if ps.get("palm") and ps.get("targets_xy"):                          # v6 (23 Nov, motion_on3's hand): palm and fingers in ONE
+            hx, hy = ps["targets_xy"][0]                                         # shape, flat across the lid, the fingers pointing on, a thumb
+            sk = dc.SKIN_F
+            c.save(); c.translate(hx + 5, hy); c.scale(0.95, 0.95)                # v7 (audit: "the guard's hand"): from HIS cuff, short of the sleeve
+            c.new_path(); c.move_to(-8, -7); c.curve_to(4, -10, 18, -9, 21, -3); c.curve_to(22, 3, 16, 7, 2, 7); c.line_to(-8, 7); c.close_path()
+            c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
+            c.set_source_rgb(*INK); c.set_line_width(1.3); c.set_line_cap(1)
+            for y0, x0, x1 in ((-4.5, 9, 19), (-0.5, 9, 20), (3.5, 9, 17)):        # three fingers' seams
+                c.move_to(x0, y0); c.line_to(x1, y0); c.stroke()
+            c.new_path(); c.move_to(-2, 6); c.curve_to(2, 12, 9, 12, 9, 6)          # the thumb, down the near side
+            c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.8); c.stroke()
+            c.new_path(); c.arc(4, -6, 3.2, 0, 2 * math.pi)                          # his red ring, on top: his hand
+            c.set_source_rgb(0.80, 0.10, 0.12); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.2); c.stroke()
+            c.restore()
     elif n in ("g1", "g2"):
         x, f = pos[n]
         x -= ps.get("back", 0)
-        behind = (n == "g2" and scene == 2) or (n == "g1" and scene == 3)
+        behind = (((n == "g2" and scene == 2) or (n == "g1" and scene == 3)) and n not in st.get("front_of_car", ())) \
+            or n in st.get("behind_car", ())
         flip = behind
         tg = ps.get("targets_xy") or [_pt(t, x, f) for t in ps.get("targets", [])]
-        o = oc.guard(k, x, f, GS, flip=flip, targets=tg, turn=ps.get("turn", 0.0), seed=1600 if n == "g1" else 1640)
+        hk = _kit.HAND[0]
+        HELD_AT[0] = None
+        if tg and (ps.get("lamp") or "lighter" in ps):                       # v11 (23 Nov, audit: "a fist with a second hand under it"):
+            lw_ = ps.get("lamp_xy") or tg[0]                                     # the hand that holds it is the grip's own; the other stays
+            td_ = c.user_to_device(*lw_); tol_ = math.hypot(*c.user_to_device_distance(30, 0))   # in DEVICE space: the rigs call the
+            def _skip(k_, hx_, hy_, *a_):                                                         # hook in their own local units
+                dx_, dy_ = k_.c.user_to_device(hx_, hy_)
+                if math.hypot(dx_ - td_[0], dy_ - td_[1]) < tol_:
+                    HELD_AT[0] = (dx_, dy_)                                      # where his arm REALLY ends (device)
+                    return None
+                return hk(k_, hx_, hy_, *a_)
+            _kit.HAND[0] = _skip
+        oc.ELBOW_LOW[0] = bool(ps.get("elbow_low"))
+        try:
+            o = oc.guard(k, x, f, GS, flip=flip, targets=tg, turn=ps.get("turn", 0.0), seed=1600 if n == "g1" else 1640)
+        finally:
+            _kit.HAND[0] = hk
+            oc.ELBOW_LOW[0] = False
         heads[n] = (o["head"][0], o["head"][1], 55 * GS)
-        if ps.get("lamp"):
-            hx, hy = ps.get("lamp_xy") or tg[0]
-            if ps.get("cone"):                                       # v3: held high, pointing down into the bay
-                cx0, cy0 = hx - 2, hy + 24
-                g_ = cairo.LinearGradient(cx0, cy0, cx0, 712)
-                g_.add_color_stop_rgba(0, 1.0, 0.93, 0.55, 0.85 * ps["cone"]); g_.add_color_stop_rgba(1, 1.0, 0.93, 0.55, 0.35 * ps["cone"])
-                c.set_source(g_); c.move_to(cx0 - 6, cy0); c.line_to(cx0 + 6, cy0); c.line_to(548, 712); c.line_to(452, 712)
-                c.close_path(); c.fill()
-                c.set_source_rgba(1.0, 0.95, 0.65, 0.45 * ps["cone"])               # the pool of light on the engine
-                c.save(); c.translate(500, 708); c.scale(50, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
-                gs.lamp(k, hx - 2, hy + 10, ang=-math.pi / 2, lit=True)
-            elif ps.get("cone_side", ps.get("lamp") == "held"):              # v9: from the side, into the bay, on his hands
-                cs = ps.get("cone_side", 1.0) if ps.get("cone_side") is not None else 1.0
-                bx0, by0 = hx - 14, hy + 18
-                g_ = cairo.LinearGradient(bx0, by0, 500, 712)
-                g_.add_color_stop_rgba(0, 1.0, 0.93, 0.55, 0.80 * cs); g_.add_color_stop_rgba(1, 1.0, 0.93, 0.55, 0.40 * cs)
-                c.set_source(g_); c.move_to(bx0, by0 - 6); c.line_to(bx0 + 4, by0 + 6); c.line_to(510, 716); c.line_to(488, 700)
-                c.close_path(); c.fill()
-                c.set_source_rgba(1.0, 0.95, 0.65, 0.55 * cs)                          # the pool of light on his hands
-                c.save(); c.translate(496, 706); c.scale(34, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
-                gs.lamp(k, hx + 4, hy - 6, ang=2.5, lit=True)                     # the cage down-left, into the bay
-            else:
-                gs.lamp(k, hx - 8, hy + 22, ang=ps.get("lamp_ang", -1.3), lit=ps.get("lamp_lit", False) or "lamp_ang" in ps)
-            gs.protect(c, "the lamp in his hand", hx - 40, hy - 10, hx + 30, hy + 50)
-        if "lighter" in ps:
-            hx, hy = tg[0]
-            gs.protect(c, "the lighter", hx - 20, hy - 90, hx + 20, hy - 8)
-            gs.lighter(k, hx - 2, hy - 46, 0.75, ps["lighter"], hand=False, lid=ps.get("lid", 1.0 if ps["lighter"] else 0.0))   # v8: bigger
+        if ps.get("lamp") and not (ps.get("lamp_front") and scene == 3):
+            want = ps.get("lamp_xy") or tg[0]                                    # v4: the hand that reached for it
+            hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
+            if HELD_AT[0]:
+                hx, hy = c.device_to_user(*HELD_AT[0])                           # v11: the arm's real end, not the rig's report
+            _lamp_in_hand(k, ps, hx, hy)
+        if "lighter" in ps:                                                   # v9 (23 Nov, Office Noir 3's lighter_hand, lesson 399):
+            want = tg[0]                                                         # on the hand the pose returns, narrower than the hand
+            hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
+            if HELD_AT[0]:
+                hx, hy = c.device_to_user(*HELD_AT[0])
+            gs.protect(c, "the lighter", hx - 14, hy - LIGHTER_LIFT - 40, hx + 14, hy - 4)
+            held_lighter(k, hx, hy, ps["lighter"], ps.get("lid", 1.0 if ps["lighter"] else 0.0), co_skin())
         if ps.get("point") and tg:                                            # the finger on 7
             hx, hy = tg[0]
             c.set_source_rgb(*INK); c.set_line_width(8); c.set_line_cap(1); c.move_to(hx, hy + 8); c.line_to(hx - 4, hy - 6); c.stroke()
@@ -321,7 +357,7 @@ def _cast_draw(k, n, scene, sh, heads):
                 for i in range(3):
                     for j in range(3):
                         c_.rectangle(-15 + i * 11, -14 + j * 11, 8, 8); c_.fill()
-            oc.phone(k, hx, hy - 10, 0.75, cal, ang=-0.1)
+            oc.phone_grip(k, hx, hy, 0.6, cal, ang=-0.1, skin=co_skin())                 # v4 hands: held, on his palm
         if ps.get("dent"):                                                    # v10: the roof gives under the palm, 2 drawings
             hx, hy = tg[0]
             c.set_source_rgb(*INK); c.set_line_width(2.4); c.new_path()
@@ -340,34 +376,54 @@ def _cast_draw(k, n, scene, sh, heads):
         kind = ps.get("kind", "stand")
         look = ps.get("look", (-1, 0))
         if kind == "sit":
-            o = oc.client_sit(k, x, f, CS, look=look, face=ps.get("face", "bored"), wipe=ps.get("wipe", 0.0))
-        elif kind == "bent":                                            # v6: from the front, behind the car, bent over
-            bx, bf = BENT_AT                                                # the open bay toward us; the lid up behind him
-            w = ps.get("work", 0.0)                                          # stage 7: the hands busy in the bay
-            hands = [(bx - 34 + 5 * w, 704 - 3 * abs(w)), (bx + 6 - 4 * w, 706 + 2 * w)]
+            o = oc.client_sit(k, x, f, CS, look=look, face=ps.get("face", "bored"), wipe=ps.get("wipe", 0.0), hands_at=ps.get("hands_at"))
+        elif kind == "bent":                                            # v8 (23 Nov, decided): IN FRONT of the car, at its nose, side on,
+            bx, bf = BENT_AT                                                # bent over the wing into the bay (client_of.profile, the sheet's
+            w = ps.get("work", 0.0)                                          # "bent into the engine"); his whole body seen, feet on the floor
+            bolt = gs.bay_bolt()                                              # v9 (23 Nov, audit): the near hand on the wrench at the bolt,
+            wa = -2.2 + 0.35 * w                                               # turning; the far hand braced on the wing's edge
+            wrench_h = (bolt[0] + 26 * math.cos(wa) * -1, bolt[1] - 26 * math.sin(wa) * -1)
+            wrench_h = (bolt[0] + 26 * math.cos(wa + math.pi), bolt[1] + 26 * math.sin(wa + math.pi))
+            brace = (bolt[0] - 18, bolt[1] - 4)                                  # v10 (audit: "no second hand"): his far hand on the block, beyond the bolt, in sight
+            hands = [wrench_h, brace]
             if ps.get("hand_back"):
-                hands = [(bx - 34, 704), ps.get("hand_back_at", (bx + 70, 650))]
-            c.save(); c.translate(bx, bf); c.scale(1, 0.86); c.translate(-bx, -bf)   # the trunk foreshortened, tipped to us
-            o = oc.client(k, bx, bf, CS, look=(-0.4, 2.0), targets=hands, face="glance")   # eyes down, into the bay
-            c.restore()
-            o["head"] = (o["head"][0], bf + (o["head"][1] - bf) * 0.86)
+                hands = [ps.get("hand_back_at", (bx + 60, 724)), brace]
+            o = oc.client_bent(k, bx, bf, CS, hands=hands, lean=0.38, head34=0.7)   # v10: his own face, three-quarter
+            if not ps.get("hand_back"):                                       # the wrench, from his fist to the bolt
+                c.set_source_rgb(*INK); c.set_line_width(7); c.set_line_cap(1)
+                c.move_to(*wrench_h); c.line_to(*bolt); c.stroke()
+                c.set_source_rgb(0.72, 0.74, 0.77); c.set_line_width(4.4); c.move_to(*wrench_h); c.line_to(*bolt); c.stroke()
+                c.set_source_rgb(*INK); c.new_path(); c.arc(bolt[0], bolt[1], 5, 0, 2 * math.pi); c.set_line_width(1.6); c.stroke()                # v8: his head over the bay, his hands below it
             if ps.get("hand_back") and ps.get("client_lamp", True):
-                hx_, hy_ = ps.get("hand_back_at", (bx + 70, 650))
-                gs.lamp(k, hx_ - 6, hy_ + 2, ang=-1.3, lit=ps.get("lamp_lit", True))
+                hx_, hy_ = ps.get("hand_back_at", (bx + 60, 724))
+                gs.lamp(k, hx_ - 6, hy_ + 2, ang=-1.3, lit=ps.get("lamp_lit", True), hang=884)
         elif kind == "watch":
             wu = ps.get("watch_u", 1.0)                                       # stage 7: the wrist comes up to the eyes
             wx, wy = oc.watch_pose(x, f, CS)[0]
             o = oc.client(k, x, f, CS, look=look, targets=[(x + 40 + (wx - x - 40) * wu, f - 110 + (wy - f + 110) * wu)],
                           face=ps.get("face", "bored"))
         elif kind == "pocket":
-            pu = ps.get("pocket_u", 0.0)                                     # stage 7: out of the pocket, turned round
-            tx, ty = x - 30 - 66 * pu, f - 150
+            pu = ps.get("pocket_u", 0.0)                                     # v5 (23 Nov, Tomas: "the hand is strange"): out of the
+            P0, P1, P2 = (x - 8, f - 140), (x - 22, f - 106), (x - 66, f - 158)  # top pocket, a wipe on the thigh, held out to
+            if pu < 0.4:                                                         # Father as in 2.8b, in ONE arm (2.8b's)
+                tx, ty = om_lerp(P0, P1, pu / 0.4)
+            elif pu < 0.6:
+                tx, ty = P1[0] + 6 * math.sin((pu - 0.4) / 0.2 * 2 * math.pi), P1[1]
+            else:
+                tx, ty = om_lerp(P1, P2, (pu - 0.6) / 0.4)
             o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)])
-            oc.phone(k, tx - 6 * pu, ty - 2 - 8 * pu, 0.55 + 0.05 * pu, None, ang=0.4 - 0.5 * pu)
-        elif kind == "phone_out":
-            tx, ty = x - 96, f - 150
+            import client_ob as co_
+            H, _ = oc.guard_arm_front(k, x, f, CS, False, (tx, ty), co_skin(), hand=False, from_elbow=False,
+                                      upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
+            oc.phone_grip(k, H[0], H[1], 0.6, None, ang=(0.9 if pu < 0.6 else 0.9 - 1.0 * (pu - 0.6) / 0.4), skin=co_skin(),
+                          thumb=1)                                               # v2 (23 Nov, Tomas, 0:38): his right hand — the
+        elif kind == "phone_out":                                               # thumb was on the far edge, crossed over his own fingers
+            tx, ty = x - 66, f - 158                                             # v5 (23 Nov): the whole phone inside the frame
             o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)])
-            oc.phone(k, tx - 6, ty - 10, 0.6, None, ang=-0.1)
+            import client_ob as co_                                              # v6: his arm again in ONE piece (the rig's broke under the phone)
+            H, _ = oc.guard_arm_front(k, x, f, CS, False, (tx, ty), co_skin(), hand=False, from_elbow=False,
+                                      upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
+            oc.phone_grip(k, H[0], H[1], 0.6, None, ang=-0.1, skin=co_skin(), thumb=1)   # v2: same fix, same arm
         elif kind == "slam":
             sy = ps.get("slam_y", 0.0)                                       # stage 7: the hands come down with the lid
             o = oc.client(k, x, f, CS, look=(-1, 0.6), targets=[(x - 64, 668 - sy), (x - 40, 664 - sy)])
@@ -376,11 +432,76 @@ def _cast_draw(k, n, scene, sh, heads):
         heads[n] = (o["head"][0], o["head"][1], 55 * CS)
 
 
+HELD_AT = [None]                                           # v11: the device point where the holding arm really ends
+LIGHTER_S = 0.34                                           # v9 (23 Nov): a lighter is narrower than the hand that holds it
+LIGHTER_LIFT = 74 * LIGHTER_S - 5                           # the flame's foot above the hand point: the case stands on the fist
+
+
+def _lamp_in_hand(k, ps, hx, hy, arm=None):
+    """the work lamp in a guard's hand at (hx, hy) (v10: one function, so it can be drawn after the Client)."""
+    c = k.c
+    if ps.get("cone"):                                       # v3: held high, pointing down into the bay
+        cx0, cy0 = hx - 2, hy + 24
+        g_ = cairo.LinearGradient(cx0, cy0, cx0, 712)
+        g_.add_color_stop_rgba(0, 1.0, 0.93, 0.55, 0.85 * ps["cone"]); g_.add_color_stop_rgba(1, 1.0, 0.93, 0.55, 0.35 * ps["cone"])
+        c.set_source(g_); c.move_to(cx0 - 6, cy0); c.line_to(cx0 + 6, cy0); c.line_to(548, 712); c.line_to(452, 712)
+        c.close_path(); c.fill()
+        c.set_source_rgba(1.0, 0.95, 0.65, 0.45 * ps["cone"])               # the pool of light on the engine
+        c.save(); c.translate(500, 708); c.scale(50, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        gs.lamp(k, hx - 2, hy + 10, ang=-math.pi / 2, lit=True)
+    elif ps.get("cone_side", ps.get("lamp") == "held"):              # v9: from the side, into the bay, on his hands
+        cs = ps.get("cone_side", 1.0) if ps.get("cone_side") is not None else 1.0
+        la_ = ps.get("lamp_ang", 0.35)                                           # v11 (23 Nov, audit): the HANDLE in his hand, the cage
+        cx_, cy_ = hx - 26 * math.cos(la_), hy - 26 * math.sin(la_)              # out in front of it, pointing into the bay
+        px_, py_ = ps.get("pool", (500, 712))
+        g_ = cairo.LinearGradient(cx_, cy_, px_, py_)
+        g_.add_color_stop_rgba(0, 1.0, 0.93, 0.55, 0.80 * cs); g_.add_color_stop_rgba(1, 1.0, 0.93, 0.55, 0.40 * cs)
+        c.set_source(g_); c.move_to(cx_, cy_ - 7); c.line_to(cx_, cy_ + 7); c.line_to(px_ + 12, py_ + 8); c.line_to(px_ - 12, py_ - 8)
+        c.close_path(); c.fill()
+        c.set_source_rgba(1.0, 0.95, 0.65, 0.55 * cs)                          # the pool of light, in the bay
+        c.save(); c.translate(px_, py_); c.scale(34, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        if arm:
+            arm()
+        gs.lamp(k, cx_, cy_, ang=la_, lit=True, hang=ps.get("cable_floor"), glow=False)   # the cone is its light; no halo over his arm
+        _oc.handle_grip(k, hx, hy, 24, la_ + math.pi / 2, co_skin())
+    else:
+        la_ = ps.get("lamp_ang", -1.3)
+        gs.lamp(k, hx - 8, hy + 22, ang=la_, lit=ps.get("lamp_lit", False) or "lamp_ang" in ps)
+        _oc.handle_grip(k, hx - 8 + 26 * math.cos(la_), hy + 22 + 26 * math.sin(la_), 24, la_ + math.pi / 2, co_skin())   # v3: held
+    gs.protect(c, "the lamp in his hand", hx - 40, hy - 10, hx + 30, hy + 50)
+    if ps.get("napkin"):                                                     # v1 (23 Nov, the mid-film gag): a white napkin
+        cut(Ctx(c, 0) if False else k, [(hx + 4, hy + 6), (hx + 30, hy + 2), (hx + 34, hy + 46), (hx + 22, hy + 52), (hx + 8, hy + 44)],
+            (0.98, 0.98, 0.96), lw=2)                                         # over his forearm: he serves the lamp like a waiter
+        c.set_source_rgb(0.80, 0.80, 0.80); c.set_line_width(1.4); c.move_to(hx + 18, hy + 6); c.line_to(hx + 20, hy + 48); c.stroke()
+
+
+def held_lighter(k, hx, hy, flame, lid, skin):
+    """Office Noir 3's lighter_hand, for a hand at (hx, hy): the case stands IN the fist (the fist round its lower half,
+    drawn over it), the thumb up its side to the wheel."""
+    c = k.c
+    fx, fy = hx, hy - LIGHTER_LIFT
+    gs.lighter(k, fx, fy, LIGHTER_S, flame, hand=False, lid=lid)
+    c.save(); c.translate(hx, hy - 4); c.scale(12.5, 9.5); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()   # the fist
+    c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
+    c.set_line_width(1.3); c.set_line_cap(1)
+    for dy in (-6, -2, 2):                                                    # the curled fingers' seams
+        c.move_to(hx - 3, hy - 4 + dy); c.line_to(hx + 9, hy - 4 + dy); c.stroke()
+    _oc._capsule(c, hx - 9, hy - 8, fx - 7, fy + 4, 3.4, skin)                 # the thumb, up the near side
+    return fx, fy
+
+
+def om_lerp(a, b, u):
+    u = max(0.0, min(1.0, u))
+    return a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u
+
+
 def garage_shot(k, sh, scene, heads, cam):
     st = sh["state"]
     behind_names = [n for n in sh["cast"] if (n == "g2" and scene == 2) or (n == "g1" and scene == 3)
-                    or (n == "client" and POSES.get(sh["id"], {}).get("client", {}).get("kind") == "bent")]
+                    ]                                                              # v8: the bent Client is in front now
     behind_names.sort(key=lambda n: n != "g1")                         # the lamp man furthest back
+    behind_names = [n for n in behind_names if n not in st.get("front_of_car", ())]   # v11 (23 Nov, lesson 292): he steps round the car
+    behind_names += [n for n in st.get("behind_car", ()) if n in sh["cast"] and n not in behind_names]   # v12: at the wall
     front_names = [n for n in sh["cast"] if n not in behind_names]
     if scene == 3:
         legs_out = None
@@ -401,18 +522,32 @@ def garage_shot(k, sh, scene, heads, cam):
     def behind(k):
         for n in behind_names:
             _cast_draw(k, n, scene, sh, heads)
+        gp = POSES.get(sh["id"], {}).get("g1", {})
+        if scene == 3 and "g1" in behind_names and gp.get("lamp") and gp.get("lamp_front"):   # v10 (23 Nov, lessons 129/245):
+            gx_, gf_ = dict(BLOCK[3], **st.get("moved", {}))["g1"]              # his lamp arm AFTER the Client, so the hand shows
+            gx_ -= gp.get("back", 0)
+            want = gp.get("lamp_xy") or gp["targets_xy"][0]
+            H, _ = _oc.guard_arm_front(k, gx_, gf_, GS, True, want, co_skin(), draw=False)   # lesson 168: the arm stays BEHIND him,
+            _lamp_in_hand(k, gp, H[0], H[1])                                     # only the hand and the lamp in front
 
     def front(k):
         for n in front_names:
             _cast_draw(k, n, scene, sh, heads)
-    gs.LID_BEHIND[0] = any(POSES.get(sh["id"], {}).get("client", {}).get("kind") == "bent" for _ in (0,))
+    gs.LID_BEHIND[0] = False                                              # v8: nobody works behind the lid now
     gs.LEGS_WORK[0] = st.get("legs_work", 0.0)                            # v8: the knee taps while he works
     gs.FIRE[0], gs.FIRE[1] = st.get("fire", 0.0), st.get("fire_t", 0.0)       # v9: the fire, the sheet
     gs.SHEET[0], gs.SHEET[1] = st.get("sheet_fly"), st.get("sheet_floor")
+    gs.NEW_PLAN[0] = st.get("new_plan")                                     # v1 (23 Nov, decided): the fresh plan going up
+    gs.BLACK_CAR[0] = bool(st.get("black_car"))                              # v1 (23 Nov, decided): Father has arrived
     gs.garage(k, burn=st.get("burn", 0.0), legs_out=legs_out, bonnet=bon,
-              lamp_on_floor=scene in (1, 2, 5) and not st.get("lamp_up"), behind=behind, front=front, tilt=st.get("tilt", 0.0))
+              lamp_on_floor=scene in (1, 2, 5) and (not st.get("lamp_up") or st.get("lamp_floor")), behind=behind, front=front, tilt=st.get("tilt", 0.0))
     gs.LID_BEHIND[0] = False
     c = k.c
+    if st.get("lamp_fly") is not None:                                    # v1 (23 Nov): the lamp in the air, onto its floor spot
+        w_ = st["lamp_fly"]
+        x0_, y0_ = BLOCK[1]["g1"][0] + 50, BLOCK[1]["g1"][1] - 60
+        x1_, y1_ = gs.LAMP_AT
+        gs.lamp(k, x0_ + (x1_ - x0_) * w_, y0_ + (y1_ - y0_) * w_ - 70 * 4 * w_ * (1 - w_), ang=-0.5 + 2.5 * (1 - w_), lit=True)
     if st.get("running"):                                                 # v9: 2.8e, the car runs: lights on, a puff of exhaust
         r_ = st["running"]
         x0_, x1_ = gs.CAR_X
@@ -492,6 +627,10 @@ def dc_velvet():
     return dc.VELVET
 
 
+UPRIGHT = [True]                                           # v12: the overhead turned so he lies head-up
+KSCALE = [1.0]                                             # the overhead is drawn in frame units
+
+
 def under_shot(k, sh, heads):
     """UNDER THE CAR: his face up, lit from the lamp's side; the sump a hand above it. In frame units."""
     import of_cast as oc
@@ -504,10 +643,15 @@ def under_shot(k, sh, heads):
     if sh["state"].get("view") == "top" or sh["id"] == "0.9":                   # v10: the overhead (v11: 0.9 too, closer:
         zt = 1.0 if sh["state"].get("view") == "top" else 1.55                    # the side profile looked wrong)
         zx = 300 if zt == 1.0 else 200                                            # 0.9: his face and hands, not his boots
-        c.save(); c.translate(300, 500); c.scale(zt, zt); c.translate(-zx, -500)
+        R_ = UPRIGHT[0]                                                           # v12 (23 Nov, cold tests 3 of 3: "sideways"):
+        c.save()                                                                  # turned a quarter: his head UP the frame
+        if R_:
+            c.translate(270 + (0 if zt == 1.0 else 80), 480); c.rotate(math.pi / 2); c.scale(1.15, 1.15); c.translate(-270, -480)
+        c.translate(300, 500); c.scale(zt, zt); c.translate(-zx, -500)
         hx_, hy_, hr_ = oc.client_top(k, sway=sway, wrench_t=sh["state"].get("wrench_t", 0.0))
+        dev = c.user_to_device(hx_, hy_); rr = math.hypot(*c.user_to_device_distance(hr_, 0))
         c.restore()
-        heads["client"] = ((hx_ - zx) * zt + 300, (hy_ - 500) * zt + 500, hr_ * zt)
+        heads["client"] = (dev[0] / KSCALE[0], dev[1] / KSCALE[0], rr / KSCALE[0]) if R_ else ((hx_ - zx) * zt + 300, (hy_ - 500) * zt + 500, hr_ * zt)
     else:
         heads["client"] = oc.client_under(k, 1.6, sway=sway, wrench_t=sh["state"].get("wrench_t", 0.0))   # v9: the side cutaway
 
@@ -543,6 +687,112 @@ def insert_shot(k, sh):
         c.save(); c.translate(225, 520); brand.mark(c, 0, 0, 90); c.restore()            # the mark on the glass
         gs.protect(c, "the mark on the glass", 225, 520, 315, 610)
         rect(k, 0, 900, 540, 60, (0.48, 0.49, 0.52), 3720, shadow=False, lw=2)           # the pavement
+    elif kind == "pin":                                                            # v2 (23 Nov, cold tests 3 of 3: the plan "healed"):
+        u_ = sh["state"].get("pin_u", 1.0)                                             # the WHOLE fresh plan, close; his thumb
+        Z_, CX_, CY_ = 2.45, 408, 520                                                  # pushes the red pin into its top-left corner
+        c.save(); c.translate(270, 480); c.scale(Z_, Z_); c.translate(-CX_, -CY_)
+        gs.room(k); gs.plan(k, 0.0)
+        import acts_ob as _ac                                                    # v3 (23 Nov, Tomas: 3b) — a DIFFERENT bay ringed, not 7
+        _bx, _by, _bw, _bh = [b[1:] for b in _ac._bays() if b[0] == 3][0]         # again: this plan is a new target, not the old one
+        _tx = gs.PLAN[0] + (_bx + _bw / 2) * gs.PLAN[2]                           # healed. Tagged DON, not a bare number: it ties
+        _ty = gs.PLAN[1] + (_by + _bh / 2) * gs.PLAN[2]                           # straight to the "without him" meeting (lesson 163).
+        c.set_source_rgb(0.85, 0.12, 0.12); c.set_line_width(4.5)
+        c.arc(_tx, _ty, 22, 0, 2 * math.pi); c.stroke()
+        gs.T(c, "DON", _tx, _ty + 40, 15, col=(0.85, 0.12, 0.12))
+        c.restore()
+        px_, py_ = (334 - CX_) * Z_ + 270, (452 - CY_) * Z_ + 480
+        for col, lw in ((INK, 86), ((0.11, 0.11, 0.13), 78)):                             # his sleeve, up from the frame's foot
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+            c.move_to(px_ - 20, 1000); c.line_to(px_ + 20, py_ + 170 - 30 * u_); c.stroke()
+        c.save(); c.translate(px_ + 18, py_ + 150 - 30 * u_); c.rotate(0.15)
+        rect(k, -44, -12, 88, 26, (0.97, 0.97, 0.95), 3495, shadow=False, lw=2.4)         # the white cuff
+        c.restore()
+        ellipse(k, px_ + 16, py_ + 90 - 30 * u_, 44, 40, (0.92, 0.74, 0.60), 3496, lw=2.6)   # his fist
+        _oc._capsule(c, px_ + 6, py_ + 66 - 30 * u_, px_, py_ + 14 - 14 * u_, 14, (0.92, 0.74, 0.60))   # the thumb, up to the pin
+        ellipse(k, px_, py_, 14, 14, (0.85, 0.12, 0.12), 3497, lw=2.4)                  # the red pin
+        gs.protect(c, "the fresh plan", 60, 290, 470, 660)
+    elif kind == "bay":                                                            # v1 (23 Nov, decided A): his hands in the lamp's light
+        c.save(); c.translate(250, 360); c.scale(1.12, 1.12); c.translate(-250, -270)   # v5 (decided): the bay fills the frame
+        c.set_source_rgb(0.10, 0.10, 0.11); c.paint()                                  # the bay, dark; all of it inside the safe area
+        bu = sh["state"].get("bay_u", 1.0)
+        g_ = cairo.RadialGradient(240, 340, 10, 240, 340, 230)                         # the lamp's pool, on the engine and his hands
+        g_.add_color_stop_rgba(0, 1.0, 0.95, 0.70, 0.55 * bu); g_.add_color_stop_rgba(1, 1.0, 0.95, 0.70, 0.0)
+        c.set_source(g_); c.arc(240, 340, 230, 0, 2 * math.pi); c.fill()
+        rect(k, 40, 270, 400, 230, (0.50, 0.51, 0.54), 3460, lw=3)                     # v2 (23 Nov, decided): the SAME engine as the
+        for i in range(3):                                                             # wide shot: the block, its red plug leads,
+            c.set_source_rgb(*INK); c.set_line_width(13); c.set_line_cap(1)            # the round air filter, a black hose, the
+            c.move_to(110 + i * 70, 270); c.line_to(90 + i * 70, 200); c.stroke()     # yellow oil cap, the bolt
+            c.set_source_rgb(0.85, 0.15, 0.12); c.set_line_width(9); c.move_to(110 + i * 70, 270); c.line_to(90 + i * 70, 200); c.stroke()
+        ellipse(k, 200, 225, 130, 46, (0.18, 0.18, 0.20), 3461, lw=2.6)                # the air filter
+        ellipse(k, 200, 225, 40, 14, (0.30, 0.30, 0.32), 3462, shadow=False, lw=1.8)
+        c.set_source_rgb(*INK); c.set_line_width(36); c.set_line_cap(1)
+        c.move_to(330, 250); c.curve_to(390, 190, 440, 230, 470, 300); c.stroke()
+        c.set_source_rgb(0.15, 0.15, 0.16); c.set_line_width(30); c.move_to(330, 250); c.curve_to(390, 190, 440, 230, 470, 300); c.stroke()
+        ellipse(k, 380, 440, 34, 26, (0.98, 0.80, 0.12), 3463, lw=2.4)                 # the yellow oil cap
+        c.set_source_rgb(0.20, 0.20, 0.22); c.set_line_width(22); c.set_line_cap(1)    # a pipe below
+        c.move_to(20, 560); c.curve_to(160, 540, 280, 600, 440, 560); c.stroke()
+        g2_ = cairo.RadialGradient(250, 350, 10, 250, 350, 200)                        # the light ON the work, soft, over the parts
+        g2_.add_color_stop_rgba(0, 1.0, 0.95, 0.70, 0.35); g2_.add_color_stop_rgba(1, 1.0, 0.95, 0.70, 0.0)
+        c.set_source(g2_); c.arc(250, 350, 200, 0, 2 * math.pi); c.fill()
+        bo_ = sh["state"].get("bolt_out", 0.0)                                         # v3 (decided): the bolt comes FREE
+        if bo_ > 0:
+            c.set_source_rgb(0.08, 0.08, 0.09); c.arc(250, 350, 15, 0, 2 * math.pi); c.fill()   # its hole
+        if bo_ == 0:
+            ellipse(k, 250, 350, 28, 28, (0.62, 0.64, 0.66), 3470, lw=2.4)              # the plug's top, in the block
+
+        w_ = sh["state"].get("work", 0.0)
+        c.save(); c.translate(250, 350); c.rotate(-2.4 + 0.35 * w_ - 0.6 * sh["state"].get("bolt_out", 0.0))       # the wrench on it, turning
+        rect(k, -14, -14, 190, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)
+        c.restore()
+        bo2_ = sh["state"].get("bolt_out", 0.0)
+        hw_ = (250 + 175 * math.cos(-2.4 + 0.35 * w_ - 0.6 * bo2_), 350 + 175 * math.sin(-2.4 + 0.35 * w_ - 0.6 * bo2_))   # his fist on the wrench
+        fh_ = (330 + (290 - 330) * bo2_, 470 + (250 - 470) * bo2_)                          # v4: the far hand comes up with the plug
+        for side, (hx, hy, ex, ey) in enumerate(((hw_[0], hw_[1], -80, 40), (fh_[0], fh_[1], 640, 620))):
+            for col, lw in ((INK, 62), ((0.80, 0.62, 0.50), 56)):                      # the oily forearms, from the frame's edges
+                c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+                c.move_to(hx, hy); c.line_to(ex, ey); c.stroke()
+            c.save(); c.translate(hx + (ex - hx) * 0.70, hy + (ey - hy) * 0.70); c.rotate(math.atan2(ey - hy, ex - hx))
+            rect(k, -10, -44, 140, 88, (0.97, 0.97, 0.95), 3472 + side, lw=2.6)          # the white T-shirt sleeves
+            c.restore()
+            if side == 1 and bo2_ > 0:                                                # v4: his far fist round the plug
+                ellipse(k, hx, hy, 40, 34, (0.80, 0.62, 0.50), 3490, lw=2.4)
+                c.set_source_rgb(*INK); c.set_line_width(2.2)
+                for d_ in (-12, 0, 12):
+                    c.move_to(hx - 18, hy + d_); c.line_to(hx + 10, hy + d_); c.stroke()
+                continue
+            if side == 1:                                                             # v2 (decided): his far hand FLAT on the block
+                c.save(); c.translate(hx, hy); c.rotate(math.atan2(ey - hy, ex - hx) + math.pi)
+                c.new_path(); c.move_to(-34, -26); c.curve_to(10, -32, 60, -26, 70, -10); c.curve_to(74, 6, 60, 22, 10, 26); c.line_to(-34, 26); c.close_path()
+                c.set_source_rgb(0.80, 0.62, 0.50); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()
+                for y0 in (-12, 0, 12):
+                    c.move_to(30, y0); c.line_to(62, y0); c.stroke()
+                c.restore()
+                c.set_source_rgba(0.1, 0.08, 0.05, 0.45); c.arc(hx + 6, hy + 4, 8, 0, 2 * math.pi); c.fill()
+                continue
+            ellipse(k, hx, hy, 42, 36, (0.80, 0.62, 0.50), 3474 + side, lw=2.4)           # the fist on the wrench
+            c.set_source_rgb(*INK); c.set_line_width(2.2)
+            for d_ in (-12, 0, 12):
+                c.move_to(hx - 18, hy + d_); c.line_to(hx + 10, hy + d_); c.stroke()
+            c.set_source_rgba(0.1, 0.08, 0.05, 0.45); c.arc(hx + 12, hy - 10, 8, 0, 2 * math.pi); c.fill()   # oil
+        if bo2_ > 0:                                                                     # v4 (cold tests 3 of 3: "what did he find?"):
+            px_, py_ = 250 + (290 - 250) * bo2_, 350 + (215 - 350) * bo2_                   # out of the hole comes ONE thing you can
+            c.save(); c.translate(px_, py_); c.rotate(-0.25); c.scale(1.0 + 0.6 * bo2_, 1.0 + 0.6 * bo2_)   # name: a spark plug,
+            rect(k, -12, -70, 24, 50, (0.95, 0.94, 0.90), 3480, lw=2.4)                    # its tip black, cracked through
+            rect(k, -18, -22, 36, 22, (0.70, 0.72, 0.75), 3481, lw=2.2)                     # the hex
+            rect(k, -9, 0, 18, 26, (0.55, 0.56, 0.58), 3482, lw=2)                          # the thread
+            c.set_source_rgb(0.08, 0.07, 0.06); c.rectangle(-9, 18, 18, 10); c.fill()        # soot
+            c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
+            c.move_to(-6, -66); c.line_to(2, -54); c.line_to(-4, -44); c.line_to(5, -30); c.stroke()   # the crack
+            c.restore()
+        wx_, wy_ = hw_[0] + (-80 - hw_[0]) * 0.28, hw_[1] + (40 - hw_[1]) * 0.28          # HIS gold watch, on the wrench wrist
+        ellipse(k, wx_, wy_, 24, 24, (0.86, 0.68, 0.22), 3477, lw=2.2)
+        ellipse(k, wx_, wy_, 15, 15, (0.10, 0.16, 0.14), 3478, lw=1.6)
+        gs.lamp(k, 300, 60, ang=-1.2, lit=True, glow=False)                            # the lamp, at the top of the frame: the light's source
+        c.save(); c.translate(120, 470)                                                 # his red rag, over the block's edge
+        cut(k, [(-30, -8), (30, -12), (40, 50), (8, 90), (-26, 62)], (0.82, 0.30, 0.22), 3476, lw=2.2)
+        c.restore()
+        gs.protect(c, "his hands in the light", 60, 150, 440, 460)
+        c.restore()
     elif kind == "key":                                                            # the steering column, the key, his fingers
         c.set_source_rgb(0.16, 0.16, 0.18); c.paint()
         c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(46); c.set_line_cap(1)
@@ -596,16 +846,30 @@ def donnie_shot(k, sh, heads):
     c.restore()
     c.set_source_rgba(1.0, 0.98, 0.88, 0.35); c.rectangle(20, F - 330, 180, 330); c.fill()
     st = sh["state"]
-    c.save(); c.translate(132 + st.get("hand_dx", 0.0) + st.get("buzz", 0.0), 690)     # stage 7: walking out; it buzzes
+    c.save(); c.translate(92 + st.get("hand_dx", 0.0) + st.get("buzz", 0.0), 680)      # stage 7: walking out; it buzzes (v2: in frame)
     for col, lw in ((INK, 40), (dc.VELVET, 34)):                                     # his sleeve, velvet, going out
         c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
         c.move_to(110, 60); c.line_to(24, 14); c.stroke()
     def scr(c_):
         c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
         c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
-        e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, 0); c_.show_text("DONNIE")
-    oc.phone(k, 0, -10, 0.95, None if st.get("donnie_down") else scr, ang=-0.35)   # face down against his palm
+        e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, -12); c_.show_text("DONNIE")
+    def scr2(c_):                                                                   # v2 (23 Nov, decided): red DECLINE, green answer
+        scr(c_)
+        c_.set_source_rgb(0.85, 0.12, 0.12); c_.arc(-9, 6, 8, 0, 2 * math.pi); c_.fill()
+        c_.set_source_rgb(0.15, 0.75, 0.30); c_.arc(9, 6, 8, 0, 2 * math.pi); c_.fill()
+        if st.get("declined"):
+            c_.set_source_rgba(0, 0, 0, 0.65); c_.rectangle(-19, -34, 38, 68); c_.fill()
+            c_.set_source_rgb(0.95, 0.25, 0.25); c_.select_font_face("Lilita One"); c_.set_font_size(8.5)
+            e = c_.text_extents("DECLINED"); c_.move_to(-e.x_advance / 2, -20); c_.show_text("DECLINED")
+    oc.phone(k, 0, -10, 0.95, None if st.get("donnie_down") else scr2, ang=-0.35)   # face down against his palm
     ellipse(k, 10, 22, 24, 18, dc.SKIN_F, 3441, lw=2)
+    if st.get("thumb") and not st.get("donnie_down"):                                # his thumb comes over onto the red button
+        u_ = st["thumb"]
+        a_ = -0.35
+        bx_, by_ = -9 * math.cos(a_) - 6 * math.sin(a_), -10 + (-9) * math.sin(a_) + 6 * math.cos(a_)
+        tx_, ty_ = 20 + (bx_ - 20) * u_, 14 + (by_ - 14) * u_
+        oc._capsule(c, 22, 20, tx_, ty_, 7, dc.SKIN_F)
     c.restore()
 
 
@@ -639,12 +903,36 @@ def desk_shot(k, sh, heads):
 
     def pam(k_, o):
         don(k_, o)
-        q = pb.pam(k_, 652, F + 6, dl.PS, sh["state"].get("pam_pose", (-8, 0, 140, 60)), "neutral", look=sh["state"].get("pam_look", (0.4, 0.6)), glasses="up")
+        q = pb.pam(k_, 652, F + 6, dl.PS, sh["state"].get("pam_pose", (-8, 0, 140, 60)), sh["state"].get("pam_face", "neutral"),
+                   look=sh["state"].get("pam_look", (0.4, 0.6)), glasses=sh["state"].get("pam_glasses", "up"))   # v8: face, glasses per drawing
         heads["_pamhand"] = q["hands"][1]
         drawn["pam"] = (q["head"][0], q["head"][1], 50 * dl.PS)
+    def office_dressing(k_):
+        """v18: the office read 'bare, placeholder-like' to 3 cold viewers vs. the garage's clutter (lesson 163).
+        Tomas: augalas, uptimez. A floor plant right of Pam's counter, the UPTIMEZ wordmark on the wall left of the
+        portrait. Background layer: drawn before the cast so they occlude it, not the other way round."""
+        c = k_.c
+        px, py = 672, F + 6                                              # v2: pulled in from 712 — the leaves touched the frame edge
+
+        c.set_source_rgb(0.47, 0.33, 0.22); c.rectangle(px - 20, py - 46, 40, 46); c.fill()
+        c.set_source_rgb(0.40, 0.27, 0.18); c.set_line_width(2); c.rectangle(px - 20, py - 46, 40, 46); c.stroke()
+        c.set_source_rgb(0.56, 0.40, 0.27); c.rectangle(px - 24, py - 50, 48, 8); c.fill()
+        leaf = (0.24, 0.52, 0.30)
+        for ang, ln in ((-0.9, 58), (-0.25, 72), (0.3, 70), (0.85, 56)):
+            c.set_source_rgb(*leaf); c.set_line_width(10); c.set_line_cap(1)
+            c.move_to(px, py - 50)
+            c.curve_to(px + 14 * math.sin(ang), py - 50 - ln * 0.5, px + 26 * math.sin(ang), py - 50 - ln * 0.85,
+                       px + 30 * math.sin(ang), py - 50 - ln)
+            c.stroke()
+        sx, sy = 292, 350                                                 # the wordmark, a small plaque left of the portrait
+        c.set_source_rgb(0.97, 0.96, 0.92); c.rectangle(sx - 46, sy - 20, 92, 40); c.fill()
+        c.set_source_rgb(*INK); c.set_line_width(2); c.rectangle(sx - 46, sy - 20, 92, 40); c.stroke()
+        gs.T(c, "UPTIMEZ", sx, sy, 15, col=(0.16, 0.42, 0.55))
+
     vis = visor_point()
     if which == "wide":
         def wide(k_, o):
+            office_dressing(k_)
             pam(k_, o); r = oc.robot(k_, dl.RX, F + 4, rs)
             drawn["robot"] = (r["screen"][0], r["screen"][1], 50 * rs)
         shot = dl.shot("3.1", [dl.h_seat(), vis, dl.hp(652, F + 6, dl.PS)], wide, "", rb=False, chair=False,
@@ -705,7 +993,8 @@ def desk_shot(k, sh, heads):
             c_.set_source_rgb(0.97, 0.94, 0.86); c_.rectangle(-19, -34, 38, 68); c_.fill()
             c_.set_source_rgb(0.55, 0.16, 0.46); c_.select_font_face("Lilita One"); c_.set_font_size(6.5)
             c_.move_to(-17, -14); c_.show_text("INVITATION")
-            c_.set_source_rgb(*INK); c_.set_font_size(9); c_.move_to(-17, 6); c_.show_text("FATHER")
+            c_.set_source_rgb(*INK); c_.set_font_size(9); c_.move_to(-17, 6); c_.show_text("DAD")  # v18: DAD not FATHER — it has
+            # to read as the same man Don later calls DAD (lesson 163: 2/3 cold viewers had to guess who "him" was)
         bz = sh["state"].get("buzz", 0.0)                                          # stage 7: it buzzes; then face down
         down = sh["state"].get("phone_down", False)
         if down:                                                                   # v10: SLAPPED face down on the desk
@@ -721,7 +1010,7 @@ def desk_shot(k, sh, heads):
                 c.move_to(px_ + 60 * math.cos(a), py_ - 6 + 34 * math.sin(a)); c.line_to(px_ + 80 * math.cos(a), py_ - 6 + 46 * math.sin(a)); c.stroke()
         else:
             c.save(); c.translate(x + bz, y - 40); c.scale(z * 0.55, z * 0.55)
-            oc.phone(Ctx(c, 0), 0, 0, 1.0, scr); c.restore()
+            oc.phone_grip(Ctx(c, 0), 0, 0, 1.0, scr); c.restore()
     return cam
 
 
@@ -746,7 +1035,8 @@ DON_FAULTS = []                                            # the Don rule's faul
 DON_EDGE = [90]                                            # v9: with the robot at 0.66, the throne further right: both faces clear                                            # 3.4: how far right of the robot the throne slides in
 import kit as _kit
 import of_cast as _oc
-_kit.HAND[0] = _oc.cartoon_hand                            # v11 (23 Nov, decided): one cartoon hand for everyone, episode 13 only
+_kit.HAND[0] = _oc.cartoon_hand  # v11 (23 Nov, decided): one cartoon hand for everyone, episode 13 only
+_kit.ARM_RIM[0] = (0.46, 0.46, 0.52)                       # v1 (23 Nov): the guards' black sleeves get a grey rim
 ROBOT_S = 0.66                                             # v11 (22 Nov, Tomas): the largest the Don rule allows (95 % of his height). The storyboard's 0.40
                                                            # and the set's 0.48 both read as a gnome, "a rat", beside the throne
 
@@ -781,6 +1071,11 @@ def don_rule_validate():
     ok = not don_rule(office) and any("client is taller" in m for m in don_rule(planted))
     print("don_rule: office", don_rule(office) or "pass", "| planted Client:", don_rule(planted))
     return ok
+
+
+def co_skin():
+    import client_ob as co_
+    return co_.SKIN
 
 
 def sb_sc(n):
@@ -1091,6 +1386,7 @@ def board_frame(sh, scene, bubble=True):
     if sh["id"] not in SAY or not bubble:
         return surf, msgs
     who, txt = SAY[sh["id"]]
+    txt = sh["state"].get("say_txt", txt)                             # v12: a long line shown in parts (bigger bubbles)
     fc = uz.faces(f) if sh["cam"] not in ("under",) else {n: tuple(v) for n, v in f["heads"].items()}
     if sh["cam"] == "desk":                                           # the desk frame's heads are in set units already mapped
         fc = {n: ((v[0] - cam[0]) * cam[2] + 270, (v[1] - cam[1]) * cam[2] + 480, v[2] * cam[2]) for n, v in f["heads"].items()}
@@ -1108,8 +1404,9 @@ def board_frame(sh, scene, bubble=True):
         mx, my = MOUTH_AT[who]
         mx, my = (mx - cam[0]) * cam[2] + 270, (my - cam[1]) * cam[2] + 480
         tail = (mx - 2, my - 3, 4)
-    if sh["cam"] == "under":                                          # lying, head to the left: the mouth is to the right
-        tail = (head[0] + 0.30 * head[2], head[1] - 0.50 * head[2], 10)  # of the face's middle; the tip on the cheek above it
+    if sh["cam"] == "under":                                          # v12: head UP the frame (turned): his mouth is below the
+        tail = (head[0] + 0.50 * head[2], head[1] + 0.30 * head[2], 10) if UPRIGHT[0] else \
+            (head[0] + 0.30 * head[2], head[1] - 0.50 * head[2], 10)  # face's middle; the tip on the cheek beside it
     if who == "robot":                                                # to the visor's rim, never across its card
         tail = (head[0] - head[2] * 0.62, head[1] - head[2] * 0.62, 2)
     others = [v for n, v in fc.items() if n != who]
