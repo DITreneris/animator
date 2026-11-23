@@ -1,0 +1,326 @@
+[
+ {
+  "key": "n1",
+  "shot": "1.3",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "i know how to survive",
+  "len": 1.71,
+  "asr": [
+   "I know how to survive.",
+   "I know how to survive.",
+   "I know how to survive."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I know how to survive.",
+    "speed": 0.9,
+    "pitch_start": 206.9,
+    "pitch_end": 165.5,
+    "falls": true
+   }
+  ],
+  "saturated": 0.0,
+  "file": "n1_A"
+ },
+ {
+  "key": "n2",
+  "shot": "2.4",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "i know where to see what others do not see",
+  "len": 3.48,
+  "asr": [
+   "I know where to see. What others do not see.",
+   "I know where to see. What others do not see.",
+   "I know where to see. What others do not see."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I know where to see",
+    "speed": 0.9,
+    "pitch_start": 204.3,
+    "pitch_end": 158.9,
+    "falls": true
+   },
+   {
+    "phrase": "what others do not see.",
+    "speed": 0.9,
+    "pitch_start": 206.9,
+    "pitch_end": 154.6,
+    "falls": true
+   }
+  ],
+  "saturated": 0.0,
+  "file": "n2_A"
+ },
+ {
+  "key": "n3",
+  "shot": "3.6",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "i am like a cat i have seven lives",
+  "len": 3.75,
+  "asr": [
+   "I am like a cat. I have seven lives.",
+   "I am like a cat. I have seven lives.",
+   "I am like a cat. I have seven lives."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I am like a cat.",
+    "speed": 0.9,
+    "pitch_start": 201.7,
+    "pitch_end": 186.8,
+    "falls": true
+   },
+   {
+    "phrase": "I have seven lives.",
+    "speed": 0.9,
+    "pitch_start": 207.8,
+    "pitch_end": 160.5,
+    "falls": true
+   }
+  ],
+  "saturated": 0.0,
+  "file": "n3_A"
+ },
+ {
+  "key": "n1",
+  "shot": "1.3",
+  "who": "PAM_N",
+  "kind": "B",
+  "text": "i know how to survive",
+  "len": 1.97,
+  "asr": [
+   "I know how to survive.",
+   "I know how to survive.",
+   "I know how to survive."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I know how to survive.",
+    "speed": 0.84,
+    "pitch_start": 206.5,
+    "pitch_end": 164.1,
+    "falls": true
+   }
+  ],
+  "saturated": 0.01,
+  "file": "n1_B"
+ },
+ {
+  "key": "n2",
+  "shot": "2.4",
+  "who": "PAM_N",
+  "kind": "B",
+  "text": "i know where to see what others do not see",
+  "len": 4.0,
+  "asr": [
+   "I know where to see. What others do not see.",
+   "I know where to see. What others do not see.",
+   "I know where to see. What others do not see."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I know where to see",
+    "speed": 0.84,
+    "pitch_start": 202.5,
+    "pitch_end": 160.0,
+    "falls": true
+   },
+   {
+    "phrase": "what others do not see.",
+    "speed": 0.84,
+    "pitch_start": 206.5,
+    "pitch_end": 153.9,
+    "falls": true
+   }
+  ],
+  "saturated": 0.0,
+  "file": "n2_B"
+ },
+ {
+  "key": "n3",
+  "shot": "3.6",
+  "who": "PAM_N",
+  "kind": "B",
+  "text": "i am like a cat i have seven lives",
+  "len": 4.4,
+  "asr": [
+   "I am like a cat. I have seven lives.",
+   "as I am like a cat I have seven lives",
+   "I am like a cat. I have seven lives."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I am like a cat.",
+    "speed": 0.84,
+    "pitch_start": 198.8,
+    "pitch_end": 169.7,
+    "falls": true
+   },
+   {
+    "phrase": "I have seven lives.",
+    "speed": 0.84,
+    "pitch_start": 206.9,
+    "pitch_end": 156.4,
+    "falls": true
+   }
+  ],
+  "saturated": 0.01,
+  "file": "n3_B"
+ },
+ {
+  "key": "n1",
+  "shot": "1.3",
+  "who": "PAM_N",
+  "kind": "C",
+  "text": "i know how to survive",
+  "len": 1.71,
+  "asr": [
+   "I know how to survive.",
+   "I know how to survive.",
+   "I know how to survive."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I know how to survive.",
+    "speed": 0.88,
+    "pitch_start": 231.9,
+    "pitch_end": 205.1,
+    "falls": true
+   }
+  ],
+  "saturated": 0.05,
+  "file": "n1_C"
+ },
+ {
+  "key": "n2",
+  "shot": "2.4",
+  "who": "PAM_N",
+  "kind": "C",
+  "text": "i know where to see what others do not see",
+  "len": 3.57,
+  "asr": [
+   "I know where to see. What others do not see.",
+   "I know where to see what others do not see.",
+   "I know where to see. What others do not see."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I know where to see",
+    "speed": 0.88,
+    "pitch_start": 228.6,
+    "pitch_end": 184.6,
+    "falls": true
+   },
+   {
+    "phrase": "what others do not see.",
+    "speed": 0.88,
+    "pitch_start": 230.9,
+    "pitch_end": 186.3,
+    "falls": true
+   }
+  ],
+  "saturated": 0.01,
+  "file": "n2_C"
+ },
+ {
+  "key": "n3",
+  "shot": "3.6",
+  "who": "PAM_N",
+  "kind": "C",
+  "text": "i am like a cat i have seven lives",
+  "len": 3.58,
+  "asr": [
+   "I am like a cat. I have seven lives.",
+   "I am like a cat. I have seven lives.",
+   "I am like a cat. I have seven lives."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I am like a cat.",
+    "speed": 0.88,
+    "pitch_start": 223.3,
+    "pitch_end": 210.5,
+    "falls": true
+   },
+   {
+    "phrase": "I have seven lives.",
+    "speed": 0.88,
+    "pitch_start": 231.9,
+    "pitch_end": 192.8,
+    "falls": true
+   }
+  ],
+  "saturated": 0.02,
+  "file": "n3_C"
+ },
+ {
+  "key": "s1",
+  "shot": "7.2",
+  "who": "SOFIA",
+  "kind": null,
+  "text": "only for you",
+  "len": 0.78,
+  "asr": [
+   "only for you.",
+   "Only for you.",
+   "only for you."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "Only for you.",
+    "speed": 1.0,
+    "pitch_start": 237.6,
+    "pitch_end": 190.5,
+    "falls": true
+   }
+  ],
+  "saturated": 0.01,
+  "file": "s1"
+ },
+ {
+  "key": "r1",
+  "shot": "8.1",
+  "who": "PAM",
+  "kind": null,
+  "text": "some shine others brew",
+  "len": 2.54,
+  "asr": [
+   "some shine others brew",
+   "Some shine others brew",
+   "some shine others brew"
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "Some shine.",
+    "speed": 0.92,
+    "pitch_start": 195.1,
+    "pitch_end": 150.9,
+    "falls": true
+   },
+   {
+    "phrase": "Others brew.",
+    "speed": 0.92,
+    "pitch_start": 201.7,
+    "pitch_end": 155.8,
+    "falls": true
+   }
+  ],
+  "saturated": 0.0,
+  "file": "r1"
+ }
+]
