@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v8.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v9.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -118,7 +118,7 @@ SCENES = [
           action="CLICK shut", reaction="the mark stays", cast=("g2",), state=dict(burn=1.0), fx="CLICK"),
     ]),
     ("3 · The Offer", "Same bay.", 3, [
-        S("2.1", "TWO-SHOT", (505, 770, 1.30), "Father and the Client, the car between them. Father speaks to him. "
+        S("2.1", "TWO-SHOT", (467, 872, 1.80), "Father and the Client, the car between them. Father speaks to him. "
           "**He has only ever spoken to Don.**", line='FATHER: "My son says his machine finds anything."',
           cast=("father", "client", "g2"), state=dict(bonnet=1.0, burn=1.0)),
         S("2.2", "CLOSE", (560, 780, 2.9), "CLOSE, the Client, back under the bonnet, not looking up.",
@@ -136,14 +136,15 @@ SCENES = [
           cast=("father", "g1"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.6", "CLOSE", FATHER_LAMP, "SAME FRAME. Business.", line='FATHER: "And then?"', cast=("father", "g1"),
           state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
-        S("2.7", "MEDIUM", ["client"], "MEDIUM. The Client takes his phone from his top pocket, wipes it on his trousers, turns it "
+        S("2.7", "MEDIUM", (560, 846, 2.0), "MEDIUM. The Client takes his phone from his top pocket, wipes it on his trousers, turns it "
           "round.", action="the phone, turned round", cast=("client",), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, zmax=1.9)),
         S("2.8", "INSERT", "insert", "INSERT, the phone, filling the frame: one contact card. **PAM — finds things.**",
           state=dict(insert="card")),
         S("2.8b", "CLOSE", ["client"], "CLOSE, the Client, phone still held out. His terms from episode 9, now for her.",
           line='CLIENT: "One month. I ask. She finds it."', cast=("client",), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.8c", "TWO-SHOT", ["father", "client"], "TWO-SHOT. Father nods once. That is all.", line='FATHER: "Done."',
-          action="one nod", cast=("father", "client", "g1", "g2"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
+          action="one nod", cast=("father", "client", "g1", "g2"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP,
+          moved=dict(g1=(500, F + 18)))),          # v12 (23 Nov audit): his head was stacked on the Client's
         S("2.8d", "MEDIUM", ["client"], "MEDIUM, the car. The Client drops the bonnet: SLAM. Wipes it once with the rag.",
           action="SLAM", cast=("client", "g1"), state=dict(bonnet=0.0, burn=1.0, lamp_held=True, zmax=1.5), fx="SLAM"),
         S("2.8e", "INSERT", "insert", "INSERT, the ignition, his oily fingers on the key. It turns; the engine coughs, catches, "
@@ -153,7 +154,7 @@ SCENES = [
           reaction="he keeps holding it", cast=("g1",), state=dict(bonnet=0.0, burn=1.0, lamp_held=True)),
         S("2.9", "MEDIUM", ["father"], "MEDIUM. Father, on his way to the door, without turning his head, to bodyguard 2, "
           "who thumbs a calendar entry.", line='FATHER: "Put it in the calendar."', action="the thumb on the phone", cast=("father", "g2"),
-          state=dict(bonnet=0.0, burn=1.0, phone2=True, zmax=1.7, moved=dict(father=(214, 880), g2=(120, 872)))),
+          state=dict(bonnet=0.0, burn=1.0, phone2=True, zmax=2.3, moved=dict(father=(214, 880), g2=(120, 872)))),   # v12: zmax 1.7 -> 2.3
     ]),
     ("4 · The Calendar", "The front desk, UptimeZ. The same minute.", 4, [
         S("3.0", "EXT", "insert", "v9 (23 Nov): **UptimeZ Inc.**, the glass doors, the logo on the glass, the lobby lit behind. "
@@ -276,12 +277,21 @@ def _cast_draw(k, n, scene, sh, heads):
                 return None if math.hypot(dx_ - pd_[0], dy_ - pd_[1]) < pt_ else hk(k_, hx_, hy_, *a_)
             _kit.HAND[0] = _pskip
         dc.FATHER_STEP[0] = st.get("father_step")                                # v1 (23 Nov): his feet, when he walks
+        ln_ = ps.get("lean", 0.0)                                                # v1 (23 Nov audit, decided): a weight shift,
+        if ln_:                                                                  # the whole man tilted about his feet
+            c.save(); c.translate(x, f); c.rotate(ln_); c.translate(-x, -f)
         try:
             o = oc.father(k, x, f, FS, face=ps.get("face", "hard"), look=ps.get("look", (1, 0)), targets=ps.get("targets_xy", ()))
         finally:
             dc.FATHER_STEP[0] = None
             _kit.HAND[0] = hk
-        heads[n] = (o["head"][0], o["head"][1], 50 * FS)
+            if ln_:
+                c.restore()
+        hx0_, hy0_ = o["head"]
+        if ln_:
+            hx0_, hy0_ = (x + (hx0_ - x) * math.cos(ln_) - (hy0_ - f) * math.sin(ln_),
+                          f + (hx0_ - x) * math.sin(ln_) + (hy0_ - f) * math.cos(ln_))
+        heads[n] = (hx0_, hy0_, 50 * FS)
         if ps.get("phone_donnie") and ps.get("targets_xy"):                  # v1 (23 Nov): DONNIE calling, in his hand, he looks at it
             want = ps["targets_xy"][0]
             hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
@@ -311,6 +321,8 @@ def _cast_draw(k, n, scene, sh, heads):
             or n in st.get("behind_car", ())
         flip = behind
         tg = ps.get("targets_xy") or [_pt(t, x, f) for t in ps.get("targets", [])]
+        if ps.get("lamp_dx") or ps.get("lamp_dy"):                               # v1 (23 Nov audit): 2.8f's search, the lamp moved
+            tg = [(tg[0][0] + ps.get("lamp_dx", 0.0), tg[0][1] + ps.get("lamp_dy", 0.0))] + list(tg[1:])
         hk = _kit.HAND[0]
         HELD_AT[0] = None
         if tg and (ps.get("lamp") or "lighter" in ps):                       # v11 (23 Nov, audit: "a fist with a second hand under it"):
@@ -402,6 +414,22 @@ def _cast_draw(k, n, scene, sh, heads):
             wx, wy = oc.watch_pose(x, f, CS)[0]
             o = oc.client(k, x, f, CS, look=look, targets=[(x + 40 + (wx - x - 40) * wu, f - 110 + (wy - f + 110) * wu)],
                           face=ps.get("face", "bored"))
+        elif kind == "thumb":                                                   # v1 (23 Nov audit, decided): "Without him." with
+            tu = ps.get("thumb_u", 1.0)                                        # a thumb jerked over his shoulder, at the door
+            T0, T1 = (x + 30, f - 112), (x + 60, f - 178)   # v2: the RIGHT hand, away from Father
+            tx, ty = om_lerp(T0, T1, tu)
+            wx, wy = oc.watch_pose(x, f, CS)[0]
+            o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)], face=ps.get("face", "bored"))
+            import client_ob as co_
+            H, _ = oc.guard_arm_front(k, x, f, CS, True, (tx, ty), co_skin(), hand=False, from_elbow=False,
+                                      upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
+            ellipse(k, H[0], H[1] - 3, 20, 20, co_skin(), 3760, lw=2.2)                   # the fist (over the rig's hand)
+            c_ = k.c
+            c_.set_source_rgb(*INK); c_.set_line_width(1.6)
+            for j in range(3):                                                        # its knuckles
+                c_.new_path(); c_.arc(H[0] - 7, H[1] - 8 + j * 8, 4.0, math.pi - 1.2, math.pi + 1.2); c_.stroke()
+            ang_ = math.radians(-15 + 25 * tu - 180 + 180)   # out to the right                                         # the thumb, out to the left and up
+            _oc._capsule(c_, H[0] + 6, H[1] - 6, H[0] + 6 + 17 * math.cos(ang_), H[1] - 6 + 17 * math.sin(ang_), 5.5, co_skin())
         elif kind == "pocket":
             pu = ps.get("pocket_u", 0.0)                                     # v5 (23 Nov, Tomas: "the hand is strange"): out of the
             P0, P1, P2 = (x - 8, f - 140), (x - 22, f - 106), (x - 66, f - 158)  # top pocket, a wipe on the thigh, held out to
@@ -558,13 +586,17 @@ def garage_shot(k, sh, scene, heads, cam):
         c.set_source_rgba(1.0, 0.98, 0.8, 0.9 * r_); c.move_to(x1_ - 6, ly_ - 8); c.line_to(x1_ + 140, ly_ - 40)
         c.line_to(x1_ + 140, ly_ + 50); c.line_to(x1_ - 6, ly_ + 8); c.close_path(); c.fill()
         p_ = st.get("puff", 0.0)
-        for i in range(3):                                                # puffs from the tail pipe, drifting left and up
-            a_ = p_ - i * 0.18
+        for i in range(5):                                                # v10 (23 Nov audit: "a dial"): BIG cartoon puffs from
+            a_ = p_ - i * 0.14                                            # the tail pipe, outlined, rising: it RUNS
             if a_ <= 0:
                 continue
-            ex, ey = x0_ + 14 - 20 * a_, gs.SILL - 4 - 70 * a_
-            c.set_source_rgba(0.35, 0.35, 0.38, max(0.0, 0.85 - 0.7 * a_))
-            c.arc(ex, ey, 16 + 34 * a_, 0, 2 * math.pi); c.fill()
+            ex, ey = x0_ + 30 + 18 * a_ + (8 if i % 2 else -8), gs.SILL + 6 - 120 * a_
+            al_ = max(0.0, 0.95 - 0.8 * a_)
+            for (ox, oy, rr) in ((0, 0, 1.0), (-0.7, 0.3, 0.7), (0.7, 0.25, 0.75)):
+                R_ = 18 + 30 * a_
+                c.new_path(); c.arc(ex + ox * R_, ey + oy * R_, rr * R_, 0, 2 * math.pi)
+                c.set_source_rgba(0.55, 0.55, 0.58, al_); c.fill_preserve()
+                c.set_source_rgba(0.12, 0.12, 0.14, al_); c.set_line_width(2.2); c.stroke()
     if st.get("reach") is not None:                                       # 0.2: his hand out from under the sill, the wrench
         u = st["reach"]
         sx_, sy_ = gs.CREEPER[0] + 40, gs.SILL + 26
@@ -641,8 +673,8 @@ def under_shot(k, sh, heads):
     g.add_color_stop_rgba(0, 1.0, 0.92, 0.6, 0.55); g.add_color_stop_rgba(1, 1.0, 0.92, 0.6, 0.0)
     c.set_source(g); c.paint()
     if sh["state"].get("view") == "top" or sh["id"] == "0.9":                   # v10: the overhead (v11: 0.9 too, closer:
-        zt = 1.0 if sh["state"].get("view") == "top" else 1.55                    # the side profile looked wrong)
-        zx = 300 if zt == 1.0 else 200                                            # 0.9: his face and hands, not his boots
+        zt = 1.0 if sh["state"].get("view") == "top" else 1.30                    # the side profile looked wrong; v12, 23 Nov
+        zx = 300 if zt == 1.0 else 230                                            # audit: 1.55 -> 1.30, so the car's sill and a tyre
         R_ = UPRIGHT[0]                                                           # v12 (23 Nov, cold tests 3 of 3: "sideways"):
         c.save()                                                                  # turned a quarter: his head UP the frame
         if R_:
@@ -659,8 +691,32 @@ def under_shot(k, sh, heads):
 def insert_shot(k, sh):
     c = k.c
     kind = sh["state"].get("insert")
-    if kind == "card":
-        gs.insert_card(k)
+    if kind == "card":                                                            # v2 (23 Nov audit: viewers read "an ad, a
+        import cs_props as cp_                                                      # billboard"): HIS phone, in HIS hand, the
+        c.set_source_rgb(*gs.WALL); c.paint()                                       # garage behind: the wall, the dado, the car
+        c.set_source_rgb(*gs.WALL_D); c.rectangle(0, 600, 540, 360); c.fill()
+        c.set_source_rgba(0.17, 0.36, 0.62, 0.55); c.new_path(); c.arc(40, 700, 230, 0, 2 * math.pi); c.fill()
+        c.save(); c.translate(270, 430); c.rotate(-0.05); c.scale(0.76, 0.76); c.translate(-270, -440)
+        sk_ = co_skin()
+        for col, lw in ((INK, 150), (sk_, 142)):                                   # his forearm, up from the bottom right,
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.move_to(300, 930); c.line_to(640, 1260); c.stroke()
+        ellipse(k, 290, 900, 200, 110, sk_, 3480, lw=3)                             # and the palm BEHIND the phone
+        c.save(); c.translate(560, 1180); c.rotate(0.75)
+        rect(k, -90, -40, 180, 120, (0.97, 0.97, 0.95), 3485, lw=3)                 # the white T-shirt sleeve
+        c.restore()
+        old_bg = cp_._bg; cp_._bg = lambda *a, **kw: None
+        try:
+            gs.insert_card(k)
+        finally:
+            cp_._bg = old_bg
+        for j in range(4):                                                         # his fingers round the right edge
+            ellipse(k, 508, 560 + j * 70, 30, 40, sk_, 3481 + j, lw=2.6)
+            c.set_source_rgba(0.12, 0.10, 0.08, 0.45); c.arc(512, 574 + j * 70, 9, 0, 2 * math.pi); c.fill()
+        _oc._capsule(c, 60, 960, 92, 780, 48, sk_)                                  # the thumb over the left edge, off the text
+        c.set_source_rgba(0.12, 0.10, 0.08, 0.45)
+        for (ox, oy, rr) in ((76, 900, 10), (200, 985, 12), (380, 975, 9)):        # oil on the hand
+            c.new_path(); c.arc(ox, oy, rr, 0, 2 * math.pi); c.fill()
+        c.restore()
     elif kind == "invite":
         gs.insert_invite(k)
     elif kind == "uptimez":                                                        # v9: the building, so we know where we are
@@ -691,15 +747,8 @@ def insert_shot(k, sh):
         u_ = sh["state"].get("pin_u", 1.0)                                             # the WHOLE fresh plan, close; his thumb
         Z_, CX_, CY_ = 2.45, 408, 520                                                  # pushes the red pin into its top-left corner
         c.save(); c.translate(270, 480); c.scale(Z_, Z_); c.translate(-CX_, -CY_)
-        gs.room(k); gs.plan(k, 0.0)
-        import acts_ob as _ac                                                    # v3 (23 Nov, Tomas: 3b) — a DIFFERENT bay ringed, not 7
-        _bx, _by, _bw, _bh = [b[1:] for b in _ac._bays() if b[0] == 3][0]         # again: this plan is a new target, not the old one
-        _tx = gs.PLAN[0] + (_bx + _bw / 2) * gs.PLAN[2]                           # healed. Tagged DON, not a bare number: it ties
-        _ty = gs.PLAN[1] + (_by + _bh / 2) * gs.PLAN[2]                           # straight to the "without him" meeting (lesson 163).
-        c.set_source_rgb(0.85, 0.12, 0.12); c.set_line_width(4.5)
-        c.arc(_tx, _ty, 22, 0, 2 * math.pi); c.stroke()
-        gs.T(c, "DON", _tx, _ty + 40, 15, col=(0.85, 0.12, 0.12))
-        c.restore()
+        gs.room(k); gs.plan(k, 0.0)                                              # v3 (Tomas: 3b): 3 ringed, DON, now drawn by
+        c.restore()                                                              # gs.plan on every fresh plan (gs.DON_RING)
         px_, py_ = (334 - CX_) * Z_ + 270, (452 - CY_) * Z_ + 480
         for col, lw in ((INK, 86), ((0.11, 0.11, 0.13), 78)):                             # his sleeve, up from the frame's foot
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
@@ -794,20 +843,48 @@ def insert_shot(k, sh):
         gs.protect(c, "his hands in the light", 60, 150, 440, 460)
         c.restore()
     elif kind == "key":                                                            # the steering column, the key, his fingers
-        c.set_source_rgb(0.16, 0.16, 0.18); c.paint()
-        c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(46); c.set_line_cap(1)
-        c.new_path(); c.arc(330, 170, 300, 1.7, 3.0); c.stroke()                     # the wheel's rim, above
+        c.set_source_rgb(0.16, 0.16, 0.18); c.paint()                                 # v10 (23 Nov audit, 2 of 3 viewers: "a dial"):
+        ku = sh["state"].get("key_u", 1.0)                                            # a CAR: the wheel's rim with its spoke, the
+        rr_ = sh["state"].get("run") or 0.0                                           # rev counter whose needle jumps when it
+        rect(k, -20, -20, 580, 330, (0.22, 0.22, 0.25), 3428, lw=3)                   # the dashboard
+        cx_, cy_ = 300, 118                                                           # its rev counter, seen through the wheel
+        ellipse(k, cx_, cy_, 66, 66, (0.10, 0.10, 0.12), 3429, lw=3)
+        c.set_source_rgb(0.92, 0.92, 0.88); c.set_line_width(3)
+        for i in range(9):
+            a0 = math.pi * (0.8 + 1.4 * i / 8)
+            c.move_to(cx_ + 50 * math.cos(a0), cy_ + 50 * math.sin(a0)); c.line_to(cx_ + 60 * math.cos(a0), cy_ + 60 * math.sin(a0)); c.stroke()
+        an_ = math.pi * (0.8 + 1.4 * (0.05 + (0.55 if rr_ else 0.0) + 0.04 * rr_))
+        c.set_source_rgb(1.0, 0.35, 0.2); c.set_line_width(5); c.set_line_cap(1)
+        c.move_to(cx_, cy_); c.line_to(cx_ + 52 * math.cos(an_), cy_ + 52 * math.sin(an_)); c.stroke()
+        ellipse(k, cx_, cy_, 8, 8, (0.6, 0.6, 0.62), 3427, shadow=False, lw=2)
+        WX, WY, WR = 300, 236, 214                                                    # the steering wheel: rim, three spokes, hub
+        for col, lw in ((INK, 50), ((0.30, 0.30, 0.33), 42)):
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+            c.new_path(); c.arc(WX, WY, WR, 0, 2 * math.pi); c.stroke()
+            for ax in (math.pi, 0.0, math.pi / 2):
+                c.move_to(WX, WY); c.line_to(WX + WR * math.cos(ax), WY + WR * math.sin(ax)); c.stroke()
+        c.set_source_rgba(1, 1, 1, 0.16); c.set_line_width(8)
+        c.new_path(); c.arc(WX, WY, WR + 8, 3.6, 5.8); c.stroke()                     # its highlight
+        ellipse(k, WX, WY, 50, 44, (0.24, 0.24, 0.27), 3426, lw=3)                     # the hub
         rect(k, 90, 360, 330, 200, (0.22, 0.22, 0.24), 3430, lw=2.6)                   # the column's shroud
         ellipse(k, 300, 460, 56, 56, (0.62, 0.64, 0.66), 3431, lw=2.4)                 # the lock barrel
+        c.set_source_rgb(0.15, 0.15, 0.16); c.rectangle(294, 422, 12, 30); c.fill()   # its slot
+        for (lx, txt) in ((170, "OFF"), (232, "ON"), (400, "START")):                   # the positions, on the shroud
+            gs.T(c, txt, lx, 548, 22, col=(1.0, 0.75, 0.2) if txt == "START" else (0.95, 0.95, 0.90))
         gs.protect(c, "the key at START", 150, 300, 470, 660)
-        ku = sh["state"].get("key_u", 1.0)                                            # stage 7: the turn; then the engine runs
         if sh["state"].get("run"):
             c.translate(sh["state"]["run"], 0)
-        c.save(); c.translate(300, 460); c.rotate(-0.5 + 1.4 * ku)                     # the key, turned to START
-        rect(k, -8, -100, 16, 100, (0.80, 0.80, 0.78), 3432, lw=2)
-        ellipse(k, 0, -122, 34, 30, (0.30, 0.32, 0.36), 3433, lw=2.2)                  # its head
+        c.save(); c.translate(300, 460); c.rotate(-0.5 + 1.4 * ku)                     # the key, turned to START: its blade
+        cut(k, [(-9, 0), (9, 0), (9, -60), (3, -66), (9, -72), (9, -84), (-9, -84)], (0.82, 0.82, 0.80), 3432, lw=2)
+        rect(k, -26, -132, 52, 52, (0.10, 0.10, 0.12), 3433, lw=2.2)                   # its black head
         c.restore()
-        rect(k, 380, 520, 70, 40, (0.85, 0.65, 0.20), 3434, lw=2)                      # the key ring's tag
+        sw_ = 0.25 * math.sin(4.0 * ku) + (0.08 * rr_ if rr_ else 0.0)               # the ring and the fob, swinging
+        c.save(); c.translate(318, 500); c.rotate(sw_)
+        c.set_source_rgb(0.75, 0.75, 0.72); c.set_line_width(4); c.new_path(); c.arc(0, 26, 20, 0, 2 * math.pi); c.stroke()
+        rect(k, -26, 46, 52, 86, (0.08, 0.08, 0.10), 3434, lw=2.4)                     # the fob
+        for j, col in enumerate(((0.7, 0.7, 0.72), (0.7, 0.7, 0.72), (0.85, 0.2, 0.2))):
+            ellipse(k, 0, 64 + j * 22, 9, 7, col, 3435 + j, shadow=False, lw=1.4)
+        c.restore()
         a_ = -0.5 + 1.4 * ku                                                          # oily fingers ON the key head, turning it
         kx, ky = 300 + 122 * math.sin(a_), 460 - 122 * math.cos(a_)
         # v9 (22 Nov, decided): HIS arm, so it reads as the Client in this car: the oily forearm, the white T-shirt sleeve
@@ -829,8 +906,6 @@ def insert_shot(k, sh):
             ellipse(k, dx, dy, 14, 28, (0.80, 0.62, 0.50), 3440 + i, lw=2)
             c.set_source_rgba(0.1, 0.08, 0.05, 0.5); c.arc(dx, dy + 10, 7, 0, 2 * math.pi); c.fill()
         c.restore()
-        for i, (x0, txt) in enumerate(((150, "OFF"), (210, "ON"), (380, "START"))):
-            gs.T(c, txt, x0, 640, 26, col=(0.95, 0.95, 0.90) if txt != "START" else (1.0, 0.75, 0.2))
 
 
 def donnie_shot(k, sh, heads):

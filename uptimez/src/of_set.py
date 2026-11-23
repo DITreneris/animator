@@ -217,6 +217,13 @@ def plan(k, burn=0.0):
     finally:
         c.restore()
         cp.PROPS4[0], cp.TITLE_TAPE[0], cp._bg = old
+    if burn <= 0 and DON_RING[0]:                                                          # v4 (23 Nov, audit): the fresh plan's
+        import acts_ob as ac                                                               # ring on 3, DON, on EVERY fresh plan:
+        _bx, _by, _bw, _bh = [b[1:] for b in ac._bays() if b[0] == 3][0]                    # the pinned close-up, the last wide and
+        tx, ty = px + (_bx + _bw / 2) * s, py + (_by + _bh / 2) * s                         # frame 0 agree (a detail for the rewatch)
+        c.set_source_rgb(0.85, 0.12, 0.12); c.set_line_width(4.5); c.new_path()
+        c.arc(tx, ty, 22, 0, 2 * math.pi); c.stroke()
+        T(c, "DON", tx, ty + 40, 15, col=(0.85, 0.12, 0.12)); c.new_path()               # show_text leaves a current point
     if burn > 0:                                   # v3 (23 Nov, "just a stupid stain"): the lower row BURNT
         protect(c, "the burnt row", 330, 462, 440, 596)
         burnt_row(c, min(1.0, burn / TORN_AT))
@@ -509,6 +516,7 @@ def garage(k, burn=0.0, legs_out=None, bonnet=0.0, lamp_on_floor=True, behind=No
 
 SMOTHER = [0.0]                                            # v3: 0..1 the rag pressed on the burning 7
 NEW_PLAN = [None]                                          # v1: 0..1 a fresh plan slid up the wall over the burnt one
+DON_RING = [True]                                          # v1 (23 Nov): every fresh plan has 3 ringed, DON (False: v3 of the plan)
 
 
 def sheet(k, burn):

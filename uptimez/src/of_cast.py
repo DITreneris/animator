@@ -10,6 +10,7 @@ an older module: the rigs are episode 12's (dh_cast, dh_poses) and episodes 9-11
 - don_throne(): Don in the throne with his face, look and arms (the phone held up, DAD), and the sweat.
 - robot(): episode 12's robot_state (the head turn, "turn"), and its visor's screen point for a card."""
 import math
+import cairo
 import kit
 import client_ob as co
 import dh_cast as dc
@@ -20,6 +21,7 @@ from cand_bc import ik, _d
 from kit import INK, rect, ellipse, cut
 
 SHX, SHY = co.SH[0], co.BT + 26                            # the shoulder on the Client's rig (the bodyguards share it)
+TOP_CAR = [True]                                           # v2 (23 Nov): the overhead shows the car's side and the lit floor (False: v1)
 
 
 def ik_low(sx, sy, tx, ty, ln1, ln2):
@@ -445,11 +447,20 @@ def client_top(k, sway=0.0, wrench_t=0.0, s=1.12):
     c = k.c
     dy = abs(sway) * 0.8
     cx, cy = 300, 560                                                                      # his middle
+    if TOP_CAR[0]:                                                                         # v2 (23 Nov, audit: three rounds of viewers
+        EX = 430                                                                           # read "a man at a dark door"): the car's SIDE
+        c.set_source_rgb(0.74, 0.73, 0.69); c.rectangle(EX, -900, 2400, 2800); c.fill()     # crosses at his knees, as in frame 0: under
+        c.set_source_rgb(0.93, 0.78, 0.22); c.rectangle(EX + 250, -900, 14, 2800); c.fill() # it the dark, past it the lit floor with its
+        g_ = cairo.RadialGradient(EX + 120, 820, 20, EX + 120, 820, 420)                      # yellow line and the lamp's pool, his boots
+        g_.add_color_stop_rgba(0, 1.0, 0.92, 0.6, 0.45); g_.add_color_stop_rgba(1, 1.0, 0.92, 0.6, 0.0)
+        c.set_source(g_); c.rectangle(EX, -900, 2400, 2800); c.fill()                       # on it; the sill in the car's blue, a tyre
+        c.set_source_rgba(0, 0, 0, 0.25); c.rectangle(EX, -900, 40, 2800); c.fill()        # each side of him, half out from under it
     c.save(); c.translate(sway * 0.3, dy)                                                  # the car above him, cut away
-    for (wx, wy) in ((40, 360), (40, 760), (470, 360), (470, 760)):
-        rect(k, wx - 30, wy - 55, 60, 110, (0.06, 0.06, 0.07), 3560 + wx + wy, lw=2.4)       # the wheels
-    c.set_source_rgba(0.55, 0.65, 0.85, 0.12); c.rectangle(20, 300, 500, 520); c.fill()
-    c.set_source_rgb(0.50, 0.58, 0.75); c.set_line_width(3); c.set_dash([14, 10]); c.rectangle(20, 300, 500, 520); c.stroke(); c.set_dash([])
+    if not TOP_CAR[0]:
+        for (wx, wy) in ((40, 360), (40, 760), (470, 360), (470, 760)):
+            rect(k, wx - 30, wy - 55, 60, 110, (0.06, 0.06, 0.07), 3560 + wx + wy, lw=2.4)       # the wheels
+        c.set_source_rgba(0.55, 0.65, 0.85, 0.12); c.rectangle(20, 300, 500, 520); c.fill()
+        c.set_source_rgb(0.50, 0.58, 0.75); c.set_line_width(3); c.set_dash([14, 10]); c.rectangle(20, 300, 500, 520); c.stroke(); c.set_dash([])
     c.restore()
     rect(k, 60, cy - 78, 470, 156, (0.24, 0.24, 0.26), 3550, lw=2.4)                        # the creeper
     X = lambda sx, sy: (cy - sy, sx - cx)                                                  # frame -> his laid-down frame
@@ -460,9 +471,22 @@ def client_top(k, sway=0.0, wrench_t=0.0, s=1.12):
     c.restore()
     hx, hy = o["head"]
     head = (cx + hy, cy - hx, 55 * s)
+    if TOP_CAR[0]:                                                                         # v2: the sill and the tyres OVER him (the car
+        EX = 430                                                                           # is nearer the camera than he is): his knees
+        c.save(); c.translate(sway * 0.3, dy)                                              # go in under the blue, the boots stay out
+        c.set_source_rgba(0, 0, 0, 0.35); c.rectangle(EX, -900, 26, 2800); c.fill()        # the sill's shadow on his legs
+        rect(k, EX - 46, -900, 46, 2800, (0.17, 0.36, 0.62), 3558, lw=3)
+        c.set_source_rgb(0.30, 0.50, 0.76); c.rectangle(EX - 40, -900, 10, 2800); c.fill()  # its highlight
+        for wy in (300, 820):
+            rect(k, EX - 44, wy - 70, 80, 140, (0.08, 0.08, 0.09), 3560 + wy, lw=3)           # the tyres, half out
+            c.set_source_rgb(0.32, 0.32, 0.34); c.set_line_width(5)
+            for j in range(5):
+                c.move_to(EX - 38, wy - 52 + j * 26); c.line_to(EX + 30, wy - 52 + j * 26); c.stroke()
+        c.restore()
     c.save(); c.translate(sway * 0.3, dy)                                                  # the pipe and the bracket over his chest
     for col, lw in ((INK, 18), ((0.42, 0.43, 0.46), 12)):
-        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.move_to(110, 440); c.line_to(500, 436); c.stroke()
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.move_to(110, 440)
+        c.line_to(360 if TOP_CAR[0] else 500, 437); c.stroke()                             # v2: the pipe ends under the sill
     rect(k, 236, 446, 56, 44, (0.38, 0.39, 0.42), 3552, lw=2.2)
     c.restore()
     ellipse(k, bolt[0], bolt[1], 8, 8, (0.72, 0.73, 0.76), 3553, lw=1.8)

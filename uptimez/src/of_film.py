@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 17, 2: 21, 3: 18, 4: 20, 5: 17}
-SOUND = "of_sound_v8.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 18, 2: 22, 3: 19, 4: 21, 5: 18}
+SOUND = "of_sound_v9.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -124,10 +124,10 @@ def s23b(t, L):                                            # his eyes go from th
     return {}, dict(father=dict(look=(1, -0.9 + 1.1 * u)))
 
 
-def s25(t, L):                                             # he straightens, the wrist comes up; the glance
-    u = ease(t / 0.35)
-    return {}, dict(client=dict(kind="watch", watch_u=u, look=(-1, 0) if u < 0.8 else (1.9, 2.0),
-                                face="bored" if u < 0.8 else "glance"))
+def s25(t, L):                                             # v2 (23 Nov audit, decided): he straightens; "Without him." with a
+    u = ease(t / 0.3)                                      # thumb jerked over his shoulder at the door (the hand at his neck
+    return {}, dict(client=dict(kind="thumb", thumb_u=u, look=(-1, 0),   # read as scratching, or a call)
+                                face="bored"))
 
 
 def s27(t, L):                                             # the phone out of the top pocket, turned round
@@ -165,11 +165,11 @@ def s29(t, L):                                             # on his way to the d
     return dict(_cam=WALK_CAM, father_step=feet, moved=dict(father=(x, 880 - bob), g2=(120, 872))), {}
 
 
-WALK_CAM = (290, 780, 1.3)                                 # locked: he walks through the frame (a following camera jumped)
+WALK_CAM = (170, 815, 1.8)                                 # locked: he walks through the frame (a following camera jumped)
 
 
 VETO_AT = (505, 880)                                       # v9 (22 Nov, decided): Father shuts the lighter himself
-VETO_CAM = (594, 885, 1.75)                                # v12: the two men and the lighter in the safe band
+VETO_CAM = (594, 836, 2.00)                                # v12: the two men and the lighter in the safe band
 VETO_G2 = (688, 880)                                       # v12: the guard beside Father, in front of the car
 VETO_FIST = (596, 756)                                     # his fist with the lighter, at his chest, toward Father
 
@@ -323,9 +323,30 @@ def s42_service(t, L):                                     # the last frame (and
     return st, dict(g1=g1, g2=g2)
 
 
+def s24(t, L):                                             # v1 (23 Nov audit, decided): Father acts the question. He leans
+    ln = 0.035 * ease(min(1.0, max(0.0, (t - 0.5) / 0.6)))  # in toward the Client as he asks; the brow goes up on "company?"
+    face = "talk" if t < 2.35 else ("brow" if t < 3.05 else "hard")
+    return {}, dict(father=dict(face=face, lean=ln, look=(1, 0)))
+
+
+def s26(t, L):                                             # v1: "And then?" -- the lean in, then the big brow after the line,
+    ln = 0.045 * ease(min(1.0, t / 0.4))                   # held: business, waiting
+    face = "talk" if t < 1.1 else "brow2"
+    return {}, dict(father=dict(face=face, lean=ln, look=(1, 0)))
+
+
+def s28f(t, L):                                            # v1 (23 Nov audit, decided: the gag held, 2.0 s): the bonnet is shut,
+    if t < 0.6 or t > 1.7:                                 # nothing left to light, and he still searches it with the lamp:
+        u = 0.0                                            # still; a slow sweep, down and across the shut bonnet; still again
+    else:
+        u = math.sin(math.pi * (t - 0.6) / 1.1)
+    dx = -34 * math.sin(2 * math.pi * (t - 0.6) / 1.1) if 0.6 <= t <= 1.7 else 0.0
+    return {}, dict(g1=dict(targets=["lamp"], lamp="held", lamp_dx=dx, lamp_dy=16 * u, turn=0.25 * u))
+
+
 MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14,
           "2.1": s21, "2.2": s22, "2.3b": s23b, "2.5": s25, "2.7": s27, "2.8c": s28c, "2.8d": s28d, "2.8e": s28e,
-          "2.9": s29,
+          "2.9": s29, "2.4": s24, "2.6": s26, "2.8f": s28f,
           "3.2": s32, "3.3": s33, "3.5": s35, "3.6": s36, "3.7": s37,
           "4.1": s41, "4.2": s42}
 HANDS_CAM = (500, 742, 3.0)                                # v9: the cut-in: his hands, working in the light
@@ -366,7 +387,7 @@ def s28e2(t, L):                                           # v9: the key turns; 
                 running=ease((t - 0.55) / 0.08), puff=t - 0.55, tilt=0.004 * j), {}
 
 
-RUN_CAM = (378, 790, 1.25)                                 # the whole car, nose right: the lights, the puff, the shudder
+RUN_CAM = (350, 790, 1.25)                                 # the whole car, nose right: the lights, the puff, the shudder
 
 
 MOTION["2.3"] = s23
