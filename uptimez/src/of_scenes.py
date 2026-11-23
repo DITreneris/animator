@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v5.json"                               # v8 (22 Nov): the joke at 0:00
+TIMING = "of_timing_v6.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -393,10 +393,19 @@ def _cast_draw(k, n, scene, sh, heads):
             o = oc.client(k, x, f, CS, look=look, targets=[(x + 40 + (wx - x - 40) * wu, f - 110 + (wy - f + 110) * wu)],
                           face=ps.get("face", "bored"))
         elif kind == "pocket":
-            pu = ps.get("pocket_u", 0.0)                                     # stage 7: out of the pocket, turned round
-            tx, ty = x - 30 - 12 * pu, f - 150                                   # v4: held out, inside the frame
+            pu = ps.get("pocket_u", 0.0)                                     # v5 (23 Nov, Tomas: "the hand is strange"): out of the
+            P0, P1, P2 = (x - 8, f - 140), (x - 22, f - 106), (x - 66, f - 158)  # top pocket, a wipe on the thigh, held out to
+            if pu < 0.4:                                                         # Father as in 2.8b, in ONE arm (2.8b's)
+                tx, ty = om_lerp(P0, P1, pu / 0.4)
+            elif pu < 0.6:
+                tx, ty = P1[0] + 6 * math.sin((pu - 0.4) / 0.2 * 2 * math.pi), P1[1]
+            else:
+                tx, ty = om_lerp(P1, P2, (pu - 0.6) / 0.4)
             o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)])
-            oc.phone_grip(k, tx, ty, 0.55 + 0.05 * pu, None, ang=0.4 - 0.5 * pu, skin=co_skin())
+            import client_ob as co_
+            H, _ = oc.guard_arm_front(k, x, f, CS, False, (tx, ty), co_skin(), hand=False, from_elbow=False,
+                                      upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
+            oc.phone_grip(k, H[0], H[1], 0.6, None, ang=(0.9 if pu < 0.6 else 0.9 - 1.0 * (pu - 0.6) / 0.4), skin=co_skin())
         elif kind == "phone_out":
             tx, ty = x - 66, f - 158                                             # v5 (23 Nov): the whole phone inside the frame
             o = oc.client(k, x, f, CS, look=look, targets=[(tx, ty)])
@@ -466,6 +475,11 @@ def held_lighter(k, hx, hy, flame, lid, skin):
     return fx, fy
 
 
+def om_lerp(a, b, u):
+    u = max(0.0, min(1.0, u))
+    return a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u
+
+
 def garage_shot(k, sh, scene, heads, cam):
     st = sh["state"]
     behind_names = [n for n in sh["cast"] if (n == "g2" and scene == 2) or (n == "g1" and scene == 3)
@@ -509,6 +523,7 @@ def garage_shot(k, sh, scene, heads, cam):
     gs.FIRE[0], gs.FIRE[1] = st.get("fire", 0.0), st.get("fire_t", 0.0)       # v9: the fire, the sheet
     gs.SHEET[0], gs.SHEET[1] = st.get("sheet_fly"), st.get("sheet_floor")
     gs.NEW_PLAN[0] = st.get("new_plan")                                     # v1 (23 Nov, decided): the fresh plan going up
+    gs.BLACK_CAR[0] = bool(st.get("black_car"))                              # v1 (23 Nov, decided): Father has arrived
     gs.garage(k, burn=st.get("burn", 0.0), legs_out=legs_out, bonnet=bon,
               lamp_on_floor=scene in (1, 2, 5) and (not st.get("lamp_up") or st.get("lamp_floor")), behind=behind, front=front, tilt=st.get("tilt", 0.0))
     gs.LID_BEHIND[0] = False

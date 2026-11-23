@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 12, 2: 17, 3: 12, 4: 15, 5: 12}
-SOUND = "of_sound_v5.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 13, 2: 18, 3: 14, 4: 16, 5: 13}
+SOUND = "of_sound_v6.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -131,7 +131,7 @@ def s25(t, L):                                             # he straightens, the
 
 
 def s27(t, L):                                             # the phone out of the top pocket, turned round
-    return {}, dict(client=dict(kind="pocket", pocket_u=ease((t - 0.1) / 0.4)))
+    return {}, dict(client=dict(kind="pocket", pocket_u=min(1.0, t / 0.55)))   # v5: pocket, wipe, out
 
 
 def s28c(t, L):                                            # one nod: down and back up
@@ -530,7 +530,16 @@ def _at_wall(r):
 
 MOTION["0.8"] = lambda t, L, f_=MOTION.get("0.8", s08_slam): _at_wall(f_(t, L))
 MOTION["0.10"] = lambda t, L, f_=MOTION.get("0.10", s010_same): _at_wall(f_(t, L))
-MOTION["0.6"] = lambda t, L: _at_wall(s010_same(1.35 + t, 1.4))
+DOOR_CAM = (168, 700, 1.9)                                # v1 (23 Nov, decided): the doorway, Father in it, held
+
+
+def s06_arrive(t, L):                                      # Father in the doorway, the black car behind him: he has arrived.
+    return (dict(_cam=DOOR_CAM, _cast=("father",), black_car=True, moved=dict(father=(156, F_ + 26))),
+            dict(father=dict(face="low", look=(1, 0.3))))
+
+
+F_ = sc.F
+MOTION["0.6"] = s06_arrive
 
 
 if __name__ == "__main__":

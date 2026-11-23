@@ -86,6 +86,9 @@ def room(k):
     c.move_to(-60, 1010); c.line_to(640, 1010); c.stroke()
 
 
+BLACK_CAR = [False]
+
+
 def door(k):
     """the roller door, up: the opening x 20-200, the drum above it; outside, the bright street, a kerb, the house
     opposite. The light lies across the floor."""
@@ -96,6 +99,10 @@ def door(k):
     for wx in (48, 128):
         rect(k, wx, F - 186, 40, 52, (0.80, 0.90, 0.96), 3010 + wx, shadow=False, lw=1.8)
     c.set_source_rgb(*STREET_D); c.rectangle(x0, F - 60, x1 - x0, 60); c.fill()              # the pavement
+    if BLACK_CAR[0]:                                                                         # v2 (23 Nov): Father's black car at the kerb
+        cut(k, [(x0 - 10, F - 40), (x0 + 10, F - 110), (x0 + 70, F - 140), (x0 + 150, F - 140), (x0 + 210, F - 100), (x0 + 220, F - 40)],
+            (0.07, 0.07, 0.08), lw=2.4)
+        c.set_source_rgb(0.30, 0.34, 0.40); c.rectangle(x0 + 60, F - 130, 80, 28); c.fill()
     c.set_source_rgb(*INK); c.set_line_width(1.8); c.move_to(x0, F - 60); c.line_to(x1, F - 60); c.stroke()
     c.set_source_rgba(1.0, 0.98, 0.88, 0.55)                                                 # the light on the floor
     c.move_to(x0, F); c.line_to(x1, F); c.line_to(x1 + 170, F + 300); c.line_to(x0 - 60, F + 300); c.close_path(); c.fill()
