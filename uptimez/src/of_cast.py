@@ -21,6 +21,7 @@ from cand_bc import ik, _d
 from kit import INK, rect, ellipse, cut
 
 SHX, SHY = co.SH[0], co.BT + 26                            # the shoulder on the Client's rig (the bodyguards share it)
+TURN_DOWN = [0.0]                                          # a turned guard's features this much lower: he looks down (0.9)
 TOP_CAR = [True]                                           # v2 (23 Nov): the overhead shows the car's side and the lit floor (False: v1)
 
 # --- one hand per wrist (23 Nov, hand audit, decided) -------------------------------------------------------------------
@@ -175,10 +176,11 @@ def _turn_head(k, x, feet, s, flip, turn, seed):
     cut(k, [(-47, hy - 4), (-49, hy - 30), (-38, hy - 52), (-10, hy - 62), (22, hy - 60), (44, hy - 46), (49, hy - 26),
             (47, hy - 4), (42, hy - 24), (26, hy - 38), (0, hy - 41), (-26, hy - 38), (-42, hy - 24)], hair, shadow=False, lw=2)
     dx = 22 * turn
+    dy_ = TURN_DOWN[0]                                                             # v2 (23 Nov): his look down, opt-in
     ex_ = 44 if turn < 0 else -44                                                  # the ear on the side he turns from
     ellipse(k, ex_, hy + 2, 7.5, 12, co.SKIN, seed + 27, shadow=False, lw=2)
-    c.save(); c.translate(dx, 0)
-    co._face(k, hy + 4, "plain", (turn, 0), None, seed + 30, "none")
+    c.save(); c.translate(dx, dy_)
+    co._face(k, hy + 4, "plain", (turn, 0.8 if dy_ else 0), None, seed + 30, "none")
     for sx in (-1, 1):
         sq = 0.75 if sx * turn < 0 else 1.0                                       # the far lens, foreshortened
         cut(k, [(sx * 4, hy - 12), (sx * 4 + sx * 34 * sq, hy - 13), (sx * 4 + sx * 32 * sq, hy + 8), (sx * 4 + sx * 16 * sq, hy + 13),

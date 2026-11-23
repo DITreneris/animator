@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 21, 2: 25, 3: 22, 4: 25, 5: 21}
-SOUND = "of_sound_v11.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 22, 2: 26, 3: 23, 4: 26, 5: 22}
+SOUND = "of_sound_v12.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -167,7 +167,11 @@ def s29(t, L):                                             # on his way to the d
     a = -stride / 2 + stride * ease(min(1.0, ph / 0.7))     # the swing foot from behind to ahead (body units, left is ahead)
     feet = [(-a * 0.9, lift), (0.0, 0.0)] if n % 2 == 0 else [(0.0, 0.0), (-a * 0.9, lift)]
     bob = 3 * math.sin(math.pi * min(1.0, ph / 0.7))
-    return dict(_cam=WALK_CAM, father_step=feet, moved=dict(father=(x, 880 - bob), g2=(120, 872))), {}
+    cam = WALK_CAM if t < 1.1 else CAL_CAM                 # v3 (cold tests 3 of 3: it drags; "a calculator"): CUT IN on the two
+    return dict(_cam=cam, father_step=feet, moved=dict(father=(x, 880 - bob), g2=(120, 872))), {}   # of them, the calendar readable
+
+
+CAL_CAM = (172, 770, 2.6)
 
 
 WALK_CAM = (170, 815, 1.8)                                 # locked: he walks through the frame (a following camera jumped)
@@ -213,9 +217,10 @@ def _loud(sid, t):
     return {None: 0.0, "M": 0.15, "F": 0.3, "C": 0.45, "U": 0.5, "E": 0.7, "O": 0.85, "A": 1.0}.get(m, 0.5)   # v2: every viseme
 
 
-def s32(t, L):                                             # the visor: the line pops on, and glows as it talks
+def s32(t, L):                                             # the visor: the line pops on, and glows as it talks; v2 (cold tests
     k_ = 0.02 + 0.98 * min(1.0, max(0.0, (t / 0.15))) if t < 0.15 else 1.0 + 0.08 * math.sin(min(1.0, (t - 0.15) / 0.12) * math.pi)
-    return dict(visor_k=k_, visor_glow=_loud("3.2", t)), {}
+    lo = _loud("3.2", t)                                   # 2 of 3 "held too long"): it bobs on its wheel with each word
+    return dict(visor_k=k_, visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4))), {}
 
 
 def s33(t, L):                                             # he sits up for good news
@@ -255,14 +260,14 @@ def s37(t, L):                                             # the smile is gone; 
 
 # --- scene 5, Frame 0 ------------------------------------------------------------------------------------------------
 def s41(t, L):                                             # v3 (23 Nov, cold tests 3 of 3: "a faceless hand"): FATHER in the
-    if t < 0.9:                                            # doorway, DONNIE buzzing in his hand; he looks at it. Then CLOSE:
+    if t < 1.1:                                            # doorway, DONNIE buzzing in his hand; he looks at it. Then CLOSE:
         bz = 2.5 * math.sin(t * 2 * math.pi * 18)          # his thumb on red, DECLINED, face down
         return (dict(_cam=DOOR_CAM, _cast=("father",), black_car=True, burn=1.0, insert=None, moved=dict(father=(156, F_ + 26))),
                 dict(father=dict(face="low", look=(0.6, 1.2), targets_xy=[(190, F_ - 110)], phone_donnie=True, buzz=bz)))
-    u = t - 0.9
+    u = t - 1.1                                            # v4 (timing v12, cold tests 3 of 3 "too fast"): DECLINED held 1.0 s
     th = ease((u - 0.25) / 0.2)
     return dict(_cam=DONNIE_CAM, hand_dx=0.0, buzz=3 * math.sin(u * 2 * math.pi * 18) if u < 0.3 else 0.0,
-                thumb=th if u < 1.0 else 0.0, declined=u > 0.45, donnie_down=u > 1.05), {}
+                thumb=th if u < 1.4 else 0.0, declined=u > 0.45, donnie_down=u > 1.45), {}
 
 
 DONNIE_CAM = (98, 668, 3.0)                                # v3: the phone big enough to read on a phone
@@ -441,16 +446,19 @@ def s36b(t, L):                                            # v9: MEETING IN 4:59
 MOTION["3.4b"] = s34b
 MOTION["3.5b"] = s35b
 MOTION["3.6b"] = s36b
-def s09_wide(t, L):                                       # v2 (23 Nov, decided): 0.8's frame held; his hand still on the roof,
-    x, f = sc.BLOCK[1]["g1"]                               # the knee under the car taps; the voice from under it
-    return dict(_cam=sc.CAR_CAM, _cast=("g1",), legs_work=math.sin(t * 2 * math.pi * 1.4)), \
-        dict(g1=dict(targets_xy=[(322, 654)], push=True))   # the palm flat on the roof's top, as 0.8 left it
+def s09_wide(t, L):                                       # v3 (23 Nov, cold tests 3 of 3 gave the line to the GUARD): on the
+    x, f = sc.BLOCK[1]["g1"]                               # first word the legs KICK (out and back) and the knee works; the
+    kick = 16 * math.sin(math.pi * min(1.0, max(0.0, (t - 0.12) / 0.25)))   # guard's head drops to look down AT the legs
+    lk = ease(min(1.0, max(0.0, (t - 0.25) / 0.2)))       # (a listener looks at whoever speaks)
+    return dict(_cam=sc.CAR_CAM, _cast=("g1",), legs_work=math.sin(t * 2 * math.pi * 2.0), legs_jolt=kick), \
+        dict(g1=dict(targets_xy=[(322, 654)], push=True, turn=0.7 * lk, look_down=10 * lk))
 
 
 MOTION["0.9"] = s09_wide
 MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
 MOTION["0.10"] = s010_same
-MOTION["4.2"] = s42_service
+MOTION["4.2"] = lambda t, L: s42_service(t, L) if t < 0.55 else (s42_service(0.5, L) if t < 0.85 else s42_service(t - 0.3, L))
+# v6 (timing v12): the pin held 0.3 s longer, the rest as it was
 MOTION["0.4"] = lambda t, L: (dict(legs_work=math.sin(t * 2 * math.pi * 1.2)), {})    # the knee taps: he works on
 
 

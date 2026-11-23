@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v11.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v12.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -105,7 +105,7 @@ SCENES = [
         S("1.2", "TWO-SHOT", PLAN_FRAME, "SAME FRAME. The gold lighter in his fist. CLICK: the flame under 7's corner. The paper "
           "browns. **Nobody says it.**", action="CLICK, the flame", cast=("g2",), state=dict(burn=0.4, flame=True),
           fx="CLICK; the radio alone; the paper crackles"),
-        S("1.3", "WIDE", "wide", "FRAME 0's frame. The creeper rolls out; the Client sits up, wipes his hands on a rag, looks at "
+        S("1.3", "WIDE", (322, 742, 1.45), "FRAME 0's frame. The creeper rolls out; the Client sits up, wipes his hands on a rag, looks at "
           "the flame, then **at his watch**.", action="he sits up", reaction="he checks his watch",
           cast=("father", "g1", "g2", "client"), state=dict(burn=0.7, flame=True, sit=True)),
         S("1.4", "CLOSE", ["client"], "CLOSE, the Client, to Father, flat, the rag in his hands.",
@@ -366,6 +366,7 @@ def _cast_draw0(k, n, scene, sh, heads):
                 return hk(k_, hx_, hy_, *a_)
             _kit.HAND[0] = _skip
         oc.ELBOW_LOW[0] = bool(ps.get("elbow_low"))
+        oc.TURN_DOWN[0] = ps.get("look_down", 0.0)
         try:
             draw_g = lambda: oc.guard(k, x, f, GS, flip=flip, targets=tg, turn=ps.get("turn", 0.0), seed=1600 if n == "g1" else 1640)
             gl_ = POSES.get(sh["id"], {}).get("father", {}).get("guard_lighter") if n == "g2" else None
@@ -380,7 +381,7 @@ def _cast_draw0(k, n, scene, sh, heads):
                 o = draw_g()
         finally:
             _kit.HAND[0] = hk
-            oc.ELBOW_LOW[0] = False
+            oc.ELBOW_LOW[0] = False; oc.TURN_DOWN[0] = 0.0
         heads[n] = (o["head"][0], o["head"][1], 55 * GS)
         if ps.get("lamp") and not (ps.get("lamp_front") and scene == 3):
             want = ps.get("lamp_xy") or tg[0]                                    # v4: the hand that reached for it
@@ -1006,7 +1007,10 @@ def desk_shot(k, sh, heads):
             c_.restore()
         else:
             don(k_, o)
+        bob_ = sh["state"].get("robot_bob", 0.0)                       # v2 (23 Nov): it bobs as it talks (the wheel stays down)
+        k_.c.save(); k_.c.translate(dl.RX, F + 4); k_.c.scale(1.0, 1.0 + bob_ / 300.0); k_.c.translate(-dl.RX, -(F + 4))
         r = oc.robot(k_, dl.RX, F + 4, rs, turn=float(sh["state"].get("turn", 0.0)))
+        sx_, sy_ = k_.c.user_to_device(*r["screen"]); k_.c.restore(); r = dict(r, screen=k_.c.device_to_user(sx_, sy_))
         heads["_screen"] = r["screen"]
         drawn["robot"] = (r["screen"][0], r["screen"][1], 50 * rs)
 
