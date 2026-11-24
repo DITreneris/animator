@@ -129,3 +129,9 @@ Rough 7: a low two-note stab on the red circle (B) and on the sticker (E), a din
 Rough 8: recording 64 (take 1, tempo 1.4, 1.67 s): "Remove the bottle - NECK", every syllable heard (the old take, 0.9 s,
 was heard as "Remove the bottle."; kept as `vo/h_remove_take53.wav`). The line is 0.8 s longer, so the pops wait for it:
 `P0 = 51` (was 15), A is 81 frames, the film 470 frames (15.67 s); everything after A moved 1.2 s later.
+
+## Final (24 Nov, all a) - `final/remove_the_bottleneck.mp4`, rough 9
+
+Cold mute test (2 viewers, 5/5 beats each; their shared faults fixed): the fitting is 0.7 s shorter (C 54 frames, the still
+stretch cut), the thumb is 1.5x bigger. 449 frames, 14.97 s. Cover: the carry with the thumb and "FASTER!" (both viewers'
+screenshot moment). Posting text in `final/POST.md`.

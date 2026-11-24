@@ -18,7 +18,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.jo
 import office as P, setb as B, tailors as T, kp as KP
 from office import K, A, INK, WHITE, NAVY, YEL, RED, GREY, rr, fs, ell, limb, txt, hx, lerp, W, H, FLOOR, HS, AS
 cl = lambda t: max(0.0, min(1.0, t)); oe = lambda t: 1 - (1 - cl(t)) ** 3; io = lambda t: (lambda u: u * u * (3 - 2 * u))(cl(t))
-SHOTS = [('A', 81), ('B', 60), ('C', 75), ('D', 75), ('E', 45), ('F', 134)]
+SHOTS = [('A', 81), ('B', 60), ('C', 54), ('D', 75), ('E', 45), ('F', 134)]
 START = {}; _t = 0
 for n, d in SHOTS: START[n] = _t; _t += d
 NF = _t
@@ -227,7 +227,7 @@ def carriers(c, x0, walk=None, look=(-16, -4), rot=0.0, gone=(), bob=0.0, eye='h
 def thumb_up(c, sl, k):
     """His fist out of the hand slot, thumb up (a fist on its side, the thumb off the top of it: never one lone finger)."""
     if k <= 0 or not sl: return
-    c.save(); c.rectangle(0, 0, W, sl[1]); c.clip(); c.translate(sl[0], sl[1] + 60 * (1 - k) - 6)
+    c.save(); c.rectangle(0, 0, W, sl[1]); c.clip(); c.translate(sl[0], sl[1] + 90 * (1 - k) - 6); c.scale(1.5, 1.5)      # cold test: the thumb was mistaken for a sticker - bigger
     rr(c, -24, -40, 48, 50, 12); fs(c, NAVY, 6)
     c.save(); c.rotate(-.12); rr(c, -52, -158, 34, 84, 16); fs(c, SKIN, 7); c.restore()
     rr(c, -40, -100, 88, 70, 24); fs(c, SKIN, 7)
@@ -281,7 +281,7 @@ def shot_F(c, t):
         sl = B.crate(c, x0, y, lid=oe((t - T_HIT) / 4) if hit else 0, stamp=0 if hit else 1.0, rts=1.0 if t >= T_BACK else 0, slot=True, slot_x=50,
                      rot=(.02 if t < T_GO else (-.05 if t < T_OUT else lerp(-.05, .04, oe((t - T_BACK) / 14)))) * (1 - fall) if not hit else 0)
         thumb_up(c, sl, io((t - 22) / 5) * (1 - io((t - T_DROP + 3) / 3)))
-        if 32 <= t < T_GO and sl: bubble(c, ['FASTER!'], (sl[0] - 6, sl[1] - 150), 330, 470, 70)
+        if 32 <= t < T_GO and sl: bubble(c, ['FASTER!'], (sl[0] - 6, sl[1] - 235), 330, 470, 70)
         for at, i in POPS_F: pop(c, x0 + DX[i], FLOOR - 240, (t - at) / 6, 120)
         if T_DROP <= t:                                                   # the one that is left trots to its mark - and is MY AI again
             if t < T_LAND:
@@ -324,7 +324,7 @@ def draw(fr, bar=True):
     n, t = next((n, fr - START[n]) for n, d in SHOTS if fr < START[n] + d)
     if n == 'A': shot_A(c, t)
     elif n == 'B': shot_B(c, t)
-    elif n == 'C': tailors(c, t)
+    elif n == 'C': tailors(c, t if t < 26 else t + 21)      # cold test: the fitting was too long - the still stretch (t 26-46) is cut
     elif n == 'D': tailors(c, 75, t) if t < 14 else legs_in(c, t)
     elif n == 'E': shot_E(c, t)
     else: shot_F(c, t)

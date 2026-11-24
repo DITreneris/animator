@@ -1,0 +1,50 @@
+[
+ {
+  "name": "h_huh",
+  "start": 1.73,
+  "gain": 0.5,
+  "dur": 0.43
+ },
+ {
+  "name": "h_sip",
+  "start": 3.2,
+  "gain": 0.45,
+  "dur": 1.35
+ },
+ {
+  "name": "h_hmm",
+  "start": 4.2,
+  "gain": 0.45,
+  "dur": 1.0
+ },
+ {
+  "name": "h_whoa",
+  "start": 7.25,
+  "gain": 0.6,
+  "dur": 0.54
+ },
+ {
+  "name": "h_muffled",
+  "start": 7.9,
+  "gain": 0.45,
+  "dur": 1.6
+ },
+ {
+  "name": "h_oof",
+  "start": 9.25,
+  "gain": 0.55,
+  "dur": 0.4
+ },
+ {
+  "name": "h_hum",
+  "start": 11.1,
+  "gain": 0.35,
+  "dur": 1.0
+ },
+ {
+  "name": "h_yay",
+  "start": 15.033,
+  "gain": 0.5,
+  "dur": 0.45
+ }
+]

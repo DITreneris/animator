@@ -45,7 +45,7 @@ add(fx, S['B'] + 31, P(scribble(.3) * 1.5, zipt(.3)), .4); add(fx, S['B'] + 33, 
 add(fx, S['E'] + 26, sting(73.4, .8), .6); add(fx, S['E'] + 29, ding(), .3)                              # BOTTLENECK REMOVED.: the same stab, then the tick rings
 add(fx, S['B'] + 15, lowpass(noise(.3, 6), 1000), .2)           # the circle; his sip
 add(fx, S['C'], roll(.4), .3); add(fx, S['C'] + 4, whoosh(.2), .2); add(fx, S['C'] + 6, zipt(.3), .25)
-for i in range(6): add(fx, S['C'] + 25 + 7 * i, scribble(.15), .15)
+for i in range(4): add(fx, S['C'] + 25 + 7 * i, scribble(.15), .15)
 add(fx, S['D'], whoosh(.2), .4); add(fx, S['D'] + 6, whoosh(.35), .35); add(fx, S['D'] + 14, thud(.9), .5)
 for i in range(5): add(fx, S['D'] + 20 + 8 * i, thud(.3), .25)
 add(fx, S['D'] + 60, slam(), .55)
