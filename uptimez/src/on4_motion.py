@@ -235,7 +235,10 @@ def cat_over(s, frames):
     """the cat, drawn after the grade so its eyes keep their colour (as on_film does): frames = [(x, y, scale, flip)] or "full" """
     import cat_on as ct
     c = cairo.Context(s); kk = sc.Ctx(c, 0)
-    if frames == "in":
+    if CAT_SOFT[0] and frames in ("in", "full", "full2", "out"):
+        x_, y_, s_ = {"in": (40, 1000, 4.0), "full": (190, 800, 4.6), "full2": (330, 560, 4.2), "out": (450, 340, 3.4)}[frames]
+        ct.black_cat(kk, x_, y_, s_, "fall", flip=False)
+    elif frames == "in":
         ct.black_cat(kk, 70, 1010, 4.2, "fall", flip=False)
     elif frames in ("full", "full2"):
         big = frames == "full2"
@@ -431,7 +434,8 @@ def seat3_people(k, hand, env, dad, t=None, give=None, lk2=None, fc="plain", ean
         drum = 4.0 * max(0.0, math.sin(2 * math.pi * 2.2 * t - i_ * 1.1)) if (t is not None and dad >= 1 and env == "hand" and not give) else 0.0   # DENSE: his fingers drum while he waits
         kit.ellipse(k, 362 + dx - i_ * 2, 580 + i_ * 6 - drum, 14, 5, dc.SKIN_F, 7703 + i_, shadow=False, lw=1.6)
     c.set_source_rgb(*INK); c.rectangle(372 + dx, 576, 11, 14); c.fill(); c.set_source_rgb(*st.GOLD); c.rectangle(374 + dx, 578, 7, 10); c.fill()
-    c.set_source_rgb(*st.NEON); c.rectangle(374 + dx, 580, 7, 6); c.fill()
+    if not RING_GOLD[0]:
+        c.set_source_rgb(*st.NEON); c.rectangle(374 + dx, 580, 7, 6); c.fill()
     c.restore()
     car._p(c, WIN); c.set_source_rgb(*car.CHROME); c.set_line_width(4); c.stroke()                 # the window's chrome
     c.set_source_rgb(*INK); c.set_line_width(2.4); c.move_to(40, 340); c.line_to(40, 900); c.stroke()   # the door's shut lines
@@ -614,6 +618,9 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+RING_GOLD = [False]                                          # (24 Nov, Tomas's pick) Dad's ring a plain gold band here: no red stone (the film's red is the envelope's heart, the neon and the fire)
+CAT_SOFT = [False]                                           # (24 Nov, cold test: "a monster") 0:00 the cat leaps across the frame, whole, in four drawings: no lens full of fur, no fangs
+WALK12 = [False]                                             # (24 Nov, Tomas's pick) her cat's walk over the crossing: two strides in twelve drawings (was one in six)
 GIVE = [False]                                               # (24 Nov, Tomas: "who hands what to whom?") 2.2-2.3: Dad's ringed hand comes out of the dark holding the envelope out; the Client takes it, looks, puts it under his lapel
 CATWALK = [False]                                            # (24 Nov) her cat's walk (on4_anim.catwalk) over the crossing and along the fire escape
 PEEK = [False]                                               # (24 Nov, Tomas: "the cat's head is bad; put her looking out of the window above?") 2.2-2.3: she comes up in the window over the car, her gloves on its sill, follows the envelope, ducks before he looks up
@@ -680,9 +687,10 @@ def t3():
             oc.MASK_TILT[0] = 0.0
     side = lazy(side)
     OFF = 1200
-    for i in range(6 if CATWALK[0] else 0):                  # her cat's walk over the crossing: one stride in the six drawings
+    NW_ = 12 if WALK12[0] else 6
+    for i in range(NW_ if CATWALK[0] else 0):                # her cat's walk over the crossing: one stride in the six drawings
         import on4_anim as an_
-        t = i / 5.0; y_ = 610 + (PF - 610) * t
+        t = i / float(NW_ - 1); y_ = 610 + (PF - 610) * t
         ar_, ge_, kn_, rot_, dx_, kw_ = an_.catwalk(i / 6.0)
         fr.append(side(OFF, D_STOP, ("up", PX, y_, 1.203 * (0.42 + 0.14 * (y_ - 596.0) / 176.0), ar_, ge_, 0.0, "peer", (0.0, 0.1), 0.0,
                                      dict(kn=kn_, rot=rot_, dx=dx_, **kw_))))

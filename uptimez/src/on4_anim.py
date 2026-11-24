@@ -514,6 +514,9 @@ def a61(t):
 
 
 # ---- 6.2: her glove's thumb slides off the sheet: SOFIA, the photograph; the camera in on the circled number ---------
+THUMB62 = [False]                                            # (24 Nov, cold test: "a grey tube") 6.2: a gloved hand on the sheet's edge, not a rod
+
+
 def a62(t):
     """v5 (review): her hand holds the sheet at its right edge: the palm off the paper, the thumb across its face (the
     fingers are behind it). The thumb lies over the end of SOFIA and slides down off it. The camera comes in a little,
@@ -524,9 +527,17 @@ def a62(t):
         c = k.c
         ey = 492 + 74 * u                                                      # the thumb's height: on the name, then under it
         st.poly(k, [(620, ey - 60), (500, ey - 34), (506, ey + 44), (620, ey + 70)], oc.COAT, 2.4)   # her sleeve, from the right edge
-        for col, grow in ((RIM, 3), (GL, 0)):                                  # the palm, off the paper's edge
+        for col, grow in (() if THUMB62[0] else ((RIM, 3), (GL, 0))):          # the palm, off the paper's edge
             c.new_path(); c.save(); c.translate(506, ey + 10); c.scale(48 + grow, 58 + grow); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
             c.set_source_rgb(*col); c.fill()
+        if THUMB62[0]:                                                         # the series' own gloved hand (hands_ps), gripping the sheet's edge: thumb on its face, fingers behind
+            import hands_ps as hp
+            ey2 = 452 + 66 * u                                                  # on the name's height, then down beside the grey lines: neither the name nor the number under it
+            c.push_group(); hp.draw(k, "grab", 512, ey2, 104, GL, (-1.0, 0.1), 1); g_ = c.pop_group()
+            for dx_, dy_ in ((-3, 0), (3, 0), (0, -3), (0, 3)):
+                c.save(); c.translate(dx_, dy_); c.set_source_rgba(*RIM, 0.9); c.mask(g_); c.restore()
+            hp.draw(k, "grab", 512, ey2, 104, GL, (-1.0, 0.1), 1)
+            return
         for col, w in ((RIM, 46), (GL, 40)):                                   # the thumb, short and thick, across the sheet's face
             c.set_source_rgb(*col); c.set_line_width(w); c.set_line_cap(1); c.move_to(480, ey); c.line_to(404, ey - 8); c.stroke()
         c.set_source_rgba(0, 0, 0, 0.35); c.set_line_width(2); c.new_path(); c.arc(410, ey - 8, 13, -1.2, 1.2); c.stroke()   # its nail's edge

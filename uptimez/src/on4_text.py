@@ -28,17 +28,58 @@ SPLIT = {"n2": ("I know where to see", "what others do not see."),      # a two-
 SPEAKER = {"PAM": "pam", "DON": "don", "CLIENT": "client", "SOFIA": "sofia"}
 _done = [False]
 _FR = {}                                                     # a motion test's drawings, made once
-LINGER = 0.20                                                # a bubble stays this long after its last word (never over a cut)
+LINGER = 0.20
+CARD_HALO = [True]                                                # a bubble stays this long after its last word (never over a cut)
+
+
+CLOCK = {"say": {}, "blink": set(), "live": False}           # set per drawing by the film: who is saying which mouth shape, whose eyes are shut
+SHUT_FACES = ("squint", "happy", "pleased", "smug", "fade")
+LIP = (0.62, 0.20, 0.26)
+
+
+def _skin(who):
+    import kit
+    if who == "client":
+        return co.SKIN
+    if who == "sofia":
+        import sofia_v4 as s4
+        return s4.SKIN
+    return kit.PEOPLE["DON" if who == "don" else "PAM"]["skin"]
 
 
 def _wrap(mod, name, who):
+    import iwry_mouths as im
     f = getattr(mod, name)
     def w(k, x, feet, s=1.0, *a, **kw):
-        o = f(k, x, feet, s, *a, **kw)
+        code = CLOCK["say"].get(who) if CLOCK["live"] else None
+        shut = CLOCK["live"] and who in CLOCK["blink"]
+        if code and who in ("client", "sofia"):
+            kw = dict(kw); kw["mouth"] = code                # these two rigs draw the spoken mouth themselves
+        if code and who == "don" and kw.get("whistle_in"):
+            kw = dict(kw); kw["whistle_in"] = False          # he lets the whistle hang on its cord while he speaks
+        if who == "pam":
+            oc.BLINK[0] = bool(shut)
+        try:
+            o = f(k, x, feet, s, *a, **kw)
+        finally:
+            if who == "pam":
+                oc.BLINK[0] = False
         try:
             hx, hy = o["head"]
-            dx, dy = k.c.user_to_device(hx, hy)
-            rx, ry = k.c.user_to_device_distance(R_HEAD[who] * s, 0)
+            c = k.c
+            face = a[1] if len(a) > 1 else kw.get("face", "")
+            if code and who == "don":
+                c.save(); c.translate(hx, hy); c.scale(s, s); im.don_mouth(sc.Ctx(c, 0), (0, 0), code, kw.get("chin", 0)); c.restore()
+            if code and who == "pam":
+                c.save(); c.translate(hx, hy); c.scale(s, s); im.mouth(sc.Ctx(c, 0), 0, 31, code, _skin(who), lip_col=LIP, erase=(19, 11), seed=67); c.restore()
+            if shut and who in ("client", "don", "sofia") and face not in SHUT_FACES:
+                c.save(); c.translate(hx, hy); c.scale(s, s)
+                for sx in (-17, 17):
+                    c.new_path(); c.arc(sx, 4, 12.5, 0, 2 * math.pi); c.set_source_rgb(*_skin(who)); c.fill()
+                    c.set_source_rgb(0.08, 0.08, 0.09); c.set_line_width(3.0); c.set_line_cap(1); c.move_to(sx - 9, 6); c.curve_to(sx - 3, 9, sx + 3, 9, sx + 9, 6); c.stroke(); c.set_line_cap(0)
+                c.restore()
+            dx, dy = c.user_to_device(hx, hy)
+            rx, ry = c.user_to_device_distance(R_HEAD[who] * s, 0)
             if -60 < dx < 600 and -60 < dy < 1020:               # a figure drawn off the frame has no head on it
                 h_ = (dx, dy, math.hypot(rx, ry))
                 if who in HEADS and math.hypot(HEADS[who][0] - dx, HEADS[who][1] - dy) > 4:
@@ -157,6 +198,11 @@ def put(s, line, heads, pin=None):
         txt = '%s: "%s"' % (who, txt); kind = "card"
     if kind == "card":
         y0 = CARD_Y.get(key.rstrip('ab') if key[:-1] in SPLIT else key, 100)
+        if CARD_HALO[0]:                                     # (the cards' audit) a soft dark edge all round the card, so cream on a white wall still has a shape
+            c.push_group(); a3._card(c, txt, y0); pat = c.pop_group()
+            for r_, al in ((7, 0.10), (4, 0.14), (2, 0.18)):
+                for q in range(8):
+                    c.save(); c.translate(r_ * math.cos(q * math.pi / 4), r_ * math.sin(q * math.pi / 4) + 1); c.set_source_rgba(0, 0, 0, al); c.mask(pat); c.restore()
         y1 = a3._card(c, txt, y0)
         c.select_font_face("Special Elite", 0, 0); c.set_font_size(30)
         wmax = c.text_extents(txt).x_advance + 24
