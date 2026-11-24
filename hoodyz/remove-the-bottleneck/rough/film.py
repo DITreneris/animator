@@ -63,7 +63,7 @@ def hoody(c, x, expr, side=-1, bow=0.0, gaze=0, bob=0.0, rot=0.0, sh=True):
     return [tr(p) for p in r]
 def crate0(c, x0=CX, **k): return B.crate(c, x0, FLOOR, slot=True, slot_x=50, **{'lid': 1, **k})
 def mug_arm(c, shL):                                                     # coffee in his screen-left hand, in every shot he holds it
-    P.hoody_arm(c, shL, (shL[0] - 40, shL[1] + 180), HS, pref=P.LEFT, hand='grip'); P.mug(c, shL[0] - 46, shL[1] + 250, 1.1)
+    P.hoody_arm(c, shL, (shL[0] + 25, shL[1] + 125), HS, pref=P.DOWN, hand='grip'); P.mug(c, shL[0] + 19, shL[1] + 195, 1.1)      # v4: at his chest (at his hip it covered MY AI's face in frame 0)
 
 # ---------------- the list: a sheet the copies tape to the wall (B); its last box is ticked in E; the sprint blows it away
 LIST = (66, 700, 330, 380)
@@ -150,7 +150,7 @@ def tailors(c, t, d=-1):
     crate0(c, lerp(CX, CL, oe(t / 12)) if d < 0 else CL)
     yank = io(d / 5) if d >= 0 else 0.0
     xd, gd = 935, FLOOR + 10                                             # the spec sheet (a crate to his size), glasses on
-    bot(c, xd, gd, eye='happy', look=(-8, 10), arms=('hold', 'hold2'))
+    bot(c, xd, gd, eye='happy', look=(-8, 10), arms=('hold', 'hold'))      # v4: both hands on the notebook ('hold2' stuck an arm out to the frame edge)
     T.glasses(c, xd, gd, s); T.tape_neck(c, xd, gd, s); T.notebook(c, xd - 8, gd - 228 + 4 * math.sin(t * 1.3), 1.0)
     x1, g1 = 150, FLOOR; x2, g2 = 150, FLOOR - 375 * s                   # one stands on the other's head, to hold the ruler up
     ankle = (HX0 - 40, FLOOR - 40); crotch = (HX0 - 8, FLOOR - 360)
@@ -160,9 +160,12 @@ def tailors(c, t, d=-1):
     pb = P.ai_pose(1, P.ai_local(x2, g2, s, (rx - 6, g2 - 330 * KC)), P.UP)
     bot(c, x2, g2, sh=False, eye='happy', look=(16, -14), rot=.04 + .03 * math.sin(t * .4), arms=('down', pb)); T.tape_neck(c, x2, g2, s)
     mh = A.hand_at(x2, g2, s, -1, 'down'); P.mug(c, max(mh[0], 44), mh[1] + 62, 1.1)                       # "let me hold that for you"
-    rot = -1.0 * oe((d - 4) / 10) if d >= 0 else 0.0                     # over backwards
+    rot = -.6 * oe((d - 4) / 10) if d >= 0 else 0.0                      # over backwards; v4: -.6, his face stays in frame (at -1.0 only a dark torso was left)
+    if d >= 0:                                                            # v4: as he goes over, the ruler stays where it stood, BEHIND him (it crossed his face)
+        _c = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)); _h = hoody(_c, HX0, 'smug', side=1, bob=4 * math.sin(t * .3))[2]
+        T.ruler(c, rx, _h[1] - 250, FLOOR - 10)
     shL, shR, head = hoody(c, HX0, 'smug' if d < 4 else 'shock', side=1, bob=4 * math.sin(t * .3), rot=rot)
-    T.ruler(c, rx, max(head[1] - 250, rtop) if d < 0 else head[1] - 250, FLOOR - 10)
+    if d < 0: T.ruler(c, rx, max(head[1] - 250, rtop), FLOOR - 10)
     hb = A.hand_at(x2, g2, s, 1, pb); ell(c, hb[0], hb[1], 22 * KC, 22 * KC); fs(c, WHITE, 6)
     leg = cl((t - 15) / 10) if d < 0 else 1
     ha = A.hand_at(x1, g1, s, 1, pa)
@@ -170,8 +173,8 @@ def tailors(c, t, d=-1):
         T.tape_line(c, [crotch, (lerp(crotch[0], ankle[0], leg), lerp(crotch[1], ankle[1], leg))], 14)
         if leg >= 1: c.move_to(*ankle); c.line_to(ha[0] + 10, ha[1]); c.set_source_rgb(*T.TAPE); c.set_line_width(14); c.stroke()
     ell(c, ha[0], ha[1], 22 * KC, 22 * KC); fs(c, WHITE, 6)
-    P.hoody_arm(c, shL, (shL[0] - 280, shL[1] + 10 + (60 * yank)), HS, pref=P.UP, hand='palm', ang=math.pi)
-    P.hoody_arm(c, shR, (shR[0] + 200, shR[1] - 230 + 200 * yank), HS, pref=P.DOWN, hand='palm', ang=-.8)
+    P.hoody_arm(c, shL, (shL[0] - 215, shL[1] + 25 + (60 * yank)), HS, pref=P.DOWN, hand='palm', ang=math.pi)      # v4: in reach, a real elbow (out of reach = a pole)
+    P.hoody_arm(c, shR, (shR[0] + 150, shR[1] - 195 + 200 * yank), HS, pref=P.DOWN, hand='palm', ang=-.8)
     x3, g3 = 745 + 40 * yank, FLOOR; wy = FLOOR - 300 * HS - 40          # the waist: it cannot reach, so it hauls the tape down to itself
     lean = .06 + .04 * math.sin(t * .5) + .35 * yank
     pc = P.ai_pose(-1, P.ai_local(x3, g3, s, (HX0 + 175 + 120 * yank, wy + 30)), P.UP)
