@@ -883,3 +883,14 @@ Measured from the stems of v29: music on for 12 s of 64.5; the office (14.7 s) h
 210. **Measure the film before judging it.** The gates found what the reviews had circled: the 20 Nov scale rule (biggest face r 78–80) had framed 22 of 32 shots as mediums, and only 1 shot of 32 had anything in front of the people. Shot sizes come from the rendered face sizes, foreground from what is drawn over the people after them; each rule fails on a planted fault. The fix was cameras and layers (5 close-ups, 2 over-the-shoulder shots, set edges in front), not redrawing.
 211. **A face in a picture is not a person.** The wall portrait drew the Client's rig, so the proportion gate saw a Client 11 % too big in shots he isn't in. Keep the portrait's head out of the people log.
 212. **Room reverb on dialogue reads as "from a well".** The early reflections and tail added in One Star's v4 mix made Tomas wince; v9's voices are dry (`cs_film.WET = 0`) with the room tone kept. A voice effect gets an A/B listen from Tomas before it ships.
+
+## 213. An arm needs its owner in the frame; a gag needs a shape, not only a state change (The Offer v31, 24 Nov)
+
+The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mentions, though v29 had made them short and thick; the one that passed (Father's thumb on DECLINED) has the whole person in the shot. The lamp gag was 0 of 3, and all three called the lamp "a pole, a staff, a rifle".
+
+- `insert_arm(hand, elbow, shoulder, ...)` draws the forearm tapering to the wrist, a bent elbow (`bend()` pushes it sideways), a wider upper arm in his sleeve, and his shoulder and a piece of his body behind it. Outlines for all parts first, then all colours, so the joints are one shape.
+- A taut straight cable reads as a pole. The held lamp's cord now hangs to the floor (`cable_floor`), so it is a lamp on a cord.
+- A fall that takes 0.4 s with a small shake is not a slam at feed size. 0.09 s down plus a 14 px jolt that dies in 0.3 s reads at 15 fps in two frames.
+- A character reaching toward another's clasped hands reads as "holding hands". The guard lowers his own phone; nobody reaches.
+- A mute test at 4 fps cannot show a 0.05 s flicker or a 0.1 s fall: add the 8-10 fps strip for any beat under 0.5 s, before judging it a FAIL.
+- A shot's length is its take plus the 0.15 s lead (2.8b 2.2 s, 3.2 2.05 s); the rest is a drag.

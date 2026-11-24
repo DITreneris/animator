@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v14.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v15.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -807,9 +807,10 @@ def insert_shot(k, sh):
         c.restore(); c.restore()
         px_, py_ = (336 - CX_) * Z_ + 270, (579 - CY_) * Z_ + 480 + 340 * (1 - sl_) * Z_   # the fresh plan's bottom left corner
         ph_ = (px_ + 34 + 10 * (1 - u_), py_ + 78 + 18 * (1 - u_))
-        pd_ = insert_arm(c, ph_, (ph_[0] + 60, ph_[1] + 130), (ph_[0] + 130, 1010), 96, (0.92, 0.74, 0.60), (0.11, 0.11, 0.13),
-                         cuff=(0.97, 0.97, 0.95))                                      # hand + a short thick suit forearm, from below
-        _oc.ps_hand(k, "point", ph_[0], ph_[1], 96, (0.92, 0.74, 0.60), pd_, 1)        # his INDEX finger on the pin (hands_ps "point")
+        sh_ = (ph_[0] + 200, 1000)                                                     # v6 (24 Nov, cold test v30: "a pole" 3 of 3): HE is in the
+        pd_ = insert_arm(c, ph_, bend(ph_, sh_, 70, -1), sh_, 70, (0.92, 0.74, 0.60), (0.11, 0.11, 0.13),   # frame: a bent suit arm,
+                         cuff=(0.97, 0.97, 0.95), torso=(0.11, 0.11, 0.13))                    # his shoulder and the jacket's body behind it
+        _oc.ps_hand(k, "point", ph_[0], ph_[1], 84, (0.92, 0.74, 0.60), pd_, 1)        # his INDEX finger on the pin (hands_ps "point")
         if u_ > 0.5:
             ellipse(k, px_, py_, 14, 14, (0.85, 0.12, 0.12), 3497, lw=2.4)              # the red pin, in
         gs.protect(c, "the fresh plan", 60, 290, 470, 660)
@@ -849,10 +850,10 @@ def insert_shot(k, sh):
         bo2_ = sh["state"].get("bolt_out", 0.0)
         hw_ = (250 + 175 * math.cos(-2.4 + 0.35 * w_ - 0.6 * bo2_), 350 + 175 * math.sin(-2.4 + 0.35 * w_ - 0.6 * bo2_))   # his fist on the wrench
         fh_ = (330 + (290 - 330) * bo2_, 470 + (250 - 470) * bo2_)                          # v4: the far hand comes up with the plug
-        for side, (hx, hy, ex, ey) in enumerate(((hw_[0], hw_[1], hw_[0] - 150, hw_[1] + 40), (fh_[0], fh_[1], fh_[0] + 190, fh_[1] + 70))):
-            el_ = ((hx + ex) / 2, (hy + ey) / 2)                                      # v7 (cold test 3 of 3: "tubes", "a pole across
-            dd_ = insert_arm(c, (hx, hy), el_, (ex, ey), 60, (0.80, 0.62, 0.50), None)   # the frame"): SHORT, as wide as the fist, out
-                                                                                      # of the nearest edge
+        for side, (hx, hy, sx_, sy_) in enumerate(((hw_[0], hw_[1], 30, 70), (fh_[0], fh_[1], 500, 720))):
+            el_ = bend((hx, hy), (sx_, sy_), 60, 1 if side == 0 else 1)                   # v8 (24 Nov, cold test v30: "tubes" 3 of 3): his
+            dd_ = insert_arm(c, (hx, hy), el_, (sx_, sy_), 54, (0.80, 0.62, 0.50), (0.97, 0.97, 0.95),   # T-shirt shoulder and chest are IN
+                             torso=(0.97, 0.97, 0.95))                                    # the frame, the elbow bent
             if side == 1 and bo2_ > 0:                                                # v4: his far fist round the plug
                 _oc.ps_hand(k, "fist", hx - 12 * dd_[0], hy - 12 * dd_[1], 64, (0.80, 0.62, 0.50), dd_, 1)
                 continue
@@ -927,13 +928,10 @@ def insert_shot(k, sh):
         a_ = -0.5 + 1.4 * ku                                                          # oily fingers ON the key head, turning it
         kx, ky = 300 + 122 * math.sin(a_), 460 - 122 * math.cos(a_)
         # v9 (22 Nov, decided): HIS arm, so it reads as the Client in this car: the oily forearm, the white T-shirt sleeve
-        kd_ = insert_arm(c, (kx + 26, ky + 14), (kx + 130, ky + 62), (640, ky + 150), 64, (0.80, 0.62, 0.50), None)   # v11 (24 Nov):
-                                                                                      # short, as wide as the fist, bare (no cuff to flicker)
-        c.save(); c.translate(452, 548)                                                 # his red rag, off the key ring
-        cut(k, [(-8, -6), (16, -8), (24, 34), (6, 56), (-12, 40)], (0.82, 0.30, 0.22), 3451, lw=2)
-        c.set_source_rgba(0.1, 0.08, 0.05, 0.4); c.arc(6, 24, 7, 0, 2 * math.pi); c.fill()
-        c.restore()
-        _oc.ps_hand(k, "fist", kx + 26 - 12 * kd_[0], ky + 14 - 12 * kd_[1], 68, (0.80, 0.62, 0.50), kd_, 1)   # v10 (hand audit):
+        ksh_ = (590, ky + 70)                                                          # v12 (24 Nov, cold test v30): his shoulder and chest at the
+        kd_ = insert_arm(c, (kx + 26, ky + 14), bend((kx + 26, ky + 14), ksh_, 60, 1), ksh_, 56, (0.80, 0.62, 0.50),   # frame's edge,
+                         (0.97, 0.97, 0.95), torso=(0.97, 0.97, 0.95))                         # the elbow bent, a bare forearm
+        _oc.ps_hand(k, "fist", kx + 26 - 12 * kd_[0], ky + 14 - 12 * kd_[1], 62, (0.80, 0.62, 0.50), kd_, 1)   # v10 (hand audit):
         c.set_source_rgba(0.1, 0.08, 0.05, 0.5); c.arc(kx + 20, ky + 16, 8, 0, 2 * math.pi); c.fill()         # the series' fist on the key
 
 
@@ -1277,26 +1275,49 @@ class TextRec(cairo.Context):
         return super().show_text(s)
 
 
-def insert_arm(c, hand, elbow, edge, w, skin, sleeve, sleeve_from=0.35, cuff=None):
-    """v1 (23 Nov, cold test 3 of 3: "a pole", "a plank", "disembodied"): an insert's arm is an ARM: a forearm from the
-    hand to an elbow, an upper arm on to the frame's edge, the owner's sleeve over the upper part (and a cuff at the
-    wrist for a suit). Returns the forearm's direction into the hand."""
-    c.set_line_cap(1); c.set_line_join(1)
-    for col, lw in ((INK, w + 6), (skin if cuff is None or sleeve is None else sleeve, w)):
-        c.set_source_rgb(*col); c.set_line_width(lw); c.new_path()
-        c.move_to(*hand); c.line_to(*elbow); c.line_to(*edge); c.stroke()
-    if cuff is None and sleeve is not None:                             # a short sleeve: over the upper arm only
-        sx, sy = elbow[0] + (edge[0] - elbow[0]) * sleeve_from, elbow[1] + (edge[1] - elbow[1]) * sleeve_from
-        for col, lw in ((INK, w + 22), (sleeve, w + 16)):
-            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0); c.new_path()
-            c.move_to(sx, sy); c.line_to(*edge); c.stroke()
+def _limb(c, p, q, w0, w1, col, e=0.0):
+    """one tapered limb segment p->q, width w0 -> w1 (+e on every side for the outline pass): a quad and a disc at each end,
+    each filled whole, so nothing is left to the arc's winding."""
+    dx, dy = q[0] - p[0], q[1] - p[1]; L = math.hypot(dx, dy) or 1.0
+    nx, ny = -dy / L, dx / L
+    c.set_source_rgb(*col); c.new_path()
+    c.move_to(p[0] + nx * (w0 / 2 + e), p[1] + ny * (w0 / 2 + e)); c.line_to(q[0] + nx * (w1 / 2 + e), q[1] + ny * (w1 / 2 + e))
+    c.line_to(q[0] - nx * (w1 / 2 + e), q[1] - ny * (w1 / 2 + e)); c.line_to(p[0] - nx * (w0 / 2 + e), p[1] - ny * (w0 / 2 + e))
+    c.close_path(); c.fill()
+    for (x, y), w in ((p, w0), (q, w1)):
+        c.new_path(); c.arc(x, y, w / 2 + e, 0, 2 * math.pi); c.fill()
+
+
+def bend(hand, shoulder, off, side=1):
+    """an elbow between the hand and the shoulder, pushed `off` px sideways (side +1/-1): a clear bend, not a straight band."""
+    mx, my = (hand[0] + shoulder[0]) / 2, (hand[1] + shoulder[1]) / 2
+    dx, dy = shoulder[0] - hand[0], shoulder[1] - hand[1]; L = math.hypot(dx, dy) or 1.0
+    return (mx + side * off * -dy / L, my + side * off * dx / L)
+
+
+def insert_arm(c, hand, elbow, shoulder, w, skin, sleeve, cuff=None, torso=None):
+    """v2 (24 Nov, cold test v30: 8 of 9 mentions "a pole/tube" for a one-width band from the frame's edge; only the
+    DONNIE shot, with the WHOLE person in it, passed): the owner is IN the insert. A forearm that tapers to the wrist,
+    a bent elbow, a wider upper arm in his sleeve, and his SHOULDER and a piece of his body (torso colour) behind it.
+    A suit's forearm is sleeve with a cuff at the wrist; a T-shirt's is bare. All outlines first, then all colours, so the
+    joints are one shape. Returns the forearm's direction into the hand."""
+    fore = sleeve if cuff is not None else skin
+    up = sleeve if sleeve is not None else skin
     dl = math.hypot(hand[0] - elbow[0], hand[1] - elbow[1]); d = ((hand[0] - elbow[0]) / dl, (hand[1] - elbow[1]) / dl)
-    if cuff is not None:                                                # a suit: its white cuff at the wrist
-        cx_, cy_ = hand[0] - d[0] * 16, hand[1] - d[1] * 16
-        for col, lw in ((INK, w + 12), (cuff, w + 6)):
-            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0); c.new_path()
-            c.move_to(cx_ - d[0] * 9, cy_ - d[1] * 9); c.line_to(cx_ + d[0] * 9, cy_ + d[1] * 9); c.stroke()
-    c.set_line_cap(1)
+    parts = []
+    if torso is not None:
+        parts.append(("disc", shoulder, 3.8 * w, torso))
+    parts.append(("limb", hand, elbow, w * 0.78, w * 0.98, fore))
+    parts.append(("limb", elbow, shoulder, w * 1.12, w * 1.30, up))
+    if cuff is not None:
+        cx_, cy_ = hand[0] - d[0] * 14, hand[1] - d[1] * 14
+        parts.append(("limb", (cx_ - d[0] * 6, cy_ - d[1] * 6), (cx_ + d[0] * 6, cy_ + d[1] * 6), w * 0.84, w * 0.84, cuff))
+    for e, ink in ((3.5, True), (0.0, False)):
+        for pt in parts:
+            if pt[0] == "disc":
+                c.set_source_rgb(*(INK if ink else pt[3])); c.new_path(); c.arc(pt[1][0], pt[1][1], pt[2] / 2 + e, 0, 2 * math.pi); c.fill()
+            else:
+                _limb(c, pt[1], pt[2], pt[3], pt[4], INK if ink else pt[5], e)
     return d
 
 

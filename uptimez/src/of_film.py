@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 29, 2: 29, 3: 29, 4: 29, 5: 29}
-SOUND = "of_sound_v15.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 31, 2: 31, 3: 31, 4: 31, 5: 31}
+SOUND = "of_sound_v16.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -150,20 +150,20 @@ def s28c(t, L):                                            # one nod: down and b
     up, dn = (x2 + 30, f2 - 150), (x2 + 26, f2 - 92)
     push = ease((u - 0.55) / 0.25)                         # v3 (24 Nov, cold test: seen 3 of 3, understood 0 of 3; decided: body
     ph = om.lerp(up, dn, push)                             # size): CLOSER, and Father's own hand comes across and pushes it down
-    reach = ease((u - 0.3) / 0.22)
-    fh = om.lerp((214 - 34, 880 - 96), (ph[0] + 14, ph[1] - 30), reach) if push < 1 else om.lerp((ph[0] + 14, ph[1] - 30), (214 - 34, 880 - 96), ease((u - 0.85) / 0.15))
+    # v3 (24 Nov, cold test v30: B read Father's reach to the guard's clasped hands as "holding hands"): Father does not reach.
+    # The guard himself lowers the phone, once Father's eyes are on him.
     g2 = dict(targets_xy=[ph], phone="pam") if push < 0.95 else dict(targets_xy=[ph])
     return (dict(_cam=PAM_GAG_CAM, _cast=("g2", "father"), moved=dict(father=(214, 880), g2=(x2, f2))),
-            dict(father=dict(face="hard" if u < 0.25 else "brow", look=(1, 0) if u < 0.25 else (-1.6, 0.3), targets_xy=[fh]), g2=g2))
+            dict(father=dict(face="hard" if u < 0.25 else "brow", look=(1, 0) if u < 0.25 else (-1.6, 0.3)), g2=g2))
 
 
 PAM_GAG_CAM = (166, 742, 3.4)
 
 
 def s28d(t, L):                                            # SLAM
-    T0 = 0.3                                               # v2 (24 Nov, cold test 2 of 3 "never saw a slam"): the bonnet is UP,
-    u = ease((t - T0) / 0.2)                               # his hand on it, for 0.3 s; then it comes down
-    return dict(anim=True, bonnet=1.0 - u, shake=0 if t < T0 + 0.2 else 5 * math.exp(-(t - T0 - 0.2) * 9) * math.sin(t * 90)), \
+    T0 = 0.3                                               # v3 (24 Nov, cold test v30: 0 of 3 saw it; at 10 fps it fell for 0.4 s with a small
+    u = ease((t - T0) / 0.09)                              # shake): UP with his hand on it for 0.3 s, down in 0.09 s, and the frame JOLTS
+    return dict(anim=True, bonnet=1.0 - u, shake=0 if t < T0 + 0.09 else 14 * math.exp(-(t - T0 - 0.09) * 11) * math.sin(t * 110)), \
         dict(client=dict(kind="slam", slam_y=110 * (1 - u)))
 
 
@@ -382,6 +382,7 @@ def s28f(t, L):                                            # v3 (24 Nov, cold te
     x, y = 556, 652                                        # he has lifted it in front of him, to look at it
     return (dict(_cam=LAMP_GAG_CAM),
             dict(g1=dict(targets_xy=[(x + 2, y + 15 * sh)], lamp="held", cone_side=0.03 if fl else 1.0, lamp_ang=0.35 + 0.34 * sh,
+                         cable_floor=sc.F + 8,                              # v14 (24 Nov, cold test v30: "a pole", "a staff", "a rifle" 3 of 3): the cord HANGS
                          turn=0.01 - 0.6 * dn, look_down=12 * dn)))
 
 
