@@ -112,6 +112,16 @@ def fg_d(k, cam, tt, n, box):
     S.d_fg(k, cam)
 
 
+def r_point(k, o, t, tt, n):
+    """5.4'' (round 3, Tomas "keičiam"; silhouette test 2 of 2): the mug is gone (five gestures with it read as "a blue
+    card"); she looks at his case, then her arm goes up and out at the OUT OF ORDER machine, eyes on it. Held."""
+    u = min(1.0, max(0.0, (t - 0.25) / 0.17))
+    hp.reset("quiet", "point_t" if u > 0.5 else "quiet")
+    pose = (-8, 0, 10 + 115 * u, 10 * u)
+    look = (-0.7, 0.8) if t < 0.25 else (0.8, -0.5)
+    ds.pb.pam(k, S.PAM[0], S.PAM[1], dl.PS, pose, "incredulous" if u > 0.5 else "neutral", look=look, glasses="up")
+
+
 def r_d2(k, o, t, tt, n):
     """5.4'' (round 4): the mug goes over in three drawings, its empty mouth to us; she looks in; her mouth opens, shuts."""
     S.MUG_TIP[0] = seq(t, [0.0, 0.0, 0.35, 0.75, 1.0])
@@ -147,6 +157,16 @@ def r_e(k, o, t, tt, n):
         V7.shredding(k, n)
         visitor(k, o, (0.8, 0.2))
         x, pose = DONX + 40 * min(1.0, t / 0.25), (-30, 0, 30, 0)
+        if t >= 1.05:                                       # round 3 ("we never see him take it out"): from his vest, in his hand
+            pose = POCKET_POSE
+            scratch = Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0)
+            hx, hy = _don_real()(scratch, x, F + 26, DS_, pose, "happy")["hands"][0]
+            hp.reset("palm", "relax")
+            d = don_at(k, x, F + 26, pose, "happy", (-1, 0), tt, still=True)
+            draw_sticker(k, hx - 2, hy - 24 + (10 if t < 1.15 else 0), S.GS)   # held up by its lower edge, out from his body
+            A.mouth(k, d["head"], DS_, max(sc.loud("6.1a", tt), sc.loud("6.1b", tt)))
+            o["head"] = d["head"]
+            return
     else:                                                   # (c) round 4 (cold test: "the sticker just appears"; rules 223, 225):
         i = int(t * DPS + 1e-6)                             # he comes back with it in his hand (shown), presses it on with
         on = i >= 3                                         # his palm (the burst), keeps the palm on it, then lets go
@@ -210,6 +230,7 @@ def draw_sticker(k, cx, cy, s_=None):
 
 
 _REACH = {}
+POCKET_POSE = (-70, 60, 30, 0)                              # his left hand at his vest pocket (checked on the frame)
 
 
 def _don_real():
@@ -304,7 +325,7 @@ def fg_h(k, cam, tt, n, box):
 
 
 SHOTS = {"5.1": ("4A", r_a, fg_a, False), "5.2": ("4B", r_b, fg_none, False), "5.3": ("4C", r_c, fg_c, False),
-         "5.4": ("4D", r_d, fg_d, False), "5.4''": ("4D2", r_d2, fg_d2, False),
+         "5.4": ("4D", r_d, fg_d, False), "5.4''": ("4D", r_point, fg_d, False),
          "6.1": ("4E", r_e, fg_e, False), "6.1'": ("4E", r_e, fg_e, False), "6.1''": ("4E", r_e, fg_e, False),
          "6.2": ("4F", r_f, fg_f, False), "6.3": ("4G", r_g, fg_g, False), "6.4": ("4H", r_h, fg_h, False)}
 def _m(cam, dx=0, dy=0):
@@ -317,6 +338,7 @@ CAMS = {"4A": S.CAM_4A, "4B": (480, 712, 2.3), "4C": _m(S.CAM_4C, 0, -8), "4D": 
 # 4F up: the robot's face out of the caption quarter
 INS = {"5.4'": i_pass}
 SHIFT_CAM = {}
+PUSH = {"4A": 1.10, "4F": 1.06}                               # 4F: at 1.10 the robot's face reached the caption quarter
 SET_MOVES = {}
 SET_AIR = set()
 SET_BEHIND = set()
@@ -338,6 +360,8 @@ def frame(tt, n, hi=1):
             return surf, sid
         name, draw, fg, robot = SHOTS[sid]
         cam = CAMS[name]
+        if name in PUSH:                                    # round 3 (cold test: 2 s and nothing moves): a slow push in
+            cam = (cam[0], cam[1], cam[2] * (1 + (PUSH[name] - 1) * min(1.0, t / (dict(ROWS)[sid]))))
         if sid in SHIFT_CAM:                                # a cut in for one line (the camera only, lesson 358)
             cam = SHIFT_CAM[sid]
         box = {}

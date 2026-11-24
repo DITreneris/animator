@@ -91,3 +91,10 @@ Six full-size frames (4A, 4B, 4C, 4D, 4E c, 4H) for your look before any animati
 - 4A: he looks round the room, a half step at 1.05 s; 4F: the robot bobs 2 px on its words. Viewers: both still "frozen for 2 s" (2 of 2): too small to see at feed size.
 - set_gate: wrapped functions carry `_real`, so a measuring pass on a scratch surface is not logged as a drawing (it had made a "cut" fault for Don).
 - Gates: speech_gate 113/0, dead zones 0, set 0; −17.1 LUFS; v7 baseline same; scene 3 still passes.
+
+## Animation v8 round 3 (24 Nov, Tomas: "keičiam", then "darom")
+
+- 4D'': the mug is cut (five more mug gestures drawn: at her lips, shaken upside down, peered into, held out, mouth to us; at feed size the mug stays "a blue rectangle", the third failed fix of the shot). Instead she looks at his case and points at the OUT OF ORDER machine, arm out and up, on the 4D camera (the machine whole). Silhouette/still test: 2 of 2 "points at the machine" (variant 2 of 3; finger straight up read "a question", open palm "a wave"). Cold test: 2 of 2 "she points at the broken machine: that's his job" (one: "small in the frame").
+- 4E: the sticker shown in Don's hand at the end of 6.1' (held out by its edge). Cold test: still "appears from nowhere / floats near the throne" (2 of 2): it reads as floating, not held. Open.
+- 4A, 4F: slow push in (10 %, 6 %). Cold test: still "2 s, nothing moves" (2 of 2). Open.
+- Gates: speech_gate 113/0, dead zones 0, set 0; −17.1 LUFS; v7 baseline same.
