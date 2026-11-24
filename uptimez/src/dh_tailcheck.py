@@ -34,7 +34,12 @@ import dh_anim as DA
 import dh_anim1 as A
 import dh_anim1_v4 as OLD
 
-OUT = "../daddys-home/tailcheck"
+OUT = os.environ.get("DH_TAIL_OUT", "../daddys-home/tailcheck")
+TAIL_MAX = 26                                               # px of tail over open wall (20 + the outline and the 1.5 px overlap)
+WALL = [0.0]
+TIP_R = 0.7                                                 # the far cheek is beyond this
+HAIR_RIGS = ("pam_bc", "mom_fs", "sofia_cs", "sofia_dh", "sofia_ob")   # hair beside the cheek: the tail may run over it (lessons 360)
+BOX_MIN = 120                                               # px: narrower boxes are one word a line
 DBG = {}
 
 
@@ -75,6 +80,13 @@ def scenes():
            3: (lambda tt, n: dh_anim3.frame(tt, n, 1), dh_anim3.TOTAL, True)}
     for k, m in ((4, dh_anim4), (5, dh_anim5), (6, dh_anim6), (7, dh_anim7), (8, dh_anim8)):
         out[k] = (lambda tt, n, m=m: m.sc.frame(tt, n, 1), m.sc.total, True)
+    if os.environ.get("DH_TAIL_S3") == "v8":                  # opt-in (24 Nov): scene 3 v8, its bubbles as rendered
+        import dh_anim3_v8 as m8
+        SY = m8.install_speech()
+        if SY is not None:
+            SY.plan_scene(lambda tt, n: m8.frame(tt, n, 1), m8.TOTAL)
+            pass                                                # (no pinned boxes: dh_say places them)
+        out[3] = (lambda tt, n: m8.frame(tt, n, 1), m8.TOTAL, True)
     return out
 
 
@@ -214,11 +226,21 @@ def check_one(fr, n, scene, plant=None):
         if L["kind"] == "card":
             if T is not None:
                 f["fails"].append("a card with a tail")
+            if L.get("text") not in SP.CARD:                 # 24 Nov (qa_bc / CLAUDE.md "Tails"): cards are for off-screen speakers only
+                f["fails"].append("a card for a speaker in frame")
             res.append(f); continue
         if tip is None:
             f["fails"].append("a bubble with no tail for an on-screen speaker"); res.append(f); continue
         if tip[0] < 3 or tip[0] > 536 or tip[1] < 3 or tip[1] > 956:
             f["fails"].append("tail runs to the frame's edge")
+        # 24 Nov (qa_bc, CLAUDE.md "Tails", lessons 174/325/360): the box beside the face and a SHORT tail: the run over
+        # open wall, from the box to the speaker's outline, is at most 20 px (+ outline); over hair beside the cheek it may go on
+        bx0_, by0_, bx1_, by1_ = box
+        ddx = max(bx0_ - tip[0], 0, tip[0] - bx1_); ddy = max(by0_ - tip[1], 0, tip[1] - by1_)
+        past = math.hypot(ddx, ddy)
+        WALL[0] = past
+        if bx1_ - bx0_ < BOX_MIN:                            # lessons 279/375: sized from the text, not one word a line
+            f["fails"].append("box %d px wide: squeezed" % (bx1_ - bx0_))
         rec = L.get("rec")
         idx = rec.get("idx") if isinstance(rec, dict) and "idx" in rec else None
         if isinstance(rec, dict) and rec.get("kind") == "booth":
@@ -233,6 +255,16 @@ def check_one(fr, n, scene, plant=None):
             SIL = (np.abs(off - wo).sum(-1) > 30) & ~shadow
         SKN = SIL & sk_all
         tx, ty = tip
+        bx0_, by0_, bx1_, by1_ = box                         # the wall run: from the box's nearest point toward the tip, until the speaker
+        nx_ = min(max(tx, bx0_), bx1_); ny_ = min(max(ty, by0_), by1_)
+        Lw = math.hypot(tx - nx_, ty - ny_); run = Lw
+        for i_ in range(1, int(Lw)):
+            px_ = int(round(nx_ + (tx - nx_) * i_ / Lw)); py_ = int(round(ny_ + (ty - ny_) * i_ / Lw))
+            if SIL[min(959, max(0, py_)), min(539, max(0, px_))]:
+                run = i_; break
+        lim = TAIL_MAX + (8 if L["kind"] in ("antenna",) or L["kind"].startswith("overhead") else 0)
+        if run > lim:
+            f["fails"].append("tail runs %d px over the wall (short tail: 10-20)" % run)
         ring = SKN[max(0, ty - 3):ty + 4, max(0, tx - 3):tx + 4]
         # the box itself on anyone's skin
         bx0, by0, bx1, by1 = box
@@ -257,7 +289,8 @@ def check_one(fr, n, scene, plant=None):
         bad = T & SIL & ~near_skin
         if bad.sum() > 45:
             msg = "tail crosses the speaker off skin (hair/glasses/eyes/headset) (%d px)" % bad.sum()
-            if L.get("tier") == 2 and bad.sum() <= 450:     # declared: the only way in is across an earring/chain
+            hair = isinstance(L.get("rec"), dict) and L["rec"].get("mod") in HAIR_RIGS
+            if (L.get("tier") == 2 or hair) and bad.sum() <= 450:   # declared, or hair beside the cheek (lessons 360): over hair to the cheek
                 f.setdefault("warn", []).append(msg.replace("hair/glasses/eyes/headset", "earring or chain, tier 2"))
             else:
                 f["fails"].append(msg)
@@ -339,8 +372,9 @@ def check_one(fr, n, scene, plant=None):
                 ok = False; break
         if not ok:
             f["fails"].append("not only skin between the tip and the mouth")
-        elif L_ > 0.4 * r + 4:
-            f["fails"].append("tip too far from the mouth (%.2f r)" % (L_ / r))
+        elif L_ > TIP_R * r + 4:                             # 24 Nov (Tomas): the tip on the cheek's outline at mouth height (CLAUDE.md);
+            f["fails"].append("tip too far from the mouth (%.2f r)" % (L_ / r))   # 0.4 r (lesson 398) is for a tipped head:
+                                                             # a frontal face's outline is 0.55-0.63 r from its mouth
         res.append(f)
     return res
 

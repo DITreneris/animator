@@ -1,0 +1,23 @@
+{
+ "3.1": {
+  "who": "DON",
+  "text": "Make it green.",
+  "len": 1.01,
+  "asr": [
+   "Make it green.",
+   "Make it green.",
+   "Make it green."
+  ],
+  "ok": 3,
+  "made": "'Make it' from film_v1/3.1.wav (0-0.40 s) + 'green' cut from the front of 'Green ones.' (am_onyx), 20 ms apart",
+  "vowel_F1_F2_Hz": [
+   387,
+   1979
+  ],
+  "was_F1_F2_Hz": [
+   518,
+   1219
+  ],
+  "approved": "Tomas, 24 Nov: 'tvirtinam green garsa'"
+ }
+}
