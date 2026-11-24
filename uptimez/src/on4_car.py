@@ -18,6 +18,8 @@ import cairo
 from kit import INK
 
 NEON = (0.93, 0.13, 0.22)
+TAIL_GREY = [False]          # (24 Nov, Tomas: one red through the film, the envelope's heart): the taillights white-grey, not red
+TAIL = (0.80, 0.80, 0.78)
 BODY = (0.06, 0.06, 0.075)
 BODY_HI = (0.16, 0.16, 0.19)          # the long highlight along the flank and the bonnet's crown
 CHROME = (0.86, 0.87, 0.90)
@@ -107,7 +109,7 @@ def side(k, x, base, s=1.0, glass="stars"):
         _rr(c, hx - 9, -60, 18, 4, 2); _fs(c, CHROME, 1.0)
     _line(c, (-66, -20), (132, -20), CHROME, 2.6)                                         # the chrome sill strip
     _rr(c, -175, -58, 8, 14, 3); _fs(c, LAMP, 1.2)                                        # the headlight's line
-    _rr(c, 165, -62, 7, 18, 3); c.set_source_rgb(*NEON); c.fill()                         # the taillight's line
+    _rr(c, 165, -62, 7, 18, 3); c.set_source_rgb(*(TAIL if TAIL_GREY[0] else NEON)); c.fill()                         # the taillight's line
     _rr(c, -64, -82, 12, 10, 3); _fs(c, BODY, 1.4)                                        # the mirror
     for wx in (-114, 104):                                                                # arches, then wheels
         c.new_path(); c.arc(wx, -28, 34, math.pi, 2 * math.pi); c.close_path(); c.set_source_rgb(0.02, 0.02, 0.03); c.fill()
@@ -187,7 +189,7 @@ def rear(k, x, base, s=1.0, window=0.0, glass="stars", inside=None):
     for sx in (-1, 1):                                                                    # the taillights: tall, red lines
         x0 = min(sx * 66, sx * 88)
         _rr(c, x0, -90, 22, 36, 6); _fs(c, (0.10, 0.04, 0.05), 1.6)
-        _rr(c, x0 + 2, -88, 18, 32, 5); c.set_source_rgb(*NEON); c.set_line_width(3.4); c.stroke()
+        _rr(c, x0 + 2, -88, 18, 32, 5); c.set_source_rgb(*(TAIL if TAIL_GREY[0] else NEON)); c.set_line_width(3.4); c.stroke()
     _rr(c, -44, -86, 88, 8, 3); _fs(c, CHROME, 1.4)                                       # the boot's chrome handle
     _rr(c, -34, -74, 68, 22, 3); _fs(c, (0.04, 0.04, 0.05), 1.4)                          # the plate recess, blank
     _line(c, (-90, -40), (90, -40), BODY_HI, 1.8)
@@ -221,7 +223,7 @@ def glow(c, view, x, base, s=1.0, lamps=1.0):
         gr = cairo.RadialGradient(px, py, 0, px, py, r)
         gr.add_color_stop_rgba(0, col[0], col[1], col[2], a); gr.add_color_stop_rgba(1, col[0], col[1], col[2], 0)
         c.set_source(gr); c.new_path(); c.arc(px, py, r, 0, 2 * math.pi); c.fill()
-    W, R = (1, 1, 0.94), (1, 0.18, 0.24)
+    W, R = (1, 1, 0.94), ((1, 0.96, 0.90) if TAIL_GREY[0] else (1, 0.18, 0.24))
     if view == "side":
         g(x - 171 * s, base - 51 * s, 26 * s, W, 0.5 * lamps); g(x + 168 * s, base - 53 * s, 22 * s, R, 0.45 * lamps)
     elif view == "front":
@@ -259,7 +261,7 @@ def three_q(k, x, base, s=1.0, end="rear", lamps=True):
 
 def glow_three_q(c, x, base, s=1.0, end="rear"):
     fs = 0.62 * s; cx = x - 98 * fs * 0.78
-    col, a, r, dy = ((1, 0.18, 0.24), 0.5, 30, 72) if end == "rear" else ((1, 1, 0.94), 0.55, 40, 74)
+    col, a, r, dy = (((1, 0.96, 0.90) if TAIL_GREY[0] else (1, 0.18, 0.24)), 0.5, 30, 72) if end == "rear" else ((1, 1, 0.94), 0.55, 40, 74)
     for sx in (-1, 1):
         px, py = cx + sx * (77 if end == "rear" else 63) * fs * 0.78, base - dy * fs
         g = cairo.RadialGradient(px, py, 0, px, py, r * s)

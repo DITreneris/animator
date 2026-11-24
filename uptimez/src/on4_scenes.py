@@ -686,7 +686,7 @@ def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
         for a_ in range(100, 290, 21):
             q = (36 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
             c.new_path(); c.arc(sx_ + q * math.cos(math.radians(a_)), sy_ + 1.5 * q * math.sin(math.radians(a_)), 2.6, 0, 2 * math.pi)
-            c.set_source_rgb(*st.NEON); c.fill()
+            c.set_source_rgb(1.0, 0.92, 0.70); c.fill()
         for j in range(6):                                 # v19: smoke in soft clumps (three lobes each), bigger and fainter as they rise
             u = ((j + (t % 6) / 6.0) / 6.0)
             px_, py_ = sx_ - 14 + 26 * math.sin(j * 1.9 + u * 3) + 18 * u, sy_ - 60 - 190 * u
@@ -1018,6 +1018,7 @@ def render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
     import on4_club as cl
     cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True
+    car.TAIL_GREY[0] = True; oc.HEART[0] = 1.6; pr.ROTA_INK[0] = True       # (24 Nov) the envelope's heart is the film's one red
     cl.LIMO[0] = (30, 1.15); cl.CLIENT_DY[0] = 0      # the Client stands behind the booth table (his legs reach the floor): left as he was
     st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"; oc.ENV_BIG[0] = 1.25; oc.MASK_UP_V2[0] = True
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W * scale, H * scale); s.set_device_scale(scale, scale)

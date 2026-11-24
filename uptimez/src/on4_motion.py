@@ -485,6 +485,7 @@ def t5():
     fr = []
     hx, hy = pr.LAMP[0] - 40, pr.LAMP[1] - 90
     ax, ay = st.A_LAMP
+    HX, HY = 387, 239                                        # frame 0's neon heart (measured)
     b = (hx - (ax - 270) / 1.6, hy - (ay - 480) / 1.6, 1.6)   # v3: wider, the sleeper in frame; the lamp's head on frame 0's streetlamp
     for _ in range(6):
         fr.append(draw(shot("8.1")))                         # the rota over the cups, her head down
@@ -499,7 +500,16 @@ def t5():
         finally:
             for m, f_ in held:
                 m.shredder = f_
+        c0 = cairo.Context(s)                                # the internal-mail envelope, leaning on the monitor's foot (its heart where frame 0's neon heart is)
+        c0.save(); c0.translate(HX, HY + 16); c0.rotate(-0.08)
+        c0.rectangle(-24, -30, 48, 40); c0.set_source_rgb(*pr.ENV); c0.fill_preserve(); c0.set_source_rgb(*INK); c0.set_line_width(1.6); c0.stroke()
+        c0.restore()
         s = dark(s, 0.88 * d, ax, ay + 20)
+        c0 = cairo.Context(s)                                # its heart, after the dark: it stays lit, the one red, and turns into frame 0's
+        g = cairo.RadialGradient(HX, HY, 4, HX, HY, 60)
+        g.add_color_stop_rgba(0, st.NEON[0], st.NEON[1], st.NEON[2], 0.45 * d); g.add_color_stop_rgba(1, st.NEON[0], st.NEON[1], st.NEON[2], 0)
+        c0.set_source(g); c0.paint()
+        oc.seal(c0, HX, HY, 15)
         c = cairo.Context(s); g = cairo.LinearGradient(0, ay + 180, 0, ay + 236)                    # v4: the floor (the shredder) goes first
         g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0.01, 0.01, 0.02, min(1.0, d * 1.6))
         c.set_source(g); c.paint()
@@ -870,7 +880,7 @@ def t9():
                 _jet(c, hx + 24, hy + 36, 310 * grow, i)
             if 24 <= i < 31:                                 # one ember left, coming down
                 u = (i - 24) / 7.0
-                c.new_path(); c.arc(hx + 250 - 40 * u + 14 * math.sin(i * 1.3), hy - 30 + 230 * u, 4.5, 0, 2 * math.pi); c.set_source_rgb(*st.NEON); c.fill()
+                c.new_path(); c.arc(hx + 250 - 40 * u + 14 * math.sin(i * 1.3), hy - 30 + 230 * u, 4.5, 0, 2 * math.pi); c.set_source_rgb(1.0, 0.92, 0.70); c.fill()
                 c.new_path(); c.arc(hx + 250 - 40 * u + 14 * math.sin(i * 1.3), hy - 30 + 230 * u, 2.2, 0, 2 * math.pi); c.set_source_rgb(*st.GOLD); c.fill()
             if i >= 28:
                 t = ease(min(1.0, (i - 28) / 8.0))
