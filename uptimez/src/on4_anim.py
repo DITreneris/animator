@@ -569,7 +569,7 @@ def a72(t):                                                    # Sofia in mid-st
     if END2[0]:                                                # nearer, from the waist up: her face in the upper half of the safe area, the phone, the mail and Pam's hand in one frame; 2.6 s
         x = 500 + 108 * ease(seg(t, 0.0, 0.6)) + 300 * ease(seg(t, 1.9, 2.6))
         reach = 0.6 <= t < 1.4
-        sof = P("sofia", x, 872 - (5 if int(t * 8) % 2 and (t < 0.6 or t > 1.9) else 0), 0.90, "post" if reach else "hold", "appraise", (0.2, 1.0))
+        sof = P("sofia", x, 890 - (5 if int(t * 8) % 2 and (t < 0.6 or t > 1.9) else 0), 0.90, "post" if reach else "hold", "appraise", (0.2, 1.0))
         cam72 = (651, 665, 2.44); T_UP = (0.85, 1.2); T_MUG = 1.9
     v = ease(seg(t, 0.8, 1.4))
     def post(k):

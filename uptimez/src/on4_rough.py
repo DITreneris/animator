@@ -12,6 +12,7 @@ import numpy as np
 import soundfile as sf
 import on4_scenes as sc
 import on4_voices as vo
+LENS = {}                                                    # line -> its take's length in seconds, as mixed (on4_text reads it)
 END2 = [False]                                               # film v16: the office's sounds on the shorter ending
 
 FPS = 12
@@ -147,19 +148,21 @@ def sound(tm, d, total):
     marks = []
     for key, ln in d["lines"].items():
         t = st_(MOVE7[key][0]) + MOVE7[key][1] if key in MOVE7 else st_(ln["shot"]) + vo.LEAD.get(ln["shot"], 0.3)
-        put(voice, stops(load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), " ".join(p_[0] for p_ in vo.LINES[key][2])), t); marks.append((key, round(t, 2)))
+        a0_ = stops(load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), " ".join(p_[0] for p_ in vo.LINES[key][2])); LENS[key] = len(a0_) / float(SR)
+        put(voice, a0_, t); marks.append((key, round(t, 2)))
     d2, _ = new_takes()
     _clear = []
     for key, (shot, lead, who, txt) in NEW.items():
         t = st_(shot) + lead
         a_ = load(RETAKE.get(key, os.path.join(d2, key + ".wav"))) * VGAIN.get(key, 1.0)
-        put(voice, a_, t); marks.append((key, round(t, 2)))
+        put(voice, a_, t); marks.append((key, round(t, 2))); LENS[key] = len(a_) / float(SR)
         if key in CLEAR:
             _clear.append((t - 0.25, t + len(a_) / float(SR) + 0.45))
     d3 = narr_takes(d.get("narration", "A"))
     for key, (shot, lead, txt) in NARR.items():
         t = st_(shot) + lead
-        put(voice, load(os.path.join(d3, key + ".wav")), t); marks.append((key, round(t, 2)))
+        a3_ = load(os.path.join(d3, key + ".wav")); LENS[key] = len(a3_) / float(SR)
+        put(voice, a3_, t); marks.append((key, round(t, 2)))
     # the office (v4): its own sounds instead of words. Room tone, the machine, her steps, paper, the head going down
     import sound_day1 as dd
     import sound_xmas as sx
