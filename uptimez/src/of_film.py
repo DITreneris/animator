@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 46, 2: 46, 3: 46, 4: 46, 5: 46}
+VER = {1: 47, 2: 47, 3: 47, 4: 47, 5: 47}
 SOUND = "of_sound_v23.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -215,13 +215,13 @@ def s29(t, L):                                             # on his way to the d
     bob = 3 * math.sin(math.pi * min(1.0, ph / 0.7))
     cam = WALK_CAM if t < 1.1 else CAL_CAM                 # v3 (cold tests 3 of 3: it drags; "a calculator"): CUT IN on the two
     x = max(x, 226.0)                                      # v4 (cold test v43): he stops BESIDE his man, not behind him
-    return dict(_cam=cam, father_step=feet if x > 226.0 else None, bubble_over=True, moved=dict(father=(x, 880 - (bob if x > 226.0 else 0)), g2=(120, 872))), {}   # of them, the calendar readable
+    return dict(_cam=cam, father_step=feet if x > 226.0 else None, bubble_top=True, moved=dict(father=(x, 880 - (bob if x > 226.0 else 0)), g2=(120, 872))), {}   # of them, the calendar readable
 
 
-CAL_CAM = (172, 770, 2.6)
+CAL_CAM = (172, 752, 2.6)
 
 
-WALK_CAM = (170, 815, 1.8)                                 # locked: he walks through the frame (a following camera jumped)
+WALK_CAM = (170, 795, 1.8)                                 # locked: he walks through the frame (a following camera jumped)
 
 
 VETO_AT = (505, 880)                                       # v9 (22 Nov, decided): Father shuts the lighter himself
@@ -641,6 +641,77 @@ def held_only(probs):
     return out
 
 
+BUBBLE_PICTURES = {}
+
+
+def shot_frame(sh0, t, tm, call):
+    """one drawing of a shot at t: the motion's state and poses, the film's clock, the mouth; then call(sh)."""
+    sid = sh0["id"]
+    L = tm[sid]["len"]; st0 = tm[sid]["start"]
+    fn = MOTION.get(sid, still)
+    st_over, pose_over = fn(t, L)
+    st_over = dict(st_over)
+    cast = st_over.pop("_cast", None)
+    cam_ = st_over.pop("_cam", None)
+    sh = dict(sh0, state=dict(sh0["state"], **st_over))
+    if cam_ is not None:
+        sh["cam"] = cam_
+    if cast is not None:
+        sh["cast"] = cast
+    saved = sc.POSES.get(sid)
+    if pose_over:
+        base = dict(saved or {})
+        for who, ps in pose_over.items():
+            base[who] = dict(base.get(who, {}), **ps)
+        sc.POSES[sid] = base
+    who = sc.SAY.get(sid, (None,))[0]
+    oc.NOW[0] = st0 + t                                    # v1 (23 Nov): the film's clock, for blinks and breaths
+    oc.SHOT_T[0] = t
+    oc.ACCENT[0] = (who, accent(sid, t))
+    oc.LOOP_T[0] = sc._timing_total()
+    mc_ = mouth_at(sid, t)
+    oc.MOUTH[0] = mc_ if who == "client" else None
+    oc.FATHER_MOUTH[0] = mc_ if who == "father" else None
+    oc.DON_MOUTH[0] = mc_ if who == "don" else None
+    try:
+        if sid in SPLIT:                                    # v12 (cold tests 3 of 3): two short bubbles, not one long
+            fr_, parts = SPLIT[sid]
+            mouth_at(sid, 0.0)
+            a_, sr_ = _TAKE[sid]
+            u_ = (t - LEAD) / (len(a_) / sr_)
+            sh = dict(sh, state=dict(sh["state"], say_txt=parts[0] if u_ < fr_ else parts[1]))
+        return call(sh)
+    finally:
+        oc.MOUTH[0] = oc.FATHER_MOUTH[0] = oc.DON_MOUTH[0] = None
+        if saved is None:
+            sc.POSES.pop(sid, None)
+        else:
+            sc.POSES[sid] = saved
+
+
+def lock_shot(sh0, scene, tm):
+    """v47: place each of this shot's bubbles ONCE per picture (camera and text), at the drawing 60 % into that
+    picture's bubble, when a lean or a turn has settled. -> the bubble checks' messages for those drawings."""
+    sid = sh0["id"]
+    if sid not in sc.SAY:
+        return []
+    L = tm[sid]["len"]; st0 = tm[sid]["start"]
+    nd = max(1, int(round((st0 + L) * DPS)) - int(round(st0 * DPS)))
+    keys = {}
+    for i in range(nd):
+        t = i / DPS
+        if bubble_on(sid, t):
+            keys.setdefault(shot_frame(sh0, t, tm, sc.bubble_key), []).append(t)
+    out = []
+    BUBBLE_PICTURES[sid] = [(k_[1], k_[2], ts[0], ts[-1]) for k_, ts in keys.items()]
+    if len(keys) > 4:                                      # the gate: a camera that moves under a line re-places it every drawing
+        out.append((sid, 0, 0.0, "BUBBLE %s: placed %d times in one shot (a moving camera under a line)" % (sid, len(keys))))
+    for key, ts in keys.items():
+        tr = ts[int(0.6 * (len(ts) - 1))]
+        out += [(sid, int(round(tr * DPS)), tr, q) for q in shot_frame(sh0, tr, tm, lambda sh: sc.lock_bubble(sh, scene))]
+    return out
+
+
 def render_scene(n):
     title, where, scene, shots = sc.SCENES[n - 1]
     tm = sc._timing()
@@ -657,47 +728,13 @@ def render_scene(n):
         fn = MOTION.get(sid, still)
         st0 = tm[sid]["start"]                                 # v2 (rough cut): drawings on the timeline's own grid, so
         nd = max(1, int(round((st0 + L) * DPS)) - int(round(st0 * DPS)))   # the picture never drifts from the sound
+        probs += lock_shot(sh0, scene, tm)                    # v47: its bubbles, placed once per picture
         for i in range(nd):
             t = i / DPS
-            st_over, pose_over = fn(t, L)
-            st_over = dict(st_over)
-            cast = st_over.pop("_cast", None)
-            cam_ = st_over.pop("_cam", None)
-            sh = dict(sh0, state=dict(sh0["state"], **st_over))
-            if cam_ is not None:
-                sh["cam"] = cam_
-            if cast is not None:
-                sh["cast"] = cast
-            saved = sc.POSES.get(sid)
-            if pose_over:
-                base = dict(saved or {})
-                for who, ps in pose_over.items():
-                    base[who] = dict(base.get(who, {}), **ps)
-                sc.POSES[sid] = base
-            who = sc.SAY.get(sid, (None,))[0]
-            oc.NOW[0] = st0 + t                                    # v1 (23 Nov): the film's clock, for blinks and breaths
-            oc.SHOT_T[0] = t
-            oc.ACCENT[0] = (who, accent(sid, t))
-            oc.LOOP_T[0] = sc._timing_total()
-            mc_ = mouth_at(sid, t)
-            oc.MOUTH[0] = mc_ if who == "client" else None
-            oc.FATHER_MOUTH[0] = mc_ if who == "father" else None
-            oc.DON_MOUTH[0] = mc_ if who == "don" else None
-            try:
-                if sid in SPLIT:                                    # v12 (cold tests 3 of 3): two short bubbles, not one long
-                    fr_, parts = SPLIT[sid]
-                    mouth_at(sid, 0.0)
-                    a_, sr_ = _TAKE[sid]
-                    u_ = (t - LEAD) / (len(a_) / sr_)
-                    sh = dict(sh, state=dict(sh["state"], say_txt=parts[0] if u_ < fr_ else parts[1]))
-                surf, p = sc.board_frame(sh, scene, bubble=bubble_on(sid, t))
-            finally:
-                oc.MOUTH[0] = oc.FATHER_MOUTH[0] = oc.DON_MOUTH[0] = None
-                if saved is None:
-                    sc.POSES.pop(sid, None)
-                else:
-                    sc.POSES[sid] = saved
+            surf, p = shot_frame(sh0, t, tm, lambda sh: sc.board_frame(sh, scene, bubble=bubble_on(sid, t)))
             probs += [(sid, i, t, q) for q in p]
+            while sc.BUBBLE_UNLOCKED:                              # the gate: every bubble in the film is a locked one
+                probs.append((sid, i, t, "BUBBLE %s: placed on the spot, not locked" % (sc.BUBBLE_UNLOCKED.pop(),)))
             for _ in range(FPS // DPS):
                 surf.write_to_png(os.path.join(d, "f%04d.png" % k)); k += 1
             if (k // 2) % 4 == 1 or i == 0:                       # about 4 fps for the sheet, and every shot's first drawing

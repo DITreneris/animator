@@ -1010,3 +1010,11 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - Trimming: the room is in silent shots and in SHORT lines' tails; the long lines were already 0.2 s from their cuts. Measure each take against its shot before promising seconds (3.2 s promised, 2.2 s found).
 - Before trimming a shot, read its motion and its sounds: actions and effects sit at fixed times inside it (a look at 0.45 s, a tick at 0.65 s, a ring 1.25 s long) and a shorter shot cuts them off. Re-key the action or leave the shot.
 - A trim can drop a line from the mix without touching it: "Pam?" stopped being heard when 3.3 lost 0.2 s. The sound is built and its lines checked BEFORE any scene renders; `tail` after a command hides its exit code, so do not chain renders on it.
+
+## 235. *The Offer* v47 (24 Nov, Tomas: "the bubble jumps in several places"; cold test, 3 viewers)
+
+- A bubble placed from the head on every drawing follows everything the head does: it flipped sides (1.4), shook with the frame's jolt (0.9), bobbed with a nodding robot and a walking man (3.2, 2.9), slid with a lean (2.4). Measure it: draw each frame with and without the bubble, and the box of what differs is the bubble (`/tmp/bub.py` in the session; 6 of 15 lines moved).
+- A bubble is placed ONCE per picture (one camera, one text), at the drawing 60 % into it, and laid over the frame after everything, so a camera jolt does not move it (`of_scenes.lock_bubble`, `of_film.lock_shot`, `shot_frame`). The gate: a bubble placed on the spot, or more than four placings in a shot, fails the render. 3 of 3 cold viewers: "no bubble moves within a held picture".
+- Not done, and said so: the tail is locked with the box (it does not follow the mouth), and a bubble still takes a new place after a cut inside a line (3 of 3 saw it at 0:18, 0:26, 0:34). Both need the box given from outside in `speech.py` and `fs_animatic.speech`.
+- A layer pasted onto a 2x surface needs the surface's device scale, or it lands twice as big and off the frame.
+- When no wall beside a mouth is free of the listener's face and the prop he holds, the line goes in two short rows over the speaker's head (`bubble_top`, `speech.TOP_FIRST`, opt-in), and the camera comes down a little to make the room.

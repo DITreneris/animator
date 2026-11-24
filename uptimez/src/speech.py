@@ -23,6 +23,7 @@ MONO_SIZE = [24]   # the robot's
 MAX_W = [220]      # the widest a line may wrap to before it takes a second row
 MONO_BOLD = [False]
 SIGNS_FIRST = [False]   # rather a narrower box than one over a story prop
+TOP_FIRST = [False]                                     # opt-in (The Offer v47): with `above`, the box over the head wins when it fits
 
 
 def _weight(font):
@@ -230,11 +231,14 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
         got = overhead()
         if got:
             found.append(((_crowded(got[0], others),) if CLEAR[0] else ()) + (False, False, len(tries), got))
+    top_ = overhead() if (TOP_FIRST[0] and above is not None) else None
     if SIGNS_FIRST[0]:                                    # f[-4:] is (narrow, past a sign, try, got); CLEAR prefixes crowded
         found.sort(key=lambda f: f[:-4] + (f[-3], f[-4], f[-2]))
         picked = found[0][-1] if found else None
     else:
         picked = min(found, key=lambda f: f[:-1])[-1] if found else None
+    if top_:
+        picked = top_
     if picked is None:
         side, tip, y = max(tries, key=lambda t: room_for(t[0], t[1]))
         avail = max(56, room_for(side, tip))

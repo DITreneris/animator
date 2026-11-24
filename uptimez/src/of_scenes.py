@@ -1774,7 +1774,50 @@ def _speech_too_tall(surf, sh, who, txt, fc, cam, va_):
     return (box[3] - box[1]) > 30 * 1.15 * 3 + 20
 
 
+BUBBLE_LOCKS = {}                                           # (shot, camera, text) -> the bubble as it was drawn ONCE for that picture
+BUBBLE_LOCK_ON = [True]
+BUBBLE_UNLOCKED = []                                        # frames whose bubble was placed on the spot (the gate fails on any)
+
+
+def bubble_key(sh):
+    return (sh["id"], repr(sh["cam"]), sh["state"].get("say_txt"))
+
+
+def lock_bubble(sh, scene):
+    """v47 (24 Nov, Tomas: "the bubble jumps in several places", decided): a bubble is placed ONCE for a picture (one
+    camera, one text) and then stands still: it was placed again on every drawing from the head, so it flipped sides
+    (1.4), shook with the frame (0.9), bobbed with a nodding or walking head (3.2, 2.9) and slid with a lean (2.4).
+    The frame is drawn with and without the bubble; what differs IS the bubble (box, text, tail), kept as a layer."""
+    import numpy as np
+    from scipy import ndimage
+    a, msgs = _board_frame_raw(sh, scene, True)
+    b, _ = _board_frame_raw(sh, scene, False)
+    A = np.ndarray((a.get_height(), a.get_width(), 4), np.uint8, a.get_data()).copy()
+    B = np.ndarray((b.get_height(), b.get_width(), 4), np.uint8, b.get_data())
+    m = ndimage.binary_fill_holes((np.abs(A.astype(int) - B.astype(int))[..., :3].max(axis=2) > 0))
+    P = np.zeros_like(A); P[m] = A[m]; P[m, 3] = 255
+    patch = cairo.ImageSurface.create_for_data(bytearray(P.tobytes()), cairo.FORMAT_ARGB32, a.get_width(), a.get_height())
+    ys, xs = np.nonzero(m)
+    BUBBLE_LOCKS[bubble_key(sh)] = (patch, (int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())) if len(xs) else None)
+    return msgs
+
+
 def board_frame(sh, scene, bubble=True):
+    """the frame with its line's bubble: the picture's LOCKED bubble when there is one (lock_bubble), laid over the frame
+    after everything, so a camera jolt does not move it."""
+    if not bubble or sh["id"] not in SAY or not BUBBLE_LOCK_ON[0]:
+        return _board_frame_raw(sh, scene, bubble)
+    lk = BUBBLE_LOCKS.get(bubble_key(sh))
+    if lk is None:
+        BUBBLE_UNLOCKED.append(bubble_key(sh))
+        return _board_frame_raw(sh, scene, True)
+    surf, msgs = _board_frame_raw(sh, scene, False)
+    lk[0].set_device_scale(*surf.get_device_scale())                   # pixel for pixel, whatever the frame's scale
+    c = cairo.Context(surf); c.identity_matrix(); c.set_source_surface(lk[0], 0, 0); c.paint(); surf.flush()
+    return surf, msgs
+
+
+def _board_frame_raw(sh, scene, bubble=True):
     """-> (surface 540 x 960 at 2x, problems). The frame, its line's bubble, and the pixel check of the tail."""
     import numpy as np
     import fs_animatic as an
@@ -1826,12 +1869,18 @@ def board_frame(sh, scene, bubble=True):
         speech.SIZE[0], speech.MONO_SIZE[0], speech.MAX_W[0], speech.MONO_BOLD[0], speech.SIGNS_FIRST[0] = 30, 28, 300, True, True   # v40 (24 Nov, decided):
         av_ = [p[1:] for p in gs.PROTECT]                                # the repo's bubble, read on a phone; never over a story prop
         above_ = (head[0] - head[2] * 0.35, head[1] - head[2] * 0.97) if who == "robot" else None   # people: beside the mouth only
+        top_ = bool(sh["state"].get("bubble_top"))                       # v47 (2.9): no wall beside his mouth that is not his man's
+        if top_:                                                         # face or the phone: two short rows OVER his head, the
+            above_ = (head[0], head[1] - head[2] * 1.02); aim = None      # tail down to his crown
+            speech.MAX_W[0] = 190
+        speech.TOP_FIRST[0] = top_
         if who == "robot":                                               # over the antenna, never across the visor's card
             aim = None
         box, tip = speech.draw(Ctx(c, 0), txt.upper() if who == "robot" else txt, head, mouth=mouth, aim=aim, above=above_,
                                mono=(who == "robot"), others=[v for n, v in fc.items() if n != who], avoid=av_)
         gp_ = speech_gate.check(surf, box, tip, list(fc.values()), aim=aim, before=before)
-        if who == "robot":                                               # the visor's dark rim is not hair: the tip is ON the visor
+        speech.TOP_FIRST[0] = False
+        if who == "robot" or top_:                                       # the visor's dark rim is not hair: the tip is ON the visor
             gp_ = [m for m in gp_ if not m.startswith("TAIL on hair or eyes")]
         return surf, list(msgs) + gp_
     head = fc[who]
