@@ -293,7 +293,7 @@ def shot_JK(t, k_shot):
             hxx, hyy = A.hand_at(x, gy, AS, 1, pr); P.card(c, hxx + 70, hyy - 10, .9, rot=-.05)
         else: P.card(c, lt[0] - 70, lt[1] - 10, .9, rot=-.05)
     # the pot: hanging (K and the walk), lifted over the mug and tipped to pour (J 10-30)
-    hang = (shR[0] - 50, shR[1] + 215)
+    hang = (shR[0] - 70, shR[1] + 75)                                   # v2: the pot is held at his chest/belly (at +215 it hung at his crotch)
     over = (OUT[0] + 70, OUT[1] - 215)
     pu = io((j - 9) / 4) * (1 - io((j - 30) / 5)) if not k_shot else 0
     ph = (lerp(hang[0], over[0], pu), lerp(hang[1], over[1], pu))
