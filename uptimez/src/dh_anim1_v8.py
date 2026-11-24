@@ -4,10 +4,12 @@ inserts, with the call redrawn:
   - 0.4, 0.5b, 0.6, 0.7b (on the phone): of_cast.phone_grip at his ear, the palm behind the phone, its back against his
     head, the arm from his own shoulder with the elbow out (v10: his hand behind his head and the phone by his cheek, not
     in it, hands audit #1; rules: one grip for every phone, lesson 179)
-  - Father's lines (the booth, his face above the frame, and through the phone) on named cards: an off-screen speaker
+  - Father's lines stay v10's: his own dark bubble, under his chin in the booth and to the phone in his son's hand (Tomas,
+    24 Nov: no cards for Father)
   python3 dh_anim1_v8.py [gate|nobub]  ->  ../daddys-home/dh_s1_anim_v8.mp4"""
 import math
 import sys
+from kit import INK
 import cairo
 import kit
 import fs_storyboard as sb
@@ -94,6 +96,7 @@ def d_call(t, tt, face, key=None, lower=0.0, lit=True, face2=None, at2=9.0, look
         finally:
             kit.HAND[0] = real
         o["mouth"] = (d["head"][0] - 27, d["head"][1] + 27 * DON[2])
+        o["phone"] = (px, py - 22 * PHONE_S[0] - 38 * PHONE_S[0])   # the phone's top edge
     return f
 
 
@@ -107,14 +110,57 @@ def _dad(c):                                                # on speaker: the ca
     e = c.text_extents("DAD"); c.move_to(-e.x_advance / 2, -6); c.show_text("DAD")
 
 
+# v10's own bubble (dh_say replaces dh_anim1.bubble with a planner that needs dh_say.plan_scene; here it guessed and the
+# box landed on Don's face): Father's dark box, placed as v10 placed it
+def _v10_bubble(c, text, tip, y=128, up=False, side=0, maxw=372, dark=False, shift=0):
+    """v10 dh_anim1.bubble, copied: a speech bubble in the 540 frame: the box at y, the tail's tip 10 px short of the mouth (or the phone)."""
+    c.select_font_face(kit.FONT); c.set_font_size(31)
+    lines = [""]
+    for w_ in text.split():
+        cand = (lines[-1] + " " + w_).strip()
+        if c.text_extents(cand).x_advance > maxw and lines[-1]:
+            lines.append(w_)
+        else:
+            lines[-1] = cand
+    bw = max(c.text_extents(l).x_advance for l in lines) + 44; bh = 26 + 37 * len(lines)
+    bx = min(max(tip[0] + side * (bw / 2 - 26) - bw / 2 + shift, 24), 462 - bw)   # shift: the box moved off a prop (scene 2: the crown)
+    tx = min(max(tip[0], bx + 30), bx + bw - 30)
+    c.set_line_join(1)
+    for fill in (False, True):
+        c.new_path()
+        r = 16
+        c.arc(bx + r, y + r, r, math.pi, 1.5 * math.pi); c.arc(bx + bw - r, y + r, r, 1.5 * math.pi, 0)
+        c.arc(bx + bw - r, y + bh - r, r, 0, 0.5 * math.pi); c.arc(bx + r, y + bh - r, r, 0.5 * math.pi, math.pi); c.close_path()
+        if up:
+            c.move_to(tx - 14, y + 2); c.line_to(tip[0], tip[1] + 10); c.line_to(tx + 14, y + 2); c.close_path()
+        else:
+            c.move_to(tx - 14, y + bh - 2); c.line_to(tip[0] + side * 4, tip[1] - 3); c.line_to(tx + 14, y + bh - 2); c.close_path()
+        if fill:
+            c.set_source_rgb(*((0.16, 0.05, 0.08) if dark else (1, 1, 1))); c.fill()
+        else:
+            c.set_source_rgb(*((0.93, 0.25, 0.35) if dark else INK)); c.set_line_width(7); c.stroke()
+    c.set_source_rgb(*((1, 1, 1) if dark else INK))
+    for i, l in enumerate(lines):
+        c.move_to(bx + (bw - c.text_extents(l).x_advance) / 2, y + 42 + 37 * i); c.show_text(l)
+
+
+
+def _father_phone(sc, k, cam, t, tt, n, box):
+    """0.5b: Father's line through the phone: v10's dark bubble, its tail to the phone in Don's hand."""
+    if E.NOBUB[0] or not V7.speaking("0.5", tt) or "phone" not in box:
+        return
+    w = box["phone"]
+    tip = (270 + (w[0] - cam[0]) * cam[2], 480 + (w[1] - cam[1]) * cam[2])
+    _v10_bubble(k.c, "I arrive at five.", tip, y=150, side=1, maxw=150, dark=True)
+
+
 # ---- the bridge: dh_anim1.frame's branches as shots and inserts
 class Bridge1:
     def __init__(self):
         self.rows, self.T0, self.total, self.phone = V7.ROWS, V7.T0, V7.TOTAL, False
         self.shot, self.DRAW, self.INS = {}, {}, {}
         self.SHIFT, self._cam0, self.PRE = {}, {}, None
-        self.CARD = {"Donnie.": "FATHER", "My men go in first.": "FATHER", "Today.": "FATHER"}
-        self.CARD8 = {"I arrive at five.": "FATHER"}           # his voice through the phone
+        self.FG8 = {"0.5b": [_father_phone]}                   # "I arrive at five.": his dark bubble to the phone
         HS, H = ds.HS, ds.H
         for sid, _ in self.rows:
             if sid in INSERT:
@@ -127,20 +173,29 @@ class Bridge1:
 
     def _ins(self, sid):
         def f(sc, k, c, t, tt, n):
+            line = self._booth(sid, k, c, t, tt, n)
+            if line and not E.NOBUB[0]:                     # v10's booth bubble: dark, under his chin (his face is above the frame)
+                c.save(); c.identity_matrix(); hi = c.get_target().get_width() / 540.0; c.scale(hi, hi)
+                _v10_bubble(c, line, (270, 178 - 14), y=200, up=True, dark=True)
+                c.restore()
+            return None
+        return f
+
+    def _booth(self, sid, k, c, t, tt, n):
+        if True:
             if sid == "0.1":
                 V7.d_phone(t, n)(k, c); return None
             if sid == "0.3":
                 V7.d_booth(t)(k, c)
-                return ("Donnie.",) if V7.speaking("0.3", tt) else None
+                return "Donnie." if V7.speaking("0.3", tt) else None
             if sid == "0.5a":
                 w = t - 0.95
                 tp = 0.0 if w < 0 else (1.0 if w < 0.17 else max(0.0, 1.0 - (w - 0.17) / 0.17))
                 V7.d_booth(t, tap=tp, jolt=2.0 if 0 <= w < 0.09 else 0.0)(k, c)
-                return ("My men go in first.",) if V7.speaking("0.5", tt) else None
+                return "My men go in first." if V7.speaking("0.5", tt) else None
             w = t - 0.72
             V7.d_booth(t, down=w >= 0.17, turn=(0.35 if w < 0.085 else 0.72) if 0 <= w < 0.17 else None, jolt=3.0 if 0.17 <= w < 0.26 else 0.0)(k, c)
-            return ("Today.",) if V7.speaking("0.7", tt) else None
-        return f
+            return "Today." if V7.speaking("0.7", tt) else None
 
     def _draw(self, sid):
         def f(sc, k, o, t, tt, n):
@@ -157,8 +212,6 @@ class Bridge1:
                 o["say"] = ("Dad! Great timing!", o["mouth"])
             elif sid == "0.6" and V7.speaking("0.6", tt):
                 o["say"] = ("Tomorrow?", o["mouth"])
-            elif sid == "0.5b" and V7.speaking("0.5", tt):
-                o["say"] = ("I arrive at five.", o["mouth"])
         return f
 
     def sound(self, out):

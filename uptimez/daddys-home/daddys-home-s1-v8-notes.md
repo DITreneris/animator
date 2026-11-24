@@ -15,7 +15,9 @@ Lessons applied:
   - v10 had his hand behind his head and the phone by his cheek, not in it (hands audit #1).
   - At his ear, in the series grip, the phone "is stuck to his cheek" 2/2: his head is wider than his arm is long, so the hand cannot reach round it with the elbow out.
   - In 0.7b the call ends: the screen goes dark and the phone tips as his hand drops.
-- **Father's lines** (the booth, his face above the frame, and "I arrive at five." through the phone) are on named cards (FATHER), as an off-screen speaker.
+- **Father's lines stay v10's** (Tomas, 24 Nov: no FATHER cards): his own dark bubble, under his chin in the booth, and for "I arrive at five." at the top with its tail to the phone in Don's hand.
+  - They use a copy of v10's `dh_anim1.bubble`: `dh_say` replaces that function with a planner that needs `dh_say.plan_scene`, and without the plan it put the box on Don's face.
+  - These boxes are not in speech_gate's count (v10's placement).
 - **0.2b** (the seat's drop): `ymin` 320, so `clear_signs` does not push the camera so far that the price tag goes under the title bar on the first lift.
 
 ## Checks
