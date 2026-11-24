@@ -484,6 +484,7 @@ def draw_cast(k, cast):
         if who == "pam_cat":
             oc.HUNT[0] = kw.pop("hunt", 0.0)
             cy = kw.pop("clip_y", None)
+            behind = kw.pop("behind", False)                 # (24 Nov) her back to us, with the walk's knees and hips (pam_from_behind has neither)
             twist = kw.pop("twist", 0.0)                     # (24 Nov, the walk's review) her shoulders against her hips: the same drawing cut at the belt, the upper half turned about it
             tilt = kw.pop("tilt", 0.0)                       # (24 Nov) her head a little behind her body: the same drawing twice, cut at the neck, the head's half turned about it
             if kw.pop("rim", False):                         # board v9: a thin rim of light round her
@@ -508,6 +509,13 @@ def draw_cast(k, cast):
                 c_.rectangle(a[0] - 600, wy_ - 1200, 1200, 1200 + 7 * a[2]); c_.clip(); _upper(); c_.restore()
             else:
                 o = _upper()
+            if behind:                                       # the back of her head over her face: her brown bob, the ears
+                hx, hy = o["head"]; s_ = a[2]
+                if twist:
+                    wy_ = a[1] - 150 * s_; dx_, dy_ = hx - a[0], hy - wy_
+                    hx, hy = a[0] + dx_ * math.cos(twist) - dy_ * math.sin(twist), wy_ + dx_ * math.sin(twist) + dy_ * math.cos(twist)
+                kit.ellipse(k, hx, hy - 4 * s_, 62 * s_, 58 * s_, (0.36, 0.30, 0.27), 7301, shadow=False, lw=2.4)
+                oc.ears(k, hx, hy, s_)
             if cy is not None:
                 k.c.restore()
         elif who == "pam_from_behind":                       # her back to us: the figure, the face covered by the back of

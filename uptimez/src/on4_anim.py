@@ -46,8 +46,8 @@ KNEE_K = 0.6                                               # (review: "the knees
 
 def kneel(drop, **kw):
     """_pam's knee dict, or None when the knees are straight"""
-    if m.LAW[0] and not kw and drop <= 20:                 # (24 Nov) no squat with both knees out (a diamond): the weight on one leg, the other loose
-        return relax(min(1.0, drop / 12.0))
+    if m.LAW[0] and not kw and drop <= 20:                 # (24 Nov) no squat with both knees out (a diamond); and (Tomas: "she sways like a drunk") no shifting about either:
+        return None                                        # standing, she stands; she moves when she walks (catwalk)
     kw = {k_: (v[0], v[1] * KNEE_K, v[2]) for k_, v in kw.items()}
     drop = drop * KNEE_K * (0.5 if m.LAW[0] else 1.0)
     return dict(drop=drop, **kw) if drop > 2.5 or kw else None
@@ -59,7 +59,7 @@ def relax(u):
     return dict(drop=2.0 * u, r=(9.0 * u, 10.0 * u, 1)) if u > 0.05 else None
 
 
-def catwalk(ph):
+def catwalk(ph, away=False):
     """(24 Nov, Tomas: "her walk lacks a cat's manners"; v2 after the review) one stride, ph 0..1 (two steps), from the
     front. Each foot set down on one line under her middle, the free foot low and round (a glide, not a march); the
     hips swing out over the standing leg; the shoulders turn the other way (the figure cut at the belt); the head tips
@@ -78,6 +78,9 @@ def catwalk(ph):
     free = (free_dx, 7.0 * sw, -side)                        # low: it slides
     kn = dict(drop=0.5 + 1.2 * abs(math.cos(math.pi * u)), l=stand if left_stands else free, r=free if left_stands else stand)
     a = math.cos(math.pi * h)
+    if away:                                               # the second walk (Tomas: she may walk twice, the walk a little different): leaving, her back to us: both arms loose, the hips wider, no tilt of the head
+        arms = oc.pm.ik(-1, -34 + 9 * a, oc.BT + 134 - 3 * abs(a)) + oc.pm.ik(1, 34 + 9 * a, oc.BT + 134 - 3 * abs(a))
+        return arms, ("relax_s", "relax_s"), kn, 0.085 * s_, 19.0 * s_, dict(twist=-0.12 * s_, behind=True)
     arms = tuple(HERO[:2]) + oc.pm.ik(1, 34 + 9 * a, oc.BT + 132 - 3 * abs(a))   # screen-left glove on her hip; the other swings, loose
     return arms, ("fist", "relax_s"), kn, 0.075 * s_, 16.0 * s_, dict(tilt=-0.03 * s_, twist=-0.10 * s_, hunt=0.5)
 
@@ -114,14 +117,14 @@ def a13(t):
         u = ease(seg(t, 0.9, 1.6))
         arms, face, look, rot, kn = asym(lerp(HERO, SAG, u), 8 * u), "fade", (0.9, 0.2 + 0.4 * u), 0.05 * u + weight(14 * u), kneel(14 * u)
         if m.LAW[0]:
-            rot, kn = -0.03 * u, relax(u)
+            rot, kn = 0.0, None                            # she stands firm: only her arms and face let down
     elif t < 2.3:                                                              # the coat pulled straight: two tugs, a lift
         u = seg(t, 1.6, 2.3)
         tug = abs(math.sin(u * 2 * math.pi))
         arms, face, look = asym(lerp(SAG, TUG, min(1.0, u * 3)), 5), "peer", (0.0, 0.8)
         kn = kneel(14 * (1 - u) + 8 * tug); rot = weight(14 * (1 - u) + 8 * tug) - 0.03 * tug
         if m.LAW[0]:
-            kn = relax(max(0.0, 1 - u * 1.4)); rot = -0.03 * max(0.0, 1 - u * 1.4) - 0.02 * tug
+            kn = None; rot = 0.0
     else:                                                                      # and the pose again, as if
         u = ease(seg(t, 2.3, 2.6))
         arms, face, look, rot, kn = lerp(TUG, HERO, u), "proud", (-0.4, -0.2), 0.0, None
@@ -182,10 +185,15 @@ def a14(t):
     kn = kneel(d, r=(10 * step, 8 * math.sin(step * math.pi * 2) ** 2, 1)) if step > 0 else kneel(d)
     rot_ = 0.04 * u + weight(d)
     if m.LAW[0]:                                                               # (Tomas: "where does she go?"; the review) she does not walk on the spot: she stays, her weight goes onto one leg, she turns to the arch and leans after them
-        lean_ = ease(seg(t, 2.0, 2.7))
-        p = P("pam_cat", 150 - 4 * u + 6 * lean_, 760, 0.84, pose(asym(lerp(HERO, (-30, 40, 34, -26), u), 6 * u), ("fist", "relax_s" if u > 0.5 else "fist")),
-              "approve" if t < 1.0 else "peer", (0.6 * (1 - u) + 0.9 * u, -0.6 - 0.2 * u), rim=True)
-        kn = relax(u); rot_ = -0.03 * u + 0.05 * lean_
+        if t < 1.15:                                       # she stands firm and watches them go: only her eyes move
+            p = P("pam_cat", 128, 760, 0.84, pose(HERO, ("fist", "fist")), "approve" if t < 0.9 else "peer", (0.6 + 0.3 * seg(t, 0.3, 0.9), -0.6), rim=True,
+                  hunt=0.5 * seg(t, 0.9, 1.1))
+            kn = None; rot_ = 0.0
+        else:                                              # and goes after them up the lane: her cat's walk, from behind, smaller with the distance
+            w = (t - 1.15) / 1.65                          # 0..1 over the rest of the shot
+            yy = 760 - 96 * w; ss = 0.84 * (yy - YV) / float(760 - YV)
+            ar_, ge_, kn, rot_, dx_, kw_ = catwalk((t - 1.15) / 0.92, away=True)
+            p = P("pam_cat", 128 + 10 * w + dx_ * ss, yy, ss, pose(ar_, ge_), "peer", (0, 0), rim=True, **kw_)
     def before(k):
         for x, y, s_ in shadows:
             contact(k, x, y, s_)
