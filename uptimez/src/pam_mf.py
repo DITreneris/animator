@@ -101,6 +101,9 @@ def half_moon(c, cx, top, w, h):
     c.curve_to(cx + w / 2, top + h * 1.2, cx - w / 2, top + h * 1.2, cx - w / 2, top); c.close_path()
 
 
+GCHAIN_DX = [0.0]                                          # opt-in (24 Nov, episode 13), px at the chain's end
+
+
 def glasses_draw(k, x, y, state, seed=0):
     """Reading glasses: half-moon lenses low on the nose, the eyes peek over; a gold bead chain from the temples."""
     if state in (None, "off"):
@@ -113,7 +116,7 @@ def glasses_draw(k, x, y, state, seed=0):
         c.set_source_rgb(*GOLD)
         for i in range(10):
             t = i / 9
-            bx = x0 + sx * (4 * math.sin(t * math.pi * 0.9))
+            bx = x0 + sx * (4 * math.sin(t * math.pi * 0.9)) + GCHAIN_DX[0] * t * t     # opt-in: the chain swings
             by = y0 + t * 50
             c.arc(bx, by, 1.5, 0, 2 * math.pi); c.fill()
     c.set_source_rgb(*INK); c.set_line_width(2.4); c.set_line_cap(1)

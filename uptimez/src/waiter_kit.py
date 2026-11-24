@@ -163,6 +163,9 @@ HEAD_DX = {"travel": 6, "lean": 8}
 HEAD_ROT = {"lean": -0.10}
 
 
+ANT_DX = [0.0]
+
+
 def robot(k, x, feet, s=1.0, pose="stand", face="eager", look=(0, 0), wobble=0.0, side=1, talk=0.0,
           tray=None, seed=900, badge=True, locked=None, head_dx=None, head_rot=None):
     """tray: None | "empty" | "dome" (carried in the front hand).
@@ -219,8 +222,14 @@ def robot(k, x, feet, s=1.0, pose="stand", face="eager", look=(0, 0), wobble=0.0
     c.save(); c.scale(side, 1)                                   # keep the face un-mirrored
     screen_face(k, face, look=(look[0] * side, look[1]), talk=talk, side=side)
     c.restore()
-    c.set_source_rgb(*INK); c.set_line_width(2.4); c.move_to(0, -44); c.line_to(0, -58); c.stroke()
-    ellipse(k, 0, -62, 6, 6, GLOW_STERN if face == "stern" else (1.0, 0.82, 0.25), seed + 52, shadow=False, lw=1.5)
+    ax_ = ANT_DX[0]                                                       # opt-in (24 Nov, episode 13): the antenna whips
+    c.set_source_rgb(*INK); c.set_line_width(2.4); c.move_to(0, -44)
+    if ax_:
+        c.curve_to(0, -50, ax_ * 0.4, -55, ax_, -58)
+    else:
+        c.line_to(0, -58)
+    c.stroke()
+    ellipse(k, ax_, -62, 6, 6, GLOW_STERN if face == "stern" else (1.0, 0.82, 0.25), seed + 52, shadow=False, lw=1.5)
     c.restore()
     c.restore()
     # canvas-space points (rotation ignored for points: tilts are small)

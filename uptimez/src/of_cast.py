@@ -137,7 +137,11 @@ def arms_to(x, feet, s, flip=False, targets=(), rest=None):
 
 def guard(k, x, feet, s, flip=False, targets=(), turn=0.0, seed=1600):
     pose = arms_to(x, feet, s, flip, targets, rest=dc.GUARD_POSE) if targets else None
-    o = dc.guard(k, x, feet, s, pose=pose, flip=flip, seed=seed)
+    dc.COIL_DX[0] = max(-9.0, min(9.0, -14.0 * follow("coil%d" % seed, turn, 1.8, 0.3)))   # v2 (24 Nov): the coil trails his head
+    try:
+        o = dc.guard(k, x, feet, s, pose=pose, flip=flip, seed=seed)
+    finally:
+        dc.COIL_DX[0] = 0.0
     if turn:
         _turn_head(k, x, feet, s, flip, turn, seed)
     return o
@@ -230,10 +234,16 @@ def father(k, x, feet, s, face="hard", look=(1, 0), targets=()):
             free[side] = ik(side * 40, sy, tx, ty, 48, 48, side)
         pose = tuple(list(free.get(-1, (-8, 0))) + list(free.get(1, (8, 0))))
     dc.BROW_UP[0] = 14 if face == "brow2" else 9; dc.BROW_DARK[0] = face == "brow2"                                # v8: his one move, big enough to read
+    dd_ = dart("father", FATHER_MOUTH[0] is not None)
+    look = (look[0] + dd_[0], look[1] + dd_[1]) if look else look
     dc.MOUTH_CODE[0] = FATHER_MOUTH[0]; dc.BLINK[0] = blink("father")
+    acc_ = ACCENT[0][1] if ACCENT[0][0] == "father" else 0.0                     # v9 (24 Nov): the chain swings after him
+    T_ = (x + 0.10 * (targets[0][0] - x) if targets else x) / s + 6 * acc_
+    dc.CHAIN_DX[0] = max(-7.0, min(7.0, -1.6 * follow("father_chain", T_, 1.5, 0.22)))
     try:
         o = dc.father(k, x, feet, s, pose=pose, face="brow" if face == "brow2" else face, look=look)
     finally:
+        dc.CHAIN_DX[0] = 0.0
         dc.BROW_UP[0] = 9; dc.BROW_DARK[0] = False; dc.MOUTH_CODE[0] = None; dc.BLINK[0] = False
     _stubble(k, o["head"], s, low=face == "low")
     return o
@@ -281,6 +291,9 @@ def _narrow(fn):
 
 MOUTH = [None]                                             # the film's lip sync: a mouth code for the Client this drawing
 FATHER_MOUTH = [None]; DON_MOUTH = [None]                  # v2 (23 Nov, decided): lip sync for every speaker with a mouth
+SHOT_T = [None]                                            # v2 (24 Nov): time into the current shot (a blink on the cut)
+LIVE = [True]                                              # v2 (24 Nov, decided): irregular blinks, eye darts while listening
+ACCENT = [(None, 0.0)]                                     # v1 (24 Nov): (speaker, 0..1 stress) this drawing
 NOW = [None]                                               # v1 (23 Nov, decided: no frozen frames): the film's clock this drawing
 
 
@@ -292,15 +305,78 @@ def _fit(period):
     return T / max(1, round(T / period)) if T else period
 
 
+def _blink_times(name, total=120.0):
+    """v2 (24 Nov, decided): irregular blinks, 2-6 s apart, one in seven a double; each face its own fixed sequence."""
+    import random
+    r = random.Random("blink-" + name)
+    t, out = r.uniform(0.6, 2.0), []
+    while t < total:
+        out.append(t)
+        if r.random() < 0.14:
+            out.append(t + 0.27)                                  # a double blink
+        t += r.uniform(2.0, 6.0)
+    return out
+
+
+_BT = {}
+
+
 def blink(name):
-    """a blink, 2 drawings, on each face's own clock (the film's time, so a cut doesn't reset it); never in the
-    first or the last half second (frame 0 and the loop's last frame stay the same drawing)."""
+    """a blink, 2-4 drawings (0.13 s), on each face's own clock (the film's time, so a cut doesn't reset it); never in
+    the first or the last half second (frame 0 and the loop's last frame stay the same drawing). v2: irregular, and a
+    blink on a cut (the first 0.04-0.17 s of a shot), as a real eye does when the view changes."""
     if NOW[0] is None:
         return False
     if NOW[0] < 0.5 or (LOOP_T[0] and NOW[0] > LOOP_T[0] - 0.5):
         return False
-    period, off = {"client": (3.3, 0.4), "father": (4.1, 1.7), "don": (2.9, 2.2)}.get(name, (3.7, 0.0))
-    return (NOW[0] + off) % period < 0.13
+    if not LIVE[0]:
+        period, off = {"client": (3.3, 0.4), "father": (4.1, 1.7), "don": (2.9, 2.2)}.get(name, (3.7, 0.0))
+        return (NOW[0] + off) % period < 0.13
+    if SHOT_T[0] is not None and 0.04 <= SHOT_T[0] < 0.17 and __import__("zlib").crc32(name.encode()) % 2 == 0:
+        return True
+    bt = _BT.setdefault(name, _blink_times(name))
+    return any(0.0 <= NOW[0] - b < 0.13 for b in bt)
+
+
+def dart(name, speaking):
+    """v1 (24 Nov, decided): a listener's eyes shift a little and come back every 1.5-3 s (0.25-0.5 s away); the
+    speaker's stay put. Returns an offset for look=(x, y)."""
+    if not LIVE[0] or speaking or NOW[0] is None or NOW[0] < 0.5 or (LOOP_T[0] and NOW[0] > LOOP_T[0] - 0.5):
+        return (0.0, 0.0)
+    import random
+    r = random.Random("dart-" + name)
+    t = r.uniform(0.8, 1.6)
+    while t < NOW[0]:
+        hold = r.uniform(0.25, 0.5)
+        dx, dy = r.choice((-1, 1)) * r.uniform(0.25, 0.45), r.uniform(-0.15, 0.2)
+        if NOW[0] < t + hold:
+            return (dx, dy)
+        t += hold + r.uniform(1.5, 3.0)
+    return (0.0, 0.0)
+
+
+_SPR = {}
+
+
+def follow(key, target, hz=1.6, zeta=0.25):
+    """v1 (24 Nov, decided: secondary motion): a damped spring that chases target on the film's clock; returns
+    (where it is) - target, the lag of a thing that hangs or springs (a chain, a coil, an antenna). Frames come in order
+    in a render; a jump in time (a still, a new scene) starts it at rest."""
+    if NOW[0] is None or not LIVE[0]:
+        return 0.0
+    st = _SPR.get(key)
+    if st is None or not (0.0 < NOW[0] - st[0] < 0.2):
+        _SPR[key] = (NOW[0], target, 0.0)
+        return 0.0
+    t0, p, v = st
+    dt = NOW[0] - t0
+    w = 2 * math.pi * hz
+    for _ in range(4):
+        h = dt / 4
+        a = -w * w * (p - target) - 2 * zeta * w * v
+        v += a * h; p += v * h
+    _SPR[key] = (NOW[0], p, v)
+    return p - target
 
 
 def breath(name):
@@ -309,7 +385,8 @@ def breath(name):
         return 0.0
     ph = {"client": 0.0, "father": 1.3, "g1": 2.1, "g2": 0.7, "don": 1.9, "pam": 2.6, "robot": 0.0}.get(name, 0.5)
     P = _fit(3.4)                                          # a whole number of breaths in the film: the loop's join holds
-    return 0.007 * math.sin(2 * math.pi * (NOW[0] + ph * P / 3.4) / P) if name != "robot" else 0.0
+    amp = 0.012 if LIVE[0] else 0.007                      # v2 (24 Nov, decided): the chest and shoulders rise (of_scenes)
+    return amp * math.sin(2 * math.pi * (NOW[0] + ph * P / 3.4) / P) if name != "robot" else 0.0
 
 
 @_narrow
@@ -326,6 +403,8 @@ def client(k, x, feet, s, look=(-1, 0), targets=(), clip_hip=False, face="bored"
         co.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in co.FACES.items()})
         cof.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in cof.FACES.items()})
     try:
+        dd_ = dart("client", MOUTH[0] is not None)
+        look = (look[0] + dd_[0], look[1] + dd_[1]) if look else look
         o = cof.client(k, x, feet, s, pose, face, look=look, mouth=MOUTH[0])
     finally:
         if old_f is not None:
@@ -652,7 +731,11 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
     """Don in the throne: dq.don_seated's own drawing, with his arms and face set (pose: kit angles); forward: he sits up."""
     c = k.c
     cs = s
-    dp.ceo_chair(k, x, floor, cs)
+    dp.CROWN_ROT[0] = max(-0.18, min(0.18, -0.9 * follow("crown", forward + 0.4 * sweat / 3.0, 2.2, 0.18)))   # v8: it rocks
+    try:
+        dp.ceo_chair(k, x, floor, cs)
+    finally:
+        dp.CROWN_ROT[0] = 0.0
     seat_y = floor - 110 * cs + 4 * s
     feet = seat_y - dq.WAIST * s
     c.save(); c.rectangle(x - 200 * s, seat_y - 400 * s, 400 * s, 400 * s + 2); c.clip()
@@ -661,7 +744,8 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
     def draw_d():
         c.save(); c.translate(x, seat_y); c.scale(1.0, 1.0 + br_); c.translate(-x, -seat_y)
         try:
-            return sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=look)
+            dd_ = dart("don", DON_MOUTH[0] is not None)                               # v9 (24 Nov): his eyes dart as he listens
+            return sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=(look[0] + dd_[0], look[1] + dd_[1]) if look else look)
         finally:
             c.restore()
     o = held(k, draw_d, lambda o_: list(o_["hands"][:2])) if phone_dad else draw_d()   # v5 (hand audit): the phone and the clutch
@@ -703,8 +787,18 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
 TURN_DX = 34                                               # the head's slide at a full turn (ep 12 used 14: too small)
 
 
-def robot(k, x, feet, s, turn=0.0):
-    """turn 0..1: its head turning toward Don (episode 12's 10.5a at 1); the smile never changes."""
+def robot(k, x, feet, s, turn=0.0, bob=0.0):
+    """turn 0..1: its head turning toward Don (episode 12's 10.5a at 1); the smile never changes. v3 (24 Nov): the
+    antenna whips after the head and the bob."""
+    import waiter_kit as wk_
+    wk_.ANT_DX[0] = max(-10.0, min(10.0, -1.4 * follow("antenna", 18 * turn + bob, 3.0, 0.16)))
+    try:
+        return _robot(k, x, feet, s, turn)
+    finally:
+        wk_.ANT_DX[0] = 0.0
+
+
+def _robot(k, x, feet, s, turn=0.0):
     if turn <= 0:
         return dq.robot_state(k, x, feet, s, "idle")
     o = dq.rm.robot(k, x, feet, s, (0.0, 0, 0, (-8, 0), (8, 0)), "eager", (turn, 0), 1, head_dx=TURN_DX * turn * 0.5, head_rot=0.0)

@@ -255,23 +255,90 @@ SPEECH = [True]                                            # v40 (24 Nov, decide
 MOUTH_AT = {}                                              # mouths a pose knows better than the face point (the profile)
 
 
+LIGHT = [True]     # v41 (24 Nov, Tomas: "flat colours, no light"): contact shadows and the room's light (grade)
+SHADOW_W = dict(father=40, g1=46, g2=46, client=42, don=40, pam=34, robot=34)
+
+
+def _contact_shadow(k, n, scene, sh):
+    """a soft dark ellipse on the floor under his feet, drawn before him."""
+    if not LIGHT[0]:
+        return
+    st = sh["state"]
+    if n == "client" and (st.get("sit") or scene in (1, 2, 3) and not st.get("front_of_car")):
+        return                                                       # under the car, on the creeper, or bent in behind its wing
+    pos = dict(BLOCK[0] if st.get("doorway") else BLOCK[scene], **st.get("moved", {}))
+    if n not in pos:
+        return
+    x, f = pos[n]
+    if f < F - 6:
+        return
+    w = SHADOW_W.get(n, 38)
+    c = k.c
+    c.save(); c.translate(x, f + 3); c.scale(w, 8)
+    g = cairo.RadialGradient(0, 0, 0.2, 0, 0, 1.0)
+    g.add_color_stop_rgba(0, 0.04, 0.04, 0.07, 0.34); g.add_color_stop_rgba(1, 0.04, 0.04, 0.07, 0.0)
+    c.set_source(g); c.arc(0, 0, 1.0, 0, 2 * math.pi); c.fill(); c.restore()
+
+
+def grade(c, scene):
+    """the room's light over the whole frame, under the bubbles: a darker ceiling and corners, a warm pool where the
+    light is, the floor darker toward us. Subtle: the drawing stays flat-coloured, it just stops being evenly lit."""
+    if not LIGHT[0]:
+        return
+    office = scene == 4
+    c.save(); c.identity_matrix()
+    g = cairo.LinearGradient(0, 0, 0, 300)
+    g.add_color_stop_rgba(0, 0.05, 0.05, 0.08, 0.10 if office else 0.22); g.add_color_stop_rgba(1, 0.05, 0.05, 0.08, 0.0)
+    c.set_source(g); c.rectangle(0, 0, 540, 300); c.fill()
+    g = cairo.LinearGradient(0, 760, 0, 960)
+    g.add_color_stop_rgba(0, 0.05, 0.05, 0.08, 0.0); g.add_color_stop_rgba(1, 0.05, 0.05, 0.08, 0.12 if office else 0.20)
+    c.set_source(g); c.rectangle(0, 760, 540, 200); c.fill()
+    g = cairo.RadialGradient(270, 470, 230, 270, 470, 640)
+    g.add_color_stop_rgba(0, 0.04, 0.04, 0.07, 0.0); g.add_color_stop_rgba(1, 0.04, 0.04, 0.07, 0.20 if office else 0.34)
+    c.set_source(g); c.paint()
+    g = cairo.RadialGradient(270, 380, 10, 270, 380, 330)
+    w_ = (1.0, 0.92, 0.70) if not office else (1.0, 0.96, 0.86)
+    g.add_color_stop_rgba(0, w_[0], w_[1], w_[2], 0.10); g.add_color_stop_rgba(1, w_[0], w_[1], w_[2], 0.0)
+    c.set_source(g); c.paint()
+    c.restore()
+
+
 def _cast_draw(k, n, scene, sh, heads):
-    """v2 (23 Nov, decided: no frozen frames): every cast member breathes, about his feet; his head point follows."""
+    """v2 (23 Nov, decided: no frozen frames): every cast member breathes; his head point follows. v3 (24 Nov, decided):
+    the breath lifts the chest, shoulders and head (above the hips) and the legs stand; a speaker's head and shoulders
+    dip a little on a stressed syllable. The figure is drawn ONCE into a group and painted in two parts."""
+    _contact_shadow(k, n, scene, sh)
     b_ = _oc.breath(n)
-    if not b_:
+    who_, acc_ = _oc.ACCENT[0]
+    dip = 2.2 * acc_ if (who_ == n and _oc.LIVE[0]) else 0.0
+    if not b_ and not dip:
         return _cast_draw0(k, n, scene, sh, heads)
     pos = dict(BLOCK[0] if sh["state"].get("doorway") else BLOCK[scene], **sh["state"].get("moved", {}))
     x, f = pos.get(n, (0, F))
     c = k.c
-    c.save(); c.translate(x, f); c.scale(1.0, 1.0 + b_); c.translate(-x, -f)
+    if not _oc.LIVE[0]:
+        c.save(); c.translate(x, f); c.scale(1.0, 1.0 + b_); c.translate(-x, -f)
+        try:
+            r = _cast_draw0(k, n, scene, sh, heads)
+        finally:
+            c.restore()
+        if n in heads:
+            hx_, hy_, hr_ = heads[n]
+            heads[n] = (hx_, f + (hy_ - f) * (1.0 + b_), hr_)
+        return r
+    c.push_group()
     try:
         r = _cast_draw0(k, n, scene, sh, heads)
     finally:
-        c.restore()
-    if n in heads:
-        hx_, hy_, hr_ = heads[n]
-        heads[n] = (hx_, f + (hy_ - f) * (1.0 + b_), hr_)
-    return r
+        pat = c.pop_group()
+    hy0 = heads[n][1] if n in heads else f - 300
+    hip = f + (hy0 - f) * 0.42                                   # about the belt
+    c.save(); c.rectangle(-5000, hip, 10000, 10000); c.clip(); c.set_source(pat); c.paint(); c.restore()
+    c.save(); c.rectangle(-5000, -10000, 10000, 10000 + hip + 0.5); c.clip()
+    c.translate(x, hip); c.scale(1.0, 1.0 + b_ * (f - hip) / max(1.0, hip - hy0) * 2.2); c.translate(-x, -hip)
+    c.translate(0, dip)
+    c.set_source(pat); c.paint(); c.restore()
+    return r                                                     # heads[n] stays the still head: the camera and the bubble don't swim
 
 
 def _cast_draw0(k, n, scene, sh, heads):
@@ -1025,19 +1092,24 @@ def desk_shot(k, sh, heads):
             don(k_, o)
         bob_ = sh["state"].get("robot_bob", 0.0)                       # v2 (23 Nov): it bobs as it talks (the wheel stays down)
         k_.c.save(); k_.c.translate(dl.RX, F + 4); k_.c.scale(1.0, 1.0 + bob_ / 300.0); k_.c.translate(-dl.RX, -(F + 4))
-        r = oc.robot(k_, dl.RX, F + 4, rs, turn=float(sh["state"].get("turn", 0.0)))
+        r = oc.robot(k_, dl.RX, F + 4, rs, turn=float(sh["state"].get("turn", 0.0)), bob=bob_)
         sx_, sy_ = k_.c.user_to_device(*r["screen"]); k_.c.restore(); r = dict(r, screen=k_.c.device_to_user(sx_, sy_))
         heads["_screen"] = r["screen"]
         drawn["robot"] = (r["screen"][0], r["screen"][1], 50 * rs)
 
     def pam(k_, o):
         don(k_, o)
+        import pam_mf as pm_
+        pp_ = sh["state"].get("pam_pose", (-8, 0, 140, 60))
+        pT_ = (sum(pp_) / 25.0) if isinstance(pp_, tuple) else 0.0
+        pm_.GCHAIN_DX[0] = max(-9.0, min(9.0, 1.3 * oc.follow("pam_chain", pT_, 1.3, 0.2)))   # v10: her glasses' chain swings
         draw_p = lambda: pb.pam(k_, 652, F + 6, dl.PS, sh["state"].get("pam_pose", (-8, 0, 140, 60)), sh["state"].get("pam_face", "neutral"),
-                                look=sh["state"].get("pam_look", (0.4, 0.6)), glasses=sh["state"].get("pam_glasses", "up"))   # v8: face, glasses per drawing
+                                look=tuple(a_ + b_ for a_, b_ in zip(sh["state"].get("pam_look", (0.4, 0.6)), oc.dart("pam", False))), glasses=sh["state"].get("pam_glasses", "up"))   # v8: face, glasses per drawing
         if which == "pam" and not sh["state"].get("phone_down", False):          # v9 (hand audit): her phone's hand is the phone grip's
             q = _oc.held(k_, draw_p, lambda q_: [q_["hands"][1]])
         else:
             q = draw_p()
+        pm_.GCHAIN_DX[0] = 0.0
         heads["_pamhand"] = q["hands"][1]
         drawn["pam"] = (q["head"][0], q["head"][1], 50 * dl.PS)
     def office_dressing(k_):
@@ -1422,6 +1494,7 @@ def render(sh, scene):
         insert_shot(k, sh); cam = (270, 480, 1.0)
     elif cam == "desk":
         cam = desk_shot(k, sh, heads)
+        grade(c, 4)
     elif sh["state"].get("insert") == "donnie":
         gs.frame(k, cam, draw=lambda k_: donnie_shot(k_, sh, heads))
     else:
@@ -1442,6 +1515,7 @@ def render(sh, scene):
         heads.clear()
         del gs.PROTECT[:]                                         # only pass 2, through the camera, counts
         gs.frame(k, cam, draw=lambda k_: garage_shot(k_, sh, scene, heads, cam))
+        grade(c, scene)
     # the text in set units, for check_signs (it maps them through the camera itself)
     fx, fy, z = cam if isinstance(cam, tuple) else (270, 480, 1.0)
     text = []

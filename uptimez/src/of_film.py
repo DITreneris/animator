@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 40, 2: 40, 3: 40, 4: 40, 5: 40}
+VER = {1: 41, 2: 41, 3: 41, 4: 41, 5: 41}
 SOUND = "of_sound_v19.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -509,6 +509,31 @@ VISEME = {"A": "M", "B": "C", "C": "E", "D": "A", "E": "O", "F": "U", "G": "F", 
 _CUES = {}
 
 
+LIP_AHEAD = 2 / 30.0
+
+
+def accent(sid, t):
+    """v1 (24 Nov, decided): 0..1, a stressed syllable of the speaker this drawing (the take's loudness rising fast);
+    the speaker's head dips with it."""
+    if sid not in sc.SAY:
+        return 0.0
+    if sid not in _TAKE:
+        a, sr = sf.read(os.path.join(TAKES, "%s.wav" % sid))
+        _TAKE[sid] = (a, sr)
+    a, sr = _TAKE[sid]
+    def env(x):
+        if x < 0 or x > len(a) / sr:
+            return 0.0
+        seg = a[int(x * sr):int((x + 0.06) * sr)]
+        return float(np.sqrt(np.mean(seg ** 2))) / (np.abs(a).max() + 1e-9) if len(seg) else 0.0
+    tt = t - LEAD
+    best = 0.0
+    for back in (0.0, 0.05, 0.10, 0.15):                    # the dip lasts ~0.2 s after the rise
+        rise = env(tt - back) - env(tt - back - 0.12)
+        best = max(best, min(1.0, max(0.0, rise / 0.25)) * (1 - back / 0.2))
+    return best
+
+
 def mouth_at(sid, t):
     """the mouth for the speaker of shot sid, t seconds into the shot (None: not speaking). v2 (23 Nov, decided): the
     take's own mouth shapes (Rhubarb Lip Sync, of_voices/visemes/<shot>.json, phonetic, with the line's text), held
@@ -519,7 +544,7 @@ def mouth_at(sid, t):
         a, sr = sf.read(os.path.join(TAKES, "%s.wav" % sid))
         _TAKE[sid] = (a, sr)
     a, sr = _TAKE[sid]
-    tt = t - LEAD
+    tt = t - LEAD + LIP_AHEAD                              # v3 (24 Nov, decided): the mouth 2 frames ahead of the sound
     if tt < 0 or tt > len(a) / sr:
         return None
     vp = os.path.join(TAKES, "..", "visemes", "%s.json" % sid)
@@ -608,6 +633,8 @@ def render_scene(n):
                 sc.POSES[sid] = base
             who = sc.SAY.get(sid, (None,))[0]
             oc.NOW[0] = st0 + t                                    # v1 (23 Nov): the film's clock, for blinks and breaths
+            oc.SHOT_T[0] = t
+            oc.ACCENT[0] = (who, accent(sid, t))
             oc.LOOP_T[0] = sc._timing_total()
             mc_ = mouth_at(sid, t)
             oc.MOUTH[0] = mc_ if who == "client" else None

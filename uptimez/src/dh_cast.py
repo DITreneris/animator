@@ -29,6 +29,8 @@ CUP = (0.93, 0.90, 0.82)
 
 
 BROW_UP = [9]; BROW_DARK = [False]                                  # how far "brow" lifts; episode 13 raises it for one shot (default unchanged)
+CHAIN_DX = [0.0]                                          # opt-in (24 Nov, episode 13): the gold chain's swing, px
+COIL_DX = [0.0]                                           # opt-in (24 Nov, episode 13): the earpiece coil trails the head, px
 BLINK = [False]                                           # opt-in (episode 13): his lids shut this drawing
 MOUTH_CODE = [None]                                       # opt-in (episode 13, 23 Nov): a lip-sync mouth (iwry_mouths code) this drawing
 
@@ -103,9 +105,10 @@ def _father_costume(k, name, p, body_top, seed):
     for sx in (-1, 1):
         cut(k, [(sx * 12, bt - 4), (sx * 27, bt + 2), (sx * 20, bt + 22), (sx * 3, bt + 34)], BLACK_L, shadow=False, lw=1.6)
     c.set_source_rgb(*GOLD_D); c.set_line_width(4.4); c.set_line_cap(1)                     # the chain
-    c.move_to(-11, bt + 2); c.curve_to(-8, bt + 26, 8, bt + 26, 11, bt + 2); c.stroke()
+    cd_ = CHAIN_DX[0]
+    c.move_to(-11, bt + 2); c.curve_to(-8 + cd_, bt + 26, 8 + cd_, bt + 26, 11, bt + 2); c.stroke()
     c.set_source_rgb(*GOLD); c.set_line_width(2.6); c.set_dash([3.2, 2.2])
-    c.move_to(-11, bt + 2); c.curve_to(-8, bt + 26, 8, bt + 26, 11, bt + 2); c.stroke(); c.set_dash([])
+    c.move_to(-11, bt + 2); c.curve_to(-8 + cd_, bt + 26, 8 + cd_, bt + 26, 11, bt + 2); c.stroke(); c.set_dash([])
     for sx in (-1, 1):                                                                      # the velvet jacket, open
         cut(k, [(sx * 13, bt + 6), (sx * 46, bt - 2), (sx * 50, waist + 8), (sx * 12, waist + 8)], VELVET, shadow=False, lw=2.2)
         cut(k, [(sx * 13, bt + 6), (sx * 34, bt - 4), (sx * 36, bt + 46), (sx * 13, bt + 96)], VELVET_D, shadow=False, lw=1.8)   # a shawl lapel
@@ -328,7 +331,8 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
         c.move_to(51, hy + 4)
         for i in range(7):
             yy = hy + 10 + i * 8
-            c.curve_to(58, yy, 44, yy + 4, 51, yy + 8)
+            q_ = COIL_DX[0] * (i + 1) / 7.0
+            c.curve_to(58 + q_, yy, 44 + q_, yy + 4, 51 + COIL_DX[0] * (i + 1.5) / 7.0, yy + 8)
         c.stroke()
         ellipse(k, 50, hy + 2, 4.5, 5.5, (0.92, 0.92, 0.90), seed + 33, shadow=False, lw=1.4)
     else:
