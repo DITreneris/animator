@@ -19,7 +19,7 @@ MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("2.4",):
        ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("6.3", "6.6"): ("T4", 0, -8), ("8.1", "8.2"): ("T5", 0, -7)}
 OUT = os.path.join(sc.OUT, "on4_rough_v13.mp4")
 NEW = {   # key: (shot, seconds into the shot, who, text)
-    "c1": ("2.2", 1.55, "CLIENT", "Mine until it's done."),
+    "c1": ("2.2", 2.1, "CLIENT", "Mine until it's done."),
     "d1": ("3.1", 1.5, "DON", "Traffic flows."),
     "d2": ("3.3", 1.9, "DON", "Not a scratch."),
     "f1": ("3.4", 1.0, "FATHER", "For the boys."),
@@ -29,10 +29,10 @@ NEW = {   # key: (shot, seconds into the shot, who, text)
 }
 
 
-MOVE7 = {"n2": ("2.1", 0.1)}                                # v7: "I know where to see..." over the spying (2.1-2.2); 2.4 gets its own two lines
+MOVE7 = {"n2": ("2.1", 0.1), "n1": ("1.3", 0.3)}            # n1 earlier (24 Nov, Tomas: longer pauses between the narrator's sentences)                                # v7: "I know where to see..." over the spying (2.1-2.2); 2.4 gets its own two lines
 NARR = {   # v4 (Tomas: the pauses are too long, the narrator is missing): two more of her boasts over the long gaps
-    "n4": ("1.4", 0.5, "Nobody follows me."),              # as the two shadows come up behind her
-    "n5": ("5.1", 0.6, "Nobody sees me coming."),          # as she walks through the club and nobody looks
+    "n4": ("1.4", 0.3, "Nobody follows me."),              # as the two shadows come up behind her
+    "n5": ("5.1", -0.45, "Nobody sees me coming."),          # as she walks through the club and nobody looks
     "n6": ("2.4", 0.7, "I know how to climb."),            # v7 (Tomas): up the ladder; she goes over the rail on its heels
     "n7": ("2.4", 32 / 12.0 + 0.75, "I know how to fall."),   # out of the bin, the peel on her ear
 }
@@ -85,6 +85,37 @@ def new_takes():
     return d, log
 
 
+STOP_GAP = 0.75                                             # (24 Nov, Tomas) where a speaker puts a full stop inside a take: at least this much silence
+
+
+def stops(a, text):
+    """a take with more than one sentence: the silence at each full stop widened to STOP_GAP (the longest quiet stretches
+    inside the take are the stops)"""
+    n_ = sum(text.count(ch) for ch in ".?!") - 1
+    if n_ < 1:
+        return a
+    w = int(0.02 * SR); env = np.sqrt(np.convolve(a ** 2, np.ones(w) / w, "same"))
+    quiet = env < 0.06 * env.max()
+    runs = []; j = 0; L = len(a)
+    while j < L:
+        if quiet[j]:
+            k_ = j
+            while k_ < L and quiet[k_]:
+                k_ += 1
+            if j > 0.15 * SR and k_ < L - 0.15 * SR:
+                runs.append((k_ - j, j, k_))
+            j = k_
+        else:
+            j += 1
+    out = a
+    for ln, j0, j1 in sorted(sorted(runs, reverse=True)[:n_], key=lambda r_: -r_[1]):
+        add = int(STOP_GAP * SR) - ln
+        if add > 0:
+            mid = (j0 + j1) // 2
+            out = np.concatenate([out[:mid], np.zeros(add), out[mid:]])
+    return out
+
+
 def load(p):
     a, sr = sf.read(p)
     if a.ndim > 1:
@@ -111,7 +142,7 @@ def sound(tm, d, total):
     marks = []
     for key, ln in d["lines"].items():
         t = st_(MOVE7[key][0]) + MOVE7[key][1] if key in MOVE7 else st_(ln["shot"]) + vo.LEAD.get(ln["shot"], 0.3)
-        put(voice, load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), t); marks.append((key, round(t, 2)))
+        put(voice, stops(load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), " ".join(p_[0] for p_ in vo.LINES[key][2])), t); marks.append((key, round(t, 2)))
     d2, _ = new_takes()
     for key, (shot, lead, who, txt) in NEW.items():
         t = st_(shot) + lead
