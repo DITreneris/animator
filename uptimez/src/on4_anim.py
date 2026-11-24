@@ -373,9 +373,13 @@ def a53(t):
         d_ = 10 if t < 0.9 else (14 if t < 2.0 else 8)
         st2 = int(t * 10) % 2 if t < 0.9 else 0
         kn = dict(drop=d_, l=(-3, 8 if st2 else 0, -1), r=(-3, 0 if (st2 or t >= 0.9) else 8, -1))
-    p = P("pam_cat", x, 716, 0.46, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env, hunt=0.5 if m.LAW[0] else 0.0)
+    p = P("pam_cat", x, 716, 0.46, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env, hunt=0.5 if m.LAW[0] else 0.0, rim_red=bool(m.LAW[0]))
     def after(k):
         card(k, t)
+        if m.LAW[0]:                                       # her shadow thrown away from the booth's lamp, along the boards
+            c = k.c
+            g = cairo.LinearGradient(x, 0, x + 120, 0); g.add_color_stop_rgba(0, 0, 0, 0, 0.5); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+            c.new_path(); c.move_to(x - 16, 712); c.line_to(x + 16, 720); c.line_to(x + 130, 734); c.line_to(x + 120, 716); c.close_path(); c.set_source(g); c.fill()
         pam_(k, p, breath(t), rot, kn)
     z = 1.9 * (1 + 0.03 * ease(seg(t, 0.0, 2.3)))                             # a slow push in
     return draw(shot("5.3", cam=(160, 610, z), cast=[], after=after, protect=()))

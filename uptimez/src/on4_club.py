@@ -459,7 +459,8 @@ def spill(c):
     """the neon's red on the room, after the grade (the grade would grey it): on the wall behind it, on the screen's bars and the booth's top, a breath on the table"""
     if not (MOTTO[0] and TUBE[0]):
         return
-    for cx_, cy_, rx, ry, al in ((130, 410, 150, 84, 0.34), (130, 480, 170, 40, 0.16), (150, 560, 150, 46, 0.07)):
+    for cx_, cy_, rx, ry, al in ((130, 410, 150, 84, 0.26), (130, 480, 170, 40, 0.16), (150, 560, 150, 46, 0.07),
+                                 (130, 376, 92, 22, 0.30), (130, 406, 92, 24, 0.30), (130, 436, 100, 24, 0.30)):      # v3: tighter round each row
         g = cairo.RadialGradient(0, 0, 0, 0, 0, 1)
         g.add_color_stop_rgba(0, NEON[0], NEON[1], NEON[2], al); g.add_color_stop_rgba(1, NEON[0], NEON[1], NEON[2], 0)
         c.save(); c.translate(cx_, cy_); c.scale(rx, ry); c.set_source(g); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
@@ -473,24 +474,17 @@ def motto(k):
     import on4_posters as _po
     if TUBE[0]:                                            # (24 Nov, Tomas: "I don't like the neon"; v2 after the review) glass tubing: a deep red tube with a narrow hot core,
         import random                                      # no grey halo; clips and a lead that show; some letters a little weaker. Its red light on the room is laid after the grade (spill)
-        r_ = random.Random(12)
-        c.set_source_rgb(0.42, 0.41, 0.42); c.set_line_width(1.6)
+        c.set_source_rgb(0.42, 0.41, 0.42); c.set_line_width(1.6)                              # v3 (second review): one line a letter, not an outline: red glass, a pale core down its middle; all of it red; no clips
         c.move_to(204, 446); c.curve_to(216, 456, 222, 472, 224, 500); c.stroke()               # the lead
         for i, (txt, sz) in enumerate(rows):
             yy = 382 + i * 30; sz2 = sz + 5
             c.select_font_face("Lilita One", 0, 0); c.set_font_size(sz2)
             e = c.text_extents(txt); x0 = 130 - e.x_advance / 2
-            for bx in (x0 - 5, x0 + e.x_advance + 3):                                           # clips either side of each row
-                c.set_source_rgb(0.50, 0.49, 0.50); c.rectangle(bx - 2, yy - sz2 * 0.62, 4, sz2 * 0.5); c.fill()
-                c.set_source_rgb(0.12, 0.11, 0.12); c.set_line_width(1); c.rectangle(bx - 2, yy - sz2 * 0.62, 4, sz2 * 0.5); c.stroke()
-            xx = x0
-            for ch in txt:                                                                      # letter by letter: each its own strength
-                w_ = c.text_extents(ch).x_advance
-                if ch != " ":
-                    weak = r_.random() < 0.22
-                    c.new_path(); c.move_to(xx, yy); c.text_path(ch); c.set_source_rgb(*NEON); c.set_line_width(3.0 if not weak else 2.4); c.set_line_join(1); c.stroke()
-                    c.new_path(); c.move_to(xx, yy); c.text_path(ch); c.set_source_rgba(1.0, 0.90, 0.92, 0.95 if not weak else 0.35); c.set_line_width(0.9); c.stroke()
-                xx += w_
+            c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.set_source_rgb(*NEON); c.fill()
+            c.save(); c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.clip()               # the core: what a red edge leaves of the letter's middle
+            c.set_source_rgb(1.0, 0.86, 0.88); c.paint()
+            c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.set_source_rgb(*NEON); c.set_line_width(sz2 * 0.19); c.set_line_join(1); c.stroke()
+            c.restore()
         return
     if _po.ON[0]:                                          # (24 Nov) one backing under all three, then the words: each row's backing cut the foot of the word above
         c.set_source_rgba(0.10, 0.01, 0.03, 0.85); c.rectangle(46, 362, 168, 86); c.fill()

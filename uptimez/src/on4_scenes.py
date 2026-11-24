@@ -487,6 +487,13 @@ def draw_cast(k, cast):
             behind = kw.pop("behind", False)                 # (24 Nov) her back to us, with the walk's knees and hips (pam_from_behind has neither)
             twist = kw.pop("twist", 0.0)                     # (24 Nov, the walk's review) her shoulders against her hips: the same drawing cut at the belt, the upper half turned about it
             tilt = kw.pop("tilt", 0.0)                       # (24 Nov) her head a little behind her body: the same drawing twice, cut at the neck, the head's half turned about it
+            rim_red = kw.pop("rim_red", False)               # (24 Nov) in the club: the neon's red on her edge toward it, a little white from the lamp above; not the sticker's white all round
+            if rim_red:
+                kw.pop("rim", None)
+                c_ = k.c
+                c_.push_group(); oc.pam_cat(k, *a, **kw); g_ = c_.pop_group()
+                c_.save(); c_.translate(-2.2, -0.6); c_.set_source_rgb(*st.NEON); c_.mask(g_); c_.restore()
+                c_.save(); c_.translate(0, -2.5); c_.set_source_rgba(0.82, 0.82, 0.80, 0.4); c_.mask(g_); c_.restore()
             if kw.pop("rim", False):                         # board v9: a thin rim of light round her
                 c_ = k.c
                 c_.push_group(); oc.pam_cat(k, *a, **kw); g_ = c_.pop_group()
