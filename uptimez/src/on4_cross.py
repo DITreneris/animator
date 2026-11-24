@@ -119,7 +119,7 @@ D_W = (398.0, 694.0)                                         # behind the bonnet
 
 
 WALK_W = [(170, 596), (330, 604), (420, 640), D_W]
-NW = 22                                                      # drawings he walks for (12 a second): about four steps
+NW = 18                                                      # drawings he walks for (12 a second): about four steps
 
 
 def tw():
@@ -149,7 +149,7 @@ def tw():
             sc.draw_cast(k, [pm_])
         return m.draw(m.shot("3.1", loc="C_side", cam=CAM_W, cast=[], protect=(), after=after))
     f = m.lazy(f)
-    return [f(i) for i in range(NW + 28)]
+    return [f(i) for i in range(NW + 26)]              # 44: 3.3 and 3.3b share their time in halves (on4_scenes._timing)
 
 
 # ---- R: the rear window --------------------------------------------------------------------------------------------------
@@ -218,7 +218,7 @@ def tr():
         finally:
             m.POOL[0] = (250, 610)
     f = m.lazy(f)
-    return [f(i) for i in range(NR + 26)]
+    return [f(i) for i in range(NR + 32)]              # 44
 
 
 # ---- B: the bills on her -------------------------------------------------------------------------------------------------

@@ -199,26 +199,63 @@ def sound(tm, d, total):
         if thud is not None:
             whistle(bump, 0.22)                                                                      # his whistle on the tap
             put(fx, rs(so.thump(), so.SR), thud, 2.2); put(fx, rs(so.swish(0.12), so.SR), thud + 0.01, 0.5)   # she lands
-        e0, e1 = st_("3.1") + span31 * 15.0 / 46.0, t6(64)                                           # the engine: in with the car, idling, away with it
-        te = np.arange(int((e1 - e0) * SR)) / SR
-        f0 = 44 + 3 * np.sin(2 * np.pi * 0.7 * te); ph = 2 * np.pi * np.cumsum(f0) / SR
-        eng = sum(np.sin(h * ph + h) / h for h in range(1, 7)) * (0.75 + 0.25 * np.sin(ph / 2))
-        eng *= np.clip(np.minimum(te / 0.5, (e1 - e0 - te) / 0.9), 0, 1)
-        put(fx, eng, e0, 0.05)
-        n0, n1 = st_("3.1"), st_("3.6") + 2.5                                                        # the night over the whole crossing: never dead zero
-        Ln = int((n1 - n0) * SR); tn = np.arange(Ln) / SR
-        night = np.convolve(np.random.default_rng(11).standard_normal(Ln), np.ones(400) / 400, "same") * np.clip(np.minimum(tn / 0.3, (n1 - n0 - tn) / 0.6), 0, 1)
-        put(fx, night, n0, 0.16)
-        for i in (12, 18, 24, 30):                                                                   # his glove along the bonnet
-            tq = np.arange(int(0.13 * SR)) / SR
-            put(fx, np.sin(2 * np.pi * np.cumsum(1700 + 5200 * tq + 90 * np.sin(2 * np.pi * 55 * tq)) / SR) * np.sin(np.pi * tq / 0.13) ** 2 * 0.05, t6(i))
-        for i in (71, 74):                                                                           # GO, to the car: after Father's line (two toots under it and it was not heard)
-            whistle(t6(i), 0.16, 0.06)
-        for j in range(6):                                                                           # each bill lands on her
-            put(fx, rs(so.swish(0.07), so.SR), t6(59 + j * 1.5), 0.30)
-        for j, i in enumerate((61, 63, 65, 67, 77, 79, 81, 83)):                                     # the two shadows: in, and away with her
-            put(fx, rs(so.thump(), so.SR), t6(i), (0.45 if j % 2 else 0.6) * (0.5 if i < 70 else 1.0))
-    put(fx, rs(so.swish(0.6), so.SR), st_("3.4") + 0.9, 0.35)                                       # the bills
+        if SCENE3[0] == "cross":                             # (24 Nov) the crossing in four shots (on4_cross): the sounds on its drawings
+            import on4_cross as xc
+            T3N = float(len(m_.TESTS["T3"]())) if False else 48.0
+            W, R, B, G = (lambda i: st_("3.3") + i / 12.0), (lambda i: st_("3.3b") + i / 12.0), (lambda i: st_("3.4") + i / 12.0), (lambda i: st_("3.5") + i / 12.0)
+            e0, e1 = st_("3.1") + span31 * 15.0 / T3N, B(8)                                          # the engine: in with the car, idling, away with it
+            te = np.arange(int((e1 - e0) * SR)) / SR
+            f0 = 44 + 3 * np.sin(2 * np.pi * 0.7 * te) + 22 * np.clip((te - (R(33) - e0)) / 1.2, 0, 1); ph = 2 * np.pi * np.cumsum(f0) / SR
+            eng = sum(np.sin(h * ph + h) / h for h in range(1, 7)) * (0.75 + 0.25 * np.sin(ph / 2))
+            eng *= np.clip(np.minimum(te / 0.5, (e1 - e0 - te) / 0.6), 0, 1)
+            put(fx, eng, e0, 0.05)
+            n0, n1 = st_("3.1"), st_("3.6") + 2.5                                                    # the night over the whole crossing: never dead zero
+            Ln = int((n1 - n0) * SR); tn = np.arange(Ln) / SR
+            night = np.convolve(np.random.default_rng(11).standard_normal(Ln), np.ones(400) / 400, "same") * np.clip(np.minimum(tn / 0.3, (n1 - n0 - tn) / 0.6), 0, 1)
+            put(fx, night, n0, 0.16)
+            for i in (3, 7, 11, 15):                                                                 # Don's steps to the bonnet; round the tail
+                put(fx, rs(so.thump(), so.SR), W(i), 0.22)
+            for i in (3, 8):
+                put(fx, rs(so.thump(), so.SR), R(i), 0.25)
+            for i in (xc.NW + 3, xc.NW + 9, xc.NW + 15):                                             # his glove along the bonnet
+                tq = np.arange(int(0.13 * SR)) / SR
+                put(fx, np.sin(2 * np.pi * np.cumsum(1700 + 5200 * tq + 90 * np.sin(2 * np.pi * 55 * tq)) / SR) * np.sin(np.pi * tq / 0.13) ** 2 * 0.05, W(i))
+            put(fx, rs(so.swish(0.25), so.SR), R(xc.NR - 3), 0.25)                                    # the glass down
+            for q in range(6):                                                                       # each of hers flicked up over the roof
+                put(fx, rs(so.swish(0.07), so.SR), R(xc.NR + 7 + q * 1.5), 0.30)
+            for i in (xc.NR + 20, xc.NR + 23):                                                       # GO, to the car: after Father's line
+                whistle(R(i), 0.16, 0.07)
+            for q in range(6):                                                                       # each bill lands on her
+                put(fx, rs(so.swish(0.07), so.SR), B(q * 1.6 + 9), 0.40)
+            for j, i in enumerate((1, 3, 5, 7, 9)):                                                  # the two bodyguards walk in
+                put(fx, rs(so.thump(), so.SR), G(i), 0.40 if j % 2 else 0.55)
+            for q in range(6):                                                                       # he picks them up, one by one
+                put(fx, rs(so.swish(0.05), so.SR), G(xc.TAKE + 1.2 + q * 2.0), 0.22)
+            put(fx, rs(so.swish(0.3), so.SR), G(xc.LIFT), 0.45)                                      # up she goes
+            for j, i in enumerate(range(xc.GO + 1, 52, 2)):                                          # and away with her
+                put(fx, rs(so.thump(), so.SR), G(i), 0.40 if j % 2 else 0.55)
+        else:
+            e0, e1 = st_("3.1") + span31 * 15.0 / 46.0, t6(64)                                           # the engine: in with the car, idling, away with it
+            te = np.arange(int((e1 - e0) * SR)) / SR
+            f0 = 44 + 3 * np.sin(2 * np.pi * 0.7 * te); ph = 2 * np.pi * np.cumsum(f0) / SR
+            eng = sum(np.sin(h * ph + h) / h for h in range(1, 7)) * (0.75 + 0.25 * np.sin(ph / 2))
+            eng *= np.clip(np.minimum(te / 0.5, (e1 - e0 - te) / 0.9), 0, 1)
+            put(fx, eng, e0, 0.05)
+            n0, n1 = st_("3.1"), st_("3.6") + 2.5                                                        # the night over the whole crossing: never dead zero
+            Ln = int((n1 - n0) * SR); tn = np.arange(Ln) / SR
+            night = np.convolve(np.random.default_rng(11).standard_normal(Ln), np.ones(400) / 400, "same") * np.clip(np.minimum(tn / 0.3, (n1 - n0 - tn) / 0.6), 0, 1)
+            put(fx, night, n0, 0.16)
+            for i in (12, 18, 24, 30):                                                                   # his glove along the bonnet
+                tq = np.arange(int(0.13 * SR)) / SR
+                put(fx, np.sin(2 * np.pi * np.cumsum(1700 + 5200 * tq + 90 * np.sin(2 * np.pi * 55 * tq)) / SR) * np.sin(np.pi * tq / 0.13) ** 2 * 0.05, t6(i))
+            for i in (71, 74):                                                                           # GO, to the car: after Father's line (two toots under it and it was not heard)
+                whistle(t6(i), 0.16, 0.06)
+            for j in range(6):                                                                           # each bill lands on her
+                put(fx, rs(so.swish(0.07), so.SR), t6(59 + j * 1.5), 0.30)
+            for j, i in enumerate((61, 63, 65, 67, 77, 79, 81, 83)):                                     # the two shadows: in, and away with her
+                put(fx, rs(so.thump(), so.SR), t6(i), (0.45 if j % 2 else 0.6) * (0.5 if i < 70 else 1.0))
+    if SCENE3[0] != "cross":
+        put(fx, rs(so.swish(0.6), so.SR), st_("3.4") + 0.9, 0.35)                                   # the bills
     put(fx, rs(iw.clink(), getattr(iw, "SR", SR)), st_("7.2") + 2.4, 0.8)                           # her mug set down
     crash = st_("2.4") + 32 / 12.0                                                                  # v6: T7's lid
     put(fx, rs(so.swish(0.3), so.SR), crash - 0.27, 0.6)                                            # she goes over

@@ -18,15 +18,18 @@ SR = r.SR
 import on4_posters as po
 import on4_street as st
 
-VER = "v4"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
+VER = "v5"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
 po.ON[0] = True; st.TOWN[0] = True
-m.CRASH[0] = True; sc.DUR["3.2"] = 2.6                       # v4: the bump restaged (12 more drawings: 1.2 s more for 3.2)
+import on4_cross as xc
+m.CRASH[0] = True; m.LAW[0] = True; m.CAR_S = xc.S_CAR      # v4: the bump as a tap; v5: one scale law on the crossing, the plank bounces
+m.TESTS.update(xc.TESTS)                                     # v5: the crossing after the bump in four shots (W, R, B, G), not one wide take
+sc.DUR.update({"3.2": 2.8, "3.3": 88 / 12.0, "3.4": 22 / 12.0, "3.5": 52 / 12.0})   # 3.3 is halved between 3.3 and 3.3b: 44 drawings each
 CEIL = 0.53                                                  # v4: 0.56 gave -0.9 dBFS after AAC with the new effects (the limit is -1)
-r.SCENE3[0] = True                                           # v4: the crossing's sound after the bump
-r.NARR["n8"] = ("3.3", 0.1, "Nobody stops for me.")          # v4 (Tomas): as she lies there and waves, and they all step over her
+r.SCENE3[0] = "cross"                                        # v4: the crossing's sound after the bump; v5: on the four shots
+r.NARR["n8"] = ("3.3", 0.3, "Nobody stops for me.")          # v4 (Tomas): as she lies there and waves, and they all step over her
 r.NEW["d1"] = ("3.1", 1.25, "DON", "Traffic flows.")         # clear of his whistle on the tap
-r.NEW["d2"] = ("3.3", 2.5, "DON", "Not a scratch.")          # after her line; where he holds the glove up: clean
-r.NEW["f1"] = ("3.4", 1.05, "FATHER", "For the boys.")       # as the ringed hand lets the bills go
+r.NEW["d2"] = ("3.3", 2.9, "DON", "Not a scratch.")          # after her line; where he holds the glove up: clean
+r.NEW["f1"] = ("3.3b", 1.0, "FATHER", "For the boys.")       # as the ringed hand lets the bills go
 r.RETAKE["d2"] = os.path.join(r.vo.OUT, "takes_v4", "d2.wav")   # a slower take (0.82): the first was not heard in the mix
 r.RETAKE["f1"] = os.path.join(r.vo.OUT, "takes_v4", "f1.wav")   # "For, the boys." at 0.8, -1 semitone: heard 3 of 3 alone
 OUT = os.path.join(sc.OUT, "on4_film_%s.mp4" % VER)
@@ -34,6 +37,8 @@ MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",):
        ("3.1", "3.2"): ("T3", 0, None), ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("3.6",): ("T8", 0, None),
        ("4.4",): ("T12", 0, None), ("6.0",): ("T9", 0, None), ("6.05",): ("T10", 0, None), ("6.07",): ("T11", 0, None),
        ("6.3", "6.6"): ("T4", 0, -16), ("8.1", "8.2"): ("T5", 0, -14)}
+del MOT[("3.3", "3.3b", "3.4", "3.5")]                       # v5
+MOT.update({("3.3",): ("W", 0, None), ("3.3b",): ("R", 0, None), ("3.4",): ("B", 0, None), ("3.5",): ("G", 0, None)})
 
 
 def frames(tmp):
