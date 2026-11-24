@@ -918,3 +918,11 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - An audit's fix that moves a canon mark (DON from garage 3 to 7) is refused in the table, with the reason.
 - Three rounds on the same six stills moved the score by 0.5: after two rounds, render and test the motion.
 - Stills go to Tomas as PNG before any render (his message arrived mid-render at v34).
+
+## 217. *The Offer* v38 (24 Nov, cold test v37, 3 viewers; then Tomas: "don't grow the thick white")
+
+- An arm whose ELBOW is outside the frame reads as two things: a forearm from the edge and a sleeve lying apart, and it "jumps" when it folds in. Frame the shot so both elbows are inside (here the camera 15 % back, the body 30 up), then set the rest pose near the next action so the move is short.
+- Pulling the camera back grows whatever is plain and light. Before sending, look for the biggest flat light area: here his white back; it became his shoulders only, with his navy overalls below, and short sleeves no wider than the arm, joined by one yoke.
+- A lid that shuts needs the hand ON it all the way down and after; a hand beside it reads as a wave (3 of 3).
+- A phone held "from the edge, along the floor" has no owner; from above it belongs to someone standing over it.
+- A gag that is "long for what it delivers" loses time first (2.2 -> 1.8 s) and gets a body reaction (the shoulders and the lamp drop), since this face has no brows to move.

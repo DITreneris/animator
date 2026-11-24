@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v16.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v17.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -505,8 +505,9 @@ def _cast_draw0(k, n, scene, sh, heads):
                                       upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
             oc.phone_grip(k, H[0], H[1], 0.6, None, ang=-0.1, skin=co_skin(), body_x=x)   # v2: same fix, same arm
         elif kind == "slam":
-            sy = ps.get("slam_y", 0.0)                                       # stage 7: the hands come down with the lid
-            o = oc.client(k, x, f, CS, look=(-1, 0.6), targets=[(x - 64, 668 - sy), (x - 40, 664 - sy)])
+            sb_ = ps.get("slam_b", 0.0)                                      # v2 (24 Nov, cold test v37, 3 of 3: "it shuts by itself, he waves"):
+            aa_ = -1.45 * sb_                                                # ONE hand, flat ON the lid's free edge all the way down
+            o = oc.client(k, x, f, CS, look=(-1, 0.6), targets=[(462 + 66 * math.cos(aa_) + 4 - 34 * (1 - sb_) ** 3, 676 + 66 * math.sin(aa_) + 6 + 16 * (1 - sb_) ** 3)])
         else:
             o = oc.client(k, x, f, CS, look=look)
         heads[n] = (o["head"][0], o["head"][1], 55 * CS)
@@ -680,8 +681,8 @@ def garage_shot(k, sh, scene, heads, cam):
         c.save(); c.translate(px, py); c.scale(1.15, 1.15); c.translate(-px, -py)      # the phone 15 % bigger
         for col, lw in ((INK, 66), (dc.SUIT, 60)):                            # v9 (24 Nov, cold test 3 of 3: "a black diagonal",
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0)       # "floating"; decided: hand + SHORT THICK forearm):
-            c.move_to(px + 36, py + 30); c.line_to(px + 190, py - 20); c.stroke()   # his sleeve, as wide as the hand, straight
-        c.save(); c.translate(px + 62, py + 21.5); c.rotate(math.atan2(-50, 154))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
+            c.move_to(px + 40, py + 26); c.line_to(px + 150, py - 230); c.stroke()   # his sleeve, as wide as the hand, straight
+        c.save(); c.translate(px + 51, py + 0.4); c.rotate(math.atan2(-256, 110))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
         rect(k, -9, -35, 18, 70, (0.97, 0.97, 0.94), 3409, shadow=False, lw=1.8)            # his white cuff, at the phone
         c.restore()
         S04, A04 = 90 / 44.0, 0.0                                             # v7: the same phone grip as every phone, big
@@ -823,7 +824,7 @@ def insert_shot(k, sh):
             ellipse(k, px_, py_, 14, 14, (0.85, 0.12, 0.12), 3497, lw=2.4)              # the red pin, in
         gs.protect(c, "the fresh plan", 60, 290, 470, 660)
     elif kind == "bay":                                                            # v1 (23 Nov, decided A): his hands in the lamp's light
-        c.save(); c.translate(232, 400); c.scale(1.22, 1.22); c.translate(-250, -330)   # v7 (24 Nov, decided): TIGHT on the hands
+        c.save(); c.translate(270, 400); c.scale(1.04, 1.04); c.translate(-262, -330)   # v7 (24 Nov, decided): TIGHT on the hands
         c.set_source_rgb(0.10, 0.10, 0.11); c.paint()                                  # the bay, dark; all of it inside the safe area
         bu = sh["state"].get("bay_u", 1.0)
         g_ = cairo.RadialGradient(240, 340, 10, 240, 340, 230)                         # the lamp's pool, on the engine and his hands
@@ -850,16 +851,16 @@ def insert_shot(k, sh):
 
         w_ = sh["state"].get("work", 0.0)
         ro_ = sh["state"].get("bay_reach", sh["state"].get("bolt_out", 0.0))
-        wa_ = -2.6 + 0.2 * w_                                                          # v12: a 150 handle, worked about the bolt; then the
-        hw_ = (250 + 150 * math.cos(wa_), 350 + 150 * math.sin(wa_))                   # HAND stays and the wrist swings the head off the hole
+        wa_ = -2.2 + 0.2 * w_                                                          # v12: a 150 handle, worked about the bolt; then the
+        hw_ = (250 + 170 * math.cos(wa_), 350 + 170 * math.sin(wa_))                   # HAND stays and the wrist swings the head off the hole
         c.save(); c.translate(*hw_); c.rotate(wa_ + math.pi + 0.6 * ro_)               # (the arm keeps its length: audit)
-        rect(k, -40, -14, 204, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)                   # the handle comes out past his fist
+        rect(k, -40, -14, 224, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)                   # the handle comes out past his fist
         c.restore()
         bo2_ = sh["state"].get("bolt_out", 0.0)
-        fh_ = (360 - 110 * ro_, 330 - 17 * ro_ - 102 * bo2_)   # v10 (24 Nov, Tomas: "the hand JUMPED, whose is it?"): it goes to the hole FIRST, grips, then lifts; the plug is in the fist all the way                          # v4: the far hand comes up with the plug
+        fh_ = (330 - 80 * ro_, 270 + 43 * ro_ - 102 * bo2_)   # v10 (24 Nov, Tomas: "the hand JUMPED, whose is it?"): it goes to the hole FIRST, grips, then lifts; the plug is in the fist all the way                          # v4: the far hand comes up with the plug
         for side, (hx, hy, sx_, sy_) in enumerate(((hw_[0], hw_[1], 30, 70), (fh_[0], fh_[1], 500, 720))):
-            sx_, sy_ = (112, 620) if side == 0 else (405, 620)                           # v11 (24 Nov, Tomas: "a hand walks in space, a wrist with
-            el_ = ik2((hx, hy), (sx_, sy_), 222, 222, -1 if side == 0 else 1)             # v12 (audit: +33 % stretch): fixed bone lengths                  # no arm"): HE is in the frame, from behind: his back and
+            sx_, sy_ = (112, 590) if side == 0 else (405, 590)                           # v11 (24 Nov, Tomas: "a hand walks in space, a wrist with
+            el_ = ik2((hx, hy), (sx_, sy_), 207, 207, -1 if side == 0 else 1)             # v12 (audit: +33 % stretch): fixed bone lengths                  # no arm"): HE is in the frame, from behind: his back and
             dd_ = insert_arm(c, (hx, hy), el_, (sx_, sy_), 54, (0.80, 0.62, 0.50), None, lit=(330, 96), half=(0.97, 0.97, 0.95))
             if side == 0:
                 WD_ = dd_                                                             # the watch sits ON this wrist
@@ -892,7 +893,14 @@ def insert_shot(k, sh):
                 continue
             _oc.ps_hand(k, "fist", hx - 12 * dd_[0], hy - 12 * dd_[1], 64, (0.80, 0.62, 0.50), dd_, -1)   # the fist on the wrench
             c.set_source_rgba(0.1, 0.08, 0.05, 0.45); c.arc(hx + 12, hy - 10, 8, 0, 2 * math.pi); c.fill()   # oil
-        ellipse(k, 266, 790, 232, 160, (0.97, 0.97, 0.95), 3490, lw=3)                    # his T-shirt back, bent over the wing
+        c.save(); c.translate(0, -30)                                                   # v13 (cold test v37): the whole of him 30 up, the frame wider: both ELBOWS are in it
+        _limb(c, (118, 628), (399, 628), 70, 70, INK, 3.5)                               # his shoulders: one yoke from sleeve to sleeve
+        ellipse(k, 266, 760, 196, 120, (0.97, 0.97, 0.95), 3490, lw=3)                    # v14 (Tomas: "don't grow the thick white"): his shoulders only;
+        _limb(c, (118, 628), (399, 628), 70, 70, (0.97, 0.97, 0.95), 0.0)
+        c.save(); c.rectangle(-100, 742, 800, 400); c.clip()                            # below them his overalls, tied at the waist (his own navy)
+        ellipse(k, 266, 790, 190, 130, (0.14, 0.20, 0.36), 3489, shadow=False, lw=3)
+        c.restore()
+        pass                    # his T-shirt back, bent over the wing
         for ex_ in (198, 334):                                                         # v2 (Tomas: "is this the Client?"): HIS head from above:
             ellipse(k, ex_, 652, 13, 20, (0.80, 0.62, 0.50), 3493 + ex_, lw=2.2)        # ears, dark hair combed back in strands, the grey at
         ellipse(k, 266, 650, 66, 60, (0.80, 0.62, 0.50), 3491, lw=2.6)                    # both temples
@@ -905,6 +913,7 @@ def insert_shot(k, sh):
         for j_ in range(5):
             xx_ = 232 + j_ * 17
             c.move_to(xx_, 606 + abs(j_ - 2) * 5); c.curve_to(xx_ - 3, 630, xx_ + 3, 655, xx_ - 2, 682 - abs(j_ - 2) * 4); c.stroke()
+        c.restore()
         c.restore()
         if False:                                                                        # v12: the plug is drawn in the fist (above)
             px_, py_ = 250 + (290 - 250) * bo2_, 350 + (215 - 350) * bo2_                   # out of the hole comes ONE thing you can
@@ -1398,8 +1407,8 @@ def insert_arm(c, hand, elbow, shoulder, w, skin, sleeve, cuff=None, torso=None,
             else:
                 _limb(c, pt[1], pt[2], pt[3], pt[4], INK if ink else pt[5], e)
     if half is not None:                                                              # a short sleeve: the upper arm's top half
-        m_ = ((elbow[0] + shoulder[0]) / 2, (elbow[1] + shoulder[1]) / 2)
-        _limb(c, m_, shoulder, w * 1.30, w * 1.46, INK, 3.5); _limb(c, m_, shoulder, w * 1.30, w * 1.46, half, 0.0)
+        m_ = (shoulder[0] + (elbow[0] - shoulder[0]) * 0.38, shoulder[1] + (elbow[1] - shoulder[1]) * 0.38)   # v2 (Tomas: "the thick white"): a SHORT sleeve,
+        _limb(c, m_, shoulder, w * 1.26, w * 1.34, INK, 3.5); _limb(c, m_, shoulder, w * 1.26, w * 1.34, half, 0.0)   # no wider than the arm in it
     if lit is not None:                                                               # the lamp's warm light along the side that faces it
         for p_, q_, ww in ((hand, elbow, w * 0.8),) + (() if half is not None else ((elbow, shoulder, w * 1.2),)):
             mx_, my_ = (p_[0] + q_[0]) / 2, (p_[1] + q_[1]) / 2
