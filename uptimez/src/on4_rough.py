@@ -257,6 +257,12 @@ def sound(tm, d, total):
     if SCENE3[0] != "cross":
         put(fx, rs(so.swish(0.6), so.SR), st_("3.4") + 0.9, 0.35)                                   # the bills
     put(fx, rs(iw.clink(), getattr(iw, "SR", SR)), st_("7.2") + 2.4, 0.8)                           # her mug set down
+    import on4_motion as _m2
+    if _m2.GIVE[0] and _m2.T2_MARKS:                         # (the review) paper: as it changes hands; as it goes under his lapel
+        span2 = tm["2.2"]["dur"] + tm["2.3"]["dur"]
+        put(fx, rs(so.swish(0.14), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["grip"], 0.35)
+        put(fx, rs(so.swish(0.10), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["grip"] + 0.3, 0.25)
+        put(fx, rs(so.swish(0.18), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["coat"], 0.30)
     crash = st_("2.4") + __import__("on4_motion").T7_SLAM[0] / 12.0                                                                  # v6: T7's lid
     put(fx, rs(so.swish(0.3), so.SR), crash - 0.27, 0.6)                                            # she goes over
     tc = np.arange(int(0.7 * SR)) / SR

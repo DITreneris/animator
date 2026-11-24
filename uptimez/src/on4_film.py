@@ -25,6 +25,7 @@ m.CRASH[0] = True; m.LAW[0] = True; m.CAR_S = xc.S_CAR      # v4: the bump as a 
 m.TESTS.update(xc.TESTS)                                     # v5: the crossing after the bump in four shots (W, R, B, G), not one wide take
 sc.DUR.update({"3.2": 2.8, "3.3": 88 / 12.0, "3.4": 22 / 12.0, "3.5": 52 / 12.0})   # 3.3 is halved between 3.3 and 3.3b: 44 drawings each
 CEIL = 0.50                                                  # v4: 0.56 gave -0.9 dBFS after AAC with the new effects (the limit is -1)
+sc.DUR["2.3"] = 2.75; r.NEW["c1"] = ("2.2", 2.95, "CLIENT", "Mine until it's done.")   # v11: the handover has its beats (52 keys); his line as it goes under his lapel
 m.GIVE[0] = True                                             # v11: Dad's hand gives the envelope, the Client takes it
 m.CATWALK[0] = True                                          # v9: her cat's walk over the crossing and along the fire escape; the car drives up in 2.1; the hunting face
 m.PEEK[0] = True                                             # v8: she watches from the window over the car
