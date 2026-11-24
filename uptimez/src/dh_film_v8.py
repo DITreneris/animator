@@ -14,7 +14,7 @@ import subprocess
 HERE = os.path.dirname(os.path.abspath(__file__))
 os.chdir(HERE); sys.path.insert(0, HERE)
 OUT = "../daddys-home"
-VERS = {1: "v10", 2: "v8", 3: "v8", 4: "v8", 5: "v8", 6: "v8", 7: "v8", 8: "v8"}   # 3-8: the v8 restaging
+VERS = {1: "v8", 2: "v8", 3: "v8", 4: "v8", 5: "v8", 6: "v8", 7: "v8", 8: "v8"}   # all eight: the v8 restaging (1-2 through dh_anim_v8 by bridges)
 
 
 def render(n):
