@@ -1,0 +1,20 @@
+[
+ {
+  "name": "h_remove",
+  "start": 0.07,
+  "dur": 0.9,
+  "text": "Remove the bottleneck."
+ },
+ {
+  "name": "h_suit",
+  "start": 4.03,
+  "dur": 0.95,
+  "text": "New suit?"
+ },
+ {
+  "name": "h_faster",
+  "start": 11.1,
+  "dur": 0.6,
+  "text": "Faster!"
+ }
+]
