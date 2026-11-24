@@ -85,6 +85,8 @@ def new_takes():
     return d, log
 
 
+SCENE3 = [False]                                            # (24 Nov, Tomas: "the music goes and it is dreary and silent, why?") the crossing after the bump: a short silence, then the bass alone; the engine idling, the night, the glove's squeak, each bill, the shadows' steps, his whistle; the bump as a tap and a thud (on4_motion.CRASH)
+RETAKE = {}                                                 # key -> wav: a later take of a line of NEW (on4_film sets it)
 STOP_GAP = 0.75                                             # (24 Nov, Tomas) where a speaker puts a full stop inside a take: at least this much silence
 
 
@@ -146,7 +148,7 @@ def sound(tm, d, total):
     d2, _ = new_takes()
     for key, (shot, lead, who, txt) in NEW.items():
         t = st_(shot) + lead
-        put(voice, load(os.path.join(d2, key + ".wav")), t); marks.append((key, round(t, 2)))
+        put(voice, load(RETAKE.get(key, os.path.join(d2, key + ".wav"))), t); marks.append((key, round(t, 2)))
     d3 = narr_takes(d.get("narration", "A"))
     for key, (shot, lead, txt) in NARR.items():
         t = st_(shot) + lead
@@ -171,6 +173,11 @@ def sound(tm, d, total):
     span31 = tm["3.1"]["dur"] + tm["3.2"]["dur"]
     bump = st_("3.1") + span31 * 21.0 / 32.0                 # T3's hit drawing
     toot = st_("3.1") + span31 * 12.0 / 32.0
+    thud = None
+    if SCENE3[0]:
+        import on4_motion as m_
+        bump = st_("3.1") + span31 * m_.T3_MARKS["bump"]; toot = st_("3.1") + span31 * m_.T3_MARKS["toot"]
+        thud = st_("3.1") + span31 * m_.T3_MARKS["thud"] if "thud" in m_.T3_MARKS else None
     C0 = 0.67                                                                                       # v5: the cat first (8 drawings)
     put(fx, rs(so.hiss(0.5), so.SR), 0.25, 0.45)                                                     # the cat across the lens: hiss and yowl
     ty = np.arange(int(0.42 * SR)) / SR; fq = 620 + 900 * np.sin(np.pi * ty / 0.42) ** 0.7 + 40 * np.sin(2 * np.pi * 31 * ty)
@@ -180,9 +187,37 @@ def sound(tm, d, total):
     put(fx, rs(so.swish(0.3), so.SR), 0.72 + C0, 0.9); put(fx, rs(so.thump(), so.SR), 0.85 + C0, 1.6)       # the punch
     put(fx, rs(so.swish(0.9), so.SR), 1.0 + C0, 0.5)                                                     # the shadow runs down the wall
     t_ = np.arange(int(0.5 * SR)) / SR                                                             # the whistle's toot
-    put(fx, np.sin(2 * np.pi * (2300 + 60 * np.sin(2 * np.pi * 38 * t_)) * t_) * np.minimum(t_ / 0.02, 1) * np.exp(-np.maximum(t_ - 0.35, 0) / 0.05) * 0.12, toot)
+    if not (SCENE3[0] and thud is not None):                 # with the tap he blows on the tap; the flip's toot sat on "Traffic flows."
+        put(fx, np.sin(2 * np.pi * (2300 + 60 * np.sin(2 * np.pi * 38 * t_)) * t_) * np.minimum(t_ / 0.02, 1) * np.exp(-np.maximum(t_ - 0.35, 0) / 0.05) * 0.12, toot)
     put(fx, rs(so.hiss(0.5), so.SR), bump - 0.45, 0.5)                                              # the tyres
-    put(fx, rs(so.thump(), so.SR), bump, 2.0)
+    put(fx, rs(so.thump(), so.SR), bump, 2.0 if thud is None else 0.9)
+    if SCENE3[0]:
+        def whistle(t0, dur_, g=0.12):
+            tw = np.arange(int(dur_ * SR)) / SR
+            put(fx, np.sin(2 * np.pi * (2300 + 60 * np.sin(2 * np.pi * 38 * tw)) * tw) * np.minimum(tw / 0.02, 1) * np.exp(-np.maximum(tw - dur_ * 0.7, 0) / 0.04) * g, t0)
+        t6 = lambda i: st_("3.3") + i / 12.0                                                         # T6's drawings, 12 a second
+        if thud is not None:
+            whistle(bump, 0.22)                                                                      # his whistle on the tap
+            put(fx, rs(so.thump(), so.SR), thud, 2.2); put(fx, rs(so.swish(0.12), so.SR), thud + 0.01, 0.5)   # she lands
+        e0, e1 = st_("3.1") + span31 * 15.0 / 46.0, t6(64)                                           # the engine: in with the car, idling, away with it
+        te = np.arange(int((e1 - e0) * SR)) / SR
+        f0 = 44 + 3 * np.sin(2 * np.pi * 0.7 * te); ph = 2 * np.pi * np.cumsum(f0) / SR
+        eng = sum(np.sin(h * ph + h) / h for h in range(1, 7)) * (0.75 + 0.25 * np.sin(ph / 2))
+        eng *= np.clip(np.minimum(te / 0.5, (e1 - e0 - te) / 0.9), 0, 1)
+        put(fx, eng, e0, 0.05)
+        n0, n1 = st_("3.1"), st_("3.6") + 2.5                                                        # the night over the whole crossing: never dead zero
+        Ln = int((n1 - n0) * SR); tn = np.arange(Ln) / SR
+        night = np.convolve(np.random.default_rng(11).standard_normal(Ln), np.ones(400) / 400, "same") * np.clip(np.minimum(tn / 0.3, (n1 - n0 - tn) / 0.6), 0, 1)
+        put(fx, night, n0, 0.16)
+        for i in (12, 18, 24, 30):                                                                   # his glove along the bonnet
+            tq = np.arange(int(0.13 * SR)) / SR
+            put(fx, np.sin(2 * np.pi * np.cumsum(1700 + 5200 * tq + 90 * np.sin(2 * np.pi * 55 * tq)) / SR) * np.sin(np.pi * tq / 0.13) ** 2 * 0.05, t6(i))
+        for i in (71, 74):                                                                           # GO, to the car: after Father's line (two toots under it and it was not heard)
+            whistle(t6(i), 0.16, 0.06)
+        for j in range(6):                                                                           # each bill lands on her
+            put(fx, rs(so.swish(0.07), so.SR), t6(59 + j * 1.5), 0.30)
+        for j, i in enumerate((61, 63, 65, 67, 77, 79, 81, 83)):                                     # the two shadows: in, and away with her
+            put(fx, rs(so.thump(), so.SR), t6(i), (0.45 if j % 2 else 0.6) * (0.5 if i < 70 else 1.0))
     put(fx, rs(so.swish(0.6), so.SR), st_("3.4") + 0.9, 0.35)                                       # the bills
     put(fx, rs(iw.clink(), getattr(iw, "SR", SR)), st_("7.2") + 2.4, 0.8)                           # her mug set down
     crash = st_("2.4") + 32 / 12.0                                                                  # v6: T7's lid
@@ -233,8 +268,11 @@ def sound(tm, d, total):
     put(fx, rs(so.rain(1.2), so.SR) * np.linspace(1, 0, len(rs(so.rain(1.2), so.SR))), 0.0, 1.2)    # the rain runs through the loop's seam
     # the band: in the dream only; dead on the bump (back when she sits up), dead on "Well?"; nothing awake
     crash = st_("2.4") + 32 / 12.0
-    for t0, t1 in ((1.0, crash), (crash + 1.6, bump), (st_("3.6") + 2.5, st_("6.0"))):
-        jz.groove(mus, t0, t1, level=0.8)
+    band = [(1.0, crash, {}), (crash + 1.6, bump, {}), (st_("3.6") + 2.5, st_("6.0"), {})]
+    if SCENE3[0] and thud is not None:                       # dead on the tap; she falls in silence; 1.5 s after she lands the bass walks alone, to the club
+        band.insert(2, (thud + 1.5, st_("3.6") + 2.5, dict(drums=0, comp=False)))
+    for t0, t1, kw_ in band:
+        jz.groove(mus, t0, t1, level=0.8, **kw_)
         j = int(t1 * SR); mus[j:] = 0.0                                                             # cut dead
     mus_end = int(st_("6.0") * SR); mus[mus_end:] = 0.0
     if "4.4" in tm:                                                                                 # the final film: the band and the effects give way under every line
