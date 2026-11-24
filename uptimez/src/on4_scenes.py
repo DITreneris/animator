@@ -436,6 +436,7 @@ oc.CAT_POSES.setdefault("mask_fix", ((-8, 0) + oc.pm.ik(1, 34, oc.HY - 6), ("rel
 DON_REACH = (-70, 20, 8, 0)                                # 3.3: his screen-left arm out and down to the bumper
 
 
+RIM_A = [0.85]                                             # (24 Nov, review) her rim light's strength: 0.6 is the outline 30 % quieter
 FACE_KEY = [False]                                         # (24 Nov, three reviews: dark, but no contrast on the faces) a soft key light on each face in the dream
 KEYS = []
 KEY_WHO = ("pam_cat", "sofia", "client", "don")
@@ -465,7 +466,7 @@ def draw_cast(k, cast):
                 c_ = k.c
                 c_.push_group(); oc.pam_cat(k, *a, **kw); g_ = c_.pop_group()
                 for dx_, dy_ in ((-3, 0), (3, 0), (0, -3)):
-                    c_.save(); c_.translate(dx_, dy_); c_.set_source_rgba(0.82, 0.82, 0.80, 0.85); c_.mask(g_); c_.restore()
+                    c_.save(); c_.translate(dx_, dy_); c_.set_source_rgba(0.82, 0.82, 0.80, RIM_A[0]); c_.mask(g_); c_.restore()
             if cy is not None:                               # 3.6: sitting: only her top half rises from the road
                 k.c.save(); k.c.rectangle(-2000, -2000, 5000, cy + 2000); k.c.clip()
             o = oc.pam_cat(k, *a, **kw)
@@ -1045,7 +1046,7 @@ def render(sh, scale=1):
 def _render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
     import on4_club as cl
-    cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True
+    cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True; cl.PASSAGE_DARK[0] = True; RIM_A[0] = 0.6
     st.NIGHT[0] = True; OFFICE_MUTE[0] = True; FACE_KEY[0] = True
     car.TAIL_GREY[0] = True; oc.HEART[0] = 1.6; pr.ROTA_INK[0] = True       # (24 Nov) the envelope's heart is the film's one red
     cl.LIMO[0] = (30, 1.15); cl.CLIENT_DY[0] = 0      # the Client stands behind the booth table (his legs reach the floor): left as he was

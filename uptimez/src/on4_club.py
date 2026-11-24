@@ -200,10 +200,17 @@ def light_front(c, limo=False):
         g = cairo.RadialGradient(270, 600, 10, 270, 600, 230)
         g.add_color_stop_rgba(0, 1, 0.97, 0.88, 0.30); g.add_color_stop_rgba(1, 1, 0.97, 0.88, 0)
         c.set_source(g); c.rectangle(0, 380, 540, 400); c.fill()
-        c.save(); c.translate(170, 642); c.scale(120, 22)                       # the marquee's red on the car's roof
+        lx_, ls_ = LIMO[0]                                                    # v10: on the car's roof where the car is, stronger
+        a_ = 0.45 if ARCH_WARM[0] else 0.30
+        c.save(); c.translate(lx_ + 10 * ls_, 712 - 96 * ls_); c.scale(130 * ls_, 20 * ls_)  # the marquee's red on the car's roof
         g = cairo.RadialGradient(0, 0, 0, 0, 0, 1)
-        g.add_color_stop_rgba(0, 1, 0.15, 0.22, 0.30); g.add_color_stop_rgba(1, 1, 0.15, 0.22, 0)
+        g.add_color_stop_rgba(0, 1, 0.15, 0.22, a_); g.add_color_stop_rgba(1, 1, 0.15, 0.22, 0)
         c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+        if ARCH_WARM[0]:                                                        # and a red sheen on the wet stones under the marquee
+            c.save(); c.translate(270, 740); c.scale(200, 26)
+            g = cairo.RadialGradient(0, 0, 0, 0, 0, 1)
+            g.add_color_stop_rgba(0, 1, 0.15, 0.22, 0.14); g.add_color_stop_rgba(1, 1, 0.15, 0.22, 0)
+            c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
     if ARCH_WARM[0]:                                                       # v9: the arch's bulbs as lights: a warm ring round it
         cx_, at_, rr_ = 270, 478, 92
         for r_, a_ in ((rr_ + 34, 0.40), (rr_ + 22, 0.50)):
