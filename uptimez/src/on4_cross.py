@@ -27,6 +27,7 @@ import kit
 P = sc.P
 B_BILL0 = [0.0]                                              # the drawing of 3.4 the first bill starts on (the sound reads it)
 FWD = [False]                                                # (24 Nov, Tomas: "after the crash the car leaves backwards") it drives on, forward: out onto the far side of the road, round her, and off to the left
+FAR = [False]                                                # (24 Nov, cold test of film v14: "the limo drives over her and she does not react") 3.4: the car passes in the far lane, road between its tyres and her; her raised palm goes with its wind; the bills are in the air as its tail leaves
 S_CAR = 1.65
 PAM_K, GUARD_K = 1.203, 0.903
 NOSE = 345.0                                                 # the bumper, where it stopped (T3: STOPX + 5 - 170 S)
@@ -260,16 +261,23 @@ def tb():
         if FWD[0]:                                           # it passes behind her, right to left, and is gone by the eleventh drawing
             cx = CX - 360 - 56.0 * i - 2.2 * i * i             # on from where 3.3b left it, at the speed it had (55 a drawing), still gathering
         B0 = 14.0 if FWD[0] else 0.0                         # (the review) the car is gone by the eighth drawing; half a second of her alone; then the bills
+        if FAR[0]:
+            B0 = 7.0                                         # the first bill comes into frame as the car's tail leaves it: one event, not two
         B_BILL0[0] = B0
         look = (0.9, -0.9) if i < 8 else (0.3, -0.2)
         if FWD[0]:                                           # her eyes go with it, right to left; then up at what is coming down
             look = (0.9 - 1.8 * min(1.0, i / 8.0), -0.5) if i < 9 else ((-0.9, -0.3) if i < 14 else (0.2, -0.9))
-        pm_ = pam("doubt" if i < 14 + B0 else "fade", look, (50, -128))
+        arm = (50, -128)
+        if FAR[0]:                                           # the car's wind takes her raised palm with it, and lets it back
+            u = max(0.0, 1 - abs(i - 4.0) / 4.0)
+            arm = (50 - 26 * u, -128 - 14 * u)
+        pm_ = pam("doubt" if i < 14 + B0 else "fade", look, arm)
         def after(k):
             pam_shadow(k)
             if FWD[0]:
                 if cx + 175 * S_CAR > 40:
-                    car_fwd(k, cx, 694, S_CAR)
+                    cb_ = 652.0 if FAR[0] else 694.0
+                    car_fwd(k, cx, cb_, S_CAR * dscale(cb_) / dscale(694.0))
             elif cx - 170 * S_CAR < 420:
                 shadow(k, cx, 728, 160 * S_CAR, 8, 0.5); car.side(k, cx, 724, S_CAR)
             sc.draw_cast(k, [pm_])

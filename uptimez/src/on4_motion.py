@@ -185,7 +185,17 @@ def tab(seq, x):
     return _tw(seq[j], seq[j + 1], u)
 
 
-def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0):
+HIT = [False]                                                # (24 Nov, cold test of film v14: nobody could say who felled the shadow) the punch as a blow: a wind-up we see, a step in, her arm rim-lit on the shadow, a hit-stop, his hat knocked off; he folds and slides down with no streaks
+
+
+def _hat(c, x, y, rot, s=1.0):
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    c.rectangle(-58, -6, 116, 12); c.fill()
+    c.new_path(); c.move_to(-36, -6); c.line_to(-30, -54); c.line_to(30, -54); c.line_to(36, -6); c.close_path(); c.fill()
+    c.restore()
+
+
+def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0, hat=None, jolt=0.0):
     """the projected hat shadow (sc.wall_shadow's geometry) with its deformation: w, h scale it on the wall; drip 0..1
     runs it down the wall into a puddle at the wall's foot."""
     c = k.c
@@ -200,9 +210,12 @@ def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0):
     if hh > 0.05:
         c.save(); c.translate(bx, by)
         c.transform(cairo.Matrix(0.74 * w * (1 + 0.9 * drip), -0.74 * w, 0, hh, 0, 0)); c.rotate(lean)
-        al.shadow_man(k, 0, 0, 0.98, "knife", state, flip=True)
+        c.translate(-jolt, 0)                                # knocked back along the wall, away from her
+        al.shadow_man(k, 0, 0, 0.98, "knife", state, flip=True, hat=hat is None)
+        if hat is not None and len(hat) == 3:                # his hat in the air: (dx, dy, turn) from where it sat
+            c.set_source_rgba(0.02, 0.02, 0.03, 0.86); _hat(c, hat[0], -360 * 0.98 + hat[1], hat[2])
         c.restore()
-    if drip > 0:                                            # streaks running down the wall
+    if drip > 0 and not HIT[0]:                             # streaks running down the wall
         c.set_source_rgba(0.02, 0.02, 0.03, 0.85)
         for i, dx in enumerate((-50, -20, 10, 40, 64)):
             x0 = bx + dx; y0 = by - dx - 250 * (1 - drip) * (0.6 + 0.1 * i)
@@ -211,6 +224,8 @@ def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0):
     if drip > 0:                                            # the puddle at the wall's foot
         c.save(); c.translate(bx + 30, by + 20); c.rotate(-0.78); c.scale(110 * drip, 26 * drip)
         c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.set_source_rgba(0.02, 0.02, 0.03, 0.9); c.fill()
+    if hat is not None and len(hat) == 4:                    # the hat on the cobbles by what is left of him: (x, y, turn, size)
+        c.set_source_rgba(0.02, 0.02, 0.03, 0.9); _hat(c, hat[0], hat[1], hat[2], hat[3])
 
 
 CAT = [True]                                                 # v6 (Tomas): Office Noir 1's black cat leaps across the lens at 0:00.25
@@ -252,14 +267,24 @@ def t1():
     def sof(i):
         t = i / float(N)
         return (330 + 70 * t + (5 if i % 4 < 2 else -5), 650 + 560 * t * t + 80 * t - (7 if i % 2 else 0), 0.50 + 0.5 * t)   # v3: steps
-    def f(i, arms, lean, face, look, sh, burst=False, hop=0):
+    def f(i, arms, lean, face, look, sh, burst=False, hop=0, dx=0, fx=""):
         sx, sy, ss = sof(i)
         sofia = [P("sofia", sx, sy, ss, "hold", "appraise", (0.2, 1.0))] if sy < 1180 else []
-        pam = [P("pam_cat", 220, 730 - hop, 0.84, pose(arms, ("fist", "fist")), face, look, lean=lean)]
+        kw = dict(lean=lean)
+        pam = [P("pam_cat", 220 + dx, 730 - hop, 0.84, pose(arms, ("fist", "fist")), face, look, **kw)]
         flat = []
         cast = flat + (sofia + pam if sy < 735 else pam + sofia)
+        def aft(k):
+            c = k.c
+            if fx in ("swing", "star"):                      # the fist's path: lines along the blow, not a ghost (lessons 150, 160)
+                c.set_source_rgba(1, 1, 1, 0.9); c.set_line_cap(1)
+                for j, (yy, x0, x1) in enumerate(((524, 236, 176), (538, 250, 168), (552, 240, 182))):
+                    c.set_line_width(4 if j == 1 else 2.5); c.move_to(x0 + dx, yy); c.line_to(x1 + dx, yy); c.stroke()
+                c.set_line_cap(0)
+            if fx == "star":
+                sc._burst(k, 62, 540, 44)
         return draw(shot("1.1", cast=cast, before=lambda k: shadow2(k, **sh),
-                         after=(lambda k: sc._burst(k, 98, 544, 36)) if burst else None))
+                         after=aft if fx in ("swing", "star") else ((lambda k: sc._burst(k, 98, 544, 36)) if burst else None)))
     f = lazy(f)
     i = 0
     if CAT[0]:
@@ -278,6 +303,8 @@ def t1():
     else:
         for _ in range(6):                                   # 0.5 s: the threat, held; her eyes already on it
             fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
+    if HIT[0]:
+        return _t1_hit(fr, f, i, N)
     for t in (0.4, 0.8, 1.0):                                # the wind-up: the fist back, the weight back
         fr.append(f(i, lerp(HERO, WIND, t), 0.07 * t, "peer", (-1.0, -0.4), dict())); i += 1
     fr.append(f(i, lerp(WIND, PUNCH, 0.6), -0.04, "peer", (-1.0, -0.3), dict())); i += 1          # the strike
@@ -291,6 +318,34 @@ def t1():
         fr.append(f(i, lerp(PUNCH, HERO, t), -0.06 * (1 - t), "proud", (0.7, 0.3), dict(drip=1.0, state="down"))); i += 1
     while i < N:                                             # Sofia walks past and out; the pose held at nobody
         fr.append(f(i, HERO, 0, "proud" if i < N - 6 else "fade", (0.7, 0.6), dict(drip=1.0, state="down"))); i += 1
+    return fr
+
+
+def _t1_hit(fr, f, i, N):
+    """the blow, in the same number of keys as before (nothing after it moves): two keys of the old settle are spent on
+    the wind-up and one of the slide on the hit-stop."""
+    del fr[-2:]; i -= 2                                      # the two held hero keys before the wind-up
+    WIND2 = oc.pm.ik(-1, -58, -262) + oc.pm.ik(1, 58, -150)  # the fist cocked by her ear on his side (clear of her face), the other hand a guard
+    MID = oc.pm.ik(-1, -112, oc.BT - 8) + oc.pm.ik(1, 46, -130)
+    PUNCH2 = oc.pm.ik(-1, -152, oc.BT + 6) + oc.pm.ik(1, 40, -120)
+    for t, d in ((0.5, 6), (1.0, 14), (1.0, 18), (1.0, 18)):  # the wind-up: the weight back and away from him, held
+        fr.append(f(i, lerp(HERO, WIND2, t), 0.16 * t, "peer", (-1.0, -0.4), dict(), dx=d)); i += 1
+    fr.append(f(i, MID, -0.04, "peer", (-1.0, -0.3), dict(), dx=-14, fx="swing")); i += 1                           # the step in
+    hit = dict(w=1.1, h=0.96, lean=-0.16, state="down", hat=(-34, -64, -0.5), jolt=22)
+    fr.append(f(i, PUNCH2, -0.08, "peer", (-1.0, -0.3), hit, dx=-30, fx="star")); i += 1                            # contact: he jolts back, his hat lifts
+    fr.append(fr[-1]); i += 1; fr.append(fr[-1]); i += 1     # the hit-stop: three keys on one drawing
+    hy = lambda u: (150 + 30 * u, 690 + 112 * u * u, -1.2 + 1.0 * u, 0.62)
+    for sh in (dict(w=1.25, h=0.8, lean=-0.2, state="down", hat=(-80, -150, -1.3), jolt=34),
+               dict(w=1.45, h=0.62, lean=-0.24, state="down", hat=(-150, -140, -2.3), jolt=34),
+               dict(w=1.5, h=0.6, lean=-0.24, drip=0.35, state="down", hat=hy(0.3)),
+               dict(w=1.5, h=0.6, lean=-0.24, drip=0.65, state="down", hat=hy(0.7)),
+               dict(w=1.5, h=0.6, lean=-0.24, drip=0.88, state="down", hat=hy(1.0))):
+        fr.append(f(i, PUNCH2, -0.08, "peer", (-1.0, 0.2), sh, dx=-30)); i += 1                                     # he folds and slides down the wall; she holds the fist out
+    end = dict(drip=1.0, state="down", hat=hy(1.0))
+    for t in (0.5, 1.0):                                     # she turns to be thanked
+        fr.append(f(i, lerp(PUNCH2, HERO, t), -0.04 * (1 - t), "proud", (0.7, 0.3), end, dx=-30 * (1 - t))); i += 1
+    while i < N:                                             # Sofia walks past and out; the pose held at nobody
+        fr.append(f(i, HERO, 0, "proud" if i < N - 6 else "fade", (0.7, 0.6), end)); i += 1
     return fr
 
 
@@ -567,6 +622,7 @@ DENSE = [False]                                              # (24 Nov, Tomas: w
 T7_SLAM = [32]                                               # the drawing the bin's lid slams on (the sound reads it)
 LAW = [False]                                                # (24 Nov) one scale law on the crossing (on4_cross.dscale): her walk in grows by it; she lies as she fell (the same rig), no other drawing
 CRASH = [False]                                              # (24 Nov, Tomas's picks) the bump restaged: see t3
+TEETER = [False]                                             # (24 Nov, cold test of film v14: "a frozen picture") the second between the tap and the fall is acted: eyes to the bumper, a sway onto it and off
 T3_MARKS = {"toot": 12.0 / 32.0, "bump": 21.0 / 32.0}        # where the sounds fall, as fractions of 3.1 + 3.2
 
 
@@ -652,7 +708,11 @@ def t3():
         fr.append(side(STOPX, D_GO, FACE(0.03, 0, "doubt"), burst=True, shake=(4, 0), mask=0.16))     # the tap (his whistle)
         fr.append(side(STOPX + 6, D_GO2, FACE(0.02, 0, "doubt"), pitch=0.010, shake=(-2, 0), mask=0.30))   # it rocks back
         fr.append(side(STOPX + 5, D_GO, FACE(0.0, 0, "doubt"), mask=0.30))
-        for j in range(4):                                                                            # a beat: she stands, palm out, the mask askew
+        if TEETER[0]:                                        # the beat acted, in the same four keys: her eyes go down to the bumper on her hip and back up; she sways onto it, then off it, and over
+            FACE2 = lambda lean, look, sag: ("up", PX + lean * 60, PF, 0.62, oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 96 - sag * 0.3, oc.HY + 30 + sag), ("relax_s", "palm"), -lean, "doubt", look)
+            for j, (ln, lk, sg) in enumerate(((-0.02, (0.8, 0.7), 10), (-0.06, (0.7, 1.0), 26), (-0.06, (0.7, 1.0), 30), (-0.02, (1.0, -0.5), 12))):
+                fr.append(side(STOPX + 5, go(j + 1), FACE2(ln, lk, sg), mask=0.30 + 0.04 * j))
+        for j in range(0 if TEETER[0] else 4):                                                        # a beat: she stands, palm out, the mask askew
             fr.append(side(STOPX + 5, go(j + 1), FACE(0.0, 0, "doubt"), mask=0.30))
         PLANK = lambda ln: ("up", PX + ln * 30, PF - 12 * (ln / 1.38) ** 2, 0.62, STOPP, ("relax_s", "palm"), -ln, "doubt", (1.0, -0.1))   # about her heels; her head comes down where the lying drawing has it
         if LAW[0]:
