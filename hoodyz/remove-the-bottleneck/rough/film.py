@@ -225,14 +225,16 @@ def carriers(c, x0, walk=None, look=(-16, -4), rot=0.0, gone=(), bob=0.0, eye='h
         if i not in gone and -200 < x < W + 200:
             bot(c, x, FLOOR, sh=False, eye=eye, look=look, rot=rot, bob=bob, walk=walk + i * 1.6 if walk is not None else None, arms=('up', 'up'))
 def thumb_up(c, sl, k):
-    """His fist out of the hand slot, thumb up (a fist on its side, the thumb off the top of it: never one lone finger)."""
+    """His fist out of the hand slot, thumb up (a fist on its side, the thumb off the top of it: never one lone finger).
+    Cover audit 2: a longer navy sleeve with a cuff, so it reads as an ARM with a hand and not as a thumbs-up symbol."""
     if k <= 0 or not sl: return
-    c.save(); c.rectangle(0, 0, W, sl[1]); c.clip(); c.translate(sl[0], sl[1] + 90 * (1 - k) - 6); c.scale(1.5, 1.5)      # cold test: the thumb was mistaken for a sticker - bigger
-    rr(c, -24, -40, 48, 50, 12); fs(c, NAVY, 6)
-    c.save(); c.rotate(-.12); rr(c, -52, -158, 34, 84, 16); fs(c, SKIN, 7); c.restore()
-    rr(c, -40, -100, 88, 70, 24); fs(c, SKIN, 7)
+    c.save(); c.rectangle(0, 0, W, sl[1]); c.clip(); c.translate(sl[0], sl[1] + 120 * (1 - k) - 6); c.scale(1.5, 1.5)
+    rr(c, -27, -104, 54, 120, 12); fs(c, NAVY, 6)                                   # the sleeve
+    rr(c, -31, -112, 62, 22, 8); fs(c, hx('2c3a66'), 5)                             # its cuff
+    c.save(); c.translate(0, -62); c.rotate(-.12); rr(c, -52, -158, 34, 84, 16); fs(c, SKIN, 7); c.restore()
+    c.save(); c.translate(0, -62); rr(c, -40, -100, 88, 70, 24); fs(c, SKIN, 7)
     for i in range(3): c.move_to(48, -86 + i * 18); c.line_to(24, -86 + i * 18)
-    c.set_source_rgb(*INK); c.set_line_width(5); c.stroke(); c.restore()
+    c.set_source_rgb(*INK); c.set_line_width(5); c.stroke(); c.restore(); c.restore()
 def shot_E(c, t):
     B.room(c); B.poster(c, *BOARD); wall_list(c, (1, 1, 1, (t - 29) / 3))        # the sticker goes on: the last box is ticked
     up = io((t - 4) / 14)
@@ -281,7 +283,7 @@ def shot_F(c, t):
         sl = B.crate(c, x0, y, lid=oe((t - T_HIT) / 4) if hit else 0, stamp=0 if hit else 1.0, rts=1.0 if t >= T_BACK else 0, slot=True, slot_x=50,
                      rot=(.02 if t < T_GO else (-.05 if t < T_OUT else lerp(-.05, .04, oe((t - T_BACK) / 14)))) * (1 - fall) if not hit else 0)
         thumb_up(c, sl, io((t - 22) / 5) * (1 - io((t - T_DROP + 3) / 3)))
-        if 32 <= t < T_GO and sl: bubble(c, ['FASTER!'], (sl[0] - 6, sl[1] - 235), 330, 470, 70)
+        if 32 <= t < T_GO and sl: bubble(c, ['FASTER!'], (sl[0] - 6, sl[1] - 335), 330, 470, 70)      # the tail 40 % shorter (cover audit 2)
         for at, i in POPS_F: pop(c, x0 + DX[i], FLOOR - 240, (t - at) / 6, 120)
         if T_DROP <= t:                                                   # the one that is left trots to its mark - and is MY AI again
             if t < T_LAND:
