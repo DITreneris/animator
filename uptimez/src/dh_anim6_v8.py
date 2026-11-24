@@ -16,6 +16,7 @@ import dh_poses as dq
 import mom_on as mo
 import dh_anim6 as V7
 import dh_anim_v8 as E
+import dh_anim3_v8 as A3
 from kit import INK
 
 sc = V7.sc
@@ -49,6 +50,40 @@ def _wet_filter(k, x, y, *a, **kw):
 
 
 dp.wet_filter = _wet_filter
+
+
+# ---- 8.2': "Mom! I'm..." v7 had both hands up at his head (cold test: "on a phone" 2 of 2; rules: hand at ear = phone).
+# 12 gestures were drawn at feed size, and 2 cold viewers saw each set. Hands out to the side lost the near hand behind Mom
+# ("stub" 2/2). Winner (2/2 clearest, no phone, both hands whole): the near arm down, the far fist flung up in protest.
+# With the bubble on, that fist sat under the box: the fist is now kept clear (AVOID_EXTRA) and raised above the box (130, 25).
+LICK_POSE = [(-8, 0, 130, 25)]
+
+
+def r_lick(s, k, o, t, tt, n):
+    rot = V7.seq(t, [0.03, 0.09, 0.11, 0.09])
+    dp.ceo_chair(k, ds.THR5, CH[1], CH[2])
+    c = k.c
+    x0, f0 = ds.DON6
+    c.save(); c.translate(x0 + 4, f0); c.rotate(rot); c.translate(-x0 - 4, -f0)
+    seen, real = [], kit.HAND[0]
+
+    def spy(k_, hx, hy, *a):                                # his hands on this drawing, in frame units (540 wide)
+        sc_ = k_.c.get_target().get_width() / 540.0
+        seen.append(tuple(v / sc_ for v in k_.c.user_to_device(hx, hy)))
+        return real(k_, hx, hy, *a)
+    kit.HAND[0] = spy
+    try:
+        d = sb.don(k, x0 + 4, f0, DS_, LICK_POSE[0], "shock", look=(-1, 0))
+    finally:
+        kit.HAND[0] = real
+    A3.AVOID_EXTRA[:] = [(hx - 22, hy - 22, hx + 22, hy + 22) for hx, hy in seen if hy < 520]   # the flung fist stays clear of the box
+    V7.A.fear(k, d["head"], DS_, "hope", s.loud("8.2", tt))
+    dp.coffee_run(k, d["head"], DS_)
+    c.restore()
+    sb.mfs.mom(k, ds.MOM6[0] + V7.seq(t, [0, 4, 8, 10]), ds.MOM6[1], ds.MS, "lick", "sweet", look=(0.8, -0.3), bag=False)
+    dp.wet_filter(k, ds.MOM6[0] - 34, F - 86, 0.6, 0.4)
+    if s.speaking("8.2", tt):
+        o["say"] = ("Mom! I'm...", (d["head"][0] + 30, d["head"][1] + 16), 1, False, 60, 170)
 
 
 # ---- 8.3: Mom zips him, her own arm
@@ -127,13 +162,14 @@ def r_left(s, k, o, t, tt, n):
                   0.1 + 0.05 * min(3, j))
 
 
-sc.DRAW.update({"8.3": r_zip, "8.4a": r_sofia, "8.4c": r_left})
+sc.DRAW.update({"8.2'": r_lick, "8.3": r_zip, "8.4a": r_sofia, "8.4c": r_left})
 SET_MOVES, SET_AIR, SET_BEHIND = {}, set(), set()
 SET_WALKS = {("8.2'''", "8.3", "mom")}                     # she steps up to him for the zip
 ENTRANCES = {("8.4a", "sofia")}
 
 
 def frame8(tt, n, hi=1):
+    A3.AVOID_EXTRA[:] = []                                  # set by r_lick for its own line only
     return E.frame(sc, tt, n, hi)
 
 
