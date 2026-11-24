@@ -213,17 +213,24 @@ def plan(k, burn=0.0):
     cp._bg = lambda *a, **kw: None
     c.save(); c.translate(px, py); c.scale(s / k0, s / k0); c.translate(-270, -470)
     try:
+        cp.NOSEAM[0] = cp.TITLE_WIDE[0] = CLEAN[0] and burn <= 0
         cp.plan(k, "whole", 740)
     finally:
         c.restore()
         cp.PROPS4[0], cp.TITLE_TAPE[0], cp._bg = old
+        cp.NOSEAM[0] = cp.TITLE_WIDE[0] = False
+    if CLEAN[0] and burn <= 0:                                                             # 4.2 v10: the printed title's ends under the tape, painted out
+        c.set_source_rgb(0.157, 0.38, 0.80); c.rectangle(px - 40 * s, py - 46.6 * s, 80 * s, 3.4 * s); c.fill()
     if burn <= 0 and DON_RING[0]:                                                          # v4 (23 Nov, audit): the fresh plan's
         import acts_ob as ac                                                               # ring on 3, DON, on EVERY fresh plan:
         _bx, _by, _bw, _bh = [b[1:] for b in ac._bays() if b[0] == 3][0]                    # the pinned close-up, the last wide and
         tx, ty = px + (_bx + _bw / 2) * s, py + (_by + _bh / 2) * s                         # frame 0 agree (a detail for the rewatch)
         c.set_source_rgb(0.85, 0.12, 0.12); c.set_line_width(4.5); c.new_path()
         c.arc(tx, ty, 22, 0, 2 * math.pi); c.stroke()
-        T(c, "DON", tx, ty + 40, 15, col=(0.85, 0.12, 0.12)); c.new_path()               # show_text leaves a current point
+        if DON_TAG[0]:                                                                     # 4.2 v8 (audit: "DON competes"): on its own
+            c.set_source_rgb(0.98, 0.96, 0.86); c.rectangle(tx - 19, ty + 21, 38, 14); c.fill()   # paper tag, tight under ITS garage
+            c.set_source_rgb(*INK); c.set_line_width(1.2); c.rectangle(tx - 19, ty + 21, 38, 14); c.stroke()
+        T(c, "DON", tx, ty + (32.2 if DON_TAG[0] else 40), 11.5 if DON_TAG[0] else 15, col=(0.85, 0.12, 0.12)); c.new_path()               # show_text leaves a current point
     if burn > 0:                                   # v3 (23 Nov, "just a stupid stain"): the lower row BURNT
         protect(c, "the burnt row", 330, 462, 440, 596)
         burnt_row(c, min(1.0, burn / TORN_AT))
@@ -516,6 +523,8 @@ def garage(k, burn=0.0, legs_out=None, bonnet=0.0, lamp_on_floor=True, behind=No
 
 SMOTHER = [0.0]                                            # v3: 0..1 the rag pressed on the burning 7
 NEW_PLAN = [None]                                          # v1: 0..1 a fresh plan slid up the wall over the burnt one
+DON_TAG = [False]
+CLEAN = [False]
 DON_RING = [True]                                          # v1 (23 Nov): every fresh plan has 3 ringed, DON (False: v3 of the plan)
 
 

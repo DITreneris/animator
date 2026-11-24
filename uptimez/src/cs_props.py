@@ -517,7 +517,9 @@ def ai_site(k, seed=975):
 FLIP0 = [None]              # One Star scene 4 (opt-in): the first strip's turn, radians (pi = upside down, 0 = right)
 GAP_PLAIN = [False]         # layout v2: the gap at 7 as a torn hole only: no red outline, no red 7 (it gave the answer away)
 TAPE7_DY = [0.0]            # scene 4: the tape higher on bay 7, clear of its number
+NOSEAM = [False]            # The Offer 4.2 v8: the FRESH plan in the pin close-up has no seam tape (audit: noise)
 NOTAPE7 = [False]           # scene 4: the 7 laid in, before her tape goes across it
+TITLE_WIDE = [False]        # The Offer 4.2 v9: the title's tape covers the printed title whole (audit: 'an old title under it')
 TITLE_TAPE = [False]        # layout v2: MY GARAGES in pen on one strip of tape (the printed title is cut by the strips)
 
 
@@ -580,7 +582,7 @@ def plan(k, state="before", seed=740):
     elif state == "turned":
         c.set_source_rgb(*INK); c.set_line_width(1.0); c.set_dash([3, 2])
         c.rectangle(bx - 2, by - 3, bw + 4, bh + 16); c.stroke(); c.set_dash([])
-    for i, ex in enumerate(edges[1:-1]):                                                         # the seams' tape
+    for i, ex in enumerate([] if NOSEAM[0] else edges[1:-1]):                                    # the seams' tape
         for ty in (-48, -14, 22):
             c.save(); c.translate(ex, ty + (i % 2) * 6); c.rotate(-0.25 + 0.18 * i)
             c.set_source_rgba(0.98, 0.96, 0.86, 0.72); c.rectangle(-7, -3.5, 14, 7); c.fill()
@@ -588,8 +590,9 @@ def plan(k, state="before", seed=740):
             c.restore()
     if TITLE_TAPE[0] and state != "number":                                                     # MY GARAGES, in her pen
         c.save(); c.translate(8, -54); c.rotate(-0.03)
-        c.set_source_rgb(0.98, 0.96, 0.86); c.rectangle(-36, -6.5, 72, 13); c.fill()
-        c.set_source_rgba(0.6, 0.55, 0.4, 0.8); c.set_line_width(0.6); c.rectangle(-36, -6.5, 72, 13); c.stroke()
+        tw_ = 56 if TITLE_WIDE[0] else 36
+        c.set_source_rgb(0.98, 0.96, 0.86); c.rectangle(-tw_, -6.5, 2 * tw_, 15.5 if TITLE_WIDE[0] else 13); c.fill()
+        c.set_source_rgba(0.6, 0.55, 0.4, 0.8); c.set_line_width(0.6); c.rectangle(-tw_, -6.5, 2 * tw_, 15.5 if TITLE_WIDE[0] else 13); c.stroke()
         c.set_source_rgb(0.10, 0.15, 0.55); c.select_font_face("Comic Neue", 0, 1); c.set_font_size(9.5)
         e = c.text_extents("MY GARAGES"); c.move_to(-e.x_advance / 2, 3.4); c.show_text("MY GARAGES")
         c.restore()

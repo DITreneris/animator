@@ -676,9 +676,11 @@ def garage_shot(k, sh, scene, heads, cam):
     if POSES.get(sh["id"], {}).get("g1", {}).get("phone") == "delete":    # 0.4: HIS arm, from the top, holding it down
         import dh_cast as dc
         px, py = 300, 812
+        c.save(); c.set_source_rgba(0.10, 0.10, 0.12, 0.32); c.paint(); c.restore()   # v11 (audit): the car steps back,
+        c.save(); c.translate(px, py); c.scale(1.15, 1.15); c.translate(-px, -py)      # the phone 15 % bigger
         for col, lw in ((INK, 66), (dc.SUIT, 60)):                            # v9 (24 Nov, cold test 3 of 3: "a black diagonal",
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0)       # "floating"; decided: hand + SHORT THICK forearm):
-            c.move_to(px + 36, py + 30); c.line_to(px + 112, py + 6); c.stroke()   # his sleeve, as wide as the hand, straight
+            c.move_to(px + 36, py + 30); c.line_to(px + 190, py - 20); c.stroke()   # his sleeve, as wide as the hand, straight
         c.save(); c.translate(px + 62, py + 21.5); c.rotate(math.atan2(-50, 154))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
         rect(k, -9, -35, 18, 70, (0.97, 0.97, 0.94), 3409, shadow=False, lw=1.8)            # his white cuff, at the phone
         c.restore()
@@ -698,6 +700,7 @@ def garage_shot(k, sh, scene, heads, cam):
         gs.T(c, "DELETE", 0, 27, 10.5, col=(1, 1, 1))
         c.restore()
         _oc.phone_grip(k, gx_, gy_, S04, ang=A04, skin=(0.92, 0.74, 0.60), body_x=gx_ + 400, part="front", ink=0.6)   # thumb, fingertips
+        c.restore()
 
 
 def _star(c, x, y, r):
@@ -799,11 +802,16 @@ def insert_shot(k, sh):
     elif kind == "pin":                                                            # v2 (23 Nov, cold tests 3 of 3: the plan "healed"):
         u_ = sh["state"].get("pin_u", 1.0)                                             # v5 (24 Nov, cold test 3 of 3: "the burnt map is
         sl_ = sh["state"].get("pin_slide", 1.0)                                        # whole again", "a pole from the floor"; decided):
-        Z_, CX_, CY_, DY_ = 2.45, 408, 520, 40                                                   # the BURNT plan is there, with its hole; the FRESH
+        Z_, CX_, CY_, DY_ = 2.8, 408, 520, 22                                                   # the BURNT plan is there, with its hole; the FRESH
         c.save(); c.translate(270, 480 + DY_); c.scale(Z_, Z_); c.translate(-CX_, -CY_)      # one slides up over it under his hand, and his
-        gs.room(k); gs.plan(k, 1.0)                                                    # finger pins its bottom corner. It is covered,
+        gs.room(k)
+        c.save(); c.identity_matrix(); c.set_source_rgba(0.10, 0.10, 0.12, 0.34); c.paint(); c.restore()   # v9 (audit): the wall steps back
+        c.push_group(); gs.plan(k, 1.0); c.pop_group_to_source(); c.paint_with_alpha(1.0 - 0.999 * ease_((sl_ - 0.55) / 0.45))   # and the burnt one is GONE under the fresh one
+        pass                                                    # finger pins its bottom corner. It is covered,
         c.save(); c.translate(0, 340 * (1 - sl_))
-        gs.plan(k, 0.0)                                                                # not healed (gs.DON_RING: 3 ringed, DON)
+        gs.CLEAN[0] = gs.DON_TAG[0] = True                                             # v8 (audit): no seam tape on the fresh one, DON on a tag
+        gs.plan(k, 0.0)
+        gs.CLEAN[0] = gs.DON_TAG[0] = False
         c.restore(); c.restore()
         px_, py_ = (336 - CX_) * Z_ + 270, (579 - CY_) * Z_ + 480 + DY_ + 340 * (1 - sl_) * Z_   # the fresh plan's bottom left corner
         ph_ = (px_ + 34 + 10 * (1 - u_), py_ + 78 + 18 * (1 - u_))
@@ -838,25 +846,44 @@ def insert_shot(k, sh):
         g2_.add_color_stop_rgba(0, 1.0, 0.95, 0.70, 0.35); g2_.add_color_stop_rgba(1, 1.0, 0.95, 0.70, 0.0)
         c.set_source(g2_); c.arc(250, 350, 200, 0, 2 * math.pi); c.fill()
         bo_ = sh["state"].get("bolt_out", 0.0)                                         # v3 (decided): the bolt comes FREE
-        if bo_ > 0:
-            c.set_source_rgb(0.08, 0.08, 0.09); c.arc(250, 350, 15, 0, 2 * math.pi); c.fill()   # its hole
-        if bo_ == 0:
-            ellipse(k, 250, 350, 28, 28, (0.62, 0.64, 0.66), 3470, lw=2.4)              # the plug's top, in the block
+        c.set_source_rgb(0.08, 0.08, 0.09); c.arc(250, 350, 15, 0, 2 * math.pi); c.fill()   # its hole (the plug sits in it: below)
 
         w_ = sh["state"].get("work", 0.0)
-        ro_ = sh["state"].get("bay_reach", sh["state"].get("bolt_out", 0.0))             # v10: the wrench swings off as the far hand comes
-        c.save(); c.translate(250, 350); c.rotate(-2.4 + 0.35 * w_ - 0.6 * ro_)       # the wrench on it, turning
-        rect(k, -14, -14, 190, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)
+        ro_ = sh["state"].get("bay_reach", sh["state"].get("bolt_out", 0.0))
+        wa_ = -2.6 + 0.2 * w_                                                          # v12: a 150 handle, worked about the bolt; then the
+        hw_ = (250 + 150 * math.cos(wa_), 350 + 150 * math.sin(wa_))                   # HAND stays and the wrist swings the head off the hole
+        c.save(); c.translate(*hw_); c.rotate(wa_ + math.pi + 0.6 * ro_)               # (the arm keeps its length: audit)
+        rect(k, -40, -14, 204, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)                   # the handle comes out past his fist
         c.restore()
         bo2_ = sh["state"].get("bolt_out", 0.0)
-        hw_ = (250 + 175 * math.cos(-2.4 + 0.35 * w_ - 0.6 * ro_), 350 + 175 * math.sin(-2.4 + 0.35 * w_ - 0.6 * ro_))   # his fist on the wrench
-        fh_ = (330 + (250 - 330) * ro_ + 40 * bo2_, 470 + (385 - 470) * ro_ - 135 * bo2_)   # v10 (24 Nov, Tomas: "the hand JUMPED, whose is it?"): it goes to the hole FIRST, grips, then lifts; the plug is in the fist all the way                          # v4: the far hand comes up with the plug
+        fh_ = (360 - 110 * ro_, 330 - 17 * ro_ - 102 * bo2_)   # v10 (24 Nov, Tomas: "the hand JUMPED, whose is it?"): it goes to the hole FIRST, grips, then lifts; the plug is in the fist all the way                          # v4: the far hand comes up with the plug
         for side, (hx, hy, sx_, sy_) in enumerate(((hw_[0], hw_[1], 30, 70), (fh_[0], fh_[1], 500, 720))):
-            el_ = bend((hx, hy), (sx_, sy_), 60, 1 if side == 0 else 1)                   # v8 (24 Nov, cold test v30: "tubes" 3 of 3): his
-            dd_ = insert_cuff(c, (hx, hy), el_, 54, (0.80, 0.62, 0.50), None, stub=64 if side == 0 else 26)
+            sx_, sy_ = (112, 620) if side == 0 else (405, 620)                           # v11 (24 Nov, Tomas: "a hand walks in space, a wrist with
+            el_ = ik2((hx, hy), (sx_, sy_), 222, 222, -1 if side == 0 else 1)             # v12 (audit: +33 % stretch): fixed bone lengths                  # no arm"): HE is in the frame, from behind: his back and
+            dd_ = insert_arm(c, (hx, hy), el_, (sx_, sy_), 54, (0.80, 0.62, 0.50), None, lit=(330, 96), half=(0.97, 0.97, 0.95))
             if side == 0:
-                WD_ = dd_                                                             # the watch sits ON this wrist (it floated beside the hand)                         # v9: HAND + bare wrist only
-            if side == 1 and ro_ > 0.6:                                                # v4: his far fist round the plug
+                WD_ = dd_                                                             # the watch sits ON this wrist
+            if side == 1:                                                             # v13 (three audits: "a scrap of paper"): the plug stands in
+                c.save(); c.rectangle(0, 0, 600, 357); c.clip()                           # its hole, thread DOWN; he takes it by the insulator's top and
+                c.translate(250, 385 - 102 * bo2_); c.rotate(-0.10 * bo2_); c.scale(1.6, 1.6)   # draws it up: the hex, the thread and the sooty
+                rect(k, -5, -84, 10, 16, (0.70, 0.72, 0.75), 3483, shadow=False, lw=2)     # electrode come out of the hole after it
+                c.new_path(); c.move_to(-9, -68); c.line_to(9, -68); c.line_to(13, -22); c.line_to(-13, -22); c.close_path()
+                c.set_source_rgb(0.95, 0.94, 0.90); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()
+                c.set_line_width(1.6)
+                for ry_ in (-58, -48, -38):
+                    c.move_to(-10, ry_); c.line_to(10, ry_); c.stroke()
+                rect(k, -19, -22, 38, 20, (0.70, 0.72, 0.75), 3481, lw=2.2)
+                for vx_ in (-7, 7):
+                    c.move_to(vx_, -21); c.line_to(vx_, -3); c.stroke()
+                rect(k, -10, -2, 20, 30, (0.55, 0.56, 0.58), 3482, lw=2)
+                c.set_source_rgb(*INK); c.set_line_width(1.6)
+                for ty_ in (4, 11, 18):
+                    c.move_to(-10, ty_ + 3); c.line_to(10, ty_ - 2); c.stroke()
+                c.set_source_rgb(0.08, 0.07, 0.06); c.rectangle(-10, 19, 20, 10); c.fill()
+                c.set_source_rgb(*INK); c.set_line_width(3.4); c.set_line_cap(1)
+                c.move_to(7, 28); c.line_to(7, 38); c.line_to(-4, 38); c.stroke()
+                c.restore()
+            if side == 1 and ro_ > 0.6:                                                # his fist round the insulator
                 _oc.ps_hand(k, "fist", hx - 12 * dd_[0], hy - 12 * dd_[1], 64, (0.80, 0.62, 0.50), dd_, 1)
                 continue
             if side == 1:                                                             # v2 (decided): his far hand FLAT on the block
@@ -865,7 +892,21 @@ def insert_shot(k, sh):
                 continue
             _oc.ps_hand(k, "fist", hx - 12 * dd_[0], hy - 12 * dd_[1], 64, (0.80, 0.62, 0.50), dd_, -1)   # the fist on the wrench
             c.set_source_rgba(0.1, 0.08, 0.05, 0.45); c.arc(hx + 12, hy - 10, 8, 0, 2 * math.pi); c.fill()   # oil
-        if bo2_ > 0:                                                                     # v4 (cold tests 3 of 3: "what did he find?"):
+        ellipse(k, 266, 790, 232, 160, (0.97, 0.97, 0.95), 3490, lw=3)                    # his T-shirt back, bent over the wing
+        for ex_ in (198, 334):                                                         # v2 (Tomas: "is this the Client?"): HIS head from above:
+            ellipse(k, ex_, 652, 13, 20, (0.80, 0.62, 0.50), 3493 + ex_, lw=2.2)        # ears, dark hair combed back in strands, the grey at
+        ellipse(k, 266, 650, 66, 60, (0.80, 0.62, 0.50), 3491, lw=2.6)                    # both temples
+        ellipse(k, 266, 642, 64, 54, (0.16, 0.13, 0.11), 3492, shadow=False, lw=2.2)
+        c.save(); c.new_path(); c.save(); c.translate(266, 642); c.scale(64, 54); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.clip()
+        c.set_source_rgb(0.62, 0.62, 0.64)
+        for sx2_ in (-1, 1):
+            c.save(); c.translate(266 + sx2_ * 58, 650); c.scale(17, 40); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        c.set_source_rgba(0.42, 0.38, 0.35, 0.9); c.set_line_width(2.2); c.set_line_cap(1)
+        for j_ in range(5):
+            xx_ = 232 + j_ * 17
+            c.move_to(xx_, 606 + abs(j_ - 2) * 5); c.curve_to(xx_ - 3, 630, xx_ + 3, 655, xx_ - 2, 682 - abs(j_ - 2) * 4); c.stroke()
+        c.restore()
+        if False:                                                                        # v12: the plug is drawn in the fist (above)
             px_, py_ = 250 + (290 - 250) * bo2_, 350 + (215 - 350) * bo2_                   # out of the hole comes ONE thing you can
             c.save(); c.translate(px_, py_); c.rotate(-0.25); c.scale(1.0 + 0.6 * bo2_, 1.0 + 0.6 * bo2_)   # name: a spark plug,
             rect(k, -12, -70, 24, 50, (0.95, 0.94, 0.90), 3480, lw=2.4)                    # its tip black, cracked through
@@ -1297,6 +1338,19 @@ def bend(hand, shoulder, off, side=1):
     return (mx + side * off * -dy / L, my + side * off * dx / L)
 
 
+def ease_(u):
+    u = max(0.0, min(1.0, u)); return u * u * (3 - 2 * u)
+
+
+def ik2(hand, shoulder, l1, l2, side):
+    """the elbow of a two-bone arm with FIXED lengths (shoulder->elbow l1, elbow->hand l2); side picks the bend."""
+    dx, dy = hand[0] - shoulder[0], hand[1] - shoulder[1]
+    d = max(1e-6, min(math.hypot(dx, dy), l1 + l2 - 0.5))
+    a = (l1 * l1 - l2 * l2 + d * d) / (2 * d); h = math.sqrt(max(0.0, l1 * l1 - a * a))
+    ux, uy = dx / math.hypot(dx, dy), dy / math.hypot(dx, dy)
+    return (shoulder[0] + ux * a - uy * h * side, shoulder[1] + uy * a + ux * h * side)
+
+
 def insert_cuff(c, hand, elbow, w, skin, sleeve, cuff=None, stub=26):
     """v3 (24 Nov, cold test v31: arms read "a pole / floating" 3 of 3 whatever their length; decided "hand + wrist cuff only"):
     NO arm. The hand, big, with a short stub of sleeve and its cuff (a suit), or a bare wrist (a T-shirt). The direction
@@ -1316,7 +1370,7 @@ def insert_cuff(c, hand, elbow, w, skin, sleeve, cuff=None, stub=26):
     return d
 
 
-def insert_arm(c, hand, elbow, shoulder, w, skin, sleeve, cuff=None, torso=None):
+def insert_arm(c, hand, elbow, shoulder, w, skin, sleeve, cuff=None, torso=None, lit=None, half=None):
     """v2 (24 Nov, cold test v30: 8 of 9 mentions "a pole/tube" for a one-width band from the frame's edge; only the
     DONNIE shot, with the WHOLE person in it, passed): the owner is IN the insert. A forearm that tapers to the wrist,
     a bent elbow, a wider upper arm in his sleeve, and his SHOULDER and a piece of his body (torso colour) behind it.
@@ -1328,17 +1382,34 @@ def insert_arm(c, hand, elbow, shoulder, w, skin, sleeve, cuff=None, torso=None)
     parts = []
     if torso is not None:
         parts.append(("disc", shoulder, 3.8 * w, torso))
-    parts.append(("limb", hand, elbow, w * 0.78, w * 0.98, fore))
-    parts.append(("limb", elbow, shoulder, w * 1.12, w * 1.30, up))
+    parts.append(("limb", hand, elbow, w * 0.66, w * 1.02, fore))                      # v3 (audit: "a rubber tube"): a narrow wrist, a full
+    parts.append(("limb", elbow, shoulder, w * 1.08, w * 1.40, up))                    # forearm, a heavier upper arm
     if cuff is not None:
         cx_, cy_ = hand[0] - d[0] * 14, hand[1] - d[1] * 14
         parts.append(("limb", (cx_ - d[0] * 6, cy_ - d[1] * 6), (cx_ + d[0] * 6, cy_ + d[1] * 6), w * 0.84, w * 0.84, cuff))
+    if lit is not None:                                                               # its contact shadow on what is under it
+        c.push_group()
+        _limb(c, (hand[0] + 9, hand[1] + 12), (elbow[0] + 9, elbow[1] + 12), w * 0.9, w * 1.1, (0.05, 0.05, 0.06), 0.0)
+        c.pop_group_to_source(); c.paint_with_alpha(0.30)
     for e, ink in ((3.5, True), (0.0, False)):
         for pt in parts:
             if pt[0] == "disc":
                 c.set_source_rgb(*(INK if ink else pt[3])); c.new_path(); c.arc(pt[1][0], pt[1][1], pt[2] / 2 + e, 0, 2 * math.pi); c.fill()
             else:
                 _limb(c, pt[1], pt[2], pt[3], pt[4], INK if ink else pt[5], e)
+    if half is not None:                                                              # a short sleeve: the upper arm's top half
+        m_ = ((elbow[0] + shoulder[0]) / 2, (elbow[1] + shoulder[1]) / 2)
+        _limb(c, m_, shoulder, w * 1.30, w * 1.46, INK, 3.5); _limb(c, m_, shoulder, w * 1.30, w * 1.46, half, 0.0)
+    if lit is not None:                                                               # the lamp's warm light along the side that faces it
+        for p_, q_, ww in ((hand, elbow, w * 0.8),) + (() if half is not None else ((elbow, shoulder, w * 1.2),)):
+            mx_, my_ = (p_[0] + q_[0]) / 2, (p_[1] + q_[1]) / 2
+            lx_, ly_ = lit[0] - mx_, lit[1] - my_; ll_ = math.hypot(lx_, ly_) or 1.0
+            ax_, ay_ = q_[0] - p_[0], q_[1] - p_[1]; al_ = math.hypot(ax_, ay_) or 1.0
+            nx_, ny_ = -ay_ / al_, ax_ / al_
+            sg_ = 1 if nx_ * lx_ + ny_ * ly_ > 0 else -1
+            c.set_source_rgba(1.0, 0.93, 0.70, 0.30); c.set_line_width(ww * 0.22); c.set_line_cap(1)
+            c.move_to(p_[0] + nx_ * sg_ * ww * 0.26 + ax_ * 0.12, p_[1] + ny_ * sg_ * ww * 0.26 + ay_ * 0.12)
+            c.line_to(q_[0] + nx_ * sg_ * ww * 0.26 - ax_ * 0.12, q_[1] + ny_ * sg_ * ww * 0.26 - ay_ * 0.12); c.stroke()
     return d
 
 

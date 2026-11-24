@@ -908,3 +908,13 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - Taking the arms out of an insert (214) also takes out what tied a prop to the body: the watch was placed by a fixed offset on the old forearm and floated beside the hand. Anything worn goes on the wrist stub, along its direction.
 - A hand that changes job mid-shot must travel in order: reach the thing (0.3 s), grip, then lift, with the object locked to the fist. v32 lifted the plug by itself while the hand crossed the frame in 0.3 s and changed shape on the first frame: a jump.
 - I checked this shot only as stills at three times, not as a 10 fps strip of the encoded file. Every shot whose drawing code changed gets a strip before delivery.
+
+## 216. *The Offer* v34–v37 (24 Nov): the engine insert after Tomas ("a hand walks in space") and three still audits (7, 7, 7.5 of 10)
+
+- A hand-only insert works only at the frame's edge. Mid-frame, the hand needs its owner: here his back, head (his own: grey temples, strands, ears, short sleeves) and both arms from the shoulders, seen from behind.
+- Arms are two bones of FIXED length (`ik2`); the motion's range is then set by the bones (move the shoulder or shorten the travel), never the reverse. A fixed sideways elbow offset stretched an arm by 33 % between two frames.
+- A held object is drawn in the hand's order: object, then fingers; the tool's handle comes out past the fist. Withdraw a tool by the wrist, the arm still.
+- "It looks like paper" in three audits was the GRIP, not the drawing: he held the plug by its thread, so only the white insulator showed. Held by the top, thread down, the metal shows and the pull has three phases (in the hole, half out, out).
+- An audit's fix that moves a canon mark (DON from garage 3 to 7) is refused in the table, with the reason.
+- Three rounds on the same six stills moved the score by 0.5: after two rounds, render and test the motion.
+- Stills go to Tomas as PNG before any render (his message arrived mid-render at v34).
