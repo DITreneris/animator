@@ -511,10 +511,10 @@ def draw_cast(k, cast):
             if xl is not None:
                 c.save(); c.rectangle(xl, -2000, 4000, 6000); c.clip()
             c.push_group()
-            stepped(lambda f_: _dc.guard(k, x_, f_, s_, flip=kw.get("flip", False), seed=kw.get("seed", 1600)), k, x_, y_, s_, 190, kw.get("step", 0.0), 14.0)
+            stepped(lambda f_: _dc.guard(k, x_, f_, s_, pose=kw.get("pose"), flip=kw.get("flip", False), seed=kw.get("seed", 1600)), k, x_, y_, s_, 190, kw.get("step", 0.0), kw.get("lift", 14.0))
             g = c.pop_group()
             c.set_source(g); c.paint_with_alpha(1.0)
-            c.set_source_rgba(0.03, 0.03, 0.04, 0.86); c.mask(g)
+            c.set_source_rgba(0.03, 0.03, 0.04, kw.get("dark", 0.86)); c.mask(g)
             if xl is not None:
                 c.restore()
             o = {}

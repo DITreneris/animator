@@ -51,6 +51,12 @@ def kneel(drop, **kw):
     return dict(drop=drop, **kw) if drop > 2.5 or kw else None
 
 
+def relax(u):
+    """(24 Nov, the review of 1.4: both knees bent, the trunk not answering) her weight on her screen-left leg, straight;
+    the other loose: its heel up a little, its knee out, the foot a little aside. u 0..1. No squat."""
+    return dict(drop=2.0 * u, r=(9.0 * u, 10.0 * u, 1)) if u > 0.05 else None
+
+
 def pam_(k, p, sy=1.0, rot=0.0, kn=None):
     """her figure over a contact shadow on the ground under her boots (review: she floats)"""
     who, a, kw = p
@@ -82,11 +88,15 @@ def a13(t):
     elif t < 1.6:                                                              # it sags
         u = ease(seg(t, 0.9, 1.6))
         arms, face, look, rot, kn = asym(lerp(HERO, SAG, u), 8 * u), "fade", (0.9, 0.2 + 0.4 * u), 0.05 * u + weight(14 * u), kneel(14 * u)
+        if m.LAW[0]:
+            rot, kn = -0.03 * u, relax(u)
     elif t < 2.3:                                                              # the coat pulled straight: two tugs, a lift
         u = seg(t, 1.6, 2.3)
         tug = abs(math.sin(u * 2 * math.pi))
         arms, face, look = asym(lerp(SAG, TUG, min(1.0, u * 3)), 5), "peer", (0.0, 0.8)
         kn = kneel(14 * (1 - u) + 8 * tug); rot = weight(14 * (1 - u) + 8 * tug) - 0.03 * tug
+        if m.LAW[0]:
+            kn = relax(max(0.0, 1 - u * 1.4)); rot = -0.03 * max(0.0, 1 - u * 1.4) - 0.02 * tug
     else:                                                                      # and the pose again, as if
         u = ease(seg(t, 2.3, 2.6))
         arms, face, look, rot, kn = lerp(TUG, HERO, u), "proud", (-0.4, -0.2), 0.0, None
@@ -103,10 +113,12 @@ def a14(t):
         c.save(); c.translate(x, y + 2); c.scale(62 * s_ / 0.26, 7 * s_ / 0.26); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
         c.set_source_rgba(0, 0, 0, 0.45); c.fill()
     def thug(j, x0, y0, s0, seed):
-        u = seg(t, 0.15 + 0.12 * j, 2.2 + 0.12 * j)
+        u = seg(t, 0.15 + (0.30 if m.LAW[0] else 0.12) * j, 2.2 + (0.30 if m.LAW[0] else 0.12) * j)   # (review) the second man a good step behind: in file, not one double shape
         if u <= 0:                                                             # still flat on the cobbles: a shadow
             return ("flat", (x0 - 10, y0 + 12, 0.20), dict(seed=seed))
         rise = seg(u, 0.0, 0.14)
+        if rise < 1 and m.LAW[0]:                                              # up off the cobbles, already the man he is
+            return ("guard_sil", (x0, y0, (s0 / 0.26) * 0.30 * (0.35 + 0.65 * rise)), dict(seed=1600 + j * 40, flip=(j == 1), step=0.0, dark=0.90))
         if rise < 1:                                                           # peeling up off them
             return ("thug%d" % (j + 1), (x0, y0, s0 * (0.3 + 0.7 * rise)), dict(pose=(-40, 40, 40, -40), seed=seed))
         if m.LAW[0]:                                                           # (24 Nov, Tomas: "where do they go? they miss the lane") the two are Dad's bodyguards, dark;
@@ -114,7 +126,12 @@ def a14(t):
             y = y0 + (566 - y0) * v                                            # then round it to the left, behind the wall's edge: gone, not popped
             sg = (s0 / 0.26) * 0.30 * (y - YV) / float(y0 - YV)                # a guard's size by the same distance: her 0.84 at y 760 is 0.40 at y 600; x 0.903 / 1.203 = 0.30
             x = x0 + (226 - x0) * v - 78 * w
-            return ("guard_sil", (x, y, sg), dict(seed=1600 + j * 40, flip=(j == 1), step=u * 26.0 + j * 1.3, clip_x=st.A_BEND_X + 1 if v > 0.8 else None))
+            import on4_cross as xc
+            ph_ = u * 30.0 + j * 1.3                                           # a step you can see at this size: the leg well up, the arms swinging against the legs, the body rising on each
+            sw = 22 * math.sin(ph_)
+            return ("guard_sil", (x, y - 3.0 * abs(math.sin(ph_)) * sg / 0.30, sg),
+                    dict(seed=1600 + j * 40, flip=(j == 1), step=ph_, lift=44.0, dark=0.88 - 0.20 * v,
+                         pose=xc.garm((-78, xc.co.HIP + 40 + sw), (78, xc.co.HIP + 40 - sw)), clip_x=st.A_BEND_X + 1 if v > 0.8 else None))
         v = ease(seg(u, 0.14, 1.0))                                            # running up the street: feet on the cobbles,
         y = y0 + (YE - y0) * v                                                 # the size from the distance (the feet's height
         sc_ = s0 * (y - YV) / float(y0 - YV)                                   # over the vanishing line)
@@ -138,11 +155,17 @@ def a14(t):
           "approve" if t < 1.0 else "peer", (0.6 * (1 - u) + 0.1 * u, -0.6 - 0.3 * u), rim=True)
     d = 8 * u
     kn = kneel(d, r=(10 * step, 8 * math.sin(step * math.pi * 2) ** 2, 1)) if step > 0 else kneel(d)
+    rot_ = 0.04 * u + weight(d)
+    if m.LAW[0]:                                                               # (Tomas: "where does she go?"; the review) she does not walk on the spot: she stays, her weight goes onto one leg, she turns to the arch and leans after them
+        lean_ = ease(seg(t, 2.0, 2.7))
+        p = P("pam_cat", 150 - 4 * u + 6 * lean_, 760, 0.84, pose(asym(lerp(HERO, (-30, 40, 34, -26), u), 6 * u), ("fist", "relax_s" if u > 0.5 else "fist")),
+              "approve" if t < 1.0 else "peer", (0.6 * (1 - u) + 0.9 * u, -0.6 - 0.2 * u), rim=True)
+        kn = relax(u); rot_ = -0.03 * u + 0.05 * lean_
     def before(k):
         for x, y, s_ in shadows:
             contact(k, x, y, s_)
     def after(k):
-        pam_(k, p, breath(t), 0.04 * u + weight(d), kn)
+        pam_(k, p, breath(t), rot_, kn)
     return draw(shot("1.4", cast=cast, before=before, after=after, protect=()))
 
 
