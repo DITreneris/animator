@@ -69,9 +69,7 @@ def bench_people(c, f, ai_x=AI_X, eva_x=EVA_X, ai_walk=None, eva_walk=None, boun
     b = abs(math.sin(f * .55)) if bounce else 0; sq = .06 * b         # MY AI bounces on its toes, eager, rubbing its mitts
     c.save(); c.translate(ai_x, GY + 70); c.scale(1 + sq * .5, 1 - sq); c.translate(-ai_x, -(GY + 70) - 26 * b)
     ai(c, ai_x, GY + 70, .88, eye='happy', tilt=10 if bounce else 0, look=(12, -4), arms=('hold', 'hold') if bounce else ('down', 'down'), walk=ai_walk, f=f)
-    if bounce:
-        mx, my = ai_x + 70 * .9, GY + 70 - 150 * .9
-        for q in (-1, 1): ell(c, mx + q * (14 + 10 * math.sin(f * 1.3)), my + q * 4, 22, 20); fs(c, WHITE, 5)
+    # v2.4: the two loose white balls (fake 'rubbing mitts') drawn on its chest are gone: its real hands are the arms ('hold')
     c.restore()
 
 def s_ask(c, f, r):   # frame 0: on the bench, the ask already on screen; MY AI in front of the bench, eager; Eva right there
