@@ -207,6 +207,42 @@ def a21(t):
         pam_(k, p, breath(t), lean + weight(10), kneel(10))
         sc.railing(k, 380)
     z = 1.0 + 0.22 * ease(seg(t, 0.0, 2.2))                                    # a slow push in, down onto the car
+    if m.LAW[0]:                                           # (24 Nov, Tomas: "what does the car do? should it not come nearer?") the limousine drives up the lane to her wall and
+        z = max(z, 1.002)                                  # never the exact wide camera: its light (with the parked car's red tail glow) came on for the first drawing only
+        import on4_car as car_                             # stops under her; Dad's two men walk beside it; she drops behind the rail and her eyes follow it in
+        import on4_cross as xc
+        u = 0.06 + 0.94 * (1 - (1 - seg(t, 0.0, 1.7)) ** 2)   # it slows as it comes (already moving on the first drawing)
+        cy = 576 + (735 - 576) * u
+        cs = 0.36 * (105 + 285 * (cy - 576) / 384.0) / 105.0
+        cx = 302 + 23 * (cy - 576) / 384.0 - 14 * u
+        nose = -0.02 * math.sin(math.pi * seg(t, 1.5, 1.9))                    # it stops: the nose dips and comes back
+        duck = ease(seg(t, 0.25, 0.65))
+        look = (0.75 - 0.25 * u, 0.85 + 0.1 * u)
+        RAIL2 = oc.pm.ik(-1, -56, -126 + 34 * duck) + oc.pm.ik(1, 62, -126 + 34 * duck)   # both gloves on the rail
+        RAIL2 = oc.pm.ik(-1, -56, -126 + 60 * duck) + oc.pm.ik(1, 62, -126 + 60 * duck)   # her hands stay on the rail as she sinks
+        p = P("pam_cat", 186, 420, 0.64, pose(RAIL2, ("grab", "grab")), "peer", look, rim=True)   # her feet stay on the platform: she goes down on her knees
+        def before(k):
+            c = k.c
+            g = cairo.RadialGradient(0, 0, 0, 0, 0, 1)                         # the headlights on the cobbles ahead of it
+            g.add_color_stop_rgba(0, 1, 1, 0.94, 0.42); g.add_color_stop_rgba(1, 1, 1, 0.94, 0)
+            c.save(); c.translate(cx, cy + 46 * cs); c.scale(120 * cs, 52 * cs); c.set_source(g); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+            c.save(); c.translate(cx, cy); c.rotate(nose); c.translate(-cx, -cy)
+            car_.reflect(k, lambda: car_.front(k, cx, cy, cs), cy, 0.25, 20)
+            c.restore()
+            gs0 = xc.GS; xc.GS = 0.27 * cs
+            try:
+                for j, sgn in enumerate((-1, 1)):                              # one each side, in step with it; they stop when it stops
+                    xc.guard(k, cx + sgn * (104 * cs + 16), cy + 4, xc.G_WALK, j == 1, 1600 + j * 40, 0.0, (t * 11.0 + j * 1.6) if t < 1.7 else None)
+            finally:
+                xc.GS = gs0
+        def after2(k):
+            pam_(k, p, breath(t), 0.05 + 0.05 * duck, dict(drop=60 * duck, l=(-4, 0, 1), r=(6, 0, 1)) if duck > 0.03 else None)
+            sc.railing(k, 380)
+        car_.B_END_OFF[0] = True
+        try:
+            return draw(shot("2.1", cam=(270 - 40 * (z - 1) / 0.22, 480 + 60 * (z - 1) / 0.22, z), cast=[], before=before, after=after2, protect=()))
+        finally:
+            car_.B_END_OFF[0] = False
     return draw(shot("2.1", cam=(270 - 40 * (z - 1) / 0.22, 480 + 60 * (z - 1) / 0.22, z), cast=cast, after=after, protect=()))
 
 

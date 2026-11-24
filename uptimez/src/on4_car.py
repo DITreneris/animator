@@ -343,8 +343,13 @@ def _in_setup(which, draw_car, glow_car, **kw):
     return s
 
 
+B_END_OFF = [False]              # (24 Nov) 2.1: the car is not parked at the lane's end: it drives up (on4_anim.a21)
+
+
 def b_end(k):
     """1.4 / 2.1: waiting at the end of the lane, from behind (replaces the old sedan of setup B)."""
+    if B_END_OFF[0]:
+        return
     reflect(k, lambda: rear(k, 300, 574, 0.36), 574, 0.25, 20)
 
 
