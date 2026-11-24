@@ -103,30 +103,36 @@ def cabaret(k, x, y, s=1.0, right=True):
     c.restore()
 
 
+def tally(k, x, y, s=1.0):
+    """Chalk on the brick: seven strokes, a gate of five and two more (her seven lives). About 74 x 42 at s=1."""
+    import random
+    c = k.c; r = random.Random(77)
+    c.save(); c.translate(x, y); c.scale(s, s); c.set_line_cap(cairo.LINE_CAP_ROUND)
+    c.set_source_rgb(0.80, 0.79, 0.76); c.set_line_width(3.6)
+    for x0 in (2, 12, 22, 32, 54, 64):
+        c.move_to(x0 + r.uniform(-1.5, 1.5), r.uniform(0, 3)); c.line_to(x0 + r.uniform(-2.5, 2.5), 40 + r.uniform(-3, 2)); c.stroke()
+    c.move_to(-5, 31); c.line_to(40, 8); c.stroke()
+    c.restore()
+
+
 def crossing(k):
-    """on4_motion.c_side: the far houses' wall (y 380-568, windows y 430-500)."""
+    """on4_motion.c_side: the far houses' wall (y 380-568, windows y 430-500). v2 (Tomas, 24 Nov: where is it too much):
+    her bill alone, right of her, clear of Don's STOP/GO sign."""
     if not ON[0]:
         return
-    pam_cat(k, 245, 392, 0.74)
-    fight(k, 382, 392, 0.74)
-    cabaret(k, 306, 322, 0.72)                               # on the taller house's top storey, its arrow down the road
+    pam_cat(k, 382, 392, 0.74)
 
 
 def lane(k):
-    """2.4, the brick wall over the bin (the bin's mouth y 566, x 200-420; the camera sees x 84-456)."""
+    """2.4, the brick wall over the bin (the bin's mouth y 566, x 200-420; the camera sees x 84-456). v2: her bill, the
+    chalk tally, the fight bill; the TV bill out."""
     if not ON[0]:
         return
     pam_cat(k, 204, 354, 0.76, -0.03)
-    tv_show(k, 285, 358, 0.76, 0.02)
-    fight(k, 363, 352, 0.76)
+    tally(k, 290, 362, 0.9)
+    fight(k, 372, 352, 0.76)
 
 
 def club(k):
-    """on4_club.front: a bill in a frame on the facade, right of the arch, over her head (left of it the limousine hides the wall)."""
-    if not ON[0]:
-        return
-    if not whole(432, 446, 82, 114):
-        return
-    c = k.c
-    c.set_source_rgb(0.10, 0.10, 0.11); c.rectangle(432, 446, 82, 114); c.fill()
-    pam_cat(k, 436, 450, 0.78)
+    """v2: nothing (the marquee says it; the bill was cut by the close cameras)."""
+    return
