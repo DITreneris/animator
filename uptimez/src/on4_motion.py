@@ -911,6 +911,7 @@ def blend(a, b, t):
 
 
 SIGN_OUT = [False]
+END_HOLD = [14]                                              # the drawings she lies for before the room goes dark (film v16: 6)
 
 
 def t5():
@@ -929,7 +930,7 @@ def t5():
             finally:
                 sc.BREATH[0] = 1.0
         held81 = lazy(held81)
-        for i in range(14):
+        for i in range(END_HOLD[0]):
             fr.append(held81(1.0 + 0.011 * math.sin(2 * math.pi * i / 16.0)))   # the rota over the cups, her head down; asleep, she breathes
     else:
       for _ in range(6):

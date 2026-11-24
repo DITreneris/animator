@@ -18,7 +18,7 @@ SR = r.SR
 import on4_posters as po
 import on4_street as st
 
-VER = "v15"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
+VER = "v16"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
 po.ON[0] = True; st.TOWN[0] = True
 import on4_cross as xc
 m.CRASH[0] = True; m.LAW[0] = True; m.CAR_S = xc.S_CAR      # v4: the bump as a tap; v5: one scale law on the crossing, the plank bounces
@@ -41,6 +41,9 @@ r.RETAKE["d2"] = os.path.join(r.vo.OUT, "takes_v4", "d2.wav")   # a slower take 
 r.RETAKE["f1"] = os.path.join(r.vo.OUT, "takes_v4", "f1.wav")   # "For, the boys." at 0.8, -1 semitone: heard 3 of 3 alone
 r.RETAKE.update(f1=os.path.join(r.vo.OUT, "takes_v5", "f1.wav"), p2=os.path.join(r.vo.OUT, "takes_v5", "p2.wav"))   # v12 (after the v4 takes above, which were overriding these)
 m.HIT[0] = True; m.TEETER[0] = True; xc.FAR[0] = True   # v15 (cold test of v14): the punch as a blow; the second after the tap acted; the car in the far lane, the bills in the air as it leaves
+an.BIG53[0] = True; sc.BURN[0] = True; sc.CV_SOFIA[0] = True; an.ARCH14[0] = True; m.OTS44[0] = True; an.LIFT2[0] = True; m.SIGN_OUT[0] = True   # v16 (cold test of v14, second round)
+an.END2[0] = True; r.END2[0] = True; m.END_HOLD[0] = 6     # v16 (Tomas: the ending too long, Sofia too small): the rota once, Sofia from the waist up
+sc.DUR.update({"7.1": 1.2, "7.2": 2.6, "7.3": 1.2, "7.4": 0.0, "7.5": 1.8, "8.1": 3.6 - 8 / 12.0})
 OUT = os.path.join(sc.OUT, "on4_film_%s.mp4" % VER)
 MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None),
        ("3.1", "3.2"): ("T3", 0, None), ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("3.6",): ("T8", 0, None),

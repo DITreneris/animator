@@ -12,6 +12,7 @@ import numpy as np
 import soundfile as sf
 import on4_scenes as sc
 import on4_voices as vo
+END2 = [False]                                               # film v16: the office's sounds on the shorter ending
 
 FPS = 12
 SR = 48000
@@ -172,8 +173,8 @@ def sound(tm, d, total):
     put(fx, rs(so.hiss(1.1), so.SR), o0 + 0.1, 0.30)                                                # the machine lets off steam
     put(fx, rs(dd.pour(0.9), dd.SR), st_("7.5") + 0.3, 0.10)                                        # and drips on
     for j in range(3):                                                                              # Sofia comes up to the counter
-        put(fx, rs(sx.slipper(0.11), getattr(sx, "SR", SR)), st_("7.2") + 0.15 + j * 0.36, 0.5 + 0.1 * (j % 2))
-    for t0 in (st_("7.3") + 0.2, st_("7.5") + 1.2):                                                 # paper: the rota, then in her hands
+        put(fx, rs(sx.slipper(0.11), getattr(sx, "SR", SR)), st_("7.2") + (0.08 + j * 0.24 if END2[0] else 0.15 + j * 0.36), 0.5 + 0.1 * (j % 2))
+    for t0 in (st_("7.3") + 0.2, st_("7.5") + (0.15 if END2[0] else 1.2)):                                                 # paper: the rota, then in her hands
         put(fx, rs(so.swish(0.22), so.SR), t0, 0.22); put(fx, rs(so.swish(0.16), so.SR), t0 + 0.2, 0.16)
     put(fx, rs(so.thump(), so.SR), st_("8.1") + 0.5, 0.45)                                          # her head back on the counter
     span31 = tm["3.1"]["dur"] + tm["3.2"]["dur"]
@@ -264,7 +265,7 @@ def sound(tm, d, total):
                 put(fx, rs(so.thump(), so.SR), t6(i), (0.45 if j % 2 else 0.6) * (0.5 if i < 70 else 1.0))
     if SCENE3[0] != "cross":
         put(fx, rs(so.swish(0.6), so.SR), st_("3.4") + 0.9, 0.35)                                   # the bills
-    put(fx, rs(iw.clink(), getattr(iw, "SR", SR)), st_("7.2") + 2.4, 0.8)                           # her mug set down
+    put(fx, rs(iw.clink(), getattr(iw, "SR", SR)), st_("7.2") + (1.95 if END2[0] else 2.4), 0.8)    # her mug set down
     import on4_motion as _m2
     if _m2.GIVE[0] and _m2.T2_MARKS:                         # (the review) paper: as it changes hands; as it goes under his lapel
         span2 = tm["2.2"]["dur"] + tm["2.3"]["dur"]
