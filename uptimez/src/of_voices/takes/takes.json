@@ -129,11 +129,11 @@
  "3.2": {
   "who": "ROBOT",
   "text": "New meeting. Agenda: without him.",
-  "len": 2.19,
+  "len": 2.33,
   "asr": [
-   "new miting agenda without him.",
-   "New miteing, agenda without him.",
-   "new miting agenda without him."
+   "New Maitang, agenda without him.",
+   "New Maitang, agenda without him.",
+   "New Maitang, agenda without him."
   ],
   "ok": 3
  },
@@ -150,15 +150,12 @@
  },
  "3.4b": {
   "who": "ROBOT",
-  "text": "Calendar says... you'll see.",
-  "len": 2.05,
+  "text": "Calendar says... wait.",
+  "len": 1.88,
   "asr": [
-   "Calendar says you will say.",
-   "Calendar says you will say...",
-   "calendar says you will say.",
-   "[with the line before] New miting, agenda without him, calendar says, you'll say.",
-   "[with the line before] new miting agenda without him. Calendar says, you'll say.",
-   "[with the line before] new miting agenda without him. Calendar says, you'll say."
+   "Calendar says wait.",
+   "Calendar says wait.",
+   "calendar says wait."
   ],
   "ok": 3
  },

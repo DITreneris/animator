@@ -963,3 +963,10 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - The mouth leads the sound by 2 frames; the speaker's head dips up to 2 px on a stressed syllable (the take's loudness rising fast).
 - Secondary motion is a damped spring on the film's clock (`of_cast.follow`): Father's chain after his gesture, the coil after the guard's head, the throne's crown when Don jolts, the robot's antenna after its bob and turn, Pam's glasses chain when she lifts the phone. Each is an opt-in hook in its shared module (`dh_cast.CHAIN_DX`, `COIL_DX`, `dh_props.CROWN_ROT`, `waiter_kit.ANT_DX`, `pam_mf.GCHAIN_DX`), 0 by default: a still rendered with the hooks at 0 is md5-identical to one from the old modules.
 - "Eyes lead the head" has nothing to act on in this cast: the guards' eyes are behind sunglasses and Father, the Client, Don and Pam have no head turn of their own, only eyes.
+
+## 230. *The Offer* v42 (24 Nov, Tomas: "why does the robot say 'miting' and 'you'll say'? the engine hum is not real")
+
+- The line check passed words the ear rejects: the robot voice says "see" as "say" with or without the robot effect, and no spelling, phoneme string or neighbouring word fixed it (12 tries). `_match` is lenient to near-homophones, so G5 said 15 of 15. When a voice cannot say a word, change the word: "Calendar says... wait." Read the recognizer's own text for every line, not only the count.
+- "meeting" is voiced "meet-ing": alone the recognizer hears "meeting"; inside the whole line it still writes "Maitang", so Tomas's ear decides.
+- A synthetic idle (a filtered square wave) under a quiet gag reads as fake; the start that dies away in a second was better. Removed.
+- A line's text lives in three places: `of_scenes` (the shot), `of_voices.LINES`, and the timing json copied from the one before. Change all three.

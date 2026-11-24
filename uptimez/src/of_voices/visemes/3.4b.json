@@ -1,7 +1,7 @@
 {
   "metadata": {
     "soundFile": "/tmp/_rh.wav",
-    "duration": 2.05
+    "duration": 1.88
   },
   "mouthCues": [
     { "start": 0.00, "end": 0.07, "value": "B" },
@@ -14,11 +14,10 @@
     { "start": 0.55, "end": 0.62, "value": "C" },
     { "start": 0.62, "end": 0.90, "value": "B" },
     { "start": 0.90, "end": 1.36, "value": "X" },
-    { "start": 1.36, "end": 1.42, "value": "B" },
-    { "start": 1.42, "end": 1.55, "value": "E" },
-    { "start": 1.55, "end": 1.76, "value": "B" },
-    { "start": 1.76, "end": 1.97, "value": "C" },
-    { "start": 1.97, "end": 2.04, "value": "B" },
-    { "start": 2.04, "end": 2.05, "value": "X" }
+    { "start": 1.36, "end": 1.41, "value": "B" },
+    { "start": 1.41, "end": 1.52, "value": "F" },
+    { "start": 1.52, "end": 1.59, "value": "C" },
+    { "start": 1.59, "end": 1.87, "value": "B" },
+    { "start": 1.87, "end": 1.88, "value": "X" }
   ]
 }

@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 41, 2: 41, 3: 41, 4: 41, 5: 41}
-SOUND = "of_sound_v19.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 41, 2: 41, 3: 41, 4: 42, 5: 42}
+SOUND = "of_sound_v20.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")

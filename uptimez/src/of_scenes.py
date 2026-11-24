@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v18.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v19.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -170,7 +170,7 @@ SCENES = [
         S("3.4", "CLOSE", "desk", "CLOSE, the robot. **ITS HEAD TURNS, SLOWLY**, to Don. Still smiling. **The peak: hold it.**",
           action="the head turns", state=dict(desk="robot", turn=True)),
         S("3.4b", "CLOSE", "desk", "v9: CLOSE, the robot, turned to Don, still smiling. It doesn't say who.",
-          line='ROBOT: "Calendar says... you\'ll see."', state=dict(desk="robot", turn=True, don_edge=True)),   # v10 (Tomas, 0:49:
+          line='ROBOT: "Calendar says... wait."', state=dict(desk="robot", turn=True, don_edge=True)),   # v10 (Tomas, 0:49:
           # "he flies away, only the robot is left"): the throne stays where 3.4 slid it in; the robot is turned TO him
         S("3.5", "CLOSE", "desk", "CLOSE, Don, as 3.3. He follows the look down, to himself. The smile goes in one drawing.",
           reaction="the smile goes", state=dict(desk="don", don="stiff")),
