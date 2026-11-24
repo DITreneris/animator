@@ -51,6 +51,7 @@ VELVET, VELVET_D = dc.VELVET, dc.VELVET_D
 FELT = (0.18, 0.36, 0.26)
 HALL_LAMP = ["v6"]               # v7 (23 Nov): Dad hidden by the dark over a small lamp; "v6" the big shade
 PLAN_CARD = ["v6"]               # v7: one title, every number seen, the card laid down and the hand off it; "v6" as before
+ROW0 = [1.0]                      # (24 Nov, Tomas's pick) THE HOUSE lit (1) or out (0): it stutters and dies as she lifts the envelope; ALWAYS COLLECTS stays
 TUBE = [False]                    # see motto()
 MOTTO = [False]                  # v9 (24 Nov): Daddy's Home's neon motto, THE HOUSE ALWAYS COLLECTS, on the wall over the booth
 ARCH_WARM = [False]              # v9: the arch's bulbs give warm light (laid after the grade, so it keeps its colour)
@@ -461,6 +462,10 @@ def spill(c):
         return
     for cx_, cy_, rx, ry, al in ((130, 410, 150, 84, 0.26), (130, 480, 170, 40, 0.16), (150, 560, 150, 46, 0.07),
                                  (130, 376, 92, 22, 0.30), (130, 406, 92, 24, 0.30), (130, 436, 100, 24, 0.30)):      # v3: tighter round each row
+        if ROW0[0] < 0.5:                                  # with THE HOUSE out: its own glow gone, the wall's a little less
+            if cy_ == 376:
+                continue
+            al = al * (0.8 if cy_ == 410 else 1.0)
         g = cairo.RadialGradient(0, 0, 0, 0, 0, 1)
         g.add_color_stop_rgba(0, NEON[0], NEON[1], NEON[2], al); g.add_color_stop_rgba(1, NEON[0], NEON[1], NEON[2], 0)
         c.save(); c.translate(cx_, cy_); c.scale(rx, ry); c.set_source(g); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
@@ -480,6 +485,10 @@ def motto(k):
             yy = 382 + i * 30; sz2 = sz + 5
             c.select_font_face("Lilita One", 0, 0); c.set_font_size(sz2)
             e = c.text_extents(txt); x0 = 130 - e.x_advance / 2
+            if i == 0 and ROW0[0] < 0.5:                                                        # out: cold glass on the wall
+                c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.set_source_rgb(0.20, 0.19, 0.20); c.fill()
+                c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.set_source_rgb(0.34, 0.33, 0.34); c.set_line_width(0.8); c.stroke()
+                continue
             c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.set_source_rgb(*NEON); c.fill()
             c.save(); c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.clip()               # the core: what a red edge leaves of the letter's middle
             c.set_source_rgb(1.0, 0.86, 0.88); c.paint()

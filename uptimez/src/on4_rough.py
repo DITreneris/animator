@@ -269,6 +269,12 @@ def sound(tm, d, total):
         put(fx, rs(so.swish(0.14), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["grip"], 0.35)
         put(fx, rs(so.swish(0.10), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["grip"] + 0.3, 0.25)
         put(fx, rs(so.swish(0.18), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["coat"] - 0.55, 0.30)   # before his line, not under it
+    if _m2.LAW[0] and SCENE3[0]:                             # the neon's stutter: two dry ticks and a buzz dying
+        t5 = st_("5.3")
+        for tt in (1.60, 1.76, 1.95):
+            put(fx, rs(so.metal_click(2400, 0.03), so.SR), t5 + tt, 0.35)
+        tb = np.arange(int(0.3 * SR)) / SR
+        put(fx, np.sign(np.sin(2 * np.pi * 100 * tb)) * np.exp(-tb / 0.08) * 0.03, t5 + 1.95)
     crash = st_("2.4") + __import__("on4_motion").T7_SLAM[0] / 12.0                                                                  # v6: T7's lid
     put(fx, rs(so.swish(0.3), so.SR), crash - 0.27, 0.6)                                            # she goes over
     tc = np.arange(int(0.7 * SR)) / SR

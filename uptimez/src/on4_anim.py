@@ -382,6 +382,13 @@ def a53(t):
             c.new_path(); c.move_to(x - 16, 712); c.line_to(x + 16, 720); c.line_to(x + 130, 734); c.line_to(x + 120, 716); c.close_path(); c.set_source(g); c.fill()
         pam_(k, p, breath(t), rot, kn)
     z = 1.9 * (1 + 0.03 * ease(seg(t, 0.0, 2.3)))                             # a slow push in
+    if m.LAW[0]:                                           # as the envelope comes out: THE HOUSE stutters twice and goes out; ALWAYS COLLECTS burns on
+        import on4_club as cl_
+        cl_.ROW0[0] = 0.0 if (1.60 <= t < 1.68 or 1.76 <= t < 1.84 or t >= 1.95) else 1.0
+        try:
+            return draw(shot("5.3", cam=(160, 610, z), cast=[], after=after, protect=()))
+        finally:
+            cl_.ROW0[0] = 1.0
     return draw(shot("5.3", cam=(160, 610, z), cast=[], after=after, protect=()))
 
 
