@@ -120,8 +120,47 @@ ROOM5 = dict(blind="rehung", tape=True, spun=True, phone="lit")
 ROOM3P = dict(blind="torn", tape=True, spun=True, silhouette="phone")      # v3: 3.6, the guard's phone lit at his face
 
 
+def _tug_11(k):
+    """v4 (Tomas 24 Nov, /grill-me, the third cold test: 0 of 3 saw the robot pull): the board's 1.1 is motion test A's
+    key frame: both hands on their cords, the cords taut to the hands, the blind half down, the robot hauling it back up."""
+    import acts_ob as ac
+    heads, c, n = {}, k.c, 0.45
+    top = pss.GY0 - 10 + 12
+    x, f = at("don_cord"); x += 26
+    hd = (pss.CORD_L + 2, f - 310 * SC["don"] + (150 * SC["don"]) * n)
+    to = lambda p: ((p[0] - x) / SC["don"], (p[1] - f) / SC["don"])
+    o, heads["don"] = don(k, (x, f), ac._pose(1.12, left=to(hd)), "confused", (-0.4, -0.6))
+    rx, rf = at("rob_cord")
+    o2, heads["robot"] = robot(k, (rx - 18, rf), arms=((-180, 0), (8, 0)), visor="sun")   # a step left, clear of the door
+    #                                     frame; the near arm straight up on the glass, the grip at its tip
+    for cx, hand, pull in ((pss.CORD_L, o["hands"][0], pss.PULL), (pss.CORD_R, o2["hands"][0], pss.PULL_R)):
+        hx, hy = hand
+        c.set_source_rgb(*pss.CORD); c.set_line_width(4.0); c.set_line_cap(1)
+        c.move_to(cx, top); c.line_to(hx, hy); c.stroke(); c.set_line_cap(0)
+        c.save(); c.translate(hx, hy + 6); c.scale(5, 8); c.new_path(); c.arc(0, 0, 1, 0, 6.3); c.restore()
+        c.set_source_rgb(*pull); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.set_line_width(1.4); c.stroke()
+    return heads
+
+
+def light_in(k):
+    """v4 (Tomas 24 Nov: the sun icon read as "a sun", never "more light"): when the blind is down, daylight falls
+    through the bare glass onto whoever is in front of it: three warm bands, no new words."""
+    c = k.c
+    x0, y0, w, h = pss.GX0, pss.GY0, pss.GW, pss.GH
+    c.save()
+    c.rectangle(x0, y0, w, h + 60); c.clip()                 # through the glass and onto the floor in front, not the wall
+    for i, (a, b) in enumerate(((0.10, 0.30), (0.42, 0.58), (0.72, 0.92))):
+        c.new_path()
+        c.move_to(x0 + w * a + 40, y0); c.line_to(x0 + w * b + 40, y0)
+        c.line_to(x0 + w * b - 30, y0 + h + 60); c.line_to(x0 + w * a - 30, y0 + h + 60); c.close_path()
+        c.set_source_rgba(1.0, 0.90, 0.45, 0.34); c.fill()
+    c.restore()
+
+
 def cast_11(down=False, last=False):
     def f(k):
+        if FIX_V4[0] and not down:
+            return _tug_11(k)
         heads = {}
         _, heads["don"] = don(k, "don_cord", (-168, 6, 8, 0) if not down else (-150, -20, 8, 0),
                               "squint" if not down else "smug", (-0.4, -0.6))
@@ -137,6 +176,8 @@ def cast_12a(k):
     heads = {}
     o, heads["don"] = don(k, "don_door", "stand", "shock", (0, 0))
     dp.blind_over(k, o["head"], SC["don"])
+    if FIX_V4[0]:
+        light_in(k)
     _, heads["robot"] = robot(k, (pss.GX0 + 196, F + 4), visor="sun")
     return heads
 
@@ -587,6 +628,7 @@ def board_keys(sh, line):
 _CHK = [None]                                               # check_all's per-frame checks (run right after each key frame)
 DEBUG_V4, WHY = [False], [""]                                               # board key frames that show one of the shot's lines each
 IN_HAND_V4 = ("6.1",)
+ROOM_V4 = {"1.1": dict(blind="down", u=0.45 * 0.92, dim=False, cords=False)}   # 1.1: the tug's key frame (cords to hands)
 CAM_V4 = {}
 KEYS_V4 = {"5.4": [(700, 700, 0.8), None]}                  # Tomas 24 Nov: 5.4a wide (his door, DON · CEO, across the tape),
 CAMKEY = [None]                                             # 5.4b the medium (the foot over the line); the camera pushes in
@@ -631,8 +673,9 @@ def _pass(k, sh, cam):
     c.save()
     if cam:
         sbv.view(c, *cam)
-    _floor_on(c, sh["room"])
-    pss.room(k, **dict(dict(phone=None), **sh["room"]))
+    room_ = ROOM_V4.get(sh["id"], sh["room"]) if FIX_V4[0] else sh["room"]
+    _floor_on(c, room_)
+    pss.room(k, **dict(dict(phone=None), **room_))
     heads = sh["cast"](k) if sh["cast"] else {}
     c.restore()
     return heads
@@ -692,8 +735,9 @@ def covered(sh, cam, surf, texts):
     bare = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H)
     cb = TextRec(bare); kb = Ctx(cb, 0); cb.set_source_rgb(*kit.WALL); cb.paint()
     cb.save(); sbv.view(cb, *cam)
-    _floor_on(cb, sh["room"])
-    pss.room(kb, **dict(dict(phone=None), **sh["room"])); cb.restore()
+    room_ = ROOM_V4.get(sh["id"], sh["room"]) if FIX_V4[0] else sh["room"]
+    _floor_on(cb, room_)
+    pss.room(kb, **dict(dict(phone=None), **room_)); cb.restore()
     surf.flush(); bare.flush()
     A = np.ndarray((H, W, 4), np.uint8, surf.get_data()).astype(int)
     B = np.ndarray((H, W, 4), np.uint8, bare.get_data()).astype(int)
