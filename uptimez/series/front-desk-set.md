@@ -60,3 +60,7 @@ All drawn on top of the front desk v4 by `ps_set.room()`; nothing in `fs_set4.py
 - **Pam's phone** face up at the counter's left end (640, 640): dark, or lit; its close (5.7) reads INVITATION · DAD.
 - **The step stool** (5.3–5.6) and **Father's booth** as in 12 with the Client's oily handprint (4.3).
 - **v3** (set audit, 23 Nov): every state change made bigger than the object: the tape 40 % wider with a dark edge; torn keeps 3 crooked slats on the broken rail and a short cord; rehung has one bent slat (Pam's repair); the price tag 1.5x; the cords shorter, Don's pull white, the robot's grey; Pam's phone is episode 13's invitation card exactly (cream, purple INVITATION, black DAD); the handprint 1.5x.
+
+## The set gate (24 Nov)
+
+`src/set_gate.py` checks every drawing against this page: the props on their marks (`PROPS`: the throne 452, F+8, 0.60), depth (two people who overlap on screen stand on different floor lines; the one behind has his feet higher), and continuity across cuts (nobody is somewhere else after a cut unless the episode lists the walk). Its self-test plants the faults that shipped in Daddy's Home v8 scene 3 (the throne at 540, Sofía and Mom on one line, Mom 300 → 446 at a cut). A change here is copied into `PROPS` in the same commit.

@@ -57,33 +57,56 @@ def cam_3a(tt):
 
 
 ARM = [None]                                                # the hand's (x, y, shape) for this drawing
+ARM_UP = [[(250, 520, "point_s"), (248, 524, "point_s")]]   # 3.1's arm (a test swaps it: rules §0.6, a new gesture)
+JUMP_OUT = [True]                                           # 4.2: she leaps out of the frame on the left (3F: she peeks back in)
+JUMP_ARC = [True]                                           # 4.2: anticipation, arc and landing (False: rounds 2-7)
+SHOULDER = [(140, 100)]                                           # don_arm sh_at for 3A (None: v8 round 7, drawn over his back)
+ARM_BEND = [None]                                           # don_arm bend (None: his default, the elbow out)
+SOF_LAP = [(-12, 70, 12, -70)]                              # 3E: Sofía's hands on her clipboard in her lap (None: v7's, on the gold arm by Mom's cloth: "a handshake", 4 cold tests)
+MOM_DOWN = [True]                                           # 3E after Sofía sits: Mom holds the cloth in both hands at her waist (silhouette test 24 Nov: no contact read)
+
+
+def wall_mount(k, x, y, w):
+    """Round 8 (Tomas: "1 + laikiklis"): the rating screen bolted to the wall, a grey mounting plate wider than it and a
+    bolt at each corner. Cold tests: when Don's arm dropped the screen "stayed in the air", so his raised arm "held" it."""
+    h = w * 0.62
+    kit.rect(k, x - w / 2 - 6, y - h / 2 - 6, w + 12, h + 12, (0.55, 0.57, 0.60), 3700, shadow=False, lw=2.0)
+    for sx_ in (-1, 1):
+        for sy_ in (-1, 1):
+            kit.ellipse(k, x + sx_ * (w / 2 + 2), y + sy_ * (h / 2 + 2), 2.6, 2.6, (0.82, 0.84, 0.86), 3701, shadow=False, lw=1.2)
 
 
 def r_3a(k, o, t, tt, n):
     rx, ry = o["robot"]["screen"]
     S.SCREEN[0] = (rx + 60, ry - 92, 80)          # round 3: narrower, so both tails pass beside it
+    wall_mount(k, *S.SCREEN[0])
     dp.star_screen(k, *S.SCREEN[0], green=False)
     dp._T(k.c, "1 / 5", S.SCREEN[0][0], ry - 92 + 80 * 0.62 * 0.40, 7.0, col=(1, 1, 1))
     o["robot_head"] = (rx, ry)
     i = int(tt * DPS + 1e-6)                                # drawings since the scene began
     j = i - int(T0["3.2"] * DPS)
     if j < 0:                                               # 3.1: up to the screen in four drawings, then held
-        ARM[0] = seq(t, [(242, 482, "point_s"), (240, 486, "point_s")])     # round 7: the tip stops short of the screen (cold test: touching it read as holding the sign)     # under the screen, nearly at full reach (a bent elbow swung out; higher, the hand hid "1/5")     # caught already pointing at the screen, left of his box
+        ARM[0] = seq(t, ARM_UP[0])     # round 7: the tip stops short of the screen (cold test: touching it read as holding the sign)     # under the screen, nearly at full reach (a bent elbow swung out; higher, the hand hid "1/5")     # caught already pointing at the screen, left of his box
     else:                                                   # his hand drops as the robot answers (its box goes above its antenna)
         ARM[0] = seq(j / float(DPS), [(294, 1240, "relax")])   # dropped: straight down, out of the frame (a swing crossed his head or the robot)
 
 
 def fg_3a(k, cam, tt, n, box):
     dy = -2 if (speaking("3.1", tt) and n % 2) else 0
-    sx_, sy_ = DONB[0] - 118, DONB[1] + 132 + dy            # his raised arm, shoulder to hand: no box over it
+    sh_ = SHOULDER[0] or (118, 132)
+    sx_, sy_ = DONB[0] - sh_[0], DONB[1] + sh_[1] + dy      # his raised arm, shoulder to hand: no box over it
     hx_, hy_ = ARM[0][0], ARM[0][1]
     AVOID_EXTRA[:] = []
     if hy_ < 900:                                           # the arm as a chain of small rects along it, not one big box
         for i_ in range(6):
             u_ = i_ / 5.0; px_, py_ = hx_ + (sx_ - hx_) * u_, hy_ + (sy_ - hy_) * u_
             AVOID_EXTRA.append((px_ - 22, py_ - 40, px_ + 22, py_ + 40))
-    hd = db.don_back(k, DONB[0], DONB[1] + dy, 1.0, side=-1)
-    db.don_arm(k, DONB[0], DONB[1] + dy, 1.0, ARM[0], side=-1, cuff=True)
+    if SHOULDER[0]:                                         # round 8 (245, 224): the arm drawn first, from his shirt's shoulder
+        db.don_arm(k, DONB[0], DONB[1] + dy, 1.0, ARM[0], side=-1, cuff=True, bend=ARM_BEND[0], sh_at=SHOULDER[0])
+        hd = db.don_back(k, DONB[0], DONB[1] + dy, 1.0, side=-1)   # his back over the arm's root: it grows out of his shoulder
+    else:
+        hd = db.don_back(k, DONB[0], DONB[1] + dy, 1.0, side=-1)
+        db.don_arm(k, DONB[0], DONB[1] + dy, 1.0, ARM[0], side=-1, cuff=True, bend=ARM_BEND[0])
     if not NOBUB[0]:
         if speaking("3.1", tt):
             say(k, "Make it green.", DONB, n)
@@ -166,7 +189,7 @@ def r_pam(k, o, t, tt, n):
     look = (-1, -0.35) if (speaking("3.4", tt) or t < 0.2) else (-0.2, -0.1)   # the line, then one flat glance off it
     one = t >= 0.25                                         # round 7: ONE finger up beside her face, held (the doubt as an action)
     hp.reset("quiet", "point_t" if one else "quiet")
-    pose = (-8, 0) + ds.pb.pm.ik(1, 64, ds.pb.pm.HY + 34) if one else "stand"
+    pose = (-8, 0, 75, 95) if one else "stand"              # silhouette test 2 (24 Nov), variant 4: the arm out, the finger well clear of her head (beside the ear read as a phone)
     with pam_legs():
         q = ds.pb.pam(k, S.PAM[0], S.PAM[1], dl.PS, pose, "incredulous" if one else "neutral", look=look, glasses="up", mouth=code("3.4", tt))
     o["head"] = q["head"]
@@ -201,8 +224,8 @@ def fg_3d(k, cam, tt, n, box):
 
 
 # ------------------------------------------------------------------ 3E: one held frame (4.1, 4.1', 4.2)
-THR = S.THR                                                 # (+30 tried: still no wall between the faces; the box goes on Mom's left)
-MOMX = 300                                                  # 24 Nov (Tomas, /grill-me): 3E and 3F back to round 2's staging;
+THR = dl.CH[0]                                              # round 10 (set gate): the throne on its set mark, 452, in every shot (was 404 in 3E, 540 in 3F)
+MOMX = 366                                                  # 24 Nov (Tomas, /grill-me): 3E and 3F back to round 2's staging;
                                                             # the camera moves for a bubble, the people don't (lessons 358)
 
 
@@ -211,10 +234,23 @@ WIPE_FAR = _mb.wipe_at(118, _mb.BT + 20)                     # her cloth on the 
                                                             # palm on the arm beside the cloth read as a handshake, 3 times)
 
 
+def throned(k, *a):
+    """V7.sofia_throned with her arms set by SOF_LAP (opt-in): v7 lays them along the gold arms, beside Mom's cloth."""
+    so = V7.scs.so
+    old = so.POSES["throned"]
+    if SOF_LAP[0] is not None:
+        so.POSES["throned"] = SOF_LAP[0]
+    try:
+        return V7.sofia_throned(k, *a)
+    finally:
+        so.POSES["throned"] = old
+
+
 def mom_e(k, o, tt, n, look=(0.6, 0.8), dy=0):
     out = T0["4.1"] + 0.35 <= tt < T0["4.1'"]          # round 7: on "fired", her free hand points OUT (screen left: the door)
-    hp.reset("point_t" if out else "quiet", "fist")
-    pose = (_mb.mo.ik(-1, -_mb.SH_X - 92, _mb.BT + 50) + WIPE_FAR[2:]) if out else WIPE_FAR
+    rest = MOM_DOWN[0] and tt >= T0["4.1'"]            # round 8: once Sofía sits, both hands on the cloth at her waist (no hand near Sofía's)
+    hp.reset("point_t" if out else ("fist" if rest else "quiet"), "fist")
+    pose = (_mb.mo.ik(-1, -_mb.SH_X - 92, _mb.BT + 50) + WIPE_FAR[2:]) if out else (_mb.POSES["bag"] if rest else WIPE_FAR)
     with A.About(k.c, MOMX, F + 8, 1.0, 1.0, dy):
         m = sb.mfs.mom(k, MOMX, F + 8, dl.MS, pose, "sweet", look=look, mouth=code("4.1", tt))
     o["head"] = m["head"]
@@ -241,9 +277,10 @@ def r_sits(k, o, t, tt, n):
         ds.scs.sofia(k, THR + (70, 34)[i], F + 4, dl.SS, "hold", "smile", look=(-0.6, 0.2))
     else:
         with A.About(k.c, THR, CH[1], 1.0, 1.0, (7, -3, 0)[min(2, i - 2)]):
-            V7.sofia_throned(k, THR, CH[1], CH[2], "smile", (-0.6, 0))
+            throned(k, THR, CH[1], CH[2], "smile", (-0.6, 0))
     m = mom_e(k, o, tt, n)
-    V7.scrub(k, m["hands"][1][0], m["hands"][1][1], n)
+    if not (MOM_DOWN[0] and tt >= T0["4.1'"]):
+        V7.scrub(k, m["hands"][1][0], m["hands"][1][1], n)
 
 
 def r_up(k, o, t, tt, n):
@@ -255,14 +292,27 @@ def r_up(k, o, t, tt, n):
     dp.TAG_ANG[0] = seq(tj, [0, 0.5, 0.6, 0.3, -0.2, 0.1, 0])
     dp.ceo_chair(k, cx, CH[1], CH[2])
     if i < V7.HOLD:
-        V7.sofia_throned(k, THR, CH[1], CH[2], "horrified", (-1, 0) if i else (-0.6, 0))
+        if JUMP_ARC[0] and i == V7.HOLD - 1:                # round 8 (lesson 21): the anticipation, pressed down into the seat
+            with A.About(k.c, THR, CH[1], 1.04, 0.93):     # (0.88 pushed her face down under the app buttons)
+                throned(k, THR, CH[1], CH[2], "horrified", (-1, 0))
+        else:
+            throned(k, THR, CH[1], CH[2], "horrified", (-1, 0) if i else (-0.6, 0))
     else:
         if 1 <= j <= 3:
             tx = cx - 78
             ds._lines(k, [(tx - 22, F - 120, tx - 2, F - 120), (tx - 30, F - 86, tx - 4, F - 86), (tx - 22, F - 52, tx - 2, F - 52)])
-        up = seq(tj, [34, 60, 66, 62, 58, 58, 58])
-        sx_ = THR + (352 - THR) * min(1.0, (j + 1) / 4.0)
-        sy = seq(tj, [1.08, 1.04, 1, 1, 1, 1, 1])
+        if JUMP_OUT[0]:                                     # round 9 (Tomas: "she should jump further and leave the frame"):
+            up = [34, 62, 72, 62, 44, 28, 20][min(j, 6)]    # one leap left, behind Mom, out past the left edge
+            sx_ = THR + (40 - THR) * min(1.0, (j + 1) / 6.0)
+            sy = [1.14, 1.06, 1.0, 1.0, 1.02, 1.04, 1.04][min(j, 6)]
+        elif JUMP_ARC[0]:                                   # round 8: up, over, down onto the floor (cold test: "lifted, no crouch, no arc";
+            up = [34, 60, 70, 54, 24, 0, 0][min(j, 6)]      # she hung at 58 above the seat to the end; peak 70 keeps her face under the title bar)
+            sx_ = THR + (352 - THR) * min(1.0, (j + 1) / 5.0)      # off the throne at once: at THR her face sits under the app buttons
+            sy = [1.14, 1.06, 1.0, 1.02, 1.06, 0.94, 1.0][min(j, 6)]   # stretch going up, squash on landing (0.86 read as "shorter, another girl"), settle
+        else:
+            up = seq(tj, [34, 60, 66, 62, 58, 58, 58])
+            sx_ = THR + (352 - THR) * min(1.0, (j + 1) / 4.0)
+            sy = seq(tj, [1.08, 1.04, 1, 1, 1, 1, 1])
         hp.reset("palm", "palm")
         with A.About(k.c, sx_, F + 4 - up, 2.0 - sy, sy):
             ds.scs.sofia(k, sx_, F + 4 - up, dl.SS, "show", "horrified", look=(0.4, -0.6), lean=-0.2, tablet_kind="none")
@@ -271,7 +321,8 @@ def r_up(k, o, t, tt, n):
         if j <= 2:
             ds._lines(k, [(sx_ - 14, F - 30, sx_ - 20, F - 18), (sx_ + 14, F - 30, sx_ + 20, F - 18)])
     m = mom_e(k, o, tt, n)
-    V7.scrub(k, m["hands"][1][0], m["hands"][1][1], n)
+    if not (MOM_DOWN[0] and tt >= T0["4.1'"]):
+        V7.scrub(k, m["hands"][1][0], m["hands"][1][1], n)
 
 
 def fg_3e(k, cam, tt, n, box):
@@ -279,6 +330,7 @@ def fg_3e(k, cam, tt, n, box):
     if box.get("mom_hand"):                                 # her pointing hand stays clear of the box
         hx_, hy_, _ = S.to_screen(cam, *box["mom_hand"])
         AVOID_EXTRA.append((hx_ - 40, hy_ - 40, hx_ + 40, hy_ + 40))
+    AVOID_EXTRA.append((300, 380, 540, 860))               # round 10: the throne side (Sofía, the rail) is not this line's wall
     if not NOBUB[0] and speaking("4.1", tt):
         hx, hy, _ = S.to_screen(cam, *box["head"])
         line = "He once fired a man..." if tt < T0["4.1'"] else "...for sitting in that chair."
@@ -286,19 +338,19 @@ def fg_3e(k, cam, tt, n, box):
 
 
 # ------------------------------------------------------------------ 3F: "Different chair." (round 2's staging)
-SOF3F = 410                                                 # 12 right of round 2: whole in the stepped-back frame
+SOF3F = 300                                                 # round 9: she peeks back in from the left edge (was 410, behind Mom: "a floating head")
 def r_mom(k, o, t, tt, n):
-    dp.ceo_chair(k, 540, CH[1], CH[2])                     # to her right: she stands beside it (cold test: "Mom sits in the throne")
+    dp.ceo_chair(k, THR, CH[1], CH[2])                     # on its mark, to her right as in 3E (she stands beside it)
     after = tt - (V7.AT["4.3"] + len(V7.WAV["4.3"]) / float(V7.SR))
     hp.reset("palm", "palm")
     if after < 0:                                           # frozen; her eyes go up to the price
         lk = (0.2, -0.2) if t < 0.35 else (0.55, -0.7)
-        ds.scs.sofia(k, SOF3F, F - 50, dl.SS, "show", "horrified", look=lk, lean=0.14, tablet_kind="none")
+        ds.scs.sofia(k, SOF3F, F - 40, dl.SS * 0.92, "show", "horrified", look=lk, lean=0.14, tablet_kind="none")
     else:                                                   # after the line: flat, her eyes slide to Mom
         u = min(1.0, after / 0.17)
-        ds.scs.sofia(k, SOF3F, F - 50, dl.SS, "show", "deadpan", look=(0.55 + 0.45 * u, -0.7 + 0.9 * u), lean=0.14 - 0.10 * u, tablet_kind="none")
+        ds.scs.sofia(k, SOF3F, F - 40, dl.SS * 0.92, "show", "deadpan", look=(0.55 + 0.45 * u, -0.7 + 0.9 * u), lean=0.14 - 0.10 * u, tablet_kind="none")
     hp.reset("quiet", "fist")
-    m = sb.mfs.mom(k, 446, F + 8, dl.MS, "wipe", "sweet", look=(0.5, 0.9), mouth=code("4.3", tt))
+    m = sb.mfs.mom(k, MOMX, F + 8, dl.MS, "wipe", "sweet", look=(0.5, 0.9), mouth=code("4.3", tt))
     V7.scrub(k, m["hands"][1][0], m["hands"][1][1], n)
     o["head"] = m["head"]
 
@@ -312,6 +364,7 @@ def fg_3f(k, cam, tt, n, box):
 
 # ------------------------------------------------------------------ bubbles: speech.draw, checked by speech_gate (CLAUDE.md, 24 Nov)
 HELD = {}                                                   # text -> the box and side chosen at the line's first drawing
+R_HELD = {}                                                 # the head radius each line was first measured with
 from speech_gate import RAIL                                # the app's buttons (CLAUDE.md "Text"): one rect, the gate's
 AVOID_EXTRA = []                                            # this drawing's other no-go rects (Don's raised arm in 3A)
 CHECKS = []                                                 # (n, text, faults) for every bubble drawn
@@ -349,6 +402,9 @@ def say(k, text, near, n=0, name=None):
         ms = SY.measure(rec)
         hx, hy = SP._frame_matrix(rec).transform_point(*rec["head_u"])
         r = ms["r"]; mx, my = ms["m"]
+        if text in R_HELD and r > 1.15 * R_HELD[text]:      # a hand raised beside the head is measured as head (Pam's "one"
+            r = R_HELD[text]                                # finger: r 63 -> 109, the box pushed onto her face); keep the line's first r
+        R_HELD.setdefault(text, r)
         faces, others = [], []
         for o_ in SP.REG:
             if o_ is rec:
@@ -387,7 +443,7 @@ SHOTS = {"3.1": ("3A", r_3a, fg_3a, True), "3.2": ("3A", r_3a, fg_3a, True),
          "4.1": ("3E", r_thump, fg_3e, False), "4.1'": ("3E", r_sits, fg_3e, False), "4.2": ("3E", r_up, fg_3e, False),
          "4.3": ("3F", r_mom, fg_3f, False)}
 SHIFT = {}                                                  # sid -> (dx, dy[, zoom factor]) in set units
-CAMS = {"3C": S.CAM_3C, "3D": S.CAM_3D, "3E": S.CAM_3E, "3F": S.CAM_3F}
+CAMS = {"3C": S.CAM_3C, "3D": S.CAM_3D, "3E": (346, 540, 1.45), "3F": (398, 690, 2.3)}   # round 10: setup S3 on the throne's mark (3E), and closer on Mom (3F)
 INS = {"3.3": r_thumb, "3.3'": V7.r_green}
 
 
@@ -533,6 +589,12 @@ ZONES = dict(top=96, bottom=720, left=18, right=522)         # CLAUDE.md G3 / "T
 
 
 ENTRANCES = {("4.1'", "sofia")}                             # she comes in from the right edge, mid-step
+EXITS = {("4.2", "sofia"), ("4.3", "sofia")}                # leaving past the edge (4.2) and peeking back in from it (4.3): the edge is the point
+
+
+SET_MOVES = {("4.2", "throne"): 12}                          # set_gate: the throne's jolt when she leaps off it
+SET_AIR = {("4.2", "sofia")}                                # set_gate: off the floor on purpose (the leap)
+SET_WALKS = {("4.2", "4.3", "sofia")}                       # set_gate: she leapt out of the frame (4.2) and peeks back in, further back, behind Mom (4.3)
 
 
 def zone_faults(rect, what):
@@ -560,10 +622,16 @@ def gate():
     import dh_say as SY
     install_speech(); ds.ARM_PHONE[0] = True
     me = sys.modules[__name__]
-    HELD.clear(); del CHECKS[:]
-    zc = collections.Counter()
+    HELD.clear(); R_HELD.clear(); del CHECKS[:]
+    import set_gate
+    set_gate.install(); del set_gate.SEQ[:]
+    zc = collections.Counter(); sc = collections.Counter()
     for n in range(int(round(TOTAL * DPS))):
+        set_gate.begin(None)
         surf, sid = me.frame(n / float(DPS), n, 1)
+        set_gate.SEQ[-1] = (sid, list(set_gate.LOG))
+        for f_ in set_gate.faults(sid, moves=SET_MOVES, air=SET_AIR):
+            sc[(sid, f_)] += 1
         if sid in INS:                                      # inserts: the v7 drawings, no faces to place
             continue
         seen = []
@@ -577,7 +645,9 @@ def gate():
             seen.append((hx, hy)); r = ms["r"] * 0.8
             if -r < hx < 540 + r and -r < hy < 960 + r:
                 for f_ in zone_faults((hx - r, hy - r, hx + r, hy + r), "face"):
-                    if f_ == "at the frame's edge" and (sid, rec.get("name")) in ENTRANCES and n - int(T0[sid] * DPS) < 2:
+                    if f_ in ("at the frame's edge", "under the buttons") and (sid, rec.get("name")) in ENTRANCES and n - int(T0[sid] * DPS) < 2:
+                        continue
+                    if f_ == "at the frame's edge" and (sid, rec.get("name")) in EXITS:
                         continue                            # an entrance caught mid-step at the edge (G2b), 2 drawings
                     zc[("face %s" % rec.get("name"), sid, f_)] += 1
         for a in _avoid():
@@ -596,7 +666,13 @@ def gate():
     for (what, sid, f_), v in sorted(zc.items()):
         print("ZONE %-14s %-5s %-22s %d drawings" % (what, sid, f_, v))
     print("dead zones: %d drawings with a face or sign in them" % sum(zc.values()))
-    return bad + sum(zc.values())
+    for (sid, f_), v in sorted(sc.items()):
+        print("SET %-5s %s  %d drawings" % (sid, f_, v))
+    cuts = set_gate.cut_faults(walks=SET_WALKS)
+    for f_ in cuts:
+        print(f_)
+    print("set: %d drawings off the set, %d cuts that move someone" % (sum(sc.values()), len(cuts)))
+    return bad + sum(zc.values()) + sum(sc.values()) + len(cuts)
 
 
 if __name__ == "__main__":
@@ -613,7 +689,7 @@ if __name__ == "__main__":
         main(1)
     else:
         install_speech()                                    # the rigs logged for measuring; bubbles by speech.draw
-        HELD.clear(); del CHECKS[:]
+        HELD.clear(); R_HELD.clear(); del CHECKS[:]
         main(1)
         bad = [c_ for c_ in CHECKS if c_[2]]
         print("speech_gate on the render: %d bubble drawings, %d with faults" % (len(CHECKS), len(bad)))
