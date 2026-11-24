@@ -13,10 +13,26 @@ from kit import Ctx, cut
 from speech_gate import SAFE, TAIL_MIN, TAIL_MAX
 
 GAP = (TAIL_MIN + TAIL_MAX) // 2   # 15 px past the box; the outline eats about one px
+ROBOT = [False]   # opt-in (ep 14, Tomas 24 Nov): mono speakers on the series' tinted bubble, bold. Off: as before
+TINT = (0.90, 0.96, 1.0)
+CLEAR = [False]   # opt-in (ep 14, Tomas 24 Nov): prefer the wall with no other face beside the box. Off: as before
 
 
-def _wrap(c, text, size, font, max_w):
-    c.select_font_face(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+def _crowded(box, others):
+    """Another face level with the box and within its width (plus a head) on that side: the speaker becomes a guess."""
+    x0, y0, x1, y1 = box
+    for fx, fy, fr in others:
+        if x0 - fr * 1.2 <= fx <= x1 + fr * 1.2 and y0 - fr * 1.6 <= fy <= y1 + fr * 1.6:
+            return True
+    return False
+
+
+def _bold(mono):
+    return mono and ROBOT[0]
+
+
+def _wrap(c, text, size, font, max_w, bold=False):
+    c.select_font_face(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD if bold else cairo.FONT_WEIGHT_NORMAL)
     c.set_font_size(size)
     rows, cur = [], ""
     for word in text.split():
@@ -35,11 +51,12 @@ def _metrics(k, text, mono, max_w=220):
     c = k.c
     font = kit.MONO if mono else kit.FONT
     size = 24 if mono else 26
-    rows = _wrap(c, text, size, font, max_w)
+    b = _bold(mono)
+    rows = _wrap(c, text, size, font, max_w, b)
     lead = size * 1.15
     width = 0
     for row in rows:
-        c.select_font_face(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        c.select_font_face(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD if b else cairo.FONT_WEIGHT_NORMAL)
         c.set_font_size(size)
         width = max(width, c.text_extents(row).x_advance)
     return rows, size, font, width + 28, lead * len(rows) + 18
@@ -98,7 +115,7 @@ def _gap(tip, box):
     return math.hypot(dx, dy)
 
 
-def _paint(k, box, tip, rows, size, font):
+def _paint(k, box, tip, rows, size, font, mono=False):
     x0, y0, x1, y1 = box
     if tip is not None:
         if tip[1] >= y1 - 1:
@@ -113,13 +130,13 @@ def _paint(k, box, tip, rows, size, font):
         else:
             mid = min(max(tip[1], y0 + 14), y1 - 14)
             a, b = (x0, mid - 11), (x0, mid + 11)
-        cut(k, [tip, a, b], (1, 1, 1), shadow=False, lw=2.0)
-    cut(k, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], (1, 1, 1), shadow=True, lw=2.2)
+        cut(k, [tip, a, b], TINT if _bold(mono) else (1, 1, 1), shadow=False, lw=2.0)
+    cut(k, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], TINT if _bold(mono) else (1, 1, 1), shadow=True, lw=2.2)
     lead = size * 1.15
     cx = (x0 + x1) / 2
     top = y0 + (y1 - y0 - lead * len(rows)) / 2 + lead * 0.55
     for i, row in enumerate(rows):
-        kit.text(k, row, cx, top + i * lead, size, font=font, center=True)
+        kit.text(k, row, cx, top + i * lead, size, font=font, center=True, bold=_bold(mono))
 
 
 def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None, others=(), avoid=()):
@@ -197,19 +214,19 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
                 width = (room_for(side, tip) - 28) if narrow else 220
                 got = beside(side, tip, y, width, signs)
                 if got:
-                    found.append((narrow, not signs, n, got))
+                    found.append(((_crowded(got[0], others),) if CLEAR[0] else ()) + (narrow, not signs, n, got))
     if above is not None:
         got = overhead()
         if got:
-            found.append((False, False, len(tries), got))
-    picked = min(found)[3] if found else None
+            found.append(((_crowded(got[0], others),) if CLEAR[0] else ()) + (False, False, len(tries), got))
+    picked = min(found, key=lambda f: f[:-1])[-1] if found else None
     if picked is None:
         side, tip, y = max(tries, key=lambda t: room_for(t[0], t[1]))
         avail = max(56, room_for(side, tip))
         rows, size, font, bw, bh = _metrics(k, text, mono, max(40, avail - 28))
         while bw > avail and size > 15:
             size -= 1
-            rows = _wrap(k.c, text, size, font, max(32, avail - 28))
+            rows = _wrap(k.c, text, size, font, max(32, avail - 28), _bold(mono))
             k.c.select_font_face(font, 0, 1 if mono else 0)
             k.c.set_font_size(size)
             bw = max(56, max(k.c.text_extents(s).x_advance for s in rows) + 28)
@@ -222,5 +239,5 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
         y0 = min(max(y0, SAFE[1]), SAFE[3] - bh)
         picked = ((x0, y0, x0 + bw, y0 + bh), tip, rows, size, font)
     box, tip, rows, size, font = picked
-    _paint(k, box, tip, rows, size, font)
+    _paint(k, box, tip, rows, size, font, mono)
     return box, tip

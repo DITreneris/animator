@@ -107,7 +107,7 @@ def _attached(white, box, sx, sy):
     return _farthest(seen, box, sx, sy)
 
 
-def measured_tip(surface, box, before=None):
+def measured_tip(surface, box, before=None, fill=None):
     """The tail tip in 540 user space, and how far past the box it sits.
     With `before` (snapshot() just before the bubble), only pixels the bubble changed.
     Without it, only the white that touches the box. Eyes and teeth are white too, and are not the tip.
@@ -115,6 +115,9 @@ def measured_tip(surface, box, before=None):
     import numpy as np
     px = _buffer(surface)
     white = (px[:, :, 0] >= 248) & (px[:, :, 1] >= 248) & (px[:, :, 2] >= 248)
+    if fill is not None:                                   # a tinted bubble (speech.ROBOT): its fill counts as the paper
+        bgr = [round(255 * v) for v in fill[::-1]]
+        white |= (np.abs(px[:, :, :3].astype(np.int16) - np.array(bgr, np.int16)).max(axis=2) <= 4)
     sx, sy = surface.get_device_scale()
     if before is not None:
         changed = np.abs(px.astype(np.int16) - before.astype(np.int16))[..., :3].max(axis=2) > 30
@@ -122,7 +125,7 @@ def measured_tip(surface, box, before=None):
     return _attached(white, box, sx, sy)
 
 
-def check(surface, box, tip, faces, above=None, aim=None, before=None):
+def check(surface, box, tip, faces, above=None, aim=None, before=None, fill=None):
     """Fail on a long tail, a tip on hair, eyes or the mouth, a box outside SAFE, or a box over a face.
     above is a bare-scalp or antenna point. aim is a tip the caller measured on this frame
     (a visor rim, the mouth a profile drew, a voice in the dark). A tip landing on either is allowed.
@@ -135,7 +138,7 @@ def check(surface, box, tip, faces, above=None, aim=None, before=None):
         if _over_face(box, face):
             msgs.append("BUBBLE over a face")
             break
-    found = measured_tip(surface, box, before) if surface is not None else None
+    found = measured_tip(surface, box, before, fill) if surface is not None else None
     if tip is None:
         if found is not None and found[1] > 2:
             msgs.append("TAIL on a named card")
@@ -285,6 +288,32 @@ def selftest():
     got = check(surf, box, None, [])
     if not any("outside the safe area" in m for m in got):
         bad.append("a box outside SAFE passed: %s" % got)
+
+    # a tinted robot bubble (speech.ROBOT): without fill= its tail is not seen; with it, a long tinted tail still fails
+    # and a clean one passes
+    tint = speech.TINT
+    surf, c = _blank()
+    before = snapshot(surf)
+    ant_head = (270, 520, 33)
+    ant = (270, 520 - 33 * 1.48)
+    speech.ROBOT[0] = True
+    try:
+        tbox, ttip = speech.draw(Ctx(c, 0), "Border breach.", ant_head, above=ant, mono=True)
+    finally:
+        speech.ROBOT[0] = False
+    if not any("not painted" in m for m in check(surf, tbox, ttip, [ant_head], above=ant, before=before)):
+        bad.append("a tinted tail was read without fill= (the planted miss did not fail)")
+    got = check(surf, tbox, ttip, [ant_head], above=ant, before=before, fill=tint)
+    if got:
+        bad.append("a clean tinted robot bubble failed: %s" % got)
+    surf, c = _blank()
+    before = snapshot(surf)
+    lbox = (200, 200, 340, 250)
+    c.set_source_rgb(*tint); c.rectangle(200, 200, 140, 50); c.fill()
+    c.move_to(262, 250); c.line_to(278, 250); c.line_to(270, 330); c.close_path(); c.fill()
+    got = check(surf, lbox, (270, 330), [(270, 370, 33)], before=before, fill=tint)
+    if not any(m.startswith("TAIL too long") for m in got):
+        bad.append("a long tinted tail passed: %s" % got)
 
     def clean(surf, c, before):
         head = (160, 420, 48)
