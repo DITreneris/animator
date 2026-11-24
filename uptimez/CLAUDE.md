@@ -46,8 +46,8 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 ## Never break earlier work
 
 - New behaviour is **opt-in**: a module flag or a keyword argument whose default draws exactly as before.
-- Pin the previous file as `_vN` before changing it. A pinned file imports the pinned modules it was built with.
-- After any change, rebuild the approved sheets, covers and renders and **compare md5**. They must be byte-identical.
+- Existing `_vN.py` files stay untouched and keep importing the pinned modules they were built with. **From 24 Nov on (decided), new episodes pin approved versions with immutable `git tag`s** (e.g., `uptimez-<ep>-vN`) instead of copying whole `_vN.py` files in `src/`.
+- After any shared-module change, rebuild the approved sheets, covers and renders and **compare md5**. They must be byte-identical.
 - New renders get new names; the release a README calls current is replaced only when it's approved.
 - **A drawing map's later entry wins.** After replacing a shot's drawing, check that the map points at the new function (print it, or assert it) and look at that shot in the render: two fixes in First Search were overwritten for ten versions (lesson 109).
 
@@ -59,9 +59,11 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | Loudness | True peak ≤ −1 dBTP and −14 to −16 LUFS, measured on the final AAC (limit around 0.60; AAC overshoots) |
 | Speech | Whisper on every line inside the final mix, three windows per line; a lone word gets the previous line as context; score by words or letters (it runs "Pam a heart" together) |
 | Text | Every bubble, card and shout inside the safe area (18, 96, 522, 820 at 540×960) and off the right-hand button rail. Speech bubbles never cover a face. Narration and cards go at the top, under the bar (y 96): the bottom quarter is where TikTok, Reels and Shorts put captions, even inside the safe area |
-| Tails | The box beside the face, level with the mouth, and a **short** tail (10–20 px past the box, lessons 174, 325) whose tip lands on the cheek's outline at mouth height, never on the mouth, over the eyes or on hair; aimed at the mouth **drawn in that frame**. A tail may bend only to clear the head; never a long tail wrapped round it. No wall beside the face: reframe the shot (lesson 358). Off-screen speakers only get a quoted card with the name, no tail. Reuse `bc_sb.bubble` and `qa_bc.py` |
+| Tails | The box beside the face, level with the mouth, and a **short** tail (10–20 px past the box, lessons 174, 325) whose tip lands on the cheek's outline at mouth height, never on the mouth, over the eyes or on hair; aimed at the mouth **drawn in that frame**. A tail may bend only to clear the head; never a long tail wrapped round it. No wall beside the face: reframe the shot (lesson 358). Off-screen speakers only get a quoted card with the name, no tail. New bubbles call `speech.draw`; `bc_sb.bubble` and `qa_bc.py` stay for films already shipped |
 | Frame 0 | Complete (no flash, nothing scaling in), held at least 0.4 s before the camera moves, and the last frame leads back into it. The sound runs through the seam: no dead stop before frame 0 (a fade of 0.3 s at most) |
-| Size | **1080 renders are not committed** (`uptimez/**/*_1080.mp4` is in `.gitignore`); `build.sh` rebuilds them and they're delivered directly. The 540 previews, covers and sheets are committed. The 1080 files committed before 17 Nov stay tracked |
+| Size | **From 24 Nov on, new `.mp4` renders and intermediate contact-sheet PNGs (`board`, `layout`, `storyboard`, `cold_test*`) are not committed** (`.gitignore` stops `.git` binary bloat; `./build.sh` and `<ep>_scenes.py` rebuild them locally). Code, scripts, timing JSON, kept dry voice takes and final covers stay tracked. Files committed before 24 Nov stay tracked |
+
+New bubbles call `speech.draw` (`src/speech.py`). The check is `speech_gate.check` (`src/speech_gate.py`); both use the safe rect and the 10–20 px tail in `speech_gate`. Do not add another `TextRec`, another tail length, or another `TAIL_K` table. `kit.bubble` and `fs_animatic.speech` remain for films already shipped. A lesson in `docs/lessons.md` becomes a rule here only after `speech_gate.selftest` fails on that fault.
 
 Validate every new check on a known failure first; a check that always passes is worse than none.
 

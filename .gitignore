@@ -40,3 +40,58 @@ uptimez/src/xmas_mix_v8base.wav
 # First Search: regenerated each build
 uptimez/first-search/fs_board/
 uptimez/first-search/fs_animatic_mix_v*.wav
+
+# From 24 Nov 2026 on: stop .git binary growth (already-tracked files stay tracked).
+# Rebuilt videos & intermediate mixes stay local; source code, kept voice takes (vo/, *_voices/, *_takes/), scripts, timing, lessons and final covers stay tracked.
+*.mp4
+*.tmp.m4a
+mix.wav
+fin.wav
+*_mix*.wav
+cold_test*/
+*_board/
+*_board_v*/
+frames/
+*_frames/
+strips/
+*_strips/
+*storyboard*.png
+*_board*.png
+*_layout*.png
+*_stills*.png
+*_mute*.png
+mute_*.png
+mutesheet*.png
+*_strip*.png
+*_check*.png
+*_270.png
+*_[0-9]*fps*.png
+!*cover*.png
+!*thumbnail*.png
+!uptimez/brand/*.png
+
+# secrets: local only. A matching file that is already tracked stays tracked.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+client_secret*.json
+oauth-client.json
+*credentials*.json
+*service-account*.json
+*serviceAccount*.json
+token.json
+*-token.json
+.secrets/
+# analysis write-ups, analytics dumps and Stage 5 social packs: local only (rebuilt by tools/stage5_pack.py). Film scripts, timing and lessons stay tracked.
+/analysis/
+/analytics/
+docs/analysis/
+docs/seo/
+stage5_pack/
+*_post_pack/
+POST_PACK.md
+post_pack.json
+carousel_*.pdf
+comic_grid_*.png
