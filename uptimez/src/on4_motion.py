@@ -324,7 +324,7 @@ def seat3(k):
     c.restore()
 
 
-def seat3_people(k, hand, env, dad, t=None):
+def seat3_people(k, hand, env, dad, t=None, give=None, lk2=None):
     """his hand at `hand` (body units, co._ik target), the envelope at his hand (env: "hand") or under his lapel ("coat")."""
     c = k.c
     c.save(); car._p(c, WIN); c.clip()
@@ -336,6 +336,8 @@ def seat3_people(k, hand, env, dad, t=None):
         lk = (0.25 + 0.65 * to_dad - 0.2 * up_, 0.9 - 0.3 * to_dad - 0.55 * up_)
         if env == "coat" and up_ < 0.05:                     # put away: a look across at Dad
             lk = (0.85, 0.3)
+        if lk2 is not None:
+            lk = lk2
     c.push_group(); o = co.client(k, 200, 728, 0.74, arms, "plain", look=lk, roll=False, badge=False); c.pop_group()
     hx, hy = o["hands"][1]
     cx_, cy_ = o["head"][0] + 14, o["head"][1] + 104       # his chest, under the left lapel
@@ -351,10 +353,14 @@ def seat3_people(k, hand, env, dad, t=None):
         oc.envelope(k, cx_ + 6, cy_ - 8, 1.0)
         st.poly(k, [(cx_ - 22, cy_ + 12), (cx_ + 36, cy_ + 2), (cx_ + 40, cy_ + 40), (cx_ - 18, cy_ + 44)], (0.30, 0.36, 0.26), 2.2)   # his jacket over its lower half
     dx = (1 - dad) * 160                                                                           # Dad's ringed hand on the seat
-    st.poly(k, [(560 + dx, 560), (420 + dx, 566), (422 + dx, 606), (560 + dx, 612)], dc.VELVET, 2.2)
+    if give is not None:                                     # GIVE: the hand out toward the Client, the envelope in its fingers (give 1 = held out; 0 = flat on the seat)
+        c.translate((312 - 348) * give, (566 - 585) * give)
+        if env == "dad":
+            oc.envelope(k, 348 + dx - 22, 585 - 12, 1.15)    # the object first, his fingers over its edge after (the hands' rule)
+    st.poly(k, [(760 + dx, 556), (420 + dx, 566), (422 + dx, 606), (760 + dx, 616)], dc.VELVET, 2.2) if give is not None else st.poly(k, [(560 + dx, 560), (420 + dx, 566), (422 + dx, 606), (560 + dx, 612)], dc.VELVET, 2.2)
     kit.ellipse(k, 392 + dx, 590, 34, 15, dc.SKIN_F, 7702, shadow=False, lw=2.2)                  # v3: palm down, flat on the seat
     for i_ in range(4):
-        drum = 4.0 * max(0.0, math.sin(2 * math.pi * 2.2 * t - i_ * 1.1)) if (t is not None and dad >= 1 and env == "hand") else 0.0   # DENSE: his fingers drum while he waits
+        drum = 4.0 * max(0.0, math.sin(2 * math.pi * 2.2 * t - i_ * 1.1)) if (t is not None and dad >= 1 and env == "hand" and not give) else 0.0   # DENSE: his fingers drum while he waits
         kit.ellipse(k, 362 + dx - i_ * 2, 580 + i_ * 6 - drum, 14, 5, dc.SKIN_F, 7703 + i_, shadow=False, lw=1.6)
     c.set_source_rgb(*INK); c.rectangle(372 + dx, 576, 11, 14); c.fill(); c.set_source_rgb(*st.GOLD); c.rectangle(374 + dx, 578, 7, 10); c.fill()
     c.set_source_rgb(*st.NEON); c.rectangle(374 + dx, 580, 7, 6); c.fill()
@@ -392,6 +398,31 @@ def t2():
     seq += [(CHEST, "coat", 1)] * 2 + [(lerp(CHEST, KNEE, t), "coat", 1) for t in (0.5, 1.0)] + [(KNEE, "coat", 1)] * 6   # under his lapel
     g = lazy(lambda a: draw(shot("2.2", loc="seat3", cam=sc.WIDE, cast=(), protect=(), after=lambda k: seat3_people(k, *a))))
     if DENSE[0]:                                             # 43 keys for 3.6 s: the holds longer now that they live
+        if GIVE[0]:
+            REACH = (150, co.BT + 120)
+            S_ = []                                          # (his hand, who has the envelope, Dad's hand in 0..1, t, give 0..1, his look)
+            for j in range(6):                               # he waits, empty-handed, his eyes ahead
+                S_.append((KNEE, "none", 0.0, 1.0, (0.4, 0.3)))
+            for j in range(7):                               # out of the dark: the ringed hand, the envelope held out to him; he looks at it
+                u = ease((j + 1) / 7.0); S_.append((KNEE, "dad", u, 1.0, (0.4 + 0.5 * u, 0.3 + 0.4 * u)))
+            for j in range(4):                               # his hand goes to it (a third of a second)
+                u = ease((j + 1) / 4.0); S_.append((lerp(KNEE, REACH, u), "dad", 1.0, 1.0, (0.9, 0.7)))
+            S_.append((REACH, "hand", 1.0, 1.0, (0.9, 0.7)))                                         # the grip: it is his
+            for j in range(4):                               # Dad's hand lets go and lies down on the seat; he draws it back to his knee
+                u = ease((j + 1) / 4.0); S_.append((lerp(REACH, KNEE, u), "hand", 1.0, 1.0 - u, (0.9 - 0.65 * u, 0.7 + 0.2 * u)))
+            for j in range(3):                               # he looks at it
+                S_.append((KNEE, "hand", 1.0, 0.0, (0.25, 0.9)))
+            for j in range(4):                               # up to his coat
+                u = ease((j + 1) / 4.0); S_.append((lerp(KNEE, CHEST, u), "hand", 1.0, 0.0, None))
+            S_ += [(CHEST, "coat", 1.0, 0.0, None)] * 2
+            for j in range(2):
+                S_.append((lerp(CHEST, KNEE, (j + 1) / 2.0), "coat", 1.0, 0.0, None))
+            while len(S_) < 43:                              # he pats the lapel flat; a look across at Dad
+                j = len(S_)
+                S_.append(((62 + 10 * (1 - abs(math.cos(j * math.pi / 4.0))), co.BT + 150 - 26 * abs(math.sin(j * math.pi / 4.0))), "coat", 1.0, 0.0, None))
+            g2 = lazy(lambda hand, env, dad, gv, lk2, t_: draw(shot("2.2", loc="seat3", cam=sc.WIDE, cast=(), protect=(),
+                                                               after=lambda k: seat3_people(k, hand, env, dad, t_, gv, lk2))))
+            return [g2(h_, e_, d_, gv_, lk_, i / 12.0) for i, (h_, e_, d_, gv_, lk_) in enumerate(S_)]
         seq = [(KNEE, "hand", 0)] * 4 + seq[:16] + [(KNEE, "hand", 1)] * 2 + seq[16:-6]
         seq += [((62 + 10 * (1 - abs(math.cos(j * math.pi / 4.0))), co.BT + 150 - 26 * abs(math.sin(j * math.pi / 4.0))), "coat", 1) for j in range(43 - len(seq))]   # the hand does not lie dead: it pats the lapel flat, twice
         return [g(a + (i / 12.0,)) for i, a in enumerate(seq)]
@@ -504,6 +535,7 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+GIVE = [False]                                               # (24 Nov, Tomas: "who hands what to whom?") 2.2-2.3: Dad's ringed hand comes out of the dark holding the envelope out; the Client takes it, looks, puts it under his lapel
 CATWALK = [False]                                            # (24 Nov) her cat's walk (on4_anim.catwalk) over the crossing and along the fire escape
 PEEK = [False]                                               # (24 Nov, Tomas: "the cat's head is bad; put her looking out of the window above?") 2.2-2.3: she comes up in the window over the car, her gloves on its sill, follows the envelope, ducks before he looks up
 PEEK_WIN = (336, 150, 476, 312)                              # clear of the narration card's rows (to y 196, the second row to about x 330)

@@ -18,13 +18,14 @@ SR = r.SR
 import on4_posters as po
 import on4_street as st
 
-VER = "v10"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
+VER = "v11"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
 po.ON[0] = True; st.TOWN[0] = True
 import on4_cross as xc
 m.CRASH[0] = True; m.LAW[0] = True; m.CAR_S = xc.S_CAR      # v4: the bump as a tap; v5: one scale law on the crossing, the plank bounces
 m.TESTS.update(xc.TESTS)                                     # v5: the crossing after the bump in four shots (W, R, B, G), not one wide take
 sc.DUR.update({"3.2": 2.8, "3.3": 88 / 12.0, "3.4": 22 / 12.0, "3.5": 52 / 12.0})   # 3.3 is halved between 3.3 and 3.3b: 44 drawings each
 CEIL = 0.50                                                  # v4: 0.56 gave -0.9 dBFS after AAC with the new effects (the limit is -1)
+m.GIVE[0] = True                                             # v11: Dad's hand gives the envelope, the Client takes it
 m.CATWALK[0] = True                                          # v9: her cat's walk over the crossing and along the fire escape; the car drives up in 2.1; the hunting face
 m.PEEK[0] = True                                             # v8: she watches from the window over the car
 m.DENSE[0] = True                                            # v7: twelve different drawings a second in 2.2-2.3, 2.4's fall, 6.3-6.6, 8.1-8.2
