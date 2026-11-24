@@ -213,6 +213,7 @@ def drainpipe(k, P, u, v0=0.0, v1=0.96):
 def setup_a(k, taillights=False):
     c = k.c
     sky(k)
+    import on4_posters as _po; _po.sky(k, "A")              # (24 Nov) a crescent and seven stars, opt-in
     cx, fy, hw, h = A_ARCH
     top = fy - h
     # behind everything: roofs and a chimney over the bend
@@ -407,6 +408,7 @@ def light_b(c):
 def setup_c(k):
     c = k.c
     sky(k)
+    import on4_posters as _po; _po.sky(k, "C")
     poly(k, [(150, 470), (330, 470), (330, 600), (150, 600)], CREAM_FAR)                    # the far lit house
     poly(k, [(140, 470), (180, 430), (320, 430), (340, 470)], (0.24, 0.12, 0.10))
     for x in (172, 220, 286):

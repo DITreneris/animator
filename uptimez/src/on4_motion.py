@@ -367,6 +367,7 @@ def c_side(k):
     """3.2 from the side of the road: the far houses, the road, the crossing's bars, the lamp."""
     c = k.c
     c.set_source_rgb(0.03, 0.03, 0.04); c.paint()
+    import on4_posters as po; po.sky(k, "side")
     st.poly(k, [(-300, 360), (300, 360), (300, 300), (420, 300), (420, 380), (1000, 380), (1000, 568), (-300, 568)], (0.90, 0.89, 0.86), 2.2)
     for x in (-120, -40, 40, 110, 200, 340, 460, 560, 640, 720, 800):
         st.poly(k, [(x, 430), (x + 34, 430), (x + 34, 500), (x, 500)], (0.06, 0.06, 0.07), 1.6)

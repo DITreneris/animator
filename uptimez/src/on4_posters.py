@@ -229,3 +229,36 @@ def lane(k):
 def club(k):
     """v2: nothing (the marquee says it; the bill was cut by the close cameras)."""
     return
+
+
+# ---- the sky (24 Nov, Tomas's picks): a young thin crescent, seven stars in the Plough's shape (her seven lives, like the
+# chalk), still; over the first street (A) and the crossing (C from the road, C_side from the kerb). Opt-in with ON.
+PLOUGH = [(0.0, 0.0), (0.02, 0.30), (0.33, 0.36), (0.38, 0.10), (0.60, 0.02), (0.80, -0.08), (1.0, 0.08)]
+SKY = {"A": ((322, 66, 25), (88, 36, 170)),                  # the moon (x, y, r); the Plough (x, y, width)
+       "C": ((118, 328, 17), (30, 214, 140)),
+       "side": ((266, 322, 16), (122, 294, 112))}
+
+
+def moon(k, x, y, r, turn=-0.5):
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(turn)
+    c.new_path(); c.arc(0, 0, r, -math.pi / 2, math.pi / 2)                  # the lit limb, then back along the terminator
+    c.save(); c.scale(0.62, 1.0); c.arc_negative(0, 0, r, math.pi / 2, -math.pi / 2); c.restore()
+    c.close_path(); c.set_source_rgb(0.95, 0.94, 0.90); c.fill()
+    c.restore()
+
+
+def star(c, x, y, r):
+    c.set_source_rgb(0.93, 0.92, 0.88)
+    c.new_path(); c.arc(x, y, r, 0, 2 * math.pi); c.fill()
+    c.set_line_width(r * 0.5)
+    c.move_to(x - r * 2.1, y); c.line_to(x + r * 2.1, y); c.stroke(); c.move_to(x, y - r * 2.1); c.line_to(x, y + r * 2.1); c.stroke()
+
+
+def sky(k, where):
+    if not ON[0]:
+        return
+    (mx, my, mr), (px, py, pw) = SKY[where]
+    for i, (u, v) in enumerate(PLOUGH):
+        star(k.c, px + u * pw, py + v * pw, (3.0 if i in (0, 4, 6) else 2.4) * (0.75 + 0.25 * pw / 140.0))
+    moon(k, mx, my, mr)
