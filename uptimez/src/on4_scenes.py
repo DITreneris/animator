@@ -484,6 +484,7 @@ def draw_cast(k, cast):
         if who == "pam_cat":
             oc.HUNT[0] = kw.pop("hunt", 0.0)
             cy = kw.pop("clip_y", None)
+            twist = kw.pop("twist", 0.0)                     # (24 Nov, the walk's review) her shoulders against her hips: the same drawing cut at the belt, the upper half turned about it
             tilt = kw.pop("tilt", 0.0)                       # (24 Nov) her head a little behind her body: the same drawing twice, cut at the neck, the head's half turned about it
             if kw.pop("rim", False):                         # board v9: a thin rim of light round her
                 c_ = k.c
@@ -492,13 +493,21 @@ def draw_cast(k, cast):
                     c_.save(); c_.translate(dx_, dy_); c_.set_source_rgba(0.82, 0.82, 0.80, RIM_A[0]); c_.mask(g_); c_.restore()
             if cy is not None:                               # 3.6: sitting: only her top half rises from the road
                 k.c.save(); k.c.rectangle(-2000, -2000, 5000, cy + 2000); k.c.clip()
-            if tilt:
-                c_ = k.c; ny_ = a[1] + (oc.HY + 52) * a[2]
-                c_.save(); c_.rectangle(a[0] - 600, ny_, 1200, 1200); c_.clip(); o = oc.pam_cat(k, *a, **kw); c_.restore()
-                c_.save(); c_.translate(a[0], ny_); c_.rotate(tilt); c_.translate(-a[0], -ny_)
-                c_.rectangle(a[0] - 600, ny_ - 1200, 1200, 1200); c_.clip(); oc.pam_cat(k, *a, **kw); c_.restore()
+            def _upper():
+                if tilt:
+                    c_ = k.c; ny_ = a[1] + (oc.HY + 52) * a[2]
+                    c_.save(); c_.rectangle(a[0] - 600, ny_, 1200, 1200); c_.clip(); o_ = oc.pam_cat(k, *a, **kw); c_.restore()
+                    c_.save(); c_.translate(a[0], ny_); c_.rotate(tilt); c_.translate(-a[0], -ny_)
+                    c_.rectangle(a[0] - 600, ny_ - 1200, 1200, 1200); c_.clip(); oc.pam_cat(k, *a, **kw); c_.restore()
+                    return o_
+                return oc.pam_cat(k, *a, **kw)
+            if twist:
+                c_ = k.c; wy_ = a[1] - 150 * a[2]            # her belt
+                c_.save(); c_.rectangle(a[0] - 600, wy_, 1200, 1200); c_.clip(); o = oc.pam_cat(k, *a, **kw); c_.restore()
+                c_.save(); c_.translate(a[0], wy_); c_.rotate(twist); c_.translate(-a[0], -wy_)
+                c_.rectangle(a[0] - 600, wy_ - 1200, 1200, 1200 + 7 * a[2]); c_.clip(); _upper(); c_.restore()
             else:
-                o = oc.pam_cat(k, *a, **kw)
+                o = _upper()
             if cy is not None:
                 k.c.restore()
         elif who == "pam_from_behind":                       # her back to us: the figure, the face covered by the back of

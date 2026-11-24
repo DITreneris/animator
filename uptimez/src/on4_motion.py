@@ -375,7 +375,7 @@ def seat3_people(k, hand, env, dad, t=None):
         arms = oc.pm.ik(-1, -66, -172) + oc.pm.ik(1, 66, -172)   # the gloves whole above the sill
         if u > 0.02:
             c.save(); c.rectangle(x0, y0, x1 - x0, y1 - 2 - y0); c.clip()       # in the window: nothing of her below the sill
-            sc.draw_cast(k, [P("pam_cat", mx, feet, S2, pose(arms, ("flat", "flat")), "peer", (-0.7 + 0.15 * up2, 0.9 - 0.25 * up2), rim=True)])            # no head tilt here: at this size the cut at her neck shows
+            sc.draw_cast(k, [P("pam_cat", mx, feet, S2, pose(arms, ("flat", "flat")), "peer", (-0.7 + 0.15 * up2, 0.9 - 0.25 * up2), rim=True, hunt=0.45 * min(1.0, max(0.0, (t - 0.9) / 0.4)))])            # no head tilt here: at this size the cut at her neck shows
             c.restore()
         return
     c.save(); c.translate(486, 300); c.scale(-1, 1)                                                # her ears over the roof's edge:
@@ -504,6 +504,7 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+CATWALK = [False]                                            # (24 Nov) her cat's walk (on4_anim.catwalk) over the crossing and along the fire escape
 PEEK = [False]                                               # (24 Nov, Tomas: "the cat's head is bad; put her looking out of the window above?") 2.2-2.3: she comes up in the window over the car, her gloves on its sill, follows the envelope, ducks before he looks up
 PEEK_WIN = (336, 150, 476, 312)                              # clear of the narration card's rows (to y 196, the second row to about x 330)
 DENSE = [False]                                              # (24 Nov, Tomas: where else is the film thin?) twelve different drawings a second in 2.2-2.3, 6.3-6.6, 8.1 and the fall of 2.4: held figures breathe, eyes travel, the fall has its in-betweens
@@ -540,8 +541,11 @@ def t3():
                 gshadow(k, px, pf + 2, 70 * ps, 11 * ps)
             else:
                 gshadow(k, PX + 6, PF + 4, 120, 8)                                           # under her, lying
+        walk = pam[10] if len(pam) > 10 else None
         def after(k):
             c = k.c
+            if walk:                                         # her cat's walk: knees, hips, shoulders (drawn here: the plain cast has no knees)
+                _pam(k, P("pam_cat", px + walk["dx"] * ps, pf, ps, pose(arms, gest), face, look, tilt=walk["tilt"], twist=walk["twist"], hunt=walk["hunt"]), 1.0, 1.0, walk["rot"], walk["kn"])
             if kind == "down":
                 c.save(); c.translate(PX, PF - 6); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
             rx = cx + 112 * CAR_S                                # braking: the nose down about the rear wheel
@@ -553,7 +557,7 @@ def t3():
             if dust:                                             # where she lands: her head, her heels
                 sc._burst(k, PX - 150, PF - 2, 16); sc._burst(k, PX + 120, PF + 2, 12)
         cast = [P("don", 170, 596, 0.42, dpose, dface, (0.9, -0.2), **dkw)]
-        if kind == "up":
+        if kind == "up" and not walk:
             cast.append(P("pam_cat", px, pf, ps, pose(arms, gest), face, look, lean=lean))
         oc.MASK_TILT[0] = mask
         if kind == "up" and len(pam) > 9 and pam[9]:         # her head behind her body as she lands (on4_scenes: tilt)
@@ -564,7 +568,13 @@ def t3():
             oc.MASK_TILT[0] = 0.0
     side = lazy(side)
     OFF = 1200
-    for i in range(6):                                       # she comes over the crossing, after the car
+    for i in range(6 if CATWALK[0] else 0):                  # her cat's walk over the crossing: one stride in the six drawings
+        import on4_anim as an_
+        t = i / 5.0; y_ = 610 + (PF - 610) * t
+        ar_, ge_, kn_, rot_, dx_, kw_ = an_.catwalk(i / 6.0)
+        fr.append(side(OFF, D_STOP, ("up", PX, y_, 1.203 * (0.42 + 0.14 * (y_ - 596.0) / 176.0), ar_, ge_, 0.0, "peer", (0.0, 0.1), 0.0,
+                                     dict(kn=kn_, rot=rot_, dx=dx_, **kw_))))
+    for i in range(0 if CATWALK[0] else 6):                  # she comes over the crossing, after the car
         t = i / 5.0
         fr.append(side(OFF, D_STOP, ("up", PX, 610 + (PF - 610) * t, (0.44 + 0.18 * t) if not LAW[0] else 1.203 * (0.42 + 0.14 * (610 + (PF - 610) * t - 596.0) / 176.0), RUN if i % 2 == 0 else RUN2,
                                      ("fist", "fist"), 0.0, "peer", (0.8, -0.2))))
@@ -919,7 +929,7 @@ def t7():
         for y_ in range(PY + 10, GY - 120, 28):
             c.move_to(LX - 30, y_); c.line_to(LX + 30, y_); c.stroke()
     BMX = (BX0 + BX1) / 2.0
-    def f(pam=None, lid=0, shake=0, fall=None, pl=None, burst=False, clip=False, climb=None, tilt=0.0):
+    def f(pam=None, lid=0, shake=0, fall=None, pl=None, burst=False, clip=False, climb=None, tilt=0.0, walkp=None):
         def before(k):
             scene(k)
             k.c.save(); k.c.translate(BMX, GY); k.c.rotate(tilt); k.c.translate(-BMX, -GY)      # the bin rocks about its wheels
@@ -929,6 +939,8 @@ def t7():
                 ladder(k)
         def after(k):
             c = k.c
+            if walkp is not None:                            # along the platform in her cat's walk
+                _pam(k, walkp[0], 1.0, 1.0, walkp[2], walkp[1])
             if climb is not None:                            # v20 (review): hands on rungs, the opposite foot up, turned to the wall
                 cp, ckn = climb
                 _pam(k, cp, 1.0, 1.0, 0.0, ckn)
@@ -973,7 +985,12 @@ def t7():
         lift = 40
         kn = dict(drop=0, l=(0, lift if side > 0 else 0, -1), r=(0, lift if side < 0 else 0, 1))    # the foot opposite the high hand is up
         fr.append(f(climb=(P("pam_cat", LX, fy, S_, pose(arms, ("grab", "grab")), "peer", (0.3, -0.9), rim=True), kn)))
-    for i in range(9):                                       # along the platform, her eyes on the street below
+    for i in range(9 if CATWALK[0] else 0):                  # along the platform: a stride and a half, her eyes on the street below
+        import on4_anim as an_
+        t = i / 8.0
+        ar_, ge_, kn_, rot_, dx_, kw_ = an_.catwalk(i / 6.0)
+        fr.append(f(walkp=(P("pam_cat", LX + (310 - LX) * t + dx_ * S_, PY, S_, pose(ar_, ge_), "peer", (0.6, 0.7), rim=True, **kw_), kn_, rot_)))
+    for i in range(0 if CATWALK[0] else 9):                  # along the platform, her eyes on the street below
         t = i / 8.0
         fr.append(f(P("pam_cat", LX + (310 - LX) * t, PY - (5 if i % 2 else 0), S_, "hero", "peer", (0.6, 0.7), rim=True)))
     NL = 10 if DENSE[0] else 12

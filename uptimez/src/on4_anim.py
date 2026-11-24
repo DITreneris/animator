@@ -60,26 +60,26 @@ def relax(u):
 
 
 def catwalk(ph):
-    """(24 Nov, Tomas: "her walk lacks a cat's manners") one stride, ph 0..1 (two steps), seen from the front:
-    each foot set down on one line under her middle (a cat's track), the free knee coming up and round; the hips swing
-    out over the standing leg and the trunk tips with them; the head tips back the other way and stays level, eyes
-    ahead; the arms loose, wrists limp, swinging a little against the legs; lowest as a foot lands.
-    Returns (arms, gest, knee, rot, dx, tilt, dy) for pam_ and P."""
+    """(24 Nov, Tomas: "her walk lacks a cat's manners"; v2 after the review) one stride, ph 0..1 (two steps), from the
+    front. Each foot set down on one line under her middle, the free foot low and round (a glide, not a march); the
+    hips swing out over the standing leg; the shoulders turn the other way (the figure cut at the belt); the head tips
+    back again and stays level; one glove on her hip, the other arm loose with a limp wrist; a held beat as each foot
+    lands; the hunting face. Returns (arms, gest, knee, rot, dx, kw) for pam_ and P (kw: tilt, twist, hunt)."""
     h = (ph % 1.0) * 2.0
     left_stands = h < 1.0
-    u = h % 1.0                                              # through this step
-    sw = math.sin(math.pi * u)                               # the free foot's height
-    side = -1 if left_stands else 1                          # the side her weight is on (screen left: -1)
-    s_ = side * math.sin(math.pi * min(1.0, u * 1.15))       # the hips out over the standing leg, a little early
-    LINE = 13                                                # how far in a foot comes to reach the line under her
-    free_dx = (-side) * (-LINE) * (0.2 + 0.8 * u) + (-side) * 16 * (1 - u) * sw   # from out at its side, round, in to the line
-    stand = (side * -LINE, 0.0, side)                        # on the line, its knee to its own side
-    free = (free_dx, 15.0 * sw, -side)
-    kn = dict(drop=0.6 + 1.6 * abs(math.cos(math.pi * u)), l=stand if left_stands else free, r=free if left_stands else stand)   # the standing leg straight: no squat
-    a = math.cos(math.pi * h)                                # the paws against the legs: elbows in, hands at her chest, wrists limp; one dabs forward (lower), the other draws up
-    arms = oc.pm.ik(-1, -30, oc.BT + 84 + 16 * a) + oc.pm.ik(1, 30, oc.BT + 84 - 16 * a)
-    rot = 0.06 * s_
-    return arms, ("relax_s", "relax_s"), kn, rot, 12.0 * s_, -0.085 * s_, 0.0
+    u0 = h % 1.0
+    u = 0.5 - 0.5 * math.cos(math.pi * min(1.0, max(0.0, (u0 - 0.12) / 0.76)))   # held at each contact, quick through the pass
+    sw = math.sin(math.pi * u)
+    side = -1 if left_stands else 1
+    s_ = side * math.sin(math.pi * min(1.0, u * 1.1 + 0.08))                    # the hips out over the standing leg
+    LINE = 14
+    free_dx = (-side) * (-LINE) * (0.2 + 0.8 * u) + (-side) * 14 * (1 - u) * sw
+    stand = (side * -LINE, 0.0, side)
+    free = (free_dx, 7.0 * sw, -side)                        # low: it slides
+    kn = dict(drop=0.5 + 1.2 * abs(math.cos(math.pi * u)), l=stand if left_stands else free, r=free if left_stands else stand)
+    a = math.cos(math.pi * h)
+    arms = tuple(HERO[:2]) + oc.pm.ik(1, 34 + 9 * a, oc.BT + 132 - 3 * abs(a))   # screen-left glove on her hip; the other swings, loose
+    return arms, ("fist", "relax_s"), kn, 0.075 * s_, 16.0 * s_, dict(tilt=-0.03 * s_, twist=-0.10 * s_, hunt=0.5)
 
 
 def pam_(k, p, sy=1.0, rot=0.0, kn=None):
@@ -246,10 +246,11 @@ def a21(t):
                 g.add_color_stop_rgba(0, 1, 1, 0.94, 0.50); g.add_color_stop_rgba(1, 1, 1, 0.94, 0.0)
                 c.new_path(); c.move_to(lx - 10 * cs, ly_ + 30 * cs); c.line_to(lx + 10 * cs, ly_ + 30 * cs)
                 c.line_to(lx + sgn * 30 * cs + 46 * cs, ly_ + L); c.line_to(lx + sgn * 30 * cs - 46 * cs, ly_ + L); c.close_path(); c.set_source(g); c.fill()
-            for gx, gy, gs_, fl, st__, tn in gp:             # their long shadows, thrown up the lane by the lamps
-                c.new_path(); c.move_to(gx - 26 * gs_ / 0.27 * 0.27, gy); c.line_to(gx + 26 * gs_, gy)
-                c.line_to(gx + (gx - cx) * 0.5 + 16 * gs_, gy - 300 * gs_); c.line_to(gx + (gx - cx) * 0.5 - 16 * gs_, gy - 300 * gs_); c.close_path()
-                c.set_source_rgba(0, 0, 0, 0.42); c.fill()
+            for gx, gy, gs_, fl, st__, tn in gp:             # their long shadows down the lane toward us, from the lit house behind them
+                L = 420 * gs_; out = (gx - cx) * 0.22
+                g = cairo.LinearGradient(0, gy, 0, gy + L); g.add_color_stop_rgba(0, 0, 0, 0, 0.55); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+                c.new_path(); c.move_to(gx - 70 * gs_, gy + 2); c.line_to(gx + 70 * gs_, gy + 2)
+                c.line_to(gx + out + 110 * gs_, gy + L); c.line_to(gx + out - 110 * gs_, gy + L); c.close_path(); c.set_source(g); c.fill()
             c.save(); c.translate(cx, cy); c.rotate(nose); c.translate(-cx, -cy)
             car_.reflect(k, lambda: car_.front(k, cx, cy, cs), cy, 0.25, 20)
             c.restore()
@@ -364,7 +365,7 @@ def a53(t):
         d_ = 10 if t < 0.9 else (14 if t < 2.0 else 8)
         st2 = int(t * 10) % 2 if t < 0.9 else 0
         kn = dict(drop=d_, l=(-3, 8 if st2 else 0, -1), r=(-3, 0 if (st2 or t >= 0.9) else 8, -1))
-    p = P("pam_cat", x, 716, 0.46, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env)
+    p = P("pam_cat", x, 716, 0.46, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env, hunt=0.5 if m.LAW[0] else 0.0)
     def after(k):
         card(k, t)
         pam_(k, p, breath(t), rot, kn)
