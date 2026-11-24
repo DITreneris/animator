@@ -17,9 +17,9 @@ FPS = 12
 SR = 48000
 MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None), ("3.1", "3.2"): ("T3", 0, None),
        ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("6.3", "6.6"): ("T4", 0, -8), ("8.1", "8.2"): ("T5", 0, -7)}
-OUT = os.path.join(sc.OUT, "on4_rough_v6.mp4")
+OUT = os.path.join(sc.OUT, "on4_rough_v7.mp4")
 NEW = {   # key: (shot, seconds into the shot, who, text)
-    "c1": ("2.2", 1.3, "CLIENT", "Mine until it's done."),
+    "c1": ("2.2", 1.55, "CLIENT", "Mine until it's done."),
     "d1": ("3.1", 1.5, "DON", "Traffic flows."),
     "d2": ("3.3", 1.9, "DON", "Not a scratch."),
     "f1": ("3.4", 1.0, "FATHER", "For the boys."),
@@ -29,10 +29,12 @@ NEW = {   # key: (shot, seconds into the shot, who, text)
 }
 
 
-LEAD6 = {"2.4": -0.8}                                       # v6: her line starts over the knee insert, so its last word is the bin's lid
+MOVE7 = {"n2": ("2.1", 0.1)}                                # v7: "I know where to see..." over the spying (2.1-2.2); 2.4 gets its own two lines
 NARR = {   # v4 (Tomas: the pauses are too long, the narrator is missing): two more of her boasts over the long gaps
     "n4": ("1.4", 0.5, "Nobody follows me."),              # as the two shadows come up behind her
     "n5": ("5.1", 0.6, "Nobody sees me coming."),          # as she walks through the club and nobody looks
+    "n6": ("2.4", 0.7, "I know how to climb."),            # v7 (Tomas): up the ladder; she goes over the rail on its heels
+    "n7": ("2.4", 32 / 12.0 + 0.75, "I know how to fall."),   # out of the bin, the peel on her ear
 }
 
 
@@ -108,7 +110,7 @@ def sound(tm, d, total):
     voice = np.zeros(n); fx = np.zeros(n); mus = np.zeros(n)
     marks = []
     for key, ln in d["lines"].items():
-        t = st_(ln["shot"]) + LEAD6.get(ln["shot"], vo.LEAD.get(ln["shot"], 0.3))
+        t = st_(MOVE7[key][0]) + MOVE7[key][1] if key in MOVE7 else st_(ln["shot"]) + vo.LEAD.get(ln["shot"], 0.3)
         put(voice, load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), t); marks.append((key, round(t, 2)))
     d2, _ = new_takes()
     for key, (shot, lead, who, txt) in NEW.items():
@@ -211,7 +213,7 @@ def main():
     I = float([l for l in r.stderr.splitlines() if "I:" in l][-1].split("I:")[1].split("LUFS")[0])
     g = 10 ** ((-15.0 - I) / 20.0)
     for _ in range(4):                                                                              # a soft ceiling at 0.7, then measured again
-        out = np.tanh(mix * g / 0.7) * 0.7
+        out = np.tanh(mix * g / 0.62) * 0.62
         sf.write(tmp + "/a.wav", out.astype(np.float32), SR)
         r = subprocess.run(["ffmpeg", "-hide_banner", "-i", tmp + "/a.wav", "-af", "ebur128", "-f", "null", "-"], capture_output=True, text=True)
         I2 = float([l for l in r.stderr.splitlines() if "I:" in l][-1].split("I:")[1].split("LUFS")[0])

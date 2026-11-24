@@ -171,14 +171,16 @@ def t1():
     if CAT[0]:
         for _ in range(3):                                   # 0.25 s: frame 0, held
             fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
-        for step, hop, t in (("in", 0, 0.3), ("full", 14, 0.8), ("full2", 26, 1.0), ("out", 30, 1.0), ("gone", 22, 1.0)):
-            fr.append(cat_over(f(i, lerp(HERO, FL, t), 0.10 * t, "doubt", (0.9, -0.8), dict(), hop=hop), step)); i += 1   # the cat; she jumps
-        for hop, t in ((10, 0.9), (0, 0.6)):                 # she comes down, the hands still up: the "cat" was scared of a cat
-            fr.append(f(i, lerp(HERO, FL, t), 0.08 * t, "doubt", (0.9, -0.6), dict(), hop=hop)); i += 1
-        for t in (0.3, 0.0):                                 # collects herself; her eyes back on the shadow
-            fr.append(f(i, lerp(HERO, FL, t), 0, "peer", (-1.0, -0.5), dict())); i += 1
-        for _ in range(2):
-            fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
+        FL2 = oc.pm.ik(-1, -84, -176) + oc.pm.ik(1, 84, -176)                 # v7: hands flung wide over her head
+        for step, hop, t in (("in", 0, 0.2), ("full", 0, 0.5), ("full2", 0, 0.8)):
+            fr.append(cat_over(f(i, lerp(HERO, FL2, t), 0, "doubt", (0.9, -0.8), dict(), hop=hop), step)); i += 1       # the cat fills the lens
+        fr.append(cat_over(f(i, FL2, 0.20, "doubt", (0.9, -0.9), dict(), hop=46), "out")); i += 1                       # v7: the flinch after it, where we can see it:
+        fr.append(cat_over(f(i, FL2, 0.24, "doubt", (0.9, -0.9), dict(), hop=58), "gone")); i += 1                      # off the ground, bent back, arms up
+        for hop, lean in ((58, 0.24), (40, 0.20), (14, 0.12)):
+            fr.append(f(i, FL2, lean, "doubt", (0.9, -0.9), dict(), hop=hop)); i += 1
+        for t in (0.5, 0.0):                                 # collects herself; her eyes back on the shadow
+            fr.append(f(i, lerp(HERO, FL2, t), 0, "peer", (-1.0, -0.5), dict())); i += 1
+        fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
     else:
         for _ in range(6):                                   # 0.5 s: the threat, held; her eyes already on it
             fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
@@ -374,10 +376,30 @@ def t6():
         else:
             t = min(1.0, (i - 62) / 8.0); don = P("don", DX - (DX - 170) * t, DY - (DY - 596) * t, DS - (DS - 0.42) * t, "stand", "neutral", (-0.8, 0), paddle_side="GO", paddle_ang=0.9)
         wave = 24 <= i < 38 and (i // 3) % 2 == 0
+        TH = ((BILLS[1][0] + 10, -40), (BILLS[2][0] + 26, -90))                     # v7: where each shadow stops (behind her), where he leaves
+        def thug_at(j):
+            t = (i - (63 + j * 2)) / 8.0
+            if t < 0:
+                return None
+            x0, x1 = TH[j]
+            if t < 1:
+                return (660 - (660 - x0) * t, t, "in")
+            if t < 1.6:
+                return (x0, t, "take")
+            return (x0 - (x0 - x1) * min(1.0, (t - 1.6) / 0.9), t, "go")
         def after(k):
             c = k.c
+            hands = {}
+            for j in (0, 1):                                                         # the shadows first: they stand behind her, she stays whole
+                th = thug_at(j)
+                if th is None:
+                    continue
+                x, t, ph = th
+                st.thug(k, x, 704, 0.40, "open" if int(t * 6) % 2 else (-30, 20, 30, -20), seed=4500 + j,
+                        hands=("grab", "relax") if ph != "in" else ("relax", "relax"), lean=0.0)
+                hands[j] = (x - 6, 704 - 150, ph, t)                                 # the bill held up over his head, to the light
             c.save(); c.translate(PX, PF - 6); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG)
-            if wave:
+            if wave or (i >= 78 and (i // 3) % 2 == 0):                              # her small wave again, to their backs
                 sc._wave(k)
             c.restore()
             car.side(k, cx, 724, 1.0)
@@ -389,27 +411,25 @@ def t6():
                 st.poly(k, [(wx + 30, wy - 6), (wx - 8, wy - 2), (wx - 6, wy + 12), (wx + 30, wy + 10)], dc.VELVET, 1.6)
                 kit.ellipse(k, wx - 16, wy + 8, 11, 8, dc.SKIN_F, 7801, shadow=False, lw=1.6)
                 c.set_source_rgb(*st.GOLD); c.rectangle(wx - 20, wy + 3, 6, 6); c.fill()
-            for j, (bx, by) in enumerate(BILLS):                                     # the bills: let go, drifting onto her, plucked
+            def bill(x, y, ang):
+                ly.bill(k, x, y, ang, 2.0, seed=0)
+                c.save(); c.translate(x, y); c.rotate(ang); c.set_source_rgb(0.12, 0.16, 0.10)
+                c.select_font_face("sans-serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(20)
+                c.move_to(-6, 7); c.show_text("$"); c.restore()
+            for j, (bx, by) in enumerate(BILLS):                                     # the bills: let go, drifting onto her; then up into a shadow's fist
                 t0 = 48 + j * 2
-                if i < t0 or i >= 74 + j * 2:
+                if i < t0:
                     continue
                 t = min(1.0, (i - t0) / 9.0)
                 x = wx - 16 + (bx - (wx - 16)) * t; y = wy + 14 + (by - (wy + 14)) * t * t + math.sin(t * 9 + j) * 8 * (1 - t)
-                ly.bill(k, x, y, 0.4 + j + t * 3, 2.0, seed=j)
-                c.save(); c.translate(x, y); c.rotate(0.4 + j + t * 3); c.set_source_rgb(0.12, 0.16, 0.10)
-                c.select_font_face("sans-serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(20)
-                c.move_to(-6, 7); c.show_text("$"); c.restore()
-            for j, (x0, x1) in enumerate(((330, 60), (262, -20))):                   # two shadows walk in from the right,
-                if i < 63 + j * 2:
-                    continue
-                t = (i - (63 + j * 2)) / 9.0
-                if t < 1:
-                    x = 660 - (660 - x0) * t; lean = 0.0; hands = ("relax", "relax")
-                elif t < 1.7:
-                    x = x0; lean = -0.5; hands = ("grab", "relax")                    # bend, pluck,
-                else:
-                    x = x0 - (x0 - x1) * min(1.0, (t - 1.7) / 0.9); lean = 0.0; hands = ("grab", "relax")   # step over her, go
-                st.thug(k, x, 742, 0.38, "open" if int(t * 6) % 2 else (-30, 20, 30, -20), seed=4500 + j, hands=hands, lean=lean)
+                ang = 0.4 + j + t * 3
+                own = hands.get(0 if j < 2 else 1)                                   # the first shadow takes two, the second one
+                if own and own[2] != "in":
+                    hx, hy, ph, tt_ = own
+                    u = min(1.0, (tt_ - 1.0) / 0.4)
+                    x, y, ang = x + (hx + (j % 2) * 22 - x) * u, y + (hy - (j % 2) * 10 - y) * u, ang * (1 - u) + (0.25 - 0.5 * (j % 2)) * u
+                if x > -30:
+                    bill(x, y, ang)
         return draw(shot("3.1", loc="C_side", cam=cam, cast=[], protect=(), after=after))
     return [f(i) for i in range(84)]
 
