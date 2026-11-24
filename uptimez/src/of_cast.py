@@ -689,10 +689,8 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
     if phone_dad:
         px, py = o["hands"][0]
         def scr(c_):
-            c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
-            c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(15)
-            e = c_.text_extents("DAD"); c_.move_to(-e.x_advance / 2, -2); c_.show_text("DAD")
-            c_.set_font_size(8); e = c_.text_extents("calling…"); c_.move_to(-e.x_advance / 2, 12); c_.show_text("calling…")
+            import of_ui as ui                                                  # v5 (24 Nov): the one phone UI
+            ui.hand(c_, ui.call, "DAD", sub="calling…")
         if phone_ear:                                                           # v4 (23 Nov, Office Noir 3's lessons 245/399): his own arm
             phone_grip(k, px + 6 * s, py, s * 0.85, None, ang=0.12, body_x=x, back=True)   # its BACK to us, against his head: on a call              # from the outer shoulder, elbow out, the phone where the pose's hand is
         else:

@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v14.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v17.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -327,9 +327,8 @@ def _cast_draw0(k, n, scene, sh, heads):
             want = ps["targets_xy"][0]
             hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
             def scr_d(c_):
-                c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
-                c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
-                e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, -6); c_.show_text("DONNIE")
+                import of_ui as ui
+                ui.hand(c_, ui.call, "DONNIE")
             oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, scr_d, ang=-0.15, skin=dc.SKIN_F, body_x=x)
         if ps.get("palm") and ps.get("targets_xy"):                          # v6 (23 Nov, motion_on3's hand): palm and fingers in ONE
             hx, hy = ps["targets_xy"][0]                                         # shape, flat across the lid, the fingers pointing on, a thumb
@@ -413,19 +412,8 @@ def _cast_draw0(k, n, scene, sh, heads):
         if ps.get("phone") in ("calendar", "pam"):
             hx, hy = tg[0]
             def cal(c_):
-                if ps["phone"] == "pam":                                      # v1 (23 Nov, decided: the mid-film gag): he is
-                    c_.set_source_rgb(0.95, 0.96, 0.98); c_.rectangle(-19, -34, 38, 68); c_.fill()   # looking PAM up for himself
-                    c_.set_source_rgb(0.80, 0.82, 0.88); c_.rectangle(-16, -28, 32, 13); c_.fill()
-                    c_.set_source_rgb(0.15, 0.2, 0.45); c_.select_font_face("Lilita One"); c_.set_font_size(11)
-                    c_.move_to(-16, -17); c_.show_text("PAM"); c_.new_path()
-                    return
-                c_.set_source_rgb(0.85, 0.15, 0.15); c_.rectangle(-19, -34, 38, 14); c_.fill()
-                c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(9)
-                c_.move_to(-14, -24); c_.show_text("+ EVENT")
-                c_.set_source_rgb(0.2, 0.2, 0.25)
-                for i in range(3):
-                    for j in range(3):
-                        c_.rectangle(-15 + i * 11, -14 + j * 11, 8, 8); c_.fill()
+                import of_ui as ui                                            # v2 (24 Nov): the one phone UI
+                ui.hand(c_, ui.pam_small if ps["phone"] == "pam" else ui.event)
             oc.phone_grip(k, hx, hy, 0.6, cal, ang=-0.1, skin=co_skin(), body_x=x)                 # v4 hands: held, on his palm
         if ps.get("dent"):                                                    # v10: the roof gives under the palm, 2 drawings
             hx, hy = tg[0]
@@ -505,8 +493,9 @@ def _cast_draw0(k, n, scene, sh, heads):
                                       upper=co_.SHIRT, lower=co_skin(), cuff=False, w=19.0, short=0.55)
             oc.phone_grip(k, H[0], H[1], 0.6, None, ang=-0.1, skin=co_skin(), body_x=x)   # v2: same fix, same arm
         elif kind == "slam":
-            sy = ps.get("slam_y", 0.0)                                       # stage 7: the hands come down with the lid
-            o = oc.client(k, x, f, CS, look=(-1, 0.6), targets=[(x - 64, 668 - sy), (x - 40, 664 - sy)])
+            sb_ = ps.get("slam_b", 0.0)                                      # v2 (24 Nov, cold test v37, 3 of 3: "it shuts by itself, he waves"):
+            aa_ = -1.45 * sb_                                                # ONE hand, flat ON the lid's free edge all the way down
+            o = oc.client(k, x, f, CS, look=(-1, 0.6), targets=[(462 + 66 * math.cos(aa_) + 4 - 34 * (1 - sb_) ** 3, 676 + 66 * math.sin(aa_) + 6 + 16 * (1 - sb_) ** 3)])
         else:
             o = oc.client(k, x, f, CS, look=look)
         heads[n] = (o["head"][0], o["head"][1], 55 * CS)
@@ -676,10 +665,12 @@ def garage_shot(k, sh, scene, heads, cam):
     if POSES.get(sh["id"], {}).get("g1", {}).get("phone") == "delete":    # 0.4: HIS arm, from the top, holding it down
         import dh_cast as dc
         px, py = 300, 812
+        c.save(); c.set_source_rgba(0.10, 0.10, 0.12, 0.32); c.paint(); c.restore()   # v11 (audit): the car steps back,
+        c.save(); c.translate(px, py); c.scale(1.15, 1.15); c.translate(-px, -py)      # the phone 15 % bigger
         for col, lw in ((INK, 66), (dc.SUIT, 60)):                            # v9 (24 Nov, cold test 3 of 3: "a black diagonal",
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0)       # "floating"; decided: hand + SHORT THICK forearm):
-            c.move_to(px + 36, py + 30); c.line_to(px + 190, py - 20); c.stroke()   # his sleeve, as wide as the hand, straight
-        c.save(); c.translate(px + 62, py + 21.5); c.rotate(math.atan2(-50, 154))    # out of the frame's right edge
+            c.move_to(px + 40, py + 26); c.line_to(px + 150, py - 230); c.stroke()   # his sleeve, as wide as the hand, straight
+        c.save(); c.translate(px + 51, py + 0.4); c.rotate(math.atan2(-256, 110))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
         rect(k, -9, -35, 18, 70, (0.97, 0.97, 0.94), 3409, shadow=False, lw=1.8)            # his white cuff, at the phone
         c.restore()
         S04, A04 = 90 / 44.0, 0.0                                             # v7: the same phone grip as every phone, big
@@ -688,16 +679,11 @@ def garage_shot(k, sh, scene, heads, cam):
         c.save(); c.translate(px, py); c.rotate(0.0); c.scale(1.5, 1.5)    # v8 (cold test 3 of 3): UPRIGHT
         gs.protect(c, "the DELETE POST phone", -30, -48, 30, 48)
         rect(k, -30, -48, 60, 96, (0.10, 0.11, 0.14), 3410, lw=2)
-        c.set_source_rgb(0.95, 0.96, 0.98); c.rectangle(-25, -42, 50, 84); c.fill()
-        gs.T(c, "1", -10, -12, 18, col=(0.85, 0.55, 0.05))
-        _star(c, 9, -18, 8)
-        gs.T(c, "REVIEW", 0, 2, 8.5, col=INK, font="Inter")
-        c.set_source_rgb(0.20, 0.42, 0.62); c.rectangle(-25, -42, 50, 13); c.fill()                # v6: whose post it is
-        gs.T(c, "YOUR POST", 0, -32.5, 7.5, col=(1, 1, 1))
-        rect(k, -22, 12, 44, 20, gs.RED, 3411, shadow=False, lw=1.2)
-        gs.T(c, "DELETE", 0, 27, 10.5, col=(1, 1, 1))
+        import of_ui as ui                                                     # v12 (24 Nov, Tomas: "like PowerPoint"): the one phone UI
+        ui.full(c, -25, -42, 50, 84, ui.review)
         c.restore()
-        _oc.phone_grip(k, gx_, gy_, S04, ang=A04, skin=(0.92, 0.74, 0.60), body_x=gx_ + 400, part="front", ink=0.6)   # thumb, fingertips
+        _oc.phone_grip(k, gx_, gy_, S04, ang=A04, skin=(0.92, 0.74, 0.60), body_x=gx_ + 400, part="front", ink=0.6, thumb_tip=(23.5, 1))   # thumb (v12: short, off the screen), fingertips
+        c.restore()
 
 
 def _star(c, x, y, r):
@@ -799,22 +785,28 @@ def insert_shot(k, sh):
     elif kind == "pin":                                                            # v2 (23 Nov, cold tests 3 of 3: the plan "healed"):
         u_ = sh["state"].get("pin_u", 1.0)                                             # v5 (24 Nov, cold test 3 of 3: "the burnt map is
         sl_ = sh["state"].get("pin_slide", 1.0)                                        # whole again", "a pole from the floor"; decided):
-        Z_, CX_, CY_ = 2.45, 408, 520                                                  # the BURNT plan is there, with its hole; the FRESH
-        c.save(); c.translate(270, 480); c.scale(Z_, Z_); c.translate(-CX_, -CY_)      # one slides up over it under his hand, and his
-        gs.room(k); gs.plan(k, 1.0)                                                    # finger pins its bottom corner. It is covered,
+        Z_, CX_, CY_, DY_ = 2.8, 408, 520, 22                                                   # the BURNT plan is there, with its hole; the FRESH
+        c.save(); c.translate(270, 480 + DY_); c.scale(Z_, Z_); c.translate(-CX_, -CY_)      # one slides up over it under his hand, and his
+        gs.room(k)
+        c.save(); c.identity_matrix(); c.set_source_rgba(0.10, 0.10, 0.12, 0.34); c.paint(); c.restore()   # v9 (audit): the wall steps back
+        c.push_group(); gs.plan(k, 1.0); c.pop_group_to_source(); c.paint_with_alpha(1.0 - 0.999 * ease_((sl_ - 0.55) / 0.45))   # and the burnt one is GONE under the fresh one
+        pass                                                    # finger pins its bottom corner. It is covered,
         c.save(); c.translate(0, 340 * (1 - sl_))
-        gs.plan(k, 0.0)                                                                # not healed (gs.DON_RING: 3 ringed, DON)
+        gs.CLEAN[0] = gs.DON_TAG[0] = True                                             # v8 (audit): no seam tape on the fresh one, DON on a tag
+        gs.plan(k, 0.0)
+        gs.CLEAN[0] = gs.DON_TAG[0] = False
         c.restore(); c.restore()
-        px_, py_ = (336 - CX_) * Z_ + 270, (579 - CY_) * Z_ + 480 + 340 * (1 - sl_) * Z_   # the fresh plan's bottom left corner
+        px_, py_ = (336 - CX_) * Z_ + 270, (579 - CY_) * Z_ + 480 + DY_ + 340 * (1 - sl_) * Z_   # the fresh plan's bottom left corner
         ph_ = (px_ + 34 + 10 * (1 - u_), py_ + 78 + 18 * (1 - u_))
-        pd_ = insert_arm(c, ph_, (ph_[0] + 60, ph_[1] + 130), (ph_[0] + 130, 1010), 96, (0.92, 0.74, 0.60), (0.11, 0.11, 0.13),
-                         cuff=(0.97, 0.97, 0.95))                                      # hand + a short thick suit forearm, from below
-        _oc.ps_hand(k, "point", ph_[0], ph_[1], 96, (0.92, 0.74, 0.60), pd_, 1)        # his INDEX finger on the pin (hands_ps "point")
+        sh_ = (ph_[0] + 60, 1400)                                                     # v6 (24 Nov, cold test v30: "a pole" 3 of 3): HE is in the
+        pd_ = insert_cuff(c, ph_, bend(ph_, sh_, 70, -1), 70, (0.92, 0.74, 0.60), (0.11, 0.11, 0.13),   # v7: HAND + CUFF only
+                          cuff=(0.97, 0.97, 0.95), stub=230)
+        _oc.ps_hand(k, "point", ph_[0], ph_[1], 84, (0.92, 0.74, 0.60), pd_, 1)        # his INDEX finger on the pin (hands_ps "point")
         if u_ > 0.5:
             ellipse(k, px_, py_, 14, 14, (0.85, 0.12, 0.12), 3497, lw=2.4)              # the red pin, in
         gs.protect(c, "the fresh plan", 60, 290, 470, 660)
     elif kind == "bay":                                                            # v1 (23 Nov, decided A): his hands in the lamp's light
-        c.save(); c.translate(232, 400); c.scale(1.22, 1.22); c.translate(-250, -330)   # v7 (24 Nov, decided): TIGHT on the hands
+        c.save(); c.translate(270, 400); c.scale(1.04, 1.04); c.translate(-262, -330)   # v7 (24 Nov, decided): TIGHT on the hands
         c.set_source_rgb(0.10, 0.10, 0.11); c.paint()                                  # the bay, dark; all of it inside the safe area
         bu = sh["state"].get("bay_u", 1.0)
         g_ = cairo.RadialGradient(240, 340, 10, 240, 340, 230)                         # the lamp's pool, on the engine and his hands
@@ -837,23 +829,44 @@ def insert_shot(k, sh):
         g2_.add_color_stop_rgba(0, 1.0, 0.95, 0.70, 0.35); g2_.add_color_stop_rgba(1, 1.0, 0.95, 0.70, 0.0)
         c.set_source(g2_); c.arc(250, 350, 200, 0, 2 * math.pi); c.fill()
         bo_ = sh["state"].get("bolt_out", 0.0)                                         # v3 (decided): the bolt comes FREE
-        if bo_ > 0:
-            c.set_source_rgb(0.08, 0.08, 0.09); c.arc(250, 350, 15, 0, 2 * math.pi); c.fill()   # its hole
-        if bo_ == 0:
-            ellipse(k, 250, 350, 28, 28, (0.62, 0.64, 0.66), 3470, lw=2.4)              # the plug's top, in the block
+        c.set_source_rgb(0.08, 0.08, 0.09); c.arc(250, 350, 15, 0, 2 * math.pi); c.fill()   # its hole (the plug sits in it: below)
 
         w_ = sh["state"].get("work", 0.0)
-        c.save(); c.translate(250, 350); c.rotate(-2.4 + 0.35 * w_ - 0.6 * sh["state"].get("bolt_out", 0.0))       # the wrench on it, turning
-        rect(k, -14, -14, 190, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)
+        ro_ = sh["state"].get("bay_reach", sh["state"].get("bolt_out", 0.0))
+        wa_ = -2.2 + 0.2 * w_                                                          # v12: a 150 handle, worked about the bolt; then the
+        hw_ = (250 + 170 * math.cos(wa_), 350 + 170 * math.sin(wa_))                   # HAND stays and the wrist swings the head off the hole
+        c.save(); c.translate(*hw_); c.rotate(wa_ + math.pi + 0.6 * ro_)               # (the arm keeps its length: audit)
+        rect(k, -40, -14, 224, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)                   # the handle comes out past his fist
         c.restore()
         bo2_ = sh["state"].get("bolt_out", 0.0)
-        hw_ = (250 + 175 * math.cos(-2.4 + 0.35 * w_ - 0.6 * bo2_), 350 + 175 * math.sin(-2.4 + 0.35 * w_ - 0.6 * bo2_))   # his fist on the wrench
-        fh_ = (330 + (290 - 330) * bo2_, 470 + (250 - 470) * bo2_)                          # v4: the far hand comes up with the plug
-        for side, (hx, hy, ex, ey) in enumerate(((hw_[0], hw_[1], hw_[0] - 150, hw_[1] + 40), (fh_[0], fh_[1], fh_[0] + 190, fh_[1] + 70))):
-            el_ = ((hx + ex) / 2, (hy + ey) / 2)                                      # v7 (cold test 3 of 3: "tubes", "a pole across
-            dd_ = insert_arm(c, (hx, hy), el_, (ex, ey), 60, (0.80, 0.62, 0.50), None)   # the frame"): SHORT, as wide as the fist, out
-                                                                                      # of the nearest edge
-            if side == 1 and bo2_ > 0:                                                # v4: his far fist round the plug
+        fh_ = (330 - 80 * ro_, 270 + 43 * ro_ - 102 * bo2_)   # v10 (24 Nov, Tomas: "the hand JUMPED, whose is it?"): it goes to the hole FIRST, grips, then lifts; the plug is in the fist all the way                          # v4: the far hand comes up with the plug
+        for side, (hx, hy, sx_, sy_) in enumerate(((hw_[0], hw_[1], 30, 70), (fh_[0], fh_[1], 500, 720))):
+            sx_, sy_ = (112, 590) if side == 0 else (405, 590)                           # v11 (24 Nov, Tomas: "a hand walks in space, a wrist with
+            el_ = ik2((hx, hy), (sx_, sy_), 207, 207, -1 if side == 0 else 1)             # v12 (audit: +33 % stretch): fixed bone lengths                  # no arm"): HE is in the frame, from behind: his back and
+            dd_ = insert_arm(c, (hx, hy), el_, (sx_, sy_), 54, (0.80, 0.62, 0.50), None, lit=(330, 96), half=(0.97, 0.97, 0.95))
+            if side == 0:
+                WD_ = dd_                                                             # the watch sits ON this wrist
+            if side == 1:                                                             # v13 (three audits: "a scrap of paper"): the plug stands in
+                c.save(); c.rectangle(0, 0, 600, 357); c.clip()                           # its hole, thread DOWN; he takes it by the insulator's top and
+                c.translate(250, 385 - 102 * bo2_); c.rotate(-0.10 * bo2_); c.scale(1.6, 1.6)   # draws it up: the hex, the thread and the sooty
+                rect(k, -5, -84, 10, 16, (0.70, 0.72, 0.75), 3483, shadow=False, lw=2)     # electrode come out of the hole after it
+                c.new_path(); c.move_to(-9, -68); c.line_to(9, -68); c.line_to(13, -22); c.line_to(-13, -22); c.close_path()
+                c.set_source_rgb(0.95, 0.94, 0.90); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()
+                c.set_line_width(1.6)
+                for ry_ in (-58, -48, -38):
+                    c.move_to(-10, ry_); c.line_to(10, ry_); c.stroke()
+                rect(k, -19, -22, 38, 20, (0.70, 0.72, 0.75), 3481, lw=2.2)
+                for vx_ in (-7, 7):
+                    c.move_to(vx_, -21); c.line_to(vx_, -3); c.stroke()
+                rect(k, -10, -2, 20, 30, (0.55, 0.56, 0.58), 3482, lw=2)
+                c.set_source_rgb(*INK); c.set_line_width(1.6)
+                for ty_ in (4, 11, 18):
+                    c.move_to(-10, ty_ + 3); c.line_to(10, ty_ - 2); c.stroke()
+                c.set_source_rgb(0.08, 0.07, 0.06); c.rectangle(-10, 19, 20, 10); c.fill()
+                c.set_source_rgb(*INK); c.set_line_width(3.4); c.set_line_cap(1)
+                c.move_to(7, 28); c.line_to(7, 38); c.line_to(-4, 38); c.stroke()
+                c.restore()
+            if side == 1 and ro_ > 0.6:                                                # his fist round the insulator
                 _oc.ps_hand(k, "fist", hx - 12 * dd_[0], hy - 12 * dd_[1], 64, (0.80, 0.62, 0.50), dd_, 1)
                 continue
             if side == 1:                                                             # v2 (decided): his far hand FLAT on the block
@@ -862,7 +875,29 @@ def insert_shot(k, sh):
                 continue
             _oc.ps_hand(k, "fist", hx - 12 * dd_[0], hy - 12 * dd_[1], 64, (0.80, 0.62, 0.50), dd_, -1)   # the fist on the wrench
             c.set_source_rgba(0.1, 0.08, 0.05, 0.45); c.arc(hx + 12, hy - 10, 8, 0, 2 * math.pi); c.fill()   # oil
-        if bo2_ > 0:                                                                     # v4 (cold tests 3 of 3: "what did he find?"):
+        c.save(); c.translate(0, -30)                                                   # v13 (cold test v37): the whole of him 30 up, the frame wider: both ELBOWS are in it
+        _limb(c, (118, 628), (399, 628), 70, 70, INK, 3.5)                               # his shoulders: one yoke from sleeve to sleeve
+        ellipse(k, 266, 760, 196, 120, (0.97, 0.97, 0.95), 3490, lw=3)                    # v14 (Tomas: "don't grow the thick white"): his shoulders only;
+        _limb(c, (118, 628), (399, 628), 70, 70, (0.97, 0.97, 0.95), 0.0)
+        c.save(); c.rectangle(-100, 742, 800, 400); c.clip()                            # below them his overalls, tied at the waist (his own navy)
+        ellipse(k, 266, 790, 190, 130, (0.14, 0.20, 0.36), 3489, shadow=False, lw=3)
+        c.restore()
+        pass                    # his T-shirt back, bent over the wing
+        for ex_ in (198, 334):                                                         # v2 (Tomas: "is this the Client?"): HIS head from above:
+            ellipse(k, ex_, 652, 13, 20, (0.80, 0.62, 0.50), 3493 + ex_, lw=2.2)        # ears, dark hair combed back in strands, the grey at
+        ellipse(k, 266, 650, 66, 60, (0.80, 0.62, 0.50), 3491, lw=2.6)                    # both temples
+        ellipse(k, 266, 642, 64, 54, (0.16, 0.13, 0.11), 3492, shadow=False, lw=2.2)
+        c.save(); c.new_path(); c.save(); c.translate(266, 642); c.scale(64, 54); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.clip()
+        c.set_source_rgb(0.62, 0.62, 0.64)
+        for sx2_ in (-1, 1):
+            c.save(); c.translate(266 + sx2_ * 58, 650); c.scale(17, 40); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        c.set_source_rgba(0.42, 0.38, 0.35, 0.9); c.set_line_width(2.2); c.set_line_cap(1)
+        for j_ in range(5):
+            xx_ = 232 + j_ * 17
+            c.move_to(xx_, 606 + abs(j_ - 2) * 5); c.curve_to(xx_ - 3, 630, xx_ + 3, 655, xx_ - 2, 682 - abs(j_ - 2) * 4); c.stroke()
+        c.restore()
+        c.restore()
+        if False:                                                                        # v12: the plug is drawn in the fist (above)
             px_, py_ = 250 + (290 - 250) * bo2_, 350 + (215 - 350) * bo2_                   # out of the hole comes ONE thing you can
             c.save(); c.translate(px_, py_); c.rotate(-0.25); c.scale(1.0 + 0.6 * bo2_, 1.0 + 0.6 * bo2_)   # name: a spark plug,
             rect(k, -12, -70, 24, 50, (0.95, 0.94, 0.90), 3480, lw=2.4)                    # its tip black, cracked through
@@ -872,9 +907,9 @@ def insert_shot(k, sh):
             c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
             c.move_to(-6, -66); c.line_to(2, -54); c.line_to(-4, -44); c.line_to(5, -30); c.stroke()   # the crack
             c.restore()
-        wx_, wy_ = hw_[0] - 62, hw_[1] + 16          # HIS gold watch, on the wrench wrist
-        ellipse(k, wx_, wy_, 24, 24, (0.86, 0.68, 0.22), 3477, lw=2.2)
-        ellipse(k, wx_, wy_, 15, 15, (0.10, 0.16, 0.14), 3478, lw=1.6)
+        wx_, wy_ = hw_[0] - 62 * WD_[0], hw_[1] - 62 * WD_[1]          # HIS gold watch, on the wrench wrist
+        ellipse(k, wx_, wy_, 21, 21, (0.86, 0.68, 0.22), 3477, lw=2.2)
+        ellipse(k, wx_, wy_, 13, 13, (0.10, 0.16, 0.14), 3478, lw=1.6)
         gs.lamp(k, 330, 96, ang=-1.2, lit=True, glow=False)                            # the lamp, at the top of the frame: the light's source
         c.save(); c.translate(120, 470)                                                 # his red rag, over the block's edge
         cut(k, [(-30, -8), (30, -12), (40, 50), (8, 90), (-26, 62)], (0.82, 0.30, 0.22), 3476, lw=2.2)
@@ -927,13 +962,10 @@ def insert_shot(k, sh):
         a_ = -0.5 + 1.4 * ku                                                          # oily fingers ON the key head, turning it
         kx, ky = 300 + 122 * math.sin(a_), 460 - 122 * math.cos(a_)
         # v9 (22 Nov, decided): HIS arm, so it reads as the Client in this car: the oily forearm, the white T-shirt sleeve
-        kd_ = insert_arm(c, (kx + 26, ky + 14), (kx + 130, ky + 62), (640, ky + 150), 64, (0.80, 0.62, 0.50), None)   # v11 (24 Nov):
-                                                                                      # short, as wide as the fist, bare (no cuff to flicker)
-        c.save(); c.translate(452, 548)                                                 # his red rag, off the key ring
-        cut(k, [(-8, -6), (16, -8), (24, 34), (6, 56), (-12, 40)], (0.82, 0.30, 0.22), 3451, lw=2)
-        c.set_source_rgba(0.1, 0.08, 0.05, 0.4); c.arc(6, 24, 7, 0, 2 * math.pi); c.fill()
-        c.restore()
-        _oc.ps_hand(k, "fist", kx + 26 - 12 * kd_[0], ky + 14 - 12 * kd_[1], 68, (0.80, 0.62, 0.50), kd_, 1)   # v10 (hand audit):
+        ksh_ = (590, ky + 70)                                                          # v12 (24 Nov, cold test v30): his shoulder and chest at the
+        kd_ = insert_arm(c, (kx + 26, ky + 14), bend((kx + 26, ky + 14), ksh_, 60, 1), ksh_, 56, (0.80, 0.62, 0.50),   # frame's edge,
+                         (0.97, 0.97, 0.95), torso=(0.97, 0.97, 0.95))                         # the elbow bent, a bare forearm
+        _oc.ps_hand(k, "fist", kx + 26 - 12 * kd_[0], ky + 14 - 12 * kd_[1], 62, (0.80, 0.62, 0.50), kd_, 1)   # v10 (hand audit):
         c.set_source_rgba(0.1, 0.08, 0.05, 0.5); c.arc(kx + 20, ky + 16, 8, 0, 2 * math.pi); c.fill()         # the series' fist on the key
 
 
@@ -954,21 +986,13 @@ def donnie_shot(k, sh, heads):
     for col, lw in ((INK, 40), (dc.VELVET, 34)):                                     # his sleeve, velvet, going out
         c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
         c.move_to(110, 60); c.line_to(24, 14); c.stroke()
-    def scr(c_):
-        c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
-        c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
-        e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, -12); c_.show_text("DONNIE")
-    def scr2(c_):                                                                   # v2 (23 Nov, decided): red DECLINE, green answer
-        scr(c_)
-        c_.set_source_rgb(0.85, 0.12, 0.12); c_.arc(-9, 6, 8, 0, 2 * math.pi); c_.fill()
-        c_.set_source_rgb(0.15, 0.75, 0.30); c_.arc(9, 6, 8, 0, 2 * math.pi); c_.fill()
-        if st.get("declined"):
-            c_.set_source_rgba(0, 0, 0, 0.65); c_.rectangle(-19, -34, 38, 68); c_.fill()
-            c_.set_source_rgb(0.95, 0.25, 0.25); c_.select_font_face("Lilita One"); c_.set_font_size(8.5)
-            e = c_.text_extents("DECLINED"); c_.move_to(-e.x_advance / 2, -20); c_.show_text("DECLINED")
+    def scr2(c_):                                                                   # v3 (24 Nov): the one phone UI: an incoming call,
+        import of_ui as ui                                                           # red DECLINE, green answer; then DECLINED
+        ui.hand(c_, ui.call, "DONNIE", declined=bool(st.get("declined")))
     u_ = st.get("thumb") or 0.0                                                    # v5 (hand audit): the same phone grip as
-    tip = None if st.get("donnie_down") or not u_ else (18.9 + (-9 - 18.9) * u_, -8 + (-16 + 8) * u_)   # every phone; its thumb
-    oc.phone_grip(k, 7.2, 9.6, 0.95, None if st.get("donnie_down") else scr2, ang=-0.35, skin=dc.SKIN_F,   # goes to the red button
+    tip = (20.5, 3) if not u_ else (20.5 + (-8.7 - 20.5) * u_, 3 + (-1 - 3) * u_)   # v6: it starts BELOW the name, goes to the red button
+    tip = None if st.get("donnie_down") else tip   # every phone; its thumb
+    oc.phone_grip(k, 7.2, 9.6, 1.07, None if st.get("donnie_down") else scr2, ang=-0.35, skin=dc.SKIN_F,   # goes to the red button
                   body_x=200, thumb_tip=tip)
     c.restore()
 
@@ -1097,10 +1121,8 @@ def desk_shot(k, sh, heads):
         hx, hy = heads.pop("_pamhand")
         x, y = (hx - cam[0]) * z + 270, (hy - cam[1]) * z + 480
         def scr(c_):
-            c_.set_source_rgb(0.97, 0.94, 0.86); c_.rectangle(-19, -34, 38, 68); c_.fill()
-            c_.set_source_rgb(0.55, 0.16, 0.46); c_.select_font_face("Lilita One"); c_.set_font_size(6.5)
-            c_.move_to(-17, -14); c_.show_text("INVITATION")
-            c_.set_source_rgb(*INK); c_.set_font_size(9); c_.move_to(-17, 6); c_.show_text("DAD")  # v18: DAD not FATHER — it has
+            import of_ui as ui
+            ui.hand(c_, ui.invite_small)                                             # DAD not FATHER — it has
             # to read as the same man Don later calls DAD (lesson 163: 2/3 cold viewers had to guess who "him" was)
         bz = sh["state"].get("buzz", 0.0)                                          # stage 7: it buzzes; then face down
         down = sh["state"].get("phone_down", False)
@@ -1277,26 +1299,98 @@ class TextRec(cairo.Context):
         return super().show_text(s)
 
 
-def insert_arm(c, hand, elbow, edge, w, skin, sleeve, sleeve_from=0.35, cuff=None):
-    """v1 (23 Nov, cold test 3 of 3: "a pole", "a plank", "disembodied"): an insert's arm is an ARM: a forearm from the
-    hand to an elbow, an upper arm on to the frame's edge, the owner's sleeve over the upper part (and a cuff at the
-    wrist for a suit). Returns the forearm's direction into the hand."""
-    c.set_line_cap(1); c.set_line_join(1)
-    for col, lw in ((INK, w + 6), (skin if cuff is None or sleeve is None else sleeve, w)):
-        c.set_source_rgb(*col); c.set_line_width(lw); c.new_path()
-        c.move_to(*hand); c.line_to(*elbow); c.line_to(*edge); c.stroke()
-    if cuff is None and sleeve is not None:                             # a short sleeve: over the upper arm only
-        sx, sy = elbow[0] + (edge[0] - elbow[0]) * sleeve_from, elbow[1] + (edge[1] - elbow[1]) * sleeve_from
-        for col, lw in ((INK, w + 22), (sleeve, w + 16)):
-            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0); c.new_path()
-            c.move_to(sx, sy); c.line_to(*edge); c.stroke()
+def _limb(c, p, q, w0, w1, col, e=0.0):
+    """one tapered limb segment p->q, width w0 -> w1 (+e on every side for the outline pass): a quad and a disc at each end,
+    each filled whole, so nothing is left to the arc's winding."""
+    dx, dy = q[0] - p[0], q[1] - p[1]; L = math.hypot(dx, dy) or 1.0
+    nx, ny = -dy / L, dx / L
+    c.set_source_rgb(*col); c.new_path()
+    c.move_to(p[0] + nx * (w0 / 2 + e), p[1] + ny * (w0 / 2 + e)); c.line_to(q[0] + nx * (w1 / 2 + e), q[1] + ny * (w1 / 2 + e))
+    c.line_to(q[0] - nx * (w1 / 2 + e), q[1] - ny * (w1 / 2 + e)); c.line_to(p[0] - nx * (w0 / 2 + e), p[1] - ny * (w0 / 2 + e))
+    c.close_path(); c.fill()
+    for (x, y), w in ((p, w0), (q, w1)):
+        c.new_path(); c.arc(x, y, w / 2 + e, 0, 2 * math.pi); c.fill()
+
+
+def bend(hand, shoulder, off, side=1):
+    """an elbow between the hand and the shoulder, pushed `off` px sideways (side +1/-1): a clear bend, not a straight band."""
+    mx, my = (hand[0] + shoulder[0]) / 2, (hand[1] + shoulder[1]) / 2
+    dx, dy = shoulder[0] - hand[0], shoulder[1] - hand[1]; L = math.hypot(dx, dy) or 1.0
+    return (mx + side * off * -dy / L, my + side * off * dx / L)
+
+
+def ease_(u):
+    u = max(0.0, min(1.0, u)); return u * u * (3 - 2 * u)
+
+
+def ik2(hand, shoulder, l1, l2, side):
+    """the elbow of a two-bone arm with FIXED lengths (shoulder->elbow l1, elbow->hand l2); side picks the bend."""
+    dx, dy = hand[0] - shoulder[0], hand[1] - shoulder[1]
+    d = max(1e-6, min(math.hypot(dx, dy), l1 + l2 - 0.5))
+    a = (l1 * l1 - l2 * l2 + d * d) / (2 * d); h = math.sqrt(max(0.0, l1 * l1 - a * a))
+    ux, uy = dx / math.hypot(dx, dy), dy / math.hypot(dx, dy)
+    return (shoulder[0] + ux * a - uy * h * side, shoulder[1] + uy * a + ux * h * side)
+
+
+def insert_cuff(c, hand, elbow, w, skin, sleeve, cuff=None, stub=26):
+    """v3 (24 Nov, cold test v31: arms read "a pole / floating" 3 of 3 whatever their length; decided "hand + wrist cuff only"):
+    NO arm. The hand, big, with a short stub of sleeve and its cuff (a suit), or a bare wrist (a T-shirt). The direction
+    is the old forearm's. Returns it, as insert_arm does."""
     dl = math.hypot(hand[0] - elbow[0], hand[1] - elbow[1]); d = ((hand[0] - elbow[0]) / dl, (hand[1] - elbow[1]) / dl)
-    if cuff is not None:                                                # a suit: its white cuff at the wrist
-        cx_, cy_ = hand[0] - d[0] * 16, hand[1] - d[1] * 16
-        for col, lw in ((INK, w + 12), (cuff, w + 6)):
-            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0); c.new_path()
-            c.move_to(cx_ - d[0] * 9, cy_ - d[1] * 9); c.line_to(cx_ + d[0] * 9, cy_ + d[1] * 9); c.stroke()
-    c.set_line_cap(1)
+    back = (hand[0] - d[0] * (stub + 14), hand[1] - d[1] * (stub + 14))
+    parts = []
+    if cuff is not None:
+        parts.append(((back[0], back[1]), (hand[0] - d[0] * 14, hand[1] - d[1] * 14), w * 0.98, w * 0.92, sleeve))
+        cx_, cy_ = hand[0] - d[0] * 14, hand[1] - d[1] * 14
+        parts.append(((cx_ - d[0] * 6, cy_ - d[1] * 6), (cx_ + d[0] * 6, cy_ + d[1] * 6), w * 0.84, w * 0.84, cuff))
+    else:
+        parts.append(((back[0], back[1]), (hand[0] - d[0] * 14, hand[1] - d[1] * 14), w * 0.80, w * 0.80, skin))
+    for e, ink in ((3.5, True), (0.0, False)):
+        for p0, p1, w0, w1, col in parts:
+            _limb(c, p0, p1, w0, w1, INK if ink else col, e)
+    return d
+
+
+def insert_arm(c, hand, elbow, shoulder, w, skin, sleeve, cuff=None, torso=None, lit=None, half=None):
+    """v2 (24 Nov, cold test v30: 8 of 9 mentions "a pole/tube" for a one-width band from the frame's edge; only the
+    DONNIE shot, with the WHOLE person in it, passed): the owner is IN the insert. A forearm that tapers to the wrist,
+    a bent elbow, a wider upper arm in his sleeve, and his SHOULDER and a piece of his body (torso colour) behind it.
+    A suit's forearm is sleeve with a cuff at the wrist; a T-shirt's is bare. All outlines first, then all colours, so the
+    joints are one shape. Returns the forearm's direction into the hand."""
+    fore = sleeve if cuff is not None else skin
+    up = sleeve if sleeve is not None else skin
+    dl = math.hypot(hand[0] - elbow[0], hand[1] - elbow[1]); d = ((hand[0] - elbow[0]) / dl, (hand[1] - elbow[1]) / dl)
+    parts = []
+    if torso is not None:
+        parts.append(("disc", shoulder, 3.8 * w, torso))
+    parts.append(("limb", hand, elbow, w * 0.66, w * 1.02, fore))                      # v3 (audit: "a rubber tube"): a narrow wrist, a full
+    parts.append(("limb", elbow, shoulder, w * 1.08, w * 1.40, up))                    # forearm, a heavier upper arm
+    if cuff is not None:
+        cx_, cy_ = hand[0] - d[0] * 14, hand[1] - d[1] * 14
+        parts.append(("limb", (cx_ - d[0] * 6, cy_ - d[1] * 6), (cx_ + d[0] * 6, cy_ + d[1] * 6), w * 0.84, w * 0.84, cuff))
+    if lit is not None:                                                               # its contact shadow on what is under it
+        c.push_group()
+        _limb(c, (hand[0] + 9, hand[1] + 12), (elbow[0] + 9, elbow[1] + 12), w * 0.9, w * 1.1, (0.05, 0.05, 0.06), 0.0)
+        c.pop_group_to_source(); c.paint_with_alpha(0.30)
+    for e, ink in ((3.5, True), (0.0, False)):
+        for pt in parts:
+            if pt[0] == "disc":
+                c.set_source_rgb(*(INK if ink else pt[3])); c.new_path(); c.arc(pt[1][0], pt[1][1], pt[2] / 2 + e, 0, 2 * math.pi); c.fill()
+            else:
+                _limb(c, pt[1], pt[2], pt[3], pt[4], INK if ink else pt[5], e)
+    if half is not None:                                                              # a short sleeve: the upper arm's top half
+        m_ = (shoulder[0] + (elbow[0] - shoulder[0]) * 0.38, shoulder[1] + (elbow[1] - shoulder[1]) * 0.38)   # v2 (Tomas: "the thick white"): a SHORT sleeve,
+        _limb(c, m_, shoulder, w * 1.26, w * 1.34, INK, 3.5); _limb(c, m_, shoulder, w * 1.26, w * 1.34, half, 0.0)   # no wider than the arm in it
+    if lit is not None:                                                               # the lamp's warm light along the side that faces it
+        for p_, q_, ww in ((hand, elbow, w * 0.8),) + (() if half is not None else ((elbow, shoulder, w * 1.2),)):
+            mx_, my_ = (p_[0] + q_[0]) / 2, (p_[1] + q_[1]) / 2
+            lx_, ly_ = lit[0] - mx_, lit[1] - my_; ll_ = math.hypot(lx_, ly_) or 1.0
+            ax_, ay_ = q_[0] - p_[0], q_[1] - p_[1]; al_ = math.hypot(ax_, ay_) or 1.0
+            nx_, ny_ = -ay_ / al_, ax_ / al_
+            sg_ = 1 if nx_ * lx_ + ny_ * ly_ > 0 else -1
+            c.set_source_rgba(1.0, 0.93, 0.70, 0.30); c.set_line_width(ww * 0.22); c.set_line_cap(1)
+            c.move_to(p_[0] + nx_ * sg_ * ww * 0.26 + ax_ * 0.12, p_[1] + ny_ * sg_ * ww * 0.26 + ay_ * 0.12)
+            c.line_to(q_[0] + nx_ * sg_ * ww * 0.26 - ax_ * 0.12, q_[1] + ny_ * sg_ * ww * 0.26 - ay_ * 0.12); c.stroke()
     return d
 
 
