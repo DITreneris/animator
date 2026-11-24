@@ -142,3 +142,11 @@ Done: no AI AUTOMATION poster and no list in the cover (less text); the series b
 edge in the film too, so he now stands at x 205 (was 165) in every shot (`film_r9.py` = before; the film is rough 10, QA passes).
 Refused: removing the thumb ("it competes with the joke"): the thumb IS the joke (protect list 4), and the cold viewers
 needed it bigger, not gone. Not done: cropping the empty floor (the bottom dead zone is the series rule), moving the leader further.
+
+## Cover audit round 2 (24 Nov; the last: stop polishing here) - rough 11, cover v2 redone
+
+Done: the arm out of the crate is a longer sleeve with a cuff (reads as an arm, not a thumbs-up symbol), in the film too; the
+FASTER! tail 40 % shorter; the cover without HARV's clipboard, so he no longer hides the first carrier's face.
+Refused: THE TEAM / THE FIX (HIS TEAM is Tomas's label); the carriers 8-10 % smaller (0.75 was his sizes audit);
+the leader further left (the frame edge cut his ear); different step poses (they march in step on purpose: before/after);
+the empty top (the series bar and the apps' zone).
