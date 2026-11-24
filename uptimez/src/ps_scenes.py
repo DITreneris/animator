@@ -200,10 +200,14 @@ def cast_13(k):
     return heads
 
 
+NO_STRIP_14 = [True]
+TRIO_DX_14 = [0]                                            # tried 150/220 (review round 1): the frame goes too wide; kept
+
+
 def cast_14(k):
     heads = {}
     dx_ = 200
-    t_ = 0
+    t_ = TRIO_DX_14[0] if FIX_V4[0] else 0             # v4 review round 1: the trio further off, his box between
     _, heads["pam"] = pam(k, (300 + t_, F + 20), "cup_mid", "doubt", (0.6, 0))
     _, heads["mom"] = mom(k, (370 + t_, F + 16), "folded", "unimpressed", (-0.6, 0))
     _, heads["sofia"] = sofia(k, (440 + t_, F + 24), "hip_out", "smile", (-1, 0))
@@ -214,7 +218,8 @@ def cast_14(k):
         p_ = dp.POSES["lift_roll"]                           # his bubble sits on his right with a short tail, clear of it
         o, heads["don"] = don(k, (dx_, F + 90), (-p_[2], -p_[3], -p_[0], -p_[1]), "hollow", (0, 0), hands=("fist", "fist"))
         dp.cape_rail(k, o["head"], SC["don"])
-        dp.tape_strip(k, o["hands"][0], o["hands"][1], SC["don"])
+        if not NO_STRIP_14[0]:                               # round 1 fix: the strip between his hands framed his box
+            dp.tape_strip(k, o["hands"][0], o["hands"][1], SC["don"])   # like a sign he holds (2 of 3): the roll alone
         dp.tape_roll(k, *o["hands"][0], SC["don"] * 0.9)
         return heads
     o, heads["don"] = don(k, (dx_, F + 90), "lift_roll", "hollow", (0, 0))
@@ -269,6 +274,18 @@ def roll_point(k, o):
 
 def cast_21b(k):
     heads = {}
+    if FIX_V4[0]:                                            # review round 1 (both reviewers: the sign changes with no cause):
+        o, heads["robot"] = robot(k, "rob_throne", arms=((-150, -10), (-8, 0)), visor=None)  # the card in its claw,
+        hx, hy = o["hands"][0]                              # going onto the throne's side: the act on screen
+        pss.robot_card(k, hx + 14, hy - 44, SC["robot"] * 1.3, ang=-0.12)
+        c = k.c; c.set_source_rgb(*kit.INK); c.set_line_width(2.6); c.set_line_cap(1)   # SLAP: the card pressed on (cold
+        cx_, cy_ = hx + 14, hy - 44                          # test: nobody saw who put it there)
+        for ang in (-2.6, -2.1, -1.6, 0.5, 1.0):
+            import math as m_
+            r0, r1 = 66 * SC["robot"] * 1.3 / 0.66 * 0.66, 84 * SC["robot"] * 1.3 / 0.66 * 0.66
+            c.move_to(cx_ + m_.cos(ang) * r0, cy_ + m_.sin(ang) * r0 * 0.7); c.line_to(cx_ + m_.cos(ang) * r1, cy_ + m_.sin(ang) * r1 * 0.7); c.stroke()
+        c.set_line_cap(0)     # pressed on the throne's back by its edge
+        return heads
     _, heads["robot"] = robot(k, "rob_throne", arms=((-8, 0), (-120, -30)), visor=None)
     return heads
 
@@ -277,6 +294,27 @@ def cast_22(k):
     heads = {}
     _, heads["don"] = don(k, "don_throne", "push", "squint", (-1, -0.3))
     return heads
+
+
+_cast_24_v3 = cast_scene2("stand", "neutral", (1, 0), chin=0)
+
+
+def cast_24(k):
+    """review round 1 (R1: Pam's choice is a glance): v4 she has just hopped over the tape onto Don's side, her cup held
+    level (cup_mid): two landing marks at her shoes. v3 as before."""
+    if not FIX_V4[0]:
+        return _cast_24_v3(k)
+    heads = _cast_scene2_24(k)
+    x, f = at("pam_don")
+    c = k.c; c.set_source_rgb(*kit.INK); c.set_line_width(2.4); c.set_line_cap(1)
+    for sd in (-1, 1):                                       # the landing: short strokes out from her shoes
+        c.move_to(x + sd * 26, f + 2); c.line_to(x + sd * 44, f - 6); c.stroke()
+        c.move_to(x + sd * 28, f + 10); c.line_to(x + sd * 48, f + 10); c.stroke()
+    c.set_line_cap(0)
+    return heads
+
+
+_cast_scene2_24 = cast_scene2("stand", "neutral", (1, 0), pam_pose="cup_mid", chin=0)
 
 
 def cast_25(k):
@@ -375,8 +413,14 @@ def cast_53(k):
     pm.rail_bar(k, o["hands"][0], o["hands"][1], SC["pam"])
     import hands_ps as hp
     hp.redraw_late(k)
-    _, heads["robot"] = robot(k, (230, F + 40), arms=((-8, 0), (60, 0)))
-    _, heads["sofia"] = sofia(k, "sof_door", "walk", "smile", (-1, 0))
+    if FIX_V4[0]:                                            # review round 1: who is welcomed? the robot clear of her, she has
+        _, heads["robot"] = robot(k, (330, F + 40), arms=((-60, 0), (60, 0)))   # the CV (given in 5.2) in her hand
+        o, heads["sofia"] = sofia(k, (215, F + 60), "walk", "smile", (1, 0))
+        hx, hy = o["hands"][1]
+        sp.cv_coo(k, hx + 6, hy + 10, 0.6)
+    else:
+        _, heads["robot"] = robot(k, (230, F + 40), arms=((-8, 0), (60, 0)))
+        _, heads["sofia"] = sofia(k, "sof_door", "walk", "smile", (-1, 0))
     _, heads["don"] = don(k, "don_line", "stand", "neutral", (1, 0))
     return heads
 
@@ -416,22 +460,59 @@ def cast_57(k):
     return heads
 
 
+CV_61 = [1.3]
+SOF_61 = [712]                                              # review round 1: Sofía right of Pam's phone, the phone seen buzzing
+
+
 def cast_61(k):
     """behind: Mom on the tape turned away, Pam's reach across it, Sofía past the line with COO?; the throne's card."""
     heads = {}
     _, heads["mom"] = mom(k, "mom_tape", "folded", "stern", (1, -0.6))                      # v3: eyes away, up
-    o, heads["sofia"] = sofia(k, (640, F + 40), "chest", "smile", (0.2, 0.6))                # v3: eyes on her CV, not Don
+    o, heads["sofia"] = sofia(k, (SOF_61[0] if FIX_V4[0] else 640, F + 40), "chest", "smile", (0.2, 0.6))   # v3: eyes on CV
     hx, hy = o["hands"][0]
-    sp.cv_coo(k, hx + 4, hy + (40 if FIX_V4[0] else 4), 0.8)    # held at her chest, COO? up; v4: lower, off her face
+    sp.cv_coo(k, hx + 4, hy + (40 if FIX_V4[0] else 4), CV_61[0] if FIX_V4[0] else 0.8)   # at her chest, COO? up; v4 lower
+    if FIX_V4[0]:                                            # review round 1 (Tomas: the loop's trigger): Pam's phone on the
+        x_, y_ = pss.PHONE_AT                                # counter buzzes behind Don, 5.7's own phone small and upright
+        k.c.save(); k.c.translate(x_, y_ - 26); k.c.rotate(-0.08)   # (bare arcs read as "a blue spiral", cold test)
+        pss.phone_close(k, 0, 0, 0.34, lit=True, buzz=True)
+        k.c.restore()
     o, heads["pam"] = pam(k, (tape_x(55) - 40, F + 55), "reach", "avert", (1, 0.6), mug=False)  # v3: eyes on her lit phone
     if not FIX_V4[0]:                                        # v4 (cold test, 3 fixes, 0 of 3 read a phone in her hand): no phone in
         pss.pam_phone(k, o["hands"][1][0] + 30, o["hands"][1][1] + 10, 1.4, lit=True)   # 6.1; its owner is read in 5.7 (her hand)
     return heads
 
 
+DON_X_61 = [110]
+
+
+FACE_61B = ["shock"]
+
+
+def fg_61b(k):
+    """6.1b (Tomas 24 Nov, Office Noir 1's startle as the model: the cat hisses, his eyes go round, the hat jumps): the
+    phone behind him buzzes; eyes round and over to it, his one hair sprung straight up (no hat), two jump strokes."""
+    s_ = 0.60 * 2.5
+    o = dp.don(k, DON_X_61[0], 1150, s_, "vest", FACE_61B[0], (1, -1), chin=0)
+    hx, hy = o["head"]
+    c = k.c
+    import fs_storyboard as fsb
+    hs = 1.7 if fsb.SET4[0] else 1.0
+    c.save(); c.translate(hx, hy); c.scale(s_, s_)             # the sprung hair, from the curl's root
+    c.set_source_rgb(*kit.INK); c.set_line_width(4.6 if fsb.SET4[0] else 2.4); c.set_line_cap(1); c.set_line_join(1)
+    c.move_to(2, -50)
+    for i in range(5):                                     # a spring, straight up
+        c.line_to(2 + (6 if i % 2 == 0 else -6) * hs, -50 - (7 + 7 * i) * hs)
+    c.line_to(2, -50 - 42 * hs); c.stroke()
+    for sd in (-1, 1):                                     # the jump: strokes either side of it
+        c.move_to(sd * 16 * hs, -50 - 30 * hs); c.line_to(sd * 26 * hs, -50 - 38 * hs); c.stroke()
+    c.set_line_cap(0); c.set_line_join(0)
+    c.restore()
+    return {"don": (hx, hy, R["don"] * s_)}
+
+
 def fg_61(k):
     """Don, near, big, front-left on his side, facing us: drawn in frame units."""
-    o = dp.don(k, 170, 1150, 0.60 * 2.5, "vest", "smug", (0, 0), chin=1)
+    o = dp.don(k, DON_X_61[0] if FIX_V4[0] else 170, 1150, 0.60 * 2.5, "vest", "smug", (0, 0), chin=1)   # v4: left, the tape seen
     return {"don": (o["head"][0], o["head"][1], R["don"] * 0.60 * 2.5)}
 
 
@@ -470,9 +551,14 @@ def ins_booth_wide(k):
         kit.text(k, txt, 270, yy, sz, (1.0, 0.86, 0.88))
 
 
+HEEL_42 = (330, 470)                                        # where Sofía's heel lands in the pushed-in photo (frame px)
+
+
 def ins_prints(k):
     c = k.c
     c.set_source_rgb(0.10, 0.05, 0.06); c.paint()
+    if FIX_V4[0]:
+        return _prints_v4(k)
     rp.phone_screen(k, 270, 520, 2.3, "posted")
     for (x, y) in ((270, 452), (324, 548)):                 # the oily fingertip: a print on Pam, then one on the heel
         c.save(); c.translate(x, y); c.rotate(0.3); c.scale(14, 19)
@@ -481,6 +567,38 @@ def ins_prints(k):
         for r_ in (5, 9, 13):
             c.new_path(); c.save(); c.translate(x, y); c.rotate(0.3); c.scale(r_ / 13 * 1.0, r_ / 13 * 1.35)
             c.arc(0, 0, 10, 0.3, 5.9); c.restore(); c.stroke()
+
+
+def _prints_v4(k):
+    """review round 1 (both reviewers, Tomas's pick): not 3.5's post again but the push-in: the posted photo big, the
+    Client's dirty fingertip landing on Sofía's heel over the tape: "That one." is chosen on screen. Lessons 753, 911, 925:
+    the hand + a wrist stub only, from the frame's top-right edge, his oily print on the heel."""
+    import of_scenes as ofs
+    import hands_ps as hp
+    import client_ob as cob
+    c = k.c
+    s_ = 7.0                                                 # the phone's own heel point: (22.3, 13.6) in its units
+    px, py = HEEL_42[0] - 22.3 * s_ - 100, HEEL_42[1] - 13.6 * s_ + 46   # measured: her heel sits 100 px right, 46 up
+    import ps_checks as pc
+    pc.NO_DECLARE[0] = True                                  # the screen fills the frame: the story rect is the heel + finger
+    try:
+        rp.phone_screen(k, px, py, s_, "posted")
+    finally:
+        pc.NO_DECLARE[0] = False
+    hx, hy = HEEL_42
+    pc.protect(c, "the heel under his finger", hx - 70, hy - 110, hx + 90, hy + 120)                                         # his oily print, then the finger on it
+    c.save(); c.translate(hx + 4, hy + 6); c.rotate(0.3); c.scale(16, 21)
+    c.set_source_rgba(0.08, 0.05, 0.03, 0.45); c.arc(0, 0, 1, 0, 6.3); c.fill(); c.restore()
+    w = 84
+    d = (-0.55, -0.83)                                       # up-left from below the photo: the finger, not his hand, over her
+    wx, wy = hx - d[0] * 1.35 * w, hy - d[1] * 1.35 * w
+    ofs.insert_cuff(c, (wx, wy), (wx - d[0] * 60, wy - d[1] * 60), w, cob.SKIN, (0.95, 0.94, 0.90), cuff=(0.95, 0.94, 0.90))
+    hp.draw(k, "point", wx, wy, w, cob.SKIN, d, 1)
+    c.set_source_rgba(0.12, 0.07, 0.03, 0.75)               # grease on the knuckles and under the nail (his hands, canon)
+    for (ox, oy, r) in ((-6, 8, 9), (10, -4, 7)):
+        c.new_path(); c.arc(wx + ox, wy + oy, r, 0, 6.3); c.fill()
+    tx_, ty_ = wx + d[0] * 1.22 * w, wy + d[1] * 1.22 * w
+    c.new_path(); c.arc(tx_, ty_, 5, 0, 6.3); c.fill()
 
 
 BOOTH_PART_V4 = {0: (1.25, -230, -220), 1: (1.25, 100, -220)}   # round 5: 4.3a on the Client, 4.3b on Father (x' = s x + tx)
@@ -510,8 +628,12 @@ def _booth_43(k):
     of = dc.father(k, 110, seat + 170, fs_, face="hard", look=(0.6, 0.5))
     import client_on3 as co
     cx, s = (424 if FIX_V4[0] else 400), 1.15                    # v4: 24 px right, room for his bubble beside his hand
-    oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=[(265, tbl - 128), (cx + 40, tbl - 6)],
-                          clip_hip=True, hands={-1: "point"}, aim=(230, tbl - 122))
+    if FIX_V4[0] and PART[0] == 1:                           # round 1 fix: 4.3b is Father's line; the Client's pointing arm at
+        tg = [(cx - 40, tbl - 6), (cx + 40, tbl - 6)]        # the frame's edge made the speaker a guess: his hands down here
+        oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=tg, clip_hip=True)
+    else:
+        oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=[(265, tbl - 128), (cx + 40, tbl - 6)],
+                              clip_hip=True, hands={-1: "point"}, aim=(230, tbl - 122))
     cps.table(k, W, tbl)
     return {"father": of["head"] + (50 * fs_,), "client": oc_["head"] + (56 * s,)}
 
@@ -535,10 +657,18 @@ def ins_cv(hand=False):
 def cast_55(k):
     """5.5 (v3): at the door, Sofía takes the CV, COO? up beside her face."""
     heads = {}
+    if FIX_V4[0]:                                            # review round 1 (R1's top 2): her choice is a step: astride the
+        o, heads["sofia"] = sofia(k, (tape_x(60) + 4, F + 60), "chest", "smile", (-1, -0.2))  # tape, the CV at her chest
+        hx, hy = o["hands"][0]                              # in the hand the pose returns (lesson 655), as in 6.1
+        sp.cv_coo(k, hx + 4, hy + 6, 0.9)
+        return heads
     o, heads["sofia"] = sofia(k, (290, F + 60), "press", "smile", (-0.6, -0.3))
     hx, hy = o["hands"][0]
     sp.cv_coo(k, hx - 30, hy - 6, 1.1)                                      # in her outstretched hand, toward the door
     return heads
+
+
+HOLD_57 = [True]
 
 
 def ins_phone_57(k):
@@ -554,8 +684,8 @@ def ins_phone_57(k):
         d = ((hx - ex) / math.hypot(hx - ex, hy - ey), (hy - ey) / math.hypot(hx - ex, hy - ey))   # the words
         for col, lw in ((INK, 118), (pmf_.PURPLE, 110)):
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0); c.move_to(ex, ey); c.line_to(hx - d[0] * 20, hy - d[1] * 20); c.stroke()
-        hp_.draw(k, "point", hx, hy, 66, pmf_.SKIN, d, 1)
-        return
+        hp_.draw(k, "grab" if HOLD_57[0] else "point", hx, hy, 66, pmf_.SKIN, d, 1)   # round 1 fix: a tap read as
+        return                                               # her SENDING it (2 of 3); a grip round its edge receives it
     pss.phone_close(k, 270, 520, 1.8)
 
 
@@ -569,7 +699,7 @@ SHOTS = [
     S("2.1b", ["robot"], ROOM2, cast_21b),
     S("2.2", ["don"], ROOM2S, cast_22),
     S("2.3", ["don"], ROOM2S, cast_scene2(don_pose="lift_roll", extra=roll_up), story=["don"]),
-    S("2.4", ["don", "pam"], ROOM2S, cast_scene2("stand", "neutral", (1, 0), chin=0)),
+    S("2.4", ["don", "pam"], ROOM2S, cast_24),
     S("2.5", ["don", "pam"], ROOM2S, cast_25),
     S("2.6", ["mom"], ROOM2S, cast_26),
     S("2.7", ["sofia"], ROOM2S, cast_27),
@@ -578,7 +708,7 @@ SHOTS = [
     S("2.9b", ["sofia"], ROOM2S, cast_29b),
     S("2.10", ["don", "robot"], ROOM2S, cast_210),
     S("2.11", ["don", "robot"], ROOM2S, cast_211),
-    S("2.12", ["sofia"], ROOM2S, cast_212),
+    # 2.12 cut (review round 1, both reviewers: a third copy of 2.7 / 2.9b's framing; Tomas's pick)
     S("3.1", ["don", "robot", "mom"], ROOM3, cast_31),
     S("3.2", "screen", draw=ins_photo),
     S("3.3", ["robot"], ROOM3, cast_33),
@@ -597,6 +727,7 @@ SHOTS = [
     S("5.6", (tape_x(60) - 90, F - 150, 1.7), ROOM5, cast_56, fg=fg_56, story=["pam", "sofia"]),
     S("5.7", "screen", draw=ins_phone_57),
     S("6.1", (580, F - 170, 1.30), ROOM5, cast_61, fg=fg_61, story=["don", "sofia"]),
+    S("6.1b", (580, F - 170, 1.30), ROOM5, cast_61, fg=fg_61b, story=["don"]),   # review round 1: the loop's cause
     S("6.2", S2, dict(blind="rehung"), cast_11(down=False, last=True)),
 ]
 SCENE_OF = lambda sid: int(sid.split(".")[0])
@@ -618,10 +749,10 @@ SHIFT = {"1.2b": (120, 0, 1.1), "1.4": (-40, 0, 0.9), "2.1": (0, 0, 1.0), "2.2":
 # --- render and check ---------------------------------------------------------------------------------------------------
 # v4 (opt-in, FIX_V4: the board v3 and `check`; the layout sheets v3 stay as approved): the faults the series' checks found
 FIX_V4 = [False]
-SHIFT_V4 = {"2.5": (40, 0, 0.72), "2.10": (80, 0, 0.8), "6.1": (0, -60, 0.9), "5.6": (480, -40, 1.0)}   # 5.6: round 5, Sofía out of Pam's key frame (Tomas: the frame Pam's only)   # wall beside the speaker for bc_sb's bubble (lesson 358)
-SPLIT_V4 = ("3.1", "4.3")       # two lines said in turn (3.1 the robot, then Mom; 4.3 the Client, then Father) whose bubbles
+SHIFT_V4 = {"2.5": (40, 0, 0.72), "2.10": (80, 0, 0.8), "6.1": (-216, -210, 1.33), "6.1b": (-216, -210, 1.33), "5.6": (480, -40, 1.0), "2.6": (-45, -90, 1.0), "5.5": (0, -40, 1.15), "5.3": (60, 0, 1.1)}   # round 1: grid-searched, no cut sign   # 2.6: her feet on the tape in frame   # 6.1: review round 1 (Sofía and COO? big, the phone buzzing; grid-searched)   # 5.6: round 5, Sofía out of Pam's key frame (Tomas: the frame Pam's only)   # wall beside the speaker for bc_sb's bubble (lesson 358)
+SPLIT_V4 = ("3.1", "4.3", "2.10")   # 2.10: review round 1, "BOTH." on its own frame, the robot big, arms across the tape       # two lines said in turn (3.1 the robot, then Mom; 4.3 the Client, then Father) whose bubbles
 PART = [None]                    # can't both sit beside their faces
-PART_SHIFT_V4 = {("3.1", 0): (-230, -175, 1.9)}             # (dx, dy, zoom) per split key frame: 3.1a in on the robot,
+PART_SHIFT_V4 = {("3.1", 0): (-230, -175, 1.9), ("2.10", 1): (-380, -100, 1.4)}   # 2.10b: the robot on the tape, arms across             # (dx, dy, zoom) per split key frame: 3.1a in on the robot,
 #                                                             its line over its antenna, Mom above it (round 5; grid-searched): the board shows one key frame per line
 
 
@@ -653,8 +784,9 @@ def board_keys(sh, line):
 
 _CHK = [None]                                               # check_all's per-frame checks (run right after each key frame)
 DEBUG_V4, WHY = [False], [""]                                               # board key frames that show one of the shot's lines each
-IN_HAND_V4 = ("6.1",)
-ROOM_V4 = {"1.1": dict(blind="down", u=0.45 * 0.92, dim=False, cords=False)}   # 1.1: the tug's key frame (cords to hands)
+IN_HAND_V4 = ()                                             # review round 1: 6.1 keeps the counter phone (lit, buzzing)
+ROOM_V4 = {"1.1": dict(blind="down", u=0.45 * 0.92, dim=False, cords=False)}
+ROOM_V4["6.2"] = ROOM_V4["1.1"]                              # review round 1: the loop's last frame IS frame 0 (lessons 257, 659)   # 1.1: the tug's key frame (cords to hands)
 CAM_V4 = {}
 KEYS_V4 = {"5.4": [(700, 700, 0.8), None]}                  # Tomas 24 Nov: 5.4a wide (his door, DON · CEO, across the tape),
 CAMKEY = [None]                                             # 5.4b the medium (the foot over the line); the camera pushes in
@@ -808,7 +940,11 @@ def timing():
     shot's own length for 1.2a/b and 2.1b (new since): -> {shot: length}."""
     rows, _ = script_rows()
     got = {r["shot"]: r["len"] for r in json.load(open(TIMING))["shots"]}
+    got.update(LEN_V4)                                       # review round 1: shots trimmed since the takes
     return {sid: got.get(sid, rows[sid]["script"]) for sid in rows}
+
+
+LEN_V4 = {"2.11": 1.6}                                      # one push, not three (Tomas 24 Nov)
 
 
 def write_timing(out=os.path.join(OUT, "ps_timing_v3.json")):
@@ -988,8 +1124,14 @@ def bubble_v4(k, who, text, fc, taken):
     head = fc[who]
     mono = who == "robot"
     above = (head[0], head[1] - head[2] * 1.48) if mono else None   # just over the antenna's ball (ball top at 1.42 r)
+    if who == "don" and CUR_SHOT[0] in DON_OVER:             # review round 1: over Don's bare scalp (allowed: no hair), so the
+        above = (head[0], head[1] - head[2] * 1.02)          # wall beside him keeps the tape and Sofía's CV clear
+
     mouth = (head[0], head[1] + 0.35 * head[2])
     avoid = list(taken)
+    if who == "don" and CUR_SHOT[0] in DON_OVER_ONLY:        # 1.4: the box on his free side, off the trio
+        hx_, hy_, r_ = head
+        avoid.append((hx_ + r_ * 0.9, hy_ - r_ * 0.6, hx_ + 300, hy_ + r_ * 1.4))   # the trio's side closed: his left wall
     for name, a0, b0, a1, b1 in pc.PROTECT:
         avoid.append((a0, b0, a1, b1))
     avoid.extend(SIGNS_V4)
@@ -1018,6 +1160,8 @@ def bubble_v4(k, who, text, fc, taken):
 
 BUBBLES_V4 = []
 CUR_SHOT = [None]
+DON_OVER = ("6.1",)
+DON_OVER_ONLY = ()                                  # 1.4: the box over his scalp, not over the trio (read as a held sign)
 ROBOT_WALL = {"3.1": 1}                                     # round 5: the robot's line on this side of its visor only (+1 right)
 SIGNS_V4 = []                                               # the set's signs drawn in this frame (frame px), kept clear
 
@@ -1076,7 +1220,8 @@ def board(out=OUT, frames_dir="/tmp/ps_board_v3"):
             c.move_to(x, y + th + 20); c.show_text("%s · %d:%04.1f" % (sid, t0 // 60, t0 % 60))
             if line:
                 c.select_font_face("Inter", 0, 0); c.set_font_size(11); c.set_source_rgb(0.75, 0.82, 1.0)
-                c.move_to(x, y + th + 38); c.show_text(line.replace("**", "")[:52])
+                for li, ln in enumerate(textwrap.wrap(line.replace("**", ""), 46)[:2]):   # review round 1: not cut mid-word
+                    c.move_to(x, y + th + 38 + li * 14); c.show_text(ln)
         o = os.path.join(out, "ps_board_v3_%d.png" % (j + 1)); s.write_to_png(o); print("wrote", o)
     for sid, m in fails:
         print("FAIL", sid, m)
