@@ -425,6 +425,9 @@ def P(who, *a, **kw):
     return (who, a, kw)
 
 
+BREATH = [1.0]
+
+
 def stepped(draw, k, x, feet, s, hip, ph, lift=16.0):
     """Office Noir 3's walk facing the camera (film_on3._stepped31, the released film's): the figure's own drawing, cut
     at the hip; the body bobs, and each half below the hip is the same drawing lifted in its turn. ph: the walk's phase
@@ -474,6 +477,8 @@ def draw_cast(k, cast):
             cast[i] = (who, a, kw)
     for who, a, kw in cast:
         kw = dict(kw); lean = kw.pop("lean", 0.0)
+        if BREATH[0] != 1.0:                                 # (24 Nov) a held figure breathes: taller and shorter about its feet (on4_motion DENSE)
+            k.c.save(); k.c.translate(a[0], a[1]); k.c.scale(1.0, BREATH[0]); k.c.translate(-a[0], -a[1])
         if lean:
             k.c.save(); k.c.translate(a[0], a[1]); k.c.rotate(lean); k.c.translate(-a[0], -a[1])
         if who == "pam_cat":
@@ -552,8 +557,12 @@ def draw_cast(k, cast):
             st.cast(k, *a, **kw); o = {}
         else:
             raise ValueError(who)
+        if BREATH[0] != 1.0 and not lean:
+            k.c.restore()
         if lean:
             k.c.restore()
+            if BREATH[0] != 1.0:
+                k.c.restore()
             if o and "head" in o:                           # the rig's points, rotated with the figure
                 ca, sa = math.cos(lean), math.sin(lean)
                 def rot(p):

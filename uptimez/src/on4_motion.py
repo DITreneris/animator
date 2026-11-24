@@ -318,15 +318,23 @@ def seat3(k):
     c.restore()
 
 
-def seat3_people(k, hand, env, dad):
+def seat3_people(k, hand, env, dad, t=None):
     """his hand at `hand` (body units, co._ik target), the envelope at his hand (env: "hand") or under his lapel ("coat")."""
     c = k.c
     c.save(); car._p(c, WIN); c.clip()
     arms = (-10, 5) + co._ik(1, *hand)
-    c.push_group(); o = co.client(k, 200, 728, 0.74, arms, "plain", look=(0.25, 0.9), roll=False, badge=False); c.pop_group()
+    lk = (0.25, 0.9)
+    if t is not None:                                        # DENSE: he breathes; his eyes go to Dad's hand as it comes, and back to the envelope
+        to_dad = max(0.0, min(1.0, dad * 1.6)) * (1.0 if env == "hand" else 0.0) * max(0.0, 1 - max(0.0, t - 1.6) / 0.5)
+        lk = (0.25 + 0.65 * to_dad, 0.9 - 0.3 * to_dad)
+    c.push_group(); o = co.client(k, 200, 728, 0.74, arms, "plain", look=lk, roll=False, badge=False); c.pop_group()
     hx, hy = o["hands"][1]
     cx_, cy_ = o["head"][0] + 14, o["head"][1] + 104       # his chest, under the left lapel
-    o = co.client(k, 200, 728, 0.74, arms, "plain", look=(0.25, 0.9), roll=False, badge=False)
+    if t is not None:
+        c.save(); c.translate(200, 728); c.scale(1.0, 1.0 + 0.008 * math.sin(2 * math.pi * t / 2.6)); c.translate(-200, -728)
+    o = co.client(k, 200, 728, 0.74, arms, "plain", look=lk, roll=False, badge=False)
+    if t is not None:
+        c.restore()
     if env == "hand":
         oc.envelope(k, hx + 4, hy - 12, 1.15)
         kit.ellipse(k, hx, hy + 4, 15, 12, (0.87, 0.70, 0.58), 7700, shadow=False, lw=2.0)        # his thumb over its edge
@@ -337,7 +345,8 @@ def seat3_people(k, hand, env, dad):
     st.poly(k, [(560 + dx, 560), (420 + dx, 566), (422 + dx, 606), (560 + dx, 612)], dc.VELVET, 2.2)
     kit.ellipse(k, 392 + dx, 590, 34, 15, dc.SKIN_F, 7702, shadow=False, lw=2.2)                  # v3: palm down, flat on the seat
     for i_ in range(4):
-        kit.ellipse(k, 362 + dx - i_ * 2, 580 + i_ * 6, 14, 5, dc.SKIN_F, 7703 + i_, shadow=False, lw=1.6)
+        drum = 4.0 * max(0.0, math.sin(2 * math.pi * 2.2 * t - i_ * 1.1)) if (t is not None and dad >= 1 and env == "hand") else 0.0   # DENSE: his fingers drum while he waits
+        kit.ellipse(k, 362 + dx - i_ * 2, 580 + i_ * 6 - drum, 14, 5, dc.SKIN_F, 7703 + i_, shadow=False, lw=1.6)
     c.set_source_rgb(*INK); c.rectangle(372 + dx, 576, 11, 14); c.fill(); c.set_source_rgb(*st.GOLD); c.rectangle(374 + dx, 578, 7, 10); c.fill()
     c.set_source_rgb(*st.NEON); c.rectangle(374 + dx, 580, 7, 6); c.fill()
     c.restore()
@@ -349,6 +358,8 @@ def seat3_people(k, hand, env, dad):
     c.set_source_rgb(0.02, 0.02, 0.03); c.new_path(); c.arc(520, 900, 120, math.pi, 2 * math.pi); c.fill()     # the wheel arch
     car._wheel(c, 520, 900, 96)
     c.save(); c.translate(486, 300); c.scale(-1, 1)                                                # her ears over the roof's edge:
+    if t is not None:                                        # DENSE: she listens: the head eases up and down, an ear's twitch now and then
+        c.translate(0, 3.0 * math.sin(2 * math.pi * t / 1.9)); c.rotate(0.05 * math.sin(2 * math.pi * t / 1.3) + (0.10 if 1.25 < t < 1.42 else 0.0))
     kit.ellipse(k, 0, 40, 60, 54, (0.36, 0.30, 0.27), 7501, shadow=False, lw=2.2); oc.ears(k, 0, 36, 0.85); c.restore()   # watching
 
 
@@ -359,6 +370,9 @@ def t2():
     seq += [(lerp(KNEE, CHEST, ease(t)), "hand", 1) for t in (0.25, 0.5, 0.75, 1.0)]               # he lifts it to his coat
     seq += [(CHEST, "coat", 1)] * 2 + [(lerp(CHEST, KNEE, t), "coat", 1) for t in (0.5, 1.0)] + [(KNEE, "coat", 1)] * 6   # under his lapel
     g = lazy(lambda a: draw(shot("2.2", loc="seat3", cam=sc.WIDE, cast=(), protect=(), after=lambda k: seat3_people(k, *a))))
+    if DENSE[0]:                                             # 43 keys for 3.6 s: the holds longer now that they live
+        seq = [(KNEE, "hand", 0)] * 4 + seq[:16] + [(KNEE, "hand", 1)] * 2 + seq[16:] + [(KNEE, "coat", 1)] * 7
+        return [g(a + (i / 12.0,)) for i, a in enumerate(seq)]
     return [g(a) for a in seq]
 
 
@@ -468,6 +482,8 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+DENSE = [False]                                              # (24 Nov, Tomas: where else is the film thin?) twelve different drawings a second in 2.2-2.3, 6.3-6.6, 8.1 and the fall of 2.4: held figures breathe, eyes travel, the fall has its in-betweens
+T7_SLAM = [32]                                               # the drawing the bin's lid slams on (the sound reads it)
 LAW = [False]                                                # (24 Nov) one scale law on the crossing (on4_cross.dscale): her walk in grows by it; she lies as she fell (the same rig), no other drawing
 CRASH = [False]                                              # (24 Nov, Tomas's picks) the bump restaged: see t3
 T3_MARKS = {"toot": 12.0 / 32.0, "bump": 21.0 / 32.0}        # where the sounds fall, as fractions of 3.1 + 3.2
@@ -689,15 +705,43 @@ def t6():
 def t4():
     fr = []
     UP = oc.CAT_POSES["triumph2"][0]; DOWN = (-8, 0, 8, 0)
-    for _ in range(6):
-        fr.append(draw(shot("6.3")))                         # held up, in the light: Well?
-    off = draw(shot("6.3", loc="stage_dark", after=None))    # v3: the light goes out while we still see all of her
-    fr += [off, off, off]
-    def close(t, face, look):
+    def held(sid, b, **over):
+        sc.BREATH[0] = b
+        try:
+            return draw(shot(sid, **over))
+        finally:
+            sc.BREATH[0] = 1.0
+    held = lazy(held)
+    BR = lambda i, a=0.008, per=30.0: 1.0 + a * math.sin(2 * math.pi * i / per)
+    if DENSE[0]:                                             # 56 keys for 6.3 + 6.6 (4.7 s), none repeated; 7.1 is its own shot (on4_anim)
+        for i in range(10):
+            fr.append(held("6.3", BR(i)))                    # held up, in the light: Well? (she breathes: waiting)
+        for i in range(4):
+            fr.append(held("6.3", BR(10 + i), loc="stage_dark", after=None))
+    else:
+        for _ in range(6):
+            fr.append(draw(shot("6.3")))                         # held up, in the light: Well?
+        off = draw(shot("6.3", loc="stage_dark", after=None))    # v3: the light goes out while we still see all of her
+        fr += [off, off, off]
+    def close(t, face, look, b=1.0):
         arms = lerp(UP, DOWN, ease(t))
         cast = [P("pam_cat", 262, 950, 1.5, pose(arms, ("relax_s", "fist")), face, look, env=True, rim=True)]
-        return draw(shot("6.6", cast=cast))
+        sc.BREATH[0] = b
+        try:
+            return draw(shot("6.6", cast=cast))
+        finally:
+            sc.BREATH[0] = 1.0
     close = lazy(close)
+    if DENSE[0]:
+        n = 0
+        for lx in (-0.3, -0.7, -0.9, -0.9, -0.85, -0.5, 0.1, 0.6, 0.9, 0.9, 0.85, 0.6):            # her eyes cross the room and back: nobody
+            fr.append(close(0.0, "hopeful", (lx, 0.05 * math.sin(n)), BR(14 + n))); n += 1
+        for j in range(14):                                                                        # the arm comes slowly down; her shoulders with it
+            t = (j + 1) / 14.0
+            fr.append(close(t, "doubt" if t < 0.5 else "fade", (0.3, 0.3 + 0.5 * t), BR(14 + n) - 0.012 * t)); n += 1
+        for i in range(16):
+            fr.append(close(1.0, "fade", (0.4 - 0.02 * i, 0.9), BR(14 + n) - 0.012 - 0.0012 * i)); n += 1   # Of course. (a little lower with each breath)
+        return fr
     for look in ((-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0, 0), (0, 0)):                        # her eyes cross the room: nobody
         fr.append(close(0.0, "hopeful", look))
     for t in (0.1, 0.25, 0.4, 0.55, 0.7, 0.82, 0.92, 1.0):                                         # the arm comes slowly down
@@ -724,7 +768,18 @@ def t5():
     ax, ay = st.A_LAMP
     HX, HY = 387, 239                                        # frame 0's neon heart (measured)
     b = (hx - (ax - 270) / 1.6, hy - (ay - 480) / 1.6, 1.6)   # v3: wider, the sleeper in frame; the lamp's head on frame 0's streetlamp
-    for _ in range(6):
+    if DENSE[0]:
+        def held81(b):
+            sc.BREATH[0] = b
+            try:
+                return draw(shot("8.1"))
+            finally:
+                sc.BREATH[0] = 1.0
+        held81 = lazy(held81)
+        for i in range(14):
+            fr.append(held81(1.0 + 0.011 * math.sin(2 * math.pi * i / 16.0)))   # the rota over the cups, her head down; asleep, she breathes
+    else:
+      for _ in range(6):
         fr.append(draw(shot("8.1")))                         # the rota over the cups, her head down
     r = random.Random(5)
     def close(d, rain):
@@ -762,6 +817,12 @@ def t5():
                 c.move_to(x, y); c.line_to(x - 5, y + 22); c.stroke()
         return s
     close = lazy(close); blend_ = lazy(blend)
+    if DENSE[0]:                                             # 58 keys for 8.1 + 8.2 (4.8 s): the dark comes evenly; the rain is drawn afresh on every key; the eyes open
+        for j in range(20):
+            fr.append(close(0.25 + 0.75 * ease((j + 1) / 20.0), 0))
+        for j in range(24):
+            fr.append(close(1.0, 0.3 + 0.7 * min(1.0, j / 10.0) if j < 22 else 1.0))
+        return fr
     for d in (0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 1.0):                                    # the room goes dark round the lamp
         fr.append(close(d, 0))
     last = None
@@ -871,14 +932,19 @@ def t7():
     for i in range(9):                                       # along the platform, her eyes on the street below
         t = i / 8.0
         fr.append(f(P("pam_cat", LX + (310 - LX) * t, PY - (5 if i % 2 else 0), S_, "hero", "peer", (0.6, 0.7), rim=True)))
-    for i in range(12):                                      # further over the rail, and further
-        t = i / 11.0
+    NL = 10 if DENSE[0] else 12
+    for i in range(NL):                                      # further over the rail, and further
+        t = i / float(NL - 1)
         fr.append(f(P("pam_cat", 310, PY, S_, "hero", "peer" if t < 0.75 else "doubt", (0.4, 1.0), lean=0.62 * t * t + (0.03 if i % 2 else 0), rim=True)))
-    for x, y, ang in ((330, 300, 1.7), (325, 400, 2.9), (318, 500, 3.3)):   # over she goes, head first
+    FALL = ((330, 300, 1.7), (325, 400, 2.9), (318, 500, 3.3))
+    if DENSE[0]:                                             # the fall drawn through: she tips, her heels come over her head, she turns, and goes in head first
+        FALL = ((316, 262, 0.95), (324, 286, 1.35), (329, 318, 1.8), (329, 362, 2.3), (326, 410, 2.75), (322, 458, 3.1), (318, 505, 3.3))
+    for x, y, ang in FALL:   # over she goes, head first
         fr.append(f(fall=(x, y, ang)))
+    T7_SLAM[0] = len(fr)
     fr.append(f(lid=0, burst=True, shake=5))                 # the lid slams (the narrator's last word)
     fr.append(f(lid=0, shake=-4))
-    for _ in range(5):
+    for _ in range(3 if DENSE[0] else 5):
         fr.append(f(lid=0))                                  # a beat
     IN = lambda dy, face, look, arms="hero", lean=0.0: P("pam_cat", 310, BY + 150 - dy, S_, arms, face, look, clip_y=BY, lean=lean, rim=True)
     HEADY = lambda dy: BY + 150 - dy - 232 * S_ * 1.0
