@@ -22,9 +22,13 @@ import speech_gate as gate
 HEADS = {}                                                   # who -> (x, y, r) on the screen, in the drawing being made
 BY = {}                                                      # id(surface) -> its heads
 R_HEAD = {"pam": 47.0, "sofia": 47.0, "client": 52.0, "don": 47.0, "pam_awake": 47.0}
-CARD_Y = {"n6": 276}                                         # 2.4: she stands on the platform at the top of the frame: the card under her feet, over the bills
+CARD_Y = {"n6": 276}
+SPLIT = {"n2": ("I know where to see", "what others do not see."),      # a two-row card is shown one row at a time, each while it is spoken:
+         "n3": ("I am like a cat.", "I have seven lives.")}              # one row is clear of her head in 2.1 (two rows covered it for a second) and reads faster                                         # 2.4: she stands on the platform at the top of the frame: the card under her feet, over the bills
 SPEAKER = {"PAM": "pam", "DON": "don", "CLIENT": "client", "SOFIA": "sofia"}
 _done = [False]
+_FR = {}                                                     # a motion test's drawings, made once
+LINGER = 0.20                                                # a bubble stays this long after its last word (never over a cut)
 
 
 def _wrap(mod, name, who):
@@ -35,7 +39,11 @@ def _wrap(mod, name, who):
             hx, hy = o["head"]
             dx, dy = k.c.user_to_device(hx, hy)
             rx, ry = k.c.user_to_device_distance(R_HEAD[who] * s, 0)
-            HEADS[who] = (dx, dy, math.hypot(rx, ry))
+            if -60 < dx < 600 and -60 < dy < 1020:               # a figure drawn off the frame has no head on it
+                h_ = (dx, dy, math.hypot(rx, ry))
+                if who in HEADS and math.hypot(HEADS[who][0] - dx, HEADS[who][1] - dy) > 4:
+                    HEADS["%s#%d" % (who, len(HEADS))] = HEADS[who]   # a second figure from the same rig (the card players): kept as a face to keep clear of
+                HEADS[who] = h_
         except Exception:
             pass
         return o
@@ -58,6 +66,37 @@ def install():
     m.Lazy.get = get
 
 
+def _split_at(key, a_, b_):
+    """seconds into the take where its second half starts: the longest quiet stretch in the middle half of the take
+    (a sentence stop), else the halves' share of the letters"""
+    import numpy as np
+    import os
+    L = r.LENS[key]
+    try:
+        if key in r.NARR:
+            w = r.load(os.path.join(r.narr_takes(sc._timing()[1].get("narration", "A")), key + ".wav"))
+        else:
+            w = r.stops(r.load(os.path.join(r.vo.OUT, "takes_v1", key + ".wav")), " ".join(p_[0] for p_ in r.vo.LINES[key][2]))
+        hop = int(r.SR * 0.02); e = np.array([np.abs(w[i:i + hop]).mean() for i in range(0, len(w) - hop, hop)])
+        q = e < 0.06 * e.max(); best = (0, 0); i = 0
+        while i < len(q):
+            if q[i]:
+                j = i
+                while j < len(q) and q[j]:
+                    j += 1
+                mid = (i + j) / 2.0 * 0.02
+                if 0.25 * L < mid < 0.75 * L and j - i > best[0]:
+                    best = (j - i, mid)
+                i = j
+            else:
+                i += 1
+        if best[0] * 0.02 >= 0.12:
+            return best[1]
+    except Exception:
+        pass
+    return L * len(a_) / float(len(a_) + len(b_))
+
+
 def lines():
     """every line: (key, start, end, kind, who, text). kind: "card" (the narrator), "named" (off screen), "bubble"."""
     tm, d = sc._timing()
@@ -75,6 +114,10 @@ def lines():
             who = ln.get("who", "PAM_N"); txt = " ".join(p_[0] for p_ in r.vo.LINES[key][2])
         if key not in r.NEW:
             kind = "card" if who == "PAM_N" else "bubble"
+        if key in SPLIT and kind == "card":
+            a_, b_ = SPLIT[key]; cut_ = t0 + _split_at(key, a_, b_)
+            out.append((key + "a", t0, cut_, kind, who, a_)); out.append((key + "b", cut_, t0 + r.LENS[key], kind, who, b_))
+            continue
         out.append((key, t0, t0 + r.LENS[key], kind, who, txt))
     return sorted(out, key=lambda x: x[1]), tm
 
@@ -93,7 +136,9 @@ def frame_at(T, tm):
             j = N - n
             if grp:
                 t_, a, b = F.MOT[grp]
-                fr = m.TESTS[t_](sub=2)[a:b]
+                if t_ not in _FR:
+                    _FR[t_] = m.TESTS[t_](sub=2)
+                fr = _FR[t_][a:b]
                 s = fr[j] if len(fr) >= count else fr[min(len(fr) - 1, int(j * len(fr) / count))]
                 return s, BY.get(id(s), {}), span[0]
             f, _dur = an.SHOTS[ids[i]]
@@ -104,28 +149,26 @@ def frame_at(T, tm):
     raise ValueError(T)
 
 
-def put(s, line, heads):
+def put(s, line, heads, pin=None):
     """the line's card or bubble on a copy of the drawing; returns (surface, faults)"""
     key, t0, t1, kind, who, txt = line
     o = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c = cairo.Context(o); c.set_source_surface(s, 0, 0); c.paint()
+    if kind == "named":                                      # (the cards' audit, 24 Nov) the off-screen voice in the narrator's cream card, his name in front: two styles on screen, not three
+        txt = '%s: "%s"' % (who, txt); kind = "card"
     if kind == "card":
-        y0 = CARD_Y.get(key, 100)
+        y0 = CARD_Y.get(key.rstrip('ab') if key[:-1] in SPLIT else key, 100)
         y1 = a3._card(c, txt, y0)
         c.select_font_face("Special Elite", 0, 0); c.set_font_size(30)
-        wmax = max(c.text_extents(w_).x_advance for w_ in [txt]) + 24
+        wmax = c.text_extents(txt).x_advance + 24
         box = (18, y0, min(522, 18 + wmax), y1 - 6)
-        faults = ["CARD over %s's face" % who_ for who_, f_ in heads.items() if gate._over_face(box, f_)]
-        return o, faults
-    if kind == "named":
-        box, tip = speech.draw(c, txt, None, name=who)
-        return o, gate.check(o, box, tip, list(heads.values()))
+        return o, ["CARD over %s's face" % who_ for who_, f_ in heads.items() if gate._over_face(box, f_)], box
     me = SPEAKER[who]
     if me not in heads:
-        return o, ["NO HEAD measured for %s" % who]
+        return o, ["NO HEAD measured for %s" % who], None
     before = gate.snapshot(o)
     others = [v for k_, v in heads.items() if k_ != me]
-    box, tip = speech.draw(c, txt, heads[me], others=others)
-    return o, gate.check(o, box, tip, [heads[me]] + others, before=before)
+    box, tip = speech.draw(c, txt, heads[me], others=others, pin=pin)
+    return o, gate.check(o, box, tip, [heads[me]] + others, before=before), box
 
 
 def stills(out="../office-noir-4/on4_text_stills_v1.png", debug=False):
@@ -135,7 +178,7 @@ def stills(out="../office-noir-4/on4_text_stills_v1.png", debug=False):
     for ln in ls:
         T = ln[1] + min(0.45, (ln[2] - ln[1]) / 2)
         s, heads, shot = frame_at(T, tm)
-        o, faults = put(s, ln, heads)
+        o, faults, _box = put(s, ln, heads)
         c = cairo.Context(o)
         if debug:
             for who, (hx, hy, hr) in heads.items():
@@ -153,6 +196,69 @@ def stills(out="../office-noir-4/on4_text_stills_v1.png", debug=False):
         c.show_text("%s  %s  %.1f s%s" % (rep[i][0], rep[i][1], rep[i][2], "  FAULT" if rep[i][7] else ""))
     S.write_to_png(out)
     return tiles, rep
+
+
+def follow(pin, ph, head):
+    """the pinned box goes with the cheek it points at once that has moved more than 3 px from where the box was put
+    (a speaker who walks, a camera that pushes in); under that only the tail moves (lesson 784)"""
+    if pin is None or ph is None or head is None:
+        return pin, ph
+    side = 1 if (pin[0] + pin[2]) / 2.0 > ph[0] else -1
+    tip = lambda h_: (h_[0] + side * 0.82 * h_[2], h_[1] + 0.35 * h_[2])
+    (ax, ay), (bx, by) = tip(ph), tip(head)
+    dx, dy = bx - ax, by - ay
+    if math.hypot(dx, dy) <= 1.0:
+        return pin, ph
+    w, h = pin[2] - pin[0], pin[3] - pin[1]
+    x0 = min(max(pin[0] + dx, gate.SAFE[0]), gate.SAFE[2] - w); y0 = min(max(pin[1] + dy, gate.SAFE[1]), gate.SAFE[3] - h)
+    return (x0, y0, x0 + w, y0 + h), head
+
+
+def shot_end(T, tm):
+    for v in tm.values():
+        if v["dur"] > 0 and v["start"] <= T < v["start"] + v["dur"]:
+            return v["start"] + v["dur"]
+    return T
+
+
+def audit(sheet="../office-noir-4/on4_text_audit_v1.png"):
+    """every drawing of every line: the text put, the gate run; the box pinned at the line's first drawing.
+    Returns [(key, drawings, faults by kind, times the box moved)] and writes first / middle / last of each line."""
+    install()
+    ls, tm = lines()
+    rep = []; tiles = []; labels = []
+    for ln in ls:
+        key, t0, t1, kind = ln[0], ln[1], ln[2], ln[3]
+        end = t1 if kind != "bubble" else min(t1 + LINGER, shot_end(t0, tm) - 1.0 / F.DPS)
+        n0, n1 = int(round(t0 * F.DPS)), int(round(end * F.DPS))
+        pin = None; ph = None; moved = 0; faults = {}; keep = {}
+        for N in range(n0, n1 + 1):
+            s, heads, shot = frame_at(N / float(F.DPS) + 1e-4, tm)
+            pin, ph = follow(pin, ph, heads.get(SPEAKER.get(ln[4])))
+            o, fl, box = put(s, ln, heads, pin)
+            if kind == "bubble" and box is not None:
+                if pin is not None and max(abs(a_ - b_) for a_, b_ in zip(pin, box)) > 0.5:
+                    moved += 1                               # a jump: the gate's rules threw the pinned box out
+                if pin is None or max(abs(a_ - b_) for a_, b_ in zip(pin, box)) > 0.5:
+                    ph = heads.get(SPEAKER.get(ln[4]))
+                pin = box
+            for f_ in fl:
+                faults.setdefault(f_.split(" at (")[0], []).append(N)
+            if N in (n0, (n0 + n1) // 2, n1):
+                keep[N] = o
+        rep.append((key, n1 - n0 + 1, {k_: (len(v), v[0], v[-1]) for k_, v in faults.items()}, moved))
+        print(rep[-1], flush=True)
+        for N in sorted(keep):
+            c = cairo.Context(keep[N]); st.overlay(c); c.set_source_rgba(0, 0, 0, 0.35); c.rectangle(0, 0, 540, 96); c.fill()
+            tiles.append(keep[N]); labels.append("%s %.2f s%s" % (key, N / float(F.DPS), "  FAULT" if faults else ""))
+    cols = 12; w = 180; h = 320; rows = (len(tiles) + cols - 1) // cols
+    S = cairo.ImageSurface(cairo.FORMAT_ARGB32, cols * w, rows * (h + 22)); c = cairo.Context(S); c.set_source_rgb(0.12, 0.12, 0.13); c.paint()
+    for i, o in enumerate(tiles):
+        x, y = (i % cols) * w, (i // cols) * (h + 22)
+        c.save(); c.translate(x, y + 22); c.scale(w / 540.0, w / 540.0); c.set_source_surface(o, 0, 0); c.paint(); c.restore()
+        c.set_source_rgb(1, 1, 0.6); c.select_font_face("Inter", 0, 1); c.set_font_size(13); c.move_to(x + 4, y + 16); c.show_text(labels[i])
+    S.write_to_png(sheet)
+    return rep
 
 
 if __name__ == "__main__":

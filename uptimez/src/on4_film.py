@@ -44,6 +44,7 @@ m.HIT[0] = True; m.TEETER[0] = True; xc.FAR[0] = True   # v15 (cold test of v14)
 an.BIG53[0] = True; sc.BURN[0] = True; sc.CV_SOFIA[0] = True; an.ARCH14[0] = True; m.OTS44[0] = True; an.LIFT2[0] = True; m.SIGN_OUT[0] = True   # v16 (cold test of v14, second round)
 an.END2[0] = True; r.END2[0] = True; m.END_HOLD[0] = 6     # v16 (Tomas: the ending too long, Sofia too small): the rota once, Sofia from the waist up
 sc.DUR.update({"7.1": 1.2, "7.2": 2.6, "7.3": 1.2, "7.4": 0.0, "7.5": 1.8, "8.1": 3.6 - 8 / 12.0})
+an.LOW21[0] = True                                          # the words: her head under the card in 2.1
 OUT = os.path.join(sc.OUT, "on4_film_%s.mp4" % VER)
 MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None),
        ("3.1", "3.2"): ("T3", 0, None), ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("3.6",): ("T8", 0, None),

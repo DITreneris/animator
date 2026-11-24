@@ -268,7 +268,7 @@ def sound(tm, d, total):
                 put(fx, rs(so.thump(), so.SR), t6(i), (0.45 if j % 2 else 0.6) * (0.5 if i < 70 else 1.0))
     if SCENE3[0] != "cross":
         put(fx, rs(so.swish(0.6), so.SR), st_("3.4") + 0.9, 0.35)                                   # the bills
-    put(fx, rs(iw.clink(), getattr(iw, "SR", SR)), st_("7.2") + (1.95 if END2[0] else 2.4), 0.8)    # her mug set down
+    put(fx, rs(iw.clink(), getattr(iw, "SR", SR)), st_("7.2") + (2.25 if END2[0] else 2.4), 0.8)    # her mug set down
     import on4_motion as _m2
     if _m2.GIVE[0] and _m2.T2_MARKS:                         # (the review) paper: as it changes hands; as it goes under his lapel
         span2 = tm["2.2"]["dur"] + tm["2.3"]["dur"]
