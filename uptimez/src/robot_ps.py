@@ -26,6 +26,7 @@ STEEL, STEEL_D = (0.72, 0.74, 0.78), (0.50, 0.52, 0.56)
 S_OFFICE = 0.66                                            # 13's office scale (lesson 138), 95 % of Don
 
 
+HEART = [False]                                             # opt-in (ep 14 v4): the posted screen's heart drawn, not the missing glyph
 SUN_UP = [False]                                            # opt-in (ep 14 scenes, 24 Nov): the sun with an up-arrow beside it,
                                                             # "more light": two cold viewers read the plain sun as a gear
 
@@ -128,7 +129,12 @@ def phone_screen(k, x, y, s, kind="photo", seed=4700):
         e = c.text_extents(t); c.move_to(-e.x_advance / 2, 52); c.show_text(t)
         if kind == "posted":
             c.set_source_rgb(0.80, 0.30, 0.40); c.select_font_face("Inter", 0, 1); c.set_font_size(11)
-            c.move_to(-40, 76); c.show_text("♥ 1   · just now")
+            if HEART[0]:                                        # v4 (24 Nov audit): Inter has no ♥, it drew a hex-code box
+                c.save(); c.translate(-35, 73); c.new_path(); c.move_to(0, 4)
+                c.curve_to(-7, -1, -5, -8, 0, -4); c.curve_to(5, -8, 7, -1, 0, 4); c.close_path(); c.fill(); c.restore()
+                c.move_to(-26, 76); c.show_text("1   · just now")
+            else:
+                c.move_to(-40, 76); c.show_text("♥ 1   · just now")
     c.restore()
 
 
