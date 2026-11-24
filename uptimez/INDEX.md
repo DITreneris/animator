@@ -45,6 +45,7 @@ Episodes in **story order** (STORYLINE.md, Season 1). Each folder holds its rend
 | 9 | *The Onboarding* | [`the-onboarding/`](the-onboarding/) | `the-onboarding-script-v11.md` (current, line by line with the shot list; animation v19 changes are in `src/ob_anim.py`); concepts v1–v9; `storyline-proposal-act-b.md` (a proposal; STORYLINE v3.2 decides). Release: `uptimez_ob_anim_v10.mp4` |
 | 10 | *First Search* | [`first-search/`](first-search/) | `first-search-film-v35.md` (current: the film as built, shot by shot); film `fs_film35_540.mp4` (62.9 s); script v10 is the plan it started from; scripts v1–v9, concepts v1–v6 and premises v1–v3 kept |
 | 11 | *One Star* (working title: Customer Success) | [`customer-success/`](customer-success/) | `customer-success-script-v18.md` (current, line by line with the shot list); `one-star-layout-v2.md`; test notes `cs_motion_test_v8.md`, `cs_cold_test_film_v1.md`, `cs_cold_test_film_v2.md`. Rough cut: `one_star_rough_v5_540.mp4` |
+| 14 | *Pick a Side* (Civil War 2 of 5; board and tests, no film yet) | [`pick-a-side/`](pick-a-side/) | `pick-a-side-script-v8.md` (current, **generated** by `src/ps_scenes.py script`: 38 shots, 68.8 s; v1–v7 by hand); concept v3.2 (approved) with v1–v3.1; `pick-a-side-plan-v1.md` (the stage plan, with its status table); `pick-a-side-tests-v1.md` (the checks, the board cold tests, rounds 1–4, motion tests A–G, Tomas's decisions). Board `ps_board_v3_1.png`, `ps_board_v3_2.png`; layouts `ps_layout_s*_v3.png` (approved; v4 only under the board's `FIX_V4`); motion tests `ps_motion_A` … `G` |
 | — | *Saved Locally* (retired) | [`history/saved-locally/`](history/saved-locally/) | its own README |
 
 ## Characters and brand
@@ -73,6 +74,7 @@ Each episode has its own file prefix; earlier versions are kept as `_v1`, `_v2`�
 | `on2_*`, `noir2_cast`, `thumb_on2` | Office Noir 2 | `build.sh on2` |
 | `*_bc`, `bc_*`, `cand_bc`, `qa_bc*`, `sound_bc*` | The Best Candidate | `build.sh bc` |
 | `*_ob`, `ob_*`, `client_ob`, `qa_ob*`, `sound_ob*`, `thumb_ob` | The Onboarding | `build.sh ob` |
+| `ps_scenes` (the one source: `check`, `board`, `script`), `ps_checks`, `ps_text`, `ps_set`, `ps_motion`, `ps_voices`; pinned `ps_scenes_v3`, `ps_motion_v3` | Pick a Side | `python3 ps_scenes.py check\|board\|script`, `python3 ps_motion.py` |
 | `kit`, `charsheets`, `brand`, `engine`, `engine_hd`, `anim`, `emoji` | Shared: drawing kit, sheets, logo, frame engines | `build.sh sheets` |
 
 **QA workers** (each exits non-zero on a miss): `qa_dlx.py`, `qa_iwry.py`, `qa_bc.py`, `qa_ob.py` and `qa_ob_speech.py`, and `on_qa.py` (Office Noir: the full G5 standard in [`CLAUDE.md`](CLAUDE.md), including speech recognition; `--selftest` runs every check on a known failure). Episode render checks live in each episode's README section.
