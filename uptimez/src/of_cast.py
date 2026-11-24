@@ -398,10 +398,12 @@ def client(k, x, feet, s, look=(-1, 0), targets=(), clip_hip=False, face="bored"
         c.save(); c.rectangle(x - 300, hip - 500, 600, 506); c.clip()
     import client_of as cof                                   # the garage outfit (client_of v1, 22 Nov)
     old_f = old_g = None
-    if blink("client"):                                       # v1 (23 Nov): his blink, every lid shut for 2 drawings
+    bl_, ht_ = blink("client"), HEAD_TILT[0]
+    if bl_ or ht_:                                            # v1 (23 Nov): his blink; v2 (24 Nov): his head's own tilt (it LAGS)
         old_f, old_g = dict(co.FACES), dict(cof.FACES)        # (the garage faces are client_of's own table)
-        co.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in co.FACES.items()})
-        cof.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in cof.FACES.items()})
+        up_ = lambda vv: dict(vv, tilt=vv.get("tilt", 0.0) + ht_, **(dict(lid=0.98) if bl_ else {}))
+        co.FACES.update({kk: up_(vv) for kk, vv in co.FACES.items()})
+        cof.FACES.update({kk: up_(vv) for kk, vv in cof.FACES.items()})
     try:
         dd_ = dart("client", MOUTH[0] is not None)
         look = (look[0] + dd_[0], look[1] + dd_[1]) if look else look
@@ -452,8 +454,28 @@ def creeper(k, x, y, s=1.0):
         ellipse(k, x + wx * s, y + 13 * s, 6 * s, 6 * s, (0.30, 0.30, 0.32), 3512 + wx, shadow=False, lw=1.6)
 
 
-def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wipe=0.0, hands_at=None):
-    """sat up on the creeper: the board on the floor, his seat on it, knees up, the rag between his hands."""
+def rag_cloth(k, x, y, s=1.0, col=(0.92, 0.88, 0.80), ang=0.0):
+    """v2 (24 Nov, audit and cold tests: "a white lump"): a CLOTH, draped: it hangs from where it is held, with two folds
+    and grease on it. Drawn before the hand that holds it."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    cut(k, [(-15, -7), (11, -9), (17, 5), (13, 31), (5, 24), (-1, 38), (-9, 27), (-16, 33), (-19, 8)], col, lw=2)
+    c.set_source_rgba(0.35, 0.30, 0.25, 0.75); c.set_line_width(1.5); c.set_line_cap(1)
+    c.move_to(-6, -2); c.line_to(-9, 26); c.stroke(); c.move_to(5, -3); c.line_to(6, 23); c.stroke()
+    c.set_source_rgba(0.15, 0.12, 0.10, 0.5)
+    for px, py, r in ((-2, 10, 4), (10, 14, 3)):
+        c.arc(px, py, r, 0, 2 * math.pi); c.fill()
+    c.restore()
+
+
+def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wipe=0.0, hands_at=None, back=0.0, flick=None,
+               prop=None, rag_to=None, roll=0.0, head=0.0, fidget=0.0):
+    """sat up on the creeper: the board on the floor, his seat on it, knees up. v3 (24 Nov, audit: "both hands move,
+    crossed lines, a lump"): flick is None -> the old two-handed rag (pinned films); else ONE passive hand holds the rag
+    on his near knee and the other rests on the board, and flicks (0..1) lazily toward the fire. back: his trunk tipped
+    back about the seat, rad (the sit-up's in-betweens)."""
+    if flick is not None:
+        return _client_sit3(k, x, floor, s, look, face, hands_at, back, flick, prop, rag_to, roll, head, fidget)
     creeper(k, x - 20, floor - 14, 0.9)
     seat = floor - 30
     c = k.c
@@ -470,6 +492,161 @@ def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wi
                face=face)
     if rag_hands:
         rag(k, hands[0] + 2, hands[1] + 2, 1.1)
+    return o
+
+
+RAG_RED = (0.84, 0.20, 0.16)
+
+
+def fist2(k, x, y, r, skin, ang, flip=1):
+    """v1 (24 Nov, audit: "petals, stuck on"; decided: a new relaxed fist for the Client's two sitting shots only): ONE
+    silhouette: the back of the hand, the folded fingers as a rounded front, the thumb lying across them. ang: the
+    forearm's direction (the hand continues it); flip: which side the thumb lies on."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(r, r * flip)
+
+    def body():
+        c.new_path(); c.move_to(-0.95, -0.52); c.curve_to(-0.3, -0.78, 0.55, -0.80, 0.98, -0.42)
+        c.curve_to(1.30, -0.10, 1.28, 0.42, 0.92, 0.66); c.curve_to(0.45, 0.90, -0.40, 0.78, -0.95, 0.52); c.close_path()
+
+    def thumb():
+        c.new_path(); c.move_to(-0.55, -0.58); c.curve_to(-0.05, -1.08, 0.75, -1.02, 0.90, -0.62)
+        c.curve_to(0.96, -0.36, 0.60, -0.30, 0.30, -0.44); c.curve_to(0.0, -0.50, -0.30, -0.40, -0.55, -0.58); c.close_path()
+    for fn in (body, thumb):                                                  # every outline first, then every fill: no seam inside
+        fn(); c.set_source_rgb(*INK); c.set_line_width(0.40); c.set_line_join(1); c.stroke()
+    for fn in (body, thumb):
+        fn(); c.set_source_rgb(*skin); c.fill()
+    c.set_source_rgba(INK[0], INK[1], INK[2], 0.55); c.set_line_width(0.09); c.set_line_cap(1)
+    for i in range(3):                                                        # the folded fingers: three short creases, not petals
+        yy = -0.12 + i * 0.30
+        c.move_to(0.62, yy); c.curve_to(0.86, yy + 0.02, 1.02, yy + 0.06, 1.10, yy + 0.12); c.stroke()
+    c.move_to(-0.50, -0.56); c.curve_to(-0.1, -0.42, 0.3, -0.42, 0.62, -0.36); c.stroke()   # the thumb's lower edge on the fist
+    c.restore()
+
+
+def _no_seams(tmp, px):
+    """erase the dark lines INSIDE the white shirt (shoulder / sleeve / trunk joints): a dark pixel whose neighbourhood
+    is mostly shirt-white is painted shirt-white. Outer outlines have something else on one side and stay."""
+    import numpy as np
+    tmp.flush()
+    H, W = tmp.get_height(), tmp.get_width()
+    a = np.ndarray((H, W, 4), np.uint8, tmp.get_data())
+    ys, xs = np.nonzero(a[..., 3] > 200)
+    if not len(ys):
+        return
+    y0, y1, x0, x1 = max(0, ys.min() - 2), min(H, ys.max() + 3), max(0, xs.min() - 2), min(W, xs.max() + 3)
+    r = a[y0:y1, x0:x1]
+    op = r[..., 3] > 200
+    white = op & (r[..., 0] > 222) & (r[..., 1] > 228) & (r[..., 2] > 228)
+    dark = op & (r[..., :3].max(axis=2) < 110)
+    n = max(3, int(round(px * 1.6)))
+    ii = np.pad(white.astype(np.int32), ((n + 1, n), (n + 1, n))).cumsum(0).cumsum(1)
+    hh, ww = white.shape
+    box = ii[2 * n + 1:2 * n + 1 + hh, 2 * n + 1:2 * n + 1 + ww] - ii[:hh, 2 * n + 1:2 * n + 1 + ww] - ii[2 * n + 1:2 * n + 1 + hh, :ww] + ii[:hh, :ww]
+    frac = box / float((2 * n + 1) ** 2)
+    kill = dark & (frac > 0.56)
+    wcol = tuple(int(v) for v in np.median(r[white][:, :3], axis=0)) + (255,) if white.any() else (242, 247, 247, 255)
+    for _ in range(2):                                                        # and the line's anti-aliased edges beside them
+        grow = kill.copy()
+        grow[1:, :] |= kill[:-1, :]; grow[:-1, :] |= kill[1:, :]; grow[:, 1:] |= kill[:, :-1]; grow[:, :-1] |= kill[:, 1:]
+        kill = grow & op & ~white & (frac > 0.50) & (np.abs(r[..., 0].astype(int) - r[..., 2].astype(int)) < 28)
+    r[kill] = wcol
+    tmp.mark_dirty()
+KNEE_AT = (-50, -20)                                       # v4 (audit: "a white bulge, a fist stuck on"): the old point was 12 px from his
+# shoulder, so the whole arm folded into a lump. Here the sleeve, the forearm and the hand are one line down onto his thigh
+HEAD_TILT = [0.0]                                          # the Client's head, rad, on top of his face's own tilt
+
+
+def _client_sit3(k, x, floor, s, look, face, hands_at, back, flick, prop=None, rag_to=None, roll=0.0, head=0.0, fidget=0.0):
+    """v2 (24 Nov, grill: 14 key poses). back: the trunk tipped back about the seat (1.4 = lying on the board).
+    prop: a floor point his far hand presses on while he sits up. flick: None/0..1 rest -> raised (0.5) -> DOWN at the
+    fire (1). rag_to: 0..1 the far hand goes to the knee and takes the rag (0..0.5), then carries it to hands_at.
+    roll: the castors' turn. The rag is the red shop rag, hanging from the knee hand."""
+    c = k.c
+    creeper(k, x - 20, floor - 14, 0.9)
+    for wx in (-58, -22, 22, 58):                                             # a spoke on each castor: they TURN as it rolls
+        cx_, cy_ = x - 20 + wx * 0.9, floor - 14 + 13 * 0.9
+        c.set_source_rgb(*INK); c.set_line_width(1.4)
+        c.move_to(cx_ - 4.5 * math.cos(roll), cy_ - 4.5 * math.sin(roll)); c.line_to(cx_ + 4.5 * math.cos(roll), cy_ + 4.5 * math.sin(roll)); c.stroke()
+    seat = floor - 30
+    for sx, (kx, fx) in ((-1, (x - 62, x - 90)), (1, (x - 30, x - 56))):
+        for col, lw in ((INK, 30 * s / 0.52), ((0.17, 0.22, 0.34), 25 * s / 0.52)):
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+            c.move_to(x + sx * 8, seat); c.line_to(kx, seat - 44); c.line_to(fx, floor - 6); c.stroke()
+        cut(k, [(fx - 18, floor - 14), (fx + 8, floor - 14), (fx + 10, floor), (fx - 20, floor)], (0.42, 0.27, 0.14), shadow=False, lw=2)
+    hip_feet = seat - co.HIP * s
+
+    def inv(p):                                                               # a world point, into the tipped trunk's frame
+        dx, dy = p[0] - x, p[1] - seat
+        return (x + dx * math.cos(-back) - dy * math.sin(-back), seat + dx * math.sin(-back) + dy * math.cos(-back))
+    kdx_, kdy_ = KNEE_AT
+    knee = (x + kdx_ + 2 * fidget, seat + kdy_ - 2 * fidget)                  # its fingers shift a little: it is alive
+    rest, up, down = (x + 40, seat - 6), (x + 50, seat - 44), (x + 74, seat - 16)
+    f = flick or 0.0
+    if f <= 0.5:
+        act = (rest[0] + (up[0] - rest[0]) * f * 2, rest[1] + (up[1] - rest[1]) * f * 2)
+    else:
+        act = (up[0] + (down[0] - up[0]) * (f - 0.5) * 2, up[1] + (down[1] - up[1]) * (f - 0.5) * 2)
+    ragp = (knee[0] - 4, knee[1] + 16)                                        # it hangs from his fist, below it, in sight
+    if prop is not None:
+        act = prop
+    if rag_to is not None and hands_at is not None:
+        if rag_to <= 0.5:
+            u = rag_to * 2
+            act = (rest[0] + (knee[0] + 14 - rest[0]) * u, rest[1] + (knee[1] + 6 - rest[1]) * u - 14 * math.sin(math.pi * u))
+        else:
+            u = (rag_to - 0.5) * 2
+            act = (knee[0] + 14 + (hands_at[0] - knee[0] - 14) * u, knee[1] + 6 + (hands_at[1] - knee[1] - 6) * u - 16 * math.sin(math.pi * u))
+            ragp = (act[0], act[1] + 14 - 12 * u)
+    wk = max(0.0, min(1.0, 1.0 - back / 0.5))                                 # v3 (Tomas: "a pretzel"): lying, the near hand rests on his
+    wk = wk * wk * (3 - 2 * wk)                                               # hip (the trunk's own frame); it goes to the knee as he comes up
+    hipT = (x - 30, seat - 26)
+    ik_ = inv(knee)
+    kT = (hipT[0] + (ik_[0] - hipT[0]) * wk, hipT[1] + (ik_[1] - hipT[1]) * wk)
+    sideT = (x + 30, seat - 26)                                               # lying: the far hand by his side too
+    w2 = max(0.0, min(1.0, 1.0 - (back - 0.95) / 0.35)) if prop is not None else wk
+    w2 = w2 * w2 * (3 - 2 * w2)
+    ia_ = inv(act)
+    tg = [kT, (sideT[0] + (ia_[0] - sideT[0]) * w2, sideT[1] + (ia_[1] - sideT[1]) * w2)]
+    c.save(); c.translate(x, seat); c.rotate(back); c.translate(-x, -seat)
+    rp = inv(ragp) if (rag_to is not None and rag_to > 0.5) else (kT[0] - 4, kT[1] + 16)
+    held_ = rag_to is not None and rag_to > 0.5
+    sw = max(-0.5, min(0.5, 0.012 * follow("rag", ragp[0] + ragp[1], 1.4, 0.2)))   # its hem trails the hand
+    if not held_:
+        rag_cloth(k, kT[0] - 2, kT[1] + 6, 1.0, col=RAG_RED, ang=-back + sw)    # the cloth FIRST: his fingers close over its top
+    HEAD_TILT[0] = head
+    tgt_ = c.get_target()
+    W_, H_ = (tgt_.get_width(), tgt_.get_height()) if hasattr(tgt_, "get_width") else (1080, 1920)
+    if W_ < 64 or not LIVE[0]:                                                # the camera's scratch pass: no pixels to clean
+        try:
+            o = client(k, x, hip_feet, s, look=look, targets=tg, clip_hip=True, face=face)
+        finally:
+            HEAD_TILT[0] = 0.0
+    else:                                                                     # v4 (audit: "double outlines at the shoulders, hands stuck on"):
+        tmp = cairo.ImageSurface(cairo.FORMAT_ARGB32, W_, H_)                 # he is drawn apart, the seams inside his shirt cleaned, then pasted
+        tmp.set_device_scale(*tgt_.get_device_scale())
+        tc = cairo.Context(tmp); tc.set_matrix(c.get_matrix())
+        base_h, got_h = kit.HAND[0], []
+        kit.HAND[0] = lambda k_, hx, hy, w_, skin, seed, ang, side: got_h.append((k_.c.user_to_device(hx, hy), ang, k_.c.get_matrix()))
+        try:                                                                  # his rig hands are NOT drawn: fist2 goes where they were
+            o = client(kit.Ctx(tc, 0), x, hip_feet, s, look=look, targets=tg, clip_hip=True, face=face)
+        finally:
+            HEAD_TILT[0] = 0.0; kit.HAND[0] = base_h
+        tc.set_source_rgb(0.17, 0.22, 0.34); tc.save(); tc.translate(x, seat + 1); tc.scale(13, 9.5)   # the knot is tucked away
+        tc.arc(0, 0, 1, 0, 2 * math.pi); tc.restore(); tc.fill()
+        m_ = c.get_matrix(); zoom = math.sqrt(abs(m_.xx * m_.yy - m_.xy * m_.yx)) * tgt_.get_device_scale()[0]
+        _no_seams(tmp, 2.2 * s * zoom / 0.52)
+        c.save(); c.identity_matrix(); c.set_source_surface(tmp, 0, 0); c.paint(); c.restore()
+        skin_ = co.SKIN
+        for dev, dvec, mat_ in got_h:                                        # at the wrist the rig computed, along its own forearm
+            ux_, uy_ = c.device_to_user(*dev)
+            ddx, ddy = mat_.transform_distance(dvec[0], dvec[1])
+            vx_, vy_ = c.device_to_user_distance(ddx, ddy)
+            a_ = math.atan2(vy_, vx_)
+            fist2(k, ux_ + 8 * math.cos(a_), uy_ + 8 * math.sin(a_), 11.0 * s / 0.52, skin_, a_, -1 if ux_ < x else 1)
+    if held_:
+        rag_cloth(k, rp[0], rp[1], 1.0, col=RAG_RED, ang=-back + sw)            # carried to the fire: it hangs from the far hand
+    c.restore()
     return o
 
 

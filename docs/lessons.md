@@ -970,3 +970,14 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - "meeting" is voiced "meet-ing": alone the recognizer hears "meeting"; inside the whole line it still writes "Maitang", so Tomas's ear decides.
 - A synthetic idle (a filtered square wave) under a quiet gag reads as fake; the start that dies away in a second was better. Removed.
 - A line's text lives in three places: `of_scenes` (the shot), `of_voices.LINES`, and the timing json copied from the one before. Change all three.
+
+## 231. *The Offer* v43 (24 Nov): the roll-out and the sitting Client, after four audits and Tomas's frame-by-frame
+
+- **A missing in-between is a missing drawing, not a missing frame.** The film is 15 drawings a second, each computed; "he pops from lying to sitting" meant there were only two drawings of him (legs from above, sitting side on). Rotating one toward the other read as "pulled out and turned like a cut-out". Write the exposure sheet first (36 + 54 drawings, 14 key poses, which are new), then draw the keys.
+- **A 90 degree change of view is a cut.** Legs toward us to sitting side on: cut to a close on the boot and the fire (it also shows where the fire came from), then wide with him already rolling out side on, on the red creeper from the first frame.
+- **Separate the roll from the sit-up, and chain the parts:** push off, roll (ease-out), brake (the trunk slides on), elbow, palm, up, over and back; hips shift, the trunk through 45 and 60 degrees, the head two drawings late, the propping arm straightens last. A gesture starts in the shoulder a beat before the hand.
+- **A hand target closer to the shoulder than the arm is long folds the arm into a lump** ("a white bulge", "a fist stuck on"): the knee point was 12 px from the shoulder of a 64 px arm. No timing fixes geometry. Stop animating, get ONE static pose approved, then carry it through.
+- **One target path per hand for the whole shot.** Two targets switched in one drawing read as "the arm is replaced".
+- **A clip that hides him under the car must end when he is out** (the head was cut off at the sill line once he sat up). Check the frame after every state change, in the encoded test.
+- For the sitting pose only: the figure is drawn apart, the outlines inside the white shirt erased (`of_cast._no_seams`), the rig's hands not drawn and one-silhouette fists put at the rig's wrists (`fist2`), the waist knot tucked away. The rag is the red shop rag, drawn first with the fingers over its top. Other shots and episodes keep the series' hand.
+- Tomas's order of work, which got there: frame-by-frame PNG of the fault, an outside audit, the exposure sheet, key poses, one static pose approved, a motion test with sound, then the full render.

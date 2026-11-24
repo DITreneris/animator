@@ -1,6 +1,6 @@
 # Rules: hands, arms and phones
 
-The rules that hold now, gathered from lessons 147, 149, 163, 178, 179, 200, 201, 206–208, 221–226 (episode 13 *The Offer* v26–v39, One Star v7–v9). Read this before drawing any hand, close-up arm or phone screen. When a lesson below disagrees with this page, this page wins; the superseded ones are listed at the end.
+The rules that hold now, gathered from lessons 147, 149, 163, 178, 179, 200, 201, 206–208, 221–226, 231 (episode 13 *The Offer* v26–v39, One Star v7–v9). Read this before drawing any hand, close-up arm or phone screen. When a lesson below disagrees with this page, this page wins; the superseded ones are listed at the end.
 
 ## 1. Hands and arms
 
@@ -28,6 +28,14 @@ Read by cold viewers, in this order of what failed: one stroke from the edge = "
 - **Both elbows inside the frame.** An elbow outside it splits the arm into "a forearm from the edge" and "a sleeve lying apart", and it jumps when it folds in. Pull the camera back before cutting the elbow (225).
 - **After pulling back, find the biggest flat light area** and cut it down; here a white back became shoulders only over navy overalls (225).
 - **What he wears goes on his wrist,** along the forearm's direction (a watch floated when the arm was taken away) (223).
+
+### Poses before motion
+
+- **Check the hand target against the arm's length.** A target much closer to the shoulder than the arm is long folds the whole arm into a lump (a "bulge", a "stuck-on fist"). Move the target until shoulder, elbow, forearm and hand read as one line (231).
+- **One static pose approved before any motion.** More frames of a broken pose multiply the fault (231).
+- **One target path per hand per shot.** Blend between places; never switch targets in one drawing (231).
+- **In-betweens are drawings.** If a move pops, list the key poses that do not exist yet (an exposure sheet) and draw them; a change of view of 90 degrees is a cut (231).
+- **Chain the parts:** hips, trunk, head; shoulder, elbow, wrist. Each a drawing or two after the one before (231).
 
 ### Holding and moving things
 

@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v19.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v20.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -502,7 +502,23 @@ def _cast_draw0(k, n, scene, sh, heads):
         kind = ps.get("kind", "stand")
         look = ps.get("look", (-1, 0))
         if kind == "sit":
-            o = oc.client_sit(k, x, f, CS, look=look, face=ps.get("face", "bored"), wipe=ps.get("wipe", 0.0), hands_at=ps.get("hands_at"))
+            und_ = ps.get("under", 0.0)                                      # v14 (grill 24 Nov): he rolls out from under the sill, side on
+            sl_ = ps.get("slide", 0.0)
+            if und_ or sl_:                                                  # the sill hides him only while he is still under it
+                c.save()
+                if und_ > 0.5:
+                    c.rectangle(-2000, gs.SILL + 2, 4000, 2000); c.clip()
+                c.translate(sl_, -und_)
+            o = oc.client_sit(k, x, f, CS, look=look, face=ps.get("face", "bored"), wipe=ps.get("wipe", 0.0), hands_at=ps.get("hands_at"),
+                              back=ps.get("back", 0.0), flick=ps.get("flick"), prop=ps.get("prop"), rag_to=ps.get("rag_to"),
+                              roll=ps.get("roll", 0.0), head=ps.get("head", 0.0), fidget=ps.get("fidget", 0.0))
+            if und_ or sl_:
+                c.restore()
+            bk_ = ps.get("back", 0.0)                                        # his head where the tipped trunk put it (the bubble's tail)
+            if bk_ and isinstance(o, dict) and "head" in o:
+                hx_, hy_ = o["head"][0] - x, o["head"][1] - (f - 30)
+                o = dict(o, head=(x + hx_ * math.cos(bk_) - hy_ * math.sin(bk_) + ps.get("slide", 0.0),
+                                  f - 30 + hx_ * math.sin(bk_) + hy_ * math.cos(bk_) - und_))
         elif kind == "bent":                                            # v8 (23 Nov, decided): IN FRONT of the car, at its nose, side on,
             bx, bf = BENT_AT                                                # bent over the wing into the bay (client_of.profile, the sheet's
             w = ps.get("work", 0.0)                                          # "bent into the engine"); his whole body seen, feet on the floor
@@ -673,6 +689,7 @@ def garage_shot(k, sh, scene, heads, cam):
         for n in front_names:
             _cast_draw(k, n, scene, sh, heads)
     gs.LID_BEHIND[0] = False                                              # v8: nobody works behind the lid now
+    gs.LEGS_ROT[0], gs.LEGS_TORSO[0] = st.get("legs_rot", 0.0), st.get("legs_torso", 0.0)   # v13: the roll-out's in-betweens
     gs.LEGS_WORK[0] = st.get("legs_work", 0.0)                            # v8: the knee taps while he works
     gs.FIRE[0], gs.FIRE[1] = st.get("fire", 0.0), st.get("fire_t", 0.0)       # v9: the fire, the sheet
     gs.SHEET[0], gs.SHEET[1] = st.get("sheet_fly"), st.get("sheet_floor")
@@ -1724,7 +1741,7 @@ def board_frame(sh, scene, bubble=True):
         fc[who] = ((va_[0] - cam[0]) * cam[2] + 270, (va_[1] - cam[1]) * cam[2] + 480, 14.0)   # goes INTO that dark
     if who not in fc:
         return surf, msgs + ["BUBBLE: %s speaks but is not in the frame" % who]
-    if SPEECH[0] and not _speech_too_tall(surf, sh, who, txt, fc, cam, va_):   # v40: a line that would wrap past 3 rows
+    if SPEECH[0] and not _speech_too_tall(surf, sh, who, SAY[sh["id"]][1], fc, cam, va_):   # the WHOLE line decides: its parts share one place   # v40: a line that would wrap past 3 rows
         import speech                                                  # beside the face keeps the v39 bubble over the head
         import speech_gate
         head = fc[who]
