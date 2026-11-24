@@ -24,11 +24,54 @@ PAPER = (0.90, 0.89, 0.85)
 PAPER_D = (0.70, 0.69, 0.66)
 
 
+WALL_ST = (0.90, 0.89, 0.86)                                 # the crossing's lit wall
+WALL_LN = (0.30, 0.28, 0.27)                                 # the lane's brick
+WEAR = [None]                                                # v3: None = a flat sheet (v1-v2); ("fresh" | "old", wall colour)
+
+
 def _sheet(k, col=PAPER, tilt=0.0):
     c = k.c
-    c.rotate(tilt)
+    c.translate(48, 68); c.rotate(tilt); c.translate(-48, -68)
+    if WEAR[0]:
+        col = (0.85, 0.85, 0.82) if WEAR[0][0] == "fresh" else (0.74, 0.74, 0.71) if col == PAPER else (0.60, 0.60, 0.58)
+        c.rectangle(3, 4, 96, 136); c.set_source_rgba(0, 0, 0, 0.35); c.fill()         # the sheet's shadow on the wall
     c.rectangle(0, 0, 96, 136); c.set_source_rgb(*col); c.fill_preserve()
     c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()
+
+
+def _wear(k, seed=1):
+    """Over a finished bill (in its 96 x 136 space): a corner come away; an old one also torn at the foot, stained, the
+    brick's courses showing through."""
+    if not WEAR[0]:
+        return
+    import random
+    kind, wall = WEAR[0]; c = k.c; r = random.Random(seed)
+    c.new_path(); c.move_to(98, 138); c.line_to(80, 138); c.line_to(98, 120); c.close_path()         # the bottom right corner off the wall (no word there)
+    c.set_source_rgb(*wall); c.fill()
+    c.new_path(); c.move_to(81, 136); c.line_to(96, 121); c.line_to(83, 123); c.close_path()          # its underside, curled up
+    c.set_source_rgb(0.62, 0.62, 0.60); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.8); c.stroke()
+    if kind != "old":
+        return
+    x0 = r.uniform(3, 6); pts = [(x0, 138)]                                                           # nicks torn out of the foot, at the left, clear of the words and the heart
+    for i in range(1, 4):
+        pts.append((x0 + i * 3.5, 136 - (r.uniform(5, 9) if i % 2 else r.uniform(1, 4))))
+    pts.append((x0 + 14, 138))
+    c.new_path(); c.move_to(*pts[0])
+    for q in pts[1:]:
+        c.line_to(*q)
+    c.close_path(); c.set_source_rgb(*wall); c.fill()
+    c.new_path(); c.move_to(*pts[0])
+    for q in pts[1:]:
+        c.line_to(*q)
+    c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+    c.save(); c.rectangle(0, 0, 96, 136); c.clip()
+    for _ in range(3):                                                                                # damp
+        c.save(); c.translate(r.uniform(10, 86), r.uniform(20, 126)); c.scale(r.uniform(10, 20), r.uniform(8, 16))
+        c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.set_source_rgba(0, 0, 0, 0.10); c.fill()
+    c.set_source_rgba(0, 0, 0, 0.13); c.set_line_width(1.2)                                           # the courses under the paper
+    for y in range(18, 136, 40):
+        c.move_to(0, y + r.uniform(-2, 2)); c.line_to(96, y + r.uniform(-2, 2)); c.stroke()
+    c.restore()
 
 
 def _heart(c, x, y, s):
@@ -55,15 +98,22 @@ def pam_cat(k, x, y, s=1.0, tilt=0.0):
     kit.text(k, "THE CAT", 48, 90, 19, INK, bold=True)
     kit.text(k, "SEVEN LIVES", 48, 106, 10.5, INK, bold=True)
     _heart(c, 48, 122, 9)                                                           # the film's red, big enough for a phone
+    _wear(k, 5)
     c.restore()
 
 
-def fight(k, x, y, s=1.0):
+def fight(k, x, y, s=1.0, tilt=0.0):
     """Office Noir 3's bill, as it is (street_on3.poster2 draws at 1.3 and off its corner by (-14, -34))."""
     import street_on3 as s3
     c = k.c
-    c.save(); c.translate(x, y); c.scale(s / 1.3, s / 1.3); c.scale(96 / 96.0, 136 / 136.0)
-    s3.poster2(k, 14 / 1.0, 34 / 1.0, 1.0, seed=31)
+    c.save(); c.translate(x, y); c.scale(s, s)
+    c.translate(48, 68); c.rotate(tilt); c.translate(-48, -68)
+    if WEAR[0]:
+        c.rectangle(3, 4, 96, 136); c.set_source_rgba(0, 0, 0, 0.35); c.fill()
+    c.save(); c.scale(1 / 1.3, 1 / 1.3); s3.poster2(k, 14, 34, 1.0, seed=31); c.restore()
+    if WEAR[0] and WEAR[0][0] == "old":
+        c.rectangle(0, 0, 96, 136); c.set_source_rgba(0, 0, 0, 0.16); c.fill()                      # older paper
+    _wear(k, 9)
     c.restore()
 
 
@@ -103,34 +153,77 @@ def cabaret(k, x, y, s=1.0, right=True):
     c.restore()
 
 
-def tally(k, x, y, s=1.0):
-    """Chalk on the brick: seven strokes, a gate of five and two more (her seven lives). About 74 x 42 at s=1."""
+def tally(k, x, y, s=1.0, hand=False):
+    """Chalk on the brick: seven strokes, a gate of five and two more (her seven lives). About 74 x 42 at s=1.
+    hand=True (v3, the review): drawn by hand: each stroke of uneven weight, not straight, breaking where the chalk
+    skipped over a joint."""
     import random
     c = k.c; r = random.Random(77)
     c.save(); c.translate(x, y); c.scale(s, s); c.set_line_cap(cairo.LINE_CAP_ROUND)
-    c.set_source_rgb(0.80, 0.79, 0.76); c.set_line_width(3.6)
-    for x0 in (2, 12, 22, 32, 54, 64):
-        c.move_to(x0 + r.uniform(-1.5, 1.5), r.uniform(0, 3)); c.line_to(x0 + r.uniform(-2.5, 2.5), 40 + r.uniform(-3, 2)); c.stroke()
-    c.move_to(-5, 31); c.line_to(40, 8); c.stroke()
+    if not hand:
+        c.set_source_rgb(0.80, 0.79, 0.76); c.set_line_width(3.6)
+        for x0 in (2, 12, 22, 32, 54, 64):
+            c.move_to(x0 + r.uniform(-1.5, 1.5), r.uniform(0, 3)); c.line_to(x0 + r.uniform(-2.5, 2.5), 40 + r.uniform(-3, 2)); c.stroke()
+        c.move_to(-5, 31); c.line_to(40, 8); c.stroke()
+        c.restore(); return
+    def stroke(xa, ya, xb, yb):
+        n = 7; bow = r.uniform(-2.2, 2.2); gap = r.randrange(2, n - 1); w = r.uniform(3.0, 4.4)
+        px = lambda u: (xa + (xb - xa) * u + bow * math.sin(math.pi * u), ya + (yb - ya) * u)
+        for i in range(n):
+            w = min(4.8, max(2.6, w + r.uniform(-0.7, 0.7)))
+            u0, u1 = i / n, (i + 1) / n
+            if i == gap:                                     # the chalk skipped: a short break
+                u0 += 0.6 / n
+            c.set_line_cap(cairo.LINE_CAP_ROUND if i in (0, n - 1) else cairo.LINE_CAP_BUTT)
+            c.set_line_width(w); c.set_source_rgba(0.80, 0.79, 0.76, 0.95 if i != gap else 0.7)
+            c.move_to(*px(u0)); c.line_to(*px(u1 + 0.01)); c.stroke()
+    for x0 in (2, 13, 22, 33, 55, 66):
+        stroke(x0 + r.uniform(-2, 2), r.uniform(-3, 4), x0 + r.uniform(-4, 4), 40 + r.uniform(-5, 4))
+    stroke(-7, 33, 42, 6)
+    c.restore()
+
+
+def scrap(k, x, y, s=1.0):
+    """What is left of an older bill: a torn piece of grey paper, no words, two runs of old paste. About 46 x 34."""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(s, s); c.rotate(0.12)
+    pts = [(0, 3), (9, 0), (17, 5), (27, 1), (38, 4), (46, 2), (44, 14), (47, 24), (39, 33), (30, 28), (22, 34), (12, 29), (3, 31), (5, 19)]
+    c.new_path(); c.move_to(*pts[0])
+    for q in pts[1:]:
+        c.line_to(*q)
+    c.close_path(); c.set_source_rgb(0.56, 0.56, 0.54); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+    c.set_source_rgba(0, 0, 0, 0.22); c.set_line_width(2)
+    c.move_to(8, 10); c.line_to(36, 9); c.stroke(); c.move_to(10, 20); c.line_to(30, 22); c.stroke()
     c.restore()
 
 
 def crossing(k):
     """on4_motion.c_side: the far houses' wall (y 380-568, windows y 430-500). v2 (Tomas, 24 Nov: where is it too much):
-    her bill alone, right of her, clear of Don's STOP/GO sign."""
+    her bill alone, right of her, clear of Don's STOP/GO sign. v3 (the review, Tomas's picks): a fresh bill: turned a
+    little, its shadow, one corner come away."""
     if not ON[0]:
         return
-    pam_cat(k, 382, 392, 0.74)
+    WEAR[0] = ("fresh", WALL_ST)
+    try:
+        pam_cat(k, 382, 392, 0.74, 0.045)
+    finally:
+        WEAR[0] = None
 
 
 def lane(k):
     """2.4, the brick wall over the bin (the bin's mouth y 566, x 200-420; the camera sees x 84-456). v2: her bill, the
-    chalk tally, the fight bill; the TV bill out."""
+    chalk tally, the fight bill; the TV bill out. v3: old bills (darker paper, torn, damp, the courses showing), the
+    tally by hand on the brick (the window above now ends behind the platform), a scrap of an older bill."""
     if not ON[0]:
         return
-    pam_cat(k, 204, 354, 0.76, -0.03)
-    tally(k, 290, 362, 0.9)
-    fight(k, 372, 352, 0.76)
+    WEAR[0] = ("old", WALL_LN)
+    try:
+        pam_cat(k, 204, 356, 0.76, -0.05)
+        fight(k, 358, 354, 0.76, 0.04)
+    finally:
+        WEAR[0] = None
+    tally(k, 290, 364, 0.82, hand=True)
+    scrap(k, 298, 420, 0.85)
 
 
 def club(k):

@@ -382,8 +382,10 @@ def fire_escape_close(k):
         for col in range(-1, 12):
             x = col * 64 + (32 if row % 2 else 0)
             c.set_source_rgb(0.20, 0.19, 0.18); c.set_line_width(2); c.rectangle(x, y, 64, 32); c.stroke()
-    st.poly(k, [(300, 150), (470, 150), (470, 420), (300, 420)], (0.05, 0.05, 0.06), 2.4)       # a dark window
-    c.set_source_rgb(0.4, 0.4, 0.42); c.set_line_width(3); c.move_to(385, 150); c.line_to(385, 420); c.stroke()
+    import on4_posters as _po
+    wb = 330 if _po.ON[0] else 420                           # (24 Nov) with the bills on, the window ends behind the platform: brick under it
+    st.poly(k, [(300, 150), (470, 150), (470, wb), (300, wb)], (0.05, 0.05, 0.06), 2.4)       # a dark window
+    c.set_source_rgb(0.4, 0.4, 0.42); c.set_line_width(3); c.move_to(385, 150); c.line_to(385, wb); c.stroke()
 
 
 def platform(k, y):
