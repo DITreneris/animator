@@ -20,3 +20,14 @@ speech_gate 72 / 0, dead zones 0, set 0; −17.7 LUFS; v7 baseline same. Film v8
 - Round 1 → 2: Pam's mug "could pass for a phone" → not mentioned; Mom and Sofía "merged" → "borderline, touching at the shoulder".
 - Tried and dropped: his hand on the case as it comes down (7.1a): at head height it read "on the phone" 2 of 2, worse than v7's case alone ("hangs in the air").
 - Open: the brush hand "a floating fist" for one drawing as it comes in; the case insert (7.1b) "a random grey box"; the invoice arm "a stiff rod" (1 of 2).
+
+## Round 3 (24 Nov, after the whole-film mute test): the brush
+
+- **Fault:** 7.2a and 7.2a' read "a fist hits the machine", "a fist-bump / a handshake" (2/2, whole film). v7's 4 cm brush was hidden under the fist.
+- **Lessons applied:** rules §0; holding ("a tool's handle comes out past the fist", "hold an object where its shape shows"); inserts 224/225 (a hand plus a cuff stub from the edge); 263; 417/264.
+- **Fix:**
+  - The brush is drawn at 2.0x (`BRUSH_S`), with the fist on the middle of its orange grip.
+  - The tuft rests on the machine's light grey panel (`TIP_DX`, `TIP_DY`); on the dark group head it was lost 2/2.
+  - The reach starts with the hand already in the frame.
+- **Stills test** (4 sizes and positions, 2 viewers): "a fist holding a tool, not a handshake or a fist-bump" 2/2. The orange grip makes it a tool (2/2).
+- **Checks:** gate speech 72/0, zones 0, set 0; baseline same; film rejoined.

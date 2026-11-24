@@ -33,19 +33,37 @@ V7.SOF5 = ds.SOF5 = (552, F + 2)                          # round 2: further apa
 
 
 # ---- 7.2a, 7.2a': the hand and the brush, from the left edge
+# Round 3 (whole-film mute test 2/2: "a fist hits the machine", "a fist-bump / a handshake"): v7's brush was 4 cm under the
+# fist. Bigger, the orange grip out past the fist (rules: a tool's handle shows), the tuft on the machine's light grey panel
+# (on the dark group head it was lost, 2/2). Stills test, 2 viewers: "a fist holding a tool, not a handshake" 2/2.
+BRUSH_S = [2.0]
+TIP_DX = [56.0]                                             # how far onto the machine's front the tuft goes
+TIP_DY = [-24.0]                                            # up off the dark group head onto the grey panel
+
+
 def brush_hand(k, back, touch):
     hx = V7.MX - 62 * V7.MZ - back
     hy = V7.MY - 92 * V7.MZ
     c = k.c
-    hand = (hx - 30, hy + 9)
+    bs = BRUSH_S[0]
+    bx = hx + 8 + TIP_DX[0] - 27 * bs                       # the tuft's tip on the machine
+    hy += TIP_DY[0]
+    hand = (bx - 23 * bs, hy + 4 + 5)                       # the fist on the middle of the orange grip
     d = osc.insert_cuff(c, hand, (hand[0] - 200, hand[1] + 30), 26 * 0.62, ds._co.SKIN, V7.dc.SUIT, cuff=(0.97, 0.97, 0.95), stub=120)
-    V7.dc.brush(k, hx - 14, hy + 4, 0.8, 0.0)               # the brush, then the fingers over it
+    V7.dc.brush(k, bx, hy + 4, bs, 0.0)                     # the brush, then the fingers over it
     hp.draw(k, "grab", hand[0], hand[1], 26, ds._co.SKIN, d, 1)
     if touch:
         ds._lines(k, [(hx + 14, hy - 10, hx + 24, hy - 20), (hx + 18, hy + 4, hx + 30, hy + 4), (hx + 14, hy + 18, hx + 24, hy + 28)])
 
 
 V7.brush_hand = brush_hand
+
+
+def r_reach(s, k, o, t, tt, n):                             # 7.2a: the hand comes in, slowly; in the frame from its first drawing
+    brush_hand(k, V7.seq(t, [34, 26, 18, 12, 8]), False)   # (v7 64 -> 22: with the bigger brush the hand started off the edge)
+
+
+sc.DRAW["7.2a"] = r_reach
 
 
 # ---- 7.1a (round 2, cold test: "the case hangs in the air by his head"): his hand on its handle all the way down
