@@ -327,9 +327,8 @@ def _cast_draw0(k, n, scene, sh, heads):
             want = ps["targets_xy"][0]
             hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
             def scr_d(c_):
-                c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
-                c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
-                e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, -6); c_.show_text("DONNIE")
+                import of_ui as ui
+                ui.hand(c_, ui.call, "DONNIE")
             oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, scr_d, ang=-0.15, skin=dc.SKIN_F, body_x=x)
         if ps.get("palm") and ps.get("targets_xy"):                          # v6 (23 Nov, motion_on3's hand): palm and fingers in ONE
             hx, hy = ps["targets_xy"][0]                                         # shape, flat across the lid, the fingers pointing on, a thumb
@@ -413,19 +412,8 @@ def _cast_draw0(k, n, scene, sh, heads):
         if ps.get("phone") in ("calendar", "pam"):
             hx, hy = tg[0]
             def cal(c_):
-                if ps["phone"] == "pam":                                      # v1 (23 Nov, decided: the mid-film gag): he is
-                    c_.set_source_rgb(0.95, 0.96, 0.98); c_.rectangle(-19, -34, 38, 68); c_.fill()   # looking PAM up for himself
-                    c_.set_source_rgb(0.80, 0.82, 0.88); c_.rectangle(-16, -28, 32, 13); c_.fill()
-                    c_.set_source_rgb(0.15, 0.2, 0.45); c_.select_font_face("Lilita One"); c_.set_font_size(11)
-                    c_.move_to(-16, -17); c_.show_text("PAM"); c_.new_path()
-                    return
-                c_.set_source_rgb(0.85, 0.15, 0.15); c_.rectangle(-19, -34, 38, 14); c_.fill()
-                c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(9)
-                c_.move_to(-14, -24); c_.show_text("+ EVENT")
-                c_.set_source_rgb(0.2, 0.2, 0.25)
-                for i in range(3):
-                    for j in range(3):
-                        c_.rectangle(-15 + i * 11, -14 + j * 11, 8, 8); c_.fill()
+                import of_ui as ui                                            # v2 (24 Nov): the one phone UI
+                ui.hand(c_, ui.pam_small if ps["phone"] == "pam" else ui.event)
             oc.phone_grip(k, hx, hy, 0.6, cal, ang=-0.1, skin=co_skin(), body_x=x)                 # v4 hands: held, on his palm
         if ps.get("dent"):                                                    # v10: the roof gives under the palm, 2 drawings
             hx, hy = tg[0]
@@ -691,16 +679,10 @@ def garage_shot(k, sh, scene, heads, cam):
         c.save(); c.translate(px, py); c.rotate(0.0); c.scale(1.5, 1.5)    # v8 (cold test 3 of 3): UPRIGHT
         gs.protect(c, "the DELETE POST phone", -30, -48, 30, 48)
         rect(k, -30, -48, 60, 96, (0.10, 0.11, 0.14), 3410, lw=2)
-        c.set_source_rgb(0.95, 0.96, 0.98); c.rectangle(-25, -42, 50, 84); c.fill()
-        gs.T(c, "1", -10, -12, 18, col=(0.85, 0.55, 0.05))
-        _star(c, 9, -18, 8)
-        gs.T(c, "REVIEW", 0, 2, 8.5, col=INK, font="Inter")
-        c.set_source_rgb(0.20, 0.42, 0.62); c.rectangle(-25, -42, 50, 13); c.fill()                # v6: whose post it is
-        gs.T(c, "YOUR POST", 0, -32.5, 7.5, col=(1, 1, 1))
-        rect(k, -22, 12, 44, 20, gs.RED, 3411, shadow=False, lw=1.2)
-        gs.T(c, "DELETE", 0, 27, 10.5, col=(1, 1, 1))
+        import of_ui as ui                                                     # v12 (24 Nov, Tomas: "like PowerPoint"): the one phone UI
+        ui.full(c, -25, -42, 50, 84, ui.review)
         c.restore()
-        _oc.phone_grip(k, gx_, gy_, S04, ang=A04, skin=(0.92, 0.74, 0.60), body_x=gx_ + 400, part="front", ink=0.6)   # thumb, fingertips
+        _oc.phone_grip(k, gx_, gy_, S04, ang=A04, skin=(0.92, 0.74, 0.60), body_x=gx_ + 400, part="front", ink=0.6, thumb_tip=(23.5, 1))   # thumb (v12: short, off the screen), fingertips
         c.restore()
 
 
@@ -1004,21 +986,13 @@ def donnie_shot(k, sh, heads):
     for col, lw in ((INK, 40), (dc.VELVET, 34)):                                     # his sleeve, velvet, going out
         c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
         c.move_to(110, 60); c.line_to(24, 14); c.stroke()
-    def scr(c_):
-        c_.set_source_rgb(0.20, 0.70, 0.35); c_.rectangle(-19, -34, 38, 68); c_.fill()
-        c_.set_source_rgb(1, 1, 1); c_.select_font_face("Lilita One"); c_.set_font_size(11)
-        e = c_.text_extents("DONNIE"); c_.move_to(-e.x_advance / 2, -12); c_.show_text("DONNIE")
-    def scr2(c_):                                                                   # v2 (23 Nov, decided): red DECLINE, green answer
-        scr(c_)
-        c_.set_source_rgb(0.85, 0.12, 0.12); c_.arc(-9, 6, 8, 0, 2 * math.pi); c_.fill()
-        c_.set_source_rgb(0.15, 0.75, 0.30); c_.arc(9, 6, 8, 0, 2 * math.pi); c_.fill()
-        if st.get("declined"):
-            c_.set_source_rgba(0, 0, 0, 0.65); c_.rectangle(-19, -34, 38, 68); c_.fill()
-            c_.set_source_rgb(0.95, 0.25, 0.25); c_.select_font_face("Lilita One"); c_.set_font_size(8.5)
-            e = c_.text_extents("DECLINED"); c_.move_to(-e.x_advance / 2, -20); c_.show_text("DECLINED")
+    def scr2(c_):                                                                   # v3 (24 Nov): the one phone UI: an incoming call,
+        import of_ui as ui                                                           # red DECLINE, green answer; then DECLINED
+        ui.hand(c_, ui.call, "DONNIE", declined=bool(st.get("declined")))
     u_ = st.get("thumb") or 0.0                                                    # v5 (hand audit): the same phone grip as
-    tip = None if st.get("donnie_down") or not u_ else (18.9 + (-9 - 18.9) * u_, -8 + (-16 + 8) * u_)   # every phone; its thumb
-    oc.phone_grip(k, 7.2, 9.6, 0.95, None if st.get("donnie_down") else scr2, ang=-0.35, skin=dc.SKIN_F,   # goes to the red button
+    tip = (20.5, 3) if not u_ else (20.5 + (-8.7 - 20.5) * u_, 3 + (-1 - 3) * u_)   # v6: it starts BELOW the name, goes to the red button
+    tip = None if st.get("donnie_down") else tip   # every phone; its thumb
+    oc.phone_grip(k, 7.2, 9.6, 1.07, None if st.get("donnie_down") else scr2, ang=-0.35, skin=dc.SKIN_F,   # goes to the red button
                   body_x=200, thumb_tip=tip)
     c.restore()
 
@@ -1147,10 +1121,8 @@ def desk_shot(k, sh, heads):
         hx, hy = heads.pop("_pamhand")
         x, y = (hx - cam[0]) * z + 270, (hy - cam[1]) * z + 480
         def scr(c_):
-            c_.set_source_rgb(0.97, 0.94, 0.86); c_.rectangle(-19, -34, 38, 68); c_.fill()
-            c_.set_source_rgb(0.55, 0.16, 0.46); c_.select_font_face("Lilita One"); c_.set_font_size(6.5)
-            c_.move_to(-17, -14); c_.show_text("INVITATION")
-            c_.set_source_rgb(*INK); c_.set_font_size(9); c_.move_to(-17, 6); c_.show_text("DAD")  # v18: DAD not FATHER — it has
+            import of_ui as ui
+            ui.hand(c_, ui.invite_small)                                             # DAD not FATHER — it has
             # to read as the same man Don later calls DAD (lesson 163: 2/3 cold viewers had to guess who "him" was)
         bz = sh["state"].get("buzz", 0.0)                                          # stage 7: it buzzes; then face down
         down = sh["state"].get("phone_down", False)

@@ -926,3 +926,10 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - A lid that shuts needs the hand ON it all the way down and after; a hand beside it reads as a wave (3 of 3).
 - A phone held "from the edge, along the floor" has no owner; from above it belongs to someone standing over it.
 - A gag that is "long for what it delivers" loses time first (2.2 -> 1.8 s) and gets a body reaction (the shoulders and the lamp drop), since this face has no brows to move.
+
+## 218. *The Offer* v39 (24 Nov, Tomas: "every phone screen looks cheap, like PowerPoint")
+
+- One UI kit for every screen in a film (`of_ui.py`: status bar, app bar, card with a soft shadow, pill buttons, avatars; 100 units wide, drawn through `ui.hand` or `ui.full`). A screen made of a rectangle and two words is what reads as a slide.
+- A real-app look must not cost the read: the dark call screen was worse than the old plain green one (audit and my own check). Keep the screen LIGHT, the one word big, and clear of the fingers on the grip's edge.
+- On a 100 px wide screen nothing under about 9 units is read: drop helper text and placeholder lines instead of shrinking them.
+- Before / after PNG, old row over new row, is the cheapest review of a restyle; the audit's "stop" criterion is worth taking (it scored the UI 8.2 and pointed at timing and reactions next).

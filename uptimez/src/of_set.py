@@ -775,10 +775,8 @@ def insert_card(k):
     c = k.c
     x0, y0, w = cp._phone(k, 950)
     cx = x0 + w / 2
-    if hasattr(cp, "pam_photo"):
-        cp.pam_photo(k, cx, y0 + 250, 120, 951)
-    T(c, "PAM", cx, y0 + 520, 96)
-    T(c, "finds things", cx, y0 + 600, 52, col=(0.42, 0.44, 0.50), font="Inter")
+    import of_ui as ui                                         # v2 (24 Nov, Tomas: "like PowerPoint"): the one phone UI
+    ui.full(c, x0, y0, w, 820, ui.contact, photo=(lambda x_, y_, r_: cp.pam_photo(k, x_, y_, r_, 951)) if hasattr(cp, "pam_photo") else None)
     protect(c, "PAM finds things", x0 + 60, y0 + 120, x0 + w - 60, y0 + 620)
 
 
@@ -798,12 +796,8 @@ def insert_invite(k):
     c = k.c
     x0, y0, w = cp._phone(k, 960)
     cx = x0 + w / 2
-    rect(k, x0 + 30, y0 + 220, w - 60, 330, (0.97, 0.94, 0.86), 3130, lw=2.4)
-    T(c, "INVITATION", cx, y0 + 330, 58, col=(0.55, 0.16, 0.46))
-    T(c, "from", cx, y0 + 410, 30, col=(0.42, 0.44, 0.50), font="Inter")
-    T(c, "DAD", cx, y0 + 470, 52)                              # v3: DAD not FATHER — the same word Don calls in 3.7 (lesson 163)
-    rect(k, x0 + 70, y0 + 556, w - 140, 76, cp.GRN, 3131, shadow=False, lw=2)          # v2: clear of the captions
-    T(c, "ACCEPT", cx, y0 + 608, 38, col=(1, 1, 1))
+    import of_ui as ui                                         # v4 (24 Nov): the one phone UI. DAD not FATHER (lesson 163)
+    ui.full(c, x0, y0, w, 820, ui.invite)
     protect(c, "INVITATION from DAD", x0 + 60, y0 + 220, x0 + w - 60, y0 + 634)
 
 
