@@ -119,8 +119,11 @@ def lines(c, pts, n=3, col=INK, a=.55, w=6):
         c.move_to(x0 + px, y0 + py); c.line_to(x1 + px, y1 + py); c.set_source_rgba(*col, a); c.set_line_width(w); c.stroke()
 
 # ---------------- two-bone arms ----------------
+AMIN = math.radians(35)                # v4: no elbow folds flatter than a real one (35 deg; 70 as in JOL shrank the coffee sip arm)
 def ik(sh, h, L1, L2, pref):
     dx, dy = h[0] - sh[0], h[1] - sh[1]; d0 = math.hypot(dx, dy); th = math.atan2(dy, dx)
+    dmin = math.sqrt(L1 * L1 + L2 * L2 - 2 * L1 * L2 * math.cos(AMIN))
+    if d0 < dmin: k = max(.45, d0 / dmin); L1 *= k; L2 *= k      # a close target: the arm shortens instead of folding flat
     d = min(max(d0, abs(L1 - L2) + 2), L1 + L2 - .5)
     a = math.acos(max(-1, min(1, (L1 * L1 + d * d - L2 * L2) / (2 * L1 * d))))
     cands = [(sh[0] + L1 * math.cos(th + b * a), sh[1] + L1 * math.sin(th + b * a)) for b in (-1, 1)]
