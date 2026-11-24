@@ -51,6 +51,9 @@ VELVET, VELVET_D = dc.VELVET, dc.VELVET_D
 FELT = (0.18, 0.36, 0.26)
 HALL_LAMP = ["v6"]               # v7 (23 Nov): Dad hidden by the dark over a small lamp; "v6" the big shade
 PLAN_CARD = ["v6"]               # v7: one title, every number seen, the card laid down and the hand off it; "v6" as before
+MOTTO = [False]                  # v9 (24 Nov): Daddy's Home's neon motto, THE HOUSE ALWAYS COLLECTS, on the wall over the booth
+ARCH_WARM = [False]              # v9: the arch's bulbs give warm light (laid after the grade, so it keeps its colour)
+PASSAGE_DARK = [False]           # v9: the passage's walls charcoal, its far end lit (the POV, 4.4)
 LIMO = [(150, 0.74)]              # v8 (proportion audit): (x, scale) of the limousine at the kerb; on4_scenes sets (30, 1.15)
 CLIENT_DY = [0]                  # v8: the Client lower in his booth (he sat as tall as Pam stands)
 FRONT_LIGHT = ["v6"]             # v7: the facade's edges dark, the marquee's light on the car's roof, the car nearer the arch
@@ -130,9 +133,23 @@ def front(k, limo=False):
     c.save(); c.new_path(); c.move_to(ax0, ab); c.line_to(ax0, at + rr); c.arc(cx, at + rr, rr, math.pi, 0); c.line_to(ax1, ab); c.close_path(); c.clip()
     c.set_source_rgb(0.98, 0.96, 0.90); c.paint()                                                 # the bright inside
     fx0, fx1, ft, fb = cx - 34, cx + 34, at + 104, ab - 52                                        # the far opening
-    st.poly(k, [(ax0, at + rr), (fx0, ft), (fx0, fb), (ax0, ab)], (0.86, 0.84, 0.78), 1.2)         # its left wall
-    st.poly(k, [(ax1, at + rr), (fx1, ft), (fx1, fb), (ax1, ab)], (0.80, 0.78, 0.72), 1.2)         # its right wall
-    st.poly(k, [(ax0, ab), (fx0, fb), (fx1, fb), (ax1, ab)], (0.62, 0.58, 0.52), 1.2)              # its floor
+    if PASSAGE_DARK[0]:                                                                           # v9: charcoal walls, the light only at its end
+        c.set_source_rgb(0.20, 0.20, 0.21); c.paint()
+        st.poly(k, [(ax0, at + rr), (fx0, ft), (fx0, fb), (ax0, ab)], (0.25, 0.25, 0.26), 1.2)
+        st.poly(k, [(ax1, at + rr), (fx1, ft), (fx1, fb), (ax1, ab)], (0.21, 0.21, 0.22), 1.2)
+        st.poly(k, [(ax0, ab), (fx0, fb), (fx1, fb), (ax1, ab)], (0.17, 0.17, 0.18), 1.2)
+        st.poly(k, [(fx0, ft), (fx1, ft), (fx1, fb), (fx0, fb)], (1.0, 0.98, 0.92), 1.0)
+        g = cairo.LinearGradient(0, fb, 0, ab)                                                    # its light on the floor, a wet shine
+        g.add_color_stop_rgba(0, 1, 0.97, 0.88, 0.55); g.add_color_stop_rgba(1, 1, 0.97, 0.88, 0.0)
+        c.set_source(g); c.new_path(); c.move_to(fx0 + 6, fb); c.line_to(fx1 - 6, fb); c.line_to(cx + 30, ab); c.line_to(cx - 30, ab); c.close_path(); c.fill()
+        for side_ in (-1, 1):
+            g = cairo.RadialGradient(cx + side_ * 34, (ft + fb) / 2, 2, cx + side_ * 34, (ft + fb) / 2, 90)
+            g.add_color_stop_rgba(0, 1, 0.97, 0.88, 0.35); g.add_color_stop_rgba(1, 1, 0.97, 0.88, 0)
+            c.set_source(g); c.paint()
+    else:
+        st.poly(k, [(ax0, at + rr), (fx0, ft), (fx0, fb), (ax0, ab)], (0.86, 0.84, 0.78), 1.2)     # its left wall
+        st.poly(k, [(ax1, at + rr), (fx1, ft), (fx1, fb), (ax1, ab)], (0.80, 0.78, 0.72), 1.2)     # its right wall
+        st.poly(k, [(ax0, ab), (fx0, fb), (fx1, fb), (ax1, ab)], (0.62, 0.58, 0.52), 1.2)          # its floor
     for i in range(4):                                                                            # the vault's lamps
         u = (i + 1) / 5.0; y = at + 20 + u * (ft - at - 20)
         c.set_source_rgb(1, 1, 0.92); c.new_path(); c.arc(cx, y, 4 - u * 2, 0, 2 * math.pi); c.fill()
@@ -187,6 +204,15 @@ def light_front(c, limo=False):
         g = cairo.RadialGradient(0, 0, 0, 0, 0, 1)
         g.add_color_stop_rgba(0, 1, 0.15, 0.22, 0.30); g.add_color_stop_rgba(1, 1, 0.15, 0.22, 0)
         c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+    if ARCH_WARM[0]:                                                       # v9: the arch's bulbs as lights: a warm ring round it
+        cx_, at_, rr_ = 270, 478, 92
+        for r_, a_ in ((rr_ + 34, 0.40), (rr_ + 22, 0.50)):
+            c.save(); c.new_path(); c.arc(cx_, at_ + rr_, r_, math.pi, 0); c.line_to(cx_ + r_, 660); c.line_to(cx_ - r_, 660); c.close_path()
+            c.set_source_rgba(GOLD[0], GOLD[1], GOLD[2], 0); c.restore()
+            g = cairo.RadialGradient(cx_, at_ + rr_, rr_ - 10, cx_, at_ + rr_, r_ + 30)
+            g.add_color_stop_rgba(0, GOLD[0], GOLD[1] * 0.9, GOLD[2] * 0.6, 0); g.add_color_stop_rgba(0.4, GOLD[0], GOLD[1] * 0.9, GOLD[2] * 0.6, a_)
+            g.add_color_stop_rgba(1, GOLD[0], GOLD[1], GOLD[2], 0)
+            c.set_source(g); c.rectangle(cx_ - r_ - 40, at_ - 40, 2 * r_ + 80, 660 - at_ + 40); c.fill()
     if limo:
         import on4_car as car
         car.glow(c, "side", LIMO[0][0], 712, LIMO[0][1])
@@ -321,7 +347,7 @@ def hall(k):
     # the floor: boards running to the end, the end's light on them
     st.poly(k, [(-20, 1000), (560, 1000), (ex1, ef), (ex0, ef)], (0.30, 0.20, 0.14), 2.0)
     c.save(); c.new_path(); c.move_to(-20, 1000); c.line_to(560, 1000); c.line_to(ex1, ef); c.line_to(ex0, ef); c.close_path(); c.clip()
-    c.set_source_rgba(0.08, 0.05, 0.04, 0.8); c.set_line_width(1.4)
+    c.set_source_rgba(0.08, 0.05, 0.04, 0.35 if MOTTO[0] else 0.8); c.set_line_width(1.4)   # v9: the boards' joints quieter (they read as a drawing)
     for i in range(-14, 15):
         xb = 250 + i * 48
         c.move_to(VP[0] + (xb - VP[0]) * 0.17, ef); c.line_to(xb, 1000); c.stroke()
@@ -418,6 +444,16 @@ def hall(k):
         c.set_source_rgb(*WOOD); c.set_line_width(6)
         c.move_to(ax, fy - 36); c.curve_to(ax + sx * 12, fy - 36, ax + sx * 12, fy, ax + sx * 6, fy + 60); c.line_to(ax - sx * 30, fy + 60); c.stroke()
         c.set_line_cap(0)
+
+
+def motto(k):
+    """v9: Daddy's Home's motto over the booth (dh_props.booth's), in exact NEON so the accent pass keeps it red; drawn by
+    on4_scenes after the hall's dark (which would grey it)."""
+    c = k.c
+    for i, (txt, sz) in enumerate((("THE HOUSE", 15), ("ALWAYS", 21), ("COLLECTS", 21))):
+        yy = 384 + i * 27
+        c.set_source_rgba(0.10, 0.01, 0.03, 0.85); c.rectangle(46, yy - 22, 168, 28); c.fill()
+        kit.text(k, txt, 130, yy, sz, NEON)
 
 
 def light_hall(c):

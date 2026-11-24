@@ -362,6 +362,7 @@ def t6():
     CA, CB = (300, 610, 1.45), (440, 480, 0.95)
     BILLS = [(196, 682), (236, 700), (262, 686), (292, 702), (322, 688), (350, 700)]   # v10 (Tomas): more of them; six land on her, Don catches a seventh
     DX, DY, DS = 380, 772, 0.56                                  # v5: Don on the road in front of the bonnet, nearer than the car
+    DX2 = 600                                                    # v19 (cold test v13: every bill read as his): by the rear window, away from her
     def f(i):
         cam = CA if i < 36 else lerp(CA, CB, ease(min(1.0, (i - 36) / 6.0)))
         cx = STOPX + (0 if i < 57 else ((i - 57) / 7.0) ** 2 * 420)                # the car backs away
@@ -372,10 +373,13 @@ def t6():
             don = P("don", DX, DY, DS, (-8, 0) + w, "neutral", (0.9, 0.6), paddle_side="GO", paddle_ang=0.9, lean=0.10)
         elif i < 40:                                                                 # clean
             don = P("don", DX, DY, DS, "stand", "pleased", (0.9, 0.3), paddle_side="GO", paddle_ang=0.9)
-        elif i < 62:
-            don = P("don", DX, DY, DS, "wave", "pleased", (0.8, -0.2) if i < 52 else (0.6, -0.9), paddle_side="GO", paddle_ang=0.10, whistle_in=(i % 6 < 3))
+        elif i < 46:                                                                 # v19: along the car to its rear window (away from her)
+            t = (i - 40) / 6.0
+            don = P("don", DX + (DX2 - DX) * t, DY, DS, "stand", "pleased", (0.9, -0.2), paddle_side="GO", paddle_ang=0.9)
+        elif i < 62:                                                                 # his bill first, into his hand; then GO, while hers fall on her
+            don = P("don", DX2, DY, DS, "wave", "pleased", (0.6, -0.9) if i < 54 else (0.8, -0.2), paddle_side="GO", paddle_ang=0.10, whistle_in=(i >= 54 and i % 6 < 3))
         else:
-            t = min(1.0, (i - 62) / 8.0); don = P("don", DX - (DX - 170) * t, DY - (DY - 596) * t, DS - (DS - 0.42) * t, "stand", "neutral", (-0.8, 0), paddle_side="GO", paddle_ang=0.9)
+            t = min(1.0, (i - 62) / 8.0); don = P("don", DX2 - (DX2 - 170) * t, DY - (DY - 596) * t, DS - (DS - 0.42) * t, "stand", "neutral", (-0.8, 0), paddle_side="GO", paddle_ang=0.9)
         wave = 24 <= i < 38 and (i // 3) % 2 == 0
         TH = (PX - 112, PX + 104)                                                      # v8 (Tomas): one at her head, one at her feet
         LIFT, GO = 73, 76                                                           # they take the money, pick her up, carry her off
@@ -418,11 +422,11 @@ def t6():
                 c.select_font_face("sans-serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(20)
                 c.move_to(-6, 7); c.show_text("$"); c.restore()
             for j, (bx, by) in enumerate(BILLS):                                     # the bills: let go, drifting onto her; then up into a shadow's fist
-                t0 = 47 + j * 1.5
+                t0 = 50 + j * 1.5                                                 # v19: hers after his
                 if i < t0:
                     continue
                 t = min(1.0, (i - t0) / 9.0)
-                x = wx - 16 + (bx - (wx - 16)) * t; y = wy + 14 + (by - (wy + 14)) * t * t + math.sin(t * 9 + j) * 8 * (1 - t)
+                x = wx - 16 + (bx - (wx - 16)) * t; y = wy + 14 + (by - (wy + 14)) * t * t + math.sin(t * 9 + j) * 8 * (1 - t) - 150 * math.sin(math.pi * min(1.0, t * 1.2))   # v19: tossed up over the roof, away from Don
                 ang = 0.4 + j + t * 3
                 own = hands.get(j % 2)                                               # three each
                 if own and own[2] != "in":
@@ -432,16 +436,15 @@ def t6():
                     x, y, ang = x + (hx + 46 + n_ * 5 - x) * u, y + (hy + 34 - n_ * 12 - y) * u, ang * (1 - u) + (0.5 - 0.3 * n_) * u
                 if x > -30:
                     bill(x, y, ang)
-            if 50 <= i < 70:                                                         # v10: the seventh: Don plucks it out of the air, looks at it, and it is gone into his vest
+            if 44 <= i < 60:                                                         # v19: his, first and alone: out of the ringed hand into his, a look, into his vest
                 dxn = don[1][0]; dyn = don[1][1]
-                if i < 55:
-                    t = (i - 50) / 5.0; x = wx - 16 + (dxn + 44 - (wx - 16)) * t; y = wy + 14 + (dyn - 150 - (wy + 14)) * t - math.sin(t * math.pi) * 26; ang = 0.6 + t * 4
-                elif i < 62:
+                if i < 48:
+                    t = (i - 44) / 4.0; x = wx - 16 + (dxn + 44 - (wx - 16)) * t; y = wy + 14 + (dyn - 150 - (wy + 14)) * t; ang = 0.2
+                elif i < 54:
                     x, y, ang = dxn + 44, dyn - 150, -0.2
                 else:
-                    t = min(1.0, (i - 62) / 5.0); x, y, ang = dxn + 44 - 40 * t, dyn - 150 + 50 * t, -0.2 - t
-                if i < 67:
-                    bill(x, y, ang)
+                    t = min(1.0, (i - 54) / 5.0); x, y, ang = dxn + 44 - 40 * t, dyn - 150 + 50 * t, -0.2 - t
+                bill(x, y, ang)
         return draw(shot("3.1", loc="C_side", cam=cam, cast=[], protect=(), after=after))
     return [f(i) for i in range(84)]
 
@@ -921,36 +924,36 @@ def t11():
     BRUSH = (oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 24, -190), oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 44, -150))
     def f(i):
         rot = 0.0; dust = 0; kn = None; cam = (290, 560, 1.4); h = 0; dxp = 0
-        if i < 8:                                            # hanging; the smile goes; arms and knee come down
-            look = ((-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0, 0.2), (0, 0.2), (0, 0.6), (0, 0.9))[i]
-            u = max(0, i - 3) / 5.0
-            pam = P("pam_cat", X, Y - A_RISE + 3 * math.sin(i * 0.9), S_, pose(lerp(FLOAT, HERO, u), ("relax_s", "relax_s")), "proud" if i < 2 else ("hopeful" if i < 5 else "doubt"), look, rim=True)
+        if i < 16:                                           # v19 (cold test v13 read a leap): she hangs longer, waiting; smile goes; arms and knee come down
+            look = ((0, -0.3), (0, -0.3), (-0.9, 0), (-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0.9, 0), (0, 0.2), (0, 0.2), (0, 0.2), (0, 0.4), (0, 0.6), (0, 0.8), (0, 0.9), (0, 0.9))[i]
+            u = max(0, i - 8) / 8.0
+            pam = P("pam_cat", X, Y - A_RISE + 3 * math.sin(i * 0.9), S_, pose(lerp(FLOAT, HERO, u), ("relax_s", "relax_s")), "proud" if i < 4 else ("hopeful" if i < 10 else "doubt"), look, rim=True)
             rot = 0.05; cam = (290, 450, 1.4); h = 1.0; kn = dict(drop=0, r=(8 * (1 - u), 44 * (1 - u), 1), l=(-4 * (1 - u), 6 * (1 - u), -1))
-        elif i < 10:                                         # down: arms left above her, legs trailing
-            t = (i - 7) / 2.0
+        elif i < 18:                                         # down: arms left above her, legs trailing
+            t = (i - 15) / 2.0
             pam = P("pam_cat", X, Y - A_RISE * (1 - t * t), S_, pose(TADA, ("relax_s", "relax_s")), "doubt", (0, 1), rim=True)
             cam = (290, 450 + 110 * t, 1.4); h = 1 - t; kn = dict(drop=0, l=(-6, 10, -1), r=(6, 16, 1))
-        elif i < 12:                                         # the boards: deep in her knees, arms out
-            d = (44, 54)[i - 10]
+        elif i < 20:                                         # the boards: deep in her knees, arms out
+            d = (44, 54)[i - 18]
             pam = P("pam_cat", X, Y, S_, pose(LOW, ("relax_s", "relax_s")), "doubt", (0, 0.9), rim=True)
-            kn = dict(drop=d, l=(-16, 0, -1), r=(16, 0, 1)); cam = (290, 560 + (8 if i == 10 else 0), 1.4); dust = 2 if i == 10 else 1
-        elif i < 15:                                         # one knee gives; a hand goes down for the boards
-            j = i - 12
+            kn = dict(drop=d, l=(-16, 0, -1), r=(16, 0, 1)); cam = (290, 560 + (8 if i == 18 else 0), 1.4); dust = 2 if i == 18 else 1
+        elif i < 23:                                         # one knee gives; a hand goes down for the boards
+            j = i - 20
             rot = (0.10, 0.26, 0.44)[j]
             pam = P("pam_cat", X, Y, S_, pose(lerp(LOW, REACH, (0.5, 0.9, 1.0)[j]), ("relax_s", "relax_s")), "doubt", (0.8, 0.9), rim=True)
             kn = dict(drop=(62, 78, 92)[j], l=(-10, 0, -1), r=((30, 52, 70)[j], 0, 1))
-        elif i < 18:                                         # sat down hard, legs out in front of her
-            j = i - 15
+        elif i < 26:                                         # sat down hard, legs out in front of her
+            j = i - 23
             rot = 0.0; dxp = 34
             pam = P("pam_cat", X + dxp, Y, S_, pose(LOW, ("relax_s", "relax_s")), "fade", (0, 1), rim=True)
             kn = dict(drop=100 - (4 if j == 0 else 0), l=(-58, 0, -1), r=(62, 0, 1)); dust = 3 - j; cam = (290, 560 + (8 if j == 0 else 0), 1.4)
-        elif i < 22:                                         # up over one knee, a hand on it
-            t = (i - 17) / 4.0
+        elif i < 30:                                         # up over one knee, a hand on it
+            t = (i - 25) / 4.0
             pam = P("pam_cat", X + 34 * (1 - t), Y, S_, pose(lerp(LOW, HERO, t), ("relax_s", "relax_s")), "fade", (0.2, 0.6), rim=True)
             kn = dict(drop=100 * (1 - t) ** 1.4, l=(-40 * (1 - t), 0, -1), r=(30 * (1 - t), 0, 1)); rot = -0.08 * math.sin(t * math.pi)
-        elif i < 24:
-            pam = P("pam_cat", X, Y, S_, "hero", "fade", (0.2, 0.3), rim=True); kn = dict(drop=4 if i == 22 else 0)
-        elif i < 27:                                         # she brushes her coat off: nothing happened
+        elif i < 32:
+            pam = P("pam_cat", X, Y, S_, "hero", "fade", (0.2, 0.3), rim=True); kn = dict(drop=4 if i == 30 else 0)
+        elif i < 35:                                         # she brushes her coat off: nothing happened
             pam = P("pam_cat", X, Y, S_, pose(BRUSH[i % 2], ("relax_s", "flat")), "peer", (0.5, 0.8), rim=True)
         else:
             pam = P("pam_cat", X, Y, S_, "hero", "peer", (0.3, 0.3), rim=True)
@@ -967,53 +970,69 @@ def t11():
                         c.new_path(); c.arc(X + dxp + sgn * (60 + 34 * u + j * 22), Y - 8 - 16 * u - (j % 2) * 9, 9 + 10 * u, 0, 2 * math.pi)
                         c.set_source_rgba(0.80, 0.80, 0.78, 0.5 * (1 - u * 0.8)); c.fill()
         return draw(shot("6.07", cam=cam, cast=[], after=after, protect=()))
-    return [f(i) for i in range(28)]
+    return [f(i) for i in range(36)]
 
 
 # ---- T12 ----------------------------------------------------------------------------------------------------------------
 def t12():
-    """4.4, v17 (Tomas: a POV of her going in): her eyes. Through the lit arch, walking (the camera bobs on her steps),
-    down the passage to its far opening; the light fills the frame; her black glove parts a velvet curtain; the hall
-    ahead, nearer with each step: the booth, the game, the stage at the end. Nobody turns. 30 drawings, 2.5 s."""
-    import hands_ps as hp
+    """4.4, v18 (Tomas: a POV of her going in; review): her eyes. Through the arch (its bulbs warm) and down the passage,
+    charcoal walls, the light only at its end and wet on the floor; two drawings of white; a velvet curtain: her arm in
+    from the frame's left, the wrist bent, the glove's fingers closed on the cloth; it parts in soft uneven folds; the
+    hall ahead, nearer with each step, ending on the booth under THE HOUSE ALWAYS COLLECTS. Nobody turns. 36 drawings, 3.0 s."""
     import on4_club as cl
     fr = []
-    for i in range(14):                                      # the passage
-        u = i / 13.0
-        z = 1.45 * (5.2 ** (u ** 1.6))                      # from 4.3's own framing (at 1.0 the set's bottom edge showed)
-        bob = 5 * math.sin(i * math.pi / 3) / z
-        cy = 545 + 50 * u
-        s_ = draw(shot("4.3", cam=(270, cy + bob, z), cast=[], protect=()))
-        if i >= 11:                                          # the light fills it
-            c = cairo.Context(s_); c.set_source_rgba(1, 1, 0.96, (i - 10) / 4.0); c.paint()
-        fr.append(s_)
-    for i in range(16):                                      # the hall
-        u = i / 15.0
-        z = 1.0 + 0.32 * u
-        bob = 6 * math.sin((i + 14) * math.pi / 3)
-        op = min(1.0, i / 5.0)                               # the curtain parts
+    cl.PASSAGE_DARK[0] = True
+    try:
+        for i in range(13):                                  # the passage
+            u = i / 12.0
+            z = 1.45 * (5.2 ** (u ** 1.5))
+            bob = 5 * math.sin(i * math.pi / 3) / z
+            s_ = draw(shot("4.3", cam=(270, 545 + 50 * u + bob, z), cast=[], protect=()))
+            if i >= 11:
+                c = cairo.Context(s_); c.set_source_rgba(1, 1, 0.96, (i - 10) / 3.0); c.paint()
+            fr.append(s_)
+    finally:
+        cl.PASSAGE_DARK[0] = False
+    for _ in range(2):                                       # the light
+        s_ = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c = cairo.Context(s_); c.set_source_rgb(1, 1, 0.96); c.paint(); fr.append(s_)
+    FOLD = [0, 26, 70, 92, 140, 172, 230, 252, 300, 340]      # uneven folds
+    for i in range(21):                                      # the hall
+        u = i / 20.0
+        z = 1.0 + 0.50 * ease(u)
+        cx_ = 240 - 90 * ease(u); cy_ = 560 - 40 * ease(u)
+        bob = 6 * math.sin((i + 15) * math.pi / 3)
+        op = min(1.0, i / 6.0)
         def after(k, op=op, i=i):
             c = k.c
-            if op < 1.0:
-                for sgn in (-1, 1):                          # the velvet, dark, its folds catching the hall's light
-                    x0 = 270 + sgn * 270 * op
-                    st.poly(k, [(x0, -40), (x0 + sgn * 330, -40), (x0 + sgn * 330, 1000), (x0, 1000)], (0.06, 0.02, 0.03), 2.0)
-                    for j in range(7):
-                        g = cairo.LinearGradient(x0 + sgn * (8 + j * 44), 0, x0 + sgn * (30 + j * 44), 0)
-                        g.add_color_stop_rgba(0, 0.30, 0.10, 0.13, 0); g.add_color_stop_rgba(0.5, 0.36, 0.12, 0.15, 0.9); g.add_color_stop_rgba(1, 0.30, 0.10, 0.13, 0)
-                        c.set_source(g); c.rectangle(min(x0 + sgn * (8 + j * 44), x0 + sgn * (30 + j * 44)), -40, 22, 1040); c.fill()
-                hx_ = 270 - 270 * op - 6; hy_ = 520                # her arm: the coat's sleeve in from the frame's left edge, the glove on the curtain's edge
-                st.poly(k, [(-30, 690), (-30, 610), (hx_ - 34, hy_ - 20), (hx_ - 22, hy_ + 28)], (0.16, 0.16, 0.17), 2.4)
-                c.set_source_rgb(0.30, 0.30, 0.32); c.set_line_width(3); c.move_to(-30, 640); c.line_to(hx_ - 30, hy_ + 6); c.stroke()
-                kit.ellipse(k, hx_ - 14, hy_ + 4, 26, 30, oc.GLOVE_DARK, 7900, shadow=False, lw=2.4)
-                for fy in (-22, -6, 10, 24):
-                    kit.ellipse(k, hx_ + 12, hy_ + fy, 16, 7, oc.GLOVE_DARK, 7901 + fy, shadow=False, lw=2.0)
-                c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.set_line_width(2.2)               # the hall's light on her glove's edge (black on black otherwise)
-                c.new_path(); c.arc(hx_ - 14, hy_ + 4, 27, -1.9, 1.2); c.stroke()
-                for fy in (-22, -6, 10, 24):
-                    c.new_path(); c.arc(hx_ + 12, hy_ + fy, 17, -1.2, 1.2); c.stroke()
-                c.move_to(-30, 610); c.line_to(hx_ - 34, hy_ - 20); c.stroke()
-        s_ = draw(shot("5.1", cam=(240, 560 + bob, z), after=after, protect=()))
+            if op >= 1.0:
+                return
+            hx_, hy_ = 270 - 260 * op, 520
+            for sgn in (-1, 1):                              # the velvet, its folds of every width, bunched where she pulls
+                x0 = 270 + sgn * 270 * op
+                st.poly(k, [(x0, -40), (x0 + sgn * 360, -40), (x0 + sgn * 360, 1000), (x0, 1000)], (0.06, 0.02, 0.03), 0)
+                for j in range(len(FOLD) - 1):
+                    w0, w1 = FOLD[j], FOLD[j + 1]
+                    def X(w, y):
+                        bunch = (1.0 - 0.45 * op * math.exp(-((y - hy_) / 160.0) ** 2)) if sgn < 0 else 1.0
+                        return x0 + sgn * w * bunch + sgn * 6 * math.sin(y / 70.0 + j)
+                    g = cairo.LinearGradient(X(w0, hy_), 0, X(w1, hy_), 0)
+                    g.add_color_stop_rgba(0, 0.30, 0.10, 0.13, 0.0); g.add_color_stop_rgba(0.45, 0.42, 0.14, 0.18, 0.85); g.add_color_stop_rgba(1, 0.30, 0.10, 0.13, 0.0)
+                    c.new_path(); c.move_to(X(w0, -40), -40)
+                    for y in range(0, 1001, 40):
+                        c.line_to(X(w0, y), y)
+                    for y in range(1000, -41, -40):
+                        c.line_to(X(w1, y), y)
+                    c.close_path(); c.set_source(g); c.fill()
+            # her arm: the sleeve in from the frame's left, the wrist bent, the glove closed on the cloth
+            ex, ey = hx_ - 70, hy_ + 40
+            st.poly(k, [(-30, 700), (-30, 620), (ex - 6, ey - 26), (ex + 8, ey + 22)], (0.16, 0.16, 0.17), 2.4)
+            c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.set_line_width(2.2); c.move_to(-30, 620); c.line_to(ex - 6, ey - 26); c.stroke()
+            kit.ellipse(k, ex + 22, ey - 8, 26, 24, oc.GLOVE_DARK, 7900, shadow=False, lw=2.4)                      # the back of the hand, tipped up at the wrist
+            for n_, (fx_, fy_) in enumerate(((44, -28), (50, -10), (48, 8), (40, 24))):
+                kit.ellipse(k, ex + fx_, ey + fy_, 10, 8, oc.GLOVE_DARK, 7901 + n_, shadow=False, lw=1.8)            # the fingers, curled round the edge
+            c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.set_line_width(2.0)
+            c.new_path(); c.arc(ex + 22, ey - 8, 26, -2.2, 0.4); c.stroke()
+        s_ = draw(shot("5.1", cam=(cx_, cy_ + bob, z), after=after, protect=()))
         fr.append(s_)
     return fr
 

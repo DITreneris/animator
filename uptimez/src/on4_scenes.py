@@ -309,6 +309,8 @@ def stage_front(k, lit=True):
         c.save(); c.translate(225, 690); c.scale(130, 16)
         g = cairo.RadialGradient(0, 0, 0, 0, 0, 1); g.add_color_stop_rgba(0, 1, 1, 0.92, 0.55); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
         c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+    if MARKS[0]:                                             # v22: what her act left on the stage stays there, lit or dark (it vanished with the beam)
+        stage_marks(k)
 
 
 def room_reverse(k, beam=False):
@@ -703,8 +705,6 @@ def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
 
 def _spot_on(k):                                           # board v9: the beam ON her: the cone over her, its pool at her feet
     c = k.c
-    if MARKS[0]:
-        stage_marks(k)
     if SPOT_SOFT[0]:                                       # v19 (two reviews): the beam's edges soft: five thin cones, each a little wider
         for w_ in (-18, -9, 0, 9, 18):
             c.set_source_rgba(1, 1, 0.92, 0.042)
@@ -936,6 +936,8 @@ def _loc(k, name):
         g = cairo.LinearGradient(0, 300, 0, 520)             # board v9: the far wall and the ceiling go dark: a night club,
         g.add_color_stop_rgba(0, 0.02, 0.02, 0.03, 0.80); g.add_color_stop_rgba(1, 0.02, 0.02, 0.03, 0.0)   # lit at its tables
         k.c.set_source(g); k.c.rectangle(0, 0, 540, 520); k.c.fill()
+        if cl.MOTTO[0]:
+            cl.motto(k)
         return cl.light_hall
     if name == "plan":
         cl.PLAN_CARD[0] = "v7"; cl.plan_insert(k); return cl.light_inside
@@ -1015,6 +1017,7 @@ def _desk(k, sh, eighth):
 def render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
     import on4_club as cl
+    cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True
     cl.LIMO[0] = (30, 1.15); cl.CLIENT_DY[0] = 0      # the Client stands behind the booth table (his legs reach the floor): left as he was
     st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"; oc.ENV_BIG[0] = 1.25; oc.MASK_UP_V2[0] = True
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W * scale, H * scale); s.set_device_scale(scale, scale)
@@ -1080,7 +1083,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"4.4": 2.5, "6.0": 3.6, "6.05": 0.9, "6.07": 2.33, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"4.4": 3.0, "6.0": 3.6, "6.05": 0.9, "6.07": 3.0, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():
