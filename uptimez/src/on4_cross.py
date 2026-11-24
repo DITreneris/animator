@@ -25,6 +25,7 @@ import dh_cast as dc
 import kit
 
 P = sc.P
+FWD = [False]                                                # (24 Nov, Tomas: "after the crash the car leaves backwards") it drives on, forward: out onto the far side of the road, round her, and off to the left
 S_CAR = 1.65
 PAM_K, GUARD_K = 1.203, 0.903
 NOSE = 345.0                                                 # the bumper, where it stopped (T3: STOPX + 5 - 170 S)
@@ -166,6 +167,10 @@ def tr():
     def f(i):
         j = i - NR + 10                                      # the old count, from where he stands
         cx = CX + (0 if j < 31 else ((j - 31) / 5.0) ** 2 * 260)                      # at the end it starts to back away
+        cb = 724.0
+        if FWD[0]:                                           # it pulls out to the far side and forward (to the left)
+            q = max(0.0, (j - 28) / 13.0)
+            cx = CX - 360 * q * q; cb = 724 - 30 * m.ease(min(1.0, q * 1.6))
         dist = None
         if i < NR:                                           # round the tail to our side, on his legs
             t = i / float(NR - 1)
@@ -178,11 +183,11 @@ def tr():
             d = don(D_R[0], D_R[1], "wave", "pleased", (-0.8, -0.2), paddle_ang=0.20 + 0.10 * math.sin(i * math.pi), whistle_in=True)
         def after(k):
             c = k.c
-            shadow(k, cx, 728, 160 * S_CAR, 8, 0.5)
-            car.side(k, cx, 724, S_CAR)
+            shadow(k, cx, cb + 4, 160 * S_CAR, 8, 0.5)
+            car.side(k, cx, cb, S_CAR)
             wx = WX + (cx - CX)
             if j >= 7:                                       # the glass down
-                c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(wx - 36 * S_CAR, 724 - 96 * S_CAR, 72 * S_CAR, 22 * S_CAR); c.fill()
+                c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(wx - 36 * S_CAR, cb - 96 * S_CAR, 72 * S_CAR, 22 * S_CAR); c.fill()
             ox = 10 * max(0.0, 1 - abs(j - 13) / 3.0)        # the hand: out to him with his bill; a flick up on each of hers
             oy = 0.0
             for q in range(6):
@@ -229,11 +234,16 @@ LAND = [(206, 694), (232, 710), (258, 692), (284, 708), (308, 692), (330, 708)] 
 def tb():
     def f(i):
         cx = CX + 260 + (i / 6.0) ** 2 * 300                 # the car going, out of frame by the eighth drawing
+        if FWD[0]:                                           # it passes behind her, right to left, and is gone by the eleventh drawing
+            cx = CX - 360 - 62.0 * i - 3.0 * i * i
         look = (0.9, -0.9) if i < 8 else (0.3, -0.2)
         pm_ = pam("doubt" if i < 14 else "fade", look, (50, -128))
         def after(k):
             shadow(k, LX - 105, LY_ + 44, 125, 8)
-            if cx - 170 * S_CAR < 420:
+            if FWD[0]:
+                if cx + 175 * S_CAR > 40:
+                    shadow(k, cx, 698, 160 * S_CAR, 8, 0.5); car.side(k, cx, 694, S_CAR)
+            elif cx - 170 * S_CAR < 420:
                 shadow(k, cx, 728, 160 * S_CAR, 8, 0.5); car.side(k, cx, 724, S_CAR)
             sc.draw_cast(k, [pm_])
             for j, (bx, by) in enumerate(LAND):              # down out of the dark, swinging, onto her

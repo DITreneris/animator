@@ -51,6 +51,7 @@ VELVET, VELVET_D = dc.VELVET, dc.VELVET_D
 FELT = (0.18, 0.36, 0.26)
 HALL_LAMP = ["v6"]               # v7 (23 Nov): Dad hidden by the dark over a small lamp; "v6" the big shade
 PLAN_CARD = ["v6"]               # v7: one title, every number seen, the card laid down and the hand off it; "v6" as before
+TUBE = [False]                    # see motto()
 MOTTO = [False]                  # v9 (24 Nov): Daddy's Home's neon motto, THE HOUSE ALWAYS COLLECTS, on the wall over the booth
 ARCH_WARM = [False]              # v9: the arch's bulbs give warm light (laid after the grade, so it keeps its colour)
 PASSAGE_DARK = [False]           # v9: the passage's walls charcoal, its far end lit (the POV, 4.4)
@@ -460,6 +461,24 @@ def motto(k):
     c = k.c
     rows = (("THE HOUSE", 15), ("ALWAYS", 21), ("COLLECTS", 21))
     import on4_posters as _po
+    if TUBE[0]:                                            # (24 Nov, Tomas: "I don't like the neon") real tubing: the letters as thin lit tubes with a glow, no dark box;
+        fl = TUBE[0] if isinstance(TUBE[0], (int, float)) and not isinstance(TUBE[0], bool) else 1.0   # brackets and a lead down the wall; TUBE[0] in 0..1 = one letter (the O of HOUSE) flickering
+        c.set_source_rgb(0.16, 0.15, 0.16); c.set_line_width(1.4)
+        c.move_to(196, 440); c.curve_to(214, 452, 222, 470, 224, 500); c.stroke()             # the lead
+        for i, (txt, sz) in enumerate(rows):
+            yy = 382 + i * 30; sz2 = sz + 5
+            c.select_font_face("Lilita One", 0, 0); c.set_font_size(sz2)
+            e = c.text_extents(txt); x0 = 130 - e.x_advance / 2
+            for bx in (x0 + 6, x0 + e.x_advance - 6):                                           # brackets behind each row
+                c.set_source_rgb(0.20, 0.19, 0.20); c.rectangle(bx - 1.5, yy - sz2 * 0.86, 3, sz2 * 0.98); c.fill()
+            for wd, al in ((13, 0.07), (8, 0.13), (4.6, 0.22)):                                 # the glow on the wall
+                c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.set_source_rgba(1, 0.92, 0.92, al); c.set_line_width(wd); c.stroke()
+            c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.set_source_rgb(*NEON); c.set_line_width(2.3); c.set_line_join(1); c.stroke()
+            if i == 0 and fl < 1.0:                                                             # the O, dim
+                ox = x0 + c.text_extents("THE H").x_advance
+                c.save(); c.rectangle(ox - 1, yy - sz2, c.text_extents("O").x_advance + 2, sz2 + 6); c.clip()
+                c.new_path(); c.move_to(x0, yy); c.text_path(txt); c.set_source_rgb(0.30, 0.27, 0.28); c.set_line_width(2.5); c.stroke(); c.restore()
+        return
     if _po.ON[0]:                                          # (24 Nov) one backing under all three, then the words: each row's backing cut the foot of the word above
         c.set_source_rgba(0.10, 0.01, 0.03, 0.85); c.rectangle(46, 362, 168, 86); c.fill()
         for i, (txt, sz) in enumerate(rows):
