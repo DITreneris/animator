@@ -216,28 +216,60 @@ def a21(t):
         cs = 0.36 * (105 + 285 * (cy - 576) / 384.0) / 105.0
         cx = 302 + 23 * (cy - 576) / 384.0 - 14 * u
         nose = -0.02 * math.sin(math.pi * seg(t, 1.5, 1.9))                    # it stops: the nose dips and comes back
-        duck = ease(seg(t, 0.25, 0.65))
-        look = (0.75 - 0.25 * u, 0.85 + 0.1 * u)
-        RAIL2 = oc.pm.ik(-1, -56, -126 + 34 * duck) + oc.pm.ik(1, 62, -126 + 34 * duck)   # both gloves on the rail
-        RAIL2 = oc.pm.ik(-1, -56, -126 + 60 * duck) + oc.pm.ik(1, 62, -126 + 60 * duck)   # her hands stay on the rail as she sinks
-        p = P("pam_cat", 186, 420, 0.64, pose(RAIL2, ("grab", "grab")), "peer", look, rim=True)   # her feet stay on the platform: she goes down on her knees
+        duck = ease(seg(t, 0.3, 0.75))                       # v2 (the review): down on her haunches: hips down and back, the trunk forward
+        turn = ease(seg(t, 0.7, 1.0))                        # her head comes round to it last
+        hunt = 0.6 * ease(seg(t, 1.8, 2.1))                  # and at the end her eyes narrow; a small smile
+        D = 44 * duck
+        look = (0.3 + 0.6 * turn - 0.2 * u * turn, 0.5 + 0.45 * turn)
+        ARMS = oc.pm.ik(-1, -58, -126 - D) + lerp(oc.pm.ik(1, 62, -126), oc.pm.ik(1, 40, -84 - D), duck)   # one glove stays on the rail, the other comes down to her knee
+        p = P("pam_cat", 186, 420, 0.64, pose(ARMS, ("grab", "relax_s" if duck > 0.5 else "grab")), "peer", look, rim=True, tilt=0.10 * turn, hunt=hunt)
+        gd = [(-1, 10.0, 11.0, 1.70), (1, -16.0, 9.2, 1.86)]                    # each of Dad's men: side, how far ahead of the car's nose, his own pace, when he stops
+        gp = []
+        for j, (sgn, ahead, pace, stop) in enumerate(gd):
+            gu = 0.06 + 0.94 * (1 - (1 - seg(t, 0.0, stop)) ** 2)              # his own walk, not the car's
+            gy = 576 + (735 - 576) * gu + ahead * cs
+            gs_ = 0.27 * 0.36 * (105 + 285 * (gy - 576) / 384.0) / 105.0
+            gx = 302 + 23 * (gy - 576) / 384.0 - 14 * gu + sgn * (104 * cs + 16)
+            tn = math.sin((t - 1.9) * 9.0) * seg(t, 1.9, 2.0) if j == 0 else 0.0     # stopped, the first looks up the street and down it (never up at her)
+            gp.append((gx, gy, gs_, j == 1, (t * pace + j * 1.6) if t < stop else None, tn))
         def before(k):
             c = k.c
-            g = cairo.RadialGradient(0, 0, 0, 0, 0, 1)                         # the headlights on the cobbles ahead of it
-            g.add_color_stop_rgba(0, 1, 1, 0.94, 0.42); g.add_color_stop_rgba(1, 1, 1, 0.94, 0)
-            c.save(); c.translate(cx, cy + 46 * cs); c.scale(120 * cs, 52 * cs); c.set_source(g); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+            for x0, x1 in ((0, 250), (540, 330)):            # night: the lane's walls darker toward the frame's edges
+                g = cairo.LinearGradient(x0, 0, x1, 0)
+                g.add_color_stop_rgba(0, 0, 0, 0, 0.62); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+                c.set_source(g); c.rectangle(min(x0, x1), 420, abs(x1 - x0), 540); c.fill()
+            g = cairo.LinearGradient(0, 760, 0, 960); g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0, 0, 0, 0.55)
+            c.set_source(g); c.rectangle(0, 760, 540, 200); c.fill()
+            for sgn in (-1, 1):                              # the headlights: two beams down the cobbles
+                lx = cx + sgn * 62 * cs; ly_ = cy - 44 * cs; L = 190 * cs + 60
+                g = cairo.LinearGradient(0, ly_, 0, ly_ + L)
+                g.add_color_stop_rgba(0, 1, 1, 0.94, 0.50); g.add_color_stop_rgba(1, 1, 1, 0.94, 0.0)
+                c.new_path(); c.move_to(lx - 10 * cs, ly_ + 30 * cs); c.line_to(lx + 10 * cs, ly_ + 30 * cs)
+                c.line_to(lx + sgn * 30 * cs + 46 * cs, ly_ + L); c.line_to(lx + sgn * 30 * cs - 46 * cs, ly_ + L); c.close_path(); c.set_source(g); c.fill()
+            for gx, gy, gs_, fl, st__, tn in gp:             # their long shadows, thrown up the lane by the lamps
+                c.new_path(); c.move_to(gx - 26 * gs_ / 0.27 * 0.27, gy); c.line_to(gx + 26 * gs_, gy)
+                c.line_to(gx + (gx - cx) * 0.5 + 16 * gs_, gy - 300 * gs_); c.line_to(gx + (gx - cx) * 0.5 - 16 * gs_, gy - 300 * gs_); c.close_path()
+                c.set_source_rgba(0, 0, 0, 0.42); c.fill()
             c.save(); c.translate(cx, cy); c.rotate(nose); c.translate(-cx, -cy)
             car_.reflect(k, lambda: car_.front(k, cx, cy, cs), cy, 0.25, 20)
             c.restore()
-            gs0 = xc.GS; xc.GS = 0.27 * cs
+            gs0 = xc.GS
             try:
-                for j, sgn in enumerate((-1, 1)):                              # one each side, in step with it; they stop when it stops
-                    xc.guard(k, cx + sgn * (104 * cs + 16), cy + 4, xc.G_WALK, j == 1, 1600 + j * 40, 0.0, (t * 11.0 + j * 1.6) if t < 1.7 else None)
+                for j, (gx, gy, gs_, fl, st__, tn) in sorted(enumerate(gp), key=lambda q: q[1][1]):
+                    xc.GS = gs_
+                    xc.guard(k, gx, gy + 4, xc.G_WALK, fl, 1600 + j * 40, 0.0, st__, tn)
             finally:
                 xc.GS = gs0
         def after2(k):
-            pam_(k, p, breath(t), 0.05 + 0.05 * duck, dict(drop=60 * duck, l=(-4, 0, 1), r=(6, 0, 1)) if duck > 0.03 else None)
+            was = sc.RIM_A[0]; sc.RIM_A[0] = 0.35             # a thinner rim: she read as a sticker
+            try:
+                pam_(k, p, breath(t), 0.05 + 0.13 * duck, dict(drop=D, l=(-10 * duck, 0, 1), r=(4 * duck, 0, 1)) if duck > 0.03 else None)
+            finally:
+                sc.RIM_A[0] = was
             sc.railing(k, 380)
+            c = k.c                                          # the frame's corners
+            g = cairo.RadialGradient(270, 500, 300, 270, 500, 620); g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0, 0, 0, 0.4)
+            c.set_source(g); c.rectangle(-100, -100, 800, 1200); c.fill()
         car_.B_END_OFF[0] = True
         try:
             return draw(shot("2.1", cam=(270 - 40 * (z - 1) / 0.22, 480 + 60 * (z - 1) / 0.22, z), cast=[], before=before, after=after2, protect=()))

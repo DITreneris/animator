@@ -482,6 +482,7 @@ def draw_cast(k, cast):
         if lean:
             k.c.save(); k.c.translate(a[0], a[1]); k.c.rotate(lean); k.c.translate(-a[0], -a[1])
         if who == "pam_cat":
+            oc.HUNT[0] = kw.pop("hunt", 0.0)
             cy = kw.pop("clip_y", None)
             tilt = kw.pop("tilt", 0.0)                       # (24 Nov) her head a little behind her body: the same drawing twice, cut at the neck, the head's half turned about it
             if kw.pop("rim", False):                         # board v9: a thin rim of light round her
@@ -557,6 +558,7 @@ def draw_cast(k, cast):
             st.cast(k, *a, **kw); o = {}
         else:
             raise ValueError(who)
+        oc.HUNT[0] = 0.0
         if BREATH[0] != 1.0 and not lean:
             k.c.restore()
         if lean:
