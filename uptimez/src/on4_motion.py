@@ -825,8 +825,12 @@ def t5():
         beat = lambda j: max(0.0, math.sin(2 * math.pi * j / 10.0)) ** 2
         for j in range(20):
             fr.append(close(0.25 + 0.75 * ease((j + 1) / 20.0), 0, 0, beat(j)))
-        for j in range(24):                                  # the eyes open; a blink; they drop a little and come back; still for the loop
-            fr.append(close(1.0, 0.3 + 0.7 * min(1.0, j / 10.0) if j < 22 else 1.0, 1 if j in (14, 15) else (2 if j in (17, 18, 19) else 0), beat(20 + j) if j < 18 else 0.0))
+        last = None
+        for j in range(18):                                  # the eyes open; a blink; they drop a little and come back; still for the loop
+            last = close(1.0, 0.3 + 0.7 * min(1.0, j / 8.0) if j < 16 else 1.0, 1 if j in (10, 11) else (2 if j in (13, 14) else 0), beat(20 + j) if j < 14 else 0.0); fr.append(last)
+        street = draw(shot("1.1"))
+        for t in (0.17, 0.33, 0.5, 0.67, 0.83, 1.0):         # the dissolve: the lamp is the streetlamp (as before: the loop)
+            fr.append(blend_(last, street, t))
         return fr
     for d in (0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 1.0):                                    # the room goes dark round the lamp
         fr.append(close(d, 0))

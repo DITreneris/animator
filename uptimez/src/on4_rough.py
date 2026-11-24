@@ -281,7 +281,7 @@ def sound(tm, d, total):
         nz = rng.standard_normal(n_); bb, aa = sg_.butter(2, 5000 / (SR / 2), "high"); nz = sg_.lfilter(bb, aa, nz)
         return nz * np.exp(-tt_ / 0.22) * 0.22 + np.sin(2 * np.pi * 180 * tt_) * np.exp(-tt_ / 0.04) * 0.25
     for t0, d, cy in ((0.0, 0.90, 0.92), (1.17, 0.90, 2.08), (2.35, 0.65, 3.0)):
-        put(fx, roll(d), a0 + t0); put(fx, cymbal(), a0 + cy)
+        put(fx, roll(d), a0 + t0); put(fx, cymbal() * (0.55 if SCENE3[0] else 1.0), a0 + cy)   # (24 Nov) the cymbal lower: its edge rang over -1 dBFS after the AAC
     for j in range(4):
         put(fx, rs(so.swish(0.12), so.SR), a0 + 0.1 + j * 0.2, 0.3)                                  # the knives turning
     put(fx, rs(so.thump(), so.SR), a0 + 0.84, 0.5)                                                  # into the boards
