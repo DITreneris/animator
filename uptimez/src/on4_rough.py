@@ -310,8 +310,8 @@ def sound(tm, d, total):
         band.insert(2, (thud + 1.5, st_("3.6") + 2.5, dict(drums=0, comp=False)))
     for t0, t1, kw_ in band:
         jz.groove(mus, t0, t1, level=0.8, **kw_)
-        j = int(t1 * SR); mus[j:] = 0.0                                                             # cut dead
-    mus_end = int(st_("6.0") * SR); mus[mus_end:] = 0.0
+        j = int(t1 * SR); mus[max(0, j - 144):j] *= np.linspace(1, 0, len(mus[max(0, j - 144):j])); mus[j:] = 0.0   # cut dead (3 ms off the edge: a full-scale step rang to +0.4 dBFS in the AAC)
+    mus_end = int(st_("6.0") * SR); mus[max(0, mus_end - 144):mus_end] *= np.linspace(1, 0, len(mus[max(0, mus_end - 144):mus_end])); mus[mus_end:] = 0.0
     if "4.4" in tm:                                                                                 # the final film: the band and the effects give way under every line
         env = np.ones(n)                                                                            # (two lines were not recognized inside the mix, lesson 107)
         nz = np.nonzero(np.abs(voice) > 1e-4)[0]
