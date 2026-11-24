@@ -372,11 +372,10 @@ def seat3_people(k, hand, env, dad, t=None):
         up2 = max(0.0, min(1.0, (co.BT + 150 - hand[1]) / 88.0))
         S2 = 0.72; mx = (x0 + x1) / 2.0
         feet = y1 - 2 + 150 * S2 + 150 * (1 - u)             # her hands' height is the sill's top when she is up
-        arms = oc.pm.ik(-1, -66, -150) + oc.pm.ik(1, 66, -150)
+        arms = oc.pm.ik(-1, -66, -172) + oc.pm.ik(1, 66, -172)   # the gloves whole above the sill
         if u > 0.02:
             c.save(); c.rectangle(x0, y0, x1 - x0, y1 - 2 - y0); c.clip()       # in the window: nothing of her below the sill
-            sc.draw_cast(k, [P("pam_cat", mx, feet, S2, pose(arms, ("flat", "flat")), "peer", (-0.7 + 0.15 * up2, 0.9 - 0.25 * up2), rim=True,
-                               tilt=0.06 * math.sin(2 * math.pi * t / 1.7))])
+            sc.draw_cast(k, [P("pam_cat", mx, feet, S2, pose(arms, ("flat", "flat")), "peer", (-0.7 + 0.15 * up2, 0.9 - 0.25 * up2), rim=True)])            # no head tilt here: at this size the cut at her neck shows
             c.restore()
         return
     c.save(); c.translate(486, 300); c.scale(-1, 1)                                                # her ears over the roof's edge:
