@@ -171,7 +171,7 @@ def t1():
     if CAT[0]:
         for _ in range(3):                                   # 0.25 s: frame 0, held
             fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
-        FL2 = oc.pm.ik(-1, -84, -176) + oc.pm.ik(1, 84, -176)                 # v7: hands flung wide over her head
+        FL2 = oc.pm.ik(-1, -84, -306) + oc.pm.ik(1, 84, -306)                 # v13: hands flung up over her head (ik's y is from her feet: -176 was at her waist)
         for step, hop, t in (("in", 0, 0.2), ("full", 0, 0.5), ("full2", 0, 0.8)):
             fr.append(cat_over(f(i, lerp(HERO, FL2, t), 0, "doubt", (0.9, -0.8), dict(), hop=hop), step)); i += 1       # the cat fills the lens
         fr.append(cat_over(f(i, FL2, 0.20, "doubt", (0.9, -0.9), dict(), hop=46), "out")); i += 1                       # v7: the flinch after it, where we can see it:
@@ -670,67 +670,145 @@ def t8():
 
 
 # ---- T9 -----------------------------------------------------------------------------------------------------------------
+def _knife(c, x, y, ang, s=1.0):
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    c.move_to(-4, 0); c.line_to(0, -40); c.line_to(5, 0); c.close_path(); c.set_source_rgb(0.93, 0.93, 0.90); c.fill_preserve()
+    c.set_source_rgb(*INK); c.set_line_width(1.2); c.stroke()
+    c.rectangle(-5, 0, 11, 16); c.set_source_rgb(0.10, 0.10, 0.11); c.fill(); c.restore()
+
+
+def _flame(c, x, y, r):
+    for rr, col in ((r, st.NEON), (r * 0.66, st.GOLD), (r * 0.3, (1.0, 0.97, 0.85))):
+        c.new_path()
+        for a_ in range(0, 360, 30):
+            q = rr * (1.0 + 0.22 * math.sin(a_ * 0.11 + x * 0.05 + rr))
+            (c.move_to if a_ == 0 else c.line_to)(x + q * math.cos(math.radians(a_)), y + q * 0.8 * math.sin(math.radians(a_)))
+        c.close_path(); c.set_source_rgb(*col); c.fill()
+
+
+A_X, A_Y, A_S = 225, 700, 0.86
+A_RISE = 150
+
+
 def t9():
-    """6.0, v12 (Tomas: her act must be impressive): three numbers, each bigger, 1.2 s each. She juggles three knives;
-    she breathes a ball of fire across the stage (the film's only flame: GOLD and NEON, kept by the accent pass); she
-    rises off the boards and hangs in the spotlight, arms wide. 43 drawings, 3.6 s. Then 6.05: nobody turned."""
-    X, Y, S_ = 225, 700, 0.86
-    def knife(c, x, y, ang, s=1.0):
-        c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
-        c.move_to(-4, 0); c.line_to(0, -40); c.line_to(5, 0); c.close_path(); c.set_source_rgb(0.93, 0.93, 0.90); c.fill_preserve()
-        c.set_source_rgb(*INK); c.set_line_width(1.8); c.stroke()
-        c.rectangle(-5, 0, 11, 16); c.set_source_rgb(0.10, 0.10, 0.11); c.fill(); c.restore()
-    def flame(c, x, y, r):
-        for rr, col in ((r, st.NEON), (r * 0.66, st.GOLD), (r * 0.3, (1.0, 0.97, 0.85))):
-            c.new_path()
-            for a_ in range(0, 360, 30):
-                q = rr * (1.0 + 0.22 * math.sin(a_ * 0.11 + x * 0.05 + rr))
-                (c.move_to if a_ == 0 else c.line_to)(x + q * math.cos(math.radians(a_)), y + q * 0.8 * math.sin(math.radians(a_)))
-            c.close_path(); c.set_source_rgb(*col); c.fill()
+    """6.0, v13 (Tomas: stronger): the camera in (1.4) and rising with her. 1: five big knives in a high arc, her arms
+    wide; four come down into the boards round her feet, the fifth she catches in her teeth. 2: the torch up, the head
+    back, a ball of fire the width of the stage; it burns the curtain's edge. 3: she rises off the boards and hangs in
+    the spotlight, arms wide. 43 drawings, 3.6 s."""
+    X, Y, S_ = A_X, A_Y, A_S
     def f(i):
-        if i < 14:                                           # 1: three knives in the air
+        sc.MARKS[0] = False                                  # the marks come as she makes them
+        cam = (290, 560, 1.4)
+        land = 0; teeth = False; scorch = 0.0
+        if i < 14:                                           # 1: the knives
             up = i % 4 < 2
-            arms = oc.pm.ik(-1, -70, -170 if up else -90) + oc.pm.ik(1, 70, -90 if up else -170)
-            pam = P("pam_cat", X, Y, S_, pose(arms, ("relax_s", "relax_s")), "proud", (0.0, -0.9), rim=True)
-        elif i < 28:                                         # 2: the torch up, the head back, the breath
-            t = (i - 14) / 13.0
-            arms = oc.pm.ik(-1, -40, oc.BT - 20) + oc.pm.ik(1, 70, -150)
+            if i < 10:
+                arms = oc.pm.ik(-1, -84, -306 if up else -236) + oc.pm.ik(1, 84, -236 if up else -306)
+                pam = P("pam_cat", X, Y, S_, pose(arms, ("relax_s", "relax_s")), "proud", (0.0, -0.9), rim=True)
+            else:
+                land = min(4, (i - 9) * 2); teeth = i >= 11
+                pam = P("pam_cat", X, Y, S_, "hero", "proud", (0.4, -0.2), rim=True)
+        elif i < 28:                                         # 2: the fire
+            t = (i - 14) / 13.0; land = 5
+            arms = oc.pm.ik(-1, -40, oc.BT + 60) + oc.pm.ik(1, 84, -292)
             pam = P("pam_cat", X, Y, S_, pose(arms, ("fist", "fist")), "approve" if t > 0.25 else "proud", (0.9, -0.5), lean=-0.10 if t < 0.25 else 0.06, rim=True)
-        else:                                                # 3: off the boards, arms wide
-            t = ease(min(1.0, (i - 28) / 8.0))
-            arms = lerp(HERO, oc.pm.ik(-1, -120, -110) + oc.pm.ik(1, 120, -110), t)
-            pam = P("pam_cat", X, Y - 130 * t + (4 * math.sin(i * 0.9) if t >= 1 else 0), S_, pose(arms, ("relax_s", "relax_s")), "proud", (0.0, -0.8), rim=True)
+            scorch = max(0.0, min(1.0, (i - 24) / 3.0))
+        else:                                                # 3: off the boards
+            t = ease(min(1.0, (i - 28) / 8.0)); land = 5; scorch = 1.0
+            arms = lerp(HERO, oc.pm.ik(-1, -128, -240) + oc.pm.ik(1, 128, -240), t)
+            pam = P("pam_cat", X, Y - A_RISE * t + (4 * math.sin(i * 0.9) if t >= 1 else 0), S_, pose(arms, ("relax_s", "relax_s")), "proud", (0.0, -0.8), rim=True)
+            cam = (290, 560 - 110 * t, 1.4)
         def after(k):
             c = k.c
+            sc.stage_marks(k, knives=land, scorch=scorch)
             pts = sc.draw_cast(k, [pam])["pam_cat"]
             sc._spot_on(k)
             hx, hy = pts["head"]
-            if i < 14:
-                for j in range(3):                           # round an oval over her head
-                    a_ = i * 0.75 + j * 2.094
-                    knife(c, hx + 96 * math.cos(a_), hy - 175 - 70 * math.sin(a_), a_ * 2.2, 2.6)
-            elif i < 28:
+            if i < 10:
+                for j in range(5):                           # a high oval over her head
+                    a_ = i * 0.8 + j * 1.257
+                    _knife(c, hx + 120 * math.cos(a_), hy - 150 - 90 * math.sin(a_), a_ * 2.2, 3.0)
+            elif i < 14:
+                for j in range(5 - land - (1 if teeth else 0)):
+                    _knife(c, hx - 60 + j * 60, hy - 40 - 60 * (10.5 - i) , math.pi, 3.0)   # coming down, points first
+            if teeth and i < 15:
+                _knife(c, hx - 30, hy + 34, math.pi / 2, 1.7)                              # the fifth, in her teeth
+            if 14 <= i < 28:
                 tx, ty = pts["hands"][1]
                 c.set_source_rgb(*INK); c.set_line_width(5); c.move_to(tx, ty + 10); c.line_to(tx + 6, ty - 46); c.stroke()
-                flame(c, tx + 7, ty - 58, 15 + 3 * (i % 2))
-                t = (i - 18) / 9.0
-                if t > 0:                                    # the ball rolls out from her mouth across the stage
-                    for u in (1.0, 0.72, 0.45):
-                        if t * u > 0.05:
-                            flame(c, hx + 44 + 230 * t * u, hy + 8 - 40 * t * u, 24 + 104 * t * u * (1.0 if i < 27 else 0.6))
-            else:
+                _flame(c, tx + 7, ty - 58, 16 + 3 * (i % 2))
+                t = (i - 17) / 9.0
+                if t > 0:                                    # the ball rolls out from her mouth, the width of the stage
+                    for u in (1.0, 0.75, 0.5, 0.28):
+                        if t * u > 0.04:
+                            _flame(c, hx + 44 + 250 * t * u, hy + 8 - 46 * t * u, 22 + 150 * t * u * (1.0 if i < 26 else 0.55))
+            if i >= 28:
                 t = ease(min(1.0, (i - 28) / 8.0))
                 c.save(); c.translate(X, Y + 4); c.scale(70 - 34 * t, 9 - 4 * t); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
                 c.set_source_rgba(0, 0, 0, 0.55); c.fill()   # her shadow left on the boards
                 if t >= 1:
-                    for j in range(5):                       # a glitter round her
+                    for j in range(5):
                         a_ = j * 1.257 + i * 0.5
                         sc._burst(k, hx + 120 * math.cos(a_), hy + 60 + 110 * math.sin(a_), 9)
-        return draw(shot("6.0", cast=[], after=after, protect=()))
+        try:
+            return draw(shot("6.0", cam=cam, cast=[], after=after, protect=()))
+        finally:
+            sc.MARKS[0] = True
     return [f(i) for i in range(43)]
 
 
-TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7, "T8": t8, "T9": t9}
+def t10():
+    """6.05, the booth, 11 drawings: the fire's light crosses the Client's face and is gone; ash comes down on the plan.
+    He does not look up. (Drawn after the grade, so the light keeps its colour.)"""
+    fr = []
+    for i in range(11):
+        s = draw(shot("6.05"))
+        c = cairo.Context(s)
+        a = max(0.0, math.sin(min(1.0, i / 6.0) * math.pi)) * 0.42
+        if a > 0:
+            g = cairo.RadialGradient(560, 380, 20, 560, 380, 620)
+            g.add_color_stop_rgba(0, st.GOLD[0], st.GOLD[1], st.GOLD[2], a); g.add_color_stop_rgba(0.5, st.NEON[0], 0.3, 0.2, a * 0.5); g.add_color_stop_rgba(1, 1, 0.5, 0.2, 0)
+            c.set_source(g); c.paint()
+        for j in range(9):                                   # ash, onto the plan
+            y = 300 + (i - 3) * 34 + j * 23
+            if 300 < y < 512:
+                c.set_source_rgba(0.12, 0.12, 0.12, 0.9); c.rectangle(150 + (j * 53) % 150 + 6 * math.sin(i + j), y, 5, 4); c.fill()
+        fr.append(s)
+    return fr
+
+
+def t11():
+    """6.07, 23 drawings, 1.9 s: she still hangs there, arms wide, waiting. Her eyes go across the room. Nothing. She
+    drops onto the boards, gets up."""
+    X, Y, S_ = A_X, A_Y, A_S
+    WIDE_ARMS = oc.pm.ik(-1, -128, -240) + oc.pm.ik(1, 128, -240)
+    def f(i):
+        if i < 10:                                           # hanging; the smile goes
+            look = ((-0.9, 0), (-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0.9, 0), (0, 0.2), (0, 0.2), (0, 0.6), (0, 0.9))[i]
+            arms = lerp(WIDE_ARMS, HERO, max(0, i - 6) / 6.0)
+            pam = P("pam_cat", X, Y - A_RISE + 4 * math.sin(i * 0.9), S_, pose(arms, ("relax_s", "relax_s")), "proud" if i < 3 else ("hopeful" if i < 7 else "doubt"), look, rim=True)
+            cam = (290, 450, 1.4); h = 1.0
+        elif i < 12:                                         # down
+            t = (i - 9) / 2.0
+            pam = P("pam_cat", X, Y - A_RISE * (1 - t * t), S_, pose(lerp(HERO, WIDE_ARMS, 0.6), ("relax_s", "relax_s")), "doubt", (0, 1), rim=True)
+            cam = (290, 450 + 110 * t, 1.4); h = 1 - t
+        elif i < 17:                                         # on the boards, folded
+            pam = P("pam_cat", X, Y + 4, S_, "sag", "fade", (0.2, 0.9), rim=True); cam = (290, 560 + (6 if i == 12 else 0), 1.4); h = 0
+        else:                                                # up; her hand goes to her coat
+            pam = P("pam_cat", X, Y, S_, "hero", "peer", (0.3, 0.3), rim=True); cam = (290, 560, 1.4); h = 0
+        def after(k):
+            c = k.c
+            sc.draw_cast(k, [pam]); sc._spot_on(k)
+            if h > 0:
+                c.save(); c.translate(X, Y + 4); c.scale(36 + 34 * (1 - h), 5 + 4 * (1 - h)); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+                c.set_source_rgba(0, 0, 0, 0.55); c.fill()
+            if i in (12, 13):
+                sc._burst(k, X - 90, Y - 6, 22); sc._burst(k, X + 90, Y - 6, 22)
+        return draw(shot("6.07", cam=cam, cast=[], after=after, protect=()))
+    return [f(i) for i in range(23)]
+
+
+TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7, "T8": t8, "T9": t9, "T10": t10, "T11": t11}
 
 
 def build(name):

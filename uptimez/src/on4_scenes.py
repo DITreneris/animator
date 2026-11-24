@@ -647,8 +647,33 @@ def _dark_half(k):                                         # 6.5 (board v4): the
     c.move_to(ex, ey); c.line_to(ex - 4, ey - 22); c.stroke(); c.move_to(ex, ey); c.line_to(ex - 22, ey + 4); c.stroke()
 
 
+MARKS = [True]                                             # v18: what her act leaves on the stage (five knives in the boards, a scorch on the curtain)
+
+
+def stage_marks(k, knives=5, scorch=1.0):
+    c = k.c
+    if scorch > 0:                                         # the curtain's edge, burnt: a black patch, an ember line, smoke
+        c.new_path()                                         # a ragged hole, not an oval
+        for a_ in range(0, 360, 24):
+            q = (38 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
+            (c.move_to if a_ == 0 else c.line_to)(476 + q * math.cos(math.radians(a_)), 470 + 1.5 * q * math.sin(math.radians(a_)))
+        c.close_path(); c.set_source_rgba(0.01, 0.01, 0.01, 0.95); c.fill_preserve()
+        c.set_source_rgb(*st.NEON); c.set_line_width(2.0); c.set_dash([7, 9]); c.stroke(); c.set_dash([])
+        c.set_source_rgba(0.8, 0.8, 0.78, 0.5); c.set_line_width(5)
+        for j in range(3):
+            c.move_to(452 + j * 16, 410); c.curve_to(440 + j * 16, 370, 470 + j * 16, 340, 456 + j * 16, 300); c.stroke()
+    for j, (x, a) in enumerate(((132, -0.25), (176, 0.15), (276, -0.12), (318, 0.22), (356, -0.3))[:knives]):   # blades in the boards round her feet
+        c.save(); c.translate(x, 706 + (j % 2) * 5); c.rotate(a); c.scale(2.2, 2.2)
+        c.move_to(-4, -16); c.line_to(0, 0); c.line_to(5, -16); c.close_path(); c.set_source_rgb(0.93, 0.93, 0.90); c.fill_preserve()   # what shows of the blade
+        c.set_source_rgb(*INK); c.set_line_width(1.0); c.stroke()
+        c.rectangle(-5, -32, 11, 16); c.set_source_rgb(0.10, 0.10, 0.11); c.fill_preserve(); c.set_source_rgb(0.5, 0.5, 0.5); c.stroke()
+        c.restore()
+
+
 def _spot_on(k):                                           # board v9: the beam ON her: the cone over her, its pool at her feet
     c = k.c
+    if MARKS[0]:
+        stage_marks(k)
     c.set_source_rgba(1, 1, 0.92, 0.16)
     c.move_to(428, 322); c.line_to(110, 700); c.line_to(340, 700); c.line_to(432, 344); c.close_path(); c.fill()
     c.save(); c.translate(225, 700); c.scale(120, 14)
@@ -763,6 +788,9 @@ SCENES = [
           action="knives, fire, levitation", reaction="(nobody looks)"),
         S("6.05", "insert", "hall", (160, 610, 1.9), "The booth (5.3's camera): the Client and the ringed hand over the plan. Nobody turns.",
           eyeline="both to the plan", reaction="nobody turns"),
+        S("6.07", "medium, low", "stage", WIDE, "She still hangs in the air, arms wide, waiting for the applause. Silence. She drops onto "
+          "the boards, gets up, and reaches for her last card.", cast=[P("pam_cat", 225, 700, 0.86, "hero", "doubt", (0.3, -0.2), rim=True)],
+          after=_spot_on, eyeline="across the room: nobody", action="she hangs, waits, drops", reaction="(silence)"),
         S("6.1", "medium, low", "stage", WIDE, "She steps into the spotlight and opens the envelope.",
           cast=[P("pam_cat", 225, 700, 0.86, "hero", "proud", (0.3, 0.6), env=True, rim=True)], eyeline="to the envelope",
           after=_spot_on),
@@ -1013,7 +1041,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"6.0": 3.6, "6.05": 0.9, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"6.0": 3.6, "6.05": 0.9, "6.07": 1.9, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():
