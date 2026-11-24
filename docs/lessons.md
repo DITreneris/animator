@@ -844,3 +844,15 @@ The v26 cold test (3 viewers) read every close-up arm as "a pole" or "a plank": 
 - A listener standing right behind the speaker reads as grabbing him. In 2.8d the guard steps back out of the frame with the lamp.
 - A guard with no `turn` of his own turns his head to whoever speaks in the shot.
 - A screen held in a hand is read upright: the 1-star phone at 0.2 rad was "too fast to read" 3 of 3 at 1.4 s.
+
+## 201. Close-up arms pass when they are short; gags pass when they are body size (The Offer v29, 24 Nov)
+
+v27 gave the insert arms an elbow and a sleeve; the v28 cold test still read every one as "a tube" or "a pole" (3 of 3). The two that passed (Father's thumb on DECLINED, the PAM phone) were short, as wide as the hand, and left the frame at the nearest edge.
+
+- An insert shows the hand and a SHORT forearm as wide as the hand, out of the nearest edge. Crop tighter rather than draw more arm. Bare arms get no cuff (it flickered).
+- A gag whose change is under about 20 px at feed width is not seen: the bulb going dark in a wide read as "eight identical frames". Cut close (`LAMP_GAG_CAM`), and give it an action of the whole arm: it flickers, dies, he shakes it, looks at us.
+- A prop gag needs a second person's hand to say what it means: the PAM phone was seen 3 of 3 and understood 0 of 3 until Father's hand pushes it down.
+- A slam needs the thing up first: the bonnet held open 0.3 s with his hand on it, then down. At 0.18 s from the first frame 2 of 3 "never saw a slam".
+- A cut to the whole car running read as "it drove away, then it is back" (3 of 3). The start stays on the key and the rev counter.
+- A fresh sheet over a burnt one must be SEEN going over it: the burnt plan first, then the fresh one slides up, then the pin. A cut straight to the fresh plan read as "the map is whole again".
+- of_film reads the sound file: start the scene renders after of_sound has finished (scene 5 failed on a half-written wav).
