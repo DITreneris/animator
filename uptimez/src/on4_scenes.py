@@ -1064,6 +1064,7 @@ def _render(sh, scale=1):
         src = ly.scene(scale)
         c.set_source_surface(src, 0, 0); c.paint()
         return s, {"pam_cat": {"head": ly.HEAD}}
+    import on4_posters as _po; _po.CAM[0] = sh["cam"]         # (24 Nov) a bill is drawn whole in the shot's camera or not at all
     c.save(); _apply(c, sh["cam"])
     lit = _loc(k, sh["loc"])
     if lit in ("desk7", "desk8"):

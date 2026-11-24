@@ -370,6 +370,7 @@ def c_side(k):
     st.poly(k, [(-300, 360), (300, 360), (300, 300), (420, 300), (420, 380), (1000, 380), (1000, 568), (-300, 568)], (0.90, 0.89, 0.86), 2.2)
     for x in (-120, -40, 40, 110, 200, 340, 460, 560, 640, 720, 800):
         st.poly(k, [(x, 430), (x + 34, 430), (x + 34, 500), (x, 500)], (0.06, 0.06, 0.07), 1.6)
+    import on4_posters as po; po.crossing(k)                                                         # (24 Nov) bills on the far wall, opt-in
     st.poly(k, [(-300, 568), (1000, 568), (1000, 584), (-300, 584)], (0.62, 0.61, 0.58), 1.6)        # the far kerb
     st.poly(k, [(-300, 584), (1000, 584), (1000, 790), (-300, 790)], st.ROAD, 1.6)
     c.set_source_rgba(0, 0, 0, 0.25); c.set_line_width(1.2)
@@ -678,6 +679,7 @@ def t7():
         c.restore()
     def scene(k):                                            # the ground, a pavement line; the platform's shadow on the wall
         c = k.c
+        import on4_posters as po; po.lane(k)                 # (24 Nov) bills on the brick over the bin, opt-in
         st.poly(k, [(-10, GY), (550, GY), (550, 970), (-10, 970)], (0.20, 0.20, 0.21), 2.0)
         sc.platform(k, PY)
     LX = 165                                                 # v20: the ladder she climbs, its rungs every 28 (in frame: 105 cut her at the edge)
