@@ -135,3 +135,10 @@ was heard as "Remove the bottle."; kept as `vo/h_remove_take53.wav`). The line i
 Cold mute test (2 viewers, 5/5 beats each; their shared faults fixed): the fitting is 0.7 s shorter (C 54 frames, the still
 stretch cut), the thumb is 1.5x bigger. 449 frames, 14.97 s. Cover: the carry with the thumb and "FASTER!" (both viewers'
 screenshot moment). Posting text in `final/POST.md`.
+
+## Cover audit (24 Nov): `final/cover_v2.png` (`final/cover2.py`; v1 `cover.png` kept)
+
+Done: no AI AUTOMATION poster and no list in the cover (less text); the series bar 15 % smaller; HARV's ear was cut by the frame
+edge in the film too, so he now stands at x 205 (was 165) in every shot (`film_r9.py` = before; the film is rough 10, QA passes).
+Refused: removing the thumb ("it competes with the joke"): the thumb IS the joke (protect list 4), and the cold viewers
+needed it bigger, not gone. Not done: cropping the empty floor (the bottom dead zone is the series rule), moving the leader further.

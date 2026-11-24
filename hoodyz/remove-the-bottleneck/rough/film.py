@@ -312,7 +312,7 @@ def shot_F(c, t):
             if t < T_HIT + 5:
                 for i in range(7): ell(c, CX + 20 + i * 100, FLOOR - 8, 44, 16); c.set_source_rgba(.92, .88, .8, .8 * (1 - (t - T_HIT) / 5)); c.fill()
     # HARV, the leader, at the series' full size: walks in, signs for it, leaves before the sprint
-    hv = lerp(-200, 165, io(t / 10)) if t < 40 else lerp(165, -220, io((t - 40) / 14))
+    hv = lerp(-200, 205, io(t / 10)) if t < 40 else lerp(205, -220, io((t - 40) / 14))      # 205, not 165: at 165 the frame edge cut his ear (cover audit)
     if hv > -190 and t < 56:
         harv(c, hv, mouth='fond' if 14 <= t < 40 else 'flat')
         if 16 <= t < 38: c.move_to(hv + 120, FLOOR - 230); c.curve_to(hv + 140, FLOOR - 250 + 8 * math.sin(t * 2), hv + 150, FLOOR - 220, hv + 170, FLOOR - 240); c.set_source_rgb(*NAVY); c.set_line_width(4); c.stroke()
