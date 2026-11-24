@@ -109,6 +109,12 @@ def a14(t):
         rise = seg(u, 0.0, 0.14)
         if rise < 1:                                                           # peeling up off them
             return ("thug%d" % (j + 1), (x0, y0, s0 * (0.3 + 0.7 * rise)), dict(pose=(-40, 40, 40, -40), seed=seed))
+        if m.LAW[0]:                                                           # (24 Nov, Tomas: "where do they go? they miss the lane") the two are Dad's bodyguards, dark;
+            v = ease(seg(u, 0.14, 0.86)); w = seg(u, 0.86, 1.0)                # up the street INTO the arch at the bend (the taillights are in it),
+            y = y0 + (566 - y0) * v                                            # then round it to the left, behind the wall's edge: gone, not popped
+            sg = (s0 / 0.26) * 0.30 * (y - YV) / float(y0 - YV)                # a guard's size by the same distance: her 0.84 at y 760 is 0.40 at y 600; x 0.903 / 1.203 = 0.30
+            x = x0 + (226 - x0) * v - 78 * w
+            return ("guard_sil", (x, y, sg), dict(seed=1600 + j * 40, flip=(j == 1), step=u * 26.0 + j * 1.3, clip_x=st.A_BEND_X + 1 if v > 0.8 else None))
         v = ease(seg(u, 0.14, 1.0))                                            # running up the street: feet on the cobbles,
         y = y0 + (YE - y0) * v                                                 # the size from the distance (the feet's height
         sc_ = s0 * (y - YV) / float(y0 - YV)                                   # over the vanishing line)
@@ -118,7 +124,9 @@ def a14(t):
     cast = []; shadows = []
     for j, (x0, y0, s0, seed) in enumerate(((300, 600, 0.26, 4111), (340, 590, 0.24, 4112))):
         who, a, kw = thug(j, x0, y0, s0, seed)
-        if t < 2.3 + 0.12 * j:
+        if who == "guard_sil":
+            cast.append(P(who, *a, **kw)); shadows.append((a[0], a[1], a[2] * 0.6) if kw.get("clip_x") is None else (-999, 0, 0.01))
+        elif t < 2.3 + 0.12 * j:
             if who == "flat":
                 cast.append(P("flat", *a, **kw))
             else:
@@ -126,7 +134,7 @@ def a14(t):
     u = ease(seg(t, 1.0, 1.8))                                                 # she turns to the taillights, then goes
     step = seg(t, 2.0, 2.8)
     arms = asym(lerp(HERO, (-30, 40, 40, -40), u), 6 * u)
-    p = P("pam_cat", 200 + 30 * step, 760 - 6 * math.sin(step * math.pi * 2), 0.84, pose(arms, ("fist", "fist")),
+    p = P("pam_cat", (150 if m.LAW[0] else 200) + 30 * step, 760 - 6 * math.sin(step * math.pi * 2), 0.84, pose(arms, ("fist", "fist")),
           "approve" if t < 1.0 else "peer", (0.6 * (1 - u) + 0.1 * u, -0.6 - 0.3 * u), rim=True)
     d = 8 * u
     kn = kneel(d, r=(10 * step, 8 * math.sin(step * math.pi * 2) ** 2, 1)) if step > 0 else kneel(d)

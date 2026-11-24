@@ -504,6 +504,20 @@ def draw_cast(k, cast):
             c = k.c
             c.push_group(); o = oc.pam_cat(k, *a, **kw); g = c.pop_group()
             c.set_source_rgb(0.03, 0.03, 0.04); c.mask(g)
+        elif who == "guard_sil":                             # (24 Nov) Dad's bodyguard as a dark shape in the lane: the same man as at the crossing; his glasses and the earpiece's cord just show
+            import dh_cast as _dc
+            c = k.c; x_, y_, s_ = a[0], a[1], a[2]
+            xl = kw.pop("clip_x", None)                      # behind the wall at the bend: only what is right of it
+            if xl is not None:
+                c.save(); c.rectangle(xl, -2000, 4000, 6000); c.clip()
+            c.push_group()
+            stepped(lambda f_: _dc.guard(k, x_, f_, s_, flip=kw.get("flip", False), seed=kw.get("seed", 1600)), k, x_, y_, s_, 190, kw.get("step", 0.0), 14.0)
+            g = c.pop_group()
+            c.set_source(g); c.paint_with_alpha(1.0)
+            c.set_source_rgba(0.03, 0.03, 0.04, 0.86); c.mask(g)
+            if xl is not None:
+                c.restore()
+            o = {}
         elif who == "pam_awake":
             o = oc.pam_awake(k, *a, **kw)
         elif who == "don":
@@ -1139,7 +1153,7 @@ def checks(sh, heads):
     probs = []
     cam = sh["cam"]
     for who, o in heads.items():
-        if not o or "head" not in o or who in ("flat",) or who.startswith("thug") or who == "father" and sh["id"] in ("2.2",):
+        if not o or "head" not in o or who in ("flat", "guard_sil") or who.startswith("thug") or who == "father" and sh["id"] in ("2.2",):
             continue
         x, y = _to_screen(cam, o["head"])
         if -40 < x < 580 and -40 < y < 1000 and DEAD(x, y):
