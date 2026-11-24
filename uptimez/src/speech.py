@@ -13,6 +13,9 @@ from kit import Ctx, cut
 from speech_gate import SAFE, TAIL_MIN, TAIL_MAX
 
 GAP = (TAIL_MIN + TAIL_MAX) // 2   # 15 px past the box; the outline eats about one px
+ROBOT = [False]   # opt-in (ep 14, Tomas 24 Nov): mono speakers on the series' tinted bubble, bold. Off: as before
+TINT = (0.90, 0.96, 1.0)
+CLEAR = [False]   # opt-in (ep 14, Tomas 24 Nov): prefer the wall with no other face beside the box. Off: as before
 
 # Opt-in looks (24 Nov, The Offer). The defaults keep every earlier render byte-identical.
 SIZE = [26]        # the text size of a person's line
@@ -23,7 +26,20 @@ SIGNS_FIRST = [False]   # rather a narrower box than one over a story prop
 
 
 def _weight(font):
-    return cairo.FONT_WEIGHT_BOLD if (MONO_BOLD[0] and font == kit.MONO) else cairo.FONT_WEIGHT_NORMAL
+    return cairo.FONT_WEIGHT_BOLD if ((MONO_BOLD[0] or ROBOT[0]) and font == kit.MONO) else cairo.FONT_WEIGHT_NORMAL
+
+
+def _crowded(box, others):
+    """Another face level with the box and within its width (plus a head) on that side: the speaker becomes a guess."""
+    x0, y0, x1, y1 = box
+    for fx, fy, fr in others:
+        if x0 - fr * 1.2 <= fx <= x1 + fr * 1.2 and y0 - fr * 1.6 <= fy <= y1 + fr * 1.6:
+            return True
+    return False
+
+
+def _bold(mono):
+    return mono and ROBOT[0]
 
 
 def _wrap(c, text, size, font, max_w):
@@ -110,7 +126,7 @@ def _gap(tip, box):
     return math.hypot(dx, dy)
 
 
-def _paint(k, box, tip, rows, size, font):
+def _paint(k, box, tip, rows, size, font, mono=False):
     x0, y0, x1, y1 = box
     if tip is not None:
         if tip[1] >= y1 - 1:
@@ -125,8 +141,8 @@ def _paint(k, box, tip, rows, size, font):
         else:
             mid = min(max(tip[1], y0 + 14), y1 - 14)
             a, b = (x0, mid - 11), (x0, mid + 11)
-        cut(k, [tip, a, b], (1, 1, 1), shadow=False, lw=2.0)
-    cut(k, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], (1, 1, 1), shadow=True, lw=2.2)
+        cut(k, [tip, a, b], TINT if _bold(mono) else (1, 1, 1), shadow=False, lw=2.0)
+    cut(k, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], TINT if _bold(mono) else (1, 1, 1), shadow=True, lw=2.2)
     lead = size * 1.15
     cx = (x0 + x1) / 2
     top = y0 + (y1 - y0 - lead * len(rows)) / 2 + lead * 0.55
@@ -209,16 +225,16 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
                 width = (room_for(side, tip) - 28) if narrow else MAX_W[0]
                 got = beside(side, tip, y, width, signs)
                 if got:
-                    found.append((narrow, not signs, n, got))
+                    found.append(((_crowded(got[0], others),) if CLEAR[0] else ()) + (narrow, not signs, n, got))
     if above is not None:
         got = overhead()
         if got:
-            found.append((False, False, len(tries), got))
-    if SIGNS_FIRST[0]:
-        found.sort(key=lambda f: (f[1], f[0], f[2]))
-        picked = found[0][3] if found else None
+            found.append(((_crowded(got[0], others),) if CLEAR[0] else ()) + (False, False, len(tries), got))
+    if SIGNS_FIRST[0]:                                    # f[-4:] is (narrow, past a sign, try, got); CLEAR prefixes crowded
+        found.sort(key=lambda f: f[:-4] + (f[-3], f[-4], f[-2]))
+        picked = found[0][-1] if found else None
     else:
-        picked = min(found)[3] if found else None
+        picked = min(found, key=lambda f: f[:-1])[-1] if found else None
     if picked is None:
         side, tip, y = max(tries, key=lambda t: room_for(t[0], t[1]))
         avail = max(56, room_for(side, tip))
@@ -238,5 +254,5 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
         y0 = min(max(y0, SAFE[1]), SAFE[3] - bh)
         picked = ((x0, y0, x0 + bw, y0 + bh), tip, rows, size, font)
     box, tip, rows, size, font = picked
-    _paint(k, box, tip, rows, size, font)
+    _paint(k, box, tip, rows, size, font, mono)
     return box, tip

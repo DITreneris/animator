@@ -393,13 +393,17 @@ def cast_56(k):
     return heads
 
 
+PAM_X_56 = [160]                                            # her own frame (Sofía out): her box clear of the button rail
+
+
 def fg_56(k):
     """Pam near, on the stool, frozen with the blind; the frame's left, her eyes over to Sofía crossing."""
     s_ = 0.54 * 2.2
+    px = PAM_X_56[0] if FIX_V4[0] else 140                   # round 5: Pam in from the edge, the wall on her left for her line
     tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
-    hh = pm.pam(Ctx(cairo.Context(tmp), 0), 140, 1060 - 98 * s_, s_, "rail", "frozen", (1, 0.1))["hands"]
+    hh = pm.pam(Ctx(cairo.Context(tmp), 0), px, 1060 - 98 * s_, s_, "rail", "frozen", (1, 0.1))["hands"]
     pm.blind_rail(k, hh[0], hh[1], s_)                               # v3: the blind hangs from her rail
-    o = pm.pam(k, 140, 1060 - 98 * s_, s_, "rail", "frozen", (1, 0.1), late=False)
+    o = pm.pam(k, px, 1060 - 98 * s_, s_, "rail", "frozen", (1, 0.1), late=False)
     pm.rail_bar(k, o["hands"][0], o["hands"][1], s_)
     import hands_ps as hp
     hp.redraw_late(k)
@@ -479,10 +483,25 @@ def ins_prints(k):
             c.arc(0, 0, 10, 0.3, 5.9); c.restore(); c.stroke()
 
 
+BOOTH_PART_V4 = {0: (1.25, -230, -220), 1: (1.25, 100, -220)}   # round 5: 4.3a on the Client, 4.3b on Father (x' = s x + tx)
+
+
 def ins_booth_43(k):
-    import dh_cast as dc
     c = k.c
     c.set_source_rgb(0.10, 0.03, 0.05); c.paint()
+    t = BOOTH_PART_V4.get(PART[0]) if FIX_V4[0] else None
+    if t is None:
+        return _booth_43(k)
+    s_, tx, ty = t                                           # one speaker per key frame, the other off the edge: the box's wall
+    c.save(); c.translate(tx, ty); c.scale(s_, s_)           # is clear (3 of 3 cold viewers guessed who said each line)
+    h = _booth_43(k)
+    c.restore()
+    return {n: (x * s_ + tx, y * s_ + ty, r * s_) for n, (x, y, r) in h.items() if -40 < x * s_ + tx < W + 40}
+
+
+def _booth_43(k):
+    import dh_cast as dc
+    c = k.c
     seat, tbl = 760, 700
     cps.booth_room(k, W, H, seat, tbl)
     cps.handprint(k, 430, seat - 150, 1.6, 0.2)
@@ -599,9 +618,11 @@ SHIFT = {"1.2b": (120, 0, 1.1), "1.4": (-40, 0, 0.9), "2.1": (0, 0, 1.0), "2.2":
 # --- render and check ---------------------------------------------------------------------------------------------------
 # v4 (opt-in, FIX_V4: the board v3 and `check`; the layout sheets v3 stay as approved): the faults the series' checks found
 FIX_V4 = [False]
-SHIFT_V4 = {"2.5": (40, 0, 0.72), "2.10": (80, 0, 0.8), "6.1": (0, -60, 0.9)}   # wall beside the speaker for bc_sb's bubble (lesson 358)
+SHIFT_V4 = {"2.5": (40, 0, 0.72), "2.10": (80, 0, 0.8), "6.1": (0, -60, 0.9), "5.6": (480, -40, 1.0)}   # 5.6: round 5, Sofía out of Pam's key frame (Tomas: the frame Pam's only)   # wall beside the speaker for bc_sb's bubble (lesson 358)
 SPLIT_V4 = ("3.1", "4.3")       # two lines said in turn (3.1 the robot, then Mom; 4.3 the Client, then Father) whose bubbles
-PART = [None]                    # can't both sit beside their faces: the board shows one key frame per line
+PART = [None]                    # can't both sit beside their faces
+PART_SHIFT_V4 = {("3.1", 0): (-230, -175, 1.9)}             # (dx, dy, zoom) per split key frame: 3.1a in on the robot,
+#                                                             its line over its antenna, Mom above it (round 5; grid-searched): the board shows one key frame per line
 
 
 def board_keys(sh, line):
@@ -693,7 +714,7 @@ def render(sh):
     surf = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H)
     c = TextRec(surf); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
-    pss.GUARD_CUES[0] = pss.PLATE_BIG[0] = FIX_V4[0]; rp.HEART[0] = FIX_V4[0]          # v4's set cues travel with the v4 staging
+    pss.GUARD_CUES[0] = pss.PLATE_BIG[0] = pss.TAG_OFF[0] = FIX_V4[0]; rp.HEART[0] = FIX_V4[0]          # v4's set cues travel with the v4 staging
     if sh["cam"] == "screen":
         if FIX_V4[0] and sh["id"] in INS_UP:
             c.set_source_rgb(*kit.WALL); c.paint(); c.translate(0, -INS_UP[sh["id"]])
@@ -706,6 +727,8 @@ def render(sh):
         h0 = _pass(Ctx(cairo.Context(tmp), 0), sh, None)
         cam = cf.face_cam([h0[n] for n in cam])
     shift = SHIFT_V4 if FIX_V4[0] and sh["id"] in SHIFT_V4 else SHIFT
+    if FIX_V4[0] and (sh["id"], PART[0]) in PART_SHIFT_V4:   # round 5: one split key frame's own framing (lesson 358)
+        shift = {sh["id"]: PART_SHIFT_V4[(sh["id"], PART[0])]}
     if sh["id"] in shift:                                     # the content moved (frame px) / zoomed, off the signs
         dx, dy, zm = shift[sh["id"]]
         z = cam[2] * zm
@@ -914,6 +937,7 @@ def board_frame(sh, line):
         import ps_checks as pc
         pc.install_scene(sys.modules[__name__]); pc.begin()      # the story props get declared as they are drawn
         del BUBBLES_V4[:]
+    CUR_SHOT[0] = sh["id"]
     surf, msgs = render(sh)
     fc = dict(LAST[0])
     c = cairo.Context(surf); k = Ctx(c, 0)
@@ -933,8 +957,9 @@ def board_frame(sh, line):
             box = bubble_v4(k, who, txt, fc, taken)
             taken.append(box)
             rec = BUBBLES_V4[-1]
+            import speech as sp_
             msgs.extend(speech_gate.check(surf, rec["box"], rec["tip"], list(fc.values()), above=rec["above"],
-                                           before=before))
+                                           before=before, fill=sp_.TINT if who == "robot" else None))
             continue
         if who == "robot":
             tail = (hx - r * 0.62, hy - r * 0.62, 2)
@@ -962,14 +987,25 @@ def bubble_v4(k, who, text, fc, taken):
     import ps_checks as pc
     head = fc[who]
     mono = who == "robot"
-    above = (head[0], head[1] - head[2] * 1.15) if mono else None
+    above = (head[0], head[1] - head[2] * 1.48) if mono else None   # just over the antenna's ball (ball top at 1.42 r)
     mouth = (head[0], head[1] + 0.35 * head[2])
     avoid = list(taken)
     for name, a0, b0, a1, b1 in pc.PROTECT:
         avoid.append((a0, b0, a1, b1))
     avoid.extend(SIGNS_V4)
-    box, tip = speech.draw(k, text, head, mouth=mouth, above=above, mono=mono,
-                           others=[v for n, v in fc.items() if n != who], avoid=avoid)
+    import speech_gate as sg_
+    avoid.append(sg_.RAIL)                                   # main's gate (24 Nov): no box in the app's button rail
+    speech.ROBOT[0] = speech.CLEAR[0] = True                 # the series' robot bubble: tinted, bold mono; the wall with no
+    if mono and CUR_SHOT[0] in ROBOT_WALL:                   # other face beside it (Tomas 24 Nov, round 5)
+        hx, hy, r = head                                     # 3.1a: its line read as Don's on Don's side of its visor; that
+        side = ROBOT_WALL[CUR_SHOT[0]]                       # wall closed (Mom stands over its antenna: no box fits above)
+        avoid.append((hx - 300, hy - r * 1.2, hx - r * 0.9, hy + r * 1.2) if side > 0 else
+                     (hx + r * 0.9, hy - r * 1.2, hx + 300, hy + r * 1.2))
+    try:
+        box, tip = speech.draw(k, text, head, mouth=mouth, above=above, mono=mono,
+                               others=[v for n, v in fc.items() if n != who], avoid=avoid)
+    finally:
+        speech.ROBOT[0] = speech.CLEAR[0] = False
     if above and tip and abs(tip[0] - above[0]) < 8 and abs(tip[1] - above[1]) < 8:
         form = "T"
     elif tip and tip[0] >= head[0]:
@@ -981,6 +1017,8 @@ def bubble_v4(k, who, text, fc, taken):
 
 
 BUBBLES_V4 = []
+CUR_SHOT = [None]
+ROBOT_WALL = {"3.1": 1}                                     # round 5: the robot's line on this side of its visor only (+1 right)
 SIGNS_V4 = []                                               # the set's signs drawn in this frame (frame px), kept clear
 
 
