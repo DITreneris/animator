@@ -24,10 +24,12 @@ LINES = [
     ("0.9", "CLIENT", "Off the car.", None),
     ("1.4", "CLIENT", "Burn them. Your son loses his only customer.", None),
     ("2.1", "FATHER", "My son says his machine finds anything.", None),
-    ("2.2", "CLIENT", "It found nothing.", None),
-    ("2.4", "FATHER", "How would you run his company?", "How would you run his company."),   # flat: no question he needs answered
+    ("2.2", "CLIENT", "It found nothing.", "It found, nothing."),   # v3 (23 Nov audit): heard "You found nothing"
+    ("2.4", "FATHER", "How would you run his company?", "How would you run, his company."),   # flat; v3 (23 Nov audit): the comma
+    # breaks the "How How How..." the recognizer heard (0 of 3 alone -> 2 of 3)
     ("2.5", "CLIENT", "Without him.", None),
-    ("2.6", "FATHER", "And then?", "And then."),          # v2 (22 Nov, Tomas): "And?" was heard as "wind"
+    ("2.6", "FATHER", "And then?", "And, then."),         # v2 (22 Nov, Tomas): "And?" was heard as "wind"; v3 (23 Nov audit):
+    # "And then." was heard "On then" (1 of 3); with the comma 3 of 3
     ("2.8b", "CLIENT", "One month. I ask. She finds it.", None),
     ("2.8c", "FATHER", "Done.", None),
     ("2.9", "FATHER", "Put it in the calendar.", None),

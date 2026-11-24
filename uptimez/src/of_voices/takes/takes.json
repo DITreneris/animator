@@ -49,27 +49,24 @@
  "2.2": {
   "who": "CLIENT",
   "text": "It found nothing.",
-  "len": 1.03,
+  "len": 1.1,
   "asr": [
    "It found nothing.",
    "It found nothing.",
-   "it found"
+   "it found nothing"
   ],
-  "ok": 2
+  "ok": 3
  },
  "2.4": {
   "who": "FATHER",
   "text": "How would you run his company?",
-  "len": 2.47,
+  "len": 2.72,
   "asr": [
-   "How How How How How How How",
-   "How How How How How How How How How How How How How How How How",
-   "How How How How How How How How",
-   "[with the line before] It found nothing. How would you run his company?",
-   "[with the line before] It found nothing. How would you run his company?",
-   "[with the line before] It found nothing. How would you run his company?"
+   "How How How How How How",
+   "How would you run his company?",
+   "How would you run his company?"
   ],
-  "ok": 3
+  "ok": 2
  },
  "2.5": {
   "who": "CLIENT",
@@ -85,14 +82,11 @@
  "2.6": {
   "who": "FATHER",
   "text": "And then?",
-  "len": 0.9,
+  "len": 1.0,
   "asr": [
-   "on then",
-   "And then",
-   "on then.",
-   "[with the line before] Without him, on then.",
-   "[with the line before] Without him, on then.",
-   "[with the line before] Without him. On then."
+   "And then...",
+   "And then...",
+   "and then"
   ],
   "ok": 3
  },

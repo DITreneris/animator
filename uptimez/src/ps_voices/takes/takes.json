@@ -1,0 +1,217 @@
+{
+ "1.3": {
+  "who": "DON",
+  "text": "This meeting does not exist.",
+  "len": 2.11,
+  "asr": [
+   "This meeting does not exist.",
+   "This meeting does not exist.",
+   "This meeting does not exist."
+  ],
+  "ok": 3
+ },
+ "1.4": {
+  "who": "DON",
+  "text": "My father has a meeting. Without me.",
+  "len": 2.15,
+  "asr": [
+   "My father has a meeting without me.",
+   "My father has a meeting without me.",
+   "My father has a meeting without me."
+  ],
+  "ok": 3
+ },
+ "2.3": {
+  "who": "DON",
+  "text": "Pick a side.",
+  "len": 1.33,
+  "asr": [
+   "pick a side",
+   "pick a side",
+   "pick a side"
+  ],
+  "ok": 3
+ },
+ "2.5": {
+  "who": "DON",
+  "text": "Pam. My general.",
+  "len": 1.38,
+  "asr": [
+   "Pam My General",
+   "Pam My General",
+   "Pam My General"
+  ],
+  "ok": 3
+ },
+ "2.6": {
+  "who": "MOM",
+  "text": "I don't pick sides, Donnie.",
+  "len": 1.57,
+  "asr": [
+   "I don't pick sides, Donnie.",
+   "I don't pick sides, Donnie.",
+   "I don't pick sides, Donnie."
+  ],
+  "ok": 3
+ },
+ "2.9": {
+  "who": "ROBOT",
+  "text": "Border breach. One heel.",
+  "len": 1.46,
+  "asr": [
+   "Border breach 1 heal.",
+   "Border breach 1 heal.",
+   "Border breach 1 heal.",
+   "[with the line before] I don't pick sides, Donnie. Border breach one heel.",
+   "[with the line before] I don't pick sides, Donnie. Border breach one heel.",
+   "[with the line before] I don't pick sides, Donnie. Border breach one heel."
+  ],
+  "ok": 3
+ },
+ "2.10a": {
+  "who": "DON",
+  "text": "And you?",
+  "len": 0.64,
+  "asr": [
+   "and you.",
+   "and you",
+   "and you."
+  ],
+  "ok": 3
+ },
+ "2.10b": {
+  "who": "ROBOT",
+  "text": "Both.",
+  "len": 0.52,
+  "asr": [
+   "Bose",
+   "Bose",
+   "Bose",
+   "[with the line before] and you. Both.",
+   "[with the line before] and you. Both.",
+   "[with the line before] and you. Both."
+  ],
+  "ok": 3
+ },
+ "3.3": {
+  "who": "ROBOT",
+  "text": "Public post? Human approval required.",
+  "len": 2.09,
+  "asr": [
+   "Public post-human approval required.",
+   "Public post-human approval required.",
+   "public post-human approval required."
+  ],
+  "ok": 3
+ },
+ "3.4": {
+  "who": "DON",
+  "text": "Approved.",
+  "len": 0.72,
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "ok": 3
+ },
+ "3.7": {
+  "who": "PAM",
+  "text": "Some pose. Others notice.",
+  "len": 1.84,
+  "asr": [
+   "Some pose others notice.",
+   "Some pose others notice.",
+   "Some pose others notice."
+  ],
+  "ok": 3
+ },
+ "5.3": {
+  "who": "ROBOT",
+  "text": "Welcome.",
+  "len": 0.63,
+  "asr": [
+   "Welcome.",
+   "Welcome",
+   "Welcome"
+  ],
+  "ok": 3
+ },
+ "5.6": {
+  "who": "PAM",
+  "text": "Some draw lines. Others cross them.",
+  "len": 2.04,
+  "asr": [
+   "Some draw lines others cross them.",
+   "Some draw lines others cross them.",
+   "Some draw lines others cross them."
+  ],
+  "ok": 3
+ },
+ "6.1": {
+  "who": "DON",
+  "text": "Everyone's with me.",
+  "len": 1.32,
+  "asr": [
+   "Everyone's with me.",
+   "Everyone's with me.",
+   "Everyone's with me."
+  ],
+  "ok": 3
+ },
+ "2.9b": {
+  "who": "SOFIA",
+  "text": "Diplomatic heel.",
+  "len": 0.99,
+  "asr": [
+   "diplomatic heel",
+   "diplomatic heel",
+   "diplomatic heel."
+  ],
+  "ok": 3
+ },
+ "3.1a": {
+  "who": "ROBOT",
+  "text": "Smile. Recording.",
+  "len": 1.12,
+  "asr": [
+   "Smile recording.",
+   "Smile recording.",
+   "Smile recording."
+  ],
+  "ok": 3
+ },
+ "3.1b": {
+  "who": "MOM",
+  "text": "Chin up, Donnie.",
+  "len": 1.14,
+  "asr": [
+   "Chin up Donnie",
+   "Chin up Donnie",
+   "Chin up Donnie"
+  ],
+  "ok": 3
+ },
+ "4.3a": {
+  "who": "CLIENT",
+  "text": "That one.",
+  "len": 0.73,
+  "asr": [
+   "that that that that",
+   "That one",
+   "that one"
+  ],
+  "ok": 2
+ },
+ "4.3b": {
+  "who": "FATHER",
+  "text": "Invite her.",
+  "len": 1.45,
+  "asr": [
+   "invite her",
+   "Invite her",
+   ""
+  ],
+  "ok": 2
+ }
+}
