@@ -15,9 +15,9 @@ import on4_voices as vo
 
 FPS = 12
 SR = 48000
-MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None), ("3.6",): ("T8", 0, None), ("3.1", "3.2"): ("T3", 0, None),
+MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None), ("3.6",): ("T8", 0, None), ("6.0",): ("T9", 0, None), ("3.1", "3.2"): ("T3", 0, None),
        ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("6.3", "6.6"): ("T4", 0, -8), ("8.1", "8.2"): ("T5", 0, -7)}
-OUT = os.path.join(sc.OUT, "on4_rough_v11.mp4")
+OUT = os.path.join(sc.OUT, "on4_rough_v12.mp4")
 NEW = {   # key: (shot, seconds into the shot, who, text)
     "c1": ("2.2", 1.55, "CLIENT", "Mine until it's done."),
     "d1": ("3.1", 1.5, "DON", "Traffic flows."),
@@ -163,6 +163,12 @@ def sound(tm, d, total):
     put(fx, rs(so.metal_click(900, 0.12), so.SR), crash + 0.55, 0.5)                                # the lid lifts
     put(fx, rs(so.swish(0.2), so.SR), crash + 1.3, 0.4); put(fx, rs(so.pop(), so.SR), crash + 1.62, 0.5)   # the peel flicked, landed
     put(fx, rs(so.thump(), so.SR), st_("3.6") + 16 / 12.0, 1.3)                                     # v9: dropped at the club's door
+    a0 = st_("6.0")                                                                                 # v12: her act
+    for j in range(5):
+        put(fx, rs(so.swish(0.12), so.SR), a0 + 0.1 + j * 0.22, 0.35)                                # the knives turning
+    put(fx, rs(so.hiss(0.9), so.SR), a0 + 1.5, 0.8); put(fx, rs(so.thump(), so.SR), a0 + 1.55, 0.6)  # the fire
+    tl = np.arange(int(1.1 * SR)) / SR
+    put(fx, np.sin(2 * np.pi * (330 + 520 * tl / 1.1) * tl * (1 + 0.004 * np.sin(2 * np.pi * 6 * tl))) * np.minimum(tl / 0.1, 1) * np.minimum((1.1 - tl) / 0.2, 1) * 0.06, a0 + 2.4)   # she rises
     r0 = st_("8.2") - 0.8
     rain = rs(so.rain(total - r0 + 0.1), so.SR); rain[:int(0.8 * SR)] *= np.linspace(0, 1, int(0.8 * SR))
     put(fx, rain, r0, 1.2)

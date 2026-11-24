@@ -757,6 +757,12 @@ SCENES = [
           protect=[("envelope", (300, 470))], action="the lift", reaction="(he doesn't look)"),
     ]),
     ("06 Ignored star", [
+        S("6.0", "medium, low", "stage", WIDE, "Her act, three numbers, each bigger: she juggles three knives; she breathes a ball of "
+          "fire across the stage; she rises off the boards and hangs in the spotlight, arms wide.",
+          cast=[P("pam_cat", 225, 700, 0.86, "hero", "proud", (0.3, -0.2), rim=True)], after=_spot_on, eyeline="out to the room",
+          action="knives, fire, levitation", reaction="(nobody looks)"),
+        S("6.05", "insert", "hall", (160, 610, 1.9), "The booth (5.3's camera): the Client and the ringed hand over the plan. Nobody turns.",
+          eyeline="both to the plan", reaction="nobody turns"),
         S("6.1", "medium, low", "stage", WIDE, "She steps into the spotlight and opens the envelope.",
           cast=[P("pam_cat", 225, 700, 0.86, "hero", "proud", (0.3, 0.6), env=True, rim=True)], eyeline="to the envelope",
           after=_spot_on),
@@ -1007,7 +1013,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"6.0": 3.6, "6.05": 0.9, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():
@@ -1016,6 +1022,8 @@ def _timing():
     d = json.load(open(os.path.join(OUT, TIMING)))
     v1 = {s["shot"]: dict(s) for s in d["shots"]}
     for k_, v in DUR.items():
+        if k_ not in v1:                                     # v17: a shot added after timing v1 (6.0, 6.05)
+            v1[k_] = dict(shot=k_)
         v1[k_]["dur"] = v
     tm, t = {}, 0.0
     ids = [x["id"] for _, ss in SCENES for x in ss]

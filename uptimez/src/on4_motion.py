@@ -669,7 +669,68 @@ def t8():
     return [f(i) for i in range(57)]
 
 
-TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7, "T8": t8}
+# ---- T9 -----------------------------------------------------------------------------------------------------------------
+def t9():
+    """6.0, v12 (Tomas: her act must be impressive): three numbers, each bigger, 1.2 s each. She juggles three knives;
+    she breathes a ball of fire across the stage (the film's only flame: GOLD and NEON, kept by the accent pass); she
+    rises off the boards and hangs in the spotlight, arms wide. 43 drawings, 3.6 s. Then 6.05: nobody turned."""
+    X, Y, S_ = 225, 700, 0.86
+    def knife(c, x, y, ang, s=1.0):
+        c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+        c.move_to(-4, 0); c.line_to(0, -40); c.line_to(5, 0); c.close_path(); c.set_source_rgb(0.93, 0.93, 0.90); c.fill_preserve()
+        c.set_source_rgb(*INK); c.set_line_width(1.8); c.stroke()
+        c.rectangle(-5, 0, 11, 16); c.set_source_rgb(0.10, 0.10, 0.11); c.fill(); c.restore()
+    def flame(c, x, y, r):
+        for rr, col in ((r, st.NEON), (r * 0.66, st.GOLD), (r * 0.3, (1.0, 0.97, 0.85))):
+            c.new_path()
+            for a_ in range(0, 360, 30):
+                q = rr * (1.0 + 0.22 * math.sin(a_ * 0.11 + x * 0.05 + rr))
+                (c.move_to if a_ == 0 else c.line_to)(x + q * math.cos(math.radians(a_)), y + q * 0.8 * math.sin(math.radians(a_)))
+            c.close_path(); c.set_source_rgb(*col); c.fill()
+    def f(i):
+        if i < 14:                                           # 1: three knives in the air
+            up = i % 4 < 2
+            arms = oc.pm.ik(-1, -70, -170 if up else -90) + oc.pm.ik(1, 70, -90 if up else -170)
+            pam = P("pam_cat", X, Y, S_, pose(arms, ("relax_s", "relax_s")), "proud", (0.0, -0.9), rim=True)
+        elif i < 28:                                         # 2: the torch up, the head back, the breath
+            t = (i - 14) / 13.0
+            arms = oc.pm.ik(-1, -40, oc.BT - 20) + oc.pm.ik(1, 70, -150)
+            pam = P("pam_cat", X, Y, S_, pose(arms, ("fist", "fist")), "approve" if t > 0.25 else "proud", (0.9, -0.5), lean=-0.10 if t < 0.25 else 0.06, rim=True)
+        else:                                                # 3: off the boards, arms wide
+            t = ease(min(1.0, (i - 28) / 8.0))
+            arms = lerp(HERO, oc.pm.ik(-1, -120, -110) + oc.pm.ik(1, 120, -110), t)
+            pam = P("pam_cat", X, Y - 130 * t + (4 * math.sin(i * 0.9) if t >= 1 else 0), S_, pose(arms, ("relax_s", "relax_s")), "proud", (0.0, -0.8), rim=True)
+        def after(k):
+            c = k.c
+            pts = sc.draw_cast(k, [pam])["pam_cat"]
+            sc._spot_on(k)
+            hx, hy = pts["head"]
+            if i < 14:
+                for j in range(3):                           # round an oval over her head
+                    a_ = i * 0.75 + j * 2.094
+                    knife(c, hx + 96 * math.cos(a_), hy - 175 - 70 * math.sin(a_), a_ * 2.2, 2.6)
+            elif i < 28:
+                tx, ty = pts["hands"][1]
+                c.set_source_rgb(*INK); c.set_line_width(5); c.move_to(tx, ty + 10); c.line_to(tx + 6, ty - 46); c.stroke()
+                flame(c, tx + 7, ty - 58, 15 + 3 * (i % 2))
+                t = (i - 18) / 9.0
+                if t > 0:                                    # the ball rolls out from her mouth across the stage
+                    for u in (1.0, 0.72, 0.45):
+                        if t * u > 0.05:
+                            flame(c, hx + 44 + 230 * t * u, hy + 8 - 40 * t * u, 24 + 104 * t * u * (1.0 if i < 27 else 0.6))
+            else:
+                t = ease(min(1.0, (i - 28) / 8.0))
+                c.save(); c.translate(X, Y + 4); c.scale(70 - 34 * t, 9 - 4 * t); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+                c.set_source_rgba(0, 0, 0, 0.55); c.fill()   # her shadow left on the boards
+                if t >= 1:
+                    for j in range(5):                       # a glitter round her
+                        a_ = j * 1.257 + i * 0.5
+                        sc._burst(k, hx + 120 * math.cos(a_), hy + 60 + 110 * math.sin(a_), 9)
+        return draw(shot("6.0", cast=[], after=after, protect=()))
+    return [f(i) for i in range(43)]
+
+
+TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7, "T8": t8, "T9": t9}
 
 
 def build(name):
