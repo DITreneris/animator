@@ -1027,3 +1027,7 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - A prop that reads as a blob at its size is removed, not refined: the pocket rag ("a brick", 3 of 3) is gone; the rag exists only in his hand (`client_of.POCKET_RAG`, opt-out).
 - Close shots draw only their cast, so people "vanish" from them: the Client stays in Father's closes at the bay, and the second guard stands behind his boss in the wide. A man who would be a sliver at the frame's edge is left out of that shot's cast.
 - Build the sound and read ITS exit code before any scene renders (`cmd > log; echo $?`), then read each scene's whole tail.
+
+## 237. *The Offer*: "Off the car." is a decided exception (Tomas, 24 Nov: "for the hundredth time")
+
+- The Client says it from UNDER the car: no face, the bubble's tail lands on his hips in the dark under the sill. Cold viewers and audits will keep writing "unclear who speaks". It is canon and is not raised again: in a triage table it goes under "decided, stays", with no fix offered.
