@@ -160,3 +160,48 @@ Cold test (3 new viewers P, Q, R, frames 5.6, 5.7, 6.1 and the follow-up):
 | Anyone in the office knows | no | Pam "uneasy or flat" | no | 0 of 3: the knowing is not carried; the film's 5.7 beat and Don's "Everyone's with me" must carry the irony |
 
 The ownership is read from the sleeve's colour only; the mug is not named as the link any more. Not yet re-tested: the whole board after the heart and 6.1 changes.
+
+## Fifth round (24 Nov, after main moved the board's bubbles to `speech.draw`): whole board, 3 new viewers
+
+Built on branch `uptimez-pick-a-side-speech` (from main c4cf7a9), Tomas's /grill-me picks: the robot's bubble tinted and bold through an opt-in `speech.ROBOT` (off: `speech.draw` byte-identical to main, so Office Noir 4 is untouched); its tip just over the antenna's ball (1.48 r); `speech_gate.check(fill=)` so the gate sees a tinted tail, with two planted-fault selftest cases. Checks 38 shots, 0 faults; `speech_gate` selftest ok.
+
+| | S | T | U | Verdict |
+|---|---|---|---|---|
+| 4 of 5 beats | yes | yes | yes | pass |
+| Loop | yes | yes | yes | 3 of 3 |
+| The robot talks differently (caps, pale blue, tail to the antenna, screen face) | yes | yes | yes | 3 of 3 |
+| The phone is Pam's | 80 % | 75 % | 75 % | 3 of 3 (sleeve and mug) |
+| Speaker a guess or tail not seen | 20, 21, 27, 30, 31, 34, 38 | 5, 20, 21, 30, 31, 38 | 5, 20, 30, 31, 38 | shared: **20, 30, 31, 38** |
+
+Shared staging faults (3 of 3, so the staging's, not the viewers'):
+- **#20 (3.1a) "SMILE. RECORDING."**: the robot's box is placed beside its visor, at Don's shoulder, not over its antenna: read as Don's. `speech.draw` takes the side wall before the overhead one.
+- **#30–31 (4.3a/b) "That one." / "Invite her."**: the box sits between the Client and Father; the 10–20 px tail is not seen at 270 px.
+- **#38 (5.6) Pam's line**: the box is on Sofía's side of Pam, over the gap between them.
+- Under all of them: with the short tail the rule demands, the box's side is the only cue, and when a second face is within a box-width on that side the speaker is a guess.
+
+Fixes (Tomas's /grill-me picks: 3.1a an exception; the wall with no other face, reframing where both walls have one; the changed frames on 3 new viewers). All under `FIX_V4`; `speech.CLEAR` opt-in (off: `speech.draw` byte-identical to main); checks 38 shots, 0 faults:
+- 3.1a: its own framing (`PART_SHIFT_V4`, grid-searched: no cut sign, tail 10–20 px): in on the robot, Don out of the frame.
+- 4.3a/b: one speaker per key frame (`BOOTH_PART_V4`), the other off the edge.
+- 5.6: Pam in from the edge (x 200), the background 40 px right: her box on her left, away from Sofía.
+
+| Frame | V | W | X | Verdict |
+|---|---|---|---|---|
+| 3.1a the robot | fairly easy | easy | fairly easy | 3 of 3 (was 0 of 3 sure) |
+| 3.1b Mom | easy | fairly easy | moderate guess (box over Don's head) | 2.5 of 3 |
+| 4.3a the Client | easy | easy | easy | 3 of 3 (was 0) |
+| 4.3b Father | easy | easy | easy | 3 of 3 (was 0) |
+| 5.6 Pam | guess | mostly a guess | guess | 0 of 3 sure: the tail of the narrow box is not seen |
+
+New shared misread (3 of 3): the throne's **blank price tag** (white, a round hole at its point) is read as "an empty speech bubble pointing at nobody". With `speech.draw`'s plain white boxes it now looks like one.
+
+Tomas's picks: 5.6 a frame for Pam only (`SHIFT_V4["5.6"] = (480, -40, 1.0)`, Sofía out; her crossing stays in 5.4/5.5); the blank tag off the throne once it is spun (`ps_set.TAG_OFF`, opt-in). Checks 38 shots, 0 faults. Cold test, 3 new viewers (Y, Z, AA) on 5.4b, 5.5, 5.6, 5.7:
+
+| | Y | Z | AA | Verdict |
+|---|---|---|---|---|
+| 5.6 who speaks | Pam, "fairly sure" (only person) | Pam, easy | Pam, fairly confident | 3 of 3 (was 0 of 3) |
+| 5.6 tail seen | barely; at 270 px "a floating label" | tiny; not at 270 px | not at 270 px | 0 of 3 at phone size: the speaker is read by being alone in the frame |
+| An empty bubble anywhere | none | none | none | the tag misread is gone |
+
+Left, noted: `speech.draw`'s 10–20 px tail is not seen at 270 px by anyone in this round or the last; the board relies on the speaker being alone or the box sitting at their face. `COO?` (the CV's lettering) is read as a caption or Sofía's thought, not speech: fine.
+
+Merge with main (24 Nov, PR #99 was "dirty"): The Offer v40 and Daddy's Home v8 had changed `speech.py` (opt-in SIZE, MONO_SIZE, MAX_W, MONO_BOLD, SIGNS_FIRST) and `speech_gate.py` (the button rail, `avoid=`). Both sides kept: `ROBOT` bolds through main's `_weight`; `check(..., avoid=(), fill=None)`; all four selftest cases kept. With ROBOT and CLEAR off, `speech.draw` is byte-identical to main's, with and without The Offer's settings. Main's new rail check found 3 ep 14 boxes in the rail (2.6, 4.3a, 5.6): the board now passes the rail to `speech.draw` as avoid, and Pam's own 5.6 frame has her at x 160. Checks 38 shots, 0 faults.

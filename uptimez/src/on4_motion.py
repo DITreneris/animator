@@ -363,13 +363,81 @@ def t2():
 
 
 # ---- T3 -----------------------------------------------------------------------------------------------------------------
-def c_side(k):
-    """3.2 from the side of the road: the far houses, the road, the crossing's bars, the lamp."""
+def c_side_town(k):
+    """c_side with the first street's finish (Tomas's picks, 24 Nov): five houses of their own tone and height, fallen
+    plaster, a damp foot, framed windows with sills, a tiled eave, drainpipes, two doors; night: the light pooled round
+    the crossing, the ends of the street dark. Her bill is laid after the dark (its heart must stay the exact red)."""
+    import on4_posters as po
     c = k.c
     c.set_source_rgb(0.03, 0.03, 0.04); c.paint()
+    po.sky(k, "side")
+    H = [(-300, 100, 360, (0.70, 0.67, 0.58), (-230, -150, -40, 40), ()),          # x0, x1, top, colour, windows, upper windows
+         (100, 300, 360, (0.80, 0.77, 0.67), (124, 214), ()),
+         (300, 470, 300, (0.66, 0.63, 0.54), (322,), (322, 404)),
+         (470, 650, 380, (0.78, 0.75, 0.65), (500, 596), ()),
+         (650, 1000, 370, (0.69, 0.66, 0.57), (676, 800, 880), ())]
+    for j, (x0, x1, top, col, wins, ups) in enumerate(H):
+        Pn = st.Plane((x0, top, 568), (x1, top, 568))
+        Pn.fill(k, col, 2.2)
+        st.plaster(k, Pn.quad, 300 + j, n=5, col=tuple(v * 0.90 for v in col), sizes=(0.05, 0.14, 0.04, 0.10))
+        st.stained_base(k, Pn, 320 + j, 0.86, tuple(v * 0.70 for v in col))
+        u = lambda x: (x - x0) / float(x1 - x0)
+        v = lambda y: (y - top) / float(568 - top)
+        for x in wins:
+            st.window(k, Pn, u(x), u(x + 32), v(432), v(498))
+        for x in ups:
+            st.window(k, Pn, u(x), u(x + 32), v(326), v(376), lit=x == 404)
+        st.poly(k, [(x0 - 4, top - 12), (x1 + 4, top - 12), (x1 + 4, top + 4), (x0 - 4, top + 4)], st.TILE, 1.8)     # the eave
+        c.set_source_rgba(0.2, 0.08, 0.06, 0.9); c.set_line_width(1.2)
+        for x in range(int(x0), int(x1), 12):
+            c.new_path(); c.arc(x + 6, top + 4, 5, 0, math.pi); c.stroke()
+    for x in (100, 470, 650):
+        st.drainpipe(k, st.Plane((x + 5, 380, 568), (x + 6, 380, 568)), 0.0, 0.0, 0.97)
+    for x in (-110, 716):                                                                              # doors
+        st.poly(k, [(x, 480), (x + 40, 480), (x + 40, 568), (x, 568)], (0.30, 0.22, 0.18), 1.8)
+        c.set_source_rgb(*INK); c.set_line_width(1.4); c.move_to(x + 20, 480); c.line_to(x + 20, 568); c.stroke()
+    st.poly(k, [(-300, 568), (1000, 568), (1000, 584), (-300, 584)], (0.62, 0.61, 0.58), 1.6)        # the far kerb
+    st.poly(k, [(-300, 584), (1000, 584), (1000, 790), (-300, 790)], st.ROAD, 1.6)
+    c.set_source_rgba(0, 0, 0, 0.25); c.set_line_width(1.2)
+    for y in range(596, 790, 16):
+        c.move_to(-300, y); c.line_to(1000, y); c.stroke()
+    for y, hh, x0, x1 in ((606, 10, 150, 430), (634, 14, 135, 440), (668, 20, 118, 452), (712, 28, 96, 466)):
+        st.poly(k, [(x0, y), (x1, y), (x1 + 6, y + hh), (x0 - 6, y + hh)], (0.93, 0.92, 0.88), 1.2)
+    st.poly(k, [(-300, 790), (1000, 790), (1000, 1100), (-300, 1100)], (0.20, 0.20, 0.21), 1.6)      # the near kerb, ours (deeper: the wide camera sits lower)
+    g = cairo.RadialGradient(250, 610, 170, 250, 610, 620)                                           # night: the pool round the crossing
+    g.add_color_stop_rgba(0, 0, 0, 0, 0.0); g.add_color_stop_rgba(0.5, 0, 0, 0, 0.34); g.add_color_stop_rgba(1, 0, 0, 0, 0.66)
+    c.set_source(g); c.rectangle(-300, 280, 1300, 520); c.fill()
+    was = po.WALL_ST
+    po.WALL_ST = H[2][3]
+    try:
+        po.crossing(k)
+    finally:
+        po.WALL_ST = was
+    c.set_source_rgb(0.62, 0.62, 0.64); c.set_line_width(8); c.move_to(60, 584); c.line_to(60, 250); c.stroke()
+    c.set_source_rgb(*INK); c.set_line_width(5); c.move_to(60, 584); c.line_to(60, 250); c.stroke()
+    st.lamp_head(k, 60, 250, 0.8)
+
+
+def gshadow(k, x, y, rx, ry=7, a=0.45):
+    """a contact shadow on the road (the crossing from the kerb had none): only with st.TOWN"""
+    if not st.TOWN[0]:
+        return
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(rx, ry); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.set_source_rgba(0, 0, 0, a); c.fill()
+
+
+def c_side(k):
+    """3.2 from the side of the road: the far houses, the road, the crossing's bars, the lamp."""
+    if st.TOWN[0]:
+        return c_side_town(k)
+    c = k.c
+    c.set_source_rgb(0.03, 0.03, 0.04); c.paint()
+    import on4_posters as po; po.sky(k, "side")
     st.poly(k, [(-300, 360), (300, 360), (300, 300), (420, 300), (420, 380), (1000, 380), (1000, 568), (-300, 568)], (0.90, 0.89, 0.86), 2.2)
     for x in (-120, -40, 40, 110, 200, 340, 460, 560, 640, 720, 800):
         st.poly(k, [(x, 430), (x + 34, 430), (x + 34, 500), (x, 500)], (0.06, 0.06, 0.07), 1.6)
+    import on4_posters as po; po.crossing(k)                                                         # (24 Nov) bills on the far wall, opt-in
     st.poly(k, [(-300, 568), (1000, 568), (1000, 584), (-300, 584)], (0.62, 0.61, 0.58), 1.6)        # the far kerb
     st.poly(k, [(-300, 584), (1000, 584), (1000, 790), (-300, 790)], st.ROAD, 1.6)
     c.set_source_rgba(0, 0, 0, 0.25); c.set_line_width(1.2)
@@ -396,8 +464,15 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+CRASH = [False]                                              # (24 Nov, Tomas's picks) the bump restaged: see t3
+T3_MARKS = {"toot": 12.0 / 32.0, "bump": 21.0 / 32.0}        # where the sounds fall, as fractions of 3.1 + 3.2
+
+
 def t3():
-    """v3: the whole beat from the side, one car. She comes over the crossing toward us; Don, on the far kerb, holds STOP
+    """v24 with CRASH (Tomas's picks, 24 Nov): the car brakes, its nose down, and stops a hair short; a tap; it rocks
+    back. Her mask is knocked askew. A beat: she stands, palm out. Then she goes over slowly, stiff as a plank, in
+    the pose she stood in, and lands (the frame shakes). Don blows his whistle on the tap and waves GO all through.
+    v3: the whole beat from the side, one car. She comes over the crossing toward us; Don, on the far kerb, holds STOP
     out at her side; she stops; he flips it, GO to the car, the toot; the car drives in from the right; the bump."""
     fr = []
     STOPP = oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 96, oc.HY + 30)
@@ -406,7 +481,7 @@ def t3():
     D_EDGE = ((-8, 0, 92, -40), "confused", dict(paddle_side="EDGE", chin=1))
     D_GO = ("wave", "pleased", dict(paddle_side="GO", paddle_ang=0.10, whistle_in=True))
     STOPX = PX + 40 + 170 * CAR_S
-    def side(cx, don, pam, burst=False):
+    def side(cx, don, pam, burst=False, pitch=0.0, shake=(0, 0), mask=0.0, dust=False):
         kind, px, pf, ps, arms, gest, lean, face, look = pam
         dpose, dface, dkw = don
         def beam(k):                                         # v21 (review: "a double silhouette at her legs"): the headlights' beam on the road, under her
@@ -415,17 +490,31 @@ def t3():
                 g = cairo.LinearGradient(cx - 170 * CAR_S, 0, cx - 170 * CAR_S - 250, 0)
                 g.add_color_stop_rgba(0, 1, 1, 0.92, 0.5); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
                 c.set_source(g); c.move_to(cx - 168 * CAR_S, 724 - 72 * CAR_S); c.line_to(cx - 168 * CAR_S - 262, 600); c.line_to(cx - 168 * CAR_S - 262, 720); c.line_to(cx - 168 * CAR_S, 724 - 52 * CAR_S); c.close_path(); c.fill()
+            gshadow(k, 170, 598, 30, 5); gshadow(k, cx, 728, 160 * CAR_S, 8, 0.5)            # Don's, the car's
+            if kind == "up":
+                gshadow(k, px, pf + 2, 70 * ps, 11 * ps)
+            else:
+                gshadow(k, PX + 6, PF + 4, 120, 8)                                           # under her, lying
         def after(k):
             c = k.c
             if kind == "down":
                 c.save(); c.translate(PX, PF - 6); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
+            rx = cx + 112 * CAR_S                                # braking: the nose down about the rear wheel
+            c.save(); c.translate(rx, 724); c.rotate(pitch); c.translate(-rx, -724)
             car.side(k, cx, 724, CAR_S)
+            c.restore()
             if burst:
-                sc._burst(k, PX + 34, PF - 60, 40)
+                sc._burst(k, PX + 34, PF - 60, 40 if not CRASH[0] else 22)
+            if dust:                                             # where she lands: her head, her heels
+                sc._burst(k, PX - 150, PF - 2, 16); sc._burst(k, PX + 120, PF + 2, 12)
         cast = [P("don", 170, 596, 0.42, dpose, dface, (0.9, -0.2), **dkw)]
         if kind == "up":
             cast.append(P("pam_cat", px, pf, ps, pose(arms, gest), face, look, lean=lean))
-        return draw(shot("3.1", loc="C_side", cam=(300, 610, 1.45), cast=cast, protect=(), before=beam, after=after))
+        oc.MASK_TILT[0] = mask
+        try:
+            return draw(shot("3.1", loc="C_side", cam=(300 + shake[0], 610 + shake[1], 1.45), cast=cast, protect=(), before=beam, after=after))
+        finally:
+            oc.MASK_TILT[0] = 0.0
     side = lazy(side)
     OFF = 1200
     for i in range(6):                                       # she comes over the crossing, after the car
@@ -437,6 +526,31 @@ def t3():
     fr.append(side(OFF, D_EDGE, STAND))                      # the flip
     fr += [side(OFF, D_GO, STAND)] * 3                       # GO, the toot, to the car
     FACE = lambda lean, dy, face: ("up", PX + lean * 60, PF + dy, 0.62, STOPP, ("relax_s", "palm"), -lean, face, (1.0, -0.1))
+    if CRASH[0]:
+        D_GO2 = ("wave", "pleased", dict(paddle_side="GO", paddle_ang=0.30, whistle_in=True))
+        go = lambda j: D_GO if j % 2 == 0 else D_GO2             # he waves it on, all through
+        DOWN = ("down", 0, 0, 0, HERO, ("fist", "fist"), 0, "", (0, 0))
+        for j, cx in enumerate((STOPX + 330, STOPX + 230, STOPX + 140)):                             # the car drives in; her palm to it
+            fr.append(side(cx, go(j), FACE(0, 0, "approve")))
+        for j, (dx, pt) in enumerate(((78, -0.012), (38, -0.022), (16, -0.026))):                     # it brakes: the nose goes down
+            fr.append(side(STOPX + dx, go(j + 1), FACE(0, 0, "approve"), pitch=pt))
+        fr.append(side(STOPX + 10, D_GO, FACE(0, 0, "approve"), pitch=-0.012))                        # stopped, a hair short
+        hit = len(fr)
+        fr.append(side(STOPX, D_GO, FACE(0.03, 0, "doubt"), burst=True, shake=(4, 0), mask=0.16))     # the tap (his whistle)
+        fr.append(side(STOPX + 6, D_GO2, FACE(0.02, 0, "doubt"), pitch=0.010, shake=(-2, 0), mask=0.30))   # it rocks back
+        fr.append(side(STOPX + 5, D_GO, FACE(0.0, 0, "doubt"), mask=0.30))
+        for j in range(4):                                                                            # a beat: she stands, palm out, the mask askew
+            fr.append(side(STOPX + 5, go(j + 1), FACE(0.0, 0, "doubt"), mask=0.30))
+        PLANK = lambda ln: ("up", PX + ln * 30, PF - 12 * (ln / 1.38) ** 2, 0.62, STOPP, ("relax_s", "palm"), -ln, "doubt", (1.0, -0.1))   # about her heels; her head comes down where the lying drawing has it
+        for j, ln in enumerate((0.02, 0.06, 0.12, 0.22, 0.36, 0.54, 0.78, 1.06, 1.38)):               # over she goes, slowly, a plank
+            fr.append(side(STOPX + 5, go(j), PLANK(ln), mask=0.30))
+        thud = len(fr)
+        fr.append(side(STOPX + 5, D_GO, DOWN, shake=(0, 7), dust=True))
+        fr.append(side(STOPX + 5, D_GO2, DOWN, shake=(0, -3)))
+        for j in range(6):
+            fr.append(side(STOPX + 5, go(j), DOWN))                                                   # she lies; he still waves GO
+        T3_MARKS.update(toot=12.0 / len(fr), bump=hit / float(len(fr)), thud=thud / float(len(fr)))
+        return fr
     for cx in (STOPX + 330, STOPX + 230, STOPX + 140, STOPX + 70, STOPX + 24):                     # the car drives in; she turns her palm to it
         fr.append(side(cx, D_GO, FACE(0, 0, "approve")))
     fr.append(side(STOPX + 6, D_GO, FACE(0, 0, "approve")))
@@ -462,6 +576,9 @@ def t6():
     DX2 = 600                                                    # v19 (cold test v13: every bill read as his): by the rear window, away from her
     def f(i):
         cam = CA if i < 36 else lerp(CA, CB, ease(min(1.0, (i - 36) / 6.0)))
+        if st.TOWN[0] and i >= 36:                           # (24 Nov, review: the action a thin band in an empty frame) nearer by a fifth and lower in
+            CR, CL = (492, 570, 1.15), (398, 570, 1.0)       # the frame; first on the rear window and Don, then it follows the bills over to her (all of her: x 128-668; no nearer than 1.0 holds her head and Don both)
+            cam = lerp(CA, CR, ease(min(1.0, (i - 36) / 6.0))) if i < 50 else lerp(CR, CL, ease(min(1.0, (i - 50) / 10.0)))
         cx = STOPX + (0 if i < 57 else ((i - 57) / 7.0) ** 2 * 420)                # the car backs away
         if i < 9:                                                                    # Don comes to the bonnet
             t = i / 8.0; don = P("don", 170 + (DX - 170) * t, 596 + (DY - 596) * t, 0.42 + (DS - 0.42) * t, "stand", "neutral", (0.9, 0.2), paddle_side="GO", paddle_ang=0.9)
@@ -492,6 +609,8 @@ def t6():
         def after(k):
             c = k.c
             hands = {}
+            gshadow(k, PX + 6 + cdx, PF + 4, 120, 8, 0.45 if i < LIFT else 0.25)     # under her; the car's; Don's
+            gshadow(k, cx, 728, 160 * CAR_S, 8, 0.5); gshadow(k, don[1][0], don[1][1] + 2, 70 * don[1][2], 11 * don[1][2])
             for j in (0, 1):                                                         # the shadows first: they stand behind her, she stays whole
                 th = thug_at(j)
                 if th is None:
@@ -678,6 +797,7 @@ def t7():
         c.restore()
     def scene(k):                                            # the ground, a pavement line; the platform's shadow on the wall
         c = k.c
+        import on4_posters as po; po.lane(k)                 # (24 Nov) bills on the brick over the bin, opt-in
         st.poly(k, [(-10, GY), (550, GY), (550, 970), (-10, 970)], (0.20, 0.20, 0.21), 2.0)
         sc.platform(k, PY)
     LX = 165                                                 # v20: the ladder she climbs, its rungs every 28 (in frame: 105 cut her at the edge)

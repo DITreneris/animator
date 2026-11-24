@@ -51,7 +51,7 @@ def ease(u):
 
 
 # ------------------------------------------------------------------ 3A: over Don's shoulder (3.1 + 3.2)
-DONB = (404, 720)                                           # round 3: higher (his crown out of the bottom quarter), the tail beside the screen
+DONB = (370, 720)                                           # round 3: higher (his crown out of the bottom quarter), the tail beside the screen
 def cam_3a(tt):
     return lerp(S.CAM_3A, S.CAM_3Az, ease((tt - T0["3.2"]) / 1.0))
 
@@ -69,26 +69,32 @@ def r_3a(k, o, t, tt, n):
     j = i - int(T0["3.2"] * DPS)
     if j < 0:                                               # 3.1: up to the screen in four drawings, then held
         ARM[0] = seq(t, [(238, 492, "point_s"), (236, 500, "point_s")])     # caught already pointing at the screen, left of his box
-    elif j < 8:
-        ARM[0] = (236, 500, "point_s")
-    else:                                                   # his hand drops toward the robot's pad before it has finished
-        ARM[0] = seq((j - 8) / float(DPS), [(294, 1240, "relax")])   # dropped: straight down, out of the frame (a swing crossed his head or the robot)
+    else:                                                   # his hand drops as the robot answers (its box goes above its antenna)
+        ARM[0] = seq(j / float(DPS), [(294, 1240, "relax")])   # dropped: straight down, out of the frame (a swing crossed his head or the robot)
 
 
 def fg_3a(k, cam, tt, n, box):
     dy = -2 if (speaking("3.1", tt) and n % 2) else 0
+    sx_, sy_ = DONB[0] - 118, DONB[1] + 132 + dy            # his raised arm, shoulder to hand: no box over it
+    hx_, hy_ = ARM[0][0], ARM[0][1]
+    AVOID_EXTRA[:] = []
+    if hy_ < 900:                                           # the arm as a chain of small rects along it, not one big box
+        for i_ in range(6):
+            u_ = i_ / 5.0; px_, py_ = hx_ + (sx_ - hx_) * u_, hy_ + (sy_ - hy_) * u_
+            AVOID_EXTRA.append((px_ - 22, py_ - 40, px_ + 22, py_ + 40))
     hd = db.don_back(k, DONB[0], DONB[1] + dy, 1.0, side=-1)
     db.don_arm(k, DONB[0], DONB[1] + dy, 1.0, ARM[0], side=-1)
     if not NOBUB[0]:
         if speaking("3.1", tt):
-            A.bubble(k.c, "Make it green.", DONB)
+            say(k, "Make it green.", DONB, n)
         if speaking("3.2", tt):
             hx, hy, _ = S.to_screen(cam, *box["robot_head"])
-            A.bubble(k.c, "Human approval required.", (hx, hy))
+            say(k, "Human approval required.", (hx, hy), n)
 
 
 # ------------------------------------------------------------------ 3B: the thumb, the series hand pressing
 def r_thumb(k, c, t, tt, n):
+    AVOID_EXTRA[:] = []
     dx = seq(t, [150, 40, -6, 0])
     c.set_source_rgb(0.86, 0.88, 0.90); c.paint()                                           # the robot's chest plate
     kit.rect(k, 110, 300, 320, 380, (0.10, 0.13, 0.18), 3501, lw=4)
@@ -121,10 +127,11 @@ def r_pam(k, o, t, tt, n):
 
 
 def fg_3c(k, cam, tt, n, box):
+    AVOID_EXTRA[:] = []
     S.c_fg(k, cam)
     if not NOBUB[0] and speaking("3.4", tt):
         hx, hy, _ = S.to_screen(cam, *box["head"])
-        A.bubble(k.c, "It's still one.", (hx, hy))
+        say(k, "It's still one.", (hx, hy), n)
 
 
 # ------------------------------------------------------------------ 3D: Don, the fist
@@ -139,11 +146,12 @@ def r_don(k, o, t, tt, n):
 
 
 def fg_3d(k, cam, tt, n, box):
+    AVOID_EXTRA[:] = []
     S.ROBOT_NEAR[0] = (10, 780, 110)                        # round 3: lower, clear of the bubble on Don's left
     S.d_fg(k, cam)
     if not NOBUB[0] and speaking("3.5", tt):
         hx, hy, _ = S.to_screen(cam, *box["head"])
-        A.bubble(k.c, "Green is all he sees.", (hx, hy))
+        say(k, "Green is all he sees.", (hx, hy), n)
 
 
 # ------------------------------------------------------------------ 3E: one held frame (4.1, 4.1', 4.2)
@@ -217,10 +225,11 @@ def r_up(k, o, t, tt, n):
 
 
 def fg_3e(k, cam, tt, n, box):
+    AVOID_EXTRA[:] = []
     if not NOBUB[0] and speaking("4.1", tt):
         hx, hy, _ = S.to_screen(cam, *box["head"])
         line = "He once fired a man..." if tt < T0["4.1'"] else "...for sitting in that chair."
-        A.bubble(k.c, line, (hx, hy))
+        say(k, line, (hx, hy), n)
 
 
 # ------------------------------------------------------------------ 3F: "Different chair." (round 2's staging)
@@ -244,7 +253,76 @@ def r_mom(k, o, t, tt, n):
 def fg_3f(k, cam, tt, n, box):
     if not NOBUB[0] and speaking("4.3", tt):
         hx, hy, _ = S.to_screen(cam, *box["head"])
-        A.bubble(k.c, "Different chair.", (hx, hy))
+        say(k, "Different chair.", (hx, hy), n)
+    AVOID_EXTRA[:] = []
+
+
+# ------------------------------------------------------------------ bubbles: speech.draw, checked by speech_gate (CLAUDE.md, 24 Nov)
+HELD = {}                                                   # text -> the box and side chosen at the line's first drawing
+from speech_gate import RAIL                                # the app's buttons (CLAUDE.md "Text"): one rect, the gate's
+AVOID_EXTRA = []                                            # this drawing's other no-go rects (Don's raised arm in 3A)
+CHECKS = []                                                 # (n, text, faults) for every bubble drawn
+
+
+def _avoid():
+    """The logged signs (price tag, screen, filter), redrawn alone by dh_speech: one rect per piece."""
+    import dh_speech as SP
+    from scipy import ndimage
+    out = []
+    if SP.KEEP:
+        lab, nl = ndimage.label(SP.keep_mask())
+        for sl in ndimage.find_objects(lab):
+            out.append((sl[1].start, sl[0].start, sl[1].stop, sl[0].stop))
+    return out
+
+
+def say(k, text, near, n=0, name=None):
+    """One line. near is a point near the speaker's head in the frame (picks the logged rig); None = off the frame.
+    The face, the mouth and the cheek edges are measured on this drawing (dh_say.measure); the box, the tail and the
+    check are the series' (speech.draw, speech_gate.check). The box is held for the line; only the tail follows."""
+    import speech, speech_gate
+    import dh_speech as SP
+    import dh_say as SY
+    surf = k.c.get_target()
+    before = speech_gate.snapshot(surf)
+    k.c.save(); k.c.identity_matrix(); k.c.scale(surf.get_width() / 540.0, surf.get_width() / 540.0)
+    try:
+        if near is None:
+            box, tip = speech.draw(k, text, None, name=name)
+            CHECKS.append((n, text, speech_gate.check(surf, box, tip, [], before=before))); return
+        rec = SP.pick(near)
+        ms = SY.measure(rec)
+        hx, hy = SP._frame_matrix(rec).transform_point(*rec["head_u"])
+        r = ms["r"]; mx, my = ms["m"]
+        faces, others = [], []
+        for o_ in SP.REG:
+            if o_ is rec:
+                continue
+            try:
+                mo = SY.measure(o_); ox, oy = SP._frame_matrix(o_).transform_point(*o_["head_u"])
+                if math.hypot(ox - hx, oy - hy) > 0.5 * r:      # a rig logged twice (the iso redraw) is the speaker, not another face
+                    others.append((ox, oy, mo["r"]))
+            except Exception:
+                pass
+        head = (hx, hy, r)
+        above = aim = None
+        if rec.get("kind") == "antenna" or ms.get("bald"):
+            above = (ms["top"][0], ms["top"][1] + 1.5)      # the antenna, or a bare crown
+        else:
+            side = HELD[text][1] if text in HELD else None
+            if side is None:                                # the side with more wall at mouth height
+                side = -1 if (ms["eL"] - 18) > (522 - ms["eR"]) else 1
+            aim = ((ms["eL"] - 1.0) if side < 0 else (ms["eR"] + 1.0), my)   # the cheek's outline at mouth height
+        signs = _avoid() + list(AVOID_EXTRA)                # kept clear by the box and checked by the gate
+        avoid = signs + [RAIL]
+        avoid += [(ox - 1.05 * orr, oy - 1.05 * orr, ox + 1.05 * orr, oy + 1.05 * orr) for ox, oy, orr in others]   # whole heads, hair too
+        box, tip = speech.draw(k, text, head, mouth=(mx, my), above=above, aim=aim, others=others, avoid=avoid)
+        if text not in HELD:
+            HELD[text] = (box, -1 if (tip and tip[0] < hx) else 1)
+        CHECKS.append((n, text, speech_gate.check(surf, box, tip, others + [head], above=above, aim=aim, before=before,
+                                                  avoid=signs)))
+    finally:
+        k.c.restore()
 
 
 # ------------------------------------------------------------------ the frame
@@ -266,10 +344,10 @@ def frame(tt, n, hi=1):
     kit.HAND[0] = hp.hand
     try:
         if sid in INS:
-            say = INS[sid](k, c, t, tt, n)
+            line_ = INS[sid](k, c, t, tt, n)
             c.identity_matrix(); c.scale(hi, hi)
-            if say and not NOBUB[0]:
-                A.bubble(c, say[0], say[1], y=150, side=say[2], maxw=220)
+            if line_ and not NOBUB[0]:                     # his hand only, his face off the frame: a named card
+                say(k, line_[0], None, n, name="DON")
             return surf, sid
         name, draw, fg, robot = SHOTS[sid]
         cam = cam_3a(tt) if name == "3A" else CAMS[name]
@@ -332,46 +410,6 @@ def install_speech():
     return SY
 
 
-PINS = {"Make it green.": (300, 112, 220),               # over the wall above his crown, right of the screen
-        "Human approval required.": (20, 112, 240),     # over the wall above the antenna, left of the screen
-        "Green is all he sees.": (24, 112, 260)}        # above his crown, clear of the robot's face
-
-
-def pin(SY):
-    """The boxes for the three overhead lines, chosen by the shot (frames approved 24 Nov), not searched: the searched
-    places sat on the screen and on the robot's face. Tails and checks are dh_say's own."""
-    import dh_speech as SP
-    c = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 8, 8))
-    for text, (bx, by, mw) in PINS.items():
-        lines, bw, bh = SP._lines(c, text, mw)
-        SY.PLAN[text] = ("T", bx, by, bw, bh, lines)
-
-
-def sound(out):
-    """v7's mix (dh_anim3.sound), with one change: the fist's whoosh sat 0.05 s before "Green is all he sees." and Whisper
-    heard "Brain" in the mix (an effect on a line's first word masks it); it now comes after the line."""
-    import numpy as np, soundfile as sf_
-    import cs_sfx as fx
-    SR = V7.SR
-    mix = np.zeros(int((TOTAL + 0.3) * SR))
-
-    def put(a, at_, g=1.0):
-        i0 = int(at_ * SR); a = a[:max(0, len(mix) - i0)]; mix[i0:i0 + len(a)] += a * g
-    for key, at_ in V7.TAKES:
-        put(V7.WAV[key], at_)
-    put(fx.tap(220.0), T0["3.3"] + 0.17, 0.6)
-    put(fx.chime(), T0["3.3'"] + 0.05, 0.6)
-    put(fx.whoosh(0.2), V7.AT["3.5"] + len(V7.WAV["3.5"]) / float(SR) + 0.05, 0.3)   # the fist, after the line
-    put(fx.step(), T0["4.1"] + 0.17, 0.7)
-    put(fx.whoosh(0.3), T0["4.1"] + 0.19, 0.45)
-    put(fx.rustle(0.3), T0["4.1'"] + 0.17, 0.4)
-    put(fx.whoosh(0.3), T0["4.2"] + 0.06 + 0.33, 0.6)
-    put(fx.scratch(0.4), T0["4.2"] + 0.10 + 0.33, 0.3)
-    put(fx.step(), T0["4.2"] + 0.84, 0.6)
-    put(fx.tap(140.0), T0["4.2"] + 0.80, 0.5)
-    sf_.write(out, mix, SR)
-
-
 def main(hi=1):
     tmp = "/tmp/dh_s3_%s%s" % (V, "_mute" if NOBUB[0] else ""); os.makedirs(tmp, exist_ok=True)
     ds.ARM_PHONE[0] = True
@@ -409,7 +447,30 @@ def main(hi=1):
     print("wrote", out, "%.2f s, %d drawings" % (TOTAL, N))
 
 
+def gate():
+    """Every drawing of the scene with its bubbles; speech_gate's faults per line. Exit 1 on any."""
+    import collections
+    install_speech(); ds.ARM_PHONE[0] = True
+    me = sys.modules[__name__]
+    HELD.clear(); del CHECKS[:]
+    for n in range(int(round(TOTAL * DPS))):
+        me.frame(n / float(DPS), n, 1)
+    by = collections.OrderedDict()
+    for n, text, faults in CHECKS:
+        b = by.setdefault(text, [0, 0, collections.Counter()]); b[0] += 1
+        if faults:
+            b[1] += 1; b[2].update(faults)
+    bad = 0
+    for text, (nn, nf, cnt) in by.items():
+        print("%-30s %3d drawings %3d with faults  %s" % (text, nn, nf, dict(cnt)))
+        bad += nf
+    print("speech_gate: %d bubble drawings, %d with faults" % (len(CHECKS), bad))
+    return bad
+
+
 if __name__ == "__main__":
+    if "gate" in sys.argv[1:]:
+        sys.exit(1 if gate() else 0)
     if "remux" in sys.argv[1:]:                             # new sound only: the pictures are copied
         tmp = "/tmp/dh_s3_%s" % V; sound(tmp + "/a.wav")
         out = "%s/dh_s3_anim_%s.mp4" % (OUT, V)
