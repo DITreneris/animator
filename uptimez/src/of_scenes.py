@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v20.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v21.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -121,7 +121,7 @@ SCENES = [
     ("3 · The Offer", "Same bay.", 3, [
         S("2.1", "TWO-SHOT", (467, 872, 1.80), "Father and the Client, the car between them. Father speaks to him. "
           "**He has only ever spoken to Don.**", line='FATHER: "My son says his machine finds anything."',
-          cast=("father", "client", "g2"), state=dict(bonnet=1.0, burn=1.0)),
+          cast=("father", "client", "g2"), state=dict(bubble_over=True, bonnet=1.0, burn=1.0)),
         S("2.2", "CLOSE", (560, 780, 2.9), "CLOSE, the Client, back under the bonnet, not looking up.",
           line='CLIENT: "It found nothing."', cast=("client",), state=dict(bonnet=1.0, burn=1.0)),
         S("2.3", "MEDIUM", LAMP_CAM, "MEDIUM on the handover (v2). Without looking he holds the lamp out behind him; bodyguard 1 "
@@ -130,7 +130,7 @@ SCENES = [
         S("2.3b", "CLOSE", FATHER_LAMP, "CLOSE, Father, watching that. A long look; his eyes go from the lamp to the Client. "
           "**This is when he decides.**", reaction="he decides", cast=("father", "g1"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.4", "CLOSE", FATHER_LAMP, "CLOSE, Father, the bodyguard with the lamp behind him.",
-          line='FATHER: "How would you run his company?"', cast=("father", "g1"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
+          line='FATHER: "How would you run his company?"', cast=("father", "g1"), state=dict(bubble_over=True, bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.5", "CLOSE", ["client"], "CLOSE, the Client. He straightens up. Checks the watch.", line='CLIENT: "Without him."',
           action="the watch", cast=("client",), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.6a", "CLOSE", FATHER_LAMP, "CLOSE, Father. HELD, silent. He weighs it. Nothing moves.", reaction="nothing moves",
@@ -352,6 +352,8 @@ def _cast_draw0(k, n, scene, sh, heads):
         x, f = pos["father"]
         x += st.get("fshake", 0.0)
         tgs = list(ps.get("targets_xy") or ())
+        if ps.get("show_hand") and tgs:                                      # v14 (Tomas at 0:20): his gesture is the point: no bubble on it
+            gs.protect(c, "his open hand", tgs[0][0] - 22, tgs[0][1] - 26, tgs[0][0] + 22, tgs[0][1] + 22)
         if ps.get("guard_lighter"):                                          # v10 (23 Nov): the guard's own arm over the roof, the lighter in its hand
             gt, gfl, glid, gexp = ps["guard_lighter"]
             gx_, gf_ = pos["g2"]
@@ -474,9 +476,14 @@ def _cast_draw0(k, n, scene, sh, heads):
             gs.protect(c, "the lighter", hx - 14, hy - LIGHTER_LIFT - 40, hx + 14, hy - 4)
             held_lighter(k, hx, hy, ps["lighter"], ps.get("lid", 1.0 if ps["lighter"] else 0.0), co_skin())
         if ps.get("point") and tg:                                            # the finger on 7
-            hx, hy = tg[0]
-            c.set_source_rgb(*INK); c.set_line_width(8); c.set_line_cap(1); c.move_to(hx, hy + 8); c.line_to(hx - 4, hy - 6); c.stroke()
-            c.set_source_rgb(0.92, 0.74, 0.60); c.set_line_width(5); c.move_to(hx, hy + 8); c.line_to(hx - 4, hy - 6); c.stroke()
+            want = tg[0]                                                      # v2 (24 Nov, Tomas at 0:08: "the finger is off the hand"): it
+            hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)   # grows FROM the hand the rig
+            dx_, dy_ = want[0] - hx, want[1] - hy - 6                          # drew, toward the square, never further than a finger
+            dl_ = math.hypot(dx_, dy_) or 1.0
+            L_ = min(dl_, 20.0)
+            fx_, fy_ = hx + dx_ / dl_ * L_, hy + dy_ / dl_ * L_
+            c.set_source_rgb(*INK); c.set_line_width(8); c.set_line_cap(1); c.move_to(hx, hy); c.line_to(fx_, fy_); c.stroke()
+            c.set_source_rgb(*co_skin()); c.set_line_width(5); c.move_to(hx, hy); c.line_to(fx_, fy_); c.stroke()
         if ps.get("phone") in ("calendar", "pam"):
             hx, hy = tg[0]
             def cal(c_):
@@ -1714,6 +1721,8 @@ def _speech_too_tall(surf, sh, who, txt, fc, cam, va_):
     speech.SIZE[0], speech.MONO_SIZE[0], speech.MAX_W[0], speech.MONO_BOLD[0], speech.SIGNS_FIRST[0] = 30, 28, 300, True, True
     if who == "robot" or va_:
         return False
+    if sh["state"].get("bubble_over") or any(p[0] == "his open hand" for p in gs.PROTECT):          # his gesture beside his face: the bubble goes over his head
+        return True
     scratch = cairo.ImageSurface(cairo.FORMAT_RGB24, surf.get_width(), surf.get_height())
     sc_ = cairo.Context(scratch); sc_.scale(surf.get_width() / 540.0, surf.get_height() / 960.0)
     head = fc[who]

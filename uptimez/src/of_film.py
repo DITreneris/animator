@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 43, 2: 43, 3: 43, 4: 43, 5: 43}
-SOUND = "of_sound_v21.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 43, 2: 44, 3: 44, 4: 44, 5: 44}
+SOUND = "of_sound_v22.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -53,7 +53,7 @@ def _T(sid, t):
 
 
 LAND_AT = ("1.3", 0.62)                                    # the burning 7 lands by his boot
-FLOOR_BURN = 4.6                                           # and burns out in this long
+FLOOR_BURN = 5.6                                           # and burns out in this long
 
 
 def _floor(sid, t):
@@ -86,7 +86,7 @@ def s13(t, L):                                             # v5 (24 Nov, grill: 
     gu_ = ease((t - 0.62) / 0.3)                           # bodyguard 1 looks down at him and steps aside, out of his way
     g1 = dict(turn=0.6 * gu_, look_down=12 * gu_)
     gx_, gf_ = sc.BLOCK[2]["g1"]
-    cx_, cf_ = sc.BLOCK[2]["client"][0] - 28, sc.BLOCK[2]["client"][1]   # clear of the fire and the lamp while he lies
+    cx_, cf_ = sc.BLOCK[2]["client"][0] - 50, sc.BLOCK[2]["client"][1]   # clear of the fire and the lamp while he lies
     st["moved"] = dict(g1=(gx_ - 78 * ease((t - 0.66) / 0.3), gf_), client=(cx_, cf_))
     if t < 0.95:
         jerk = -10 * math.sin(min(1.0, max(0.0, (t - 0.66) / 0.14)) * math.pi) + 7 * ease((t - 0.80) / 0.12)
@@ -94,7 +94,8 @@ def s13(t, L):                                             # v5 (24 Nov, grill: 
         if t >= 0.55:
             st["_cam"] = FIRE_CAM
         return st, dict(g2=g2, g1=g1)
-    u = min(1.0, (t - 0.95) / 0.38); roll = 1 - (1 - u) ** 2.2                                    # out fast, slowing
+    t = t - 0.22 if t > 1.17 else min(t, 0.95)             # v8 (cold test v43, 3 of 3 "he is already out after the cut"): the wide
+    u = min(1.0, max(0.0, (t - 0.95) / 0.42)); roll = 1 - (1 - u) ** 2.0   # shot holds 0.2 s on the legs, THEN he rolls out, in view                                    # out fast, slowing
     brake = math.sin(min(1.0, max(0.0, (t - 1.33) / 0.14)) * math.pi)                            # the board stops; he slides on a little
     e1, e2, e3 = ease((t - 1.47) / 0.16), ease((t - 1.62) / 0.18), ease((t - 1.80) / 0.17)       # v6 (audit): 0.5 s, through 45 and 60 degrees
     back = 1.32 + 0.05 * brake - 0.37 * e1 - 0.47 * e2 - 0.48 * e3 - 0.09 * math.sin(min(1.0, max(0.0, (t - 1.97) / 0.2)) * math.pi)
@@ -150,7 +151,7 @@ def s21(t, L):                                             # v3 (24 Nov, cold te
     cl = dict(client=dict(kind="bent", work=_work(t)))     # line (lesson 197): Father close (the guard behind him adjusts his
     fx_, ff_ = sc.BLOCK[3]["father"]                       # sunglasses), the two-shot (Father's open hand),
     gu = ease((t - 0.35) / 0.3) - ease((t - 3.2) / 0.3) + 0.12 * math.sin(t * 5.0) * (1 if 0.7 < t < 3.0 else 0)   # v4: his open hand up through the whole line
-    gest = dict(targets_xy=[(fx_ + 34 + 30 * gu, ff_ - 96 - 78 * gu)]) if gu > 0.02 else {}
+    gest = dict(targets_xy=[(fx_ + 34 + 30 * gu, ff_ - 96 - 78 * gu)], show_hand=True) if gu > 0.02 else {}
     if t < CUT_21:
         return dict(_cam=sc.FATHER_LAMP, _cast=("father", "g2")), dict(father=dict(face="hard", look=(1, 0), lean=0.03 * gu, **gest), **cl)
     if t < 2.55:
@@ -213,7 +214,8 @@ def s29(t, L):                                             # on his way to the d
     feet = [(-a * 0.9, lift), (0.0, 0.0)] if n % 2 == 0 else [(0.0, 0.0), (-a * 0.9, lift)]
     bob = 3 * math.sin(math.pi * min(1.0, ph / 0.7))
     cam = WALK_CAM if t < 1.1 else CAL_CAM                 # v3 (cold tests 3 of 3: it drags; "a calculator"): CUT IN on the two
-    return dict(_cam=cam, father_step=feet, moved=dict(father=(x, 880 - bob), g2=(120, 872))), {}   # of them, the calendar readable
+    x = max(x, 226.0)                                      # v4 (cold test v43): he stops BESIDE his man, not behind him
+    return dict(_cam=cam, father_step=feet if x > 226.0 else None, bubble_over=True, moved=dict(father=(x, 880 - (bob if x > 226.0 else 0)), g2=(120, 872))), {}   # of them, the calendar readable
 
 
 CAL_CAM = (172, 770, 2.6)

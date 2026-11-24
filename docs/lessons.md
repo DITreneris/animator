@@ -981,3 +981,12 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - **A clip that hides him under the car must end when he is out** (the head was cut off at the sill line once he sat up). Check the frame after every state change, in the encoded test.
 - For the sitting pose only: the figure is drawn apart, the outlines inside the white shirt erased (`of_cast._no_seams`), the rig's hands not drawn and one-silhouette fists put at the rig's wrists (`fist2`), the waist knot tucked away. The rag is the red shop rag, drawn first with the fingers over its top. Other shots and episodes keep the series' hand.
 - Tomas's order of work, which got there: frame-by-frame PNG of the fault, an outside audit, the exposure sheet, key poses, one static pose approved, a motion test with sound, then the full render.
+
+## 232. *The Offer* v44 (24 Nov, Tomas at 0:08 and 0:20; cold test v43, 3 viewers)
+
+- A finger drawn AT the target while the arm stops short of it floats off the hand. A pointing finger grows from the hand the rig drew, toward the target, no longer than a finger.
+- A gesture that carries the line is `protect`ed, and that speaker's bubble goes over his head for the whole shot (`bubble_over`), so it does not change place as the hand comes up.
+- A cut away and back must not hide the move it was made for: after the close on the fire, the wide shot holds 0.2 s on the legs, THEN he rolls out in view (3 of 3 had read "he is already out").
+- A hand that reaches across its own body reads as "a forearm pasted on his belly" (3 of 3). The hand that already holds the thing acts: it draws back and tosses the rag, which flies in an arc onto the fire.
+- A walking figure stops beside the one he speaks to, not behind him.
+- G5's FAIL lines for a scene print after the scene's summary line: read the whole tail, not the last line.
