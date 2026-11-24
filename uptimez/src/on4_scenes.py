@@ -425,6 +425,20 @@ def P(who, *a, **kw):
     return (who, a, kw)
 
 
+def stepped(draw, k, x, feet, s, hip, ph, lift=16.0):
+    """Office Noir 3's walk facing the camera (film_on3._stepped31, the released film's): the figure's own drawing, cut
+    at the hip; the body bobs, and each half below the hip is the same drawing lifted in its turn. ph: the walk's phase
+    (a step every pi). draw(feet) draws the figure with its feet at that height. No new legs, and nothing crosses."""
+    c = k.c
+    ll, lr = max(0.0, math.sin(ph)) * lift * s, max(0.0, -math.sin(ph)) * lift * s
+    bob = abs(math.cos(ph)) * 3.0 * s
+    yh = feet - hip * s
+    c.save(); c.rectangle(x - 600, yh - 3000, 1200, 3000 - bob); c.clip(); o = draw(feet - bob); c.restore()
+    for x0, lf in ((x - 600, ll), (x, lr)):
+        c.save(); c.rectangle(x0, yh - bob - lf, 600, 4000); c.clip(); draw(feet - lf); c.restore()
+    return o
+
+
 ARM_UP = (-8, 0) + oc.pm.ik(1, 74, oc.HY - 96)     # board v9: out and up on its elbow, the sleeve seen
 import pm_ps as _pmps
 _pmps.P_HANDS.setdefault("arm_up_open", ("relax", "palm"))  # board v6: the raised hand open (read as a fist)
@@ -464,6 +478,7 @@ def draw_cast(k, cast):
             k.c.save(); k.c.translate(a[0], a[1]); k.c.rotate(lean); k.c.translate(-a[0], -a[1])
         if who == "pam_cat":
             cy = kw.pop("clip_y", None)
+            tilt = kw.pop("tilt", 0.0)                       # (24 Nov) her head a little behind her body: the same drawing twice, cut at the neck, the head's half turned about it
             if kw.pop("rim", False):                         # board v9: a thin rim of light round her
                 c_ = k.c
                 c_.push_group(); oc.pam_cat(k, *a, **kw); g_ = c_.pop_group()
@@ -471,7 +486,13 @@ def draw_cast(k, cast):
                     c_.save(); c_.translate(dx_, dy_); c_.set_source_rgba(0.82, 0.82, 0.80, RIM_A[0]); c_.mask(g_); c_.restore()
             if cy is not None:                               # 3.6: sitting: only her top half rises from the road
                 k.c.save(); k.c.rectangle(-2000, -2000, 5000, cy + 2000); k.c.clip()
-            o = oc.pam_cat(k, *a, **kw)
+            if tilt:
+                c_ = k.c; ny_ = a[1] + (oc.HY + 52) * a[2]
+                c_.save(); c_.rectangle(a[0] - 600, ny_, 1200, 1200); c_.clip(); o = oc.pam_cat(k, *a, **kw); c_.restore()
+                c_.save(); c_.translate(a[0], ny_); c_.rotate(tilt); c_.translate(-a[0], -ny_)
+                c_.rectangle(a[0] - 600, ny_ - 1200, 1200, 1200); c_.clip(); oc.pam_cat(k, *a, **kw); c_.restore()
+            else:
+                o = oc.pam_cat(k, *a, **kw)
             if cy is not None:
                 k.c.restore()
         elif who == "pam_from_behind":                       # her back to us: the figure, the face covered by the back of
@@ -489,7 +510,12 @@ def draw_cast(k, cast):
             clip_y = kw.pop("clip_y", None)
             if clip_y is not None:                           # behind the car: only what shows above its bonnet
                 k.c.save(); k.c.rectangle(-2000, -2000, 5000, clip_y + 2000); k.c.clip()
-            o = oc.don_cop2(k, *a, **kw)
+            step = kw.pop("step", None)                      # (24 Nov) he walks: Office Noir 3's steps on his own drawing
+            if step is not None:
+                import don_ps as _dps
+                o = stepped(lambda f_: oc.don_cop2(k, a[0], f_, *a[2:], **kw), k, a[0], a[1], a[2], -_dps.WAIST_Y, step)
+            else:
+                o = oc.don_cop2(k, *a, **kw)
             if clip_y is not None:
                 k.c.restore()
         elif who == "sofia":                                  # board v2: her phone, not the clipboard (read as one)

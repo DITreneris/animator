@@ -487,7 +487,7 @@ def t3():
     D_GO = ("wave", "pleased", dict(paddle_side="GO", paddle_ang=0.10, whistle_in=True))
     STOPX = PX + 40 + 170 * CAR_S
     def side(cx, don, pam, burst=False, pitch=0.0, shake=(0, 0), mask=0.0, dust=False):
-        kind, px, pf, ps, arms, gest, lean, face, look = pam
+        kind, px, pf, ps, arms, gest, lean, face, look = pam[:9]
         dpose, dface, dkw = don
         def beam(k):                                         # v21 (review: "a double silhouette at her legs"): the headlights' beam on the road, under her
             c = k.c
@@ -516,6 +516,8 @@ def t3():
         if kind == "up":
             cast.append(P("pam_cat", px, pf, ps, pose(arms, gest), face, look, lean=lean))
         oc.MASK_TILT[0] = mask
+        if kind == "up" and len(pam) > 9 and pam[9]:         # her head behind her body as she lands (on4_scenes: tilt)
+            cast[-1] = (cast[-1][0], cast[-1][1], dict(cast[-1][2], tilt=pam[9]))
         try:
             return draw(shot("3.1", loc="C_side", cam=(300 + shake[0], 610 + shake[1], 1.45), cast=cast, protect=(), before=beam, after=after))
         finally:
@@ -553,7 +555,7 @@ def t3():
             fr.append(side(STOPX + 5, go(j), PLANK(ln), mask=0.30))
         thud = len(fr)
         if LAW[0]:                                           # (the review of the stills, Tomas: the plank stays, it bounces) she lands, comes up a hand's breadth, settles; the raised palm rocks after her
-            LIE = lambda ln, ax, ay: ("up", PX + 45, PF - 14, 0.62, oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, ax, ay), ("relax_s", "palm"), -ln, "doubt", (0.9, -0.6))
+            LIE = lambda ln, ax, ay: ("up", PX + 45, PF - 14, 0.62, oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, ax, ay), ("relax_s", "palm"), -ln, "doubt", (0.9, -0.6), (1.5 - ln) * -0.9 + (ay + 128) * 0.004)
             seq = [(1.50, 50, -128, (0, 7), True), (1.42, 58, -142, (0, -3), False), (1.36, 64, -150, (0, 0), False), (1.44, 56, -136, (0, 0), False),
                    (1.50, 44, -120, (0, 3), False), (1.47, 53, -131, (0, 0), False), (1.50, 50, -128, (0, 0), False)]
             for j, (ln, ax, ay, sh, du) in enumerate(seq):
@@ -922,7 +924,7 @@ def t8():
             t = ease(min(1.0, (i - 30) / 11.0))
             if i < 44:
                 over = {42: 0.13, 43: -0.06}.get(int(round(i)), 0.0) if LAW[0] else 0.0     # past upright, back, still (Tomas: the plank rises, with the overshoot)
-                cast = [P("pam_cat", X0, GYp, 0.50, "hero", "doubt", (0.2, -0.4), lean=-1.45 * (1 - t) + over, rim=True)]
+                cast = [P("pam_cat", X0, GYp, 0.50, "hero", "doubt", (0.2, -0.4), lean=-1.45 * (1 - t) + over, rim=True, tilt=-0.6 * over)]
             elif i < 51:
                 cast = [P("pam_cat", X0, GYp, 0.50, "mask_fix", "doubt", (-0.4, -0.2), rim=True)]
             else:
@@ -936,7 +938,11 @@ def t8():
                 if LAW[0]:                                   # Dad's two bodyguards (dh_cast.guard), at her scale; both hands under her, the money pocketed
                     import on4_cross as xc
                     moving = carry or i >= 18
-                    dc.guard(k, x, GYp - 8 - (2.5 if (moving and i % 2) else 0), 0.375, pose=xc.G_CARRY if carry else xc.G_WALK, flip=(j == 1), seed=1600 + j * 40)
+                    gs0 = xc.GS; xc.GS = 0.375
+                    try:
+                        xc.guard(k, x, GYp - 8, xc.G_CARRY if carry else xc.G_WALK, j == 1, 1600 + j * 40, 0.0, (i * 1.9 + j * 0.5) if moving else None)
+                    finally:
+                        xc.GS = gs0
                     continue
                 st.thug(k, x, GYp - 8, 0.40, "open" if i % 2 else (-30, 20, 30, -20), seed=4500 + j,
                         hands=("grab", "grab") if carry or i < 18 else ("grab", "relax"), lean=0.0)
@@ -944,7 +950,7 @@ def t8():
                     bill(k, x + 40 + n_ * 4, GYp - 8 - 112 - n_ * 9, 0.5 - 0.3 * n_)
             if i < 30 and LAW[0]:                            # carried and dropped as she fell: the same rig, stiff, her palm still up
                 STOPP_ = oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, 50, -128)
-                sc.draw_cast(k, [P("pam_cat", cx + 70, GYp - 4 + lift, 0.50, pose(STOPP_, ("relax_s", "palm")) if i < 22 else "hero", "doubt", (0.9, -0.6), lean=(-1.5 + (0.045 * math.sin(i * math.pi / 2.0 - 0.9) if carry else (0.10 if i in (16, 17) else 0.0))) if i < 22 else -1.45, rim=True)])
+                sc.draw_cast(k, [P("pam_cat", cx + 70, GYp - 4 + lift, 0.50, pose(STOPP_, ("relax_s", "palm")) if i < 22 else "hero", "doubt", (0.9, -0.6), lean=(-1.5 + (0.045 * math.sin(i * math.pi / 2.0 - 0.9) if carry else (0.10 if i in (16, 17) else 0.0))) if i < 22 else -1.45, rim=True, tilt=(0.09 * math.sin(i * math.pi / 2.0 - 2.2)) if carry else 0.0)])
             elif i < 30:
                 c.save(); c.translate(cx, GYp - 6 + lift); c.scale(0.47, 0.47); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
             if i in (16, 17):                                # dropped

@@ -68,44 +68,31 @@ def plen(pts):
     return sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(pts, pts[1:]))
 
 
-STRIDE = 60.0                                                # a foot's reach ahead of his middle, in his own units
-
-
 def draw_don(k, d, dist=None, dirn=1):
-    """Don; with dist (how far he has walked, px) he walks on two legs: Office Noir 2's solved walk (on2_motion.don_legs,
-    stride: the foot on the ground stays where it is, the body goes over it and drops as the legs open), on the cop
-    (don_ps.WAIST_Y; his one-block trousers are cleared below the belt)."""
-    import on2_motion as o2
-    import don_ps
-    import don_v4 as dv
-    from kit import cut
+    """Don; with dist (how far he has walked, px) he walks: a step every 0.30 of his height (on4_scenes.stepped,
+    Office Noir 3's walk facing the camera). v2's side legs under his front-on body crossed (lesson 90): dropped."""
     if dist is None:
         sc.draw_cast(k, [d]); return
     who, a, kw = d
-    x, y, s_ = a[0], a[1], a[2]
-    u = dist / (4 * STRIDE * s_)
-    steps = [o2.stride(u, STRIDE, 16.0), o2.stride(u + 0.5, STRIDE, 16.0)]
-    drop = 9.0 * max(abs(steps[0][0]), abs(steps[1][0])) / STRIDE                 # lower with the legs apart
-    c = k.c; w = don_ps.WAIST_Y
-    c.save(); c.translate(x, y); c.scale(s_, s_)
-    for hip, (ah, lift) in sorted(zip((-20, 20), steps), key=lambda q: q[1][1]):      # the lifted leg over the planted one
-        fx = hip * 0.5 + ah * dirn
-        cut(k, [(hip - 22, w + drop - 4), (hip + 22, w + drop - 4), (fx + 17, -lift - 9), (fx - 17, -lift - 9)], dv.KHAKI, shadow=False, lw=2)
-        cut(k, [(fx - dirn * 17, -lift - 13), (fx + dirn * 12, -lift - 13), (fx + dirn * 36, -lift - 5), (fx + dirn * 36, -lift), (fx - dirn * 17, -lift)],
-            (0.24, 0.18, 0.13), shadow=False, lw=1.8)
-    c.restore()
-    d2 = (who, (x, y + drop * s_) + tuple(a[3:]) if False else (x, y + drop * s_, s_) + tuple(a[3:]), kw)
-    c.push_group()
-    sc.draw_cast(k, [d2])
-    c.save(); c.set_operator(cairo.OPERATOR_CLEAR)
-    c.rectangle(x - 52 * s_, y + (w + drop + 2) * s_, 104 * s_, (-w + 16) * s_); c.fill(); c.restore()
-    c.pop_group_to_source(); c.paint()
+    kw = dict(kw); kw["step"] = math.pi * dist / (0.30 * 392 * a[2])
+    kw.setdefault("lean", 0.035 * math.sin(kw["step"]))      # his weight over the standing foot
+    sc.draw_cast(k, [(who, a, kw)])
 
 
-def guard(k, x, y, pose, flip, seed, lean=0.0):
+def guard(k, x, y, pose, flip, seed, lean=0.0, step=None, turn=0.0):
+    """Dad's bodyguard. step: he walks (on4_scenes.stepped). turn: his head turned, -1..1 (The Offer's of_cast._turn_head)."""
+    import of_cast as oca
     c = k.c
-    c.save(); c.translate(x, y); c.rotate(lean); c.translate(-x, -y)
-    dc.guard(k, x, y, GS, pose=pose, flip=flip, seed=seed)
+    c.save(); c.translate(x, y); c.rotate(lean + (0.03 * math.sin(step) if step is not None else 0.0)); c.translate(-x, -y)
+    def one(f_):
+        o = dc.guard(k, x, f_, GS, pose=pose, flip=flip, seed=seed)
+        if turn:
+            oca._turn_head(k, x, f_, GS, flip, turn, seed)
+        return o
+    if step is not None:
+        sc.stepped(one, k, x, y, GS, -co.HIP, step, 14.0)
+    else:
+        one(y)
     c.restore()
 
 
@@ -292,13 +279,13 @@ def tg():
         up = m.ease(min(1.0, max(0.0, (i - LIFT) / 4.0)))
         lift = -46.0 * up
         sway = 0.045 * math.sin(i * math.pi / 2.0 - 0.9) if go else 0.0             # she swings behind their steps
-        step = (2.5 * abs(math.sin(i * math.pi / 2.0))) if (go or i < TAKE) else 0.0
+        step = 0.0                                           # (their bob is in the walk now)
         gs = []
         for j in (0, 1):
             if i < TAKE:                                     # in from the right, the collector first
                 t = m.ease(min(1.0, max(0.0, (i - j * 2.0) / 7.5)))
                 x = 520 + j * 90 + (GX[j] - 520 - j * 90) * t
-                gs.append([x, GY - (step if t < 1 else 0), G_WALK, 0.0, j == 1])
+                gs.append([x, GY, G_WALK, 0.0, j == 1, (math.pi * (520 + j * 90 - x) / (0.30 * 447 * GS)) if t < 1 else None, 0.0])
             elif i < LIFT:
                 if j == 0:                                   # he bends for each bill, and comes up with it
                     ph = (i - TAKE) % 2.0
@@ -306,25 +293,27 @@ def tg():
                     pose = garm((-84, co.HIP + 30), (44, co.HIP + 100)) if dn else garm((-84, co.HIP + 30), (-40, co.HIP + 30))   # down for one; across to the fan in his other hand
                     if i >= GIVE:                            # half of it across to the other
                         pose = garm((-84, co.HIP + 30), (118, co.BT + 70)) if i < POCKET else G_WALK
-                    gs.append([GX[0], GY, pose, 0.16 if dn else 0.03, False])
+                    gs.append([GX[0], GY, pose, 0.16 if dn else 0.03, False, None, 0.0])
                 else:                                        # the watch: hands clasped; he looks the other way now and then
-                    look_away = (TAKE + 3 <= i < TAKE + 6) or (TAKE + 9 <= i < TAKE + 11)
+                    tn = 0.0                                 # his head: up the street, back, down the street, back (The Offer's turn)
+                    for t0, t1, v in ((TAKE + 2, TAKE + 5, 1.0), (TAKE + 8, TAKE + 11, -1.0)):
+                        tn += v * max(0.0, min(1.0, (i - t0) / 1.0, (t1 + 1 - i) / 1.0))
                     pose = G_WATCH if i < GIVE else (garm((-118, co.BT + 70), (78, co.HIP + 40)) if i < POCKET else G_WALK)
-                    gs.append([GX[1], GY, pose, 0.0, not look_away])
+                    gs.append([GX[1], GY, pose, 0.0, True, None, tn])
             else:                                            # both bend to her, hands under her, up, and away
                 bend = 0.14 * (1 - up) * (1 if j == 0 else -1)
-                gs.append([GX[j] + cdx, GY - step, G_CARRY, bend, j == 1])
+                gs.append([GX[j] + cdx, GY, G_CARRY, bend, j == 1, (math.pi * go * 30.0 / (0.30 * 447 * GS) + j * 0.5) if go else None, 0.0])
         arm = (50 + 5 * math.sin(i * math.pi / 2.0 - 1.6), -128 + 8 * math.cos(i * math.pi / 2.0 - 1.6)) if go else (50, -128)
         arms = oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, arm[0], arm[1])
         pm_ = P("pam_cat", LX + cdx, LY_ + lift, LS, m.pose(arms, ("relax_s", "palm")), "fade" if i < LIFT else "doubt",
-                (0.3, -0.2) if i < LIFT else (0.9, -0.6), lean=LEAN + sway)
+                (0.3, -0.2) if i < LIFT else (0.9, -0.6), lean=LEAN + sway, tilt=(0.09 * math.sin(i * math.pi / 2.0 - 2.2)) if go else 0.0)
         def after(k):
             for j, g in enumerate(gs):
                 shadow(k, g[0], GY + 3, 62 * GS, 8 * GS + 3)
             if lift > -30:
                 shadow(k, LX - 105 + cdx, LY_ + 44, 125, 8, 0.45 * (1 + lift / 46.0) + 0.1)
             for j, g in enumerate(gs):
-                guard(k, g[0], g[1], g[2], g[4], 1600 + j * 40, g[3])
+                guard(k, g[0], g[1], g[2], g[4], 1600 + j * 40, g[3], g[5], g[6])
             if up > 0.25:                                    # their hands under her (drawn first: she lies on them): at her shoulders, at her ankles
                 yb = LY_ + lift + 27
                 for hx_ in (LX - 168 + cdx, LX - 128 + cdx, LX - 44 + cdx, LX - 8 + cdx):
