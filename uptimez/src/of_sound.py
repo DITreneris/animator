@@ -175,8 +175,46 @@ def room(total):
 
 # --- the mix ----------------------------------------------------------------------------------------------------------
 def timing():
-    d = json.load(open(os.path.join(OUT, "of_timing_v9.json")))
+    d = json.load(open(os.path.join(OUT, "of_timing_v14.json")))
     return {s["shot"]: s for s in d["shots"]}, d["total"]
+
+
+def lamp_buzz(d=0.05):                                         # v15 (24 Nov, decided): the work lamp flickers: a mains buzz
+    t = t_(d)
+    return (np.sign(np.sin(2 * np.pi * 100 * t)) * 0.5 + np.sin(2 * np.pi * 200 * t) * 0.4) * np.minimum(1, t / 0.004) * np.minimum(1, (d - t) / 0.004)
+
+
+def lamp_tick():                                              # and dies: one dry tick, a filament's ping after it
+    t = t_(0.25)
+    return hp(noise(0.25), 3) * np.exp(-t * 140) + np.sin(2 * np.pi * 3100 * t) * np.exp(-t * 22) * 0.18
+
+
+def rattle():                                                 # he shakes it: the cage and the dead bulb
+    t = t_(0.07)
+    return hp(noise(0.07), 4) * np.exp(-t * 70) * 0.8 + np.sin(2 * np.pi * 1700 * t) * np.exp(-t * 60) * 0.3
+
+
+def app_blip():                                               # PAM opens on his phone: two soft notes up
+    out = np.zeros(int(0.30 * SR))
+    for i, f in enumerate((880.0, 1318.5)):
+        t = t_(0.16); a = np.sin(2 * np.pi * f * t) * np.exp(-t * 22) * np.minimum(1, t / 0.004)
+        j = int(i * 0.09 * SR); out[j:j + len(a)] += a
+    return out
+
+
+def cloth_thud():                                             # Father's hand on it, down
+    t = t_(0.16)
+    return lp(noise(0.16), 60) * np.exp(-t * 40) * 3 + np.sin(2 * np.pi * 90 * t) * np.exp(-t * 35) * 0.6
+
+
+def paper(d=0.30):                                            # the fresh plan slides up over the burnt one
+    t = t_(d)
+    return hp(lp(noise(d), 4), 12) * np.sin(np.pi * t / d) ** 0.7 * (1 + 0.5 * lp(noise(d), 300) * 8)
+
+
+def pin_tap():
+    t = t_(0.08)
+    return hp(noise(0.08), 2) * np.exp(-t * 160) * 0.6 + np.sin(2 * np.pi * 420 * t) * np.exp(-t * 60) * 0.7
 
 
 def put(buf, a, t0, g):
@@ -201,7 +239,7 @@ def mix():
         k = int(0.03 * SR); seg[:k] *= np.linspace(0, 1, k); seg[-k:] *= np.linspace(1, 0, k)
         put(rad, seg, a, 1.0)
     rad_g = np.ones(n)                                                   # the engine drowns it for a moment (2.8e)
-    i0, i1 = int(T("2.8e") * SR), int((T("2.8e") + 1.0) * SR)
+    i0, i1 = int((T("2.8e") + 0.3) * SR), int((T("2.8e") + 1.3) * SR)
     rad_g[i0:i1] = 0.35
     rad *= rad_g
     # effects, at the script's places
@@ -209,31 +247,59 @@ def mix():
     for k in (0.10, 0.38):
         put(fxb, scrape(0.4), T("0.8") + k, 0.40); put(fxb, creak_car(0.4), T("0.8") + k, 0.25)
     put(fxb, car_door(), T("0.6") + 0.05, 0.40)                          # v6: Father has arrived (his car door, outside)
-    put(fxb, si.clank(), T("0.4") + 1.0, 0.35)
+    put(fxb, si.clank(), T("0.4") + 0.7, 0.35)                           # v10: the shot is 1.0 s
     put(fxb, lighter_click(), T("1.2") + 0.05, 0.75)
     put(fxb, whoosh(0.4), T("1.2") + 0.42, 0.55)                          # v4: the 7 catches
     put(fxb, crackle(1.4), T("1.2") + 0.45, 0.30)                         # it burns up the plan
-    put(fxb, whoosh(0.35), T("1.3") + 0.15, 0.45)                         # torn off and flung
-    put(fxb, crackle(3.0), T("1.3") + 0.50, 0.32)                         # on the floor by his boot
+    put(fxb, whoosh(0.35), T("1.3") + 0.18, 0.45)                         # torn off and flung
+    put(fxb, crackle(3.0), T("1.3") + 0.62, 0.32)                         # on the floor by his boot
     put(fxb, flame(E("1.5") + 0.5 - T("1.2")), T("1.2") + 0.08, 0.10)
     put(fxb, lighter_shut(), T("1.7") + 0.22, 0.70)
     put(fxb, slam(), T("2.8d") + 0.30, 0.85)
-    put(fxb, start_engine(1.6), T("2.8e") + 0.10, 0.55)
+    put(fxb, start_engine(1.6), T("2.8e") + 0.40, 0.55)   # v11: a beat on the key first
     put(fxb, chime_happy(), T("3.0") + 0.10, 0.45)                       # v5: over the UptimeZ doors
     for k_ in (0.05, 0.65):                                                # the visor's countdown ticks
         put(fxb, si.clank()[: int(0.05 * SR)], T("3.6b") + k_, 0.25)
     put(fxb, bm.buzz_phone(0.9), T("3.6") + 0.05, 0.40)
-    put(fxb, ring_out(1.6), T("3.7") + 0.15, 0.30)                        # v5: it rings, and rings; nobody answers
+    put(fxb, ring_out(1.25), T("3.7") + 0.15, 0.30)                        # v5: it rings, and rings; nobody answers
     put(fxb, bm.buzz_phone(0.7), T("4.1") + 0.05, 0.35)
     put(fxb, car_door(), E("4.1") - 0.30, 0.45)
     put(fxb, pull_away(1.6), T("4.2"), 0.45)
+    # v15 (24 Nov, the music check, decided): the new gags and shots get their sounds
+    idle0 = T("2.8e") + 0.40 + 1.45                                        # the engine RUNS on, low, until the office cut
+    idl = engine(T("3.0") - idle0, 780, 780, rough=0.15)
+    k = int(0.25 * SR); idl[:k] *= np.linspace(0, 1, k); idl[-int(0.05 * SR):] *= np.linspace(1, 0, int(0.05 * SR))
+    put(fxb, idl, idle0, 0.11)
+    for a_, b_ in ((0.45, 0.50), (0.58, 0.63)):                            # the lamp: buzz, buzz, tick, dark; then the shakes
+        put(fxb, lamp_buzz(b_ - a_), T("2.8f") + a_, 0.30)
+    put(fxb, lamp_tick(), T("2.8f") + 0.72, 0.55)
+    for q in range(4):                                                     # of_film.s28f: 4 Hz, from 0.95 s, two shakes
+        put(fxb, rattle(), T("2.8f") + 0.95 + 0.0625 + q * 0.125, 0.40 if q % 2 == 0 else 0.28)
+    put(fxb, app_blip(), T("2.8c") + 1.1 + 0.06, 0.30)                     # of_film.GAG_AT: PAM, on bodyguard 2's phone
+    put(fxb, cloth_thud(), T("2.8c") + 1.1 + 0.62, 0.45)                   # Father's hand pushes it down
+    put(fxb, paper(0.30), T("4.2") + 0.24, 0.30)                           # of_film.PIN_T: the fresh plan slides up
+    put(fxb, pin_tap(), T("4.2") + 0.80, 0.60)                             # and the pin goes in
     # music: in after the doors (0.3), cut dead on the click (1.2), back after "Done." (2.8c), out at the office cut
     bed = fm.bed("B", total + 1.0)
-    for a, b in ((T("0.6"), T("1.2") + 0.05), (E("2.8c"), T("3.0"))):
+    # v15: it stops when the lamp dies (the gag gets the silence) and is back on Father's walk; and the garage theme
+    # returns at the pin and runs through the seam, to stop on frame 0's roof SLAM
+    for a, b in ((T("0.6"), T("1.2") + 0.05), (E("2.8c"), T("2.8f") + 0.72), (T("2.9"), T("3.0")), (T("4.2") + 0.24, total)):
         seg = bed[int(a * SR):int(b * SR)].copy()
         k = int(0.6 * SR); seg[:k] *= np.linspace(0, 1, k)
         seg[-int(0.01 * SR):] *= np.linspace(1, 0, int(0.01 * SR))         # dead stop (lesson 107)
         put(mus, seg, a, 1.0)
+    put(mus, bed[int(total * SR):int((total + 0.06) * SR)].copy(), 0.0, 1.0)   # the seam: its last 0.06 s, up to the SLAM
+    # v15: the office has its own bed, the series' "Open plan" (C), low; in after the chime, dead on Don's call ringing
+    bedc = fm.bed("C", total + 1.0)
+    a, b = T("3.0") + 0.7, T("3.7") + 0.15
+    seg = bedc[int(a * SR):int(b * SR)].copy()
+    k = int(0.5 * SR); seg[:k] *= np.linspace(0, 1, k); seg[-int(0.01 * SR):] *= np.linspace(1, 0, int(0.01 * SR))
+    put(mus, seg, a, 0.75)
+    rad_up = np.ones(n)                                                     # v15: the negotiation stays dry (decided earlier), but
+    i0, i1 = int(T("2.1") * SR), int(T("2.8d") * SR)                        # the garage's radio is up 8 dB there, heard in the gaps
+    rad_up[i0:i1] = 2.5
+    k = int(0.4 * SR); rad_up[i0:i0 + k] = np.linspace(1, 2.5, k); rad_up[i1 - k:i1] = np.linspace(2.5, 1, k)
+    rad *= rad_up
     # the takes, where the timing file put them
     lines = []
     for sid, s in tm.items():
@@ -273,7 +339,7 @@ def master(a, target=-14.0, tp=-2.6):          # AAC adds about 0.9 dB
     stays under tp (lessons: the AAC overshoot is checked on the final file too)."""
     from scipy.signal import resample_poly
     from scipy.ndimage import minimum_filter1d
-    path = os.path.join(OUT, "of_sound_v9.wav")
+    path = os.path.join(OUT, "of_sound_v15.wav")
     g = 1.0
     x = a / (np.abs(a).max() + 1e-9) * 0.5
     for _ in range(6):
@@ -298,7 +364,7 @@ def check(lines, path=None, out=None):
     path: another mix to check (the rough cut's decoded AAC); out: where the json goes."""
     import of_voices as ov
     import sound_fs as sfs
-    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v9.wav"))
+    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v15.wav"))
     if a.ndim > 1:
         a = a.mean(axis=1)
     r = ov.recognizer()
@@ -325,7 +391,7 @@ def check(lines, path=None, out=None):
         prev = (t0, line.split(":", 1)[1] if ":" in line else line)
         res[sid] = dict(line=line, heard=heard, ok=ok)
         print("%-5s %d/3  %-48s | %s" % (sid, ok, line[:48], heard[0]), flush=True)
-    json.dump(res, open(out or os.path.join(OUT, "of_sound_v9_check.json"), "w"), indent=1)
+    json.dump(res, open(out or os.path.join(OUT, "of_sound_v15_check.json"), "w"), indent=1)
     return res
 
 
@@ -338,7 +404,7 @@ def levels(path):
 if __name__ == "__main__":
     a, lines, total = mix()
     master(a)
-    I, P = levels(os.path.join(OUT, "of_sound_v9.wav"))
+    I, P = levels(os.path.join(OUT, "of_sound_v15.wav"))
     print("master: %.1f s, %.1f LUFS, true peak %.1f dBTP" % (total, I, P))
     res = check(lines)
     KNOWN = {"2.6": "\"And then?\" is heard \"On then\" in 2 of 3 windows in the mix (1 of 3 dry at stop 2 without context): "

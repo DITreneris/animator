@@ -25,13 +25,19 @@ def _wrap():
             LOG.append(("hand", k.c.user_to_device(hx, hy)))
         return ch(k, hx, hy, *a, **kw)
     _kit.HAND[0] = h; oc.cartoon_hand = h
-    for n in ("phone_grip", "handle_grip", "clutch", "thumb_fist"):
+    for n in ("phone_grip", "handle_grip", "clutch"):
         f = getattr(oc, n)
         def g(k, x, y, *a, _f=f, _n=n, **kw):
             if _real(k.c) and kw.get("part", "all") != "front":
                 LOG.append((_n, k.c.user_to_device(x, y)))
             return _f(k, x, y, *a, **kw)
         setattr(oc, n, g)
+    ph = oc.ps_hand                                         # v2: the series' hands in the inserts and gestures
+    def p_(k, g, x, y, *a, **kw):
+        if _real(k.c):
+            LOG.append(("ps " + g, k.c.user_to_device(x, y)))
+        return ph(k, g, x, y, *a, **kw)
+    oc.ps_hand = p_
     hl = sc.held_lighter
     def l(k, hx, hy, *a, **kw):
         if _real(k.c):

@@ -29,6 +29,8 @@ CUP = (0.93, 0.90, 0.82)
 
 
 BROW_UP = [9]; BROW_DARK = [False]                                  # how far "brow" lifts; episode 13 raises it for one shot (default unchanged)
+BLINK = [False]                                           # opt-in (episode 13): his lids shut this drawing
+MOUTH_CODE = [None]                                       # opt-in (episode 13, 23 Nov): a lip-sync mouth (iwry_mouths code) this drawing
 
 
 def _father_face(k, x, y, face, look, glasses=False, seed=0):
@@ -44,9 +46,10 @@ def _father_face(k, x, y, face, look, glasses=False, seed=0):
         ellipse(k, x + sx, y, 10, 8.5, (1, 1, 1), seed + sx, shadow=False, lw=2)
         ellipse(k, x + sx + lx * 4, y + 1.5 + ly * 3, 4.3, 4.3, INK, seed + sx + 1, shadow=False, outline=False)
         c.set_source_rgb(*SKIN_F)                           # the upper lid, half down
-        c.rectangle(x + sx - 12, y - 11, 24, 9.5 if not low else 7.5); c.fill()
+        c.rectangle(x + sx - 12, y - 11, 24, (9.5 if not low else 7.5) if not BLINK[0] else 20.5); c.fill()
         c.set_source_rgb(*INK); c.set_line_width(2.8); c.set_line_cap(1)
-        c.move_to(x + sx - 10.5, y - 1.5); c.line_to(x + sx + 10.5, y - 1.5); c.stroke()
+        ly_ = y - 1.5 if not BLINK[0] else y + 8.5
+        c.move_to(x + sx - 10.5, ly_); c.line_to(x + sx + 10.5, ly_); c.stroke()
         c.set_source_rgba(0.45, 0.30, 0.28, 0.5); c.set_line_width(1.8)         # a bag under each eye
         c.move_to(x + sx - 8, y + 11); c.curve_to(x + sx - 3, y + 14, x + sx + 3, y + 14, x + sx + 8, y + 11); c.stroke()
     up = BROW_UP[0] if face == "brow" else 0
@@ -63,7 +66,10 @@ def _father_face(k, x, y, face, look, glasses=False, seed=0):
         c.move_to(x + 6, y - 27); c.curve_to(x + 13, y - 30, x + 21, y - 30, x + 28, y - 26); c.stroke()
     c.set_source_rgb(*INK); c.set_line_width(4)
     my = y + 28
-    if face == "talk":
+    if MOUTH_CODE[0]:                                                          # episode 13: the take's own mouth shape
+        import iwry_mouths as im_
+        im_.mouth(k, x, my, MOUTH_CODE[0], SKIN_F, erase=(13, 7), seed=seed + 5)
+    elif face == "talk":
         ellipse(k, x, my, 7, 3.6, (0.35, 0.08, 0.08), seed + 5, shadow=False, lw=2)
     else:
         c.move_to(x - 10, my); c.line_to(x + 10, my); c.stroke()
