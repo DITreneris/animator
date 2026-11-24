@@ -902,3 +902,9 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - A joke read by 0 of 3 is cut, not repaired (the PAM tail): 2.8c 2.1 -> 1.15 s.
 - Cutting away inside a long line must keep the speaker in frame (G5 BUBBLE check): push in on the speaker instead of cutting to the listener.
 - Shorter shots move the ASR windows: "Pam?" fell to 1 of 3 until the office bed went 0.75 -> 0.6. Re-run the delivered-mix check after every timing change.
+
+## 215. *The Offer* v33 (24 Nov, Tomas at 0:23: "the hand jumped, whose is it?")
+
+- Taking the arms out of an insert (214) also takes out what tied a prop to the body: the watch was placed by a fixed offset on the old forearm and floated beside the hand. Anything worn goes on the wrist stub, along its direction.
+- A hand that changes job mid-shot must travel in order: reach the thing (0.3 s), grip, then lift, with the object locked to the fist. v32 lifted the plug by itself while the hand crossed the frame in 0.3 s and changed shape on the first frame: a jump.
+- I checked this shot only as stills at three times, not as a 10 fps strip of the encoded file. Every shot whose drawing code changed gets a strip before delivery.

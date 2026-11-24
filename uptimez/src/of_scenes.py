@@ -844,16 +844,19 @@ def insert_shot(k, sh):
             ellipse(k, 250, 350, 28, 28, (0.62, 0.64, 0.66), 3470, lw=2.4)              # the plug's top, in the block
 
         w_ = sh["state"].get("work", 0.0)
-        c.save(); c.translate(250, 350); c.rotate(-2.4 + 0.35 * w_ - 0.6 * sh["state"].get("bolt_out", 0.0))       # the wrench on it, turning
+        ro_ = sh["state"].get("bay_reach", sh["state"].get("bolt_out", 0.0))             # v10: the wrench swings off as the far hand comes
+        c.save(); c.translate(250, 350); c.rotate(-2.4 + 0.35 * w_ - 0.6 * ro_)       # the wrench on it, turning
         rect(k, -14, -14, 190, 28, (0.70, 0.72, 0.75), 3471, lw=2.4)
         c.restore()
         bo2_ = sh["state"].get("bolt_out", 0.0)
-        hw_ = (250 + 175 * math.cos(-2.4 + 0.35 * w_ - 0.6 * bo2_), 350 + 175 * math.sin(-2.4 + 0.35 * w_ - 0.6 * bo2_))   # his fist on the wrench
-        fh_ = (330 + (290 - 330) * bo2_, 470 + (250 - 470) * bo2_)                          # v4: the far hand comes up with the plug
+        hw_ = (250 + 175 * math.cos(-2.4 + 0.35 * w_ - 0.6 * ro_), 350 + 175 * math.sin(-2.4 + 0.35 * w_ - 0.6 * ro_))   # his fist on the wrench
+        fh_ = (330 + (250 - 330) * ro_ + 40 * bo2_, 470 + (385 - 470) * ro_ - 135 * bo2_)   # v10 (24 Nov, Tomas: "the hand JUMPED, whose is it?"): it goes to the hole FIRST, grips, then lifts; the plug is in the fist all the way                          # v4: the far hand comes up with the plug
         for side, (hx, hy, sx_, sy_) in enumerate(((hw_[0], hw_[1], 30, 70), (fh_[0], fh_[1], 500, 720))):
             el_ = bend((hx, hy), (sx_, sy_), 60, 1 if side == 0 else 1)                   # v8 (24 Nov, cold test v30: "tubes" 3 of 3): his
-            dd_ = insert_cuff(c, (hx, hy), el_, 54, (0.80, 0.62, 0.50), None)                         # v9: HAND + bare wrist only
-            if side == 1 and bo2_ > 0:                                                # v4: his far fist round the plug
+            dd_ = insert_cuff(c, (hx, hy), el_, 54, (0.80, 0.62, 0.50), None, stub=64 if side == 0 else 26)
+            if side == 0:
+                WD_ = dd_                                                             # the watch sits ON this wrist (it floated beside the hand)                         # v9: HAND + bare wrist only
+            if side == 1 and ro_ > 0.6:                                                # v4: his far fist round the plug
                 _oc.ps_hand(k, "fist", hx - 12 * dd_[0], hy - 12 * dd_[1], 64, (0.80, 0.62, 0.50), dd_, 1)
                 continue
             if side == 1:                                                             # v2 (decided): his far hand FLAT on the block
@@ -872,9 +875,9 @@ def insert_shot(k, sh):
             c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
             c.move_to(-6, -66); c.line_to(2, -54); c.line_to(-4, -44); c.line_to(5, -30); c.stroke()   # the crack
             c.restore()
-        wx_, wy_ = hw_[0] - 62, hw_[1] + 16          # HIS gold watch, on the wrench wrist
-        ellipse(k, wx_, wy_, 24, 24, (0.86, 0.68, 0.22), 3477, lw=2.2)
-        ellipse(k, wx_, wy_, 15, 15, (0.10, 0.16, 0.14), 3478, lw=1.6)
+        wx_, wy_ = hw_[0] - 62 * WD_[0], hw_[1] - 62 * WD_[1]          # HIS gold watch, on the wrench wrist
+        ellipse(k, wx_, wy_, 21, 21, (0.86, 0.68, 0.22), 3477, lw=2.2)
+        ellipse(k, wx_, wy_, 13, 13, (0.10, 0.16, 0.14), 3478, lw=1.6)
         gs.lamp(k, 330, 96, ang=-1.2, lit=True, glow=False)                            # the lamp, at the top of the frame: the light's source
         c.save(); c.translate(120, 470)                                                 # his red rag, over the block's edge
         cut(k, [(-30, -8), (30, -12), (40, 50), (8, 90), (-26, 62)], (0.82, 0.30, 0.22), 3476, lw=2.2)

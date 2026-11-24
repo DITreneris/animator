@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 32, 2: 32, 3: 32, 4: 32, 5: 32}
+VER = {1: 32, 2: 32, 3: 33, 4: 32, 5: 32}
 SOUND = "of_sound_v17.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -412,8 +412,8 @@ def s23(t, L):
     u3 = om.hold((t - 0.55) / 0.30)
     st = dict(moved=dict(g1=LAMP_G1), front_of_car=("g1",))
     if t >= 0.7:                                           # v7 (23 Nov, decided): CUT IN, 0.9 s: his hands in the light; the bolt comes free
-        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 1.35 else 0.0,
-                    bolt_out=ease((t - 1.35) / 0.3), bay_u=1.0), {}     # v8 (timing v11): the cut-in 1.2 s, the bolt later
+        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 1.2 else 0.0,
+                    bay_reach=ease((t - 1.2) / 0.3), bolt_out=ease((t - 1.6) / 0.35), bay_u=1.0), {}     # v8 (timing v11): the cut-in 1.2 s, the bolt later
     if u3 > 0:
         gh = om.lerp(out_, LAMP_IN_BAY, u3)
         return st, dict(client=dict(kind="bent", hand_back=False, work=math.sin(t * 2 * math.pi * 1.3) if t > 0.9 else 0.0),
