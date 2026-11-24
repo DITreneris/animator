@@ -14,6 +14,8 @@ palm, finger thickness, wrist and outline in every shape:
   pick something up) · tuck  nothing: the hand hidden under the other forearm (folded arms)
   v3 (One Star hand audit 2, 23 Nov), new shape only: quiet  a hand at rest: one mitten outline, the thumb's edge along
   its side, two short finger lines (relax read as a fist, "toes")
+  v4 (Daddy's Home v8 review, 24 Nov), new shape only: point_s  point with the index 20 % shorter and the thumb out
+  (the pinned v3 is hands_ps_v3.py)
 Opt-in: kit.HAND[0] = hands_ps.hand, and GEST[0] = ("left shape", "right shape"); arms are drawn screen-left first.
 Nothing else changes: with kit.HAND[0] unset every earlier sheet draws as before.
   python3 hands_ps.py [out]  ->  before/after sheet on Don at character scale"""
@@ -151,6 +153,10 @@ def draw(k, g, hx, hy, w, skin, d, arm):
             _cap(c, [(0.50 * w, -s_ * fy * w - s_ * 0.0), (1.20 * w, -s_ * fy * w)], t, skin)
     if g == "point":
         _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.35 * w, -s_ * 0.20 * w)], t, skin)  # the index, out
+    if g == "point_s":                                                # v4 (Daddy's Home v8 review, 24 Nov): the index 20 %
+        _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.18 * w, -s_ * 0.20 * w)], t, skin)  # shorter, the thumb standing clear
+        _cap(c, [(0.12 * w, s_ * 0.30 * w), (0.40 * w, s_ * 0.58 * w)], t, skin)
+        c.restore(); return
     if g == "relax":
         _cap(c, [(0.05 * w, s_ * 0.36 * w), (0.40 * w, s_ * 0.42 * w)], t, skin)    # the thumb along the side
     elif g == "relax_s":

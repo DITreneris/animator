@@ -15,6 +15,7 @@ The rules that hold now, gathered from lessons 147, 149, 163, 178, 179, 200, 201
 
 - **Two bones of fixed length** (`of_scenes.ik2`). The arm's reach is set by the bones: move the shoulder or shorten the travel, never stretch the arm. A fixed elbow offset stretched an arm 33 % between two frames (224).
 - **Keep the target in reach.** Out of reach, the arm goes straight and reads as "a pole from the neck" (179).
+- **Never route a moving hand past the shoulder.** With fixed bones a target near the shoulder folds the arm into a V or lays it across the head; a raise or a drop that starts or ends there jumps between drawings. Catch the arm already up, and drop it straight down out of the frame (Daddy's Home v8, 3A, 10 fps strip).
 - **A wrist narrower than the forearm, the upper arm wider, a real elbow.** Equal widths read as "a rubber tube" (149, 224).
 - **A sleeve is no wider than the arm in it.** A wide light sleeve becomes the biggest shape in the frame (225).
 
@@ -31,6 +32,7 @@ Read by cold viewers, in this order of what failed: one stroke from the edge = "
 ### Holding and moving things
 
 - **Draw the object, then the fingers over it.** A tool's handle comes out past the fist (224).
+- **A prop held by a rig's hand is drawn in that hand's coordinates.** The hand hook is called inside the rig's own transform: record the matrix at the call, draw the prop under it, then call the same hand again on top (one hand, two passes). Drawn in the scene's coordinates, a mug sat off the hand and at a fraction of its size (Daddy's Home v8, 4D'').
 - **Hold an object where its shape shows.** A spark plug held by its thread showed only white and read as "paper" in three audits; held by the top, the metal shows (224).
 - **A hand that changes job moves in order:** reach (about 0.3 s), grip, then lift, with the object locked to the fist. Rest the hand near the next action, so the reach is short (223, 225).
 - **A tool is withdrawn by the wrist,** the arm still (224).
