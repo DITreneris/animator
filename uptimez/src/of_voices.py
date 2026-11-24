@@ -38,7 +38,7 @@ LINES = [
     ("3.4b", "ROBOT", "Calendar says... you'll see.", "Calendar says. You'll see."),     # v3 (23 Nov): nobody answers
     ("3.5b", "DON", "Pam?", None),
 ]
-LEAD, TAIL = 0.15, 0.35          # a line starts 0.15 s into its shot and leaves 0.35 s after it
+LEAD, TAIL = 0.15, 0.20          # a line starts 0.15 s into its shot and leaves 0.20 s after it (v10: was 0.35)
 
 
 def take(who, txt):
@@ -168,8 +168,28 @@ def _wrap(s, n):
     return out + ([cur] if cur else [])
 
 
+def visemes(only=None):
+    """v1 (23 Nov, decided: lip sync for every speaker): each take's mouth shapes, Rhubarb Lip Sync 1.13 (phonetic,
+    with the line's text, extended shapes G H X) -> of_voices/visemes/<shot>.json; of_film maps them to our mouths.
+    Needs RHUBARB (the binary; the release zip from github.com/DanielSWolf/rhubarb-lip-sync)."""
+    rb = os.environ.get("RHUBARB", "/home/claude/rhubarb/Rhubarb-Lip-Sync-1.13.0-Linux/rhubarb")
+    os.makedirs("of_voices/visemes", exist_ok=True)
+    meta = json.load(open(OUT + "/takes.json"))
+    for shot, m in meta.items():
+        if only and shot not in only:
+            continue
+        open("/tmp/_dlg.txt", "w").write(m["text"])
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", "%s/%s.wav" % (OUT, shot), "-ar", "16000", "-ac", "1",
+                        "/tmp/_rh.wav"], check=True)
+        subprocess.run([rb, "-q", "-r", "phonetic", "-f", "json", "-d", "/tmp/_dlg.txt", "--extendedShapes", "GHX",
+                        "-o", "of_voices/visemes/%s.json" % shot, "/tmp/_rh.wav"], check=True)
+        print(shot, "visemes")
+
+
 if __name__ == "__main__":
-    if sys.argv[1] == "takes":
+    if sys.argv[1] == "visemes":
+        visemes(sys.argv[2:] or None)
+    elif sys.argv[1] == "takes":
         takes(sys.argv[2:] or None)
     elif sys.argv[1] == "timing":
         timing()

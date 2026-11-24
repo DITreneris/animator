@@ -21,6 +21,7 @@ from cand_bc import ik, _d
 from kit import INK, rect, ellipse, cut
 
 SHX, SHY = co.SH[0], co.BT + 26                            # the shoulder on the Client's rig (the bodyguards share it)
+TURN_DOWN = [0.0]                                          # a turned guard's features this much lower: he looks down (0.9)
 TOP_CAR = [True]                                           # v2 (23 Nov): the overhead shows the car's side and the lit floor (False: v1)
 
 # --- one hand per wrist (23 Nov, hand audit, decided) -------------------------------------------------------------------
@@ -41,7 +42,7 @@ def log_grip(c, kind, x, y, thumb=None, want=None):
         GRIP_LOG.append(dict(kind=kind, at=c.user_to_device(x, y), thumb=thumb, want=want))
 
 
-def held(k, draw, where):
+def held(k, draw, where, alt=None):
     """draw() draws a rig and returns its record; where(o) -> the points (same user units) where grips will be drawn.
     The rig's own hands at those points are not drawn (one hand per wrist); its other hands are drawn as they were,
     straight after the rig. Use it wherever a prop with its own hand (phone_grip, thumb_fist...) is held."""
@@ -61,8 +62,34 @@ def held(k, draw, where):
         dx, dy = cc.user_to_device(hx, hy)
         if HELD_OFF[0] or not any(math.hypot(dx - px, dy - py) < tol for px, py in pts):
             base(k_, hx, hy, *a)
+        elif alt is not None:                               # v2: another hand there instead (a quiet hand for a clasp)
+            alt(k_, hx, hy, *a)
         cc.restore()
     return o
+
+
+def ps_hand(k, g, x, y, w, skin, d=(1.0, 0.0), arm=1, rot=None):
+    """v1 (23 Nov, Tomas: "we already had the hands"): the SERIES' hand (hands_ps: fist, point, palm, thumb, grab,
+    quiet), for every hand this film draws outside a rig: the close-up inserts and the gestures. d: the forearm's
+    direction into the hand; rot: for the screen-aligned "thumb", turn the whole hand (0: thumb up, pi/2: thumb right)."""
+    import hands_ps as hp
+    c = k.c
+    log_grip(c, "ps " + g, x, y)
+    if rot is None:
+        hp.draw(k, g, x, y, w, skin, d, arm)
+    else:
+        c.save(); c.translate(x, y); c.rotate(rot)
+        hp.draw(k, g, 0, 0, w, skin, (0.0, 0.0), arm)
+        c.restore()
+
+
+def quiet_hand(k_, hx, hy, w, skin, seed, d, side):
+    """a rig hand at rest, as the series draws it (hands_ps "quiet": one mitten, two finger lines): for clasped hands,
+    where two full hands read as a pile of fingers."""
+    import hands_ps as hp
+    if _real(k_.c):
+        HAND_LOG.append(k_.c.user_to_device(hx, hy))
+    hp.draw(k_, "quiet", hx, hy, w * 1.25, skin, d, side)
 
 
 def inner_thumb(x, body_x, back=False):
@@ -175,10 +202,11 @@ def _turn_head(k, x, feet, s, flip, turn, seed):
     cut(k, [(-47, hy - 4), (-49, hy - 30), (-38, hy - 52), (-10, hy - 62), (22, hy - 60), (44, hy - 46), (49, hy - 26),
             (47, hy - 4), (42, hy - 24), (26, hy - 38), (0, hy - 41), (-26, hy - 38), (-42, hy - 24)], hair, shadow=False, lw=2)
     dx = 22 * turn
+    dy_ = TURN_DOWN[0]                                                             # v2 (23 Nov): his look down, opt-in
     ex_ = 44 if turn < 0 else -44                                                  # the ear on the side he turns from
     ellipse(k, ex_, hy + 2, 7.5, 12, co.SKIN, seed + 27, shadow=False, lw=2)
-    c.save(); c.translate(dx, 0)
-    co._face(k, hy + 4, "plain", (turn, 0), None, seed + 30, "none")
+    c.save(); c.translate(dx, dy_)
+    co._face(k, hy + 4, "plain", (turn, 0.8 if dy_ else 0), None, seed + 30, "none")
     for sx in (-1, 1):
         sq = 0.75 if sx * turn < 0 else 1.0                                       # the far lens, foreshortened
         cut(k, [(sx * 4, hy - 12), (sx * 4 + sx * 34 * sq, hy - 13), (sx * 4 + sx * 32 * sq, hy + 8), (sx * 4 + sx * 16 * sq, hy + 13),
@@ -202,10 +230,11 @@ def father(k, x, feet, s, face="hard", look=(1, 0), targets=()):
             free[side] = ik(side * 40, sy, tx, ty, 48, 48, side)
         pose = tuple(list(free.get(-1, (-8, 0))) + list(free.get(1, (8, 0))))
     dc.BROW_UP[0] = 14 if face == "brow2" else 9; dc.BROW_DARK[0] = face == "brow2"                                # v8: his one move, big enough to read
+    dc.MOUTH_CODE[0] = FATHER_MOUTH[0]; dc.BLINK[0] = blink("father")
     try:
         o = dc.father(k, x, feet, s, pose=pose, face="brow" if face == "brow2" else face, look=look)
     finally:
-        dc.BROW_UP[0] = 9; dc.BROW_DARK[0] = False
+        dc.BROW_UP[0] = 9; dc.BROW_DARK[0] = False; dc.MOUTH_CODE[0] = None; dc.BLINK[0] = False
     _stubble(k, o["head"], s, low=face == "low")
     return o
 
@@ -251,6 +280,36 @@ def _narrow(fn):
 
 
 MOUTH = [None]                                             # the film's lip sync: a mouth code for the Client this drawing
+FATHER_MOUTH = [None]; DON_MOUTH = [None]                  # v2 (23 Nov, decided): lip sync for every speaker with a mouth
+NOW = [None]                                               # v1 (23 Nov, decided: no frozen frames): the film's clock this drawing
+
+
+LOOP_T = [None]                                            # the film's length: breaths fit it a whole number of times (the loop)
+
+
+def _fit(period):
+    T = LOOP_T[0]
+    return T / max(1, round(T / period)) if T else period
+
+
+def blink(name):
+    """a blink, 2 drawings, on each face's own clock (the film's time, so a cut doesn't reset it); never in the
+    first or the last half second (frame 0 and the loop's last frame stay the same drawing)."""
+    if NOW[0] is None:
+        return False
+    if NOW[0] < 0.5 or (LOOP_T[0] and NOW[0] > LOOP_T[0] - 0.5):
+        return False
+    period, off = {"client": (3.3, 0.4), "father": (4.1, 1.7), "don": (2.9, 2.2)}.get(name, (3.7, 0.0))
+    return (NOW[0] + off) % period < 0.13
+
+
+def breath(name):
+    """a slow breath, the body taller by up to 0.7 % about the feet, each on its own phase."""
+    if NOW[0] is None:
+        return 0.0
+    ph = {"client": 0.0, "father": 1.3, "g1": 2.1, "g2": 0.7, "don": 1.9, "pam": 2.6, "robot": 0.0}.get(name, 0.5)
+    P = _fit(3.4)                                          # a whole number of breaths in the film: the loop's join holds
+    return 0.007 * math.sin(2 * math.pi * (NOW[0] + ph * P / 3.4) / P) if name != "robot" else 0.0
 
 
 @_narrow
@@ -261,7 +320,16 @@ def client(k, x, feet, s, look=(-1, 0), targets=(), clip_hip=False, face="bored"
         hip = feet + co.HIP * s
         c.save(); c.rectangle(x - 300, hip - 500, 600, 506); c.clip()
     import client_of as cof                                   # the garage outfit (client_of v1, 22 Nov)
-    o = cof.client(k, x, feet, s, pose, face, look=look, mouth=MOUTH[0])
+    old_f = old_g = None
+    if blink("client"):                                       # v1 (23 Nov): his blink, every lid shut for 2 drawings
+        old_f, old_g = dict(co.FACES), dict(cof.FACES)        # (the garage faces are client_of's own table)
+        co.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in co.FACES.items()})
+        cof.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in cof.FACES.items()})
+    try:
+        o = cof.client(k, x, feet, s, pose, face, look=look, mouth=MOUTH[0])
+    finally:
+        if old_f is not None:
+            co.FACES.clear(); co.FACES.update(old_f); cof.FACES.clear(); cof.FACES.update(old_g)
     if clip_hip:
         c.restore()
     return o
@@ -329,7 +397,11 @@ def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wi
 def client_bent(k, x, feet, s, look=(-1, 0), hands=None, lean=0.75, head34=None):
     """bent over the engine bay (to his front, screen left): client_of v2's true profile, tipped from the hips."""
     import client_of as cof
-    o = cof.profile(k, x, feet, s, facing=-1, lean=lean, hands=hands, head34=head34)
+    cof.MOUTH34[0] = MOUTH[0] if head34 is not None else None                         # v3 (23 Nov): his lines lip-synced
+    try:
+        o = cof.profile(k, x, feet, s, facing=-1, lean=lean, hands=hands, head34=head34)
+    finally:
+        cof.MOUTH34[0] = None
     hip = feet + co.HIP * s
     hx, hy = o["head"]                                                        # the head, tipped forward with him
     rx, ry = hx - x, hy - hip
@@ -388,31 +460,9 @@ def cartoon_hand(k, hx, hy, w, skin, seed, d, side):
 
 
 def thumb_fist(k, hx, hy, w, skin, d, point):
-    """v1 (23 Nov, hand audit, decided): cartoon_hand's own fist with the thumb OUT, pointing along `point` (radians,
-    user units): the same wrist, palm, blobs and outline weight as everyone's hand, the fingers curled in, the thumb
-    long. Used for 2.5's thumb jerked away ("Without him.")."""
-    c = k.c
-    log_grip(c, "thumb fist", hx, hy)
-    w = w * 1.25
-    a = math.atan2(d[1], d[0])
-    sk = skin
-    def blob(x, y, rx, ry, rot=0.0):
-        c.save(); c.translate(x, y); c.rotate(rot); c.scale(rx, ry); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
-        c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
-    c.save(); c.translate(hx, hy)
-    pa = point - a                                                                           # the thumb, in the hand's frame
-    c.rotate(a)
-    c.new_path()                                                                             # the wrist, as cartoon_hand's
-    c.move_to(-0.55 * w, -0.30 * w); c.line_to(0.05 * w, -0.34 * w)
-    c.line_to(0.05 * w, 0.34 * w); c.line_to(-0.55 * w, 0.30 * w); c.close_path()
-    c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
-    tx, ty = 0.18 * w + 0.80 * w * math.cos(pa), 0.80 * w * math.sin(pa)
-    blob(0.18 * w + 0.42 * w * math.cos(pa), 0.42 * w * math.sin(pa), 0.52 * w, 0.18 * w, pa)   # the thumb, out
-    blob(0.18 * w, 0.0, 0.50 * w, 0.46 * w)                                                  # the palm (the fist's back)
-    for j, fy in enumerate((-0.26, 0.0, 0.26)):                                              # three fingers curled IN, short
-        blob(0.52 * w, fy * w, 0.16 * w, 0.15 * w)
-    blob(tx - 0.10 * w * math.cos(pa), ty - 0.10 * w * math.sin(pa), 0.17 * w, 0.15 * w, pa)  # its tip, over the palm's edge
-    c.restore()
+    """v2 (23 Nov): the series' own thumbs-up (hands_ps "thumb"), turned so the thumb points along `point` (radians):
+    2.5's thumb jerked away. v1 was a hand of its own, 1.5x his other hand."""
+    ps_hand(k, "thumb", hx, hy, w, skin, rot=point + math.pi / 2, arm=-1)
 
 
 SKIN_LIGHT = (0.96, 0.80, 0.70)
@@ -425,7 +475,7 @@ def _capsule(c, x0, y0, x1, y1, w, col):
 
 
 def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=SKIN_LIGHT, thumb=None, wrist=None, body_x=None, back=False, part="all",
-               ink=1.0):
+               ink=1.0, thumb_tip=None):
     """v3 hands (iteration 2): a phone HELD. (x, y) is the PALM (where the arm ends), the phone stands on it: the palm
     behind its lower half, the thumb crossing the front of one edge, three fingertips round the other. No wrist stub:
     the arm itself runs into the palm. v4 (23 Nov, hand audit): the thumb's side is COMPUTED from body_x (the holder's
@@ -450,7 +500,7 @@ def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=SKIN_LIGHT, thumb=None, wr
         tx = 22 * thumb
         for cc, lw in ((INK, 11 + 4.0 * ink), (skin, 11)):                                  # the thumb over the front edge, low
             c.set_source_rgb(*cc); c.set_line_width(lw); c.set_line_cap(1)
-            c.move_to(tx * 1.12, 10); c.line_to(tx * 0.86, -8); c.stroke()
+            c.move_to(tx * 1.12, 10); c.line_to(*(thumb_tip or (tx * 0.86, -8))); c.stroke()   # thumb_tip: it presses there
         for fy in (-30, -16, -2):                                                          # three fingertips round the other
             c.save(); c.translate(-tx * 1.03, fy); c.scale(8.5, 6.2); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
             c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0 * ink); c.stroke()
@@ -607,8 +657,20 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
     feet = seat_y - dq.WAIST * s
     c.save(); c.rectangle(x - 200 * s, seat_y - 400 * s, 400 * s, 400 * s + 2); c.clip()
     c.save(); c.translate(x, seat_y); c.rotate(-0.10 * forward); c.translate(-x, -seat_y)
-    draw_d = lambda: sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=look)
+    br_ = breath("don")                                                                 # v7 (23 Nov): he breathes in the throne
+    def draw_d():
+        c.save(); c.translate(x, seat_y); c.scale(1.0, 1.0 + br_); c.translate(-x, -seat_y)
+        try:
+            return sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=look)
+        finally:
+            c.restore()
     o = held(k, draw_d, lambda o_: list(o_["hands"][:2])) if phone_dad else draw_d()   # v5 (hand audit): the phone and the clutch
+    if DON_MOUTH[0]:                                                                    # v6 (23 Nov): his lines lip-synced,
+        import iwry_mouths as im_                                                       # in the head's own (leaning) frame;
+        hx_, hy_ = o["head"]                                                            # v7 (Tomas, 0:47: "the lips jump out"):
+        c.save(); c.translate(hx_, hy_); c.scale(s, s)                                  # at HIS scale (0.6), not 1.0 (don_mouth
+        im_.mouth(k, 0, 32, DON_MOUTH[0], kit.PEOPLE["DON"]["skin"], erase=(20, 15), seed=530)   # assumes a full-size Don)
+        c.restore()
                                                                                         # are his hands there: one hand per wrist
     c.restore()
     c.restore()

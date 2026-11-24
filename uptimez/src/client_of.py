@@ -153,6 +153,9 @@ client = _build()
 
 
 # --- the profile (v2): one true side view, for 2.2 (into the engine) and 0.5 / 0.9 (on his back) ---------------------
+MOUTH34 = [None]                                                                # opt-in: a lip-sync mouth on the 3/4 head
+
+
 def head34(k, hy, face="bored", look=(0.9, 1.0), seed=900):
     """v1 (23 Nov; lessons 87 and 88): his head drawn three-quarter, turned toward +x, built from his own parts and
     measures (client_ob's outline, hair, ear, stubble and face). A turned front drawing only slides a bare head; here the
@@ -201,6 +204,11 @@ def head34(k, hy, face="bored", look=(0.9, 1.0), seed=900):
         c.save(); c.rectangle(lo - 0.6, hy - 90, hi - lo + 1.2, 200); c.clip()   # overlap: no seam
         c.translate(CX, 0); c.scale(sc_, 1)                                     # (v4's squash of the far half split the mouth: out)
         _face(k, hy + 8, face, look, None, seed + 30, "stubble")                # +4: the features lower, he looks down
+        c.restore()
+    if MOUTH34[0]:                                                              # v5 (23 Nov, cold tests: "It found nothing" didn't
+        import iwry_mouths as im_                                               # move): the take's mouth, on the turned face's
+        c.save(); c.translate(CX, 0); c.scale(0.8, 1)                           # centre line, a little narrower (turned)
+        im_.mouth(k, 0, hy + 8 + 34, MOUTH34[0], co.SKIN, erase=(12, 6), seed=seed + 96)
         c.restore()
     c.restore()
     hair = [sk(q) for q in [(-47, hy - 2), (-50, hy - 30), (-40, hy - 54), (-10, hy - 66), (24, hy - 64), (46, hy - 46),

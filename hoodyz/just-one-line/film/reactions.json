@@ -1,0 +1,56 @@
+[
+ {
+  "name": "h_gasp",
+  "start": 1.0,
+  "gain": 0.4,
+  "dur": 0.464
+ },
+ {
+  "name": "h_hey",
+  "start": 1.6,
+  "gain": 0.6,
+  "dur": 0.55
+ },
+ {
+  "name": "h_ow",
+  "start": 2.17,
+  "gain": 0.6,
+  "dur": 0.6
+ },
+ {
+  "name": "h_mmph_cut",
+  "start": 4.38,
+  "gain": 0.5,
+  "dur": 0.35
+ },
+ {
+  "name": "h_oof",
+  "start": 4.73,
+  "gain": 0.6,
+  "dur": 0.318
+ },
+ {
+  "name": "h_scream",
+  "start": 5.83,
+  "gain": 0.55,
+  "dur": 1.037
+ },
+ {
+  "name": "h_groan",
+  "start": 6.95,
+  "gain": 0.32,
+  "dur": 2.665
+ },
+ {
+  "name": "h_sigh",
+  "start": 13.95,
+  "gain": 0.45,
+  "dur": 0.977
+ },
+ {
+  "name": "h_grunts_cut",
+  "start": 2.72,
+  "gain": 0.5,
+  "dur": 0.45
+ }
+]
