@@ -981,3 +981,24 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - **A clip that hides him under the car must end when he is out** (the head was cut off at the sill line once he sat up). Check the frame after every state change, in the encoded test.
 - For the sitting pose only: the figure is drawn apart, the outlines inside the white shirt erased (`of_cast._no_seams`), the rig's hands not drawn and one-silhouette fists put at the rig's wrists (`fist2`), the waist knot tucked away. The rag is the red shop rag, drawn first with the fingers over its top. Other shots and episodes keep the series' hand.
 - Tomas's order of work, which got there: frame-by-frame PNG of the fault, an outside audit, the exposure sheet, key poses, one static pose approved, a motion test with sound, then the full render.
+
+## 232. *The Offer* v44 (24 Nov, Tomas at 0:08 and 0:20; cold test v43, 3 viewers)
+
+- A finger drawn AT the target while the arm stops short of it floats off the hand. A pointing finger grows from the hand the rig drew, toward the target, no longer than a finger.
+- A gesture that carries the line is `protect`ed, and that speaker's bubble goes over his head for the whole shot (`bubble_over`), so it does not change place as the hand comes up.
+- A cut away and back must not hide the move it was made for: after the close on the fire, the wide shot holds 0.2 s on the legs, THEN he rolls out in view (3 of 3 had read "he is already out").
+- A hand that reaches across its own body reads as "a forearm pasted on his belly" (3 of 3). The hand that already holds the thing acts: it draws back and tosses the rag, which flies in an arc onto the fire.
+- A walking figure stops beside the one he speaks to, not behind him.
+- G5's FAIL lines for a scene print after the scene's summary line: read the whole tail, not the last line.
+
+## 233. *The Offer* v45 (24 Nov, Tomas: "the lamp bothers me most", "that red rag makes me sick"; three outside audits)
+
+- A prop is a THING with parts, not a sign of one. The work lamp read as "a microphone on a hose": now a grey handle the fingers show on, an orange collar, a long cage with a shield along its back, a bulb that is visibly lit or dead, a hook at the tip, a cable half as thick (`of_set.lamp`, `lamp_cable`).
+- Light follows the lamp. The beam was tied to a fixed point; it now leaves the cage's open side along the lamp's angle and lands where that ray meets a surface. On a shut bonnet the pool is drawn after the car (`pool_late`).
+- A cable drops from the handle's end BEHIND the man who holds it (drawn before him), so it never crosses his arm, hand or legs; its belly lags the hand and settles after it (`cable_swing`).
+- A gag needs a different last picture than its first (three cold tests: "half landed"). Lit and pointing down; dead; turned up, looked into, below the chin so the face stays open; one wide shake; it hangs by his leg.
+- One prop, one drawing. The rag was three polygons in three reds in three places. One `client_of.shop_rag` (opt-in `NEW_RAG`, other films unchanged): a soft outline, two shaded folds, a hem stripe, the same three stains. Two of one prop in a frame is a continuity fault: the rag on the engine is gone.
+- A prop the same colour as what is behind it disappears: the creeper is dark grey now, as the set's.
+- A replace by slice (`s[:a] + new + s[b:]`) deletes everything between its anchors: it took out the one-hand-per-wrist hook, and only the frame's own check caught it. Replace exact strings, and read every check line of every still.
+- Moving a camera can cut a sign that was out of frame: test `box_state` for the new camera before posing in it.
+- A sheet of stills sent for an outside audit carries its labels IN the picture (shot, time, BEFORE / NOW). Twice an unlabelled sheet was read as one scene, and story props (the burnt plan) came back as defects.

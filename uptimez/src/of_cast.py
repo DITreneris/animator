@@ -447,7 +447,7 @@ def phone(k, x, y, s, screen=None, ang=0.0, face_out=True):
 def creeper(k, x, y, s=1.0):
     """the mechanic's creeper, side on: a padded board on four castors."""
     c = k.c
-    rect(k, x - 70 * s, y - 10 * s, 140 * s, 14 * s, (0.80, 0.16, 0.14), 3510, lw=2.2)
+    rect(k, x - 70 * s, y - 10 * s, 140 * s, 14 * s, (0.30, 0.31, 0.35), 3510, lw=2.2)   # v2 (24 Nov): dark grey, as the set's (red hid his red rag)
     rect(k, x - 64 * s, y - 18 * s, 54 * s, 9 * s, (0.20, 0.20, 0.22), 3511, shadow=False, lw=1.6)   # the head pad
     for wx in (-58, -22, 22, 58):
         c.set_source_rgb(*INK); c.rectangle(x + wx * s - 2 * s, y + 4 * s, 4 * s, 6 * s); c.fill()
@@ -457,6 +457,9 @@ def creeper(k, x, y, s=1.0):
 def rag_cloth(k, x, y, s=1.0, col=(0.92, 0.88, 0.80), ang=0.0):
     """v2 (24 Nov, audit and cold tests: "a white lump"): a CLOTH, draped: it hangs from where it is held, with two folds
     and grease on it. Drawn before the hand that holds it."""
+    if col == RAG_RED:                                        # v3 (24 Nov): the one shop rag (client_of.shop_rag)
+        import client_of as cof_
+        return cof_.shop_rag(k, x, y + 2, s * 0.85, ang)
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
     cut(k, [(-15, -7), (11, -9), (17, 5), (13, 31), (5, 24), (-1, 38), (-9, 27), (-16, 33), (-19, 8)], col, lw=2)
@@ -590,14 +593,15 @@ def _client_sit3(k, x, floor, s, look, face, hands_at, back, flick, prop=None, r
     ragp = (knee[0] - 4, knee[1] + 16)                                        # it hangs from his fist, below it, in sight
     if prop is not None:
         act = prop
-    if rag_to is not None and hands_at is not None:
-        if rag_to <= 0.5:
-            u = rag_to * 2
-            act = (rest[0] + (knee[0] + 14 - rest[0]) * u, rest[1] + (knee[1] + 6 - rest[1]) * u - 14 * math.sin(math.pi * u))
+    fly = None
+    if rag_to is not None and hands_at is not None:                           # v5 (cold test v43, 3 of 3: "a forearm across his belly"): no
+        if rag_to <= 0.5:                                                     # reach across himself. The hand that HOLDS the rag draws back
+            u = rag_to * 2                                                    # a little, and tosses it: the rag flies in an arc onto the fire
+            knee = (knee[0] - 8 * math.sin(math.pi * u * 0.5), knee[1] - 10 * math.sin(math.pi * u * 0.5))
         else:
             u = (rag_to - 0.5) * 2
-            act = (knee[0] + 14 + (hands_at[0] - knee[0] - 14) * u, knee[1] + 6 + (hands_at[1] - knee[1] - 6) * u - 16 * math.sin(math.pi * u))
-            ragp = (act[0], act[1] + 14 - 12 * u)
+            knee = (knee[0] - 8 + 22 * min(1.0, u * 2.5), knee[1] - 10 + 4 * min(1.0, u * 2.5))   # the follow-through
+            fly = (knee[0] + (hands_at[0] - knee[0]) * u, knee[1] + 16 + (hands_at[1] - knee[1] - 16) * u - 46 * math.sin(math.pi * u), 2.6 * u)
     wk = max(0.0, min(1.0, 1.0 - back / 0.5))                                 # v3 (Tomas: "a pretzel"): lying, the near hand rests on his
     wk = wk * wk * (3 - 2 * wk)                                               # hip (the trunk's own frame); it goes to the knee as he comes up
     hipT = (x - 30, seat - 26)
@@ -609,8 +613,7 @@ def _client_sit3(k, x, floor, s, look, face, hands_at, back, flick, prop=None, r
     ia_ = inv(act)
     tg = [kT, (sideT[0] + (ia_[0] - sideT[0]) * w2, sideT[1] + (ia_[1] - sideT[1]) * w2)]
     c.save(); c.translate(x, seat); c.rotate(back); c.translate(-x, -seat)
-    rp = inv(ragp) if (rag_to is not None and rag_to > 0.5) else (kT[0] - 4, kT[1] + 16)
-    held_ = rag_to is not None and rag_to > 0.5
+    held_ = fly is not None
     sw = max(-0.5, min(0.5, 0.012 * follow("rag", ragp[0] + ragp[1], 1.4, 0.2)))   # its hem trails the hand
     if not held_:
         rag_cloth(k, kT[0] - 2, kT[1] + 6, 1.0, col=RAG_RED, ang=-back + sw)    # the cloth FIRST: his fingers close over its top
@@ -645,7 +648,8 @@ def _client_sit3(k, x, floor, s, look, face, hands_at, back, flick, prop=None, r
             a_ = math.atan2(vy_, vx_)
             fist2(k, ux_ + 8 * math.cos(a_), uy_ + 8 * math.sin(a_), 11.0 * s / 0.52, skin_, a_, -1 if ux_ < x else 1)
     if held_:
-        rag_cloth(k, rp[0], rp[1], 1.0, col=RAG_RED, ang=-back + sw)            # carried to the fire: it hangs from the far hand
+        rp = inv((fly[0], fly[1]))
+        rag_cloth(k, rp[0], rp[1], 1.0, col=RAG_RED, ang=-back + fly[2])        # in the air, turning, onto the fire
     c.restore()
     return o
 
