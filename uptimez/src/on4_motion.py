@@ -691,30 +691,48 @@ def _pam(k, p, sx=1.0, sy=1.0, rot=0.0):
 
 
 def _jet(c, x0, y0, L, i):
-    """the breath of fire: a tongue from her mouth, narrow there, wide and ragged at its end; three skins (NEON, GOLD,
-    white), sparks thrown off it. Not a ball."""
+    """the breath of fire, v15: a point at her lips, then a ragged body with licks torn off its top and bottom edge; three
+    skins (NEON, GOLD, white-hot), sparks. Its shape changes every drawing."""
     if L < 8:
         return
-    for w, col, ln in ((1.0, st.NEON, 1.0), (0.62, st.GOLD, 0.88), (0.26, (1.0, 0.97, 0.86), 0.66)):
-        n = 9; up, dn = [], []
+    import random
+    k_ = L / 300.0
+    for w, col, ln in ((1.0, st.NEON, 1.0), (0.60, st.GOLD, 0.90), (0.24, (1.0, 0.97, 0.86), 0.70)):
+        r = random.Random(i * 7 + int(w * 10))
+        n = 12; up, dn = [], []
         for j in range(n + 1):
             u = j / float(n)
-            xx = x0 + L * ln * u; yy = y0 - 40 * u * ln * (L / 300.0)
-            half = (6 + 92 * (u ** 0.8) * (L / 300.0)) * w * (1.0 + 0.20 * math.sin(u * 9 + i * 1.7 + w * 5))
-            up.append((xx, yy - half)); dn.append((xx, yy + half * 0.8))
-        tipx = x0 + L * ln * 1.10; tipy = y0 - 40 * ln * (L / 300.0)
-        c.new_path(); c.move_to(*up[0])
-        for pt in up[1:]:
+            xx = x0 + L * ln * u; yy = y0 - 46 * u * u * ln * k_
+            half = (2 + 100 * (u ** 1.25) * k_) * w
+            lick = (1.0 + (0.55 if j % 2 else -0.15) * r.random()) if j > 1 else 1.0
+            up.append((xx + (10 * r.random() if j % 2 else 0), yy - half * lick))
+            lick = (1.0 + (0.45 if j % 2 == 0 else -0.15) * r.random()) if j > 1 else 1.0
+            dn.append((xx, yy + half * 0.75 * lick))
+        c.new_path(); c.move_to(x0, y0)
+        for pt in up:
             c.line_to(*pt)
-        for q in (-0.7, 0.0, 0.7):                           # three licks at its end
-            c.line_to(tipx + 26 * w * (1 - abs(q)), tipy + q * 80 * w * (L / 300.0)); c.line_to(tipx - 18 * w, tipy + (q + 0.35) * 80 * w * (L / 300.0))
+        tipx = x0 + L * ln; tipy = y0 - 46 * ln * k_
+        for q in (-0.8, -0.3, 0.25, 0.75):                   # torn tongues at its end
+            c.line_to(tipx + (30 + 40 * r.random()) * w, tipy + q * 100 * w * k_); c.line_to(tipx - 14 * w, tipy + (q + 0.22) * 100 * w * k_)
         for pt in reversed(dn):
             c.line_to(*pt)
         c.close_path(); c.set_source_rgb(*col); c.fill()
-    for j in range(7):                                       # sparks
-        u = ((j * 0.37 + i * 0.21) % 1.0)
-        c.new_path(); c.arc(x0 + L * (0.3 + 0.8 * u), y0 - 50 - 90 * u + 60 * math.sin(j * 2.3), 3.2, 0, 2 * math.pi)
+    r = random.Random(i)
+    for j in range(9):                                       # sparks
+        u = r.random()
+        c.new_path(); c.arc(x0 + L * (0.3 + 0.85 * u), y0 - 30 - 150 * u * r.random() + 90 * (r.random() - 0.3), 2.2 + 2 * r.random(), 0, 2 * math.pi)
         c.set_source_rgb(*st.GOLD); c.fill()
+
+
+def _warm(s, x, y, r, a):
+    """the fire's light on her, laid over the graded frame so it keeps its colour"""
+    if a <= 0:
+        return s
+    c = cairo.Context(s)
+    g = cairo.RadialGradient(x, y, 4, x, y, r)
+    g.add_color_stop_rgba(0, st.GOLD[0], st.GOLD[1], st.GOLD[2], a); g.add_color_stop_rgba(1, 1.0, 0.45, 0.2, 0)
+    c.set_source(g); c.paint()
+    return s
 
 
 def t9():
@@ -754,7 +772,7 @@ def t9():
         else:                                                # 3: off the boards
             t = ease(min(1.0, (i - 28) / 8.0)); land = 5; scorch = 1.0
             pam = P("pam_cat", X, Y - A_RISE * t, S_, pose(lerp(HERO, FLOAT, t), ("relax_s", "relax_s")), "proud", (0.0, -0.8), rim=True)
-            rot = 0.07 * t * math.sin(i * 0.45) + 0.05 * t
+            rot = (-0.20, -0.26, -0.12, 0.16, 0.24, 0.10, -0.06, 0.03)[i - 28] if i < 36 else 0.05 + 0.03 * math.sin(i * 0.6)   # v15: off balance, over, back, found
             cam = (290, 560 - 110 * t, 1.4)
         def after(k):
             c = k.c
@@ -767,12 +785,21 @@ def t9():
                     a_ = i * 0.8 + j * 1.257
                     sc.knife(c, X + 124 * math.cos(a_), hy - 215 - 78 * math.sin(a_), a_ * 2.2, 2.0)
             elif i < 11:
-                for j in range(min(land, 4), 4):                     # the rest still falling, points down, each over its own mark
-                    sc.knife(c, sc.KNIFE_AT[j][0], 560 + (i - 9) * 70, math.pi, 2.0)
+                for j in range(min(land, 4), 4):                     # the rest still falling, points down, each over its own mark, each at its own height
+                    kx, ky = sc.KNIFE_AT[j][0], 500 + (i - 9) * 90 + j * 34
+                    c.set_source_rgba(1, 1, 1, 0.5); c.set_line_width(2)
+                    for d_ in (-9, 0, 9):
+                        c.move_to(kx + d_, ky - 60); c.line_to(kx + d_, ky - 130 - 10 * abs(d_)); c.stroke()
+                    sc.knife(c, kx, ky, math.pi + 0.08 * (j - 1.5), 2.0)
                 if not teeth:
                     sc.knife(c, hx + 6, hy - 150, math.pi, 2.0)          # the fifth, straight down at her
             if teeth:
-                sc.knife(c, hx + 44, hy + 33, math.pi / 2, 1.9)           # in her teeth: the handle out to her left, the blade to her right
+                gy = hy + 36 * S_ / 0.86                              # v15: gripped by the blade just past the guard: the handle out one side, the blade the other, teeth on it
+                sc.knife(c, hx - 16, gy, math.pi / 2, 1.9)
+                c.set_source_rgb(0.99, 0.99, 0.97)
+                for tx_ in (-7, 3):
+                    c.rectangle(hx + tx_, gy - 12, 8, 6)                  # her upper teeth, biting down on the flat of it
+                c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.2); c.stroke()
             if 14 <= i < 28:
                 tx, ty = pts["hands"][1]
                 c.set_source_rgb(0.20, 0.20, 0.21); c.set_line_width(7); c.move_to(tx, ty + 14); c.line_to(tx + 5, ty - 44); c.stroke()
@@ -782,8 +809,12 @@ def t9():
                     c.new_path(); c.move_to(tx + 5 - rr * 0.7, ty - 56); c.curve_to(tx + 5 - rr, ty - 56 - rr, tx + 5, ty - 56 - rr * 1.3, tx + 5 + 2, ty - 56 - rr * 2.2)
                     c.curve_to(tx + 5 + rr * 0.6, ty - 56 - rr * 1.2, tx + 5 + rr, ty - 56 - rr * 0.6, tx + 5 + rr * 0.7, ty - 56); c.close_path(); c.set_source_rgb(*col); c.fill()
             if 17 <= i < 25:
-                grow = (0.25, 0.55, 0.85, 1.0, 1.0, 0.95, 0.6, 0.25)[i - 17]
-                _jet(c, hx + 40, hy + 30, 300 * grow, i)
+                grow = (0.10, 0.0, 0.45, 0.9, 1.0, 1.0, 0.95, 0.0)[i - 17]   # v15: a small puff, nothing, then all of it, then gone
+                _jet(c, hx + 24, hy + 36, 310 * grow, i)
+            if 24 <= i < 31:                                 # one ember left, coming down
+                u = (i - 24) / 7.0
+                c.new_path(); c.arc(hx + 250 - 40 * u + 14 * math.sin(i * 1.3), hy - 30 + 230 * u, 4.5, 0, 2 * math.pi); c.set_source_rgb(*st.NEON); c.fill()
+                c.new_path(); c.arc(hx + 250 - 40 * u + 14 * math.sin(i * 1.3), hy - 30 + 230 * u, 2.2, 0, 2 * math.pi); c.set_source_rgb(*st.GOLD); c.fill()
             if i >= 28:
                 t = ease(min(1.0, (i - 28) / 8.0))
                 c.save(); c.translate(X, Y + 4); c.scale(70 - 34 * t, 9 - 4 * t); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
@@ -794,7 +825,10 @@ def t9():
                         sc._burst(k, hx + 120 * math.cos(a_), hy + 60 + 110 * math.sin(a_), 9)
         sc.MARKS[0] = False
         try:
-            return draw(shot("6.0", cam=cam, cast=[], after=after, protect=()))
+            out = draw(shot("6.0", cam=cam, cast=[], after=after, protect=()))
+            if 19 <= i < 24:                                 # the fire's light on her face and glove
+                out = _warm(out, 300, 400, 230, 0.34)
+            return out
         finally:
             sc.MARKS[0] = True
     return [f(i) for i in range(43)]
@@ -821,46 +855,47 @@ def t10():
 
 
 def t11():
-    """6.07, 23 drawings, 1.9 s (v14: weight, no grace): she still hangs there, waiting. Her eyes go across the room; the
-    arms come down. Nothing. She drops like a sack: flat on the boards, squashed, dust at her boots; her head hangs;
-    she straightens."""
+    """6.07, 23 drawings, 1.9 s, v15 (no squashing: the rig has no knees, and a pressed figure read as a digital squash):
+    she hangs, waiting; her eyes cross the room; the arms sink. Nothing. She drops, lands on her feet, sways, and
+    goes over forward, flat on her face on the boards: dust. Then she comes up off them stiff as a plank, as she did
+    at the club's door."""
     X, Y, S_ = A_X, A_Y, A_S
     def f(i):
-        sx = sy = 1.0; rot = 0.0; dust = 0
-        if i < 10:                                           # hanging; the smile goes, the arms sink
-            look = ((-0.9, 0), (-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0.9, 0), (0, 0.2), (0, 0.2), (0, 0.6), (0, 0.9))[i]
-            arms = lerp(FLOAT, HERO, max(0, i - 5) / 5.0)
-            pam = P("pam_cat", X, Y - A_RISE + 3 * math.sin(i * 0.9), S_, pose(arms, ("relax_s", "relax_s")), "proud" if i < 3 else ("hopeful" if i < 7 else "doubt"), look, rim=True)
+        rot = 0.0; dust = 0; sy = 1.0
+        if i < 8:                                            # hanging; the smile goes, the arms sink
+            look = ((-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0, 0.2), (0, 0.2), (0, 0.6), (0, 0.9))[i]
+            arms = lerp(FLOAT, HERO, max(0, i - 3) / 5.0)
+            pam = P("pam_cat", X, Y - A_RISE + 3 * math.sin(i * 0.9), S_, pose(arms, ("relax_s", "relax_s")), "proud" if i < 2 else ("hopeful" if i < 5 else "doubt"), look, rim=True)
             rot = 0.05; cam = (290, 450, 1.4); h = 1.0
-        elif i < 12:                                         # down: stretched, the arms left behind above her
-            t = (i - 9) / 2.0
+        elif i < 10:                                         # down: the arms left behind above her
+            t = (i - 7) / 2.0
             pam = P("pam_cat", X, Y - A_RISE * (1 - t * t), S_, pose(TADA, ("relax_s", "relax_s")), "doubt", (0, 1), rim=True)
-            sy = 1.08; sx = 0.95; cam = (290, 450 + 110 * t, 1.4); h = 1 - t
-        elif i < 17:                                         # the boards: flat, wide, the head down
-            q = (0.70, 0.76, 0.80, 0.80, 0.82)[i - 12]
-            pam = P("pam_cat", X, Y + 2, S_, "sag", "fade", (0.1, 1.0), rim=True); sy = q; sx = 1.0 + (1 - q) * 0.6; rot = 0.05
-            cam = (290, 560 + (8 if i == 12 else 0), 1.4); h = 0; dust = 5 - (i - 12)
-        elif i < 20:                                         # up again, slowly
-            t = (i - 16) / 3.0
-            pam = P("pam_cat", X, Y, S_, "sag", "fade", (0.2, 0.7), rim=True); sy = 0.82 + 0.18 * t; sx = 1.1 - 0.1 * t; cam = (290, 560, 1.4); h = 0
+            sy = 1.05; cam = (290, 450 + 110 * t, 1.4); h = 1 - t
+        elif i < 14:                                         # on her feet... and over
+            rot = (-0.08, 0.10, 0.55, 1.20)[i - 10]
+            pam = P("pam_cat", X - 40, Y - (0, 0, 10, 24)[i - 10], S_, pose(lerp(HERO, TADA, 0.5 if i < 12 else 0.9), ("relax_s", "relax_s")), "doubt", (0.6, 0.8), rim=True)
+            cam = (290, 560, 1.4); h = 0
+        elif i < 17:                                         # flat on her face
+            rot = 1.50
+            pam = P("pam_cat", X - 40, Y - 28, S_, pose(TADA, ("relax_s", "relax_s")), "fade", (0, 1), rim=True)
+            cam = (290, 560 + (8 if i == 14 else 0), 1.4); h = 0; dust = 3 - (i - 14)
+        elif i < 21:                                         # up, stiff as a plank
+            t = ease((i - 16) / 4.0)
+            rot = 1.50 * (1 - t)
+            pam = P("pam_cat", X - 40 + 40 * t, Y - 28 * (1 - t), S_, "hero", "fade", (0.2, 0.5), rim=True); cam = (290, 560, 1.4); h = 0
         else:                                                # her hand to her coat
             pam = P("pam_cat", X, Y, S_, "hero", "peer", (0.3, 0.3), rim=True); cam = (290, 560, 1.4); h = 0
         def after(k):
             c = k.c
-            _pam(k, pam, sx, sy, rot); sc._spot_on(k)
+            pts = _pam(k, pam, 1.0, sy, rot); sc._spot_on(k)
             if h > 0:
                 c.save(); c.translate(X, Y + 4); c.scale(36 + 34 * (1 - h), 5 + 4 * (1 - h)); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
                 c.set_source_rgba(0, 0, 0, 0.55); c.fill()
-            if dust > 0:                                     # dust off the boards at her boots, not stars
-                for sgn in (-1, 1):
-                    for j in range(3):
-                        u = (5 - dust) / 5.0
-                        c.new_path(); c.arc(X + sgn * (34 + 30 * u + j * 20), Y - 6 - j * 9 * u - 10 * u, 8 + 9 * u + j * 2, 0, 2 * math.pi)
-                        c.set_source_rgba(0.80, 0.80, 0.78, 0.55 * (1 - u)); c.fill()
-                if dust == 5:
-                    c.set_source_rgb(*INK); c.set_line_width(3)
-                    for sgn in (-1, 1):
-                        c.move_to(X + sgn * 40, Y + 2); c.line_to(X + sgn * 78, Y - 2); c.stroke()
+            if dust > 0:                                     # dust off the boards where her face met them
+                hx, hy = pts["head"]; u = (3 - dust) / 3.0
+                for j in range(5):
+                    c.new_path(); c.arc(hx - 30 + j * 26 + 10 * u * (j - 2), Y - 8 - 18 * u - (j % 2) * 10, 9 + 10 * u, 0, 2 * math.pi)
+                    c.set_source_rgba(0.80, 0.80, 0.78, 0.5 * (1 - u * 0.8)); c.fill()
         return draw(shot("6.07", cam=cam, cast=[], after=after, protect=()))
     return [f(i) for i in range(23)]
 

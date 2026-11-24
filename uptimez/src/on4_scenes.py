@@ -647,6 +647,7 @@ def _dark_half(k):                                         # 6.5 (board v4): the
     c.move_to(ex, ey); c.line_to(ex - 4, ey - 22); c.stroke(); c.move_to(ex, ey); c.line_to(ex - 22, ey + 4); c.stroke()
 
 
+SPOT_SOFT = [True]
 MARKS = [True]                                             # v18: what her act leaves on the stage (five knives in the boards, a scorch on the curtain)
 
 
@@ -667,7 +668,7 @@ def knife(c, x, y, ang, s=1.0, stuck=0.0):
     c.restore()
 
 
-KNIFE_AT = ((120, -0.22), (166, 0.14), (286, -0.12), (332, 0.20), (378, -0.16))   # where they stand in the boards (the fifth after she has had it in her teeth)
+KNIFE_AT = ((120, -0.34), (166, 0.10), (286, -0.06), (332, 0.30), (378, -0.20))   # where they stand in the boards (the fifth after she has had it in her teeth)
 SCORCH = (466, 500)
 
 
@@ -684,21 +685,31 @@ def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
             q = (36 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
             c.new_path(); c.arc(sx_ + q * math.cos(math.radians(a_)), sy_ + 1.5 * q * math.sin(math.radians(a_)), 2.6, 0, 2 * math.pi)
             c.set_source_rgb(*st.NEON); c.fill()
-        for j in range(6):                                 # puffs, each bigger and fainter, wandering up and out
+        for j in range(6):                                 # v19: smoke in soft clumps (three lobes each), bigger and fainter as they rise
             u = ((j + (t % 6) / 6.0) / 6.0)
-            c.new_path(); c.arc(sx_ - 14 + 26 * math.sin(j * 1.9 + u * 3) + 18 * u, sy_ - 60 - 190 * u, 10 + 26 * u, 0, 2 * math.pi)
-            c.set_source_rgba(0.78, 0.78, 0.76, 0.42 * (1 - u) * smoke * scorch); c.fill()
+            px_, py_ = sx_ - 14 + 26 * math.sin(j * 1.9 + u * 3) + 18 * u, sy_ - 60 - 190 * u
+            r_ = 9 + 22 * u
+            for dx_, dy_, q in ((0, 0, 1.0), (-0.7, 0.35, 0.72), (0.65, 0.25, 0.8), (0.1, -0.6, 0.66)):
+                g = cairo.RadialGradient(px_ + dx_ * r_, py_ + dy_ * r_, 0, px_ + dx_ * r_, py_ + dy_ * r_, r_ * q)
+                g.add_color_stop_rgba(0, 0.80, 0.80, 0.78, 0.30 * (1 - u) * smoke * scorch); g.add_color_stop_rgba(1, 0.80, 0.80, 0.78, 0)
+                c.set_source(g); c.new_path(); c.arc(px_ + dx_ * r_, py_ + dy_ * r_, r_ * q, 0, 2 * math.pi); c.fill()
     for j, (x, a) in enumerate(KNIFE_AT[:knives]):          # blades in the boards round her feet
+        dp = (0, 12, -6, 16, 4)[j]                           # v19: each at its own depth and angle
         c.save(); c.rectangle(-100, -100, 800, 806 + (j % 2) * 4); c.clip()    # the point is in the wood: nothing of it below the boards' line
-        knife(c, x, 676 + (j % 2) * 4, a + math.pi, 2.0); c.restore()
+        knife(c, x, 676 + (j % 2) * 4 + dp, a + math.pi, 2.0); c.restore()
 
 
 def _spot_on(k):                                           # board v9: the beam ON her: the cone over her, its pool at her feet
     c = k.c
     if MARKS[0]:
         stage_marks(k)
-    c.set_source_rgba(1, 1, 0.92, 0.16)
-    c.move_to(428, 322); c.line_to(110, 700); c.line_to(340, 700); c.line_to(432, 344); c.close_path(); c.fill()
+    if SPOT_SOFT[0]:                                       # v19 (two reviews): the beam's edges soft: five thin cones, each a little wider
+        for w_ in (-18, -9, 0, 9, 18):
+            c.set_source_rgba(1, 1, 0.92, 0.042)
+            c.move_to(428, 322); c.line_to(110 - w_, 700); c.line_to(340 + w_, 700); c.line_to(432, 344); c.close_path(); c.fill()
+    else:
+        c.set_source_rgba(1, 1, 0.92, 0.16)
+        c.move_to(428, 322); c.line_to(110, 700); c.line_to(340, 700); c.line_to(432, 344); c.close_path(); c.fill()
     c.save(); c.translate(225, 700); c.scale(120, 14)
     g = cairo.RadialGradient(0, 0, 0, 0, 0, 1); g.add_color_stop_rgba(0, 1, 1, 0.92, 0.6); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
     c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
