@@ -189,11 +189,11 @@ def a14(t):
             p = P("pam_cat", 128, 760, 0.84, pose(HERO, ("fist", "fist")), "approve" if t < 0.9 else "peer", (0.6 + 0.3 * seg(t, 0.3, 0.9), -0.6), rim=True,
                   hunt=0.5 * seg(t, 0.9, 1.1))
             kn = None; rot_ = 0.0
-        else:                                              # and goes after them up the lane: her cat's walk, from behind, smaller with the distance
-            w = (t - 1.15) / 1.65                          # 0..1 over the rest of the shot
-            yy = 760 - 96 * w; ss = 0.84 * (yy - YV) / float(760 - YV)
-            ar_, ge_, kn, rot_, dx_, kw_ = catwalk((t - 1.15) / 0.92, away=True)
-            p = P("pam_cat", 128 + 10 * w + dx_ * ss, yy, ss, pose(ar_, ge_), "peer", (0, 0), rim=True, **kw_)
+        else:                                              # (Tomas: "she must come from far, nearer, to the camera") and she walks: toward us down the lane, her cat's walk,
+            w = ease((t - 1.15) / 1.65)                    # bigger with every step, while they go into the arch behind her
+            yy = 760 + 180 * w; ss = 0.84 * (yy - YV) / float(760 - YV)
+            ar_, ge_, kn, rot_, dx_, kw_ = catwalk((t - 1.15) / 0.92)
+            p = P("pam_cat", 128 + 130 * w + dx_ * ss, yy, ss, pose(ar_, ge_), "peer", (0.0, 0.1), rim=True, **kw_)
     def before(k):
         for x, y, s_ in shadows:
             contact(k, x, y, s_)
