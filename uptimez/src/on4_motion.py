@@ -173,6 +173,7 @@ def keys(fn):
             REC[0] = False
         return resolve(fr, sub)
     w.__doc__ = fn.__doc__
+    w.raw = fn
     return w
 
 

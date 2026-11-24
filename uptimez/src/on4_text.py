@@ -59,6 +59,9 @@ def _wrap(mod, name, who):
             kw = dict(kw); kw["whistle_in"] = False          # he lets the whistle hang on its cord while he speaks
         if who == "pam":
             oc.BLINK[0] = bool(shut)
+        br = CLOCK["live"] and CLOCK.get("breath") and who in ("client", "don", "sofia")
+        if br:                                               # a slow rise and fall about the feet (motion_on3.alive's 0.7 %)
+            k.c.save(); k.c.translate(x, feet); k.c.scale(1.0, 1.0 + 0.007 * math.sin(2 * math.pi * (CLOCK["T"] / 3.4 + len(who) / 7.0))); k.c.translate(-x, -feet)
         try:
             o = f(k, x, feet, s, *a, **kw)
         finally:
@@ -87,6 +90,8 @@ def _wrap(mod, name, who):
                 HEADS[who] = h_
         except Exception:
             pass
+        if br:
+            k.c.restore()
         return o
     setattr(mod, name, w)
 
@@ -307,5 +312,117 @@ def audit(sheet="../office-noir-4/on4_text_audit_v1.png"):
     return rep
 
 
+def fresh(x):
+    """a recorded drawing made again, now (the clock set): held keys share one recording, and a mouth must move on them"""
+    if isinstance(x, m.Lazy):
+        return x.fn(*[fresh(a_) for a_ in x.a], **{k_: fresh(v) for k_, v in x.kw.items()})
+    return x
+
+
+def seq2(name):
+    """a motion test's 24 a second, not yet drawn: its keys and the drawing half way between each two (on4_motion.resolve)"""
+    m.REC[0] = True
+    try:
+        fr = m.TESTS[name].raw()
+    finally:
+        m.REC[0] = False
+    out = []
+    for j, x in enumerate(fr):
+        out.append(x)
+        nxt = fr[j + 1] if j + 1 < len(fr) else x
+        out.append(m._tw(x, nxt, 0.5) if isinstance(x, m.Lazy) and isinstance(nxt, m.Lazy) else x)
+    return out
+
+
+def clock(T, total, ls):
+    import on3_animatic as a3_
+    edge = T < 0.45 or T > total - 1.2                       # the loop's two ends are one drawing: nobody blinks or breathes there
+    say = {}
+    for key, t0, t1, kind, who, txt in ls:
+        if kind == "bubble" and t0 <= T < t1:
+            v = a3_._visemes(txt); tl = int((T - t0) * 12) / 12.0
+            say[SPEAKER[who]] = v[min(len(v) - 1, int(tl / (t1 - t0) * len(v)))]
+    bl = set()
+    for i_, who in enumerate(("pam", "client", "don", "sofia")):
+        ph = (i_ * 5 + 3) / 17.0
+        if not edge and ((T + ph * 5.0) % (2.9 + ph * 1.3)) < 0.1:
+            bl.add(who)
+    k_ = max(1, int(round(2.0 * total / (2 * math.pi))))
+    oc.TAIL_PH[0] = 2 * math.pi * k_ * T / total             # whole turns over the film: the last drawing's tail is frame 0's
+    CLOCK.update(say=say, blink=bl, live=True, breath=not edge, T=T)
+
+
+def film_frames(tmp):
+    """on4_film.frames with the clock set for every drawing and the words put on it; returns what it returns, and the faults"""
+    install()
+    ls, tm = lines()
+    d = sc._timing()[1]
+    total = sum(v["dur"] for v in tm.values())
+    ids = [x["id"] for _, ss in sc.SCENES for x in ss]
+    n = 0; cuts = []; i = 0; faults = {}; state = {}
+    def one(make, shot_id):
+        T = n / float(F.DPS)
+        clock(T, total, ls); HEADS.clear()
+        s = make()
+        heads = dict(HEADS)
+        CLOCK["live"] = False
+        for ln in ls:
+            key, t0, t1, kind = ln[0], ln[1], ln[2], ln[3]
+            end = t1 if kind != "bubble" else min(t1 + LINGER, shot_end(t0, tm) - 1.0 / F.DPS)
+            if not (int(round(t0 * F.DPS)) <= n <= int(round(end * F.DPS))):
+                continue
+            pin, ph = state.get(key, (None, None))
+            me = heads.get(SPEAKER.get(ln[4]))
+            pin, ph = follow(pin, ph, me)
+            s, fl, box = put(s, ln, heads, pin)
+            if kind == "bubble" and box is not None:
+                if pin is None or max(abs(a_ - b_) for a_, b_ in zip(pin, box)) > 0.5:
+                    if pin is not None:
+                        faults.setdefault("%s: BOX jumped" % key, []).append(n)
+                    ph = me
+                state[key] = (box, ph)
+            for f_ in fl:
+                faults.setdefault("%s: %s" % (key, f_.split(" at (")[0]), []).append(n)
+        s.write_to_png("%s/%05d.png" % (tmp, n))
+    while i < len(ids):
+        grp = next((g for g in F.MOT if g[0] == ids[i]), None)
+        span = grp if grp else (ids[i],)
+        end = tm[span[-1]]["start"] + tm[span[-1]]["dur"]
+        count = int(round(end * F.DPS)) - n
+        cuts.append((ids[i], n))
+        if grp:
+            t_, a, b = F.MOT[grp]
+            fr = seq2(t_)[a:b]
+            pick = fr[:count] if len(fr) >= count else [fr[min(len(fr) - 1, int(j * len(fr) / count))] for j in range(count)]
+            for x in pick:
+                one(lambda: fresh(x), ids[i]); n += 1
+        else:
+            f, _dur = an.SHOTS[ids[i]]
+            for j in range(count):
+                one(lambda: f(j / float(F.DPS)), ids[i]); n += 1
+        print(span, n, flush=True)
+        i += len(span)
+    CLOCK["live"] = False
+    return tm, d, n, cuts, faults
+
+
+def film():
+    import shutil, subprocess, os
+    import numpy as np
+    tmp = "/tmp/on4_film"; shutil.rmtree(tmp, ignore_errors=True); os.makedirs(tmp)
+    tm, d, n, cuts, faults = film_frames(tmp)
+    total = n / float(F.DPS)
+    mix, marks, ev = r.sound(tm, d, total)
+    F.master(mix, tmp)
+    t_ = F.OUT[:-4] + "_tmp.mp4"
+    q = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(F.DPS), "-i", tmp + "/%05d.png", "-i", tmp + "/a.wav",
+                        "-vf", "format=yuv420p", "-c:v", "libx264", "-crf", "18", "-preset", "veryfast",
+                        "-c:a", "aac", "-b:a", "192k", "-t", "%.3f" % total, t_])
+    if q.returncode == 0:
+        os.replace(t_, F.OUT)
+    print("FILM", F.OUT, n, "drawings", round(total, 2), "s")
+    print("FAULTS", {k_: (len(v), v[0], v[-1]) for k_, v in faults.items()})
+
+
 if __name__ == "__main__":
-    stills()
+    film()
