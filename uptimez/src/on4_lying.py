@@ -234,6 +234,9 @@ def thug_shadow(k, fx, fy, s, dx, dy, a=0.55, pose="open", seed=4100):
     c.set_source_rgba(0.02, 0.02, 0.03, a); c.mask(g)
 
 
+V4 = [False]                    # v4 (opt-in, the board review): a soft rim from above only, contact shadows under their feet
+
+
 def rim(k, fx, fy, s, seed=4100, lean=0.0, pose="open"):
     """The thug's outline lit from behind: his body, pale, a little bigger and raised, under the black figure."""
     import client_ob as co
@@ -246,7 +249,7 @@ def rim(k, fx, fy, s, seed=4100, lean=0.0, pose="open"):
         co.client(k, fx, fy, s, pose, "plain", look=(0, 0), roll=False, badge=False, seed=seed)
         c.restore()
         g = c.pop_group()
-        c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.mask(g)
+        c.set_source_rgba(0.85, 0.85, 0.82, 0.9 if not V4[0] else (0.38 if dy == -3 else 0.0)); c.mask(g)
 
 
 def ground(k):
@@ -273,6 +276,10 @@ def scene(scale=2, t=0.0):
     # front of them; their shadows, on the road, are drawn over her (they fall across her)
     import client_ob as co
     reach = (-10, 5) + co._ik(-1, -110, co.BT + 175)                 # his screen-left hand down to her coat
+    if V4[0]:
+        for fx in (468, BX):
+            c.save(); c.translate(fx, 586); c.scale(46, 8); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+            c.set_source_rgba(0, 0, 0, 0.6); c.fill()
     rim(k, 468, 584, 0.42, seed=4418)                                 # a rim of the lamp's light on the one standing
     st.thug(k, 468, 584, 0.42, "open", seed=4418, hands=("relax", "relax"))
     rim(k, BX, 588, 0.42, seed=4448, lean=BLEAN, pose=reach)          # the other stands behind her and bends over her

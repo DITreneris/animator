@@ -82,6 +82,9 @@ def bulb(c, x, y, r):
     c.set_source_rgb(*GOLD); c.new_path(); c.arc(x, y, r, 0, 2 * math.pi); c.fill()
 
 
+BLOOM = [1.0]                     # v8 (opt-in, the board review): 0.6 = the lamps' bloom 40% smaller
+
+
 def lamp_glow(c, x, y, r=150, a=0.9):
     g = cairo.RadialGradient(x, y, 0, x, y, r)
     g.add_color_stop_rgba(0, 1, 1, 0.96, a); g.add_color_stop_rgba(0.10, 1, 1, 0.95, a * 0.65); g.add_color_stop_rgba(1, 1, 1, 0.9, 0)
@@ -91,7 +94,7 @@ def lamp_glow(c, x, y, r=150, a=0.9):
 def lamp_head(k, x, y, s=1.0):
     c = k.c
     poly(k, [(x - 15 * s, y - 10 * s), (x + 15 * s, y - 10 * s), (x + 22 * s, y + 6 * s), (x - 22 * s, y + 6 * s)], INK, 1.6)
-    lamp_glow(c, x, y + 10 * s, 150 * s)
+    lamp_glow(c, x, y + 10 * s, 150 * s * BLOOM[0])
     c.set_source_rgb(1, 1, 1); c.save(); c.translate(x, y + 9 * s); c.scale(15 * s, 7 * s); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
 
 

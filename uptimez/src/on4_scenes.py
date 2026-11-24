@@ -1,4 +1,11 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v9b = board v7 (23 Nov): 2.3 redrawn with owners (board v6: his finger read
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v10 = board v8 (24 Nov; v9 pinned). The board's second and last outside
+round (three reviews, "improve"): figures touch their surfaces, the light acts on the scene, the shadow is a projection.
+3.6 a low close (the A-shaped legs gone); 2.4 she stands ON the platform; 1.1-1.2 the hat shadow runs from the bottom of the
+frame across the cobbles, folds at the wall's foot and climbs the wall (its man unseen), the fist on its outline, and it
+squashes and slides; 3.5 soft rim and contact shadows; 2.3 the ring a gold band on his finger, a contact shadow under the
+tapping finger; 3.4 the fingers; 2.2 tighter, Dad rim-lit; 3.1 asymmetric, light on the road, contact shadows; 3.2 one
+burst; the lamps' bloom 40% smaller. Not taken: a long shadow fight (Tomas: one punch at 0:01, then they ignore her).
+v9b = board v7 (23 Nov): 2.3 redrawn with owners (board v6: his finger read
 as "a grabber pole", the ring as "a coin"): the series' hand pointing, his sleeve, watch and jaw; Dad's flat hand, the ring on a
 finger. v9 = board v6: After the board v5 audit ("improve"):
 timing v2 generated from this file (the shots' own durations, a/b keys splitting their shot), 4.3 1.5 s shorter, the rota
@@ -67,6 +74,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "board v8: grounding and light (3.6 low close; 2.4 on the platform; 1.1-1.2 the shadow projected from the cobbles up the wall, the fist on it; 3.5 soft rim, contact shadows; hands in 2.3 and 3.4; 2.2 tighter, Dad rim-lit; 3.1 asymmetric with light on the road; 3.2 one burst; bloom -40%).",
     "board v6: timing v2 from the scene file (a/b keys); 4.3 -1.5 s, the rota 2.0 s; the burst at the bumper; the heart seal on both envelopes; faces at the turns; 7.1 an open hand.",
     "board v5: 6.4 and 6.5 cut (the light leaving her misread three times); 6.3 carries it, 6.6 alone on the dark stage; Sofia unimpressed, eyes on her phone, in 1.1-1.2.",
     "board v4: the CV is Office Noir 3's sheet with her photograph big and SOFIA; 6.5 the beam seen swinging off Pam to the card table, Pam in the dark half; 2.3b merged into 2.2 (his own coat, Pam's ears at the window).",
@@ -193,6 +201,8 @@ def knee_insert(k):
     c.set_source_rgb(0.10, 0.10, 0.11); c.paint()
     st.poly(k, [(-10, 520), (330, 470), (360, 700), (-10, 720)], (0.20, 0.22, 0.28), 2.4)      # his knee and thigh
     oc.envelope(k, 200, 540, 2.6)
+    c.save(); c.translate(236, 548); c.scale(26, 9); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.set_source_rgba(0, 0, 0, 0.45); c.fill()                                                  # the fingertip's contact shadow
     hp.draw(k, "point", 300, 452, 110, SK, (-0.55, 0.85), 1)                                   # his finger on the envelope
     st.poly(k, [(560, 110), (336, 372), (392, 428), (560, 250)], (0.20, 0.22, 0.28), 2.4)      # his sleeve, from him, to the wrist
     st.poly(k, [(340, 384), (362, 366), (384, 388), (362, 406)], (0.85, 0.80, 0.55), 1.6)      # the watch at the cuff
@@ -200,7 +210,11 @@ def knee_insert(k):
     c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()                                   # his jaw, at the top
     st.poly(k, [(560, 610), (440, 630), (444, 690), (560, 700)], dc.VELVET, 2.4)               # Dad's cuff,
     hp.draw(k, "palm", 400, 660, 96, dc.SKIN_F, (-1.0, 0.0), -1)                                # his hand flat on the seat,
-    dc.ring(k, 372, 652, 2.6)                                                                   # the ring on a finger, big
+    c.save(); c.translate(346, 664); c.rotate(-0.05)                                            # board v8: a gold band round one
+    c.set_source_rgb(*INK); c.rectangle(-9, -17, 18, 34); c.fill()                              # finger, a small red stone on it
+    c.set_source_rgb(*st.GOLD); c.rectangle(-7, -15, 14, 30); c.fill()
+    c.set_source_rgb(*INK); c.rectangle(-8, -8, 16, 16); c.fill(); c.set_source_rgb(*st.NEON); c.rectangle(-6, -6, 12, 12); c.fill()
+    c.restore()
 
 
 def knee_coat(k, env=True, hand=True):
@@ -353,6 +367,21 @@ def fire_escape_close(k):
     c.set_source_rgb(0.4, 0.4, 0.42); c.set_line_width(3); c.move_to(385, 150); c.line_to(385, 420); c.stroke()
 
 
+def platform(k, y):
+    """2.4 (board v8): the fire escape's floor under her feet: an iron grating seen a little from below, its brackets to
+    the wall, a contact shadow where she stands."""
+    c = k.c
+    st.poly(k, [(-10, y - 14), (550, y - 14), (550, y + 12), (-10, y + 12)], (0.16, 0.16, 0.17), 2.2)
+    c.set_source_rgb(*INK); c.set_line_width(1.6)
+    for x in range(0, 550, 22):
+        c.move_to(x, y - 14); c.line_to(x - 8, y + 12); c.stroke()
+    c.set_line_width(7)
+    for x in (60, 480):
+        c.move_to(x, y + 12); c.line_to(x - 40, y + 110); c.stroke()
+    c.save(); c.translate(270, y - 4); c.scale(90, 9); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.set_source_rgba(0, 0, 0, 0.55); c.fill()
+
+
 def railing(k, y=640):
     c = k.c
     c.set_source_rgb(*INK)
@@ -414,7 +443,7 @@ def draw_cast(k, cast):
         elif who == "pam_from_behind":                       # her back to us: the figure, the face covered by the back of
             o = oc.pam_cat(k, *a, **kw)                      # the head (her dark bob) and the ears
             hx, hy = o["head"]; s_ = a[2]
-            kit.ellipse(k, hx, hy - 4 * s_, 62 * s_, 58 * s_, (0.14, 0.12, 0.14), 7301, shadow=False, lw=2.4)
+            kit.ellipse(k, hx, hy - 4 * s_, 62 * s_, 58 * s_, (0.36, 0.30, 0.27), 7301, shadow=False, lw=2.4)   # board v8: her brown bob, not a black blob
             oc.ears(k, hx, hy, s_)
         elif who == "pam_black":                             # 6.5: a black shape against the lit wall
             c = k.c
@@ -437,7 +466,11 @@ def draw_cast(k, cast):
             car._rr(k.c, hx - 7 * s_ * 2, hy - 27 * s_ * 2, 14 * s_ * 2, 24 * s_ * 2, 3 * s_ * 2); k.c.set_source_rgb(0.75, 0.88, 1.0); k.c.fill()
         elif who == "client":
             o = co.client(k, *a, **kw)
-        elif who == "father":
+        elif who == "father":                                # board v8: a thin rim of light, so the black suit leaves the dark
+            c_ = k.c
+            c_.push_group(); dc.father(k, *a, **kw); g_ = c_.pop_group()
+            for dx_, dy_ in ((-2.5, 0), (2.5, 0), (0, -2.5)):
+                c_.save(); c_.translate(dx_, dy_); c_.set_source_rgba(0.80, 0.80, 0.78, 0.8); c_.mask(g_); c_.restore()
             o = dc.father(k, *a, **kw)
         elif who.startswith("thug"):
             o = st.thug(k, *a, **kw)
@@ -531,16 +564,23 @@ def _sit_legs(k):                                          # 3.6: sitting: her l
 
 
 def wall_shadow(k, state="aim", slide=0.0):
-    """Office Noir 3's shadow (alley_on3.shadow_man: hat, coat, never a face) cast on the lane's lit left wall, its knife
-    toward Sofia (aim), or punched and sliding down the wall (slide 0..1). A pool of lamp light on the wall behind it."""
+    """Office Noir 3's shadow (alley_on3.shadow_man: hat, coat, never a face), board v8: a PROJECTION. Its man stands out
+    of frame, below; the shadow runs from the frame's bottom edge across the cobbles, folds at the foot of the lit left wall
+    and climbs it, sheared to the wall's perspective. Punched (slide > 0) it squashes, wider and shorter, and slides down."""
     import alley_on3 as al
     c = k.c
+    bx, by = 96, 742                                         # where it folds: on the wall's foot (the line (196,640)-(-20,860))
+    c.set_source_rgba(0.02, 0.02, 0.03, 0.80)                # the part on the cobbles, to the bottom edge, widening to us
+    c.new_path(); c.move_to(bx - 34, by + 34); c.line_to(bx + 40, by - 40); c.line_to(250, 960); c.line_to(70, 960); c.close_path(); c.fill()
     c.save(); c.new_path(); c.move_to(-20, 40); c.line_to(196, 300); c.line_to(196, 640); c.line_to(-20, 860); c.close_path(); c.clip()
     g = cairo.RadialGradient(110, 470, 20, 110, 470, 240)
     g.add_color_stop_rgba(0, 1, 1, 0.95, 0.55); g.add_color_stop_rgba(1, 1, 1, 0.95, 0)
     c.set_source(g); c.paint()
-    c.save(); c.translate(110, 690 + slide * 120); c.rotate(slide * 0.5); c.translate(-110, -(690 + slide * 120))
-    al.shadow_man(k, 110, 690 + slide * 120, 0.92, "knife", "down" if slide else state, flip=True)
+    sq = 1.0 - 0.38 * slide                                  # the squash
+    c.save(); c.translate(bx, by + slide * 30)
+    c.transform(cairo.Matrix(0.74 * (1 + 0.5 * slide), -0.74, 0, sq, 0, 0))    # sheared along the wall
+    c.rotate(-slide * 0.35)
+    al.shadow_man(k, 0, 0, 0.98, "knife", "down" if slide else state, flip=True)
     c.restore(); c.restore()
 
 
@@ -590,7 +630,7 @@ SCENES = [
           cast=A_SHADOW() + [P("pam_cat", 220, 730, 0.84, "punch", "peer", (-0.8, -0.3)),
                               P("sofia", 380, 820, 0.70, "hold", "appraise", (0.2, 1.0))],
           action="the punch; Sofia sidesteps her (the 0:01 joke)", reaction="the shadow slides down; nobody thanks her",
-          before=lambda k: wall_shadow(k, slide=0.55), after=lambda k: _burst(k, 150, 520, 30)),
+          before=lambda k: wall_shadow(k, slide=0.55), after=lambda k: _burst(k, 98, 544, 30)),
         S("1.3", "close", "A", (220, 560, 1.9), "The pose holds; her eyes follow Sofia out; the pose sags; she pulls her coat straight.",
           cast=[P("pam_cat", 220, 730, 0.84, "sag", "fade", (0.8, 0.2))], line="N: I know how to survive.",
           action="the pose sags", reaction="Fine. (to where Sofia went)"),
@@ -604,22 +644,22 @@ SCENES = [
           "bare-headed shadows at its rear window; one pale glove points back down the lane.",
           cast=[P("thug1", 262, 578, 0.20, "open", seed=4121), P("pam_cat", 130, 420, 0.64, "hero", "peer", (0.7, 0.9))],
           protect=[("the car", (300, 560))], after=lambda k: railing(k, 380), eyeline="down to the car"),
-        S("2.2", "medium, through the window", "back_seat", WIDE, "The back seat: the Client, whole; beside him a velvet sleeve, "
+        S("2.2", "medium, through the window", "back_seat", (270, 590, 1.08), "The back seat: the Client, whole; beside him a velvet sleeve, "
           "a ringed hand on a knee, a chin (the window's top cuts Dad at the chin).",
           cast=[P("client", 170, 820, 0.66, "open", "plain", look=(0.7, 0.4), roll=False, badge=False),
                 P("father", 370, 596, 0.78, (-20, 30, 20, -30), "hard", (-0.6, 0.6))],
           eyeline="both to the envelope", after=_into_coat),
         S("2.3", "insert, 1.2 s", "knee", WIDE, "Through the window: the envelope on the Client's knee, his finger taps it twice; the "
-          "ringed hand lays itself flat on the seat: agreed.", protect=[("envelope", (200, 540)), ("ring", (372, 652))],
+          "ringed hand lays itself flat on the seat: agreed.", protect=[("envelope", (200, 540)), ("ring", (346, 664))],
           line="The Client: Mine until it's done.", action="two taps", reaction="the ringed hand flat: agreed"),
         S("2.4", "close", "escape", WIDE, "Her eyes narrow; she swings onto the ladder and drops out of frame.",
-          cast=[P("pam_cat", 270, 900, 0.96, "hero", "peer", (0.4, 0.6))], line="N: I know where to see what others do not see.",
-          after=lambda k: railing(k, 690), eyeline="down to the car", action="she drops out of frame", reaction="Got you."),
+          cast=[P("pam_cat", 270, 764, 0.96, "hero", "peer", (0.4, 0.6))], line="N: I know where to see what others do not see.",
+          before=lambda k: platform(k, 764), after=lambda k: railing(k, 690), eyeline="down to the car", action="she drops out of frame", reaction="Got you."),
     ]),
     ("03 Ignored victim", [
         S("3.1", "wide, low", "C_turn", (270, 610, 1.5), "The car swings round at the junction, nose to us; Pam runs onto the crossing after it. "
           "Don flashes STOP at her side without looking at her, flips the paddle, GO to the car; she stops dead in its path.",
-          cast=[P("pam_cat", 340, ROAD_Y + 6, 0.62, "hero", "peer", (-0.6, -0.3)),
+          cast=[P("pam_cat", 350, ROAD_Y + 6, 0.62, (-50, 30, 50, -40), "peer", (-0.6, -0.3), lean=-0.12),
                 P("don", 150, 700, 0.56, "stop", "confused", (0.2, -1.0), paddle_side="STOP", chin=1)],
           protect=[("the car", (250, 600))], line="Don: Traffic flows.", eyeline="Don to the car; Pam to the car",
           action="STOP at her side, GO to the car", reaction="she obeys: stops in its path"),
@@ -627,7 +667,7 @@ SCENES = [
           "rolls into her at walking pace: the bumper at her knees, she tips back, stars; over backwards onto the stripes.",
           cast=[P("don", 132, 700, 0.56, "wave", "pleased", (0.6, -0.4), paddle_side="GO", paddle_ang=0.10, whistle_in=True),
                 P("pam_from_behind", 292, ROAD_Y + 10, 0.66, "stop_palm", "surprised", (0, -0.2), lean=-0.22)],
-          protect=[("bumper", (250, 690)), ("headlights", (250, 630))], after=lambda k: (_burst(k, 300, 664, 34), _impact(k, 272, 520)),
+          protect=[("bumper", (250, 690)), ("headlights", (250, 630))], after=lambda k: _burst(k, 300, 664, 38),
           action="the bump", reaction="she tips back"),
         S("3.3", "medium, low (a: the glove on the bonnet)", "C_lying", WIDE, "Don walks to the car's front corner, lays his white "
           "glove flat on the bonnet, rubs one spot. Pam in the foreground under the bumper. He doesn't look at her.",
@@ -649,8 +689,7 @@ SCENES = [
           "nobody looks down.", protect=[("her face", (112, 610)), ("the glove", (300, 560))],
           eyeline="each shadow to the bills", action="a glove plucks a bill", reaction="nobody looks down"),
         S("3.6", "close, sitting up", "C_low", WIDE, "She sits up and pushes her mask straight; her eyes follow the car.",
-          cast=[P("pam_cat", 220, 900, 0.96, "mask_fix", "doubt", (0.6, -0.3), clip_y=800)], line="N: I am like a cat. I have seven lives.",
-          after=_sit_legs,
+          cast=[P("pam_cat", 250, 965, 1.25, "mask_fix", "doubt", (0.6, -0.3))], line="N: I am like a cat. I have seven lives.",
           eyeline="to the car", action="she sits up", reaction="Six left."),
     ]),
     ("04 False recognition", [
@@ -843,12 +882,14 @@ def _desk(k, sh, eighth):
 
 def render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
+    st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W * scale, H * scale); s.set_device_scale(scale, scale)
     c = cairo.Context(s); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
     heads = {}
     if sh["loc"] == "lying":
         import on4_lying as ly
+        ly.V4[0] = True
         src = ly.scene(scale)
         c.set_source_surface(src, 0, 0); c.paint()
         return s, {"pam_cat": {"head": ly.HEAD}}
@@ -865,6 +906,13 @@ def render(sh, scale=1):
             c.restore(); c.clip()
             heads = draw_cast(k, sh["cast"]); c.reset_clip()
         else:
+            if sh["loc"] in ("C_turn", "C_bump"):              # board v8: the lamp's light on the road, feet on the ground
+                g = cairo.RadialGradient(0, 0, 0, 0, 0, 1)
+                g.add_color_stop_rgba(0, 1, 1, 0.95, 0.38); g.add_color_stop_rgba(1, 1, 1, 0.95, 0)
+                c.save(); c.translate(330, 716); c.scale(210, 46); c.set_source(g); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+                for who_, a_, kw_ in sh["cast"]:
+                    c.save(); c.translate(a_[0] - 8, a_[1] + 2); c.scale(70 * a_[2], 11 * a_[2]); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+                    c.set_source_rgba(0, 0, 0, 0.55); c.fill()
             if sh.get("before"):
                 sh["before"](k)
             heads = draw_cast(k, sh["cast"])
@@ -1176,7 +1224,7 @@ def write_timing_v2(out=OUT):
     return p, d["length"]
 
 
-def board(out=OUT, ver=7):
+def board(out=OUT, ver=8):
     """stage 5: one key frame per shot at 540, generated; two sheets at 400 px tiles, numbered with the time, and a phone
     sheet at 270 px. Neutral copies for the cold viewers go to /tmp/on4_board_cv (frame_NN.png, no names)."""
     import shutil
