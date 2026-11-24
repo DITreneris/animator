@@ -5,6 +5,8 @@ dead zones, set_gate), with the shots that failed redrawn:
     the frame's edge: "an arm without a body, holding the tag"; rules: a finger near a sign = holding it)
   python3 dh_anim7_v8.py [gate|nobub]  ->  ../daddys-home/dh_s7_anim_v8.mp4"""
 import sys
+import math
+import cairo
 import kit
 import dh_props as dp
 import dh_layout as dl
@@ -154,6 +156,81 @@ def r_hop(s, k, o, t, tt, n):
 sc.DRAW.update({"9.2'": r_step, "9.4": r_offer, "9.4'": r_approved, "9.5'": r_hop, "9.5''": r_react})
 
 
+# ---- v8c (24 Nov, Tomas: "Father presses APPROVE himself"): who approves read "Don" 2/2 (whole-film and scene tests): his
+# raised hand and Father's box beside him. Now: 9.4 is Don alone, his hand up ("me!"); 9.4' cuts back to Father at the robot
+# by the door (9.3's frame, everyone on his mark): without a look at Don he presses the robot's chest himself, "Approved.",
+# and its face goes green. Father walks to Don off the screen before 9.5''. Lessons: 179 (his own shoulder, in reach, the
+# elbow bent), 207 (a press is a point), contact all the way, 263, 417/264.
+PRESS = [(218.0, 706.0)]                                    # the robot's face: its screen (its chest is below his hand's reach)
+FARM = {}
+
+
+STEP = [24.0]                                               # his one step to the robot (from 9.3's mark it is out of his reach)
+
+
+def _father_hands(pose, x=None):
+    k = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0)
+    return dc.father(k, ds.FA1[0] + STEP[0] if x is None else x, ds.FA1[1], ds.FS, pose=pose, face="hard", look=(1, 0))["hands"]
+
+
+def _father_reach(target):
+    key = (round(target[0]), round(target[1]))
+    if key not in FARM:
+        rest = _father_hands((-8, 0, 8, 0))
+        side = 0 if rest[0][0] > rest[1][0] else 1           # his screen-right hand
+        best = None
+        for a1 in range(0, 151, 3):
+            for a2 in range(20, 121, 3):                    # the elbow bent
+                pose = (-8, 0, a1, a2) if side == 1 else (-a1, -a2, 8, 0)
+                hx, hy = _father_hands(pose)[side]
+                e = math.hypot(hx - target[0], hy - target[1])
+                if best is None or e < best[0]:
+                    best = (e, pose, side)
+        FARM[key] = best
+    return FARM[key]
+
+
+def r_press(s_, k, o, t, tt, n):
+    """9.4': Father at the robot; his hand comes up to its chest, presses, stays on it; its face goes green."""
+    st = V7.seq(t, [0.0, 0.6, 1.0])                         # the step in, then the hand up and on it
+    u = V7.seq(t, [0.0, 0.0, 0.0, 0.5, 1.0])
+    fx = ds.FA1[0] + STEP[0] * st
+    mid = (fx + 26, 690.0)                                  # the in-between: his hand up at his chest, the elbow bent
+    tx, ty = (mid if u == 0.5 else PRESS[0])
+    e, pose, side = _father_reach((tx, ty))
+    if u == 0:
+        pose = (-8, 0, 8, 0)
+    hp.reset(*(("relax", "point") if side == 1 else ("point", "relax")))
+    dc.father(k, fx, ds.FA1[1], ds.FS, pose=pose, face="talk", look=(1, 0))
+    hp.reset()
+    if u >= 1 and t >= 0.25:                                # its face: the green tick, as 9.5's close shot
+        rx, ry = o["robot"]["screen"]
+        c = k.c
+        c.set_source_rgb(0.30, 0.95, 0.55); c.set_line_width(4); c.set_line_cap(1); c.set_line_join(1)
+        c.move_to(rx - 9, ry); c.line_to(rx - 2, ry + 7); c.line_to(rx + 11, ry - 8); c.stroke()
+    hd = (fx, ds.FA1[1] - 302 * ds.FS)
+    V7.father_mouth(k, hd, s_.loud("9.4", tt))
+    if s_.speaking("9.4", tt):
+        o["say"] = ("Approved.", (hd[0] + 26, hd[1] + 28 * ds.FS), 1, True, -20, 170)
+
+
+def r_offer_alone(s_, k, o, t, tt, n):                      # 9.4: Don alone, his hand coming up: "me!"
+    i = V7.idx(t)
+    if i < 3:
+        dp.ceo_chair(k, ds.THR5, CH[1], CH[2])
+        _way_don(k, ((-8, 0, 20, 110), (-8, 0, 60, 90), (-8, 0, 95, 72))[i])
+    else:
+        thumb_don(k, n, True, False, "happy", (-1, 0), 0)
+
+
+sc.shot["9.4'"] = dict(sc.shot["9.3"])                      # 9.3's frame: Father and the robot by the door
+sc.CAM8["9.4"] = (ds.DON6[0] + 18, 640, 2.3)                # Don alone, the throne behind him, his raised hand in the frame
+_scr = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 54, 96)), 0)
+_c93 = dl.draw(dict(sc.shot["9.3"], draw=lambda k_, o_: None), _scr)
+sc.CAM8["9.4'"] = (_c93[0] - 14, _c93[1], _c93[2] * 0.88)   # 9.3's camera, a little wider and left: wall on his left for his box, the robot's face out of the button rail
+sc.DRAW.update({"9.4": r_offer_alone, "9.4'": r_press})
+
+
 SET_MOVES, SET_AIR, SET_BEHIND = {}, set(), set()
 SET_WALKS = set()
 ENTRANCES = set()
@@ -161,6 +238,8 @@ ENTRANCES = set()
 
 def frame8(tt, n, hi=1):
     A3.AVOID_EXTRA[:] = []
+    if "Approved." not in A3.HELD:                          # 9.4': his box on his left (the robot is on his right)
+        A3.HELD["Approved."] = (None, -1)
     if "Approved." not in A3.HELD:                          # Father says it to the robot, off the frame on his left: the box on
         A3.HELD["Approved."] = (None, -1)                   # his left, not between him and Don (v8 first pass: over Don's head)
     return E.frame(sc, tt, n, hi)
