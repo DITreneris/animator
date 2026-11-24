@@ -241,6 +241,9 @@ def _bbox_group(c, f, name):
     return r
 
 
+NO_DECLARE = [False]
+
+
 def install_scene(ps):
     install()
     if getattr(ps, "_checked", False):
@@ -250,6 +253,8 @@ def install_scene(ps):
     for m, fn, name in PROPS:
         f0 = getattr(mods[m], fn)
         def prop(k, *a, _f0=f0, _name=name, **kw):
+            if NO_DECLARE[0]:                                 # a full-frame insert declares its own story rect instead
+                return _f0(k, *a, **kw)
             if _name == "Pam's phone" and not kw.get("lit", a[3] if len(a) > 3 else False):
                 return _f0(k, *a, **kw)                      # dark, face up on the counter: set dressing until it lights (5.7)
             return _bbox_group(k.c, lambda: _f0(k, *a, **kw), _name)
