@@ -51,14 +51,18 @@ def room(k, blind="up", u=0.0, tape=False, spun=False, phone="dark", silhouette=
     """The whole front desk, empty (the cast goes on top). blind: up / down (u: how far, 0..1) / torn / rehung."""
     c = k.c
     old = _shut_stage(k)
-    old_scr = s4.fs.screen
+    old_scr, old_conf = s4.fs.screen, s4.s3.confetti
     if NO_SCREEN[0]:
         s4.fs.screen = lambda *a, **kw: None
+    if NO_DOOR_CONFETTI[0]:
+        s4.s3.confetti = lambda k_, x, *a, **kw: None if x < 100 else old_conf(k_, x, *a, **kw)
     try:
         s4.draw_set(k, {})
     finally:
         st.stage = old
-        s4.fs.screen = old_scr
+        s4.fs.screen, s4.s3.confetti = old_scr, old_conf
+    if PLATE_BIG[0]:
+        plate_big(k)
     if silhouette:
         behind_glass(k, lit=(silhouette == "phone"))
     throne(k, spun)
@@ -69,6 +73,15 @@ def room(k, blind="up", u=0.0, tape=False, spun=False, phone="dark", silhouette=
     blinds(k, blind, u, cords=cords)
     if dim and blind == "down" and u > 0:                    # the blinds shut out the street: the room goes dim
         c.set_source_rgba(0.05, 0.05, 0.10, 0.22 * u); c.rectangle(0, 0, 960, 960); c.fill()
+
+
+def plate_big(k):
+    """the status plate on DON's office door (fs_set4), at a size that reads at 270 px: DON · CEO."""
+    x, y, w, h = s4.OFFICE
+    c = k.c
+    rect(k, x - 22, y - 62, w + 44, 52, (0.85, 0.70, 0.30), 807, lw=2)       # over the small gilt plate (y - 46 .. - 12)
+    c.set_source_rgb(0.25, 0.18, 0.05); c.select_font_face("Inter", 0, 1); c.set_font_size(18)
+    e = c.text_extents("DON · CEO"); c.move_to(x + w / 2 - e.x_advance / 2, y - 29); c.show_text("DON · CEO")
 
 
 def behind_glass(k, x=100, lit=False):
@@ -87,6 +100,20 @@ def behind_glass(k, x=100, lit=False):
         c.set_source_rgba(0.08, 0.08, 0.10, 0.9); c.set_line_width(16); c.set_line_cap(1)      # his arm up to it
         c.move_to(x + 40, 640); c.line_to(x + 30, 570); c.stroke()
         c.set_source_rgb(0.80, 0.97, 1.0); c.rectangle(x + 6, 528, 20, 34); c.fill()
+    if GUARD_CUES[0]:                                         # the guard's sunglasses (black, a glint) and earpiece coil
+        for sx in (-1, 1):
+            c.new_path(); c.move_to(x + sx * 3, 506); c.line_to(x + sx * 25, 505); c.line_to(x + sx * 23, 522)
+            c.line_to(x + sx * 12, 525); c.line_to(x + sx * 4, 521); c.close_path()
+            c.set_source_rgb(0.02, 0.02, 0.03); c.fill()
+            c.set_source_rgba(1, 1, 1, 0.8); c.set_line_width(2.4); c.set_line_cap(1)
+            c.move_to(x + sx * 9, 518); c.line_to(x + sx * 15, 510); c.stroke()
+        c.set_source_rgb(0.02, 0.02, 0.03); c.set_line_width(3)
+        c.move_to(x - 3, 507); c.line_to(x + 3, 507); c.stroke()
+        c.set_source_rgb(0.92, 0.92, 0.90); c.set_line_width(2.6); c.new_path(); c.move_to(x + 29, 526)
+        for i in range(6):
+            yy = 532 + i * 7
+            c.curve_to(x + 37, yy - 3, x + 37, yy + 3, x + 30, yy + 2)
+        c.stroke(); c.set_line_cap(0)
     c.restore()
 
 
@@ -148,6 +175,12 @@ def _cord(c, x, y0, y1, swing=0, pull=None):
 NO_SCREEN = [False]                                         # opt-in (ps_scenes, board v2): the UPTIMEZ FIND screen over the
                                                             # door taken off: 3 of 3 cold viewers read "blueprint" typed into it
                                                             # as what brought the blind down
+NO_DOOR_CONFETTI = [False]
+GUARD_CUES = [False]                                        # opt-in (ep 14 v4, cold test 3 of 3 "who is behind the glass?"):
+#                                                             the guard's canon sunglasses glint and earpiece coil (dh_cast.guard)
+PLATE_BIG = [False]                                         # opt-in (ep 14 v4, 5.4: "whose side is his door on?" 2 of 3 can't
+#                                                             tell): the door's DON · CEO plate drawn big enough to read                                  # opt-in (ep 14 scenes, 24 Nov): episode 10's confetti by the door
+                                                            # taken off the floor: two cold viewers asked what the blue squiggles were
 MARK_SMALL = [False]                                        # opt-in (ps_scenes v2): DON smaller and close beside the tape,
                                                             # so a close shot holds it whole or not at all (lesson 295)
 
