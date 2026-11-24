@@ -683,9 +683,10 @@ def knife(c, x, y, ang, s=1.0, stuck=0.0):
 
 KNIFE_AT = ((120, -0.34), (166, 0.10), (286, -0.06), (332, 0.30), (378, -0.20))   # where they stand in the boards (the fifth after she has had it in her teeth)
 SCORCH = (466, 500)
+MARK_SKIP = []                                             # knives she has taken back out of the boards (6.1 on)
 
 
-def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
+def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0, skip=()):
     c = k.c
     if scorch > 0:                                         # the curtain's edge, burnt: a ragged black hole, embers on its rim, smoke in puffs
         sx_, sy_ = SCORCH
@@ -707,6 +708,8 @@ def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
                 g.add_color_stop_rgba(0, 0.80, 0.80, 0.78, 0.30 * (1 - u) * smoke * scorch); g.add_color_stop_rgba(1, 0.80, 0.80, 0.78, 0)
                 c.set_source(g); c.new_path(); c.arc(px_ + dx_ * r_, py_ + dy_ * r_, r_ * q, 0, 2 * math.pi); c.fill()
     for j, (x, a) in enumerate(KNIFE_AT[:knives]):          # blades in the boards round her feet
+        if j in skip or j in MARK_SKIP:
+            continue
         dp = (0, 12, -6, 16, 4)[j]                           # v19: each at its own depth and angle
         c.save(); c.translate(x + 6, 708 + (j % 2) * 4); c.scale(20, 4); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
         c.set_source_rgba(0, 0, 0, 0.5); c.fill()            # v20: its shadow on the boards, where it went in
@@ -1119,7 +1122,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"4.4": 3.0, "5.1": 1.2, "6.0": 3.6, "6.05": 0.9, "6.07": 3.0, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"4.4": 3.0, "5.1": 1.2, "6.1": 2.0, "6.0": 3.6, "6.05": 0.9, "6.07": 3.0, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():

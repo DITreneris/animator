@@ -7,6 +7,7 @@ import math
 import os
 import sys
 import cairo
+import kit
 import on4_motion as m
 import on4_scenes as sc
 import on4_cast as oc
@@ -271,7 +272,130 @@ def a53b(t):
         sc.coat_lift = old
 
 
-SHOTS = {"1.3": (a13, 2.91), "1.4": (a14, 2.8), "2.1": (a21, 2.2), "4.1": (a41, 2.6), "4.3": (a43, 2.9), "5.1": (a51, 1.2), "5.3": (a53, 2.3), "5.3b": (a53b, 2.3)}
+# ---- 6.1: up from the fall; she pulls a knife out of the boards and slits the envelope with it; the sheet slides out ---
+def a61(t):
+    import on4_props as pr
+    X = 225
+    KX = sc.KNIFE_AT[2][0]                                     # the nearest, at her right
+    ENVH = oc.pm.ik(-1, -84, -170)                             # the envelope out in her left hand, at her shoulder, clear of her face
+    if t < 0.6:                                                # down to it: weight onto the right, the hand to the handle
+        u = ease(seg(t, 0.0, 0.45))
+        arms = ENVH + lerp(oc.pm.ik(1, 50, -128), oc.pm.ik(1, (KX - X) / 0.86, -40), u)
+        kn = kneel(46 * u, l=(-8, 0, -1), r=(14 * u, 0, 1)); rot = 0.18 * u; held = False
+    elif t < 0.9:                                              # up with it
+        u = ease(seg(t, 0.6, 0.9))
+        arms = ENVH + lerp(oc.pm.ik(1, (KX - X) / 0.86, -40), oc.pm.ik(1, 40, -250), u)
+        kn = kneel(46 * (1 - u)); rot = 0.18 * (1 - u); held = True
+    else:                                                      # the slit: across the top of the envelope, then the sheet out
+        u = ease(seg(t, 0.95, 1.2))
+        arms = ENVH + lerp(oc.pm.ik(1, 40, -250), oc.pm.ik(1, -30, -250), u)
+        kn = None; rot = 0.0; held = True
+    p = P("pam_cat", X, 700, 0.86, pose(asym(arms, 3), ("grab", "grab")), "peer" if t < 1.3 else "hopeful", (0.2, -0.6), rim=True)
+    pulled = t >= 0.6
+    def after(k):
+        c = k.c
+        sc.stage_marks(k, skip=(2,) if pulled else ())
+        pts = pam_(k, p, breath(t), rot, kn)
+        sc._spot_on(k)
+        lx, ly = pts["hands"][0]; rx, ry = pts["hands"][1]
+        oc.envelope(k, lx + 6, ly - 34, 1.4)                   # the dream envelope, its heart to us
+        if t > 1.25:                                           # the sheet sliding up out of it
+            v = ease(seg(t, 1.25, 1.8))
+            c.save(); c.translate(lx + 6, ly - 50 - 60 * v); c.rotate(-0.06)
+            c.rectangle(-30, -40, 60, 72); c.set_source_rgb(0.97, 0.97, 0.95); c.fill_preserve(); c.set_source_rgb(*m.INK); c.set_line_width(1.5); c.stroke()
+            c.restore()
+        if held:
+            sc.knife(c, rx, ry - 10, -0.9 if t < 1.2 else -2.2, 1.5)
+        if 0.95 <= t < 1.2:                                    # the slit's flash
+            c.set_source_rgba(1, 1, 1, 0.8); c.set_line_width(3); c.move_to(lx - 30, ly - 58); c.line_to(lx + 42, ly - 58); c.stroke()
+    sc.MARKS[0] = False
+    try:
+        return draw(shot("6.1", cast=[], after=after, protect=()))
+    finally:
+        sc.MARKS[0] = True
+
+
+# ---- 6.2: her glove's thumb slides off the sheet: SOFIA, the photograph; the camera in on the circled number ---------
+def a62(t):
+    import hands_ps as hp
+    u = ease(seg(t, 0.15, 0.7)); z = 1.0 + 0.32 * ease(seg(t, 0.5, 1.6))
+    def after(k):
+        c = k.c                                                # her glove on the sheet's right edge, over SOFIA, then off it along the edge
+        gx, gy = 330 + 120 * u, 492 + 20 * u
+        st.poly(k, [(620, gy - 70), (gx + 40, gy - 30), (gx + 50, gy + 30), (620, gy + 40)], oc.COAT, 2.4)
+        c.push_group(); hp.draw(k, "grab", gx, gy, 96, (0.22, 0.22, 0.25), (-1.0, 0.1), 1); g_ = c.pop_group()
+        for dx_, dy_ in ((-3, 0), (3, 0), (0, -3), (0, 3)):
+            c.save(); c.translate(dx_, dy_); c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.mask(g_); c.restore()
+        hp.draw(k, "grab", gx, gy, 96, (0.22, 0.22, 0.25), (-1.0, 0.1), 1)
+    return draw(shot("6.2", cam=(270, 480 + 150 * (z - 1) / 0.32, z), after=after, protect=()))
+
+
+# ---- office -------------------------------------------------------------------------------------------------------
+def _desk_shot(sid, t, cast, after=None, loc=None, cam=None):
+    kw = dict(cast=cast, protect=())
+    if after:
+        kw["after"] = after
+    if loc:
+        kw["loc"] = loc
+    if cam:
+        kw["cam"] = cam
+    return draw(shot(sid, **kw))
+
+
+def _pam_asleep(t, x=692, feet=760, look=(0, 0)):
+    return P("pam_awake", x, feet - 1.5 * math.sin(2 * math.pi * 0.22 * t), 0.50, "down", "neutral", look, "arm_up_open")
+
+
+def a71(t):                                                    # asleep on the counter, breathing; the raised hand sways
+    return _desk_shot("7.1", t, [_pam_asleep(t)])
+
+
+def a72(t):                                                    # Sofia in mid-step, eyes on her phone; the envelope into the hand; her mug; on
+    import sofia_dh as sd
+    sd.so.POSES["post"] = (sd.so.POSES["hold"][0], sd.so.POSES["hold"][1], 160, 40)
+    x = 560 + 85 * ease(seg(t, 0.0, 0.8)) + 160 * ease(seg(t, 2.5, 3.2))
+    reach = 0.8 <= t < 1.6
+    pose_ = "post" if reach else "hold"
+    sof = P("sofia", x, 800 - (4 if int(t * 8) % 2 and (t < 0.8 or t > 2.5) else 0), 0.47, pose_, "appraise", (0.2, 1.0))
+    v = ease(seg(t, 0.8, 1.4))
+    def post(k):
+        hx, hy = sc.HANDS.get("pam_awake", (706, 510))
+        if t >= 0.8:                                           # up from her hand into Pam's
+            ex, ey = 650 + (hx + 2 - 650) * v, 640 + (hy - 20 - 640) * v
+            import on4_props as pr
+            pr.envelope(k, ex, ey, 0.26, 0.2)
+            if v >= 1:
+                import hands_ps as hp
+                hp.draw(k, "grab", hx, hy, 15, (0.99, 0.86, 0.70), (0.0, -1.0), 1)
+    loc = "desk8" if t > 2.3 else None                         # her mug at the end of the row
+    return draw(shot("7.2", cast=[_pam_asleep(t), sof], after=post, protect=(), **({"loc": loc} if loc else {})))
+
+
+def a73(t):                                                    # the clink wakes her: the mask up, the ears up, her eyes to her hand
+    up = t > 0.35
+    p = P("pam_awake", 692, 735 if up else 742, 0.50, "up" if up else "down", "approve" if t > 0.6 else "neutral",
+          (0.4, -0.6) if t > 0.5 else (0, 0), "arm_up_open")
+    return draw(shot("7.3", cast=[p], after=sc._sofia_post, protect=()))
+
+
+def a74(t):                                                    # the rota, the camera down the column to SUN
+    z = 1.0 + 0.25 * ease(seg(t, 0.2, 2.0))
+    return draw(shot("7.4", cam=(270 + 40 * (z - 1) / 0.25, 300 + 80 * (z - 1) / 0.25, z), protect=()))
+
+
+def a75(t):                                                    # her fingertip down the rows to the seventh PAM; stops; holds
+    u = ease(seg(t, 0.2, 1.9))
+    look = (-0.3, 0.6 + 0.3 * u)
+    p = P("pam_awake", 692, 735, 0.50, "up", "doubt" if t < 2.0 else "fade", look, "stand")
+    def after(k):
+        sc._rota_held(k)
+        row = min(6, int(u * 7))
+        fy = 652 + row * 6.2
+        kit.ellipse(k, 716, fy, 5, 4, (0.99, 0.86, 0.70), 7690, shadow=False, lw=1.2)
+    return draw(shot("7.5", cast=[p], after=after, protect=()))
+
+
+SHOTS = {"1.3": (a13, 2.91), "1.4": (a14, 2.8), "2.1": (a21, 2.2), "4.1": (a41, 2.6), "4.3": (a43, 2.9), "5.1": (a51, 1.2), "5.3": (a53, 2.3), "5.3b": (a53b, 2.3), "6.1": (a61, 2.0), "6.2": (a62, 1.6), "7.1": (a71, 1.4), "7.2": (a72, 3.2), "7.3": (a73, 1.4), "7.4": (a74, 2.0), "7.5": (a75, 2.8)}
 
 
 def frames(sid):
