@@ -1,0 +1,98 @@
+{
+ "n4": {
+  "key": "n4",
+  "shot": "1.4",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "nobody follows me",
+  "len": 1.55,
+  "asr": [
+   "Nobody follows me.",
+   "Nobody follows me.",
+   "Nobody follows me."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "Nobody follows me.",
+    "speed": 0.9,
+    "pitch_start": 209.6,
+    "pitch_end": 160.0,
+    "falls": true
+   }
+  ],
+  "saturated": 0.01
+ },
+ "n5": {
+  "key": "n5",
+  "shot": "5.1",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "nobody sees me coming",
+  "len": 1.75,
+  "asr": [
+   "nobody sees me coming.",
+   "Nobody sees me coming.",
+   "Nobody sees me coming."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "Nobody sees me coming.",
+    "speed": 0.9,
+    "pitch_start": 206.9,
+    "pitch_end": 158.9,
+    "falls": true
+   }
+  ],
+  "saturated": 0.02
+ },
+ "n6": {
+  "key": "n6",
+  "shot": "2.4",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "i know how to climb",
+  "len": 1.57,
+  "asr": [
+   "I know how to climb.",
+   "I know how to climb.",
+   "I know how to climb"
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I know how to climb.",
+    "speed": 0.9,
+    "pitch_start": 205.1,
+    "pitch_end": 156.4,
+    "falls": true
+   }
+  ],
+  "saturated": 0.03
+ },
+ "n7": {
+  "key": "n7",
+  "shot": "2.4",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "i know how to fall",
+  "len": 1.57,
+  "asr": [
+   "I know how to fall.",
+   "I know how to fall.",
+   "I know how to fall."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "I know how to fall.",
+    "speed": 0.9,
+    "pitch_start": 205.1,
+    "pitch_end": 157.9,
+    "falls": true
+   }
+  ],
+  "saturated": 0.01
+ }
+}

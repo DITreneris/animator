@@ -37,7 +37,9 @@ import dh_props as dhp
 from kit import Ctx, INK
 
 pss.MARK_SMALL[0] = True
-pss.NO_SCREEN[0] = True                                     # v3 (board v1 cold test, 3 of 3): no "blueprint" screen over the door
+pss.NO_SCREEN[0] = True
+pss.NO_DOOR_CONFETTI[0] = True                              # v4 (24 Nov): no confetti by the door (cold viewers: "blue squiggles?")
+rp.SUN_UP[0] = True                                         # v4: the sun with an up-arrow ("more light", not a gear)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "pick-a-side")
@@ -118,8 +120,47 @@ ROOM5 = dict(blind="rehung", tape=True, spun=True, phone="lit")
 ROOM3P = dict(blind="torn", tape=True, spun=True, silhouette="phone")      # v3: 3.6, the guard's phone lit at his face
 
 
+def _tug_11(k):
+    """v4 (Tomas 24 Nov, /grill-me, the third cold test: 0 of 3 saw the robot pull): the board's 1.1 is motion test A's
+    key frame: both hands on their cords, the cords taut to the hands, the blind half down, the robot hauling it back up."""
+    import acts_ob as ac
+    heads, c, n = {}, k.c, 0.45
+    top = pss.GY0 - 10 + 12
+    x, f = at("don_cord"); x += 26
+    hd = (pss.CORD_L + 2, f - 310 * SC["don"] + (150 * SC["don"]) * n)
+    to = lambda p: ((p[0] - x) / SC["don"], (p[1] - f) / SC["don"])
+    o, heads["don"] = don(k, (x, f), ac._pose(1.12, left=to(hd)), "confused", (-0.4, -0.6))
+    rx, rf = at("rob_cord")
+    o2, heads["robot"] = robot(k, (rx - 18, rf), arms=((-180, 0), (8, 0)), visor="sun")   # a step left, clear of the door
+    #                                     frame; the near arm straight up on the glass, the grip at its tip
+    for cx, hand, pull in ((pss.CORD_L, o["hands"][0], pss.PULL), (pss.CORD_R, o2["hands"][0], pss.PULL_R)):
+        hx, hy = hand
+        c.set_source_rgb(*pss.CORD); c.set_line_width(4.0); c.set_line_cap(1)
+        c.move_to(cx, top); c.line_to(hx, hy); c.stroke(); c.set_line_cap(0)
+        c.save(); c.translate(hx, hy + 6); c.scale(5, 8); c.new_path(); c.arc(0, 0, 1, 0, 6.3); c.restore()
+        c.set_source_rgb(*pull); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.set_line_width(1.4); c.stroke()
+    return heads
+
+
+def light_in(k):
+    """v4 (Tomas 24 Nov: the sun icon read as "a sun", never "more light"): when the blind is down, daylight falls
+    through the bare glass onto whoever is in front of it: three warm bands, no new words."""
+    c = k.c
+    x0, y0, w, h = pss.GX0, pss.GY0, pss.GW, pss.GH
+    c.save()
+    c.rectangle(x0, y0, w, h + 60); c.clip()                 # through the glass and onto the floor in front, not the wall
+    for i, (a, b) in enumerate(((0.10, 0.30), (0.42, 0.58), (0.72, 0.92))):
+        c.new_path()
+        c.move_to(x0 + w * a + 40, y0); c.line_to(x0 + w * b + 40, y0)
+        c.line_to(x0 + w * b - 30, y0 + h + 60); c.line_to(x0 + w * a - 30, y0 + h + 60); c.close_path()
+        c.set_source_rgba(1.0, 0.90, 0.45, 0.34); c.fill()
+    c.restore()
+
+
 def cast_11(down=False, last=False):
     def f(k):
+        if FIX_V4[0] and not down:
+            return _tug_11(k)
         heads = {}
         _, heads["don"] = don(k, "don_cord", (-168, 6, 8, 0) if not down else (-150, -20, 8, 0),
                               "squint" if not down else "smug", (-0.4, -0.6))
@@ -135,6 +176,8 @@ def cast_12a(k):
     heads = {}
     o, heads["don"] = don(k, "don_door", "stand", "shock", (0, 0))
     dp.blind_over(k, o["head"], SC["don"])
+    if FIX_V4[0]:
+        light_in(k)
     _, heads["robot"] = robot(k, (pss.GX0 + 196, F + 4), visor="sun")
     return heads
 
@@ -158,13 +201,22 @@ def cast_13(k):
 
 def cast_14(k):
     heads = {}
-    _, heads["pam"] = pam(k, (300, F + 20), "cup_mid", "doubt", (0.6, 0))
-    _, heads["mom"] = mom(k, (370, F + 16), "folded", "unimpressed", (-0.6, 0))
-    _, heads["sofia"] = sofia(k, (440, F + 24), "hip_out", "smile", (-1, 0))
+    dx_ = 200
+    t_ = 0
+    _, heads["pam"] = pam(k, (300 + t_, F + 20), "cup_mid", "doubt", (0.6, 0))
+    _, heads["mom"] = mom(k, (370 + t_, F + 16), "folded", "unimpressed", (-0.6, 0))
+    _, heads["sofia"] = sofia(k, (440 + t_, F + 24), "hip_out", "smile", (-1, 0))
     tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
-    hh = dp.don(Ctx(cairo.Context(tmp), 0), 200, F + 90, SC["don"], "stand", "neutral", (0, 0))["head"]
+    hh = dp.don(Ctx(cairo.Context(tmp), 0), dx_, F + 90, SC["don"], "stand", "neutral", (0, 0))["head"]
     dp.blind_cape(k, hh, SC["don"])
-    o, heads["don"] = don(k, (200, F + 90), "lift_roll", "hollow", (0, 0))
+    if FIX_V4[0]:                                            # v4 (Tomas 24 Nov): the roll in his other hand (frame left), so
+        p_ = dp.POSES["lift_roll"]                           # his bubble sits on his right with a short tail, clear of it
+        o, heads["don"] = don(k, (dx_, F + 90), (-p_[2], -p_[3], -p_[0], -p_[1]), "hollow", (0, 0), hands=("fist", "fist"))
+        dp.cape_rail(k, o["head"], SC["don"])
+        dp.tape_strip(k, o["hands"][0], o["hands"][1], SC["don"])
+        dp.tape_roll(k, *o["hands"][0], SC["don"] * 0.9)
+        return heads
+    o, heads["don"] = don(k, (dx_, F + 90), "lift_roll", "hollow", (0, 0))
     dp.cape_rail(k, o["head"], SC["don"])
     dp.tape_strip(k, o["hands"][1], o["hands"][0], SC["don"])
     dp.tape_roll(k, *o["hands"][1], SC["don"] * 0.9)
@@ -280,7 +332,8 @@ def cast_212(k):
 
 def cast_31(k):
     heads = {}
-    _, heads["mom"] = mom(k, "mom_tape", "folded", "unimpressed", (-1, 0))
+    md = 15
+    _, heads["mom"] = mom(k, (tape_x(md) + 4, F + md), "folded", "unimpressed", (-1, 0))
     _, heads["don"] = don(k, (tape_x(140) - 190, F + 140), "thumbs", "grin", (0, -0.3), chin=1)
     _, heads["robot"] = robot(k, "rob_tape", selfie=1.0, arms=((-95, 0), (160, 0)))
     return heads
@@ -364,9 +417,12 @@ def cast_61(k):
     _, heads["mom"] = mom(k, "mom_tape", "folded", "stern", (1, -0.6))                      # v3: eyes away, up
     o, heads["sofia"] = sofia(k, (640, F + 40), "chest", "smile", (0.2, 0.6))                # v3: eyes on her CV, not Don
     hx, hy = o["hands"][0]
-    sp.cv_coo(k, hx + 4, hy + 4, 0.8)                                                        # held at her chest, COO? up
+    sp.cv_coo(k, hx + 4, hy + (40 if FIX_V4[0] else 4), 0.8)    # held at her chest, COO? up; v4: lower, off her face
     o, heads["pam"] = pam(k, (tape_x(55) - 40, F + 55), "reach", "avert", (1, 0.6), mug=False)  # v3: eyes on her lit phone
-    pss.pam_phone(k, o["hands"][1][0] + 30, o["hands"][1][1] + 10, 1.4, lit=True)
+    if FIX_V4[0]:                                            # v4 (Tomas 24 Nov): small, flat, under her fingers, away from
+        pss.pam_phone(k, o["hands"][1][0] + 4, o["hands"][1][1] + 8, 1.6, lit=True)   # Sofía's CV (upright read as hers)
+    else:
+        pss.pam_phone(k, o["hands"][1][0] + 30, o["hands"][1][1] + 10, 1.4, lit=True)
     return heads
 
 
@@ -435,7 +491,7 @@ def ins_booth_43(k):
     fs_ = 0.62 / 0.52 * 1.15
     of = dc.father(k, 110, seat + 170, fs_, face="hard", look=(0.6, 0.5))
     import client_on3 as co
-    cx, s = 400, 1.15
+    cx, s = (424 if FIX_V4[0] else 400), 1.15                    # v4: 24 px right, room for his bubble beside his hand
     oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=[(265, tbl - 128), (cx + 40, tbl - 6)],
                           clip_hip=True, hands={-1: "point"}, aim=(230, tbl - 122))
     cps.table(k, W, tbl)
@@ -469,6 +525,13 @@ def cast_55(k):
 
 def ins_phone_57(k):
     k.c.set_source_rgb(0.55, 0.48, 0.40); k.c.paint()
+    if FIX_V4[0]:                                            # v4 (cold test: "Don's phone?" 2 of 3): beside it, Pam's blue mug
+        pss.phone_close(k, 230, 520, 1.8)
+        k.c.save(); k.c.translate(430, 600); k.c.scale(2.4, 2.4)           # its handle joined to the body (mug_at hides
+        k.c.set_source_rgb(*INK); k.c.set_line_width(4); k.c.new_path(); k.c.arc(-18, 0, 10, 1.57, 4.71); k.c.stroke()
+        k.c.restore()                                                      # the gap behind her fingers)
+        pm.mug_at(k, 430, 600, 2.4)
+        return
     pss.phone_close(k, 270, 520, 1.8)
 
 
@@ -514,6 +577,10 @@ SHOTS = [
 ]
 SCENE_OF = lambda sid: int(sid.split(".")[0])
 SHRED_OK = "the shredder's SHRED behind the throne or the cast reads as part of a label, no other word (fs_set4's prop)"
+# v4: the drawing map (lesson 109): the shots restaged in v3/v4, and the function that must draw them (ps_checks.check_map)
+EXPECT = {"2.1": "cast_21", "2.5": "cast_25", "2.10": "cast_210", "2.11": "cast_211", "3.1": "cast_31", "3.4": "cast_34",
+          "5.5": "cast_55", "6.1": "cast_61"}
+
 KNOWN = {(sid, "SIGN partly covered: 'SHRED'"): SHRED_OK for sid in
          ("1.2b", "2.1", "2.1b", "2.3", "2.4", "2.5", "2.11", "3.1", "3.4", "3.7", "5.4")}   # (shot, check) -> why it is allowed
 KNOWN[("5.4", "SIGN partly covered: 'DON'")] = ("the gag: his raised shoe hovers over his own name on the line for 0.6 s; "
@@ -525,6 +592,49 @@ SHIFT = {"1.2b": (120, 0, 1.1), "1.4": (-40, 0, 0.9), "2.1": (0, 0, 1.0), "2.2":
 
 
 # --- render and check ---------------------------------------------------------------------------------------------------
+# v4 (opt-in, FIX_V4: the board v3 and `check`; the layout sheets v3 stay as approved): the faults the series' checks found
+FIX_V4 = [False]
+SHIFT_V4 = {"2.5": (40, 0, 0.72), "2.10": (80, 0, 0.8), "6.1": (0, -60, 0.9)}   # wall beside the speaker for bc_sb's bubble (lesson 358)
+SPLIT_V4 = ("3.1", "4.3")       # two lines said in turn (3.1 the robot, then Mom; 4.3 the Client, then Father) whose bubbles
+PART = [None]                    # can't both sit beside their faces: the board shows one key frame per line
+
+
+def board_keys(sh, line):
+    """-> [(label, surface, faults)]: one key frame, or one per line for a split shot."""
+    if FIX_V4[0] and sh["id"] in SPLIT_V4:
+        out = []
+        for i in range(len(says(line))):
+            PART[0] = i
+            try:
+                surf, msgs = board_frame(sh, line)
+                out.append((sh["id"] + "abcd"[i], surf, msgs + (_CHK[0]() if _CHK[0] else [])))
+            finally:
+                PART[0] = None
+        return out
+    if FIX_V4[0] and sh["id"] in KEYS_V4:
+        out = []
+        for i, cam_ in enumerate(KEYS_V4[sh["id"]]):
+            CAMKEY[0] = cam_
+            try:
+                surf, msgs = board_frame(sh, line)
+                out.append((sh["id"] + "abcd"[i], surf, msgs + (_CHK[0]() if _CHK[0] else [])))
+            finally:
+                CAMKEY[0] = None
+        return out
+    surf, msgs = board_frame(sh, line)
+    return [(sh["id"], surf, msgs + (_CHK[0]() if _CHK[0] else []))]
+
+
+_CHK = [None]                                               # check_all's per-frame checks (run right after each key frame)
+DEBUG_V4, WHY = [False], [""]                                               # board key frames that show one of the shot's lines each
+IN_HAND_V4 = ("6.1",)
+ROOM_V4 = {"1.1": dict(blind="down", u=0.45 * 0.92, dim=False, cords=False)}   # 1.1: the tug's key frame (cords to hands)
+CAM_V4 = {}
+KEYS_V4 = {"5.4": [(700, 700, 0.8), None]}                  # Tomas 24 Nov: 5.4a wide (his door, DON · CEO, across the tape),
+CAMKEY = [None]                                             # 5.4b the medium (the foot over the line); the camera pushes in
+KNOWN_V4 = {}                                               # 1.4's exception lifted: the roll moved to his other hand
+DARK_V4 = ("5.4", "5.5", "5.6")                             # Pam's phone dark until 5.7 (the continuity row; ROOM5 had it lit)
+INS_UP = {"3.5": 34, "4.2": 54, "5.7": 12}                 # the phone inserts: the phone's bottom edge out of the bottom quarter
 LAST = [{}]                                                 # the last render's faces in frame units (for the board)
 _last_cam = [None]                                          # the last render's camera (the motion tests hold one camera)
 
@@ -563,8 +673,9 @@ def _pass(k, sh, cam):
     c.save()
     if cam:
         sbv.view(c, *cam)
-    _floor_on(c, sh["room"])
-    pss.room(k, **dict(dict(phone=None), **sh["room"]))
+    room_ = ROOM_V4.get(sh["id"], sh["room"]) if FIX_V4[0] else sh["room"]
+    _floor_on(c, room_)
+    pss.room(k, **dict(dict(phone=None), **room_))
     heads = sh["cast"](k) if sh["cast"] else {}
     c.restore()
     return heads
@@ -575,7 +686,10 @@ def render(sh):
     surf = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H)
     c = TextRec(surf); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
+    pss.GUARD_CUES[0] = pss.PLATE_BIG[0] = FIX_V4[0]          # v4's set cues travel with the v4 staging
     if sh["cam"] == "screen":
+        if FIX_V4[0] and sh["id"] in INS_UP:
+            c.set_source_rgb(*kit.WALL); c.paint(); c.translate(0, -INS_UP[sh["id"]])
         h = sh["draw"](k) or {}
         LAST[0] = {n: tuple(v) for n, v in h.items()}
         return surf, []
@@ -584,11 +698,18 @@ def render(sh):
         tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
         h0 = _pass(Ctx(cairo.Context(tmp), 0), sh, None)
         cam = cf.face_cam([h0[n] for n in cam])
-    if sh["id"] in SHIFT:                                     # the content moved (frame px) / zoomed, off the signs
-        dx, dy, zm = SHIFT[sh["id"]]
+    shift = SHIFT_V4 if FIX_V4[0] and sh["id"] in SHIFT_V4 else SHIFT
+    if sh["id"] in shift:                                     # the content moved (frame px) / zoomed, off the signs
+        dx, dy, zm = shift[sh["id"]]
         z = cam[2] * zm
         cam = (cam[0] - dx / z, cam[1] - dy / z, z)
     _last_cam[0] = cam
+    if FIX_V4[0] and sh["id"] in DARK_V4:
+        sh = dict(sh, room=dict(sh["room"], phone="dark"))
+    if FIX_V4[0] and CAMKEY[0] is not None:                  # v4: a key frame's own camera (KEYS_V4)
+        cam = CAMKEY[0]; _last_cam[0] = cam
+    if FIX_V4[0] and sh["id"] in IN_HAND_V4:                 # one phone: in her hand, so not on the counter as well
+        sh = dict(sh, room=dict(sh["room"], phone=None))
     heads = _pass(k, sh, cam)
     fx, fy, z = cam
     if sh["fg"]:                                              # the near layer, in frame units; its heads back to world units
@@ -601,6 +722,7 @@ def render(sh):
                                                (b[3] - 480) / z + fy), clip=t["clip"]))
     f = dict(cam=cam, heads=heads, scene=dict(text=text), bubbles=[], shot=sh["id"])
     LAST[0] = uz.faces(f)
+    SIGNS_V4[:] = [t["bbox"] for t in c.texts if t["bbox"][3] - t["bbox"][1] >= 9]
     msgs = uz.check_signs(f) + uz.check_scale(f, sh["story"]) + covered(sh, cam, surf, c.texts)
     msgs = [m for m in msgs if (sh["id"], m.split(" at ")[0].split(" (")[0]) not in KNOWN]
     return surf, msgs
@@ -613,8 +735,9 @@ def covered(sh, cam, surf, texts):
     bare = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H)
     cb = TextRec(bare); kb = Ctx(cb, 0); cb.set_source_rgb(*kit.WALL); cb.paint()
     cb.save(); sbv.view(cb, *cam)
-    _floor_on(cb, sh["room"])
-    pss.room(kb, **dict(dict(phone=None), **sh["room"])); cb.restore()
+    room_ = ROOM_V4.get(sh["id"], sh["room"]) if FIX_V4[0] else sh["room"]
+    _floor_on(cb, room_)
+    pss.room(kb, **dict(dict(phone=None), **room_)); cb.restore()
     surf.flush(); bare.flush()
     A = np.ndarray((H, W, 4), np.uint8, surf.get_data()).astype(int)
     B = np.ndarray((H, W, 4), np.uint8, bare.get_data()).astype(int)
@@ -641,25 +764,67 @@ def _zones(c):
 
 
 def script_rows():
-    """script v7's shot rows: id -> (size, picture, line)."""
-    rows, scenes, cur = {}, [], None
-    for ln in open(SCRIPT):
-        if ln.startswith("## Scene"):
-            cur = ln[3:].strip(); scenes.append(cur)
-        m = re.match(r"\| (\d\.\d+[a-z]?) \| \d:\d\d\.\d \| ([\d.]+) \|(.*)", ln)
-        if m and cur:
-            cells = [x.strip() for x in m.group(3).split("|")]
-            rows[m.group(1)] = dict(scene=cur, script=float(m.group(2)), size=cells[0], picture=cells[1], action=cells[2],
-                                    line=cells[3] if cells[3] not in ("—", "") else "", fx=cells[4] if len(cells) > 4 else "")
-    return rows, scenes
+    """v4: the shot text lives in ps_text.py (lifted from script v7): id -> (scene, size, picture, action, line, fx)."""
+    import ps_text as tx
+    scenes = []
+    for sid in tx.ORDER:
+        if tx.SHOTS[sid]["scene"] not in scenes:
+            scenes.append(tx.SHOTS[sid]["scene"])
+    return {sid: dict(tx.SHOTS[sid]) for sid in tx.ORDER}, scenes
 
 
 def timing():
+    """v4: the scene file owns the timing: the recorded takes (ps_voices, timing v2) for the shots that had them, the
+    shot's own length for 1.2a/b and 2.1b (new since): -> {shot: length}."""
     rows, _ = script_rows()
-    tj = json.load(open(TIMING))
-    got = {r["shot"]: r["len"] for r in tj["shots"]}
-    got.setdefault("1.2a", got.get("1.2", 1.0) / 2); got.setdefault("1.2b", got.get("1.2", 1.0) / 2)
+    got = {r["shot"]: r["len"] for r in json.load(open(TIMING))["shots"]}
     return {sid: got.get(sid, rows[sid]["script"]) for sid in rows}
+
+
+def write_timing(out=os.path.join(OUT, "ps_timing_v3.json")):
+    """ps_timing_v3.json: every shot of the scene file with its start, length and its takes (where each line starts)."""
+    rows, _ = script_rows()
+    old = {r["shot"]: r for r in json.load(open(TIMING))["shots"]}
+    tm = timing()
+    shots, t = [], 0.0
+    for sid in rows:
+        o = old.get(sid, {})
+        shots.append(dict(shot=sid, scene=rows[sid]["scene"], start=round(t, 2), len=round(tm[sid], 2),
+                          takes=o.get("takes", []), take_at=o.get("take_at", []), line=rows[sid]["line"] or None))
+        t += tm[sid]
+    json.dump(dict(total=round(t, 2), source="ps_scenes.py v4 (takes: ps_voices takes v2)", shots=shots),
+              open(out, "w"), indent=1, ensure_ascii=False)
+    print("wrote", out, "%.2f s" % t)
+    return shots
+
+
+def write_script(out=os.path.join(OUT, "pick-a-side-script-v8.md")):
+    """The script, generated from the scene file and ps_text (never edited by hand)."""
+    import ps_text as tx
+    rows, scenes = script_rows()
+    shots = {r["shot"]: r for r in write_timing()}
+    total = sum(r["len"] for r in shots.values())
+    L = ["# Pick a Side: the script, v8 (GENERATED)", "",
+         "UptimeZ Inc. · episode 14 · **generated by `src/ps_scenes.py script` on 24 Nov: do not edit.** The words live in "
+         "`src/ps_text.py`, the staging and timing in `src/ps_scenes.py`; the takes in `src/ps_voices/takes/` (19 lines). "
+         "v1–v7 were written by hand and are kept. **%d shots, %.1f s.**" % (len(rows), total), ""]
+    for name in ("G0: the series check", "G1: protect list", "Line budget"):
+        L += ["## " + name, "", tx.SECTIONS[name], ""]
+    for sc in scenes:
+        ids = [sid for sid in rows if rows[sid]["scene"] == sc]
+        t0 = shots[ids[0]]["start"]; dur = sum(shots[i]["len"] for i in ids)
+        L += ["## %s · %d:%04.1f · %.1f s" % (sc, t0 // 60, t0 % 60, dur), "",
+              "| Shot | At | s | Size | Picture | Action → reaction | Line | Sound |", "|---|---|---|---|---|---|---|---|"]
+        for sid in ids:
+            r, sh = rows[sid], shots[sid]
+            L.append("| %s | %d:%04.1f | %.1f | %s | %s | %s | %s | %s |" % (sid, sh["start"] // 60, sh["start"] % 60, sh["len"],
+                     r["size"], r["picture"], r["action"], r["line"] or "—", r["fx"] or "—"))
+        L.append("")
+    for name in tx.SECTIONS:
+        if name not in ("G0: the series check", "G1: protect list", "Line budget"):
+            L += ["## " + name, "", tx.SECTIONS[name], ""]
+    open(out, "w").write("\n".join(L))
+    print("wrote", out)
 
 
 def layout_sheet(n, shots, rows, out):
@@ -669,7 +834,7 @@ def layout_sheet(n, shots, rows, out):
     s = cairo.ImageSurface(cairo.FORMAT_RGB24, SW, SH); c = cairo.Context(s)
     c.set_source_rgb(0.96, 0.95, 0.92); c.paint()
     c.select_font_face("Inter", 0, 1); c.set_font_size(22); c.set_source_rgb(*INK); c.move_to(30, 44)
-    c.show_text("PICK A SIDE · layout v3 · %s" % rows[shots[0]["id"]]["scene"])
+    c.show_text("PICK A SIDE · layout v4 · %s" % rows[shots[0]["id"]]["scene"])
     c.select_font_face("Inter", 0, 0); c.set_font_size(13); c.set_source_rgb(0.3, 0.3, 0.3); c.move_to(30, 70)
     c.show_text("generated by ps_scenes.py · each frame at 270 · red: the apps' zones · checks: uz_check scale + signs")
     fails = []
@@ -704,11 +869,11 @@ def main(out=OUT):
     rows, scenes = script_rows()
     missing = [r for r in rows if r not in {s["id"] for s in SHOTS}]
     if missing:
-        print("shots in script v7 with no staging:", missing); sys.exit(1)
+        print("shots in ps_text with no staging:", missing); sys.exit(1)
     fails = []
     for n in sorted({SCENE_OF(s["id"]) for s in SHOTS}):
         shots = [s for s in SHOTS if SCENE_OF(s["id"]) == n]
-        p = os.path.join(out, "ps_layout_s%d_v3.png" % n)
+        p = os.path.join(out, "ps_layout_s%d_v4.png" % n)
         fails += layout_sheet(n, shots, rows, p)
         print("wrote", p, flush=True)
     tm = timing()
@@ -738,19 +903,40 @@ def says(line):
 
 def board_frame(sh, line):
     import fs_animatic as an
+    if FIX_V4[0]:
+        import ps_checks as pc
+        pc.install_scene(sys.modules[__name__]); pc.begin()      # the story props get declared as they are drawn
+        _wrap_capture(); CAPTURE[0] = True; SIL.clear(); del BUBBLES_V4[:]
     surf, msgs = render(sh)
     fc = dict(LAST[0])
     c = cairo.Context(surf); k = Ctx(c, 0)
     taken = []
-    for who, txt in says(line):
+    lines_ = says(line)
+    if FIX_V4[0]:                                             # the people's bubbles first (beside the face); the robot's
+        lines_ = sorted(lines_, key=lambda w: w[0] == "robot")   # comes down onto its antenna wherever is left
+        if PART[0] is not None:                               # a split shot's key frame: one of its lines
+            lines_ = [says(line)[PART[0]]]
+    for who, txt in lines_:
         if who not in fc:
             msgs.append("BUBBLE %s: %s speaks but is not in the frame" % (sh["id"], who)); continue
         hx, hy, r = fc[who]
-        if who == "robot":
+        if who == "robot" and FIX_V4[0]:                    # v4: beside the visor at eye height, never down onto the dome
+            tail = (hx, hy, r * 0.95)
+        elif who == "robot":
             tail = (hx - r * 0.62, hy - r * 0.62, 2)
         else:
             tail = (hx, hy + r * 0.08, r * 0.72)
         others = [v for n, v in fc.items() if n != who]
+        if FIX_V4[0]:
+            box = bubble_v4(k, who, txt, fc, taken)
+            taken.append(box)
+            x0, y0, x1, y1 = box
+            if x0 < 18 or y0 < 96 or x1 > 522 or y1 > 720:
+                msgs.append("BUBBLE %s outside the safe area %s" % (sh["id"], tuple(round(v) for v in box)))
+            for n, (fx_, fy_, fr) in fc.items():
+                if x0 < fx_ + fr * 0.8 and x1 > fx_ - fr * 0.8 and y0 < fy_ + fr * 0.8 and y1 > fy_ - fr * 0.8:
+                    msgs.append("BUBBLE %s over %s's face" % (sh["id"], n))
+            continue
         box = an.speech(c, k, txt.upper() if who == "robot" else txt, (hx, hy, r), others, mono=(who == "robot"), size=26,
                         taken=tuple(taken), tail_head=tail, top_tip_at=None)
         taken.append(box)
@@ -761,6 +947,190 @@ def board_frame(sh, line):
             if x0 < fx_ + fr * 0.8 and x1 > fx_ - fr * 0.8 and y0 < fy_ + fr * 0.8 and y1 > fy_ - fr * 0.8:
                 msgs.append("BUBBLE %s over %s's face" % (sh["id"], n))
     return surf, msgs
+
+
+
+# --- v4 bubbles (Tomas 24 Nov: "bc_sb.bubble"): the approved One Star bubble, beside the face at mouth height, a short
+# tail onto the cheek's outline. bc_sb measures its own rigs; here each speaker's silhouette is captured as the rig draws
+# it in this frame (CAPTURE), and bc_sb.measure's result is built from it: the mouth row, the cheek edges walked out on
+# the silhouette, the crown, how far the hair runs. Opt-in (FIX_V4): board v2 and the layout sheets v3 draw as before.
+CAPTURE = [False]
+SIL = {}
+PADB = 140
+
+
+def _capture(name, f):
+    import numpy as np
+    def g(k, *a, **kw):
+        c = k.c
+        tg = c.get_target()
+        if not CAPTURE[0] or getattr(tg, "get_width", lambda: 0)() != W:
+            return f(k, *a, **kw)
+        c.push_group()
+        try:
+            r = f(k, *a, **kw)
+        finally:
+            pat = c.pop_group()
+        s_ = cairo.ImageSurface(cairo.FORMAT_ARGB32, W + 2 * PADB, H + 2 * PADB); t = cairo.Context(s_)
+        t.translate(PADB, PADB); t.transform(c.get_matrix()); t.set_source(pat); t.paint(); s_.flush()
+        a = np.ndarray((H + 2 * PADB, W + 2 * PADB, 4), np.uint8, s_.get_data())[..., 3] > 128
+        SIL[name] = SIL[name] | a if name in SIL else a
+        c.set_source(pat); c.paint()
+        return r
+    g.__name__ = getattr(f, "__name__", name)
+    return g
+
+
+def _wrap_capture():
+    g = globals()
+    if g.get("_captured"):
+        return
+    g["_captured"] = True
+    for n in ("don", "robot", "sofia", "pam", "mom"):
+        g[n] = _capture(n, g[n])
+    cps.cast_client = _capture("client", cps.cast_client)
+    import dh_cast as dc
+    dc.father = _capture("father", dc.father)
+
+
+def _meas(who, face):
+    """bc_sb.measure's dict for a speaker drawn in this frame, from its silhouette (frame px, PADB around)."""
+    import numpy as np
+    import bc_sb as bs
+    x, y, r = face
+    sil = SIL.get(who)
+    z = r / 30.0
+    if who == "robot":                                       # its visor: the "mouth" at the smile, the crown the antenna
+        my = y + 0.30 * r
+    else:
+        my = y + 0.48 * r
+    cx, cy = int(round(x)) + PADB, int(round(my)) + PADB
+    if sil is None or not sil[cy, cx]:
+        return dict(ok=True, z=z, m=(x, my), box=(x - 4, my - 3, x + 4, my + 3), eL=x - 0.9 * r, eR=x + 0.9 * r,
+                    top=(x, y - 1.05 * r), sL=x - 0.9 * r, sR=x + 0.9 * r, skin=np.zeros((H + 2 * PADB, W + 2 * PADB), bool))
+    edge, reach = {}, {}
+    for sd in (-1, 1):                                       # the face's outline: the silhouette's run out from the mouth,
+        ends = []                                            # bounded by the head's own width (hair and a raised hand
+        for row in range(cy - 2, cy + 3):                    # beside it are reach, not cheek)
+            xx = cx
+            while abs(xx + sd - cx) <= 1.05 * r and sil[row, xx + sd]:
+                xx += sd
+            ends.append(xx)
+        edge[sd] = sorted(ends)[2]
+        xx = edge[sd]
+        while 0 < xx + sd < W + 2 * PADB - 1 and sil[cy - 2:cy + 3, xx + sd].any():
+            xx += sd
+        reach[sd] = xx
+    band = int(round(0.35 * r))
+    cols = sil[:cy, cx - band:cx + band + 1]
+    rows = np.nonzero(cols.any(axis=1))[0]
+    ty = int(rows.min()) if len(rows) else cy
+    tx = float(np.nonzero(cols[ty])[0].mean()) + cx - band if len(rows) else cx
+    return dict(ok=True, z=z, m=(x, my), box=(x - 4, my - 3, x + 4, my + 3), eL=edge[-1] - PADB, eR=edge[1] - PADB,
+                top=(tx - PADB, ty - PADB), sL=reach[-1] - PADB, sR=reach[1] - PADB, skin=sil)
+
+
+def _lines(text, size, mono, maxw=300):
+    import bc_sb as bs
+    bs._REF.select_font_face(bs.MONO if mono else kit.FONT, 0, 1 if mono else 0); bs._REF.set_font_size(size)
+    out, cur = [], ""
+    for w_ in text.split():
+        t = (cur + " " + w_).strip()
+        if cur and bs._REF.text_extents(t).x_advance > maxw:
+            out.append(cur); cur = w_
+        else:
+            cur = t
+    return out + [cur]
+
+
+def bubble_v4(k, who, text, fc, taken):
+    """-> the box drawn. The robot's bubble comes down onto its antenna (bc_sb's "T", its canon); a person's sits beside
+    the face (R or L, whichever is clear of the other faces, the bubbles already placed and the apps' zones), else above."""
+    import bc_sb as bs
+    mono = who == "robot"
+    size = 24 if mono else 26
+    lines = _lines(text.upper() if mono else text, size, mono)
+    bs.HEADS[who] = dict(meas=_meas(who, fc[who]), m=fc[who][:2], R=fc[who][2], top=fc[who][1] - fc[who][2])
+    bs.SAFE = (20, 100, 470, 716)                            # ep 14: above the bottom quarter, off the buttons
+    forms = ["T"] if mono else (["R", "L", "T"] if fc[who][0] < 270 else ["L", "R", "T"])
+    hair = who in ("sofia", "mom")
+
+    def clash(b):
+        x0, y0, x1, y1 = b
+        WHY[0] = ""
+        if x0 < 18 or y0 < 96 or x1 > 522 or y1 > 720:
+            WHY[0] = "safe"; return True
+        for n, (fx_, fy_, fr) in fc.items():
+            if x0 < fx_ + fr * 0.8 and x1 > fx_ - fr * 0.8 and y0 < fy_ + fr * 0.8 and y1 > fy_ - fr * 0.8:
+                WHY[0] = "face " + n; return True
+        if any(x0 < t[2] and x1 > t[0] and y0 < t[3] and y1 > t[1] for t in taken):
+            WHY[0] = "bubble"; return True
+        import ps_checks as pc
+        for name, a0, b0, a1, b1 in pc.PROTECT:              # never over a story prop (the phones, the CV, the card, the roll)
+            if x0 < a1 - 3 and x1 > a0 + 3 and y0 < b1 - 3 and y1 > b0 + 3:
+                WHY[0] = "prop " + name; return True
+        for t in SIGNS_V4:                                   # never over part of a sign (a sign wholly under it is out)
+            if x0 < t[2] - 4 and x1 > t[0] + 4 and y0 < t[3] - 3 and y1 > t[1] + 3 and not (
+                    x0 <= t[0] - 2 and x1 >= t[2] + 2 and y0 <= t[1] - 2 and y1 >= t[3] + 2):
+                WHY[0] = "sign %s" % (tuple(round(v) for v in t),); return True
+        return False
+
+    ms = bs.HEADS[who]["meas"]
+    my = ms["m"][1]
+
+    def room_at(fm, dy_, nl=2):
+        """the wall beside the face for a box of nl lines centred dy_ below the mouth: to the frame's safe edge or the
+        next face whose rows it shares."""
+        if fm == "T":
+            return 300
+        h2 = (nl * size * 1.12 + 26) / 2
+        near = [(fx_, fr) for n, (fx_, fy_, fr) in fc.items()
+                if n != who and fy_ - fr * 0.8 < my + dy_ + h2 and fy_ + fr * 0.8 > my + dy_ - h2]
+        if fm == "R":
+            return min([bs.SAFE[2]] + [fx_ - fr * 0.8 - 6 for fx_, fr in near if fx_ > fc[who][0]]) - \
+                (ms["sR"] if hair else ms["eR"]) - 20 - 44
+        return (ms["sL"] if hair else ms["eL"]) - 20 - 44 - \
+            max([bs.SAFE[0]] + [fx_ + fr * 0.8 + 6 for fx_, fr in near if fx_ < fc[who][0]])
+    pick, pl = forms[-1], lines
+    bs.BUBBLES = False
+    pdy = pdx = 0
+    for fm, dy_ in [(f_, d_) for f_ in forms for d_ in ((0, -24, 24, -48, 48, 72) if f_ != "T" else (0,))]:
+        ln_ = _lines(text.upper() if mono else text, size, mono, max(96, min(300, room_at(fm, dy_))))
+        for _ in range(2):                                   # the wall for that many lines (a taller box meets more faces)
+            ln_ = _lines(text.upper() if mono else text, size, mono, max(96, min(300, room_at(fm, dy_, len(ln_)))))
+        if len(ln_) > 4:
+            continue
+        bs.bubble(k, ln_, who, form=fm, size=size, mono=mono, hair=hair and fm != "T", dy=dy_)
+        b = bs.QA["bubbles"].pop()
+        cl = clash(b["box"])
+        ddx = 0
+        for _ in range(3):                                   # a prop in the hand beside the face: step past it
+            if not (cl and WHY[0].startswith("prop") and fm in ("R", "L")):
+                break
+            import ps_checks as pc
+            pb = [p_ for p_ in pc.PROTECT if p_[0] == WHY[0][5:]][0]
+            ddx += (pb[3] + 7 - b["box"][0]) if fm == "R" else (pb[1] - 7 - b["box"][2])
+            if abs(ddx) > 80:
+                break
+            ln_ = _lines(text.upper() if mono else text, size, mono, max(96, min(300, room_at(fm, dy_, len(ln_)) - abs(ddx))))
+            bs.bubble(k, ln_, who, form=fm, size=size, mono=mono, hair=hair, dy=dy_, dx=ddx)
+            b = bs.QA["bubbles"].pop()
+            cl = clash(b["box"])
+        if not cl and ddx:
+            pick, pl, pdy, pdx = fm, ln_, dy_, ddx; break
+        if DEBUG_V4[0]:
+            print("   ", who, fm, dy_, len(ln_), tuple(round(v) for v in b["box"]), WHY[0])
+        if not cl:
+            pick, pl, pdy, pdx = fm, ln_, dy_, 0; break
+    bs.BUBBLES = True
+    bs.bubble(k, pl, who, form=pick, size=size, mono=mono, hair=hair and pick != "T", dy=pdy, dx=pdx)
+    b = bs.QA["bubbles"][-1]
+    BUBBLES_V4.append(dict(who=who, form=pick, tip=b["tip"], box=b["box"], text=text, face=fc[who]))
+    return b["box"]
+
+
+BUBBLES_V4 = []
+SIGNS_V4 = []                                               # the set's signs drawn in this frame (frame px), kept clear
 
 
 def app_overlay(c):
@@ -780,7 +1150,7 @@ def app_overlay(c):
     c.restore()
 
 
-def board(out=OUT, frames_dir="/tmp/ps_board_v2"):
+def board(out=OUT, frames_dir="/tmp/ps_board_v3"):
     """every shot's key frame at 540 in frames_dir (bubbles, no overlay: for the cold viewers) and two sheets at 270 with
     the apps' overlay, time, shot and line."""
     rows, _ = script_rows()
@@ -789,12 +1159,16 @@ def board(out=OUT, frames_dir="/tmp/ps_board_v2"):
     for f_ in os.listdir(frames_dir):
         os.remove(os.path.join(frames_dir, f_))
     frames, fails, t = [], [], 0.0
-    for i, sh in enumerate(SHOTS):
+    n = 0
+    for sh in SHOTS:
         r = rows[sh["id"]]
-        surf, msgs = board_frame(sh, r["line"])
-        p = os.path.join(frames_dir, "%02d.png" % (i + 1)); surf.write_to_png(p)
-        frames.append((sh["id"], t, r["line"], p)); t += tm[sh["id"]]
-        fails += [(sh["id"], m) for m in msgs]
+        keys = board_keys(sh, r["line"])
+        for j, (label, surf, msgs) in enumerate(keys):
+            n += 1
+            p = os.path.join(frames_dir, "%02d.png" % n); surf.write_to_png(p)
+            frames.append((label, t + j * tm[sh["id"]] / len(keys), r["line"], p))
+            fails += [(label, m) for m in msgs]
+        t += tm[sh["id"]]
     half = (len(frames) + 1) // 2
     for j, part in enumerate((frames[:half], frames[half:])):
         cols, tw, th = 5, 270, 480
@@ -803,7 +1177,7 @@ def board(out=OUT, frames_dir="/tmp/ps_board_v2"):
         s = cairo.ImageSurface(cairo.FORMAT_RGB24, SW, SH); c = cairo.Context(s)
         c.set_source_rgb(0.12, 0.12, 0.14); c.paint()
         c.select_font_face("Inter", 0, 1); c.set_font_size(22); c.set_source_rgb(1, 1, 1); c.move_to(30, 44)
-        c.show_text("PICK A SIDE · board v2 · %d of 2 · every shot's key frame at 270, under the apps' overlay" % (j + 1))
+        c.show_text("PICK A SIDE · board v3 · %d of 2 · every shot's key frame at 270, under the apps' overlay" % (j + 1))
         for i, (sid, t0, line, p) in enumerate(part):
             x = 30 + (i % cols) * (tw + 24); y = 70 + (i // cols) * (th + 70)
             fr = cairo.ImageSurface.create_from_png(p)
@@ -814,13 +1188,47 @@ def board(out=OUT, frames_dir="/tmp/ps_board_v2"):
             if line:
                 c.select_font_face("Inter", 0, 0); c.set_font_size(11); c.set_source_rgb(0.75, 0.82, 1.0)
                 c.move_to(x, y + th + 38); c.show_text(line.replace("**", "")[:52])
-        o = os.path.join(out, "ps_board_v2_%d.png" % (j + 1)); s.write_to_png(o); print("wrote", o)
+        o = os.path.join(out, "ps_board_v3_%d.png" % (j + 1)); s.write_to_png(o); print("wrote", o)
     for sid, m in fails:
         print("FAIL", sid, m)
     return fails
 
 
+def check_all(frames_dir=None):
+    """v4 (Tomas 24 Nov: all the series' checks): every shot rendered with ps_checks wired in (limbs, tails, strays, the
+    drawing map, Don the tallest, story props out of the dead zones), on its board frame (bubbles drawn). Fails the build."""
+    import ps_checks as pc
+    if not pc.validate():
+        print("a check missed its planted fault"); return ["validate"]
+    pc.install_scene(sys.modules[__name__])
+    FIX_V4[0] = True
+    rows, _ = script_rows()
+    fails = [("map", m) for m in pc.check_map(SHOTS, EXPECT)]
+    _CHK[0] = lambda: pc.frame_checks(sys.modules[__name__], LAST[0])
+    orig = globals()["board_frame"]
+    def bf(sh, line):
+        pc.begin(); return orig(sh, line)
+    globals()["board_frame"] = bf
+    try:
+        for sh in SHOTS:
+            for label, surf, msgs in board_keys(sh, rows[sh["id"]]["line"]):
+                if frames_dir:
+                    os.makedirs(frames_dir, exist_ok=True); surf.write_to_png(os.path.join(frames_dir, label + ".png"))
+                msgs = [m for m in msgs if (label, m.split(":")[0]) not in KNOWN_V4]
+                fails += [(label, m) for m in msgs]
+                print("%-5s %s" % (label, "ok" if not msgs else "; ".join(msgs)), flush=True)
+    finally:
+        globals()["board_frame"] = orig; _CHK[0] = None
+    print("%d shots, %d faults" % (len(SHOTS), len(fails)))
+    return fails
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "check":
+        sys.exit(1 if check_all("/tmp/ps_check") else 0)
+    if len(sys.argv) > 1 and sys.argv[1] == "script":
+        write_script(); sys.exit(0)
     if len(sys.argv) > 1 and sys.argv[1] == "board":
+        FIX_V4[0] = True                                      # board v3: with the fixes the checks found
         sys.exit(1 if board() else 0)
     main(sys.argv[1] if len(sys.argv) > 1 else OUT)

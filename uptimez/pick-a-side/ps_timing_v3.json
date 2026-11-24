@@ -1,0 +1,418 @@
+{
+ "total": 68.81,
+ "source": "ps_scenes.py v4 (takes: ps_voices takes v2)",
+ "shots": [
+  {
+   "shot": "1.1",
+   "scene": "Scene 1 · The Blind",
+   "start": 0.0,
+   "len": 1.8,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "1.2a",
+   "scene": "Scene 1 · The Blind",
+   "start": 1.8,
+   "len": 0.5,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "1.2b",
+   "scene": "Scene 1 · The Blind",
+   "start": 2.3,
+   "len": 0.5,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "1.3",
+   "scene": "Scene 1 · The Blind",
+   "start": 2.8,
+   "len": 2.61,
+   "takes": [
+    "1.3"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "DON (whisper): \"This meeting does not exist.\""
+  },
+  {
+   "shot": "1.4",
+   "scene": "Scene 1 · The Blind",
+   "start": 5.41,
+   "len": 2.65,
+   "takes": [
+    "1.4"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "DON: \"My father has a meeting. Without me.\""
+  },
+  {
+   "shot": "2.1",
+   "scene": "Scene 2 · The Line",
+   "start": 8.06,
+   "len": 1.6,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "2.1b",
+   "scene": "Scene 2 · The Line",
+   "start": 9.66,
+   "len": 0.8,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "2.2",
+   "scene": "Scene 2 · The Line",
+   "start": 10.46,
+   "len": 1.4,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "2.3",
+   "scene": "Scene 2 · The Line",
+   "start": 11.86,
+   "len": 1.83,
+   "takes": [
+    "2.3"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "DON: \"Pick a side.\""
+  },
+  {
+   "shot": "2.4",
+   "scene": "Scene 2 · The Line",
+   "start": 13.69,
+   "len": 1.4,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "2.5",
+   "scene": "Scene 2 · The Line",
+   "start": 15.09,
+   "len": 1.88,
+   "takes": [
+    "2.5"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "DON: \"Pam. My general.\""
+  },
+  {
+   "shot": "2.6",
+   "scene": "Scene 2 · The Line",
+   "start": 16.97,
+   "len": 2.2,
+   "takes": [
+    "2.6"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "MOM: \"I don't pick sides, Donnie.\""
+  },
+  {
+   "shot": "2.7",
+   "scene": "Scene 2 · The Line",
+   "start": 19.17,
+   "len": 1.0,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "2.8",
+   "scene": "Scene 2 · The Line",
+   "start": 20.17,
+   "len": 1.0,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "2.9",
+   "scene": "Scene 2 · The Line",
+   "start": 21.17,
+   "len": 1.96,
+   "takes": [
+    "2.9"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "ROBOT: \"Border breach. One heel.\""
+  },
+  {
+   "shot": "2.9b",
+   "scene": "Scene 2 · The Line",
+   "start": 23.13,
+   "len": 1.49,
+   "takes": [
+    "2.9b"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "SOFÍA: \"Diplomatic heel.\""
+  },
+  {
+   "shot": "2.10",
+   "scene": "Scene 2 · The Line",
+   "start": 24.62,
+   "len": 2.6,
+   "takes": [
+    "2.10a",
+    "2.10b"
+   ],
+   "take_at": [
+    0.15,
+    1.04
+   ],
+   "line": "DON: \"And you?\" · ROBOT: \"Both.\""
+  },
+  {
+   "shot": "2.11",
+   "scene": "Scene 2 · The Line",
+   "start": 27.22,
+   "len": 3.6,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "2.12",
+   "scene": "Scene 2 · The Line",
+   "start": 30.82,
+   "len": 1.1,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "3.1",
+   "scene": "Scene 3 · The Selfie",
+   "start": 31.92,
+   "len": 3.01,
+   "takes": [
+    "3.1a",
+    "3.1b"
+   ],
+   "take_at": [
+    0.15,
+    1.52
+   ],
+   "line": "ROBOT: \"Smile. Recording.\" · MOM: \"Chin up, Donnie.\""
+  },
+  {
+   "shot": "3.2",
+   "scene": "Scene 3 · The Selfie",
+   "start": 34.93,
+   "len": 2.0,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "3.3",
+   "scene": "Scene 3 · The Selfie",
+   "start": 36.93,
+   "len": 2.59,
+   "takes": [
+    "3.3"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "ROBOT: \"Public post? Human approval required.\""
+  },
+  {
+   "shot": "3.4",
+   "scene": "Scene 3 · The Selfie",
+   "start": 39.52,
+   "len": 1.22,
+   "takes": [
+    "3.4"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "DON: \"Approved.\""
+  },
+  {
+   "shot": "3.5",
+   "scene": "Scene 3 · The Selfie",
+   "start": 40.74,
+   "len": 1.0,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "3.6",
+   "scene": "Scene 3 · The Selfie",
+   "start": 41.74,
+   "len": 1.6,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "3.7",
+   "scene": "Scene 3 · The Selfie",
+   "start": 43.34,
+   "len": 2.4,
+   "takes": [
+    "3.7"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "PAM (under her breath, into her cup): \"Some pose. Others notice.\""
+  },
+  {
+   "shot": "4.1",
+   "scene": "Scene 4 · The Booth",
+   "start": 45.74,
+   "len": 0.6,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "4.2",
+   "scene": "Scene 4 · The Booth",
+   "start": 46.34,
+   "len": 2.2,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "4.3",
+   "scene": "Scene 4 · The Booth",
+   "start": 48.54,
+   "len": 2.93,
+   "takes": [
+    "4.3a",
+    "4.3b"
+   ],
+   "take_at": [
+    0.15,
+    1.13
+   ],
+   "line": "CLIENT: \"That one.\" · FATHER: \"Invite her.\""
+  },
+  {
+   "shot": "5.1",
+   "scene": "Scene 5 · The Door",
+   "start": 51.47,
+   "len": 1.4,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "5.2",
+   "scene": "Scene 5 · The Door",
+   "start": 52.87,
+   "len": 1.6,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "5.3",
+   "scene": "Scene 5 · The Door",
+   "start": 54.47,
+   "len": 2.4,
+   "takes": [
+    "5.3"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "ROBOT: \"Welcome.\""
+  },
+  {
+   "shot": "5.4",
+   "scene": "Scene 5 · The Door",
+   "start": 56.87,
+   "len": 2.8,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "5.5",
+   "scene": "Scene 5 · The Door",
+   "start": 59.67,
+   "len": 1.2,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "5.6",
+   "scene": "Scene 5 · The Door",
+   "start": 60.87,
+   "len": 2.54,
+   "takes": [
+    "5.6"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "PAM (under her breath): \"Some draw lines. Others cross them.\""
+  },
+  {
+   "shot": "5.7",
+   "scene": "Scene 5 · The Door",
+   "start": 63.41,
+   "len": 1.4,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  },
+  {
+   "shot": "6.1",
+   "scene": "Scene 6 · Everyone",
+   "start": 64.81,
+   "len": 3.0,
+   "takes": [
+    "6.1"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "line": "DON: \"Everyone's with me.\""
+  },
+  {
+   "shot": "6.2",
+   "scene": "Scene 6 · Everyone",
+   "start": 67.81,
+   "len": 1.0,
+   "takes": [],
+   "take_at": [],
+   "line": null
+  }
+ ]
+}

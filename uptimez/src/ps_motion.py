@@ -22,6 +22,7 @@ import cairo
 import ps_scenes as ps
 import ps_set as pss
 import don_ps as dp
+import pm_ps as pm
 import acts_ob as ac
 from kit import Ctx, INK
 
@@ -183,12 +184,146 @@ def shot_C(t):
     return ps.S("5.4", [ "don"], ps.ROOM5, cast)
 
 
-TESTS = {"A": (shot_A, 1.8), "B": (shot_B, 4.0), "C": (shot_C, 1.7)}
+# --- D: 2.1, the tape rips toward the camera through the group (Tomas 24 Nov) -------------------------------------------
+def tape_part(c, d):
+    """the tape from the back wall to depth d (world units below the floor line), the set's own geometry."""
+    import ps_set as pss_
+    x0, x1 = pss_.LINE_X, pss_.LINE_X + 34
+    L = lambda y: (x0 - 8.5) + (y - F) * ((x1 - 20) - (x0 - 8.5)) / (960 - F)
+    R_ = lambda y: (x0 + 8.5) + (y - F) * ((x1 + 20) - (x0 + 8.5)) / (960 - F)
+    y = F + d
+    c.new_path(); c.move_to(L(F), F); c.line_to(R_(F), F); c.line_to(R_(y), y); c.line_to(L(y), y); c.close_path()
+    c.set_source_rgb(*pss_.TAPE); c.fill_preserve(); c.set_source_rgb(0.30, 0.22, 0.02); c.set_line_width(2.4); c.stroke()
+
+
+DD = 300                                                     # v1b: Don this far forward, so the floor between shows the rip
+
+
+def d_state(t):
+    """-> the tape's front (depth), Don's yank (0 arm up .. 1 down), and each one's hop (0..1) and step aside (0..1)."""
+    yank = ease((t - 0.15) / 0.20)
+    front = DD * ease((t - 0.25) / 0.45) if t > 0.25 else 0.0
+    def hop(depth, t0=None):
+        tc = 0.25 + 0.45 * 0.45 * depth / 60 if t0 is None else t0        # when the front reaches their feet
+        u = (t - tc) / 0.30
+        return (4 * u * (1 - u) if 0 < u < 1 else 0.0), ease(u)
+    return front, yank, hop(40), hop(34), hop(44)
+
+
+def shot_D(t):
+    front, yank, (ph, pa), (mh, ma), (sh_, sa) = d_state(t)
+    def cast(k):
+        heads = {}
+        c = k.c
+        tape_part(c, front)
+        _, heads["pam"] = ps.pam(k, (520 - 46 * pa, F + 40 - 34 * ph), "stand", "shock" if ph > 0 or pa > 0.5 else "neutral",
+                                 (1, 0.4))
+        _, heads["mom"] = ps.mom(k, "trio_mom", "folded", "unimpressed", (0, 0.6) if front > 30 else (-1, 0))   # stays on it
+        _, heads["sofia"] = ps.sofia(k, (662 + 64 * sa, F + 44 - 46 * sh_), "hip_out", "smile" if sa < 0.2 else "smile",
+                                     (-1, 0.4))
+        x, f = ps.tape_x(DD) - 96, F + DD                     # v1b: beside the tape, not over it: the floor reads
+        pose = (-8, 0, lerp(110, 40, yank), lerp(20, 60, yank))
+        o, heads["don"] = ps.don(k, (x, f), pose, "confused" if yank < 1 else "grin", (1, -0.4), chin=1)
+        hx, hy = o["hands"][1]
+        if front > 2:                                        # the strip from the roll down to the tape's front
+            fx_, fy_ = ps.tape_x(front), F + front
+            for col, w in ((INK, 11), (pss.TAPE, 8)):
+                c.set_source_rgb(*col); c.set_line_width(w); c.new_path(); c.move_to(hx, hy)
+                c.curve_to(hx + 4, hy + 40, fx_ - 4, fy_ - 20, fx_, fy_); c.stroke()
+            if 0.25 < t < 0.75:                              # it rips: speed lines behind the front, along the tape
+                c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
+                for dx in (-30, 30):
+                    c.move_to(ps.tape_x(front - 50) + dx, F + front - 50); c.line_to(fx_ + dx * 1.2, fy_ - 8); c.stroke()
+        dp.tape_roll(k, hx, hy, ps.SC["don"] * 0.9, ang=0.2 + 0.6 * (1 - yank))
+        return heads
+    return ps.S("2.1", (520, 820, 1.0), dict(blind="torn", tape=False, mark=False), cast)
+
+
+# --- E: 3.1 -> 3.2, the selfie: the arm telescopes up, Don swings into his pose, FLASH, the photo fills the screen ------
+E_CAM = {}
+
+
+def shot_E(t):
+    if t < 0.80:
+        sel = ease(t / 0.35)
+        u = ease((t - 0.20) / 0.30)
+        st, th = dp.POSES["stand"], dp.POSES["thumbs"]
+        pose = "thumbs" if u >= 1 else tuple(lerp(p_, q_, u) for p_, q_ in zip(st, th))
+        def cast(k):
+            heads = {}
+            _, heads["mom"] = ps.mom(k, "mom_tape", "folded", "unimpressed", (-1, 0))
+            _, heads["don"] = ps.don(k, (ps.tape_x(140) - 190, F + 140), pose, "grin" if u > 0.5 else "neutral",
+                                     (0, -0.3), chin=1 if u > 0.5 else 0)
+            _, heads["robot"] = ps.robot(k, "rob_tape", selfie=max(sel, 0.01), arms=((-95, 0), (160, 0)))
+            return heads
+        if "cam" not in E_CAM:                              # the board's own 3.1 camera (framed on the arm fully up)
+            ps.render([x for x in ps.SHOTS if x["id"] == "3.1"][0]); E_CAM["cam"] = ps._last_cam[0]
+        return ps.S("3.1m", E_CAM["cam"], ps.ROOM3, cast)        # (not "3.1": render would shift it again)
+    if t < 0.87:                                             # the FLASH: one white drawing
+        def white(k):
+            k.c.set_source_rgb(1, 1, 1); k.c.paint()
+        return ps.S("3.2f", "screen", draw=white)
+    a = 0.6 * (1 - ease((t - 0.87) / 0.4))
+    def photo(k):
+        ps.ins_photo(k, flash=False)
+        if a > 0.01:
+            k.c.set_source_rgba(1, 1, 1, a); k.c.paint()
+    return ps.S("3.2", "screen", draw=photo)
+
+
+# --- F: 5.6, Pam frozen on the stool in front; beyond her Sofía steps across the tape ----------------------------------
+def shot_F(t):
+    u = ease((t - 0.5) / 1.1)                                # 0.5-1.6 s: the walk across
+    x0, x1 = ps.tape_x(60) - 70, ps.tape_x(60) + 50         # v1b: she stops just past the line, still in frame
+    step = int(t * 5) % 2 if 0.5 < t < 1.6 else 1           # a step every 0.2 s
+    def cast(k):
+        heads = {}
+        _, heads["sofia"] = ps.sofia(k, (lerp(x0, x1, u), F + 60), "walk" if step == 0 else "stand", "smile",
+                                     (1, -0.1))
+        return heads
+    return ps.S("5.6", (ps.tape_x(60) - 90 + 20, F - 150, 1.6), ps.ROOM5, cast, fg=ps.fg_56,   # v1b: 85 px left, room
+                story=["pam", "sofia"])                                                       # past the line
+
+
+# --- G: 6.1, Don sincere in front; behind him Pam reaches across the line to her phone; nobody looks at him -------------
+G_AT = {}
+
+
+def shot_G(t):
+    r = ease((t - 0.6) / 0.8)
+    st, rc = pm.P_POSES["stand"], pm.P_POSES["reach"]
+    def cast(k):
+        heads = {}
+        _, heads["mom"] = ps.mom(k, "mom_tape", "folded", "stern", (1, -0.6))
+        o, heads["sofia"] = ps.sofia(k, (640, F + 40), "chest", "smile", (0.2, 0.6))
+        hx, hy = o["hands"][0]
+        ps.sp.cv_coo(k, hx + 4, hy + 40, 0.8)                # v2: lower, off her face (2 of 2 saw her face covered)
+        pose = "reach" if r >= 1 else tuple(lerp(p_, q_, r) for p_, q_ in zip(st, rc))
+        o, heads["pam"] = ps.pam(k, (ps.tape_x(55) - 40, F + 55), pose, "avert", (1, 0.6), mug=False)
+        if "phone" not in G_AT:                              # where her full reach ends (as the board draws it)
+            tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
+            oo = pm.pam(Ctx(cairo.Context(tmp), 0), ps.tape_x(55) - 40, F + 55, ps.SC["pam"], "reach", "avert", (1, 0.6), mug=False)
+            G_AT["phone"] = (oo["hands"][1][0] - 4, oo["hands"][1][1] - 10)
+        pss.phone_close(k, *G_AT["phone"], 0.30)              # v3: standing, its lit screen to us (v2: "a blue glow", 2 of 2)       # the phone stays put; her hand comes to it
+        return heads
+    def fg(k):
+        face = "smug" if t < 1.6 else "grin"
+        o = dp.don(k, 170, 1150, 0.60 * 2.5, "vest", face, (0, 0), chin=1)
+        return {"don": (o["head"][0], o["head"][1], ps.R["don"] * 0.60 * 2.5)}
+    return ps.S("6.1", (580, F - 170, 1.30), ps.ROOM5, cast, fg=fg, story=["don", "sofia"])   # the board's camera (v4 shift)
+
+
+TESTS = {"A": (shot_A, 1.8), "B": (shot_B, 4.0), "C": (shot_C, 1.7), "D": (shot_D, 1.6), "E": (shot_E, 2.0),
+         "F": (shot_F, 2.4), "G": (shot_G, 3.0)}
 CAM_OF = {}
+FAULTS = {}
+VER = {"D": 2, "E": 1, "F": 1, "G": 3}                       # v4 (24 Nov): the new tests start at v1; A-C stay v3
 
 
 def render_test(name):
     fn, dur = TESTS[name]
+    ps.FIX_V4[0] = name in VER                               # the new tests (D-G) are staged as board v3; A-C as before
+    ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = name in VER   # A-C were drawn before the v4 set fixes (md5)
     d = "/tmp/ps_motion_%s" % name
     os.makedirs(d, exist_ok=True)
     for f_ in os.listdir(d):
@@ -204,14 +339,23 @@ def render_test(name):
                 ps.render(sh)
                 cam = ps._last_cam[0]
             sh = dict(sh, cam=cam)
-        surf, _ = ps.render(sh)
+        if name in VER:                                      # v4: the series' checks on every drawing of the new tests
+            import ps_checks as pc
+            pc.install_scene(ps); pc.begin()
+            surf, msgs = ps.render(sh)
+            msgs = [m for m in msgs if not m.startswith("SIGN partly covered: 'SHRED'")]   # SHRED_OK: passing in front of it
+            msgs += pc.frame_checks(ps, ps.LAST[0])
+            for m in msgs:
+                FAULTS.setdefault(name, {}).setdefault(m.split(" at ")[0].split(" (")[0], []).append(i)
+        else:
+            surf, _ = ps.render(sh)
         p = os.path.join(d, "%03d.png" % i); surf.write_to_png(p); frames.append((t, p))
     lst = os.path.join(d, "list.txt")
     with open(lst, "w") as f:
         for t, p in frames:
             f.write("file '%s'\nduration %.4f\n" % (p, 1.0 / DRAW))
         f.write("file '%s'\n" % frames[-1][1])
-    mp4 = os.path.join(OUT, "ps_motion_%s_v3.mp4" % name)
+    mp4 = os.path.join(OUT, "ps_motion_%s_v%d.mp4" % (name, VER.get(name, 3)))
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-vf",
                            "fps=%d,format=yuv420p" % FPS, "-c:v", "libx264", "-crf", "20", "-preset", "veryfast", mp4])
     strip(name, frames, dur)
@@ -231,10 +375,12 @@ def strip(name, frames, dur):
         c.save(); c.translate(x, y); c.scale(tw / 540, tw / 540); c.set_source_surface(im, 0, 0); c.paint(); c.restore()
         c.set_source_rgb(1, 1, 1); c.select_font_face("Inter", 0, 1); c.set_font_size(13)
         c.move_to(x, y + th + 18); c.show_text("%d   %.2f s" % (j + 1, j / 8))
-    o = os.path.join(OUT, "ps_motion_%s_strip_v3.png" % name)
+    o = os.path.join(OUT, "ps_motion_%s_strip_v%d.png" % (name, VER.get(name, 3)))
     s.write_to_png(o)
 
 
 if __name__ == "__main__":
-    for n in (sys.argv[1:] or ["A", "B", "C"]):
+    for n in (sys.argv[1:] or ["A", "B", "C"]):              # v4: D (2.1), E (3.1-3.2), F (5.6), G (6.1) by name
         render_test(n)
+        if n in VER:
+            print(n, "checks:", "pass" if not FAULTS.get(n) else {m: len(v) for m, v in FAULTS[n].items()})

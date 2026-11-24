@@ -6,6 +6,6 @@ cd "$(dirname "$0")"
 python3 film.py final                       # exits 1 if any text box leaves x 60-960, y 375-1600
 python3 audio.py && ./master.sh mix.wav fin.wav
 ffmpeg -y -v error -i video.mp4 -i fin.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -movflags +faststart just_one_line.mp4
-python3 -c "import film as F; F.draw(F.START['H'] + 45).write_to_png('cover.png')"
+python3 -c "import film as F; F.draw(F.START['H'] + 58).write_to_png('cover.png')"
 rm -f video.mp4 fin.wav mix.wav boxes.json
 python3 ../../qa.py just_one_line.mp4 505 lines.json

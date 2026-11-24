@@ -884,7 +884,18 @@ Measured from the stems of v29: music on for 12 s of 64.5; the office (14.7 s) h
 211. **A face in a picture is not a person.** The wall portrait drew the Client's rig, so the proportion gate saw a Client 11 % too big in shots he isn't in. Keep the portrait's head out of the people log.
 212. **Room reverb on dialogue reads as "from a well".** The early reflections and tail added in One Star's v4 mix made Tomas wince; v9's voices are dry (`cs_film.WET = 0`) with the room tone kept. A voice effect gets an A/B listen from Tomas before it ships.
 
-## 213. An arm needs its owner in the frame; a gag needs a shape, not only a state change (The Offer v31, 24 Nov)
+## UptimeZ: Pick a Side, the series' checks and board v3 (24 Nov)
+
+213. **A new check finds old faults: run it on the approved board too.** The tail-length rule (10–20 px past the box) flagged 11 frames of the approved board v2 (90–270 px tails from `fs_animatic.speech`). Approved is not the same as checked; the fix went into a new version (board v3, `bc_sb.bubble`), not over v2.
+214. **Count arms per shoulder, on the frame's own surface.** Counting `kit.arm` calls gave Pam 8 arms: the camera's framing pass (a 4×4 scratch surface) and her late hand redraw call it again. One arm = one shoulder point in device units, drawn on a 540-wide surface (`ps_checks.check_limbs`).
+215. **Reuse a measured bubble by feeding it a measurement.** `bc_sb.bubble` measures its own rigs; for other rigs, capture each speaker's silhouette as it is drawn (push_group, alpha) and build `measure()`'s dict from it (mouth row, cheek edges walked on the silhouette, crown, hair reach). Wrap the text to the wall beside the face, up to the next face whose rows the box shares.
+216. **A bubble's clash list includes the signs and the story props.** Without them the bubble hid the robot's OWNER card (3.1) and the phone on the booth table (4.3). A sign wholly under a bubble is out of frame; part of one is a misread.
+217. **Two lines said in turn, or a camera move, get one key frame each on the board.** When both speakers' faces fill the frame (the booth, 4.3), the board shows 4.3a and 4.3b; the animation shows the bubbles in turn anyway.
+218. **A pinned file must be pinned before the edit.** `ps_scenes_v3.py` was copied after the v4 flags went in, so it rebuilt the approved sheets differently. Pin from git (`git show HEAD:path > path_vN.py`) and check md5 right away.
+219. **A motion test's shot id must not be a board shot's id unless it wants that shot's SHIFT.** The selfie test reused "3.1" with the board's camera already shifted, and render() shifted it again (signs cut).
+220. **Strips at 216 px can't carry small props.** Two viewers read Pam's lit phone on the counter as "a purple cord" and "a blue glow"; at 216 px Mom reads as "a man in teal". Judge background props at 540 too, and size a story prop for the strip.
+
+## 221. An arm needs its owner in the frame; a gag needs a shape, not only a state change (The Offer v31, 24 Nov)
 
 The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mentions, though v29 had made them short and thick; the one that passed (Father's thumb on DECLINED) has the whole person in the shot. The lamp gag was 0 of 3, and all three called the lamp "a pole, a staff, a rifle".
 
@@ -895,7 +906,7 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - A mute test at 4 fps cannot show a 0.05 s flicker or a 0.1 s fall: add the 8-10 fps strip for any beat under 0.5 s, before judging it a FAIL.
 - A shot's length is its take plus the 0.15 s lead (2.8b 2.2 s, 3.2 2.05 s); the rest is a drag.
 
-## 214. UptimeZ ep. 13 *The Offer* v32 (24 Nov): inserts without arms, a gag that is a reaction, a joke that is cut
+## 222. UptimeZ ep. 13 *The Offer* v32 (24 Nov): inserts without arms, a gag that is a reaction, a joke that is cut
 
 - Arms in inserts failed 3 of 3 at every length ("a pole", "floating") in v27–v31. v32: **hand + wrist stub only** (`insert_cuff`), the owner is in the frame by his hand alone. The zone rule (no burnt row below y 720) stops the pin hand's wrist reaching the frame's edge, so there the stub still runs to the bottom: check by cold test whether it reads as a sleeve or a pole.
 - A gag that "doesn't land" needs the *reaction*, not more business: the lamp dies, he lifts it to look into it, sighs, then looks at us and holds 0.4 s (8 fps strip shows the hold).
@@ -903,13 +914,13 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - Cutting away inside a long line must keep the speaker in frame (G5 BUBBLE check): push in on the speaker instead of cutting to the listener.
 - Shorter shots move the ASR windows: "Pam?" fell to 1 of 3 until the office bed went 0.75 -> 0.6. Re-run the delivered-mix check after every timing change.
 
-## 215. *The Offer* v33 (24 Nov, Tomas at 0:23: "the hand jumped, whose is it?")
+## 223. *The Offer* v33 (24 Nov, Tomas at 0:23: "the hand jumped, whose is it?")
 
-- Taking the arms out of an insert (214) also takes out what tied a prop to the body: the watch was placed by a fixed offset on the old forearm and floated beside the hand. Anything worn goes on the wrist stub, along its direction.
+- Taking the arms out of an insert (222) also takes out what tied a prop to the body: the watch was placed by a fixed offset on the old forearm and floated beside the hand. Anything worn goes on the wrist stub, along its direction.
 - A hand that changes job mid-shot must travel in order: reach the thing (0.3 s), grip, then lift, with the object locked to the fist. v32 lifted the plug by itself while the hand crossed the frame in 0.3 s and changed shape on the first frame: a jump.
 - I checked this shot only as stills at three times, not as a 10 fps strip of the encoded file. Every shot whose drawing code changed gets a strip before delivery.
 
-## 216. *The Offer* v34–v37 (24 Nov): the engine insert after Tomas ("a hand walks in space") and three still audits (7, 7, 7.5 of 10)
+## 224. *The Offer* v34–v37 (24 Nov): the engine insert after Tomas ("a hand walks in space") and three still audits (7, 7, 7.5 of 10)
 
 - A hand-only insert works only at the frame's edge. Mid-frame, the hand needs its owner: here his back, head (his own: grey temples, strands, ears, short sleeves) and both arms from the shoulders, seen from behind.
 - Arms are two bones of FIXED length (`ik2`); the motion's range is then set by the bones (move the shoulder or shorten the travel), never the reverse. A fixed sideways elbow offset stretched an arm by 33 % between two frames.
@@ -919,7 +930,7 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - Three rounds on the same six stills moved the score by 0.5: after two rounds, render and test the motion.
 - Stills go to Tomas as PNG before any render (his message arrived mid-render at v34).
 
-## 217. *The Offer* v38 (24 Nov, cold test v37, 3 viewers; then Tomas: "don't grow the thick white")
+## 225. *The Offer* v38 (24 Nov, cold test v37, 3 viewers; then Tomas: "don't grow the thick white")
 
 - An arm whose ELBOW is outside the frame reads as two things: a forearm from the edge and a sleeve lying apart, and it "jumps" when it folds in. Frame the shot so both elbows are inside (here the camera 15 % back, the body 30 up), then set the rest pose near the next action so the move is short.
 - Pulling the camera back grows whatever is plain and light. Before sending, look for the biggest flat light area: here his white back; it became his shoulders only, with his navy overalls below, and short sleeves no wider than the arm, joined by one yoke.
@@ -927,13 +938,13 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - A phone held "from the edge, along the floor" has no owner; from above it belongs to someone standing over it.
 - A gag that is "long for what it delivers" loses time first (2.2 -> 1.8 s) and gets a body reaction (the shoulders and the lamp drop), since this face has no brows to move.
 
-## 218. *The Offer* v39 (24 Nov, Tomas: "every phone screen looks cheap, like PowerPoint")
+## 226. *The Offer* v39 (24 Nov, Tomas: "every phone screen looks cheap, like PowerPoint")
 
 - One UI kit for every screen in a film (`of_ui.py`: status bar, app bar, card with a soft shadow, pill buttons, avatars; 100 units wide, drawn through `ui.hand` or `ui.full`). A screen made of a rectangle and two words is what reads as a slide.
 - A real-app look must not cost the read: the dark call screen was worse than the old plain green one (audit and my own check). Keep the screen LIGHT, the one word big, and clear of the fingers on the grip's edge.
 - On a 100 px wide screen nothing under about 9 units is read: drop helper text and placeholder lines instead of shrinking them.
 - Before / after PNG, old row over new row, is the cheapest review of a restyle; the audit's "stop" criterion is worth taking (it scored the UI 8.2 and pointed at timing and reactions next).
 
-## 219. Rules for hands and phones are on one page (24 Nov)
+## 227. Rules for hands and phones are on one page (24 Nov)
 
-Eight lessons about hands and two about phones (147–218) had become a diary of versions, some contradicting each other (214's "hand only" against 216's "the owner in the frame"). `docs/rules-hands-and-phones.md` keeps only what holds now, with the superseded lessons named. Read it before drawing a hand, a close-up arm or a phone screen; add to it, not only to this list, when a hand or a screen teaches something new.
+Eight lessons about hands and two about phones (147–226) had become a diary of versions, some contradicting each other (222's "hand only" against 224's "the owner in the frame"). `docs/rules-hands-and-phones.md` keeps only what holds now, with the superseded lessons named. Read it before drawing a hand, a close-up arm or a phone screen; add to it, not only to this list, when a hand or a screen teaches something new.

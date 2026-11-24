@@ -39,3 +39,8 @@ These rules apply to the episodes in this folder only, not to the rest of the re
 - **His choices are the protect list.** An opening, an ending or a loop he picked is not changed on a test's advice; propose it and let him decide.
 - **One structural change per round,** shown next to the version before. When a version comes back worse, return to the last good one and fix that, instead of inventing a new one.
 - **Polish has a limit:** agree the number of polish iterations with him up front (two worked for Untitled), then stop and hand over.
+- **A loop is a gate, not a look:** draw frame 0 and the last frame with one pose function and fail the build unless they match exactly (Remove the Bottleneck: 0.000/255). One cause resets everything (the crate drop: lid, sticker, Hoody, pops), never a flash.
+- **Nothing on a set changes colour or flashes without a reason the viewer can read.** A status board that went green and red was read as a glitch; a plain poster that stays the same carried the joke better.
+- **Where a line is long, the gag waits for its end.** A new take longer than the old one moves the first pop; check the opening still pays off in the first second, and tell Tomas what it cost.
+- **Small cast members reach less:** scale copies down (0.75) and check every reach and carry; redesign the staging (a list on the wall, a hop onto a chair), never stretch an arm. Same size as the series for HARV in every episode.
+- **Ear-fix a bad take before asking for a new one:** crop, tempo and compress, then ASR-test each candidate; a clear "-neck" mattered more than the exact tempo.

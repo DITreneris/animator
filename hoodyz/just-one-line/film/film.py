@@ -123,6 +123,28 @@ def harv_full(c, x, gy, walk=None, tilt=0.0, mouth='flat', arms=((None, 'case'),
         if tgt is not None: _arm(c, sh, e, h, prop, s)
     FI.LAST['harv'] = c.user_to_device(x, hy)
     return hy, [h for _, _, h, _, _ in hands]
+def harv_small(c, x, gy, walk=None, tilt=0.0, mouth='flat', arms=((None, 'case'), (None, 'stamp'))):
+    """HARV as the series draws him (Says Here, Make It Better, Remove the Bottleneck): MY AI's body and size, gold-rimmed
+    shades. Same interface as harv_full (kept above; film_tallharv.py is the film with it)."""
+    s = AS; hy = gy - 280 * s
+    for q, ph in ((-1, 0), (1, math.pi)):
+        sw = math.sin((walk or 0) + ph) * 22 * s if walk is not None else 0; lift = max(0, math.cos((walk or 0) + ph)) * 12 * s if walk is not None else 0
+        limb(c, [(x + q * 34 * s, gy - 75 * s), (x + q * 34 * s + sw, gy - lift)], 34 * s, WHITE)
+    hands = []
+    for q, (tgt, prop) in zip((-1, 1), arms):
+        sh = (x + q * 72 * s, gy - 168 * s)
+        tg = tgt or (sh[0] + q * 26 * s, sh[1] + 118 * s + (6 * math.sin((walk or 0) + q) if walk is not None else 0))
+        e, h = P.ik(sh, tg, 68 * s, 68 * s, P.DOWN)
+        hands.append((sh, e, h, prop, tgt))
+    for sh, e, h, prop, tgt in hands:
+        if tgt is None: _arm(c, sh, e, h, prop, s * .8)
+    c.save(); c.translate(x, hy); c.rotate(tilt); c.translate(-x, -hy)
+    C_harv(c, x, hy, s, mouth)
+    c.restore()
+    for sh, e, h, prop, tgt in hands:
+        if tgt is not None: _arm(c, sh, e, h, prop, s * .8)
+    FI.LAST['harv'] = c.user_to_device(x, hy)
+    return hy, [h for _, _, h, _, _ in hands]
 def _arm(c, sh, e, h, prop, s):
     limb(c, [sh, e, h], 30 * s, WHITE); ell(c, *e, 11 * s, 11 * s); fs(c, GREY, 5)
     if prop == 'case': P.briefcase(c, h[0], h[1] + 96 * .9, .9)
@@ -145,17 +167,23 @@ def shot_H(t):
     c.save(); c.translate(690, DESK_Y); P.mug(c, 0, 0, 1.0); c.restore()
     if not (26 <= t < 62): card_on_laptop(c, stamp=t >= 62)
     P.chair(c, 360, P.SEAT_Y)
-    # HARV: in through the door, past Hoody, stops at the desk
-    hx_ = lerp(165, HV_X, io((t - 3) / 20)); walk = (t - 3) * .55 if 3 <= t < 23 else None
+    # HARV at the series' size (MY AI's): in through the door, behind Hoody, a hop up onto Hoody's chair - now he reaches the card
+    wk = io((t - 3) / 13); hop = cl((t - 16) / 7)
+    hx_ = lerp(165, 300, wk) + (HV_X - 300) * io(hop); hgy = lerp(FLOOR, P.SEAT_Y, io(hop)) - 150 * math.sin(math.pi * hop)
+    walk = (t - 3) * .7 if 3 <= t < 16 else None
     look = io((t - 22) / 4)                                             # turns to the laptop: the tick, only the tick
+    mid = (hx_ + 20, hgy - 130)                                         # in front of his body: where the briefcase changes hands
     if t < 34: rarm = (None, 'stamp')
-    elif t < 40: rarm = ((CARD_AT[0] + 10, CARD_AT[1] - 200 * io((t - 34) / 4)), 'stamp')
+    elif t < 40: rarm = ((CARD_AT[0] + 10, CARD_AT[1] - 30 - 150 * (1 - io((t - 34) / 4)) * 0 - 120 * math.sin(math.pi * cl((t - 34) / 6)) ), 'stamp')
     elif t < 46: rarm = ((CARD_AT[0] + 10, CARD_AT[1] - 30), 'stamp')    # THUNK
+    elif t < 52: rarm = (None, None)
+    elif t < 58: rarm = (mid, None)
+    elif t < 70: u = io((t - 58) / 8); rarm = ((lerp(mid[0], 545, u), lerp(mid[1] - 96, 1110, u)), 'case' if t < 66 else None)
     else: rarm = (None, None)
-    if t < 58: larm = (None, 'case')
-    elif t < 70: u = io((t - 58) / 8); larm = ((lerp(hx_ - 100, 545, u), lerp(1300, 1110, u)), 'case' if t < 66 else None)
+    if t < 52: larm = (None, 'case')
+    elif t < 58: u = io((t - 52) / 5); larm = ((lerp(hx_ - 130, mid[0], u), lerp(hgy - 60, mid[1] - 96, u)), 'case')
     else: larm = (None, None)
-    hy, hands = harv_full(c, hx_, FLOOR, walk=walk, tilt=.1 * look, mouth='fond' if 46 <= t < 80 else 'flat', arms=(larm, rarm))
+    hy, hands = harv_small(c, hx_, hgy, walk=walk, tilt=.1 * look, mouth='fond' if 46 <= t < 80 else 'flat', arms=(larm, rarm))
     if 22 <= t < 30:                                                    # the glint on his shades as he reads the tick
         u = (t - 22) / 8; FI.burst(c, hx_ + 60, hy - 20, 40 + 20 * u, 4, WHITE, 6)
     # Hoody on the floor by the door
@@ -174,7 +202,7 @@ def shot_H(t):
         left = P.ai_pose(-1, P.ai_local(x, gy, AS, tg), P.DOWN); card_hand = tg
     elif t < 62: left = P.ai_pose(-1, P.ai_local(x, gy, AS, (CARD_AT[0] + 20, CARD_AT[1] + 40)), P.DOWN); card_hand = None
     else:
-        hd = hands[0] if t < 70 else (545, 1110)
+        hd = hands[1] if t < 70 else (545, 1110)
         left = P.ai_pose(-1, P.ai_local(x, gy, AS, (max(hd[0], 530), hd[1])), P.DOWN); card_hand = None
     FI.myai_at(c, f=t + 300, x=x, gy=gy, left=left, eye='happy', look=(-14, 2) if 28 <= t < 70 else (18, 0), typing=False)   # hands off the keys: the label stays clear
     if card_hand:

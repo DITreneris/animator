@@ -26,6 +26,10 @@ STEEL, STEEL_D = (0.72, 0.74, 0.78), (0.50, 0.52, 0.56)
 S_OFFICE = 0.66                                            # 13's office scale (lesson 138), 95 % of Don
 
 
+SUN_UP = [False]                                            # opt-in (ep 14 scenes, 24 Nov): the sun with an up-arrow beside it,
+                                                            # "more light": two cold viewers read the plain sun as a gear
+
+
 def visor_icon(k, sx, sy, r, kind):
     """Over the face: the dark visor, then one cyan pictogram. kind: "sun", "barrier", "public"."""
     c = k.c
@@ -35,11 +39,18 @@ def visor_icon(k, sx, sy, r, kind):
     c.set_source(g); c.arc(sx, sy, 0.86 * r, 0, 2 * math.pi); c.fill()
     c.set_source_rgb(*CYAN); c.set_line_cap(1); c.set_line_join(1)
     if kind == "sun":
+        if SUN_UP[0]:
+            sx -= 0.16 * r
         c.set_line_width(0.07 * r); c.arc(sx, sy, 0.22 * r, 0, 2 * math.pi); c.stroke()
         for i in range(8):
             a = i * math.pi / 4
             c.move_to(sx + math.cos(a) * 0.34 * r, sy + math.sin(a) * 0.34 * r)
             c.line_to(sx + math.cos(a) * 0.52 * r, sy + math.sin(a) * 0.52 * r); c.stroke()
+        if SUN_UP[0]:                                          # the arrow: up
+            ax = sx + 0.62 * r
+            c.set_line_width(0.08 * r)
+            c.move_to(ax, sy + 0.30 * r); c.line_to(ax, sy - 0.32 * r); c.stroke()
+            c.move_to(ax - 0.14 * r, sy - 0.16 * r); c.line_to(ax, sy - 0.32 * r); c.line_to(ax + 0.14 * r, sy - 0.16 * r); c.stroke()
     elif kind == "barrier":
         w, h = 0.98 * r, 0.22 * r
         x0, y0 = sx - w / 2, sy - h / 2 + 0.08 * r
