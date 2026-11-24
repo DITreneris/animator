@@ -18,6 +18,7 @@ import sofia_dh as sd
 import on3_animatic as a3
 import speech
 import speech_gate as gate
+import on4_weather as WX
 
 HEADS = {}                                                   # who -> (x, y, r) on the screen, in the drawing being made
 BY = {}                                                      # id(surface) -> its heads
@@ -354,7 +355,7 @@ def clock(T, total, ls):
 
 def film_frames(tmp):
     """on4_film.frames with the clock set for every drawing and the words put on it; returns what it returns, and the faults"""
-    install()
+    install(); WX.install()
     ls, tm = lines()
     d = sc._timing()[1]
     total = sum(v["dur"] for v in tm.values())
@@ -363,9 +364,14 @@ def film_frames(tmp):
     def one(make, shot_id):
         T = n / float(F.DPS)
         clock(T, total, ls); HEADS.clear()
+        WX.T[0] = T; WX.RAMP[0] = min(1.0, T / 0.6)
         s = make()
         heads = dict(HEADS)
         CLOCK["live"] = False
+        if WX.ON[0] or WX.LIGHT[0]:
+            sid = [q for q in ids if q in tm and tm[q]["dur"] > 0 and tm[q]["start"] <= T + 1e-6][-1]
+            o_ = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c_ = cairo.Context(o_); c_.set_source_surface(s, 0, 0); c_.paint()
+            s = WX.post(o_, sid, T, list(heads.values()))
         for ln in ls:
             key, t0, t1, kind = ln[0], ln[1], ln[2], ln[3]
             end = t1 if kind != "bubble" else min(t1 + LINGER, shot_end(t0, tm) - 1.0 / F.DPS)

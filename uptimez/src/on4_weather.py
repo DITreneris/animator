@@ -65,6 +65,7 @@ def rings(c, shot, t):
         c.save(); c.translate(x, y); c.scale((5 + 16 * a) * g, (5 + 16 * a) * g * 0.3); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.stroke()
 
 
+STRENGTH = [0.75]                                            # light_on3.auto at full strength left this film at 0.22 mean (Office Noir 1: 0.26, 2: 0.28)
 LIGHT = [False]                                              # the repo's solved light (light_on3.auto, Office Noir 3 after Tomas asked why 1 and 2 looked better): a pool round the measured heads, the rest sinks, faces lifted from above, its vignette and grain
 
 
@@ -72,8 +73,13 @@ def post(s, shot, t, heads=()):
     """over the finished drawing, under the words"""
     if LIGHT[0] and not shot.startswith(("7.", "8.")) and RAMP[0] > 0:
         hs = [(h[0], h[1], h[2] / 50.0) for h in heads]
-        lit = l3.auto(s, hs, RAMP[0], int(t * 12), max([h[2] for h in heads] or [0]) > 110, glow=True, pool=True)
-        c0 = cairo.Context(s); c0.set_source_surface(lit, 0, 0); c0.paint()
+        import numpy as np
+        s.flush(); src = np.frombuffer(bytes(s.get_data()), np.uint8).reshape(960, s.get_stride() // 4, 4)[:, :540].copy()
+        lit = l3.auto(s, hs, RAMP[0] * STRENGTH[0], int(t * 12), max([h[2] for h in heads] or [0]) > 110, glow=True, pool=True)
+        c0 = cairo.Context(s); c0.set_source_surface(lit, 0, 0); c0.paint(); s.flush()
+        buf = np.frombuffer(s.get_data(), np.uint8).reshape(960, s.get_stride() // 4, 4)
+        red = (src[:, :, 2].astype(np.int16) - src[:, :, 1]) > 60                         # the key red (the heart, the neon, the fire) keeps its own light: the pool does not dim it
+        buf[:, :540][red] = src[red]; s.mark_dirty()
     if not ON[0]:
         return s
     if shot in STREET and RAMP[0] > 0:
