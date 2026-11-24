@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 47, 2: 47, 3: 47, 4: 47, 5: 47}
-SOUND = "of_sound_v23.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 48, 2: 48, 3: 48, 4: 48, 5: 48}
+SOUND = "of_sound_v24.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -153,10 +153,10 @@ def s21(t, L):                                             # v3 (24 Nov, cold te
     gu = ease((t - 0.35) / 0.3) - ease((t - 3.2) / 0.3) + 0.12 * math.sin(t * 5.0) * (1 if 0.7 < t < 3.0 else 0)   # v4: his open hand up through the whole line
     gest = dict(targets_xy=[(fx_ + 34 + 30 * gu, ff_ - 96 - 78 * gu)], show_hand=True) if gu > 0.02 else {}
     if t < CUT_21:
-        return dict(_cam=sc.FATHER_LAMP, _cast=("father", "g2")), dict(father=dict(face="hard", look=(1, 0), lean=0.03 * gu, **gest), **cl)
+        return dict(_cam=sc.FATHER_LAMP, _cast=("father", "client")), dict(father=dict(face="hard", look=(1, 0), lean=0.03 * gu, **gest), **cl)
     if t < 2.55:
         return {}, dict(father=dict(face="hard", look=(1, 0), **gest), **cl)
-    return dict(_cam=sc.FATHER_LAMP, _cast=("father", "g2")), dict(father=dict(face="brow" if t > 3.55 else "hard", look=(1, 0), lean=0.03 * gu, **gest), **cl)
+    return dict(_cam=sc.FATHER_LAMP, _cast=("father", "client")), dict(father=dict(face="brow" if t > 3.55 else "hard", look=(1, 0), lean=0.03 * gu, **gest), **cl)
 
 
 def s22(t, L):
@@ -390,7 +390,7 @@ def s24(t, L):                                             # v1 (23 Nov audit, d
     gu = ease((t - 0.7) / 0.3) - ease((t - 2.7) / 0.3)     # every shot"): his hand comes up, open, toward the Client, on the question
     gest = dict(targets_xy=[(fx_ + 34 + 30 * gu, ff_ - 96 - 78 * gu)]) if gu > 0.02 else {}
     if t >= 1.5:                                           # v3 (cold tests 3 of 3: it drags): CUT to the medium, the question
-        return (dict(_cam=(467, 872, 1.80), _cast=("father", "client")),   # lands on the Client, at the engine (2.1's two-shot)
+        return (dict(_cam=sc.MED_CAM, _cast=("father", "client")),   # lands on the Client, at the engine (2.1's two-shot)
                 dict(father=dict(face=face, lean=ln, look=(1, 0), **gest), client=dict(kind="bent", work=_work(t))))
     return {}, dict(father=dict(face=face, lean=ln, look=(1, 0), **gest))
 
@@ -433,7 +433,7 @@ def s28f(t, L):
 def s28b(t, L):                                            # v2 (24 Nov, cold test v31: the held 'One month' shot dragged): after the line's first half, CUT to
     if t < 1.35:                                           # Father, his eyes on the held-out phone, and the line goes on over him
         return {}, {}
-    return dict(_cam=(580, 790, 3.2), _cast=("client",)), {}
+    return dict(_cam=(575, 785, 2.6), _cast=("client",)), {}
 
 
 MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14,
@@ -455,13 +455,13 @@ def s23(t, L):
     start, out_ = (bx - 30, 718), (bx + 60, 724)
     x, f = LAMP_G1                                         # v5 (23 Nov, lesson 292): he stands at the bay's side, in front
     rest = (x - 44, f - 120)
-    u1 = om.hold(t / 0.30)
-    u2 = om.hold((t - 0.30) / 0.22)
-    u3 = om.hold((t - 0.55) / 0.30)
+    u1 = om.hold(t / 0.34)                                 # v10 (cold test v47, 3 of 3: "suddenly in the suit's hand"): the
+    u2 = om.hold((t - 0.40) / 0.28)                        # handover takes 1.0 s: out, TAKEN, carried to the bay; then the cut-in
+    u3 = om.hold((t - 0.72) / 0.26)
     st = dict(moved=dict(g1=LAMP_G1), front_of_car=("g1",))
-    if t >= 0.7:                                           # v7 (23 Nov, decided): CUT IN, 0.9 s: his hands in the light; the bolt comes free
-        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 0.9 else 0.0,
-                    bay_reach=ease((t - 0.9) / 0.3), bolt_out=ease((t - 1.3) / 0.35), bay_u=1.0), {}     # v9 (timing v22): 0.3 s less of the turning     # v8 (timing v11): the cut-in 1.2 s, the bolt later
+    if t >= 1.0:                                           # v7 (23 Nov, decided): CUT IN, 0.9 s: his hands in the light; the bolt comes free
+        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 1.2 else 0.0,
+                    bay_reach=ease((t - 1.2) / 0.3), bolt_out=ease((t - 1.6) / 0.35), bay_u=1.0), {}     # v9 (timing v22): 0.3 s less of the turning     # v8 (timing v11): the cut-in 1.2 s, the bolt later
     if u3 > 0:
         gh = om.lerp(out_, LAMP_IN_BAY, u3)
         return st, dict(client=dict(kind="bent", hand_back=False, work=math.sin(t * 2 * math.pi * 1.3) if t > 0.9 else 0.0),
@@ -701,6 +701,9 @@ def lock_shot(sh0, scene, tm):
     for i in range(nd):
         t = i / DPS
         if bubble_on(sid, t):
+            k__ = shot_frame(sh0, t, tm, sc.bubble_key)
+            if sid in sc.BUBBLE_AT and k__[1] in sc.BUBBLE_AT[sid]["at"]:
+                continue                                       # placed by hand
             keys.setdefault(shot_frame(sh0, t, tm, sc.bubble_key), []).append(t)
     out = []
     BUBBLE_PICTURES[sid] = [(k_[1], k_[2], ts[0], ts[-1]) for k_, ts in keys.items()]

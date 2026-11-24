@@ -1018,3 +1018,12 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - Not done, and said so: the tail is locked with the box (it does not follow the mouth), and a bubble still takes a new place after a cut inside a line (3 of 3 saw it at 0:18, 0:26, 0:34). Both need the box given from outside in `speech.py` and `fs_animatic.speech`.
 - A layer pasted onto a 2x surface needs the surface's device scale, or it lands twice as big and off the frame.
 - When no wall beside a mouth is free of the listener's face and the prop he holds, the line goes in two short rows over the speaker's head (`bubble_top`, `speech.TOP_FIRST`, opt-in), and the camera comes down a little to make the room.
+
+## 236. *The Offer* v48 (24 Nov, cold test v47 and four decisions)
+
+- Before blaming a trim, read what it cut: "the lamp is suddenly in his hand" (3 of 3) was put down to a 0.3 s trim, but that trim was in the cut-in after it; the handover itself had always been 0.7 s. It is 1.0 s now (out, TAKEN, carried), the cut-in 0.3 s shorter.
+- A line whose picture cuts in the middle keeps ONE place relative to its speaker and ONE wrapping: `of_scenes.BUBBLE_AT` puts the box by hand per camera, and its tail goes to the mouth drawn in that frame, so it follows him. Used where the automatic place failed (five lines); the other ten stay locked per picture.
+- Make the room for a bubble with the camera, not by shrinking the text: the medium inside two long lines pulled back (1.8 to 1.5) so the line sits over his head, the plan whole above it.
+- A prop that reads as a blob at its size is removed, not refined: the pocket rag ("a brick", 3 of 3) is gone; the rag exists only in his hand (`client_of.POCKET_RAG`, opt-out).
+- Close shots draw only their cast, so people "vanish" from them: the Client stays in Father's closes at the bay, and the second guard stands behind his boss in the wide. A man who would be a sliver at the frame's edge is left out of that shot's cast.
+- Build the sound and read ITS exit code before any scene renders (`cmd > log; echo $?`), then read each scene's whole tail.
