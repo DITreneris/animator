@@ -75,4 +75,6 @@ Validate every new check on a known failure first; a check that always passes is
 
 - **Shared kit:** `src/kit.py`, paper cut-out style. Holiday looks are costumes on the existing characters, never redesigns.
 - **Voices (Kokoro):** Don `am_onyx` (the prequel shorts used `am_fenrir`), Sofía `af_bella`, Pam a British voice picked per episode by audition, Mom voice F (`bf_alice` + `bm_lewis`, aged, shouting). The robot's voice is pitched and filtered per episode.
+- **Voices are dry** (Tomas, 23 Nov, after One Star v9): no room reverb, reflections or echo on dialogue ("like from a well"); a quiet room tone under the film is fine. A voice effect goes only on a character the viewer sees as its source (the robot); a line over a phone screen or an insert is spoken in a clean voice ("Stupid human." read as "Don in a pipe" in the robot's effect).
+- **Check each take with silence after it**, not only alone: Pam's "Check your pocket." passed alone and was heard as "pocketer" in the dry mix (a long released t). Trim the tail and recheck inside the final mix, word by word.
 - **No real brands or logos** in the picture. LinkedIn is evoked by culture only.

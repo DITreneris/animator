@@ -96,7 +96,8 @@ def phone_held(k, hx, hy, s, ang=-0.15, lit=True, buzz=False, d=0, seed=900):
     c.save(); c.translate(hx + j, hy - 8 * sc); c.rotate(ang); c.scale(sc, sc)
     if lit:                                                                       # the screen's light, up toward the face
         g = cairo.RadialGradient(0, -14, 0, 0, -14, 26)
-        g.add_color_stop_rgba(0, *GLOW, 0.35); g.add_color_stop_rgba(1, *GLOW, 0.0)
+        ga = GLOW_A.get(getattr(sys.modules.get("cs_hands"), "SHOT", [None])[0], 0.35)   # per shot (v12: 5.1's read as a glitch)
+        g.add_color_stop_rgba(0, *GLOW, ga); g.add_color_stop_rgba(1, *GLOW, 0.0)
         c.set_source(g); c.arc(0, -14, 26, 0, 6.3); c.fill()
     rect(k, -7, -12, 14, 24, PHONE, seed, lw=1.4)
     c.set_source_rgb(0.30, 0.32, 0.38); c.arc(-3.2, -8.2, 1.6, 0, 6.3); c.fill()   # its camera
@@ -111,6 +112,7 @@ def phone_held(k, hx, hy, s, ang=-0.15, lit=True, buzz=False, d=0, seed=900):
             c.stroke()
 
 
+GLOW_A = {}                                                 # shot -> the phone light's strength (default 0.35)
 GRIP = [False]                                              # 23 Nov (hand audit 2): the phone HELD, ep 13's phone_grip
 _LASTPH = [None]
 PH_DEV = []                                                 # this drawing's held phones, device px (a first pass finds them)
