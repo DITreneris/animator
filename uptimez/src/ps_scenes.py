@@ -646,8 +646,10 @@ _last_cam = [None]                                          # the last render's 
 
 class TextRec(cairo.Context):
     """keeps every text shown (in device units) for uz_check.check_signs."""
+    def __new__(cls, surf):
+        return super().__new__(cls, surf)
+
     def __init__(self, surf):
-        super().__init__()
         self.texts = []
 
     def show_text(self, s):
@@ -911,7 +913,7 @@ def board_frame(sh, line):
     if FIX_V4[0]:
         import ps_checks as pc
         pc.install_scene(sys.modules[__name__]); pc.begin()      # the story props get declared as they are drawn
-        _wrap_capture(); CAPTURE[0] = True; SIL.clear(); del BUBBLES_V4[:]
+        del BUBBLES_V4[:]
     surf, msgs = render(sh)
     fc = dict(LAST[0])
     c = cairo.Context(surf); k = Ctx(c, 0)
@@ -925,23 +927,20 @@ def board_frame(sh, line):
         if who not in fc:
             msgs.append("BUBBLE %s: %s speaks but is not in the frame" % (sh["id"], who)); continue
         hx, hy, r = fc[who]
-        if who == "robot" and FIX_V4[0]:                    # v4: beside the visor at eye height, never down onto the dome
-            tail = (hx, hy, r * 0.95)
-        elif who == "robot":
+        if FIX_V4[0]:
+            import speech_gate
+            before = speech_gate.snapshot(surf)
+            box = bubble_v4(k, who, txt, fc, taken)
+            taken.append(box)
+            rec = BUBBLES_V4[-1]
+            msgs.extend(speech_gate.check(surf, rec["box"], rec["tip"], list(fc.values()), above=rec["above"],
+                                           before=before))
+            continue
+        if who == "robot":
             tail = (hx - r * 0.62, hy - r * 0.62, 2)
         else:
             tail = (hx, hy + r * 0.08, r * 0.72)
         others = [v for n, v in fc.items() if n != who]
-        if FIX_V4[0]:
-            box = bubble_v4(k, who, txt, fc, taken)
-            taken.append(box)
-            x0, y0, x1, y1 = box
-            if x0 < 18 or y0 < 96 or x1 > 522 or y1 > 720:
-                msgs.append("BUBBLE %s outside the safe area %s" % (sh["id"], tuple(round(v) for v in box)))
-            for n, (fx_, fy_, fr) in fc.items():
-                if x0 < fx_ + fr * 0.8 and x1 > fx_ - fr * 0.8 and y0 < fy_ + fr * 0.8 and y1 > fy_ - fr * 0.8:
-                    msgs.append("BUBBLE %s over %s's face" % (sh["id"], n))
-            continue
         box = an.speech(c, k, txt.upper() if who == "robot" else txt, (hx, hy, r), others, mono=(who == "robot"), size=26,
                         taken=tuple(taken), tail_head=tail, top_tip_at=None)
         taken.append(box)
@@ -955,183 +954,30 @@ def board_frame(sh, line):
 
 
 
-# --- v4 bubbles (Tomas 24 Nov: "bc_sb.bubble"): the approved One Star bubble, beside the face at mouth height, a short
-# tail onto the cheek's outline. bc_sb measures its own rigs; here each speaker's silhouette is captured as the rig draws
-# it in this frame (CAPTURE), and bc_sb.measure's result is built from it: the mouth row, the cheek edges walked out on
-# the silhouette, the crown, how far the hair runs. Opt-in (FIX_V4): board v2 and the layout sheets v3 draw as before.
-CAPTURE = [False]
-SIL = {}
-PADB = 140
-
-
-def _capture(name, f):
-    import numpy as np
-    def g(k, *a, **kw):
-        c = k.c
-        tg = c.get_target()
-        if not CAPTURE[0] or getattr(tg, "get_width", lambda: 0)() != W:
-            return f(k, *a, **kw)
-        c.push_group()
-        try:
-            r = f(k, *a, **kw)
-        finally:
-            pat = c.pop_group()
-        s_ = cairo.ImageSurface(cairo.FORMAT_ARGB32, W + 2 * PADB, H + 2 * PADB); t = cairo.Context(s_)
-        t.translate(PADB, PADB); t.transform(c.get_matrix()); t.set_source(pat); t.paint(); s_.flush()
-        a = np.ndarray((H + 2 * PADB, W + 2 * PADB, 4), np.uint8, s_.get_data())[..., 3] > 128
-        SIL[name] = SIL[name] | a if name in SIL else a
-        c.set_source(pat); c.paint()
-        return r
-    g.__name__ = getattr(f, "__name__", name)
-    return g
-
-
-def _wrap_capture():
-    g = globals()
-    if g.get("_captured"):
-        return
-    g["_captured"] = True
-    for n in ("don", "robot", "sofia", "pam", "mom"):
-        g[n] = _capture(n, g[n])
-    cps.cast_client = _capture("client", cps.cast_client)
-    import dh_cast as dc
-    dc.father = _capture("father", dc.father)
-
-
-def _meas(who, face):
-    """bc_sb.measure's dict for a speaker drawn in this frame, from its silhouette (frame px, PADB around)."""
-    import numpy as np
-    import bc_sb as bs
-    x, y, r = face
-    sil = SIL.get(who)
-    z = r / 30.0
-    if who == "robot":                                       # its visor: the "mouth" at the smile, the crown the antenna
-        my = y + 0.30 * r
-    else:
-        my = y + 0.48 * r
-    cx, cy = int(round(x)) + PADB, int(round(my)) + PADB
-    if sil is None or not sil[cy, cx]:
-        return dict(ok=True, z=z, m=(x, my), box=(x - 4, my - 3, x + 4, my + 3), eL=x - 0.9 * r, eR=x + 0.9 * r,
-                    top=(x, y - 1.05 * r), sL=x - 0.9 * r, sR=x + 0.9 * r, skin=np.zeros((H + 2 * PADB, W + 2 * PADB), bool))
-    edge, reach = {}, {}
-    for sd in (-1, 1):                                       # the face's outline: the silhouette's run out from the mouth,
-        ends = []                                            # bounded by the head's own width (hair and a raised hand
-        for row in range(cy - 2, cy + 3):                    # beside it are reach, not cheek)
-            xx = cx
-            while abs(xx + sd - cx) <= 1.05 * r and sil[row, xx + sd]:
-                xx += sd
-            ends.append(xx)
-        edge[sd] = sorted(ends)[2]
-        xx = edge[sd]
-        while 0 < xx + sd < W + 2 * PADB - 1 and sil[cy - 2:cy + 3, xx + sd].any():
-            xx += sd
-        reach[sd] = xx
-    band = int(round(0.35 * r))
-    cols = sil[:cy, cx - band:cx + band + 1]
-    rows = np.nonzero(cols.any(axis=1))[0]
-    ty = int(rows.min()) if len(rows) else cy
-    tx = float(np.nonzero(cols[ty])[0].mean()) + cx - band if len(rows) else cx
-    return dict(ok=True, z=z, m=(x, my), box=(x - 4, my - 3, x + 4, my + 3), eL=edge[-1] - PADB, eR=edge[1] - PADB,
-                top=(tx - PADB, ty - PADB), sL=reach[-1] - PADB, sR=reach[1] - PADB, skin=sil)
-
-
-def _lines(text, size, mono, maxw=300):
-    import bc_sb as bs
-    bs._REF.select_font_face(bs.MONO if mono else kit.FONT, 0, 1 if mono else 0); bs._REF.set_font_size(size)
-    out, cur = [], ""
-    for w_ in text.split():
-        t = (cur + " " + w_).strip()
-        if cur and bs._REF.text_extents(t).x_advance > maxw:
-            out.append(cur); cur = w_
-        else:
-            cur = t
-    return out + [cur]
-
-
+# --- v4 bubbles: speech.draw and speech_gate. Opt-in (FIX_V4): board v2 and the layout sheets v3 draw as before.
 def bubble_v4(k, who, text, fc, taken):
-    """-> the box drawn. The robot's bubble comes down onto its antenna (bc_sb's "T", its canon); a person's sits beside
-    the face (R or L, whichever is clear of the other faces, the bubbles already placed and the apps' zones), else above."""
-    import bc_sb as bs
+    """-> the box drawn. speech.draw places it: beside the face when that wall is clear, from above only for the robot's
+    antenna. FIX_V4 only; the v3 sheets stay on fs_animatic.speech."""
+    import speech
+    import ps_checks as pc
+    head = fc[who]
     mono = who == "robot"
-    size = 24 if mono else 26
-    lines = _lines(text.upper() if mono else text, size, mono)
-    bs.HEADS[who] = dict(meas=_meas(who, fc[who]), m=fc[who][:2], R=fc[who][2], top=fc[who][1] - fc[who][2])
-    bs.SAFE = (20, 100, 470, 716)                            # ep 14: above the bottom quarter, off the buttons
-    forms = ["T"] if mono else (["R", "L", "T"] if fc[who][0] < 270 else ["L", "R", "T"])
-    hair = who in ("sofia", "mom")
-
-    def clash(b):
-        x0, y0, x1, y1 = b
-        WHY[0] = ""
-        if x0 < 18 or y0 < 96 or x1 > 522 or y1 > 720:
-            WHY[0] = "safe"; return True
-        for n, (fx_, fy_, fr) in fc.items():
-            if x0 < fx_ + fr * 0.8 and x1 > fx_ - fr * 0.8 and y0 < fy_ + fr * 0.8 and y1 > fy_ - fr * 0.8:
-                WHY[0] = "face " + n; return True
-        if any(x0 < t[2] and x1 > t[0] and y0 < t[3] and y1 > t[1] for t in taken):
-            WHY[0] = "bubble"; return True
-        import ps_checks as pc
-        for name, a0, b0, a1, b1 in pc.PROTECT:              # never over a story prop (the phones, the CV, the card, the roll)
-            if x0 < a1 - 3 and x1 > a0 + 3 and y0 < b1 - 3 and y1 > b0 + 3:
-                WHY[0] = "prop " + name; return True
-        for t in SIGNS_V4:                                   # never over part of a sign (a sign wholly under it is out)
-            if x0 < t[2] - 4 and x1 > t[0] + 4 and y0 < t[3] - 3 and y1 > t[1] + 3 and not (
-                    x0 <= t[0] - 2 and x1 >= t[2] + 2 and y0 <= t[1] - 2 and y1 >= t[3] + 2):
-                WHY[0] = "sign %s" % (tuple(round(v) for v in t),); return True
-        return False
-
-    ms = bs.HEADS[who]["meas"]
-    my = ms["m"][1]
-
-    def room_at(fm, dy_, nl=2):
-        """the wall beside the face for a box of nl lines centred dy_ below the mouth: to the frame's safe edge or the
-        next face whose rows it shares."""
-        if fm == "T":
-            return 300
-        h2 = (nl * size * 1.12 + 26) / 2
-        near = [(fx_, fr) for n, (fx_, fy_, fr) in fc.items()
-                if n != who and fy_ - fr * 0.8 < my + dy_ + h2 and fy_ + fr * 0.8 > my + dy_ - h2]
-        if fm == "R":
-            return min([bs.SAFE[2]] + [fx_ - fr * 0.8 - 6 for fx_, fr in near if fx_ > fc[who][0]]) - \
-                (ms["sR"] if hair else ms["eR"]) - 20 - 44
-        return (ms["sL"] if hair else ms["eL"]) - 20 - 44 - \
-            max([bs.SAFE[0]] + [fx_ + fr * 0.8 + 6 for fx_, fr in near if fx_ < fc[who][0]])
-    pick, pl = forms[-1], lines
-    bs.BUBBLES = False
-    pdy = pdx = 0
-    for fm, dy_ in [(f_, d_) for f_ in forms for d_ in ((0, -24, 24, -48, 48, 72) if f_ != "T" else (0,))]:
-        ln_ = _lines(text.upper() if mono else text, size, mono, max(96, min(300, room_at(fm, dy_))))
-        for _ in range(2):                                   # the wall for that many lines (a taller box meets more faces)
-            ln_ = _lines(text.upper() if mono else text, size, mono, max(96, min(300, room_at(fm, dy_, len(ln_)))))
-        if len(ln_) > 4:
-            continue
-        bs.bubble(k, ln_, who, form=fm, size=size, mono=mono, hair=hair and fm != "T", dy=dy_)
-        b = bs.QA["bubbles"].pop()
-        cl = clash(b["box"])
-        ddx = 0
-        for _ in range(3):                                   # a prop in the hand beside the face: step past it
-            if not (cl and WHY[0].startswith("prop") and fm in ("R", "L")):
-                break
-            import ps_checks as pc
-            pb = [p_ for p_ in pc.PROTECT if p_[0] == WHY[0][5:]][0]
-            ddx += (pb[3] + 7 - b["box"][0]) if fm == "R" else (pb[1] - 7 - b["box"][2])
-            if abs(ddx) > 80:
-                break
-            ln_ = _lines(text.upper() if mono else text, size, mono, max(96, min(300, room_at(fm, dy_, len(ln_)) - abs(ddx))))
-            bs.bubble(k, ln_, who, form=fm, size=size, mono=mono, hair=hair, dy=dy_, dx=ddx)
-            b = bs.QA["bubbles"].pop()
-            cl = clash(b["box"])
-        if not cl and ddx:
-            pick, pl, pdy, pdx = fm, ln_, dy_, ddx; break
-        if DEBUG_V4[0]:
-            print("   ", who, fm, dy_, len(ln_), tuple(round(v) for v in b["box"]), WHY[0])
-        if not cl:
-            pick, pl, pdy, pdx = fm, ln_, dy_, 0; break
-    bs.BUBBLES = True
-    bs.bubble(k, pl, who, form=pick, size=size, mono=mono, hair=hair and pick != "T", dy=pdy, dx=pdx)
-    b = bs.QA["bubbles"][-1]
-    BUBBLES_V4.append(dict(who=who, form=pick, tip=b["tip"], box=b["box"], text=text, face=fc[who]))
-    return b["box"]
+    above = (head[0], head[1] - head[2] * 1.15) if mono else None
+    mouth = (head[0], head[1] + 0.35 * head[2])
+    avoid = list(taken)
+    for name, a0, b0, a1, b1 in pc.PROTECT:
+        avoid.append((a0, b0, a1, b1))
+    avoid.extend(SIGNS_V4)
+    box, tip = speech.draw(k, text, head, mouth=mouth, above=above, mono=mono,
+                           others=[v for n, v in fc.items() if n != who], avoid=avoid)
+    if above and tip and abs(tip[0] - above[0]) < 8 and abs(tip[1] - above[1]) < 8:
+        form = "T"
+    elif tip and tip[0] >= head[0]:
+        form = "R"
+    else:
+        form = "L"
+    BUBBLES_V4.append(dict(who=who, form=form, tip=tip, box=box, text=text, face=head, above=above))
+    return box
 
 
 BUBBLES_V4 = []

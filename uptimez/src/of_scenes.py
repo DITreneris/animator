@@ -251,6 +251,7 @@ def _pt(name, x, f):
 
 BENT_AT = (580, 836)                                      # the Client bent over the bay: x, and his feet (hidden by the car)
 TAIL_K = {"2.9": 0.45}                                     # stage 7: a small face in a wide frame: the tip further in
+SPEECH = [False]                                           # off: board_frame keeps fs_animatic.speech. On is a separate look.
 MOUTH_AT = {}                                              # mouths a pose knows better than the face point (the profile)
 
 
@@ -1286,8 +1287,10 @@ def zone_check(boxes):
 # --- one frame: draw it, record its text, check it ---------------------------------------------------------------------
 class TextRec(cairo.Context):
     """a context that keeps every text it shows (in its device units) for uz_check.check_signs."""
+    def __new__(cls, surf):
+        return super().__new__(cls, surf)
+
     def __init__(self, surf):
-        super().__init__()
         self.texts = []
 
     def show_text(self, s):
@@ -1397,19 +1400,8 @@ def insert_arm(c, hand, elbow, shoulder, w, skin, sleeve, cuff=None, torso=None,
 def hand_check():
     """v1 (23 Nov, hand audit, decided): one hand per wrist, and a held phone's thumb toward the body. Reads the hands
     the frame really drew (of_cast.HAND_LOG, GRIP_LOG), in frame units."""
-    out = []
-    for g in _oc.GRIP_LOG:
-        gx, gy = g["at"]
-        for hx, hy in _oc.HAND_LOG:
-            if math.hypot(hx - gx, hy - gy) < _oc.HAND_TOL:
-                out.append("HAND two at one wrist: a rig hand under the %s at (%d, %d)" % (g["kind"], gx, gy))
-                break
-        if g["kind"] == "phone":
-            if g["want"] is None:
-                out.append("HAND a phone held without body_x at (%d, %d): its thumb side unchecked" % (gx, gy))
-            elif g["thumb"] != g["want"]:
-                out.append("HAND a phone's thumb on the outer side at (%d, %d)" % (gx, gy))
-    return out
+    import hand_gate
+    return hand_gate.check(_oc.GRIP_LOG, _oc.HAND_LOG, _oc.HAND_TOL)
 
 
 def render(sh, scene):
@@ -1452,6 +1444,8 @@ def render(sh, scene):
     # the text in set units, for check_signs (it maps them through the camera itself)
     fx, fy, z = cam if isinstance(cam, tuple) else (270, 480, 1.0)
     text = []
+    # user_to_device is 540 device space. set_device_scale is not part of that matrix, so a sign at
+    # frame centre (270, 480) is already (270, 480) here; dividing by the scale would move it.
     for t in c.texts:
         b = t["bbox"]
         x0, y0 = (b[0] - 270) / z + fx, (b[1] - 480) / z + fy
@@ -1641,6 +1635,39 @@ def board_frame(sh, scene, bubble=True):
         fc[who] = ((va_[0] - cam[0]) * cam[2] + 270, (va_[1] - cam[1]) * cam[2] + 480, 14.0)   # goes INTO that dark
     if who not in fc:
         return surf, msgs + ["BUBBLE: %s speaks but is not in the frame" % who]
+    if SPEECH[0]:
+        import speech
+        import speech_gate
+        head = fc[who]
+        if who == "robot":                                          # the head point is the visor, as drawn
+            head = (head[0], head[1], head[2] * 1.15)
+            fc[who] = head
+        mouth = (head[0], head[1] + 0.35 * head[2])
+        aim = None
+        if who in MOUTH_AT and sh["cam"] not in ("under", "insert", "desk"):
+            mx, my = MOUTH_AT[who]
+            mx, my = (mx - cam[0]) * cam[2] + 270, (my - cam[1]) * cam[2] + 480
+            aim = (mx - 2, my - 3)                                  # the mouth this pose drew, not the face centre
+        if sh["cam"] == "under":
+            side = 1 if head[0] < 270 else -1
+            aim = (head[0] + side * head[2] * 0.98, head[1] + head[2] * 0.05)
+        if who == "robot":
+            # the left rim at eye height, so the line sits clear of the visor card
+            aim = (head[0] - head[2], head[1] - head[2] * 0.05)
+        if va_:
+            # the hips in the dark under the car are the mechanic; the tip lands on him, the line sits clear
+            hipx = (gs.CREEPER[0] - cam[0]) * cam[2] + 270
+            hipy = (gs.CREEPER[1] - 46 - cam[1]) * cam[2] + 480
+            hr = 26 * cam[2]
+            head = (hipx, hipy, hr)
+            fc[who] = head
+            side = 1 if hipx < 270 else -1
+            aim = (hipx + side * hr, hipy)
+        before = speech_gate.snapshot(surf)
+        c = cairo.Context(surf)
+        box, tip = speech.draw(Ctx(c, 0), txt.upper() if who == "robot" else txt, head, mouth=mouth, aim=aim,
+                               mono=(who == "robot"), others=[v for n, v in fc.items() if n != who])
+        return surf, list(msgs) + speech_gate.check(surf, box, tip, list(fc.values()), aim=aim, before=before)
     head = fc[who]
     if who == "robot":                                                # v7: the head point IS the visor, as drawn
         head = (head[0], head[1], head[2] * 1.15)

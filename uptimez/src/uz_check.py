@@ -24,8 +24,10 @@ import importlib
 import types
 import cairo
 
+import speech_gate
+
 W, H = 540, 960
-SAFE = (18, 96, 522, 820)          # bubbles and cards (CLAUDE.md, G5)
+SAFE = speech_gate.SAFE            # bubbles and cards (CLAUDE.md, G5); the number lives in speech_gate
 BOTTOM, RAIL = 720, (470, 380, 860)  # faces: not in the apps' bottom quarter, not under the right-hand buttons
 MOUTH = (0.15, 1.50, 1.70)         # a tail tip must be between y+0.15r and y+1.5r of the face point (eye level), |dx| <= 1.7r
 EDGE = 2.0                         # px of slack at the frame's edge
@@ -82,8 +84,11 @@ def _clip(c):
 class RecCtx(_Context):
     """cairo.Context that records. role: 'scene' (ARGB32, big), 'frame' (RGB24, the output), or None (dry, tiny)."""
 
+    def __new__(cls, surf):
+        # pycairo binds the surface in Context.__new__. Context.__init__(self, surf) raises TypeError.
+        return _Context.__new__(cls, surf)
+
     def __init__(self, surf):
-        _Context.__init__(self)
         self.role = None
         try:
             w, h = surf.get_width(), surf.get_height()
