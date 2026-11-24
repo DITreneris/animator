@@ -185,12 +185,14 @@ def sound(tm, d, total):
         bump = st_("3.1") + span31 * m_.T3_MARKS["bump"]; toot = st_("3.1") + span31 * m_.T3_MARKS["toot"]
         thud = st_("3.1") + span31 * m_.T3_MARKS["thud"] if "thud" in m_.T3_MARKS else None
     C0 = 0.67                                                                                       # v5: the cat first (8 drawings)
+    import on4_motion as _m
+    HK = -1 / 12.0 if _m.HIT[0] else 0.0                                                            # film v15: the blow lands one drawing earlier (its hit-stop is longer)
     put(fx, rs(so.hiss(0.5), so.SR), 0.25, 0.45)                                                     # the cat across the lens: hiss and yowl
     ty = np.arange(int(0.42 * SR)) / SR; fq = 620 + 900 * np.sin(np.pi * ty / 0.42) ** 0.7 + 40 * np.sin(2 * np.pi * 31 * ty)
     yowl = np.sin(2 * np.pi * np.cumsum(fq) / SR); yowl = np.tanh((yowl + 0.5 * np.sin(4 * np.pi * np.cumsum(fq) / SR)) * 2.0)
     put(fx, yowl * np.minimum(ty / 0.02, 1) * np.minimum((0.42 - ty) / 0.08, 1) * 0.10, 0.27)
     put(fx, rs(so.thump(), so.SR), 0.33, 0.8)
-    put(fx, rs(so.swish(0.3), so.SR), 0.72 + C0, 0.9); put(fx, rs(so.thump(), so.SR), 0.85 + C0, 1.6)       # the punch
+    put(fx, rs(so.swish(0.3), so.SR), 0.72 + C0 + HK, 0.9); put(fx, rs(so.thump(), so.SR), 0.85 + C0 + HK, 1.6)       # the punch
     put(fx, rs(so.swish(0.9), so.SR), 1.0 + C0, 0.5)                                                     # the shadow runs down the wall
     t_ = np.arange(int(0.5 * SR)) / SR                                                             # the whistle's toot
     if not (SCENE3[0] and thud is not None):                 # with the tap he blows on the tap; the flip's toot sat on "Traffic flows."
