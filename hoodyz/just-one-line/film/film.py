@@ -188,10 +188,10 @@ def shot_H(t):
         u = (t - 22) / 8; FI.burst(c, hx_ + 60, hy - 20, 40 + 20 * u, 4, WHITE, 6)
     # Hoody on the floor by the door
     if t < 3:                                                            # where the fight left him, until the door hits him
-        c.save(); c.translate(215, FLOOR - 10); P.hoody_seated(c, 0, 0, 'dizzy', legs=((170, -10), (300, 0))); c.restore()
+        c.save(); c.translate(215, FLOOR - 10); FI.floor_arms(c, P.hoody_seated(c, 0, 0, 'dizzy', legs=((170, -10), (300, 0)))); c.restore()
     elif t < 8:                                                          # BAM: knocked forward onto his front
         u = io((t - 3) / 5); c.save(); c.translate(lerp(215, 240, u), FLOOR - 10); c.rotate(1.3 * u)
-        P.hoody_seated(c, 0, 0, 'ouch', legs=((170, -10), (300, 0))); c.restore()
+        FI.floor_arms(c, P.hoody_seated(c, 0, 0, 'ouch', legs=((170, -10), (300, 0)))); c.restore()
     else: hoody_prone(c, 240, 'dizzy' if t < 14 else 'shock', t, reach=(lerp(560, 545, io((t - 60) / 6)), lerp(1300, 1170, io((t - 60) / 6))) if t >= 60 else None)
     if 3 <= t < 7: FI.burst(c, 300, FLOOR - 330, 110, 10, WHITE, 10)
     # MY AI on the desk: types; holds the card out for the stamp; takes the briefcase
