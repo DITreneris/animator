@@ -59,6 +59,29 @@ def relax(u):
     return dict(drop=2.0 * u, r=(9.0 * u, 10.0 * u, 1)) if u > 0.05 else None
 
 
+def catwalk(ph):
+    """(24 Nov, Tomas: "her walk lacks a cat's manners") one stride, ph 0..1 (two steps), seen from the front:
+    each foot set down on one line under her middle (a cat's track), the free knee coming up and round; the hips swing
+    out over the standing leg and the trunk tips with them; the head tips back the other way and stays level, eyes
+    ahead; the arms loose, wrists limp, swinging a little against the legs; lowest as a foot lands.
+    Returns (arms, gest, knee, rot, dx, tilt, dy) for pam_ and P."""
+    h = (ph % 1.0) * 2.0
+    left_stands = h < 1.0
+    u = h % 1.0                                              # through this step
+    sw = math.sin(math.pi * u)                               # the free foot's height
+    side = -1 if left_stands else 1                          # the side her weight is on (screen left: -1)
+    s_ = side * math.sin(math.pi * min(1.0, u * 1.15))       # the hips out over the standing leg, a little early
+    LINE = 13                                                # how far in a foot comes to reach the line under her
+    free_dx = (-side) * (-LINE) * (0.2 + 0.8 * u) + (-side) * 16 * (1 - u) * sw   # from out at its side, round, in to the line
+    stand = (side * -LINE, 0.0, side)                        # on the line, its knee to its own side
+    free = (free_dx, 15.0 * sw, -side)
+    kn = dict(drop=0.6 + 1.6 * abs(math.cos(math.pi * u)), l=stand if left_stands else free, r=free if left_stands else stand)   # the standing leg straight: no squat
+    a = math.cos(math.pi * h)                                # the paws against the legs: elbows in, hands at her chest, wrists limp; one dabs forward (lower), the other draws up
+    arms = oc.pm.ik(-1, -30, oc.BT + 84 + 16 * a) + oc.pm.ik(1, 30, oc.BT + 84 - 16 * a)
+    rot = 0.06 * s_
+    return arms, ("relax_s", "relax_s"), kn, rot, 12.0 * s_, -0.085 * s_, 0.0
+
+
 def pam_(k, p, sy=1.0, rot=0.0, kn=None):
     """her figure over a contact shadow on the ground under her boots (review: she floats)"""
     who, a, kw = p
