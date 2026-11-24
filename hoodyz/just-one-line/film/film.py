@@ -188,10 +188,10 @@ def shot_H(t):
         u = (t - 22) / 8; FI.burst(c, hx_ + 60, hy - 20, 40 + 20 * u, 4, WHITE, 6)
     # Hoody on the floor by the door
     if t < 3:                                                            # where the fight left him, until the door hits him
-        c.save(); c.translate(215, FLOOR - 10); P.hoody_seated(c, 0, 0, 'dizzy', legs=((170, -10), (300, 0))); c.restore()
+        c.save(); c.translate(215, FLOOR - 10); FI.floor_arms(c, P.hoody_seated(c, 0, 0, 'dizzy', legs=((170, -10), (300, 0)))); c.restore()
     elif t < 8:                                                          # BAM: knocked forward onto his front
         u = io((t - 3) / 5); c.save(); c.translate(lerp(215, 240, u), FLOOR - 10); c.rotate(1.3 * u)
-        P.hoody_seated(c, 0, 0, 'ouch', legs=((170, -10), (300, 0))); c.restore()
+        FI.floor_arms(c, P.hoody_seated(c, 0, 0, 'ouch', legs=((170, -10), (300, 0)))); c.restore()
     else: hoody_prone(c, 240, 'dizzy' if t < 14 else 'shock', t, reach=(lerp(560, 545, io((t - 60) / 6)), lerp(1300, 1170, io((t - 60) / 6))) if t >= 60 else None)
     if 3 <= t < 7: FI.burst(c, 300, FLOOR - 330, 110, 10, WHITE, 10)
     # MY AI on the desk: types; holds the card out for the stamp; takes the briefcase
@@ -293,7 +293,7 @@ def shot_JK(t, k_shot):
             hxx, hyy = A.hand_at(x, gy, AS, 1, pr); P.card(c, hxx + 70, hyy - 10, .9, rot=-.05)
         else: P.card(c, lt[0] - 70, lt[1] - 10, .9, rot=-.05)
     # the pot: hanging (K and the walk), lifted over the mug and tipped to pour (J 10-30)
-    hang = (shR[0] - 50, shR[1] + 215)
+    hang = (shR[0] - 70, shR[1] + 75)                                   # v2: the pot is held at his chest/belly (at +215 it hung at his crotch)
     over = (OUT[0] + 70, OUT[1] - 215)
     pu = io((j - 9) / 4) * (1 - io((j - 30) / 5)) if not k_shot else 0
     ph = (lerp(hang[0], over[0], pu), lerp(hang[1], over[1], pu))

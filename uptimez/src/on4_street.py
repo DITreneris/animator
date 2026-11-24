@@ -232,8 +232,9 @@ def setup_a(k, taillights=False):
     ox = cx + 18
     c.new_path(); c.move_to(ox - 18, fy - 2); c.line_to(ox - 18, fy - 44); c.arc(ox, fy - 44, 18, math.pi, 0); c.line_to(ox + 18, fy - 2); c.close_path(); c.fill()
     if taillights:
+        import on4_car as _car                              # (24 Nov) one red through the film: with the car's taillights grey, these too
         for dx in (-8, 8):
-            c.set_source_rgb(*NEON); c.new_path(); c.arc(ox + dx, fy - 12, 3.2, 0, 2 * math.pi); c.fill()
+            c.set_source_rgb(*(_car.TAIL if _car.TAIL_GREY[0] else NEON)); c.new_path(); c.arc(ox + dx, fy - 12, 3.2, 0, 2 * math.pi); c.fill()
     n = 21
     for i in range(n):                                       # the string of lights round the arch, down its right jamb
         a = math.pi + math.pi * i / (n - 1)

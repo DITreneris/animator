@@ -153,6 +153,11 @@ def draw(k, g, hx, hy, w, skin, d, arm):
             _cap(c, [(0.50 * w, -s_ * fy * w - s_ * 0.0), (1.20 * w, -s_ * fy * w)], t, skin)
     if g == "point":
         _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.35 * w, -s_ * 0.20 * w)], t, skin)  # the index, out
+    if g == "point_t":                                                # v5 (Daddy's Home v8 review 2, 24 Nov, opt-in): the index
+        _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.35 * w, -s_ * 0.20 * w)], t, skin)  # out, no thumb
+        c.restore(); return                                           # (big, "point"'s thumb across the knuckles read as a
+                                                                      # second, bent finger; pressed along the side, too): the
+                                                                      # thumb is behind the hand, seen from its back
     if g == "point_s":                                                # v4 (Daddy's Home v8 review, 24 Nov): the index 20 %
         _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.18 * w, -s_ * 0.20 * w)], t, skin)  # shorter, the thumb standing clear
         _cap(c, [(0.12 * w, s_ * 0.30 * w), (0.40 * w, s_ * 0.58 * w)], t, skin)

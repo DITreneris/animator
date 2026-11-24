@@ -94,5 +94,29 @@
    }
   ],
   "saturated": 0.01
+ },
+ "n8": {
+  "key": "n8",
+  "shot": "3.3",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "nobody stops for me",
+  "len": 1.6,
+  "asr": [
+   "Nobody stops for me.",
+   "Nobody stops for me.",
+   "Nobody stops for me."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "Nobody stops for me.",
+    "speed": 0.9,
+    "pitch_start": 209.2,
+    "pitch_end": 154.1,
+    "falls": true
+   }
+  ],
+  "saturated": 0.02
  }
 }

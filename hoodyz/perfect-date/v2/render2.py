@@ -57,8 +57,8 @@ hoody = _hoody
 
 ZOOM, ZC = 1.14, (560, 1400)                                          # the bench shot, framed the same at both ends
 
-def bench_shot(c, f):
-    c.save(); c.translate(*ZC); c.scale(ZOOM, ZOOM); c.translate(-ZC[0], -ZC[1])
+def bench_shot(c, f, z=ZOOM):
+    c.save(); c.translate(*ZC); c.scale(z, z); c.translate(-ZC[0], -ZC[1])
     park(c, f); bench(c, 220, 780, SEAT, GY)
 AI_X, EVA_X = 255, 885                                               # frame-0 places (bench coordinates), shared with the ending
 def bench_people(c, f, ai_x=AI_X, eva_x=EVA_X, ai_walk=None, eva_walk=None, bounce=True):
@@ -69,9 +69,7 @@ def bench_people(c, f, ai_x=AI_X, eva_x=EVA_X, ai_walk=None, eva_walk=None, boun
     b = abs(math.sin(f * .55)) if bounce else 0; sq = .06 * b         # MY AI bounces on its toes, eager, rubbing its mitts
     c.save(); c.translate(ai_x, GY + 70); c.scale(1 + sq * .5, 1 - sq); c.translate(-ai_x, -(GY + 70) - 26 * b)
     ai(c, ai_x, GY + 70, .88, eye='happy', tilt=10 if bounce else 0, look=(12, -4), arms=('hold', 'hold') if bounce else ('down', 'down'), walk=ai_walk, f=f)
-    if bounce:
-        mx, my = ai_x + 70 * .9, GY + 70 - 150 * .9
-        for q in (-1, 1): ell(c, mx + q * (14 + 10 * math.sin(f * 1.3)), my + q * 4, 22, 20); fs(c, WHITE, 5)
+    # v2.4: the two loose white balls (fake 'rubbing mitts') drawn on its chest are gone: its real hands are the arms ('hold')
     c.restore()
 
 def s_ask(c, f, r):   # frame 0: on the bench, the ask already on screen; MY AI in front of the bench, eager; Eva right there
@@ -235,19 +233,55 @@ def s_plonk(c, f, r):  # the insert, the string now snaps and curls back; then h
     pluck_hand(c, tip)
     if r >= 4: txt(c, 'plonk.', 540, 640, 110, NAVY, lw=0)
 
+def s_hit(c, f, r):  # v2.4: R.s20's wide impact, but the dust is BEHIND him (it was drawn over his legs and body: the grey ghost)
+    IMP = R.IMPACT
+    sh = 26 * math.exp(-(r - IMP) * .45) if r >= IMP else 0
+    c.translate(sh * math.sin(r * 7.3), sh * math.cos(r * 5.1))
+    park(c, f)
+    sag = 16 * math.exp(-(r - IMP) * .6) if r >= IMP else 0
+    q = r - IMP
+    if r >= IMP:
+        for i in range(9):                                            # the dust bursts out sideways, behind the bench and him
+            a = math.pi + i * math.pi / 8; d = 120 + q * 70
+            ell(c, 420 + math.cos(a) * d * 1.6, GY - 10 + math.sin(a) * d * .35, 70 + q * 8, 44 + q * 5)
+            c.set_source_rgba(.88, .80, .64, max(0, .85 - q * .12)); c.fill()
+    c.save(); c.translate(0, sag); bench(c, 220, 780, SEAT, GY); c.restore()
+    Sh.cat_one_eye(c, 700, SEAT - 6 + sag, .62, open_eye=(5 <= r < 8))
+    if r < IMP:
+        y1 = SEAT - 120 + (r - IMP) * 500
+        rr(c, 360, y1 - 900, 120, 900, 60); c.set_source_rgba(*NAVY, .85); c.fill()
+        for i in range(4): c.move_to(330 + i * 60, y1 - 1000); c.line_to(330 + i * 60, y1 - 1400); c.set_source_rgba(1, 1, 1, .9); c.set_line_width(8); c.stroke()
+        return
+    if r <= IMP + 1:
+        c.save(); c.translate(420, SEAT - 200); c.move_to(0, -420)
+        for i in range(1, 33): rad = 420 if i % 2 == 0 else 200; c.line_to(rad * math.sin(i * math.pi / 16), -rad * math.cos(i * math.pi / 16))
+        c.close_path(); fs(c, YEL, 12); c.restore()
+    sq = .35 * math.exp(-q * .7) * math.cos(q * 1.6)
+    c.save(); c.translate(420, SEAT + sag); c.scale(1 + sq, 1 - sq); c.translate(-420, -SEAT - sag)
+    hoody(c, 420, SEAT + sag, .82, expr='spiral' if r > IMP + 1 else 'shock', pose='sit', seat=(220, 780), arms=('flail', 'flail'), f=f, blink=False)
+    c.restore()
+
 def s_land(c, f, r):  # the fall, BOOM onto the bench, dizzy 0.5 s; then MY AI and Eva walk back to their frame-0 places
     if r < R.IMPACT:                                                  # him, falling, with speed lines (the old streak read as 'a dark bar')
         park(c, f); bench(c, 220, 780, SEAT, GY); Sh.cat_one_eye(c, 700, SEAT - 6, .62, open_eye=False)
         y = SEAT - 900 + r * 300
         for i in range(5): c.move_to(330 + i * 45, y - 520 - i * 20); c.line_to(330 + i * 45, y - 900 - i * 20); c.set_source_rgba(1, 1, 1, .95); c.set_line_width(9); c.stroke()
         hoody(c, 420, y, .82, expr='shock', pose='float', arms=('flail', 'flail'), legs='pedal', f=f, blink=False); return
-    if r < 9: R.s20(c, f, r); return
+    zz = lambda r_: 1 + (ZOOM - 1) * ss(cl((r_ - 4) / 16))              # v2.4: ONE camera move after the hit, not a snap from 1.0 to 1.14 at r = 9
+    if r < 9:
+        c.save(); c.translate(*ZC); c.scale(zz(r), zz(r)); c.translate(-ZC[0], -ZC[1]); s_hit(c, f, r); c.restore(); return
     q = r - 9
-    bench_shot(c, f)
+    c.save(); c.translate(*ZC); c.scale(zz(r), zz(r)); c.translate(-ZC[0], -ZC[1])
+    for i in range(5):                                                # the last of the dust: BEHIND him now (v2.3 drew it over his legs = grey legs)
+        ell(c, 260 + i * 90, GY - 10, 60, 30); c.set_source_rgba(.88, .80, .64, max(0, .5 - q * .03)); c.fill()
+    c.restore()
+    bench_shot(c, f, zz(r))
     Sh.cat_one_eye(c, 705, SEAT - 6, .62, open_eye=5 < q < 15)
     shake = q >= 15; u = (q - 15) / 7 if shake else 0
     gz = (-20 if u >= 1 else 34 * math.sin(u * 3 * math.pi)) if shake else 0
-    hoody(c, 500, SEAT, .82, expr='spiral' if not shake or u < .4 else 'hopeful', pose='sit', seat=(220, 780), gaze=gz, f=f, blink=False)
+    hxx = lerp(420, 500, ss(cl((r - 8) / 12)))                         # v2.4: he slides from where he hit (x 420) to his frame-0 seat, with the camera
+    arm = 'flail' if q < 2 else 'out' if q < 4 else 'take' if q < 6 else 'rest'      # v2.4: the arms come down in steps, not in one frame
+    hoody(c, hxx, SEAT, .82, expr='spiral' if not shake or u < .4 else 'hopeful', pose='sit', seat=(220, 780), arms=(arm, arm), gaze=gz, f=f, blink=False)
     hy = SEAT - 520
     for i in range(3):                                                # stars circling his head, flung off on the shake
         if shake and u > .8: break
@@ -255,8 +289,6 @@ def s_land(c, f, r):  # the fall, BOOM onto the bench, dizzy 0.5 s; then MY AI a
         c.save(); c.translate(500 + math.cos(a) * 110 * fly, hy + math.sin(a) * 22 * fly - 120 * cl(u)); c.scale(.6, .6); c.move_to(0, -30)
         for j in range(1, 10): rad = 30 if j % 2 == 0 else 12; c.line_to(rad * math.sin(j * math.pi / 5), -rad * math.cos(j * math.pi / 5))
         c.close_path(); fs(c, YEL, 4); c.restore()
-    for i in range(5):                                                # the last of the dust
-        ell(c, 260 + i * 90, GY - 10, 60, 30); c.set_source_rgba(.88, .80, .64, max(0, .5 - q * .03)); c.fill()
     if q >= 12:                                                       # they walk back in, in front of the bench, and stop on their marks
         k = ss(cl((q - 12) / 20)); moving = k < .99
         bench_people(c, f, ai_x=lerp(-160, AI_X, k), eva_x=lerp(1240, EVA_X, k),
