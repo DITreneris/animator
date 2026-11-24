@@ -299,6 +299,7 @@ def _loc2(k, name):
 
 sc._loc = _loc2
 PX, PF = 300, 716                                            # where she stands on the crossing (side view)
+CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
 def t3():
@@ -310,19 +311,19 @@ def t3():
     D_STOP = ("stop", "confused", dict(paddle_side="STOP", chin=1))
     D_EDGE = ((-8, 0, 92, -40), "confused", dict(paddle_side="EDGE", chin=1))
     D_GO = ("wave", "pleased", dict(paddle_side="GO", paddle_ang=0.10, whistle_in=True))
-    STOPX = PX + 40 + 170
+    STOPX = PX + 40 + 170 * CAR_S
     def side(cx, don, pam, burst=False):
         kind, px, pf, ps, arms, gest, lean, face, look = pam
         dpose, dface, dkw = don
         def after(k):
             c = k.c
             if cx < 900:
-                g = cairo.LinearGradient(cx - 170, 0, cx - 420, 0)
+                g = cairo.LinearGradient(cx - 170 * CAR_S, 0, cx - 170 * CAR_S - 250, 0)
                 g.add_color_stop_rgba(0, 1, 1, 0.92, 0.5); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
-                c.set_source(g); c.move_to(cx - 168, 652); c.line_to(cx - 430, 600); c.line_to(cx - 430, 720); c.line_to(cx - 168, 672); c.close_path(); c.fill()
+                c.set_source(g); c.move_to(cx - 168 * CAR_S, 724 - 72 * CAR_S); c.line_to(cx - 168 * CAR_S - 262, 600); c.line_to(cx - 168 * CAR_S - 262, 720); c.line_to(cx - 168 * CAR_S, 724 - 52 * CAR_S); c.close_path(); c.fill()
             if kind == "down":
                 c.save(); c.translate(PX, PF - 6); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
-            car.side(k, cx, 724, 1.0)
+            car.side(k, cx, 724, CAR_S)
             if burst:
                 sc._burst(k, PX + 34, PF - 60, 40)
         cast = [P("don", 170, 596, 0.42, dpose, dface, (0.9, -0.2), **dkw)]
@@ -357,10 +358,10 @@ def t6():
     the ringed hand lets the bills go, they drift onto her; the car backs away; two shadows walk in, pluck the bills
     off her, step over her and go. Nobody looks down."""
     fr = []
-    STOPX = PX + 40 + 170
-    CA, CB = (300, 610, 1.45), (392, 600, 1.02)
+    STOPX = PX + 40 + 170 * CAR_S
+    CA, CB = (300, 610, 1.45), (440, 480, 0.95)
     BILLS = [(196, 682), (236, 700), (262, 686), (292, 702), (322, 688), (350, 700)]   # v10 (Tomas): more of them; six land on her, Don catches a seventh
-    DX, DY, DS = 352, 772, 0.56                                  # v5: Don on the road in front of the bonnet, nearer than the car
+    DX, DY, DS = 380, 772, 0.56                                  # v5: Don on the road in front of the bonnet, nearer than the car
     def f(i):
         cam = CA if i < 36 else lerp(CA, CB, ease(min(1.0, (i - 36) / 6.0)))
         cx = STOPX + (0 if i < 57 else ((i - 57) / 7.0) ** 2 * 420)                # the car backs away
@@ -376,7 +377,7 @@ def t6():
         else:
             t = min(1.0, (i - 62) / 8.0); don = P("don", DX - (DX - 170) * t, DY - (DY - 596) * t, DS - (DS - 0.42) * t, "stand", "neutral", (-0.8, 0), paddle_side="GO", paddle_ang=0.9)
         wave = 24 <= i < 38 and (i // 3) % 2 == 0
-        TH = (PX - 96, PX + 92)                                                      # v8 (Tomas): one at her head, one at her feet
+        TH = (PX - 112, PX + 104)                                                      # v8 (Tomas): one at her head, one at her feet
         LIFT, GO = 73, 76                                                           # they take the money, pick her up, carry her off
         cdx = -32.0 * max(0, i - GO)                                                # the carry: everything moves left together
         cdy = -34.0 * min(1.0, max(0.0, (i - LIFT) / 3.0)) + (4 if (i > GO and i % 2) else 0)
@@ -385,7 +386,7 @@ def t6():
             if t < 0:
                 return None
             if t < 1:
-                return (660 - (660 - TH[j]) * t, t, "in")
+                return (780 - (780 - TH[j]) * t, t, "in")
             return (TH[j] + cdx, t, "take" if i < GO else "go")
         def after(k):
             c = k.c
@@ -395,18 +396,18 @@ def t6():
                 if th is None:
                     continue
                 x, t, ph = th
-                st.thug(k, x, 704, 0.40, "open" if (ph != "take" and int(t * 6) % 2) else (-30, 20, 30, -20), seed=4500 + j,
+                st.thug(k, x, 700, 0.55, "open" if (ph != "take" and int(t * 6) % 2) else (-30, 20, 30, -20), seed=4500 + j,
                         hands=("grab", "grab") if ph != "in" else ("relax", "relax"), lean=0.0)
-                hands[j] = (x - 6, 704 - 150, ph, t)                                 # the bill held up over his head
+                hands[j] = (x + 10, 700 - 196, ph, t)                                 # the bill held up over his head
             c.save(); c.translate(PX + cdx, PF - 6 + cdy); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG)
             if wave:
                 sc._wave(k)
             c.restore()
-            car.side(k, cx, 724, 1.0)
+            car.side(k, cx, 724, CAR_S)
             sc.draw_cast(k, [don])                                                   # in front of the car, not on it
-            wx, wy = cx + 74, 724 - 86                                               # the rear window
+            wx, wy = cx + 74 * CAR_S, 724 - 86 * CAR_S                                               # the rear window
             if 44 <= i < 62:
-                c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(cx + 38, 724 - 96, 72, 22); c.fill()   # the glass down
+                c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(cx + 38 * CAR_S, 724 - 96 * CAR_S, 72 * CAR_S, 22 * CAR_S); c.fill()   # the glass down
             if 46 <= i < 60:                                                         # the cuff and the ringed hand out of it
                 st.poly(k, [(wx + 30, wy - 6), (wx - 8, wy - 2), (wx - 6, wy + 12), (wx + 30, wy + 10)], dc.VELVET, 1.6)
                 kit.ellipse(k, wx - 16, wy + 8, 11, 8, dc.SKIN_F, 7801, shadow=False, lw=1.6)
@@ -629,41 +630,41 @@ def t8():
     club's door; they walk on and out. She lies there; then she comes up off the pavement stiff as a plank, puts her
     mask straight, and stands where 4.1 finds her. 57 drawings, 4.75 s, in 4.1's camera."""
     import on4_lying as ly
-    CAM = (270, 462, 1.05)
+    CAM = (300, 640, 1.8)                                     # v11: people at the door's scale (the arch 1.1 of her), the camera in on them
     X0, GYp = 400, 714                                       # where 4.1 has her; the pavement
     def bill(k, x, y, ang):
         c = k.c
-        ly.bill(k, x, y, ang, 1.8, seed=0)
+        ly.bill(k, x, y, ang, 1.2, seed=0)
         c.save(); c.translate(x, y); c.rotate(ang); c.set_source_rgb(0.12, 0.16, 0.10)
-        c.select_font_face("sans-serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(18)
-        c.move_to(-5, 6); c.show_text("$"); c.restore()
+        c.select_font_face("sans-serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(12)
+        c.move_to(-3, 4); c.show_text("$"); c.restore()
     def f(i):
         carry = i < 15
-        cx = X0 - 96 + (1 - i / 14.0) * 330 if carry else X0 - 96         # her middle while carried (she lies head to the left)
-        lift = -40 + (4 if i % 2 else 0) if carry else min(0, -40 + (i - 14) * 22)
+        cx = X0 - 70 + (1 - i / 14.0) * 250 if carry else X0 - 70         # her middle while carried (she lies head to the left)
+        lift = -30 + (3 if i % 2 else 0) if carry else min(0, -30 + (i - 14) * 16)
         cast = []
         if i >= 30:                                          # up off the pavement, stiff as a plank, about her heels
             t = ease(min(1.0, (i - 30) / 11.0))
             if i < 44:
-                cast = [P("pam_cat", X0, GYp, 0.70, "hero", "doubt", (0.2, -0.4), lean=-1.45 * (1 - t), rim=True)]
+                cast = [P("pam_cat", X0, GYp, 0.50, "hero", "doubt", (0.2, -0.4), lean=-1.45 * (1 - t), rim=True)]
             elif i < 51:
-                cast = [P("pam_cat", X0, GYp, 0.70, "mask_fix", "doubt", (-0.4, -0.2), rim=True)]
+                cast = [P("pam_cat", X0, GYp, 0.50, "mask_fix", "doubt", (-0.4, -0.2), rim=True)]
             else:
-                cast = [P("pam_cat", X0, GYp, 0.70, "hero", "approve", (-0.4, -1), rim=True)]
+                cast = [P("pam_cat", X0, GYp, 0.50, "hero", "approve", (-0.4, -1), rim=True)]
         def after(k):
             c = k.c
-            for j, off in enumerate((-96, 92)):              # the shadows: one at her head, one at her feet; then on, and out to the left
-                x = cx + off if carry else X0 - 96 + off - max(0, i - 18) * 30
+            for j, off in enumerate((-78, 72)):              # the shadows: one at her head, one at her feet; then on, and out to the left
+                x = cx + off if carry else X0 - 70 + off - max(0, i - 18) * 22
                 if x < -60:
                     continue
-                st.thug(k, x, GYp - 12, 0.44, "open" if i % 2 else (-30, 20, 30, -20), seed=4500 + j,
+                st.thug(k, x, GYp - 8, 0.40, "open" if i % 2 else (-30, 20, 30, -20), seed=4500 + j,
                         hands=("grab", "grab") if carry or i < 18 else ("grab", "relax"), lean=0.0)
                 for n_ in range(3):                             # v10: a fan of three in his fist, beside his head
-                    bill(k, x + 46 + n_ * 5, GYp - 12 - 128 - n_ * 12, 0.5 - 0.3 * n_)
+                    bill(k, x + 40 + n_ * 4, GYp - 8 - 112 - n_ * 9, 0.5 - 0.3 * n_)
             if i < 30:
-                c.save(); c.translate(cx, GYp - 6 + lift); c.scale(0.66, 0.66); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
+                c.save(); c.translate(cx, GYp - 6 + lift); c.scale(0.47, 0.47); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
             if i in (16, 17):                                # dropped
-                sc._burst(k, X0 - 200, GYp - 4, 22); sc._burst(k, X0 + 10, GYp - 4, 22)
+                sc._burst(k, X0 - 150, GYp - 4, 16); sc._burst(k, X0 + 6, GYp - 4, 16)
         return draw(shot("4.1", cam=CAM, cast=cast, after=after, protect=()))
     return [f(i) for i in range(57)]
 

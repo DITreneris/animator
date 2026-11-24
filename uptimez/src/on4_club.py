@@ -51,6 +51,8 @@ VELVET, VELVET_D = dc.VELVET, dc.VELVET_D
 FELT = (0.18, 0.36, 0.26)
 HALL_LAMP = ["v6"]               # v7 (23 Nov): Dad hidden by the dark over a small lamp; "v6" the big shade
 PLAN_CARD = ["v6"]               # v7: one title, every number seen, the card laid down and the hand off it; "v6" as before
+LIMO = [(150, 0.74)]              # v8 (proportion audit): (x, scale) of the limousine at the kerb; on4_scenes sets (30, 1.15)
+CLIENT_DY = [0]                  # v8: the Client lower in his booth (he sat as tall as Pam stands)
 FRONT_LIGHT = ["v6"]             # v7: the facade's edges dark, the marquee's light on the car's roof, the car nearer the arch
 LOG = {}
 
@@ -160,7 +162,7 @@ def front(k, limo=False):
     st.setts(k, road, 694, 960, -10, 550, -10, 550, seed=55)
     if limo:                                                              # v6: Dad's limousine, nose left, its mirror in the wet stone
         import on4_car as car
-        car.reflect(k, lambda: car.side(k, 150, 712, 0.74), 712, 0.30, 60)
+        car.reflect(k, lambda: car.side(k, LIMO[0][0], 712, LIMO[0][1]), 712, 0.30, 60)
     else:
         sedan_side(k, 120, 716, 0.72)                                     # left, clear of the arch and above the dead zone
 
@@ -187,7 +189,7 @@ def light_front(c, limo=False):
         c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
     if limo:
         import on4_car as car
-        car.glow(c, "side", 150, 712, 0.74)
+        car.glow(c, "side", LIMO[0][0], 712, LIMO[0][1])
 
 
 def inside(k):
@@ -221,8 +223,8 @@ def inside(k):
     st.poly(k, [(262, 470), (470, 470), (470, 660), (262, 660)], VELVET_D, 2.4)
     for xx in range(282, 470, 46):
         c.set_source_rgb(*VELVET); c.rectangle(xx, 476, 30, 178); c.fill()
-    co.client(k, 316, 720, 0.42, "open", "plain", look=(0.6, 0.8), roll=False, badge=False)
-    o = dc.father(k, 416, 724, 0.68, (-20, 30, 20, -30), "hard", (-0.6, 0.6))              # at the Client's size (measured)
+    co.client(k, 316, 720 + CLIENT_DY[0], 0.42, "open", "plain", look=(0.6, 0.8), roll=False, badge=False)
+    o = dc.father(k, 416, 724 + CLIENT_DY[0], 0.68, (-20, 30, 20, -30), "hard", (-0.6, 0.6))              # at the Client's size (measured)
     hx, hy = o["head"]
     LOG["dad_head"] = (round(hx), round(hy))
     c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(hx, 380); c.line_to(hx, hy - 32); c.stroke()  # the lamp hangs low: its
@@ -331,8 +333,8 @@ def hall(k):
     st.poly(k, [(24, 470), (236, 470), (236, 656), (24, 656)], VELVET_D, 2.2)
     for xx in range(34, 230, 26):
         c.set_source_rgb(*VELVET); c.rectangle(xx, 476, 15, 172); c.fill()
-    co.client(k, 84, 712, 0.42, "open", "plain", look=(0.7, 0.8), roll=False, badge=False)
-    o = dc.father(k, 180, 716, 0.68, (-20, 30, 20, -30), "hard", (-0.6, 0.6))
+    co.client(k, 84, 712 + CLIENT_DY[0], 0.42, "open", "plain", look=(0.7, 0.8), roll=False, badge=False)
+    o = dc.father(k, 180, 716 + CLIENT_DY[0], 0.68, (-20, 30, 20, -30), "hard", (-0.6, 0.6))
     hx, hy = o["head"]
     LOG["dad_head"] = (round(hx), round(hy))
     if HALL_LAMP[0] == "v6":

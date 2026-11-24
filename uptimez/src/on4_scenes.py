@@ -740,11 +740,11 @@ SCENES = [
     ]),
     ("04 False recognition", [
         S("4.1", "wide, low angle", "front", (270, 462, 1.05), "A new place, held: the car parked and empty, the club door, the marquee coming on line "
-          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 400, 714, 0.70, "hero", "approve", (-0.4, -1), rim=True)],
-          protect=[("marquee", (270, 340)), ("the car", (150, 680))], line="Pam: There you are.", eyeline="to the car, then up"),
+          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 400, 714, 0.50, "hero", "approve", (-0.4, -1), rim=True)],
+          protect=[("marquee", (270, 340)), ("the car", (120, 660))], line="Pam: There you are.", eyeline="to the car, then up"),
         S("4.3", "medium, under the sign", "front", (270, 545, 1.45), "She points up at the sign, then at herself; turns to show "
           "someone: the street is empty. A small smile anyway; she pats her ears up and pushes the door.",
-          cast=[P("pam_cat", 300, 712, 0.62, "point_sign", "proud", (0.4, -1), lean=0.05)], protect=[("ONLY FOR YOU", (270, 416))],
+          cast=[P("pam_cat", 300, 712, 0.50, "point_sign", "proud", (0.4, -1), lean=0.05)], protect=[("ONLY FOR YOU", (270, 416))],
           eyeline="to the sign, then to nobody", action="the point at the sign, at herself", reaction="Finally."),
     ]),
     ("05 The club", [
@@ -941,6 +941,8 @@ def _desk(k, sh, eighth):
 
 def render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
+    import on4_club as cl
+    cl.LIMO[0] = (30, 1.15); cl.CLIENT_DY[0] = 0      # the Client stands behind the booth table (his legs reach the floor): left as he was
     st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"; oc.ENV_BIG[0] = 1.25; oc.MASK_UP_V2[0] = True
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W * scale, H * scale); s.set_device_scale(scale, scale)
     c = cairo.Context(s); k = Ctx(c, 0)
