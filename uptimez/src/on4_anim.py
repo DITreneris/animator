@@ -46,8 +46,10 @@ KNEE_K = 0.6                                               # (review: "the knees
 
 def kneel(drop, **kw):
     """_pam's knee dict, or None when the knees are straight"""
+    if m.LAW[0] and not kw and drop <= 20:                 # (24 Nov) no squat with both knees out (a diamond): the weight on one leg, the other loose
+        return relax(min(1.0, drop / 12.0))
     kw = {k_: (v[0], v[1] * KNEE_K, v[2]) for k_, v in kw.items()}
-    drop = drop * KNEE_K
+    drop = drop * KNEE_K * (0.5 if m.LAW[0] else 1.0)
     return dict(drop=drop, **kw) if drop > 2.5 or kw else None
 
 
@@ -203,6 +205,9 @@ def a41(t):
         pam_(k, p, breath(t), 0.0, None)
         if flick:
             k.c.set_source_rgb(0.03, 0.03, 0.04); k.c.rectangle(96, 392, 348, 34); k.c.fill()
+    if m.LAW[0]:                                           # (24 Nov) from where 3.6 left her, at its size; the camera pulls back to the marquee, landing on its flicker
+        cam = lerp((300.0, 640.0, 1.8), (270.0, 462.0, 1.05), ease(seg(t, 0.6, 1.45)))     # ends on the shot's own camera
+        return draw(shot("4.1", cam=cam, cast=[], after=after, protect=()))
     return draw(shot("4.1", cast=[], after=after, protect=()))
 
 
@@ -264,6 +269,10 @@ def a53(t):
         u = ease(seg(t, 2.0, 2.3)); x = 250 + 40 * u
         arms, gest, env = lerp(LIFT, oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 10, oc.BT + 40), u), ("relax_s", "grab"), True
         kn = kneel(8); rot = 0.03
+    if m.LAW[0]:                                           # sneaking: low, both knees the way she goes (not out to both sides)
+        d_ = 10 if t < 0.9 else (14 if t < 2.0 else 8)
+        st2 = int(t * 10) % 2 if t < 0.9 else 0
+        kn = dict(drop=d_, l=(-3, 8 if st2 else 0, -1), r=(-3, 0 if (st2 or t >= 0.9) else 8, -1))
     p = P("pam_cat", x, 716, 0.46, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env)
     def after(k):
         card(k, t)
@@ -313,10 +322,14 @@ def a61(t):
         u = ease(seg(t, 0.0, 0.45))
         arms = ENVH + lerp(oc.pm.ik(1, 50, -128), oc.pm.ik(1, (KX - X) / 0.86, -40), u)
         kn = kneel(46 * u, l=(-8, 0, -1), r=(14 * u, 0, 1)); rot = 0.18 * u; held = False
+        if m.LAW[0]:                                       # a lunge to the knife: the far leg out and long, the near knee bent; more from the waist
+            kn = dict(drop=20 * u, l=(-30 * u, 0, -1), r=(8 * u, 0, 1)); rot = 0.27 * u
     elif t < 0.9:                                              # up with it
         u = ease(seg(t, 0.6, 0.9))
         arms = ENVH + lerp(oc.pm.ik(1, (KX - X) / 0.86, -40), oc.pm.ik(1, 30, -176), u)
         kn = kneel(46 * (1 - u)); rot = 0.18 * (1 - u); held = True
+        if m.LAW[0]:
+            kn = dict(drop=20 * (1 - u), l=(-30 * (1 - u), 0, -1), r=(8 * (1 - u), 0, 1)) if u < 0.97 else None; rot = 0.27 * (1 - u)
     else:                                                      # the slit: across the top of the envelope, then the sheet out
         u = ease(seg(t, 0.95, 1.2))
         arms = ENVH + lerp(oc.pm.ik(1, 30, -176), oc.pm.ik(1, -40, -176), u)        # at her chest: nothing over her eyes

@@ -458,7 +458,14 @@ def motto(k):
     """v9: Daddy's Home's motto over the booth (dh_props.booth's), in exact NEON so the accent pass keeps it red; drawn by
     on4_scenes after the hall's dark (which would grey it)."""
     c = k.c
-    for i, (txt, sz) in enumerate((("THE HOUSE", 15), ("ALWAYS", 21), ("COLLECTS", 21))):
+    rows = (("THE HOUSE", 15), ("ALWAYS", 21), ("COLLECTS", 21))
+    import on4_posters as _po
+    if _po.ON[0]:                                          # (24 Nov) one backing under all three, then the words: each row's backing cut the foot of the word above
+        c.set_source_rgba(0.10, 0.01, 0.03, 0.85); c.rectangle(46, 362, 168, 86); c.fill()
+        for i, (txt, sz) in enumerate(rows):
+            kit.text(k, txt, 130, 384 + i * 28, sz, NEON)
+        return
+    for i, (txt, sz) in enumerate(rows):
         yy = 384 + i * 27
         c.set_source_rgba(0.10, 0.01, 0.03, 0.85); c.rectangle(46, yy - 22, 168, 28); c.fill()
         kit.text(k, txt, 130, yy, sz, NEON)

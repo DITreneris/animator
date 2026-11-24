@@ -326,12 +326,15 @@ def seat3_people(k, hand, env, dad, t=None):
     lk = (0.25, 0.9)
     if t is not None:                                        # DENSE: he breathes; his eyes go to Dad's hand as it comes, and back to the envelope
         to_dad = max(0.0, min(1.0, dad * 1.6)) * (1.0 if env == "hand" else 0.0) * max(0.0, 1 - max(0.0, t - 1.6) / 0.5)
-        lk = (0.25 + 0.65 * to_dad, 0.9 - 0.3 * to_dad)
+        up_ = max(0.0, min(1.0, (co.BT + 150 - hand[1]) / 88.0))                 # the envelope on its way up to his coat: his eyes go with it, his head tips to it
+        lk = (0.25 + 0.65 * to_dad - 0.2 * up_, 0.9 - 0.3 * to_dad - 0.55 * up_)
+        if env == "coat" and up_ < 0.05:                     # put away: a look across at Dad
+            lk = (0.85, 0.3)
     c.push_group(); o = co.client(k, 200, 728, 0.74, arms, "plain", look=lk, roll=False, badge=False); c.pop_group()
     hx, hy = o["hands"][1]
     cx_, cy_ = o["head"][0] + 14, o["head"][1] + 104       # his chest, under the left lapel
     if t is not None:
-        c.save(); c.translate(200, 728); c.scale(1.0, 1.0 + 0.008 * math.sin(2 * math.pi * t / 2.6)); c.translate(-200, -728)
+        c.save(); c.translate(200, 728); c.rotate(0.035 * up_); c.scale(1.0, 1.0 + 0.008 * math.sin(2 * math.pi * t / 2.6)); c.translate(-200, -728)
     o = co.client(k, 200, 728, 0.74, arms, "plain", look=lk, roll=False, badge=False)
     if t is not None:
         c.restore()
@@ -371,7 +374,8 @@ def t2():
     seq += [(CHEST, "coat", 1)] * 2 + [(lerp(CHEST, KNEE, t), "coat", 1) for t in (0.5, 1.0)] + [(KNEE, "coat", 1)] * 6   # under his lapel
     g = lazy(lambda a: draw(shot("2.2", loc="seat3", cam=sc.WIDE, cast=(), protect=(), after=lambda k: seat3_people(k, *a))))
     if DENSE[0]:                                             # 43 keys for 3.6 s: the holds longer now that they live
-        seq = [(KNEE, "hand", 0)] * 4 + seq[:16] + [(KNEE, "hand", 1)] * 2 + seq[16:] + [(KNEE, "coat", 1)] * 7
+        seq = [(KNEE, "hand", 0)] * 4 + seq[:16] + [(KNEE, "hand", 1)] * 2 + seq[16:-6]
+        seq += [((62 + 10 * (1 - abs(math.cos(j * math.pi / 4.0))), co.BT + 150 - 26 * abs(math.sin(j * math.pi / 4.0))), "coat", 1) for j in range(43 - len(seq))]   # the hand does not lie dead: it pats the lapel flat, twice
         return [g(a + (i / 12.0,)) for i, a in enumerate(seq)]
     return [g(a) for a in seq]
 
@@ -724,7 +728,7 @@ def t4():
         off = draw(shot("6.3", loc="stage_dark", after=None))    # v3: the light goes out while we still see all of her
         fr += [off, off, off]
     def close(t, face, look, b=1.0):
-        arms = lerp(UP, DOWN, ease(t))
+        arms = lerp(UP, DOWN, ease(min(1.0, t)) + max(0.0, t - 1.0))
         cast = [P("pam_cat", 262, 950, 1.5, pose(arms, ("relax_s", "fist")), face, look, env=True, rim=True)]
         sc.BREATH[0] = b
         try:
@@ -736,8 +740,8 @@ def t4():
         n = 0
         for lx in (-0.3, -0.7, -0.9, -0.9, -0.85, -0.5, 0.1, 0.6, 0.9, 0.9, 0.85, 0.6):            # her eyes cross the room and back: nobody
             fr.append(close(0.0, "hopeful", (lx, 0.05 * math.sin(n)), BR(14 + n))); n += 1
-        for j in range(14):                                                                        # the arm comes slowly down; her shoulders with it
-            t = (j + 1) / 14.0
+        for j in range(14):                                                                        # the arm comes slowly down; her shoulders with it; it swings a little past and back
+            t = (j + 1) / 12.0 if j < 12 else (1.07, 1.0)[j - 12]
             fr.append(close(t, "doubt" if t < 0.5 else "fade", (0.3, 0.3 + 0.5 * t), BR(14 + n) - 0.012 * t)); n += 1
         for i in range(16):
             fr.append(close(1.0, "fade", (0.4 - 0.02 * i, 0.9), BR(14 + n) - 0.012 - 0.0012 * i)); n += 1   # Of course. (a little lower with each breath)
@@ -782,7 +786,7 @@ def t5():
       for _ in range(6):
         fr.append(draw(shot("8.1")))                         # the rota over the cups, her head down
     r = random.Random(5)
-    def close(d, rain):
+    def close(d, rain, bl=0, pu=0.0):
         import sys
         held = [(m, m.shredder) for m in list(sys.modules.values()) if callable(getattr(m, "shredder", None))]
         for m, _f in held:                                   # v5: no shredder in the last shot (seen in the dark by both cold viewers)
@@ -801,27 +805,28 @@ def t5():
         g = cairo.RadialGradient(HX, HY, 4, HX, HY, 80)
         g.add_color_stop_rgba(0, st.NEON[0], st.NEON[1], st.NEON[2], 0.45 * d); g.add_color_stop_rgba(1, st.NEON[0], st.NEON[1], st.NEON[2], 0)
         c0.set_source(g); c0.paint()
-        oc.seal(c0, HX, HY, 22)                            # (review) as big as frame 0's neon heart
-        c = cairo.Context(s); g = cairo.LinearGradient(0, ay + 180, 0, ay + 236)                    # v4: the floor (the shredder) goes first
+        oc.seal(c0, HX, HY, 22 * (1.0 + 0.04 * pu))        # (review) as big as frame 0's neon heart; DENSE: it beats (never on the last drawings: the loop)
+        c = cairo.Context(s); g = cairo.LinearGradient(0, ay + (110 if DENSE[0] else 180), 0, ay + (300 if DENSE[0] else 236))   # v4: the floor (the shredder) goes first; DENSE: a soft edge, not a line across the room
         g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0.01, 0.01, 0.02, min(1.0, d * 1.6))
         c.set_source(g); c.paint()
         if rain and CAT[0]:                                  # v6: two eyes open in the dark; the loop, and the cat leaps
             import cat_on as ct
             c = cairo.Context(s)
             for ex in (118, 150):
-                ct._eye(c, ex, 640, 9, "closed" if rain < 0.5 else "open", slit=rain >= 1.0)
+                ct._eye(c, ex, 640 + (2 if bl == 2 else 0), 9, "closed" if (rain < 0.5 or bl == 1) else "open", slit=rain >= 1.0)
         if rain:
             c = cairo.Context(s); c.set_source_rgba(1, 1, 1, 0.5 * rain); c.set_line_width(2)
-            for _ in range(26):
-                x = ax + r.uniform(-90, 90); y = ay + r.uniform(20, 260)
+            for _ in range(80 if DENSE[0] else 26):
+                x = ax + (r.uniform(-ax, 540 - ax) if DENSE[0] else r.uniform(-90, 90)); y = ay + (r.uniform(-ay, 800 - ay) if DENSE[0] else r.uniform(20, 260))   # DENSE: over the whole frame: rain, not a fault under the desk
                 c.move_to(x, y); c.line_to(x - 5, y + 22); c.stroke()
         return s
     close = lazy(close); blend_ = lazy(blend)
     if DENSE[0]:                                             # 58 keys for 8.1 + 8.2 (4.8 s): the dark comes evenly; the rain is drawn afresh on every key; the eyes open
+        beat = lambda j: max(0.0, math.sin(2 * math.pi * j / 10.0)) ** 2
         for j in range(20):
-            fr.append(close(0.25 + 0.75 * ease((j + 1) / 20.0), 0))
-        for j in range(24):
-            fr.append(close(1.0, 0.3 + 0.7 * min(1.0, j / 10.0) if j < 22 else 1.0))
+            fr.append(close(0.25 + 0.75 * ease((j + 1) / 20.0), 0, 0, beat(j)))
+        for j in range(24):                                  # the eyes open; a blink; they drop a little and come back; still for the loop
+            fr.append(close(1.0, 0.3 + 0.7 * min(1.0, j / 10.0) if j < 22 else 1.0, 1 if j in (14, 15) else (2 if j in (17, 18, 19) else 0), beat(20 + j) if j < 18 else 0.0))
         return fr
     for d in (0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 1.0):                                    # the room goes dark round the lamp
         fr.append(close(d, 0))
@@ -889,9 +894,13 @@ def t7():
         c.set_line_width(4)
         for y_ in range(PY + 10, GY - 120, 28):
             c.move_to(LX - 30, y_); c.line_to(LX + 30, y_); c.stroke()
-    def f(pam=None, lid=0, shake=0, fall=None, pl=None, burst=False, clip=False, climb=None):
+    BMX = (BX0 + BX1) / 2.0
+    def f(pam=None, lid=0, shake=0, fall=None, pl=None, burst=False, clip=False, climb=None, tilt=0.0):
         def before(k):
-            scene(k); bin_back(k, lid)
+            scene(k)
+            k.c.save(); k.c.translate(BMX, GY); k.c.rotate(tilt); k.c.translate(-BMX, -GY)      # the bin rocks about its wheels
+            bin_back(k, lid)
+            k.c.restore()
             if climb is not None:
                 ladder(k)
         def after(k):
@@ -901,15 +910,26 @@ def t7():
                 _pam(k, cp, 1.0, 1.0, 0.0, ckn)
             sc.railing(k, RY)
             pts = None
-            if fall:                                         # over the rail: drawn in front of it, turning
+            if fall and len(fall) > 3:                       # DENSE: her arms and legs come after her body; she tucks before she goes in
+                x, y, ang, lag, tuck = fall
+                c.save(); c.translate(x, y); c.rotate(ang); c.translate(-x, -y)
+                arms = lerp(HERO, oc.pm.ik(-1, -70, -250) + oc.pm.ik(1, 96, -236), lag)
+                kn = dict(drop=22 * tuck, l=(-6 * lag, 0, -1), r=(10 * lag, 10 * tuck, -1)) if (tuck > 0.05 or lag > 0.05) else None
+                _pam(k, P("pam_cat", x, y + 60, S_, pose(arms, ("relax_s", "relax_s")), "doubt", (0, 0.9), rim=True), 1.0, 1.0 - 0.08 * tuck, 0.0, kn)
+                c.restore()
+            elif fall:                                       # over the rail: drawn in front of it, turning
                 x, y, ang = fall
                 c.save(); c.translate(x, y); c.rotate(ang); c.translate(-x, -y)
                 sc.draw_cast(k, [P("pam_cat", x, y + 60, S_, pose(lerp(HERO, oc.CAT_POSES["triumph2"][0], 0.8), ("relax_s", "relax_s")), "doubt", (0, 0.9), rim=True)])
                 c.restore()
             if clip and pam:                                 # in the bin: only what shows above its rim
                 pts = sc.draw_cast(k, [pam])
+            c.save(); c.translate(BMX, GY); c.rotate(tilt); c.translate(-BMX, -GY)
             bin_front(k, lid, shake)
-            if burst:
+            c.restore()
+            if burst and DENSE[0]:                           # not a matched pair: a big one where she hit, a small one, a third late
+                sc._burst(k, BX0 + 40, BY - 20, 30); sc._burst(k, BX1 + 20, BY - 8, 15)
+            elif burst:
                 sc._burst(k, BX0 - 16, BY - 14, 26); sc._burst(k, BX1 + 16, BY - 14, 26)
             if pl:
                 peel(c, *pl)
@@ -938,13 +958,18 @@ def t7():
         fr.append(f(P("pam_cat", 310, PY, S_, "hero", "peer" if t < 0.75 else "doubt", (0.4, 1.0), lean=0.62 * t * t + (0.03 if i % 2 else 0), rim=True)))
     FALL = ((330, 300, 1.7), (325, 400, 2.9), (318, 500, 3.3))
     if DENSE[0]:                                             # the fall drawn through: she tips, her heels come over her head, she turns, and goes in head first
-        FALL = ((316, 262, 0.95), (324, 286, 1.35), (329, 318, 1.8), (329, 362, 2.3), (326, 410, 2.75), (322, 458, 3.1), (318, 505, 3.3))
-    for x, y, ang in FALL:   # over she goes, head first
-        fr.append(f(fall=(x, y, ang)))
+        FALL = ((316, 262, 0.95, 0.2, 0.0), (324, 286, 1.35, 0.6, 0.0), (329, 318, 1.8, 1.0, 0.0), (329, 362, 2.3, 1.0, 0.2), (326, 410, 2.75, 0.8, 0.6),
+                (322, 458, 3.1, 0.5, 1.0), (318, 505, 3.3, 0.3, 1.0))
+    for fl in FALL:   # over she goes, head first
+        fr.append(f(fall=fl))
     T7_SLAM[0] = len(fr)
-    fr.append(f(lid=0, burst=True, shake=5))                 # the lid slams (the narrator's last word)
-    fr.append(f(lid=0, shake=-4))
-    for _ in range(3 if DENSE[0] else 5):
+    if DENSE[0]:                                             # the lid slams; the bin rocks over and back; the lid jumps once and settles
+        for ld, sh, tl, bu in ((0, 5, 0.045, True), (0.10, -3, 0.030, False), (0.04, 2, -0.018, False), (0, 0, 0.008, False), (0, 0, 0.0, False)):
+            fr.append(f(lid=ld, shake=sh, tilt=tl, burst=bu))
+    else:
+      fr.append(f(lid=0, burst=True, shake=5))                 # the lid slams (the narrator's last word)
+      fr.append(f(lid=0, shake=-4))
+      for _ in range(5):
         fr.append(f(lid=0))                                  # a beat
     IN = lambda dy, face, look, arms="hero", lean=0.0: P("pam_cat", 310, BY + 150 - dy, S_, arms, face, look, clip_y=BY, lean=lean, rim=True)
     HEADY = lambda dy: BY + 150 - dy - 232 * S_ * 1.0

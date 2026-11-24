@@ -263,6 +263,8 @@ def sound(tm, d, total):
     clang = sum(np.sin(2 * np.pi * f_ * tc) * np.exp(-tc / d_) for f_, d_ in ((212, 0.22), (317, 0.16), (540, 0.10), (873, 0.07))) * 0.10
     put(fx, clang + np.random.default_rng(3).standard_normal(len(tc)) * np.exp(-tc / 0.03) * 0.12, crash)
     put(fx, rs(so.thump(), so.SR), crash, 1.4)
+    if __import__("on4_motion").DENSE[0]:
+        put(fx, rs(so.thump(), so.SR), crash + 0.17, 0.9)                                           # (the review) and she lands inside it: a duller one after the clang
     put(fx, rs(so.metal_click(900, 0.12), so.SR), crash + 0.55, 0.5)                                # the lid lifts
     put(fx, rs(so.swish(0.2), so.SR), crash + 1.3, 0.4); put(fx, rs(so.pop(), so.SR), crash + 1.62, 0.5)   # the peel flicked, landed
     put(fx, rs(so.thump(), so.SR), st_("3.6") + 16 / 12.0, 1.3)                                     # v9: dropped at the club's door
