@@ -40,12 +40,12 @@ THUMB = {(-150, -40, 10, 0): (-150, -40, 10, 0), (-146, -34, 4, 0): (-146, -34, 
 _dz = getattr(dq.don_zipped, "_v7", dq.don_zipped)
 
 
-def _don_zipped(k, x, feet, s, pose=None, **kw):
+def _don_zipped(k, x, feet, s, pose=None, *a, **kw):        # dh_poses calls it positionally too (don_block)
     if pose is None:
-        return _dz(k, x, feet, s, **kw)
-    if tuple(pose) in THUMB:
+        return _dz(k, x, feet, s, *a, **kw)
+    if not isinstance(pose, str) and tuple(pose) in THUMB:
         pose = THUMB[tuple(pose)]
-    return _dz(k, x, feet, s, pose=pose, **kw)
+    return _dz(k, x, feet, s, pose, *a, **kw)
 
 
 _don_zipped._v7 = _dz
