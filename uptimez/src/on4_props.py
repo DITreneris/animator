@@ -32,6 +32,7 @@ PAPER = (0.99, 0.99, 0.97)
 RED = (0.86, 0.12, 0.16)
 PEN = (0.12, 0.22, 0.62)
 BRASS = (0.72, 0.58, 0.30)
+SEAL = [False]                              # board v6 (opt-in): the red heart seal, the twin of the dream envelope's
 
 
 def _rr(c, x, y, w, h, r):
@@ -131,6 +132,9 @@ def envelope(k, x, y, s=1.0, ang=0.0, open_=False, sheet=0.0):
             c.set_source_rgba(0.25, 0.25, 0.30, 0.7); c.set_line_width(1.2); c.move_to(-64, yy + 10); c.line_to(32, yy + 10); c.stroke()
     c.set_line_width(1.0); c.set_source_rgb(*ENV_D); c.move_to(-14, -30); c.line_to(-14, 104); c.stroke()
     kit.text(k, "PAM", -40, 94, 24, PEN, font="Comic Neue", bold=True)
+    if SEAL[0]:                                              # board v6 (opt-in): the dream envelope's red heart, on the flap
+        import on4_cast as oc_
+        oc_.seal(c, 44, -54, 14)
     c.restore()
 
 

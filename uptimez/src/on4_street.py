@@ -28,6 +28,7 @@ import engine_on as eng
 import on_set as ons
 
 NEON = (0.93, 0.13, 0.22)
+C_POST = ["v4"]                   # v7 (opt-in): the double lamp's post lit
 ZEBRA = ["v4"]                    # v5 (23 Nov, opt-in): the stripes flat, in the road's perspective; v6: raised above y 720
 GOLD = (0.98, 0.80, 0.36)
 INK = (0.06, 0.06, 0.07)
@@ -81,6 +82,9 @@ def bulb(c, x, y, r):
     c.set_source_rgb(*GOLD); c.new_path(); c.arc(x, y, r, 0, 2 * math.pi); c.fill()
 
 
+BLOOM = [1.0]                     # v8 (opt-in, the board review): 0.6 = the lamps' bloom 40% smaller
+
+
 def lamp_glow(c, x, y, r=150, a=0.9):
     g = cairo.RadialGradient(x, y, 0, x, y, r)
     g.add_color_stop_rgba(0, 1, 1, 0.96, a); g.add_color_stop_rgba(0.10, 1, 1, 0.95, a * 0.65); g.add_color_stop_rgba(1, 1, 1, 0.9, 0)
@@ -90,7 +94,7 @@ def lamp_glow(c, x, y, r=150, a=0.9):
 def lamp_head(k, x, y, s=1.0):
     c = k.c
     poly(k, [(x - 15 * s, y - 10 * s), (x + 15 * s, y - 10 * s), (x + 22 * s, y + 6 * s), (x - 22 * s, y + 6 * s)], INK, 1.6)
-    lamp_glow(c, x, y + 10 * s, 150 * s)
+    lamp_glow(c, x, y + 10 * s, 150 * s * BLOOM[0])
     c.set_source_rgb(1, 1, 1); c.save(); c.translate(x, y + 9 * s); c.scale(15 * s, 7 * s); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
 
 
@@ -409,6 +413,10 @@ def setup_c(k):
     poly(k, [R.at(0, 0), R.at(1, 0), (R.at(1, 0)[0], R.at(1, 0)[1] - 6), (R.at(0, 0)[0], R.at(0, 0)[1] - 22)], TILE, 1.6)
     poly(k, R.quad(0.0, 1.0, 0.85, 1.0), (0.55, 0.52, 0.46), 1.4)
     px, pb, pt = 372, 700, 300                               # the double-headed lamp
+    if C_POST[0] != "v4":                                    # v7 (Tomas, 23 Nov): the post and its arm lit against the sky,
+        c.set_source_rgb(0.62, 0.62, 0.64); c.set_line_width(10)   # so the two heads hang from something (cold viewers read
+        c.move_to(px, pb); c.line_to(px, pt); c.stroke()     # them as headlights, eyes, moons)
+        c.set_line_width(6); c.move_to(px - 50, pt + 6); c.curve_to(px - 20, pt - 12, px + 20, pt - 12, px + 50, pt + 6); c.stroke()
     c.set_source_rgb(*INK); c.set_line_width(6); c.move_to(px, pb); c.line_to(px, pt); c.stroke()
     c.set_line_width(3); c.move_to(px - 50, pt + 6); c.curve_to(px - 20, pt - 12, px + 20, pt - 12, px + 50, pt + 6); c.stroke()
     lamp_head(k, px - 50, pt + 10, 0.6); lamp_head(k, px + 50, pt + 10, 0.6)

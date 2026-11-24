@@ -57,6 +57,8 @@ CAT_POSES = {   # body units (pm.ik); (left hand, right hand) shapes of hands_ps
     "lift": ((-8, 0) + pm.ik(1, 110, BT + 96), ("relax_s", "grab")),               # 5.3 the hand into his coat
     "triumph": ((-8, 0) + pm.ik(1, 62, HY - 80), ("relax_s", "fist")),             # 6.3 the envelope held high, off her ear
 }
+ENV_BIG = [1.0]                    # board v9 (opt-in): 1.25 = the held envelope a quarter bigger
+MASK_UP_V2 = [False]               # board v9 (opt-in): pushed up, the sleep mask keeps its stitched eyes and sits smaller
 
 
 def _coat_costume(badge=True):
@@ -141,13 +143,26 @@ def coat_details(k, x, feet, s):
     c.restore()
 
 
+ENV_SEAL = [False]                 # board v6 (opt-in): a small red heart seal where the flap meets, as on the office envelope
+
+
 def envelope(k, x, y, s, open_=False):
     """The dream's envelope (the warm tone) held by its edge."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(-0.12); c.scale(s, s)
     cut(k, [(-30, -22), (30, -22), (30, 20), (-30, 20)], (0.93, 0.82, 0.58), shadow=False, lw=2)
     c.set_source_rgb(*INK); c.set_line_width(1.6); c.move_to(-30, -22); c.line_to(0, 2); c.line_to(30, -22); c.stroke()
+    if ENV_SEAL[0]:
+        seal(c, 0, 4, 7)
     c.restore()
+
+
+def seal(c, x, y, r):
+    """the red heart seal (the series' neon red, kept by the grade)"""
+    c.new_path(); c.move_to(x, y + r * 0.9)
+    c.curve_to(x - r * 1.5, y - r * 0.2, x - r * 0.6, y - r * 1.3, x, y - r * 0.45)
+    c.curve_to(x + r * 0.6, y - r * 1.3, x + r * 1.5, y - r * 0.2, x, y + r * 0.9); c.close_path()
+    c.set_source_rgb(0.93, 0.13, 0.22); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(max(1.0, r * 0.18)); c.stroke()
 
 
 def pam_cat(k, x, feet, s=0.54, pose="hero", face="proud", look=(0, 0), seed=40, env=False):
@@ -175,7 +190,7 @@ def pam_cat(k, x, feet, s=0.54, pose="hero", face="proud", look=(0, 0), seed=40,
     if env or pose == "triumph":
         c.push_group(); o = draw(); c.pop_group()           # find the fist
         rx, ry = o["hands"][1]
-        envelope(k, rx + 2 * s, ry - 30 * s, s * 1.2)
+        envelope(k, rx + 2 * s, ry - 30 * s * ENV_BIG[0], s * 1.2 * ENV_BIG[0])
     o = draw()
     if pose == "sag":
         c.restore()
@@ -186,11 +201,14 @@ def sleep_mask(k, hx, hy, s, up=False):
     """The real twin: a pink sleep mask with two small cat ears, over the eyes (asleep) or pushed up (awake)."""
     c = k.c
     dy = -30 if up else 3
+    v2 = up and MASK_UP_V2[0]
+    if v2:
+        dy = -26; s = s * 0.82
     c.save(); c.translate(hx, hy + dy); c.scale(s, s)
     c.set_source_rgb(*SLEEP_DARK); c.set_line_width(3)
     c.move_to(-46, -2); c.line_to(-58, -6); c.stroke(); c.move_to(46, -2); c.line_to(58, -6); c.stroke()
     cut(k, [(-46, -14), (46, -14), (44, 12), (8, 16), (0, 10), (-8, 16), (-44, 12)], SLEEP, shadow=False, lw=2)
-    if not up:                                           # closed eyes stitched on it, asleep
+    if not up or v2:                                     # closed eyes stitched on it, asleep
         c.set_source_rgb(*SLEEP_DARK); c.set_line_width(2.4)
         for sx in (-1, 1):
             c.new_path(); c.arc(sx * 20, -2, 9, 0.2, math.pi - 0.2); c.stroke()
@@ -222,9 +240,11 @@ def star(c, x, y, r, col=BADGE):
     c.close_path(); c.set_source_rgb(*col); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.4); c.stroke()
 
 
+CROSSBELT = [True]                 # v3 (23 Nov, Tomas: "drop it"): False in layouts v2; cold viewers read it as a wand
 DON_POSES = {"stop": ((-8, 0, 92, -6), ("relax", "palm")),        # 3.1 a white glove held out flat: traffic, wait
              "wave": ((-8, 0, 70, 70), ("relax", "palm")),         # 3.1/3.4 waving the car on
-             "stand": ((-8, 0, 8, 0), ("relax", "relax"))}
+             "stand": ((-8, 0, 8, 0), ("relax", "relax")),
+             "inspect": ((-110, -50, 8, 0), ("palm", "relax"))}     # v4b, 3.3: the white glove held up at his eye: clean
 
 
 def don_cop(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistle_in=True):
@@ -235,10 +255,11 @@ def don_cop(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistl
         o = don_ps.don(k, x, feet, s, p, face, look, hands=hands)
     hx, hy = o["head"]
     c = k.c
-    c.set_source_rgb(*INK); c.set_line_width(13 * s); c.set_line_cap(0)              # the crossbelt
-    c.move_to(hx + 40 * s, hy + 66 * s); c.line_to(hx - 34 * s, hy + 196 * s); c.stroke()
-    c.set_source_rgb(*GLOVE_WHITE); c.set_line_width(10 * s)
-    c.move_to(hx + 40 * s, hy + 66 * s); c.line_to(hx - 34 * s, hy + 196 * s); c.stroke()
+    if CROSSBELT[0]:                                                                  # the crossbelt (v3: off; read as a wand)
+        c.set_source_rgb(*INK); c.set_line_width(13 * s); c.set_line_cap(0)
+        c.move_to(hx + 40 * s, hy + 66 * s); c.line_to(hx - 34 * s, hy + 196 * s); c.stroke()
+        c.set_source_rgb(*GLOVE_WHITE); c.set_line_width(10 * s)
+        c.move_to(hx + 40 * s, hy + 66 * s); c.line_to(hx - 34 * s, hy + 196 * s); c.stroke()
     star(c, hx - 44 * s, hy + 104 * s, 22 * s)
     c.set_source_rgb(0.30, 0.30, 0.32); c.set_line_width(2.4 * s)                    # the cord, from the whistle to the neck
     if whistle_in:
@@ -251,6 +272,120 @@ def don_cop(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistl
         c.move_to(hx - 18 * s, hy + 80 * s); c.curve_to(hx - 10 * s, hy + 120 * s, hx + 6 * s, hy + 130 * s, hx + 14 * s, hy + 132 * s); c.stroke()
         whistle(c, hx + 18 * s, hy + 134 * s, s)
     return o
+
+
+# ---- v4 (23 Nov, Tomas: "more serious, and a comic prop"): a real traffic cop, and the STOP / GO paddle -------------------
+NEON = (0.93, 0.13, 0.22)                   # on4_street.NEON: the accent pass keys on it
+CAP_WHITE = (0.95, 0.95, 0.93)
+CAP_BAND = (0.10, 0.11, 0.16)
+SILVER = (0.80, 0.81, 0.84)
+GO_GREEN = (0.16, 0.58, 0.32)
+
+
+def traffic_cap(k, hx, hy, s):
+    """A real traffic policeman's peaked cap, his size: a white top, a dark band, a black visor, a silver badge."""
+    c = k.c
+    c.save(); c.translate(hx, hy - 44 * s); c.scale(s, s)
+    cut(k, [(-50, 0), (-60, -30), (-44, -44), (44, -44), (60, -30), (50, 0)], CAP_WHITE, shadow=False, lw=2.4)   # the top
+    cut(k, [(-50, 0), (50, 0), (50, 16), (-50, 16)], CAP_BAND, shadow=False, lw=2.2)                              # the band
+    c.move_to(-46, 14); c.curve_to(-26, 34, 26, 34, 46, 14); c.close_path()                                        # the visor
+    c.set_source_rgb(0.04, 0.04, 0.06); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.2); c.stroke()
+    c.move_to(0, -28); c.line_to(11, -22); c.line_to(10, -8); c.line_to(0, -1); c.line_to(-10, -8); c.line_to(-11, -22)
+    c.close_path(); c.set_source_rgb(*SILVER); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+    c.restore()
+
+
+def shield(c, x, y, r):
+    """the metal badge on his vest (no star: it read as 'a star he's holding')."""
+    c.save(); c.translate(x, y); c.scale(r / 44, r / 44)
+    c.move_to(0, -22); c.line_to(18, -14); c.line_to(16, 8); c.line_to(0, 22); c.line_to(-16, 8); c.line_to(-18, -14); c.close_path()
+    c.set_source_rgb(*SILVER); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
+    c.restore()
+
+
+def paddle(k, x, y, s, side="STOP", ang=0.0):
+    """The comic prop: a round STOP / GO paddle on a short pole, (x, y) = the grip. STOP is the series' neon red, so it
+    stays red in the noir grade; GO is green (grey in the grade, the white letters carry it)."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    c.set_source_rgb(*INK); c.set_line_width(9); c.move_to(0, 10); c.line_to(0, -96); c.stroke()
+    c.set_source_rgb(0.85, 0.85, 0.86); c.set_line_width(5); c.move_to(0, 10); c.line_to(0, -96); c.stroke()
+    if side == "EDGE":                                                # mid-flip: the disc edge-on, a thin ellipse
+        c.save(); c.translate(0, -134); c.scale(7, 44); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgb(0.85, 0.85, 0.86); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3); c.stroke()
+        for dx in (-26, 26):                                          # two short turn arcs
+            c.new_path(); c.arc(0, -134, 52, math.pi * (1.15 if dx < 0 else -0.15), math.pi * (1.4 if dx < 0 else 0.1))
+            c.set_line_width(3); c.stroke()
+        c.restore()
+        return
+    c.new_path(); c.arc(0, -134, 44, 0, 2 * math.pi)
+    c.set_source_rgb(*(NEON if side == "STOP" else GO_GREEN)); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3); c.stroke()
+    c.new_path(); c.arc(0, -134, 37, 0, 2 * math.pi); c.set_source_rgb(1, 1, 1); c.set_line_width(3); c.stroke()
+    kit.text(k, side, 0, -134 + 9, 24 if side == "STOP" else 30, (1, 1, 1), bold=True)
+    c.restore()
+
+
+def don_cop2(k, x, feet, s=0.60, pose="stop", face="neutral", look=(0, 0), whistle_in=False, paddle_side=None, paddle_ang=0.0,
+             chin=0, grip=True):
+    """v4 Don the traffic cop (opt-in; don_cop is untouched): the cap, the silver shield, white gloves, the whistle on its
+    cord (in his mouth on the toot), and the STOP / GO paddle in his screen-right hand."""
+    c = k.c
+    p, hands = DON_POSES.get(pose, (pose, None))
+    if paddle_side and grip:                                          # v4b: with the paddle the hand is a grip, always
+        hands = ((hands or ("relax", "relax"))[0], "grab")
+    import fs_storyboard as sb_
+    def body():                                                       # no headset in the dream (Office Noir took it off too);
+        with _swap((hp, "hand", _wrap_white(hp.hand)), (sb_, "don_signs", lambda *a, **kw: None)):   # the cap covers his hair
+            return don_ps.don(k, x, feet, s, p, face, look, hands=hands, chin=chin)
+    o = None
+    if paddle_side:                                                   # find the hand, lay the paddle there, draw him over it
+        c.push_group(); o = body(); c.pop_group()
+        rx, ry = o["hands"][1]
+        paddle(k, rx, ry, s * 1.1, paddle_side, paddle_ang)
+    o = body()
+    hx, hy = o["head"]
+    shield(c, hx - 26 * s, hy + 112 * s, 18 * s)
+    c.set_source_rgb(0.30, 0.30, 0.32); c.set_line_width(2.4 * s)
+    if whistle_in:                                                    # v4b: the toot reads: the cord runs to his chest, the
+        c.set_line_width(3 * s)                                       # whistle big, cheeks puffed, two toot lines
+        c.move_to(hx + 4 * s, hy + 36 * s); c.curve_to(hx + 2 * s, hy + 70 * s, hx - 10 * s, hy + 100 * s, hx - 18 * s, hy + 120 * s); c.stroke()
+        whistle(c, hx + 8 * s, hy + 33 * s, s * 1.9)
+        c.set_source_rgb(*INK); c.set_line_width(2.4 * s)
+        for sx in (-1, 1):
+            c.new_path(); c.arc(hx + sx * 30 * s, hy + 26 * s, 9 * s, -0.6 if sx > 0 else math.pi - 0.6, 0.6 if sx > 0 else math.pi + 0.6); c.stroke()
+        c.set_line_width(3 * s)
+        for dy in (-10, 6):
+            c.move_to(hx + 36 * s, hy + (30 + dy) * s); c.line_to(hx + 58 * s, hy + (24 + dy * 1.6) * s); c.stroke()
+    else:
+        c.move_to(hx - 18 * s, hy + 80 * s); c.curve_to(hx - 10 * s, hy + 120 * s, hx + 6 * s, hy + 130 * s, hx + 14 * s, hy + 132 * s); c.stroke()
+        whistle(c, hx + 18 * s, hy + 134 * s, s)
+    traffic_cap(k, hx, hy, s)
+    return o
+
+
+def don_sheet(out="../office-noir-4/on4_don_v5.png"):
+    """Don v4b, the paddle's choreography for 3.1-3.3: STOP raised to Pam's side, the flip (edge-on), GO raised to the car
+    with the toot, GO lowered at rest. One grip point; the faces stern, pleased, bored; his eyes on the car throughout
+    (nobody looks at her). In the sheet Pam is to his right (the paddle's side) and the car to his left."""
+    W_, H_ = 4 * 300 + 40, 660
+    s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W_ * 2, H_ * 2); s.set_device_scale(2, 2)
+    c = cairo.Context(s); k = Ctx(c, 0)
+    c.set_source_rgb(0.58, 0.58, 0.60); c.paint()
+    labs = [("1 STOP at Pam's side", "stern; eyes on the car", dict(pose="stop", paddle_side="STOP", face="confused", chin=1, look=(-0.8, 0))),
+            ("2 the flip", "edge-on, one drawing", dict(pose=(-8, 0, 92, -40), paddle_side="EDGE", face="confused", chin=1, look=(-0.8, 0))),
+            ("3 GO to the car", "the toot; pleased", dict(pose="wave", paddle_side="GO", paddle_ang=0.25, whistle_in=True, face="pleased", look=(-0.8, -0.2))),
+            ("4 GO at rest", "bored: 'Not a scratch.'", dict(pose="stand", paddle_side="GO", paddle_ang=0.55, face="neutral", look=(-0.7, 0.4)))]
+    for i, (lab, sub, kw) in enumerate(labs):
+        don_cop2(k, 150 + i * 300, 610, 0.95, **kw)
+    eng.TONE = "v3"; eng.accent_pass(s, [(NEON, 1.0)])
+    c = cairo.Context(s); c.set_source_rgb(0, 0, 0); c.select_font_face("Inter", 0, 1)
+    for i, (lab, sub, kw) in enumerate(labs):
+        c.set_font_size(18); c.move_to(20 + i * 300, 30); c.show_text(lab)
+        c.select_font_face("Inter", 0, 0); c.set_font_size(14); c.move_to(20 + i * 300, 50); c.show_text(sub); c.select_font_face("Inter", 0, 1)
+    c.set_font_size(15); c.move_to(20, 646); c.show_text("<- the car (his eyes)")
+    c.move_to(W_ - 220, 646); c.show_text("Pam (the paddle's side) ->")
+    s.write_to_png(out)
+    return out
 
 
 def _wrap_white(orig):

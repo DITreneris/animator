@@ -234,6 +234,7 @@ def glow(c, view, x, base, s=1.0, lamps=1.0):
 
 # ---- v2: the turn (three-quarter) and the cabin (Tomas's refs v4, v5) ------------------------------------------------------
 
+CABIN_HAND = ["v1"]               # v2 (opt-in, the board review): the dropping hand's fingers
 GOLD = (0.98, 0.80, 0.36)            # the whisky: the grade's second accent, so it stays warm
 WOOD = (0.30, 0.17, 0.10)
 
@@ -309,6 +310,13 @@ def cabin(k, x, y, s=1.0, down=1.0, hand=True, seed=5150):
         kit.ellipse(k, 128, -30, 36, 28, dc.SKIN_F, 7003, shadow=False, lw=2.4)
         for i in range(4):                                                                              # fingers open, down
             a0 = (112 + i * 8, -16 + i * 2); a1 = (104 + i * 7, 18 + i * 3)
+            if CABIN_HAND[0] != "v1":                                 # v2: fingers of different lengths, curling down
+                L = (0.75, 1.15, 1.25, 0.95)[i]
+                a1 = (a0[0] - 10 * L + i * 3, a0[1] + 34 * L); cm = (a0[0] - 12, a0[1] + 14 * L)
+                for col, lw in ((INK, 14), (dc.SKIN_F, 10.5)):
+                    c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+                    c.move_to(*a0); c.curve_to(cm[0], cm[1], a1[0] - 4, a1[1] - 10, a1[0] + 4, a1[1]); c.stroke()
+                continue
             c.set_source_rgb(*INK); c.set_line_width(14); c.set_line_cap(1); c.move_to(*a0); c.line_to(*a1); c.stroke()
             c.set_source_rgb(*dc.SKIN_F); c.set_line_width(10.5); c.move_to(*a0); c.line_to(*a1); c.stroke()
         c.set_line_cap(0)
