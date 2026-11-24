@@ -142,6 +142,35 @@ def r_cv2(s, k, o, t, tt, n):
 
 sc.DRAW.update({"9.6": r_cv, "9.6'": r_cv2})
 
+# ---- v8d (24 Nov): the freeze's cutaways (11.3 Mom, 11.4 Pam, 11.5 the inspector) read "why are they there?" 2/2: Mom
+# looked down and Pam up, at nothing. Each now looks at Don, who has just been FOUND (staging: reactions face their
+# target), on his side of the room (screen left of each). Same shots, marks and lengths.
+def s8_mom_at_don(k, o):
+    ds.sb.mfs.mom(k, ds.LINE6[2][0], ds.LINE6[2][1], ds.MS, "stand", "glare", look=(-1, 0.1), bag=False)
+
+
+def s8_pam_at_don(k, o):
+    ds.pb.pam(k, ds.LINE6[1][0], ds.LINE6[1][1], ds.PS, (-35, 110, 35, -110), "neutral", look=(-1, 0.1), glasses="up")
+    ds._hand_sticker(k, ds.LINE6[1][0], ds.LINE6[1][1])
+
+
+sc.DRAW.update({"11.3": V8.r_still(s8_mom_at_don), "11.4": V8.r_still(s8_pam_at_don)})
+
+# Round 2 (the eyes alone read "they look at nobody, cameos" 2/2): over his shoulder. Don's back and the back of his head in
+# the foreground at the left edge of each cutaway, so each of them is seen glaring at him.
+DONB8 = [(30, 760, 1.5)]
+
+
+def fg_don_back(sc_, k, cam, t, tt, n, box):
+    import dh_back as db
+    x, y, s_ = DONB8[0]
+    db.don_back(k, x, y, s_, side=1)
+
+
+sc.FG8 = {sid: [fg_don_back] for sid in ("11.3", "11.4", "11.5")}
+FOREGROUND = {(sid, "don_back") for sid in ("11.3", "11.4", "11.5")}   # the back of his head, no face: at the edge on purpose
+
+
 SET_MOVES, SET_BEHIND = {}, set()
 SET_AIR = {("10.4b", "sofia")}                             # the snap startles her off the floor (v7: "Sofía leaves the floor")
 SET_WALKS = set()
@@ -162,7 +191,7 @@ def frame8(tt, n, hi=1):
 if __name__ == "__main__":
     me = sys.modules[__name__]
     if "gate" in sys.argv[1:]:
-        sys.exit(1 if E.gate(sc, me, SET_MOVES, SET_AIR, SET_BEHIND, SET_WALKS, entrances=ENTRANCES) else 0)
+        sys.exit(1 if E.gate(sc, me, SET_MOVES, SET_AIR, SET_BEHIND, SET_WALKS, entrances=ENTRANCES, foreground=FOREGROUND) else 0)
     if "nobub" in sys.argv[1:]:
         E.NOBUB[0] = True
     E.run(sc, me, 8)
