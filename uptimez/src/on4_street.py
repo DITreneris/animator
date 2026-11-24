@@ -143,6 +143,7 @@ def sky(k):
 # Tomas's picks (23 Nov): the lane bends left out of sight; the arch with its lights shows round the bend; old town in paper
 # cut-out (crooked edges, fallen plaster, a stained base, tiled roof edges, frames and sills, drainpipes).
 
+NIGHT = [False]               # (24 Nov, review of the animation stills) the street darker, the light pooled under the lamp
 A_LAMP = (396, 150)            # the loop's join: the counter lamp of 8.2 lands here
 A_ARCH = (206, 560, 50, 104)   # the arch at the bend: centre x, floor y, half width, height (its left half behind the wall)
 A_BEND_X = 196                 # where the left-hand wall's edge hides the lane
@@ -299,6 +300,10 @@ def setup_a(k, taillights=False):
 
 
 def light_a(c):
+    if NIGHT[0]:                                           # night: everything a quarter darker, except the lamp's pool
+        g_ = cairo.RadialGradient(336, 640, 95, 336, 640, 380)
+        g_.add_color_stop_rgba(0, 0, 0, 0, 0.0); g_.add_color_stop_rgba(1, 0, 0, 0, 0.34)
+        c.set_source(g_); c.paint()
     g = cairo.RadialGradient(A_LAMP[0] - 60, 800, 20, A_LAMP[0] - 60, 800, 320)
     g.add_color_stop_rgba(0, 1, 1, 0.95, 0.20); g.add_color_stop_rgba(1, 1, 1, 0.95, 0)
     c.set_source(g); c.rectangle(0, 400, 540, 560); c.fill()
@@ -379,6 +384,10 @@ def setup_b(k, car=True):
 
 
 def light_b(c):
+    if NIGHT[0]:                                           # night: everything a quarter darker, except the lamp's pool
+        g_ = cairo.RadialGradient(290, 560, 100, 290, 560, 400)
+        g_.add_color_stop_rgba(0, 0, 0, 0, 0.0); g_.add_color_stop_rgba(1, 0, 0, 0, 0.30)
+        c.set_source(g_); c.paint()
     gl = cairo.LinearGradient(0, 0, 220, 0)
     gl.add_color_stop_rgba(0, 0, 0, 0, 0.35); gl.add_color_stop_rgba(1, 0, 0, 0, 0)
     c.set_source(gl); c.rectangle(0, 0, 220, 960); c.fill()

@@ -309,6 +309,8 @@ def stage_front(k, lit=True):
         c.save(); c.translate(225, 690); c.scale(130, 16)
         g = cairo.RadialGradient(0, 0, 0, 0, 0, 1); g.add_color_stop_rgba(0, 1, 1, 0.92, 0.55); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
         c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+    if MARKS[0]:                                             # v22: what her act left on the stage stays there, lit or dark (it vanished with the beam)
+        stage_marks(k)
 
 
 def room_reverse(k, beam=False):
@@ -434,6 +436,11 @@ oc.CAT_POSES.setdefault("mask_fix", ((-8, 0) + oc.pm.ik(1, 34, oc.HY - 6), ("rel
 DON_REACH = (-70, 20, 8, 0)                                # 3.3: his screen-left arm out and down to the bumper
 
 
+FACE_KEY = [False]                                         # (24 Nov, three reviews: dark, but no contrast on the faces) a soft key light on each face in the dream
+KEYS = []
+KEY_WHO = ("pam_cat", "sofia", "client", "don")
+
+
 def draw_cast(k, cast):
     """Draws each figure; returns {who: rig points}."""
     import client_ob as co
@@ -512,6 +519,11 @@ def draw_cast(k, cast):
                 o = dict(o); o["head"] = rot(o["head"])
                 if "hands" in o:
                     o["hands"] = [rot(h) for h in o["hands"]]
+        if FACE_KEY[0] and who in KEY_WHO and o and "head" in o:
+            hx_, hy_ = o["head"]
+            dx_, dy_ = k.c.user_to_device(hx_, hy_)
+            r_ = abs(k.c.user_to_device_distance(0, 80 * a[2])[1])
+            KEYS.append((dx_, dy_, r_))
         out[who] = o
     return out
 
@@ -647,10 +659,69 @@ def _dark_half(k):                                         # 6.5 (board v4): the
     c.move_to(ex, ey); c.line_to(ex - 4, ey - 22); c.stroke(); c.move_to(ex, ey); c.line_to(ex - 22, ey + 4); c.stroke()
 
 
+SPOT_SOFT = [True]
+MARKS = [True]                                             # v18: what her act leaves on the stage (five knives in the boards, a scorch on the curtain)
+
+
+def knife(c, x, y, ang, s=1.0, stuck=0.0):
+    """A throwing knife, point up at ang 0: a tapered blade with its spine, a cross-guard, a bound handle, a pommel.
+    stuck: the part of the blade (0..1) hidden in the boards."""
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    top = -44 + 34 * stuck
+    c.move_to(-5, -8); c.line_to(-3, top + 10); c.line_to(0, top); c.line_to(4, top + 12); c.line_to(5, -8); c.close_path()
+    c.set_source_rgb(0.95, 0.95, 0.92); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.1); c.stroke()
+    if stuck < 0.5:
+        c.set_source_rgb(0.55, 0.55, 0.55); c.set_line_width(0.8); c.move_to(0, -10); c.line_to(0, top + 8); c.stroke()
+    c.rectangle(-10, -9, 20, 5); c.set_source_rgb(0.75, 0.75, 0.72); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.0); c.stroke()   # the guard
+    c.rectangle(-4, -4, 8, 20); c.set_source_rgb(0.14, 0.14, 0.15); c.fill_preserve(); c.set_source_rgb(0.6, 0.6, 0.6); c.set_line_width(0.8); c.stroke()
+    for yy in (0, 5, 10):
+        c.move_to(-4, yy); c.line_to(4, yy + 2); c.stroke()
+    c.new_path(); c.arc(0, 19, 5, 0, 2 * math.pi); c.set_source_rgb(0.75, 0.75, 0.72); c.fill_preserve(); c.set_source_rgb(*INK); c.stroke()
+    c.restore()
+
+
+KNIFE_AT = ((120, -0.34), (166, 0.10), (286, -0.06), (332, 0.30), (378, -0.20))   # where they stand in the boards (the fifth after she has had it in her teeth)
+SCORCH = (466, 500)
+
+
+def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
+    c = k.c
+    if scorch > 0:                                         # the curtain's edge, burnt: a ragged black hole, embers on its rim, smoke in puffs
+        sx_, sy_ = SCORCH
+        c.new_path()
+        for a_ in range(0, 360, 24):
+            q = (36 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
+            (c.move_to if a_ == 0 else c.line_to)(sx_ + q * math.cos(math.radians(a_)), sy_ + 1.5 * q * math.sin(math.radians(a_)))
+        c.close_path(); c.set_source_rgba(0.01, 0.01, 0.01, 0.96); c.fill()
+        for a_ in range(100, 290, 21):
+            q = (36 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
+            c.new_path(); c.arc(sx_ + q * math.cos(math.radians(a_)), sy_ + 1.5 * q * math.sin(math.radians(a_)), 2.6, 0, 2 * math.pi)
+            c.set_source_rgb(1.0, 0.92, 0.70); c.fill()
+        for j in range(6):                                 # v19: smoke in soft clumps (three lobes each), bigger and fainter as they rise
+            u = ((j + (t % 6) / 6.0) / 6.0)
+            px_, py_ = sx_ - 14 + 26 * math.sin(j * 1.9 + u * 3) + 18 * u, sy_ - 60 - 190 * u
+            r_ = 9 + 22 * u
+            for dx_, dy_, q in ((0, 0, 1.0), (-0.7, 0.35, 0.72), (0.65, 0.25, 0.8), (0.1, -0.6, 0.66)):
+                g = cairo.RadialGradient(px_ + dx_ * r_, py_ + dy_ * r_, 0, px_ + dx_ * r_, py_ + dy_ * r_, r_ * q)
+                g.add_color_stop_rgba(0, 0.80, 0.80, 0.78, 0.30 * (1 - u) * smoke * scorch); g.add_color_stop_rgba(1, 0.80, 0.80, 0.78, 0)
+                c.set_source(g); c.new_path(); c.arc(px_ + dx_ * r_, py_ + dy_ * r_, r_ * q, 0, 2 * math.pi); c.fill()
+    for j, (x, a) in enumerate(KNIFE_AT[:knives]):          # blades in the boards round her feet
+        dp = (0, 12, -6, 16, 4)[j]                           # v19: each at its own depth and angle
+        c.save(); c.translate(x + 6, 708 + (j % 2) * 4); c.scale(20, 4); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgba(0, 0, 0, 0.5); c.fill()            # v20: its shadow on the boards, where it went in
+        c.save(); c.rectangle(-100, -100, 800, 806 + (j % 2) * 4); c.clip()    # the point is in the wood: nothing of it below the boards' line
+        knife(c, x, 676 + (j % 2) * 4 + dp, a + math.pi, 2.0); c.restore()
+
+
 def _spot_on(k):                                           # board v9: the beam ON her: the cone over her, its pool at her feet
     c = k.c
-    c.set_source_rgba(1, 1, 0.92, 0.16)
-    c.move_to(428, 322); c.line_to(110, 700); c.line_to(340, 700); c.line_to(432, 344); c.close_path(); c.fill()
+    if SPOT_SOFT[0]:                                       # v19 (two reviews): the beam's edges soft: five thin cones, each a little wider
+        for w_ in (-18, -9, 0, 9, 18):
+            c.set_source_rgba(1, 1, 0.92, 0.042)
+            c.move_to(428, 322); c.line_to(110 - w_, 700); c.line_to(340 + w_, 700); c.line_to(432, 344); c.close_path(); c.fill()
+    else:
+        c.set_source_rgba(1, 1, 0.92, 0.16)
+        c.move_to(428, 322); c.line_to(110, 700); c.line_to(340, 700); c.line_to(432, 344); c.close_path(); c.fill()
     c.save(); c.translate(225, 700); c.scale(120, 14)
     g = cairo.RadialGradient(0, 0, 0, 0, 0, 1); g.add_color_stop_rgba(0, 1, 1, 0.92, 0.6); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
     c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
@@ -678,7 +749,7 @@ SCENES = [
           action="the punch; Sofia sidesteps her (the 0:01 joke)", reaction="the shadow slides down; nobody thanks her",
           before=lambda k: wall_shadow(k, slide=0.55), after=lambda k: _burst(k, 98, 544, 30)),
         S("1.3", "close", "A", (220, 560, 1.9), "The pose holds; her eyes follow Sofia out; the pose sags; she pulls her coat straight.",
-          cast=[P("pam_cat", 220, 730, 0.84, "sag", "fade", (0.8, 0.2))], line="N: I know how to survive.",
+          cast=[P("pam_cat", 220, 730, 0.84, "sag", "fade", (0.8, 0.2), rim=True)], line="N: I know how to survive.",
           action="the pose sags", reaction="Fine. (to where Sofia went)"),
         S("1.4", "wide", "A_tail", WIDE, "The shadows peel off the cobbles and run up the street to a pair of taillights; she turns to follow.",
           cast=[P("thug1", 300, 600, 0.26, "open", seed=4111), P("thug2", 340, 590, 0.24, "open", seed=4112),
@@ -740,12 +811,15 @@ SCENES = [
     ]),
     ("04 False recognition", [
         S("4.1", "wide, low angle", "front", (270, 462, 1.05), "A new place, held: the car parked and empty, the club door, the marquee coming on line "
-          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 400, 714, 0.70, "hero", "approve", (-0.4, -1), rim=True)],
-          protect=[("marquee", (270, 340)), ("the car", (150, 680))], line="Pam: There you are.", eyeline="to the car, then up"),
+          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 400, 714, 0.50, "hero", "approve", (-0.4, -1), rim=True)],
+          protect=[("marquee", (270, 340)), ("the car", (120, 660))], line="Pam: There you are.", eyeline="to the car, then up"),
         S("4.3", "medium, under the sign", "front", (270, 545, 1.45), "She points up at the sign, then at herself; turns to show "
           "someone: the street is empty. A small smile anyway; she pats her ears up and pushes the door.",
-          cast=[P("pam_cat", 300, 712, 0.62, "point_sign", "proud", (0.4, -1), lean=0.05)], protect=[("ONLY FOR YOU", (270, 416))],
+          cast=[P("pam_cat", 300, 712, 0.50, "point_sign", "proud", (0.4, -1), lean=0.05)], protect=[("ONLY FOR YOU", (270, 416))],
           eyeline="to the sign, then to nobody", action="the point at the sign, at herself", reaction="Finally."),
+        S("4.4", "POV, walking", "hall", (240, 560, 1.0), "Her eyes: through the lit arch and down the passage, the light fills "
+          "the frame; her glove parts a velvet curtain; the hall ahead, nearer with each step. Nobody turns.",
+          eyeline="ahead, to the booth", action="she goes in", reaction="(nobody turns)"),
     ]),
     ("05 The club", [
         S("5.1", "wide", "hall", (228, 590, 1.4), "Inside: the booth, the game table, the stage at the end. The Client and the ringed hand over the "
@@ -757,6 +831,15 @@ SCENES = [
           protect=[("envelope", (300, 470))], action="the lift", reaction="(he doesn't look)"),
     ]),
     ("06 Ignored star", [
+        S("6.0", "medium, low", "stage", WIDE, "Her act, three numbers, each bigger: she juggles three knives; she breathes a ball of "
+          "fire across the stage; she rises off the boards and hangs in the spotlight, arms wide.",
+          cast=[P("pam_cat", 225, 700, 0.86, "hero", "proud", (0.3, -0.2), rim=True)], after=_spot_on, eyeline="out to the room",
+          action="knives, fire, levitation", reaction="(nobody looks)"),
+        S("6.05", "insert", "hall", (160, 610, 1.9), "The booth (5.3's camera): the Client and the ringed hand over the plan. Nobody turns.",
+          eyeline="both to the plan", reaction="nobody turns"),
+        S("6.07", "medium, low", "stage", WIDE, "She still hangs in the air, arms wide, waiting for the applause. Silence. She drops onto "
+          "the boards, gets up, and reaches for her last card.", cast=[P("pam_cat", 225, 700, 0.86, "hero", "doubt", (0.3, -0.2), rim=True)],
+          after=_spot_on, eyeline="across the room: nobody", action="she hangs, waits, drops", reaction="(silence)"),
         S("6.1", "medium, low", "stage", WIDE, "She steps into the spotlight and opens the envelope.",
           cast=[P("pam_cat", 225, 700, 0.86, "hero", "proud", (0.3, 0.6), env=True, rim=True)], eyeline="to the envelope",
           after=_spot_on),
@@ -863,6 +946,8 @@ def _loc(k, name):
         g = cairo.LinearGradient(0, 300, 0, 520)             # board v9: the far wall and the ceiling go dark: a night club,
         g.add_color_stop_rgba(0, 0.02, 0.02, 0.03, 0.80); g.add_color_stop_rgba(1, 0.02, 0.02, 0.03, 0.0)   # lit at its tables
         k.c.set_source(g); k.c.rectangle(0, 0, 540, 520); k.c.fill()
+        if cl.MOTTO[0]:
+            cl.motto(k)
         return cl.light_hall
     if name == "plan":
         cl.PLAN_CARD[0] = "v7"; cl.plan_insert(k); return cl.light_inside
@@ -907,10 +992,23 @@ def _to_screen(cam, p):
     return (270 + (p[0] - fx) * z, 480 + (p[1] - fy) * z)
 
 
+OFFICE_MUTE = [False]                                      # (24 Nov, review of the heart) the machine grey and the screen quieter: the heart leads
+
+
 def _desk(k, sh, eighth):
     """the front desk set at S6 world units: Pam behind the counter, the props, the rest of the cast in front."""
     import fs_set4 as fs4
     import dh_props as dp
+    import fs_set3 as s3
+    if OFFICE_MUTE[0] and not getattr(dp, "_muted", False):
+        dp._muted = True
+        dp.MACH, dp.MACH_D = (0.52, 0.52, 0.54), (0.36, 0.36, 0.38)
+        _mon = s3.monitor
+        def monitor(k_, x, y, s_=1.0):
+            _mon(k_, x, y, s_)
+            c_ = k_.c; c_.save(); c_.translate(x, y); c_.scale(s_, s_)
+            c_.set_source_rgba(0.62, 0.64, 0.68, 0.55); c_.rectangle(-26, -44, 52, 32); c_.fill(); c_.restore()
+        s3.monitor = monitor
     heads = {}
     back = [p for p in sh["cast"] if p[0] == "pam_awake"]
     front = [p for p in sh["cast"] if p[0] != "pam_awake"]
@@ -940,7 +1038,17 @@ def _desk(k, sh, eighth):
 
 
 def render(sh, scale=1):
+    del KEYS[:]
+    return _render(sh, scale)
+
+
+def _render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
+    import on4_club as cl
+    cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True
+    st.NIGHT[0] = True; OFFICE_MUTE[0] = True; FACE_KEY[0] = True
+    car.TAIL_GREY[0] = True; oc.HEART[0] = 1.6; pr.ROTA_INK[0] = True       # (24 Nov) the envelope's heart is the film's one red
+    cl.LIMO[0] = (30, 1.15); cl.CLIENT_DY[0] = 0      # the Client stands behind the booth table (his legs reach the floor): left as he was
     st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"; oc.ENV_BIG[0] = 1.25; oc.MASK_UP_V2[0] = True
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W * scale, H * scale); s.set_device_scale(scale, scale)
     c = cairo.Context(s); k = Ctx(c, 0)
@@ -985,6 +1093,11 @@ def render(sh, scale=1):
             lit(c2)
         else:
             ons.vignette(c2, 0.55)
+        for dx_, dy_, r_ in KEYS:                            # the faces' key light, after the dark, so it lifts them out of it
+            x_, y_ = c2.device_to_user(dx_, dy_); r_ = c2.device_to_user_distance(r_, 0)[0]
+            g = cairo.RadialGradient(x_, y_, r_ * 0.2, x_, y_, r_ * 1.5)
+            g.add_color_stop_rgba(0, 1, 1, 0.96, 0.20); g.add_color_stop_rgba(1, 1, 1, 0.96, 0)
+            c2.set_source(g); c2.paint()
     return s, heads
 
 
@@ -1005,7 +1118,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"5.3": 4.6, "4.3": 2.9, "6.3": 3.4, "6.6": 3.3, "7.4": 2.0}                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"4.4": 3.0, "5.1": 1.2, "6.0": 3.6, "6.05": 0.9, "6.07": 3.0, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():
@@ -1014,6 +1127,8 @@ def _timing():
     d = json.load(open(os.path.join(OUT, TIMING)))
     v1 = {s["shot"]: dict(s) for s in d["shots"]}
     for k_, v in DUR.items():
+        if k_ not in v1:                                     # v17: a shot added after timing v1 (6.0, 6.05)
+            v1[k_] = dict(shot=k_)
         v1[k_]["dur"] = v
     tm, t = {}, 0.0
     ids = [x["id"] for _, ss in SCENES for x in ss]

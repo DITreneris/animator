@@ -32,6 +32,7 @@ PAPER = (0.99, 0.99, 0.97)
 RED = (0.86, 0.12, 0.16)
 PEN = (0.12, 0.22, 0.62)
 BRASS = (0.72, 0.58, 0.30)
+ROTA_INK = [False]                          # (24 Nov) PAM on the rota in pen ink, not red: the heart is the one red
 SEAL = [False]                              # board v6 (opt-in): the red heart seal, the twin of the dream envelope's
 
 
@@ -134,7 +135,7 @@ def envelope(k, x, y, s=1.0, ang=0.0, open_=False, sheet=0.0):
     kit.text(k, "PAM", -40, 94, 24, PEN, font="Comic Neue", bold=True)
     if SEAL[0]:                                              # board v6 (opt-in): the dream envelope's red heart, on the flap
         import on4_cast as oc_
-        oc_.seal(c, 44, -54, 14)
+        oc_.seal(c, 44, -54, 14 * oc_.HEART[0])
     c.restore()
 
 
@@ -148,7 +149,7 @@ def rota(k, x, y, s=1.0, ang=0.0):
     for i, d in enumerate(("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN")):
         yy = -84 + i * 34
         kit.text(k, d, -62, yy + 12, 22, (0.20, 0.20, 0.24), bold=True)
-        kit.text(k, "PAM", 46, yy + 13, 28, RED, bold=True)
+        kit.text(k, "PAM", 46, yy + 13, 28, PEN if ROTA_INK[0] else RED, bold=True)
         c.set_source_rgb(0.78, 0.78, 0.80); c.set_line_width(1); c.move_to(-96, yy + 24); c.line_to(96, yy + 24); c.stroke()
     c.restore()
 

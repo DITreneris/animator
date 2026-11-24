@@ -57,6 +57,8 @@ CAT_POSES = {   # body units (pm.ik); (left hand, right hand) shapes of hands_ps
     "lift": ((-8, 0) + pm.ik(1, 110, BT + 96), ("relax_s", "grab")),               # 5.3 the hand into his coat
     "triumph": ((-8, 0) + pm.ik(1, 62, HY - 80), ("relax_s", "fist")),             # 6.3 the envelope held high, off her ear
 }
+ENV_BIG = [1.0]                    # board v9 (opt-in): 1.25 = the held envelope a quarter bigger
+MASK_UP_V2 = [False]               # board v9 (opt-in): pushed up, the sleep mask keeps its stitched eyes and sits smaller
 
 
 def _coat_costume(badge=True):
@@ -188,7 +190,7 @@ def pam_cat(k, x, feet, s=0.54, pose="hero", face="proud", look=(0, 0), seed=40,
     if env or pose == "triumph":
         c.push_group(); o = draw(); c.pop_group()           # find the fist
         rx, ry = o["hands"][1]
-        envelope(k, rx + 2 * s, ry - 30 * s, s * 1.2)
+        envelope(k, rx + 2 * s, ry - 30 * s * ENV_BIG[0], s * 1.2 * ENV_BIG[0])
     o = draw()
     if pose == "sag":
         c.restore()
@@ -199,11 +201,14 @@ def sleep_mask(k, hx, hy, s, up=False):
     """The real twin: a pink sleep mask with two small cat ears, over the eyes (asleep) or pushed up (awake)."""
     c = k.c
     dy = -30 if up else 3
+    v2 = up and MASK_UP_V2[0]
+    if v2:
+        dy = -26; s = s * 0.82
     c.save(); c.translate(hx, hy + dy); c.scale(s, s)
     c.set_source_rgb(*SLEEP_DARK); c.set_line_width(3)
     c.move_to(-46, -2); c.line_to(-58, -6); c.stroke(); c.move_to(46, -2); c.line_to(58, -6); c.stroke()
     cut(k, [(-46, -14), (46, -14), (44, 12), (8, 16), (0, 10), (-8, 16), (-44, 12)], SLEEP, shadow=False, lw=2)
-    if not up:                                           # closed eyes stitched on it, asleep
+    if not up or v2:                                     # closed eyes stitched on it, asleep
         c.set_source_rgb(*SLEEP_DARK); c.set_line_width(2.4)
         for sx in (-1, 1):
             c.new_path(); c.arc(sx * 20, -2, 9, 0.2, math.pi - 0.2); c.stroke()

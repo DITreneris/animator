@@ -153,8 +153,11 @@ def envelope(k, x, y, s, open_=False):
     cut(k, [(-30, -22), (30, -22), (30, 20), (-30, 20)], (0.93, 0.82, 0.58), shadow=False, lw=2)
     c.set_source_rgb(*INK); c.set_line_width(1.6); c.move_to(-30, -22); c.line_to(0, 2); c.line_to(30, -22); c.stroke()
     if ENV_SEAL[0]:
-        seal(c, 0, 4, 7)
+        seal(c, 0, 4, 7 * HEART[0])
     c.restore()
+
+
+HEART = [1.0]                                              # (24 Nov) the heart's size on the dream envelope: the film's one red
 
 
 def seal(c, x, y, r):
