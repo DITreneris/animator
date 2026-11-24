@@ -123,23 +123,65 @@ def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0):
         c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.set_source_rgba(0.02, 0.02, 0.03, 0.9); c.fill()
 
 
+CAT = [True]                                                 # v6 (Tomas): Office Noir 1's black cat leaps across the lens at 0:00.25
+
+
+def cat_over(s, frames):
+    """the cat, drawn after the grade so its eyes keep their colour (as on_film does): frames = [(x, y, scale, flip)] or "full" """
+    import cat_on as ct
+    c = cairo.Context(s); kk = sc.Ctx(c, 0)
+    if frames == "in":
+        ct.black_cat(kk, 70, 1010, 4.2, "fall", flip=False)
+    elif frames in ("full", "full2"):
+        big = frames == "full2"
+        ct.black_cat(kk, 300, 1040, 9.5, "fall", flip=False)
+        c.set_source_rgba(0.02, 0.02, 0.03, 0.97 if big else 0.9); c.paint()      # the lens is fur
+        dx = 14 if big else 0
+        for ex in (176 + dx, 368 + dx):
+            ct._eye(c, ex, 400, 50 if big else 42, "open")
+        c.set_source_rgb(*ct.MOUTH); c.new_path(); c.save(); c.translate(272 + dx, 590); c.scale(1.0, 0.72 if big else 0.5)
+        c.arc(0, 0, 84, 0, 2 * math.pi); c.restore(); c.fill()
+        c.set_source_rgb(0.96, 0.95, 0.9)                                           # four fangs
+        for fx_, up in ((-46, 1), (46, 1), (-34, -1), (34, -1)):
+            yb = 590 - up * (60 if big else 42) * 0.9
+            c.move_to(272 + dx + fx_ - 11, yb); c.line_to(272 + dx + fx_ + 11, yb); c.line_to(272 + dx + fx_, yb + up * 34); c.close_path(); c.fill()
+    elif frames == "out":
+        ct.black_cat(kk, 470, 330, 3.4, "fall", flip=False)
+    elif frames == "gone":
+        ct.black_cat(kk, 560, 150, 1.6, "fall", flip=False)
+    return s
+
+
 def t1():
     fr = []
-    N = 34
+    N = 42 if CAT[0] else 34
+    FL = oc.pm.ik(-1, -64, -150) + oc.pm.ik(1, 64, -150)     # both hands up by her ears
     def sof(i):
         t = i / float(N)
         return (330 + 70 * t + (5 if i % 4 < 2 else -5), 650 + 560 * t * t + 80 * t - (7 if i % 2 else 0), 0.50 + 0.5 * t)   # v3: steps
-    def f(i, arms, lean, face, look, sh, burst=False):
+    def f(i, arms, lean, face, look, sh, burst=False, hop=0):
         sx, sy, ss = sof(i)
         sofia = [P("sofia", sx, sy, ss, "hold", "appraise", (0.2, 1.0))] if sy < 1180 else []
-        pam = [P("pam_cat", 220, 730, 0.84, pose(arms, ("fist", "fist")), face, look, lean=lean)]
+        pam = [P("pam_cat", 220, 730 - hop, 0.84, pose(arms, ("fist", "fist")), face, look, lean=lean)]
         flat = []
         cast = flat + (sofia + pam if sy < 735 else pam + sofia)
         return draw(shot("1.1", cast=cast, before=lambda k: shadow2(k, **sh),
                          after=(lambda k: sc._burst(k, 98, 544, 36)) if burst else None))
     i = 0
-    for _ in range(6):                                       # 0.5 s: the threat, held; her eyes already on it
-        fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
+    if CAT[0]:
+        for _ in range(3):                                   # 0.25 s: frame 0, held
+            fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
+        for step, hop, t in (("in", 0, 0.3), ("full", 14, 0.8), ("full2", 26, 1.0), ("out", 30, 1.0), ("gone", 22, 1.0)):
+            fr.append(cat_over(f(i, lerp(HERO, FL, t), 0.10 * t, "doubt", (0.9, -0.8), dict(), hop=hop), step)); i += 1   # the cat; she jumps
+        for hop, t in ((10, 0.9), (0, 0.6)):                 # she comes down, the hands still up: the "cat" was scared of a cat
+            fr.append(f(i, lerp(HERO, FL, t), 0.08 * t, "doubt", (0.9, -0.6), dict(), hop=hop)); i += 1
+        for t in (0.3, 0.0):                                 # collects herself; her eyes back on the shadow
+            fr.append(f(i, lerp(HERO, FL, t), 0, "peer", (-1.0, -0.5), dict())); i += 1
+        for _ in range(2):
+            fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
+    else:
+        for _ in range(6):                                   # 0.5 s: the threat, held; her eyes already on it
+            fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
     for t in (0.4, 0.8, 1.0):                                # the wind-up: the fist back, the weight back
         fr.append(f(i, lerp(HERO, WIND, t), 0.07 * t, "peer", (-1.0, -0.4), dict())); i += 1
     fr.append(f(i, lerp(WIND, PUNCH, 0.6), -0.04, "peer", (-1.0, -0.3), dict())); i += 1          # the strike
@@ -426,6 +468,11 @@ def t5():
         c = cairo.Context(s); g = cairo.LinearGradient(0, ay + 180, 0, ay + 236)                    # v4: the floor (the shredder) goes first
         g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0.01, 0.01, 0.02, min(1.0, d * 1.6))
         c.set_source(g); c.paint()
+        if rain and CAT[0]:                                  # v6: two eyes open in the dark; the loop, and the cat leaps
+            import cat_on as ct
+            c = cairo.Context(s)
+            for ex in (118, 150):
+                ct._eye(c, ex, 640, 9, "closed" if rain < 0.5 else "open", slit=rain >= 1.0)
         if rain:
             c = cairo.Context(s); c.set_source_rgba(1, 1, 1, 0.5 * rain); c.set_line_width(2)
             for _ in range(26):

@@ -15,9 +15,9 @@ import on4_voices as vo
 
 FPS = 12
 SR = 48000
-MOT = {("1.1", "1.2"): ("T1", 0, 31), ("2.2", "2.3"): ("T2", 0, None), ("3.1", "3.2"): ("T3", 0, None),
+MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("3.1", "3.2"): ("T3", 0, None),
        ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("6.3", "6.6"): ("T4", 0, -8), ("8.1", "8.2"): ("T5", 0, -7)}
-OUT = os.path.join(sc.OUT, "on4_rough_v4.mp4")
+OUT = os.path.join(sc.OUT, "on4_rough_v5.mp4")
 NEW = {   # key: (shot, seconds into the shot, who, text)
     "c1": ("2.2", 1.3, "CLIENT", "Mine until it's done."),
     "d1": ("3.1", 1.5, "DON", "Traffic flows."),
@@ -137,8 +137,14 @@ def sound(tm, d, total):
     span31 = tm["3.1"]["dur"] + tm["3.2"]["dur"]
     bump = st_("3.1") + span31 * 21.0 / 32.0                 # T3's hit drawing
     toot = st_("3.1") + span31 * 12.0 / 32.0
-    put(fx, rs(so.swish(0.3), so.SR), 0.72, 0.9); put(fx, rs(so.thump(), so.SR), 0.85, 1.6)       # the punch
-    put(fx, rs(so.swish(0.9), so.SR), 1.0, 0.5)                                                     # the shadow runs down the wall
+    C0 = 0.67                                                                                       # v5: the cat first (8 drawings)
+    put(fx, rs(so.hiss(0.5), so.SR), 0.25, 1.5)                                                     # the cat across the lens: hiss and yowl
+    ty = np.arange(int(0.42 * SR)) / SR; fq = 620 + 900 * np.sin(np.pi * ty / 0.42) ** 0.7 + 40 * np.sin(2 * np.pi * 31 * ty)
+    yowl = np.sin(2 * np.pi * np.cumsum(fq) / SR); yowl = np.tanh((yowl + 0.5 * np.sin(4 * np.pi * np.cumsum(fq) / SR)) * 2.0)
+    put(fx, yowl * np.minimum(ty / 0.02, 1) * np.minimum((0.42 - ty) / 0.08, 1) * 0.22, 0.27)
+    put(fx, rs(so.thump(), so.SR), 0.33, 1.0)
+    put(fx, rs(so.swish(0.3), so.SR), 0.72 + C0, 0.9); put(fx, rs(so.thump(), so.SR), 0.85 + C0, 1.6)       # the punch
+    put(fx, rs(so.swish(0.9), so.SR), 1.0 + C0, 0.5)                                                     # the shadow runs down the wall
     t_ = np.arange(int(0.5 * SR)) / SR                                                             # the whistle's toot
     put(fx, np.sin(2 * np.pi * (2300 + 60 * np.sin(2 * np.pi * 38 * t_)) * t_) * np.minimum(t_ / 0.02, 1) * np.exp(-np.maximum(t_ - 0.35, 0) / 0.05) * 0.12, toot)
     put(fx, rs(so.hiss(0.5), so.SR), bump - 0.45, 0.5)                                              # the tyres
@@ -150,7 +156,7 @@ def sound(tm, d, total):
     put(fx, rain, r0, 1.2)
     put(fx, rs(so.rain(1.2), so.SR) * np.linspace(1, 0, len(rs(so.rain(1.2), so.SR))), 0.0, 1.2)    # the rain runs through the loop's seam
     # the band: in the dream only; dead on the bump (back when she sits up), dead on "Well?"; nothing awake
-    for t0, t1 in ((0.3, bump), (st_("3.6") + 0.4, st_("6.3") + 0.9)):
+    for t0, t1 in ((1.0, bump), (st_("3.6") + 0.4, st_("6.3") + 0.9)):
         jz.groove(mus, t0, t1, level=0.8)
         j = int(t1 * SR); mus[j:] = 0.0                                                             # cut dead
     mus_end = int((st_("6.3") + 0.9) * SR); mus[mus_end:] = 0.0
