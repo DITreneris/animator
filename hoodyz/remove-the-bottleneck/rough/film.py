@@ -280,6 +280,8 @@ def shot_F(c, t):
             for i in range(5): ell(c, x0 - 20 - i * 46 + 10 * math.sin(t + i), FLOOR - 14 - i * 5, 30 - i * 4, 14 - i * 2); c.set_source_rgba(.92, .88, .8, .7); c.fill()
         # the crate; the hit throws its lid open and its sticker off
         hit = t >= T_HIT
+        if hit and t < T_HIT + 5:                                         # v2: the landing dust is BEHIND the crate (it was drawn over its bottom edge)
+            for i in range(7): ell(c, CX + 20 + i * 100, FLOOR - 8, 44, 16); c.set_source_rgba(.92, .88, .8, .8 * (1 - (t - T_HIT) / 5)); c.fill()
         sl = B.crate(c, x0, y, lid=oe((t - T_HIT) / 4) if hit else 0, stamp=0 if hit else 1.0, rts=1.0 if t >= T_BACK else 0, slot=True, slot_x=50,
                      rot=(.02 if t < T_GO else (-.05 if t < T_OUT else lerp(-.05, .04, oe((t - T_BACK) / 14)))) * (1 - fall) if not hit else 0)
         thumb_up(c, sl, io((t - 22) / 5) * (1 - io((t - T_DROP + 3) / 3)))
@@ -311,8 +313,6 @@ def shot_F(c, t):
                     for i in range(4): ell(c, H0X - 90 + i * 60, FLOOR - 10, 30, 12); c.set_source_rgba(.92, .88, .8, .7 * (1 - (t - T_LAND) / 4)); c.fill()
             u = (t - T_HIT) / 10                                          # the sticker, blown off, out of the top right
             if u < 1.3: B.sticker(c, CX + 350 + 520 * u, FLOOR - 185 - 900 * u + 300 * u * u, 1.0, rot=-.06 + 5 * u, rts=1.0)
-            if t < T_HIT + 5:
-                for i in range(7): ell(c, CX + 20 + i * 100, FLOOR - 8, 44, 16); c.set_source_rgba(.92, .88, .8, .8 * (1 - (t - T_HIT) / 5)); c.fill()
     # HARV, the leader, at the series' full size: walks in, signs for it, leaves before the sprint
     hv = lerp(-200, 205, io(t / 10)) if t < 40 else lerp(205, -220, io((t - 40) / 14))      # 205, not 165: at 165 the frame edge cut his ear (cover audit)
     if hv > -190 and t < 56:
