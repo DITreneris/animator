@@ -29,7 +29,7 @@ def _sleeve(c, pts, w):
 UPPER, FORE = 190, 180                                       # fixed bones (rules page: two bones, never stretched)
 
 
-def don_arm(k, x, y, s, arm, side=1, bend=None):
+def don_arm(k, x, y, s, arm, side=1, bend=None, cuff=False):
     """The raised arm alone (drawn after the back, not logged as him: a bubble's tail looks for his crown). Two bones of
     fixed length (of_scenes.ik2), the upper arm wider than the forearm, the wrist narrowest, the sleeve no wider than the
     arm; the elbow bends out, away from his body."""
@@ -49,6 +49,13 @@ def don_arm(k, x, y, s, arm, side=1, bend=None):
         col = INK if ink else SHIRT
         osc._limb(c, sh, el, 50 * s, 42 * s, col, e)
         osc._limb(c, el, wr, 42 * s, 32 * s, col, e)
+    if cuff:                                                # opt-in (Daddy's Home v8, review 3): his shirt cuff and gold
+        n_ = (-d[1], d[0])                                  # cufflink, as in the APPROVE insert: one hand in both shots
+        cx_, cy_ = wr[0] - d[0] * 46 * s, wr[1] - d[1] * 46 * s
+        c.set_source_rgb(*INK); c.set_line_width(2.6 * s); c.new_path()
+        c.move_to(cx_ + n_[0] * 17 * s, cy_ + n_[1] * 17 * s); c.line_to(cx_ - n_[0] * 17 * s, cy_ - n_[1] * 17 * s); c.stroke()
+        ellipse(k, wr[0] - d[0] * 34 * s + n_[0] * 8 * s, wr[1] - d[1] * 34 * s + n_[1] * 8 * s, 7 * s, 6 * s,
+                (0.95, 0.76, 0.22), 3512, shadow=False, lw=1.8 * s)
     hp.draw(k, shape, tx, ty, 62 * s, SKIN, d, side)
 
 

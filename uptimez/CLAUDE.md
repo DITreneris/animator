@@ -18,7 +18,8 @@ Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) us
 1. **Collect the lessons first.** Grep `../docs/lessons.md` for the topic (bubbles, tails, signs, mouths, scale...), write every rule that applies into the episode folder as `<episode>-<topic>-lessons-vN.md` with line numbers, and send it to Tomas before building.
 2. **Reuse what was approved.** Search `src/` and `git log origin/main` for a film where the same problem was solved and reviewed (bubbles: `bc_sb.bubble` / `measure`, checks: `qa_bc.py`). Name the file being reused. Write new code only if nothing exists, and say so to Tomas first.
 3. **Look before sending.** Open at least six frames at full size, with crops of the details the change touches (where a tail meets its box, the tip on the cheek). A checker that passes is not a reason to send; the frames are.
-4. **Stop when it isn't converging.** After one hour or two full check runs without the faults going down, stop and report to Tomas instead of patching on.
+4. **Hands, arms, gestures, poses:** before any change, follow section 0 of `../docs/rules-hands-and-phones.md` (list the applicable lessons with numbers in the reply, silhouettes for a meaningful gesture, measured gaps at feed size, hand sheet, 10 fps strip, change the gesture after three misreads). This holds for every fix from a review or a cold test, not only for new shots (Daddy's Home v8 round 7 skipped it and made a new misread).
+5. **Stop when it isn't converging.** After one hour or two full check runs without the faults going down, stop and report to Tomas instead of patching on.
 
 ## Working with Tomas
 

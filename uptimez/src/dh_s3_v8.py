@@ -166,7 +166,7 @@ def c_fg(k, cam):
             q = rr if j % 2 == 0 else rr * 0.45
             (c.move_to if j == 0 else c.line_to)(sx0 + math.cos(a_) * q, sy0 + math.sin(a_) * q)
         c.close_path(); c.set_source_rgba(0.25, 0.85, 0.40, 0.95); c.fill()
-    counter_near(k, cam, 690)
+    counter_near(k, cam, 818)                            # review 3 (24 Nov): at 690 it cut her at the shins, "no shoes"; below the soles (794)
 GLY = [0.20]
 
 
@@ -208,7 +208,7 @@ def e_fg(k, cam):
 
 
 # ---------------------------------------------------------------- 3F: "Different chair." Mom MCU, Sofía frozen behind
-CAM_3F = (476, 707, 2.6)                  # a step back and right: Mom's box on her right (her mouth's side), out of the rail
+CAM_3F = (476, 690, 2.6)                  # a step back and right: Mom's box on her right (her mouth's side), out of the rail
 
 
 def f_people(k, o):
