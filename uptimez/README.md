@@ -301,10 +301,11 @@ Built from `src/` (`fs_film35.py`, over `fs_film5.py` … `fs_film34.py`, all ke
 
 ### One Star — [`customer-success/`](customer-success/)
 
-Episode 11, **rough cut v13 (24 Nov), the master candidate.** Thursday the 11th: every phone in the office buzzes with the Client's post, one star, "Paid $999. They lost my blueprint. My lawyer will call." The robot drafts a reply and Don approves it unread; Don reads it out: "Stupid human." 🤡. Don phones him: "Nine o'clock. Your office." Friday the 12th, Don presents a site plan "recovered" by the AI; the Client: "Is this a joke?" At the door Pam stops him with a raised palm; his own taped plan slides over the AI's, with a hole at bay 7. Pam: "Check your pocket." The 7 is in his own hand. Robot: "The result was obtained by a h-human." He saves her number: "finds things". Don: "Customer success." The post gets "UPDATE: Pam found it."; Pam answers it: "Some post. Others find."; Sofía: "Still one star." Don reads his phone and puffs up. The folder and file names keep the working title (`customer-success/`, `cs_*`).
+Episode 11, **master v13 (24 Nov), approved.** Thursday the 11th: every phone in the office buzzes with the Client's post, one star, "Paid $999. They lost my blueprint. My lawyer will call." The robot drafts a reply and Don approves it unread; Don reads it out: "Stupid human." 🤡. Don phones him: "Nine o'clock. Your office." Friday the 12th, Don presents a site plan "recovered" by the AI; the Client: "Is this a joke?" At the door Pam stops him with a raised palm; his own taped plan slides over the AI's, with a hole at bay 7. Pam: "Check your pocket." The 7 is in his own hand. Robot: "The result was obtained by a h-human." He saves her number: "finds things". Don: "Customer success." The post gets "UPDATE: Pam found it."; Pam answers it: "Some post. Others find."; Sofía: "Still one star." Don reads his phone and puffs up. The folder and file names keep the working title (`customer-success/`, `cs_*`).
 
 | File | Notes |
 |---|---|
+| `one_star_master_v13_540.mp4`, `one_star_cover_v1.png` | **The master (24 Nov)** and its cover (`one-star-master-v13.md`); the film is rough cut v13 unchanged |
 | `one_star_rough_v13_540.mp4` | **v13 (24 Nov)**, 540: 61.3 s, 16 lines, −15.7 LUFS, peak −2.4 dBFS; all 16 lines word-exact in the final mix. The 1080 file is rebuilt, not committed |
 | `one_star_rough_v12_540.mp4` … `_v6_540.mp4` | v6–v12 of 23 Nov: phone texts inside the screen, layout B (Pam brings the plan), the series' one hand, shot list v19, dry voices, Don's clean "Stupid human." |
 | `one-star-shot-list-v19.md` | **Current shot list:** size, foreground and hands for every shot (five close-ups, two over-the-shoulder shots, a foreground layer with parallax, the 7 insert 4.3s) |
@@ -325,7 +326,7 @@ python3 cs_film_v13.py ../customer-success     # the mix and the film
 python3 gates_os.py collect && python3 gates_os.py depth && python3 gates_os.py report   # with V19=1 for v19
 ```
 
-**Still open:** Tomas's approval of the master, the cover, and one note from the last cold test (who dials whom in the call).
+**Left as is:** one note from the last cold test (who dials whom in the call).
 
 ### Daddy's Home — [`daddys-home/`](daddys-home/)
 
