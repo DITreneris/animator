@@ -51,7 +51,7 @@ def ease(u):
 
 
 # ------------------------------------------------------------------ 3A: over Don's shoulder (3.1 + 3.2)
-DONB = (370, 720)                                           # round 3: higher (his crown out of the bottom quarter), the tail beside the screen
+DONB = (370, 650)                                           # round 3: higher (his crown out of the bottom quarter), the tail beside the screen
 def cam_3a(tt):
     return lerp(S.CAM_3A, S.CAM_3Az, ease((tt - T0["3.2"]) / 1.0))
 
@@ -68,7 +68,7 @@ def r_3a(k, o, t, tt, n):
     i = int(tt * DPS + 1e-6)                                # drawings since the scene began
     j = i - int(T0["3.2"] * DPS)
     if j < 0:                                               # 3.1: up to the screen in four drawings, then held
-        ARM[0] = seq(t, [(238, 492, "point_s"), (236, 500, "point_s")])     # caught already pointing at the screen, left of his box
+        ARM[0] = seq(t, [(242, 482, "point_s"), (240, 486, "point_s")])     # round 7: the tip stops short of the screen (cold test: touching it read as holding the sign)     # under the screen, nearly at full reach (a bent elbow swung out; higher, the hand hid "1/5")     # caught already pointing at the screen, left of his box
     else:                                                   # his hand drops as the robot answers (its box goes above its antenna)
         ARM[0] = seq(j / float(DPS), [(294, 1240, "relax")])   # dropped: straight down, out of the frame (a swing crossed his head or the robot)
 
@@ -83,7 +83,7 @@ def fg_3a(k, cam, tt, n, box):
             u_ = i_ / 5.0; px_, py_ = hx_ + (sx_ - hx_) * u_, hy_ + (sy_ - hy_) * u_
             AVOID_EXTRA.append((px_ - 22, py_ - 40, px_ + 22, py_ + 40))
     hd = db.don_back(k, DONB[0], DONB[1] + dy, 1.0, side=-1)
-    db.don_arm(k, DONB[0], DONB[1] + dy, 1.0, ARM[0], side=-1)
+    db.don_arm(k, DONB[0], DONB[1] + dy, 1.0, ARM[0], side=-1, cuff=True)
     if not NOBUB[0]:
         if speaking("3.1", tt):
             say(k, "Make it green.", DONB, n)
@@ -109,20 +109,66 @@ def r_thumb(k, c, t, tt, n):
     # rules page (24 Nov): a press is a fingertip (point); at the frame's edge, the hand and a short cuff stub
     # (of_scenes.insert_cuff) running out of the nearest edge, the sleeve no wider than the arm
     import of_scenes as osc
-    hand, w = (452, 500), 128
-    d = osc.insert_cuff(c, hand, (640, 560), w * 0.62, SKIN, (0.98, 0.98, 0.96), cuff=(0.98, 0.98, 0.96), stub=70)
-    for ex, ey in ((506, 518), (526, 534), (498, 540)):      # the ketchup on his cuff
-        kit.ellipse(k, ex, ey, 9, 7, (0.85, 0.16, 0.10), 3510 + ex, shadow=False, lw=1.4)
-    hp.draw(k, "point", hand[0], hand[1], w, SKIN, d, 1)   # the index on the pad
+    hand, w = (400, 490), 104
+    d = osc.insert_cuff(c, hand, (640, 560), w * 0.62, SKIN, (0.98, 0.98, 0.96), cuff=(0.98, 0.98, 0.96), stub=190)
+    # round 7 (cold test: the ketchup read as nail polish): a shirt cuff, as his white sleeves in 3A, with a gold cufflink
+    nx_, ny_ = -d[1], d[0]                                  # across the arm
+    for off_ in (96, 134):                                   # the cuff's two seams
+        cx_, cy_ = hand[0] - d[0] * off_, hand[1] - d[1] * off_
+        c.set_source_rgb(*kit.INK); c.set_line_width(3.2); c.new_path()
+        c.move_to(cx_ + nx_ * 30, cy_ + ny_ * 30); c.line_to(cx_ - nx_ * 30, cy_ - ny_ * 30); c.stroke()
+    bx_, by_ = hand[0] - d[0] * 115 - nx_ * 16, hand[1] - d[1] * 115 - ny_ * 16
+    kit.ellipse(k, bx_, by_, 11, 9, (0.95, 0.76, 0.22), 3512, shadow=False, lw=2.4)      # the cufflink
+    hp.draw(k, "point_t", hand[0], hand[1], w, SKIN, d, 1)   # the index on the pad, the thumb tucked (review 2: "a bent finger")
     c.restore()
     return ("Approved.", (468, 452), 1, False, 0) if speaking("3.3", tt) else None
 
 
 # ------------------------------------------------------------------ 3C: Pam
+import contextlib, pam_xmas as _px
+
+
+@contextlib.contextmanager
+def pam_legs():
+    """Review 2 (24 Nov): her beige trousers on the beige booth read as part of it. The same colour, opt-in here: the
+    inner half of each leg 15 % darker, a heavier outline, and a contact shadow under her shoes."""
+    old = _px._legs
+
+    def legs(k, seed, stance=1.0):
+        c = k.c
+        c.save(); c.set_source_rgba(0.10, 0.08, 0.06, 0.28)          # the contact shadow
+        c.translate(0, -2); c.scale(48, 7); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+        old(k, seed, stance)
+        mid = tuple(v * 0.86 for v in _px.TROUSERS); dark = tuple(v * 0.74 for v in _px.TROUSERS)
+        for sx_ in (-15 * stance, 15 * stance):
+            top = sx_ / stance; o = 1 if sx_ > 0 else -1
+            c.new_path()                                                # the whole leg a step down from the booth's beige
+            c.move_to(top - 11, _px.HEM - 6); c.line_to(top + 11, _px.HEM - 6); c.line_to(sx_ + 10, -12); c.line_to(sx_ - 10, -12); c.close_path()
+            c.set_source_rgb(*mid); c.fill()
+            c.new_path()                                                # the inner half, in shade
+            c.move_to(top - o * 11, _px.HEM - 6); c.line_to(top, _px.HEM - 6); c.line_to(sx_, -12); c.line_to(sx_ - o * 10, -12); c.close_path()
+            c.set_source_rgb(*dark); c.fill()
+            c.set_source_rgb(*_px.TROUSERS_DARK); c.set_line_width(1.6); c.new_path()   # the crease again
+            c.move_to(top, _px.HEM + 6); c.line_to(sx_, -16); c.stroke()
+            c.new_path()                                                # the heavier outline
+            c.move_to(top - 11, _px.HEM - 6); c.line_to(sx_ - 10, -12); c.move_to(top + 11, _px.HEM - 6); c.line_to(sx_ + 10, -12)
+            c.set_source_rgb(*kit.INK); c.set_line_width(3.4); c.stroke()
+            ellipse_ = kit.ellipse                                      # the shoe again, over the shading
+            ellipse_(k, sx_ + o * 3, -6, 15, 8, _px.TRAINER, seed + 70 + sx_, lw=2)
+    _px._legs = legs
+    try:
+        yield
+    finally:
+        _px._legs = old
+
+
 def r_pam(k, o, t, tt, n):
-    hp.reset("quiet", "quiet")
     look = (-1, -0.35) if (speaking("3.4", tt) or t < 0.2) else (-0.2, -0.1)   # the line, then one flat glance off it
-    q = ds.pb.pam(k, S.PAM[0], S.PAM[1], dl.PS, "stand", "neutral", look=look, glasses="up", mouth=code("3.4", tt))
+    one = t >= 0.25                                         # round 7: ONE finger up beside her face, held (the doubt as an action)
+    hp.reset("quiet", "point_t" if one else "quiet")
+    pose = (-8, 0) + ds.pb.pm.ik(1, 64, ds.pb.pm.HY + 34) if one else "stand"
+    with pam_legs():
+        q = ds.pb.pam(k, S.PAM[0], S.PAM[1], dl.PS, pose, "incredulous" if one else "neutral", look=look, glasses="up", mouth=code("3.4", tt))
     o["head"] = q["head"]
 
 
@@ -161,14 +207,18 @@ MOMX = 300                                                  # 24 Nov (Tomas, /gr
 
 
 import mom_bc as _mb
-WIPE_FAR = _mb.POSES["wipe"]                                # her own reach (the throne is back where she can reach it)
+WIPE_FAR = _mb.wipe_at(118, _mb.BT + 20)                     # her cloth on the throne's side, above the arm (cold test: Sofía's
+                                                            # palm on the arm beside the cloth read as a handshake, 3 times)
 
 
 def mom_e(k, o, tt, n, look=(0.6, 0.8), dy=0):
-    hp.reset("quiet", "fist")
+    out = T0["4.1"] + 0.35 <= tt < T0["4.1'"]          # round 7: on "fired", her free hand points OUT (screen left: the door)
+    hp.reset("point_t" if out else "quiet", "fist")
+    pose = (_mb.mo.ik(-1, -_mb.SH_X - 92, _mb.BT + 50) + WIPE_FAR[2:]) if out else WIPE_FAR
     with A.About(k.c, MOMX, F + 8, 1.0, 1.0, dy):
-        m = sb.mfs.mom(k, MOMX, F + 8, dl.MS, WIPE_FAR, "sweet", look=look, mouth=code("4.1", tt))
+        m = sb.mfs.mom(k, MOMX, F + 8, dl.MS, pose, "sweet", look=look, mouth=code("4.1", tt))
     o["head"] = m["head"]
+    o["mom_hand"] = m["hands"][0] if out else None
     return m
 
 
@@ -226,6 +276,9 @@ def r_up(k, o, t, tt, n):
 
 def fg_3e(k, cam, tt, n, box):
     AVOID_EXTRA[:] = []
+    if box.get("mom_hand"):                                 # her pointing hand stays clear of the box
+        hx_, hy_, _ = S.to_screen(cam, *box["mom_hand"])
+        AVOID_EXTRA.append((hx_ - 40, hy_ - 40, hx_ + 40, hy_ + 40))
     if not NOBUB[0] and speaking("4.1", tt):
         hx, hy, _ = S.to_screen(cam, *box["head"])
         line = "He once fired a man..." if tt < T0["4.1'"] else "...for sitting in that chair."
@@ -233,9 +286,9 @@ def fg_3e(k, cam, tt, n, box):
 
 
 # ------------------------------------------------------------------ 3F: "Different chair." (round 2's staging)
-SOF3F = 400                                                 # 12 right of round 2: whole in the stepped-back frame
+SOF3F = 410                                                 # 12 right of round 2: whole in the stepped-back frame
 def r_mom(k, o, t, tt, n):
-    dp.ceo_chair(k, 491, CH[1], CH[2])
+    dp.ceo_chair(k, 540, CH[1], CH[2])                     # to her right: she stands beside it (cold test: "Mom sits in the throne")
     after = tt - (V7.AT["4.3"] + len(V7.WAV["4.3"]) / float(V7.SR))
     hp.reset("palm", "palm")
     if after < 0:                                           # frozen; her eyes go up to the price
@@ -262,6 +315,7 @@ HELD = {}                                                   # text -> the box an
 from speech_gate import RAIL                                # the app's buttons (CLAUDE.md "Text"): one rect, the gate's
 AVOID_EXTRA = []                                            # this drawing's other no-go rects (Don's raised arm in 3A)
 CHECKS = []                                                 # (n, text, faults) for every bubble drawn
+BOXES = []                                                  # (n, text, box) for the zone audit
 
 
 def _avoid():
@@ -289,6 +343,7 @@ def say(k, text, near, n=0, name=None):
     try:
         if near is None:
             box, tip = speech.draw(k, text, None, name=name)
+            BOXES.append((n, text, box))
             CHECKS.append((n, text, speech_gate.check(surf, box, tip, [], before=before))); return
         rec = SP.pick(near)
         ms = SY.measure(rec)
@@ -319,6 +374,7 @@ def say(k, text, near, n=0, name=None):
         box, tip = speech.draw(k, text, head, mouth=(mx, my), above=above, aim=aim, others=others, avoid=avoid)
         if text not in HELD:
             HELD[text] = (box, -1 if (tip and tip[0] < hx) else 1)
+        BOXES.append((n, text, box))
         CHECKS.append((n, text, speech_gate.check(surf, box, tip, others + [head], above=above, aim=aim, before=before,
                                                   avoid=signs)))
     finally:
@@ -410,6 +466,31 @@ def install_speech():
     return SY
 
 
+def sound(out):
+    """v7's mix (dh_anim3.sound), with one change: the fist's whoosh sat 0.05 s before "Green is all he sees." and Whisper
+    heard "Brain" in the mix (an effect on a line's first word masks it); it now comes after the line."""
+    import numpy as np, soundfile as sf_
+    import cs_sfx as fx
+    SR = V7.SR
+    mix = np.zeros(int((TOTAL + 0.3) * SR))
+
+    def put(a, at_, g=1.0):
+        i0 = int(at_ * SR); a = a[:max(0, len(mix) - i0)]; mix[i0:i0 + len(a)] += a * g
+    for key, at_ in V7.TAKES:
+        put(V7.WAV[key], at_)
+    put(fx.tap(220.0), T0["3.3"] + 0.17, 0.6)
+    put(fx.chime(), T0["3.3'"] + 0.05, 0.6)
+    put(fx.whoosh(0.2), V7.AT["3.5"] + len(V7.WAV["3.5"]) / float(SR) + 0.05, 0.3)   # the fist, after the line
+    put(fx.step(), T0["4.1"] + 0.17, 0.7)
+    put(fx.whoosh(0.3), T0["4.1"] + 0.19, 0.45)
+    put(fx.rustle(0.3), T0["4.1'"] + 0.17, 0.4)
+    put(fx.whoosh(0.3), T0["4.2"] + 0.06 + 0.33, 0.6)
+    put(fx.scratch(0.4), T0["4.2"] + 0.10 + 0.33, 0.3)
+    put(fx.step(), T0["4.2"] + 0.84, 0.6)
+    put(fx.tap(140.0), T0["4.2"] + 0.80, 0.5)
+    sf_.write(out, mix, SR)
+
+
 def main(hi=1):
     tmp = "/tmp/dh_s3_%s%s" % (V, "_mute" if NOBUB[0] else ""); os.makedirs(tmp, exist_ok=True)
     ds.ARM_PHONE[0] = True
@@ -447,14 +528,61 @@ def main(hi=1):
     print("wrote", out, "%.2f s, %d drawings" % (TOTAL, N))
 
 
+ZONES = dict(top=96, bottom=720, left=18, right=522)         # CLAUDE.md G3 / "Text": the title bar, the caption quarter, the edges;
+                                                            # the button rail is speech_gate.RAIL
+
+
+ENTRANCES = {("4.1'", "sofia")}                             # she comes in from the right edge, mid-step
+
+
+def zone_faults(rect, what):
+    """The dead zones a rect (x0, y0, x1, y1) reaches into. what: 'face' (out of the bottom quarter and the rail),
+    'sign' (whole under the title bar and off the edges), 'bubble' (speech_gate checks those)."""
+    x0, y0, x1, y1 = rect
+    out = []
+    if y0 < ZONES["top"]:
+        out.append("under the title bar")
+    if x0 < ZONES["left"] or x1 > ZONES["right"] + 18:
+        out.append("at the frame's edge")
+    if what == "face":
+        if y1 > ZONES["bottom"]:
+            out.append("in the caption quarter")
+        if x1 > RAIL[0] and y1 > RAIL[1] and y0 < RAIL[3]:
+            out.append("under the buttons")
+    return out
+
+
 def gate():
-    """Every drawing of the scene with its bubbles; speech_gate's faults per line. Exit 1 on any."""
+    """Every drawing of the scene with its bubbles; speech_gate's faults per line, and faces and signs in the apps'
+    dead zones (24 Nov, Tomas: "check also TikTok, YT, Reels dead zones"). Exit 1 on any."""
     import collections
+    import dh_speech as SP
+    import dh_say as SY
     install_speech(); ds.ARM_PHONE[0] = True
     me = sys.modules[__name__]
     HELD.clear(); del CHECKS[:]
+    zc = collections.Counter()
     for n in range(int(round(TOTAL * DPS))):
-        me.frame(n / float(DPS), n, 1)
+        surf, sid = me.frame(n / float(DPS), n, 1)
+        if sid in INS:                                      # inserts: the v7 drawings, no faces to place
+            continue
+        seen = []
+        for rec in SP.REG:
+            try:
+                ms = SY.measure(rec); hx, hy = SP._frame_matrix(rec).transform_point(*rec["head_u"])
+            except Exception:
+                continue
+            if any(math.hypot(hx - a, hy - b) < 0.5 * ms["r"] for a, b in seen):
+                continue                                    # the same rig logged twice
+            seen.append((hx, hy)); r = ms["r"] * 0.8
+            if -r < hx < 540 + r and -r < hy < 960 + r:
+                for f_ in zone_faults((hx - r, hy - r, hx + r, hy + r), "face"):
+                    if f_ == "at the frame's edge" and (sid, rec.get("name")) in ENTRANCES and n - int(T0[sid] * DPS) < 2:
+                        continue                            # an entrance caught mid-step at the edge (G2b), 2 drawings
+                    zc[("face %s" % rec.get("name"), sid, f_)] += 1
+        for a in _avoid():
+            for f_ in zone_faults(a, "sign"):
+                zc[("sign", sid, f_)] += 1
     by = collections.OrderedDict()
     for n, text, faults in CHECKS:
         b = by.setdefault(text, [0, 0, collections.Counter()]); b[0] += 1
@@ -465,7 +593,10 @@ def gate():
         print("%-30s %3d drawings %3d with faults  %s" % (text, nn, nf, dict(cnt)))
         bad += nf
     print("speech_gate: %d bubble drawings, %d with faults" % (len(CHECKS), bad))
-    return bad
+    for (what, sid, f_), v in sorted(zc.items()):
+        print("ZONE %-14s %-5s %-22s %d drawings" % (what, sid, f_, v))
+    print("dead zones: %d drawings with a face or sign in them" % sum(zc.values()))
+    return bad + sum(zc.values())
 
 
 if __name__ == "__main__":
@@ -481,9 +612,8 @@ if __name__ == "__main__":
         NOBUB[0] = True
         main(1)
     else:
-        SY = install_speech()
-        me = sys.modules[__name__]
-        if SY is not None:
-            SY.plan_scene(lambda tt, k: me.frame(tt, k, 1), TOTAL)
-            print("scene 3 v8: %d lines pinned, no place: %s" % (len(SY.PLAN), SY.NEEDS_FRAME), flush=True)
+        install_speech()                                    # the rigs logged for measuring; bubbles by speech.draw
+        HELD.clear(); del CHECKS[:]
         main(1)
+        bad = [c_ for c_ in CHECKS if c_[2]]
+        print("speech_gate on the render: %d bubble drawings, %d with faults" % (len(CHECKS), len(bad)))

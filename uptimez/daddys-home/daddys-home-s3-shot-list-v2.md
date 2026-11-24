@@ -85,3 +85,21 @@ Drawn by `src/dh_s3_v8.py` (with `src/dh_back.py`, Don from behind, and the new 
 - 3A: Don's crown at x 370 (his box over it, clear of the rail); his arm drops as the robot answers, so the robot's box goes over its antenna.
 - `dh_tailcheck.py` is back to what v7 was checked with (my qa additions removed: one tail length, in speech_gate). `speech_gate.selftest` passes.
 - Result: 108 bubble drawings, 0 faults. The frame sheet went to Tomas directly (sheets are not committed from 24 Nov).
+
+## Round 6 (24 Nov): dead zones and three cold-test fixes (Tomas: "a)")
+
+- **Dead zones** checked on every drawing against the repo's (CLAUDE.md G3/"Text": title bar y < 96, caption quarter y > 720, the button rail `speech_gate.RAIL`, the edges); the stricter 3-platform ad spec (Shorts/Reels: 15 % top, 35 % bottom, 18 % right) was looked at and not adopted. `python3 dh_anim3_v8.py gate` now also fails a face or sign in a dead zone (validated: Don's back at its old height fails 32 drawings); an entrance caught mid-step at the edge is allowed for its first 2 drawings.
+- Fixed: Don's back up out of the caption quarter (crown y 650), his finger at the screen's lower edge at nearly full reach ("1/5" uncovered); Sofía 3F off the left edge (x 410); the 3F camera down 17 so the tag clears the title bar.
+- Cold-test fixes: Mom's cloth on the throne's side above the arm (the "handshake", three tests running); the ketchup over the cuff stub in the APPROVE insert (whose hand); 3F the throne at Mom's right so she stands beside it ("Mom sits in the throne").
+- Result: speech_gate 108/0, dead zones 0, −16.5 LUFS, peak −1.9 dBFS, Whisper 3/3 except "Make it green." 2/3 (the window with leading silence hallucinates "Make Make…"; the two others are exact), v7 same in all 8 scenes.
+- Cold test (G, H): about 2.5–3 of 5 (v7 about 2). Left: the finger at the screen read as holding the sign, the ketchup as nail polish, Pam's doubt and the cause of the jump only in the words.
+
+## Round 7 (24 Nov): cold-test leftovers and three outside reviews
+
+- 3A: the fingertip stops ~15 px short of the screen; Don's arm gets a shirt cuff seam and gold cufflink (`dh_back.don_arm(cuff=True)`, opt-in), the same as the insert's.
+- APPROVE insert: the ketchup is gone; a white shirt cuff with two seams and a gold cufflink, the stub longer (190). The hand is `hands_ps` "point_t" (new, opt-in): index out, no thumb (seen from the back of the hand); "point"'s thumb across the knuckles read as "a second, bent finger" at insert size.
+- 3C: Pam raises ONE finger ("point_t") from 0.25 s, face "incredulous". Her trousers (canonical colour) get a shaded inner half and heavier outline, in this scene only (`pam_legs()`): 204 vs the booth's 220 before, 151–176 now. The near counter moved from y 690 to 818: at 690 it covered her shins and shoes ("no shoes, amputated" — the same in v7).
+- 3E: on "fired" Mom's free hand points out to screen left (the door), level ("point_t"; pointed down, the hand read as deformed and at the floor). Her hand is kept clear of the bubble.
+- Result: speech_gate 108/0, dead zones 0, −16.5 LUFS, peak −1.9 dBFS, Whisper as round 6.
+- `dh_baseline.py check` run over all 8 scenes in one process says scene 7 differs at 9.3 s; run alone, scene 7 is the same. It does so without this round's changes too: an order-dependent leak between scenes, not a v7 change. Open.
+- Cold test (I, J): about 1.5–2 of 5. Read: the approval and the green star still 1/5 (both; the hand "Don's, white cuff" for one, "probably Don" for the other). Misread: Pam's raised finger at her ear = "on a phone call" (both; a regression from the finger); the sign still "floats" when the arm drops (both: at 4 fps tile size the gap doesn't show); the handshake between Mom and Sofía (both); the jump "jumped or yanked" (both). Known, not fixed here.
