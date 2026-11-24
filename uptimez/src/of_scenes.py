@@ -236,7 +236,7 @@ POSES = {
     "2.7": dict(client=dict(kind="pocket", look=(-0.4, 0.8))),
     "2.8b": dict(client=dict(kind="phone_out", look=(-1, 0))),
     "2.8c": dict(father=dict(face="low", look=(1, 0)), client=dict(kind="phone_out", look=(-1, 0)), g1=dict(targets_xy=[(840, 700)], lamp="held")),   # v14: out of the frame, to the right
-    "2.8d": dict(client=dict(kind="slam"), g1=dict(targets_xy=[(704, 690)], lamp="held")),   # v13: he has stepped back with it
+    "2.8d": dict(client=dict(kind="slam"), g1=dict(targets_xy=[(780, 690)], lamp="held")),   # v13: he has stepped back with it
     "2.8f": dict(g1=dict(targets=["lamp"], lamp="held")),
     "2.9": dict(father=dict(look=(1, 0)), g2=dict(targets=["chest_l"], phone="calendar")),
 }
@@ -425,6 +425,12 @@ def _cast_draw0(k, n, scene, sh, heads):
             tg = [(tg[0][0] + ps.get("lamp_dx", 0.0), tg[0][1] + ps.get("lamp_dy", 0.0))] + list(tg[1:])
         hk = _kit.HAND[0]
         HELD_AT[0] = None
+        CABLE_DONE[0] = False
+        if tg and ps.get("lamp") == "held" and ps.get("cable_behind", True):
+            la0 = ps.get("lamp_ang", LAMP_ANG)                                    # v12 (24 Nov): the cable BEHIND him: it drops from the
+            lw0 = ps.get("lamp_xy") or tg[0]                                      # handle's end, and his arm, body and legs cover it
+            gs.lamp_cable(k, lw0[0] + 16 * math.cos(la0), lw0[1] + 16 * math.sin(la0), la0, ps.get("cable_floor", F + 8), ps.get("cable_swing", 0.0))
+            CABLE_DONE[0] = True
         if tg and (ps.get("lamp") or "lighter" in ps):                       # v11 (23 Nov, audit: "a fist with a second hand under it"):
             lw_ = ps.get("lamp_xy") or tg[0]                                     # the hand that holds it is the grip's own; the other stays
             td_ = c.user_to_device(*lw_); tol_ = math.hypot(*c.user_to_device_distance(30, 0))   # in DEVICE space: the rigs call the
@@ -598,6 +604,21 @@ LIGHTER_S = 0.34                                           # v9 (23 Nov): a ligh
 LIGHTER_LIFT = 74 * LIGHTER_S - 5                           # the flame's foot above the hand point: the case stands on the fist
 
 
+LATE_POOL = []
+CABLE_DONE = [False]
+LAMP_ANG = -0.2                                            # v12: held, the cage a little down: its light falls where it points
+
+
+def _late_pools(c):
+    """v12 (24 Nov): the lamp's warm pool on whatever is in front of the man who holds it (the bonnet)."""
+    for (px_, py_), (rx_, ry_), cs in LATE_POOL:
+        c.save(); c.identity_matrix(); c.translate(px_, py_); c.scale(abs(rx_), abs(ry_))
+        g_ = cairo.RadialGradient(0, 0, 0.1, 0, 0, 1)
+        g_.add_color_stop_rgba(0, 1.0, 0.96, 0.66, 0.75 * cs); g_.add_color_stop_rgba(1, 1.0, 0.93, 0.55, 0.0)
+        c.set_source(g_); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+    del LATE_POOL[:]
+
+
 def _lamp_in_hand(k, ps, hx, hy, arm=None):
     """the work lamp in a guard's hand at (hx, hy) (v10: one function, so it can be drawn after the Client)."""
     c = k.c
@@ -612,19 +633,36 @@ def _lamp_in_hand(k, ps, hx, hy, arm=None):
         gs.lamp(k, hx - 2, hy + 10, ang=-math.pi / 2, lit=True)
     elif ps.get("cone_side", ps.get("lamp") == "held"):              # v9: from the side, into the bay, on his hands
         cs = ps.get("cone_side", 1.0) if ps.get("cone_side") is not None else 1.0
-        la_ = ps.get("lamp_ang", 0.35)                                           # v11 (23 Nov, audit): the HANDLE in his hand, the cage
-        cx_, cy_ = hx - 26 * math.cos(la_), hy - 26 * math.sin(la_)              # out in front of it, pointing into the bay
-        px_, py_ = ps.get("pool", (500, 712))
-        g_ = cairo.LinearGradient(cx_, cy_, px_, py_)
-        g_.add_color_stop_rgba(0, 1.0, 0.93, 0.55, 0.80 * cs); g_.add_color_stop_rgba(1, 1.0, 0.93, 0.55, 0.40 * cs)
-        c.set_source(g_); c.move_to(cx_, cy_ - 7); c.line_to(cx_, cy_ + 7); c.line_to(px_ + 12, py_ + 8); c.line_to(px_ - 12, py_ - 8)
-        c.close_path(); c.fill()
-        c.set_source_rgba(1.0, 0.95, 0.65, 0.55 * cs)                          # the pool of light, in the bay
-        c.save(); c.translate(px_, py_); c.scale(34, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        la_ = ps.get("lamp_ang", LAMP_ANG)                                         # v11 (23 Nov, audit): the HANDLE in his hand, the cage
+        cx_, cy_ = hx - 26 * math.cos(la_), hy - 26 * math.sin(la_)              # out in front of it
+        # v12 (24 Nov, audit: "the beam is not tied to the lamp's angle"): the light leaves the cage's OPEN side, turned
+        # a little down from its axis, and lands where that ray meets the surface (pool_y); no surface, no pool
+        dx_, dy_ = -math.cos(la_ - 0.5), -math.sin(la_ - 0.5)
+        bx_, by_ = cx_ - 14 * math.cos(la_), cy_ - 14 * math.sin(la_) + 3        # the bulb
+        py0 = ps.get("pool_y", 712)
+        ln_ = (py0 - by_) / dy_ if dy_ > 0.15 else 150
+        hit = dy_ > 0.15 and ln_ < 260
+        ln_ = min(ln_, 260)
+        ex_, ey_ = bx_ + dx_ * ln_, by_ + dy_ * ln_
+        nx_, ny_ = -dy_, dx_
+        g_ = cairo.LinearGradient(bx_, by_, ex_, ey_)
+        g_.add_color_stop_rgba(0, 1.0, 0.93, 0.55, 0.80 * cs); g_.add_color_stop_rgba(1, 1.0, 0.93, 0.55, (0.38 if hit else 0.0) * cs)
+        w1 = 0.30 * ln_
+        c.set_source(g_); c.move_to(bx_ + 8 * nx_, by_ + 8 * ny_); c.line_to(bx_ - 8 * nx_, by_ - 8 * ny_)
+        c.line_to(ex_ - w1 * nx_, ey_ - w1 * ny_); c.line_to(ex_ + w1 * nx_, ey_ + w1 * ny_); c.close_path(); c.fill()
+        if hit and not ps.get("pool_late"):                                      # in the open bay: where it lands, behind the car's side
+            c.set_source_rgba(1.0, 0.95, 0.65, 0.55 * cs)
+            c.save(); c.translate(ex_, ey_); c.scale(34, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        elif hit:                                                                # on a shut bonnet: drawn AFTER the
+            LATE_POOL.append((c.user_to_device(ex_, ey_), c.user_to_device_distance(max(26, w1 / max(dy_, 0.3)), 9), cs))   # car (he stands behind it)
         if arm:
             arm()
-        gs.lamp(k, cx_, cy_, ang=la_, lit=cs > 0.5, hang=ps.get("cable_floor"), glow=False)   # the cone is its light; no halo over his arm
-        _oc.handle_grip(k, hx, hy, 24, la_ + math.pi / 2, co_skin())
+        gs.lamp(k, cx_, cy_, ang=la_, lit=cs > 0.5, hang=ps.get("cable_floor", F + 8), glow=False,   # the cone is its light; no halo over his arm
+                cable=not CABLE_DONE[0], swing=ps.get("cable_swing", 0.0))
+        _oc.handle_grip(k, hx, hy, 20, la_ + math.pi / 2, co_skin())
+        if cs > 0.5:                                                             # the light on the fingers that face the bulb
+            c.set_source_rgba(1.0, 0.92, 0.55, 0.42)
+            c.save(); c.translate(hx - 9 * math.cos(la_), hy - 9 * math.sin(la_)); c.rotate(la_); c.scale(4, 9); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
     else:
         la_ = ps.get("lamp_ang", -1.3)
         gs.lamp(k, hx - 8, hy + 22, ang=la_, lit=ps.get("lamp_lit", False) or "lamp_ang" in ps)
@@ -706,6 +744,9 @@ def garage_shot(k, sh, scene, heads, cam):
               lamp_on_floor=scene in (1, 2, 5) and (not st.get("lamp_up") or st.get("lamp_floor")), behind=behind, front=front, tilt=st.get("tilt", 0.0))
     gs.LID_BEHIND[0] = False
     c = k.c
+    _late_pools(c)
+    if st.get("dim"):                                                     # v12 (24 Nov): the lamp has died: the frame a shade darker
+        c.save(); c.identity_matrix(); c.set_source_rgba(0.04, 0.05, 0.09, st["dim"]); c.paint(); c.restore()
     if st.get("lamp_fly") is not None:                                    # v1 (23 Nov): the lamp in the air, onto its floor spot
         w_ = st["lamp_fly"]
         x0_, y0_ = BLOCK[1]["g1"][0] + 50, BLOCK[1]["g1"][1] - 60
@@ -1005,7 +1046,7 @@ def insert_shot(k, sh):
         ellipse(k, wx_, wy_, 13, 13, (0.10, 0.16, 0.14), 3478, lw=1.6)
         gs.lamp(k, 330, 96, ang=-1.2, lit=True, glow=False)                            # the lamp, at the top of the frame: the light's source
         c.save(); c.translate(120, 470)                                                 # his red rag, over the block's edge
-        cut(k, [(-30, -8), (30, -12), (40, 50), (8, 90), (-26, 62)], (0.82, 0.30, 0.22), 3476, lw=2.2)
+        # v4 (24 Nov, audit: "a cylinder"; two rags at once): NO rag on the engine: his one rag is in his back pocket
         c.restore()
         gs.protect(c, "his hands in the light", 60, 150, 440, 460)
         c.restore()
@@ -1263,6 +1304,8 @@ DON_FAULTS = []                                            # the Don rule's faul
 DON_EDGE = [90]                                            # v9: with the robot at 0.66, the throne further right: both faces clear                                            # 3.4: how far right of the robot the throne slides in
 import kit as _kit
 import of_cast as _oc
+import client_of as _cof
+_cof.NEW_RAG[0] = True                                     # v4 (24 Nov): the one shop rag, this film on
 _kit.HAND[0] = _oc.cartoon_hand  # v11 (23 Nov, decided): one cartoon hand for everyone, episode 13 only
 _kit.ARM_RIM[0] = (0.46, 0.46, 0.52)                       # v1 (23 Nov): the guards' black sleeves get a grey rim
 ROBOT_S = 0.66                                             # v11 (22 Nov, Tomas): the largest the Don rule allows (95 % of his height). The storyboard's 0.40

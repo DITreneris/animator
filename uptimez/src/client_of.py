@@ -25,6 +25,9 @@ from kit import INK, cut, rect, ellipse, Ctx
 NAVY, NAVY_D = (0.17, 0.22, 0.34), (0.11, 0.14, 0.23)
 TEE, TEE_D = (0.96, 0.95, 0.91), (0.80, 0.79, 0.75)
 RAG = co.RAG
+RAG_V3 = (0.72, 0.19, 0.17)                                # v3: a duller brick red (co.RAG is a loud one)
+NEW_RAG = [False]                                          # opt-in (The Offer sets it): other films keep the old rag, byte for byte
+
 
 FACES = {
     "bored": dict(bl=(3, 3), br=(3, 3), lid=0.46, eye=9.6, iris=5.0, lift=(0, 0), tilt=0.0, corners=0.35),
@@ -36,6 +39,42 @@ GLANCE = (1.9, 2.0)                                                             
 _UNUSED = {
 }
 
+
+
+def shop_rag(k, x, y, s=1.0, ang=0.0, col=None, grease=True):
+    """v3 (24 Nov, Tomas: "that red rag makes me sick"; audit: "a red trapezoid"): ONE shop rag for every place it shows
+    (his back pocket, his hand, the engine's edge). It was three flat zigzag polygons in a loud red. Now a CLOTH: a soft
+    outline, hanging from (x, y); a shaded fold down one side, two creases, the pale woven stripe a shop towel has along
+    its hem, grease on it; a duller brick red. About 26 wide and 50 long at s=1."""
+    c = k.c
+    col = col or RAG_V3
+    dk = tuple(v * 0.72 for v in col)
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    def outline():                                            # v4 (audit: "a strip", "too angular"): WIDER, a scalloped hem
+        c.new_path(); c.move_to(-15, -5)
+        c.curve_to(-6, -9, 6, -3, 15, -6)
+        c.curve_to(20, 8, 21, 26, 17, 44)
+        c.curve_to(13, 49, 9, 47, 7, 42)
+        c.curve_to(4, 48, -1, 53, -4, 47)
+        c.curve_to(-7, 42, -11, 46, -13, 50)
+        c.curve_to(-16, 52, -19, 49, -20, 45)
+        c.curve_to(-22, 28, -19, 10, -15, -5); c.close_path()
+    outline(); c.set_source_rgb(*col); c.fill()
+    c.save(); outline(); c.clip()
+    c.set_source_rgb(*dk)                                                                       # two folds, in shade
+    c.new_path(); c.move_to(6, -8); c.curve_to(9, 10, 8, 30, 6, 54); c.line_to(12, 54); c.curve_to(14, 30, 14, 10, 11, -8); c.close_path(); c.fill()
+    c.new_path(); c.move_to(-12, -8); c.curve_to(-15, 12, -14, 32, -11, 54); c.line_to(-7, 54); c.curve_to(-10, 32, -11, 12, -9, -8); c.close_path(); c.fill()
+    c.set_source_rgba(0.97, 0.90, 0.82, 0.85); c.set_line_width(2.2)                            # the woven stripe, along the hem
+    c.new_path(); c.move_to(-22, 37); c.curve_to(-10, 33, 6, 36, 20, 32); c.stroke()
+    if grease:
+        c.set_source_rgba(0.12, 0.10, 0.09, 0.55)
+        for px, py, rx, ry in ((-2, 13, 4.5, 3.2), (-4, 24, 2.4, 2.0), (15, 20, 2.6, 3.4)):
+            c.save(); c.translate(px, py); c.scale(rx, ry); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    c.restore()
+    c.set_source_rgba(dk[0] * 0.7, dk[1] * 0.7, dk[2] * 0.7, 0.9); c.set_line_width(1.3); c.set_line_cap(1)
+    c.new_path(); c.move_to(1, -4); c.curve_to(-1, 8, 2, 20, 0, 30); c.stroke()                 # a crease between them
+    outline(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.set_line_join(1); c.stroke()
+    c.restore()
 
 def _face(k, y, face, look, mouth, seed, chin):
     """the garage faces through client_ob's own face drawing (its 'plain' branch: a level, closed mouth)."""
@@ -132,7 +171,10 @@ def _waist(k, seed):
     c.set_source_rgb(*INK); c.set_line_width(1.6); c.set_line_cap(1)
     c.move_to(-8, HIP - 6); c.curve_to(0, HIP + 4, 2, HIP + 6, 9, HIP + 10); c.stroke()
     c.save(); c.translate(-64, HIP + 10); c.rotate(0.18)                                                    # the rag
-    cut(k, [(-10, -6), (12, -8), (16, 38), (6, 52), (-2, 40), (-12, 50), (-14, 30)], RAG, lw=2)
+    if NEW_RAG[0]:
+        shop_rag(k, 0, 0)
+    else:
+        cut(k, [(-10, -6), (12, -8), (16, 38), (6, 52), (-2, 40), (-12, 50), (-14, 30)], RAG, lw=2)
     c.set_source_rgba(0.35, 0.08, 0.08, 0.6); c.set_line_width(1.4)
     for a_, b_ in (((-6, 8), (8, 20)), ((-8, 26), (6, 34))):
         c.move_to(*a_); c.line_to(*b_); c.stroke()
@@ -270,7 +312,10 @@ def profile(k, x, feet, s=1.0, facing=-1, lean=0.0, face="bored", look_up=0.0, h
     ellipse(k, 50, HIP + 2, 13, 12, NAVY_D, seed + 7, shadow=False, lw=2)
     cut(k, [(42, HIP + 8), (60, HIP + 8), (64, HIP + 58), (46, HIP + 60)], NAVY, shadow=False, lw=2)
     c.save(); c.translate(-42, HIP + 4); c.rotate(0.12)
-    cut(k, [(-12, -4), (8, -6), (12, 40), (2, 54), (-6, 40), (-14, 50), (-16, 28)], RAG, lw=2)
+    if NEW_RAG[0]:
+        shop_rag(k, -2, 0)
+    else:
+        cut(k, [(-12, -4), (8, -6), (12, 40), (2, 54), (-6, 40), (-14, 50), (-16, 28)], RAG, lw=2)
     c.restore()
     # the torso: a barrel chest forward, the back straighter
     cut(k, [(-34, BT - 4), (20, BT - 8), (52, BT + 30), (62, BT + 82), (52, HIP - 12), (-40, HIP - 12), (-46, BT + 60)], TEE, lw=2.2)

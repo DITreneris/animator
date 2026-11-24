@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 43, 2: 44, 3: 44, 4: 44, 5: 44}
+VER = {1: 45, 2: 45, 3: 45, 4: 45, 5: 45}
 SOUND = "of_sound_v22.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -401,19 +401,32 @@ def s26(t, L):                                             # v1: "And then?" -- 
     return {}, dict(father=dict(face=face, lean=ln, look=(1, 0)))
 
 
-LAMP_GAG_CAM = (606, 700, 2.6)                             # the guard and the lamp fill the frame; the plan is out, to the left
+LAMP_GAG_CAM = (590, 696, 2.9)                             # the guard and the lamp fill the frame; the plan is out, to the left
 
 
-def s28f(t, L):                                            # v5 (24 Nov, cold test v37: "long for what it delivers", "his face does not react"): 1.8 s.
-    fl = t > 0.35 and (t < 0.4 or 0.47 < t < 0.52 or t > 0.6)   # It flickers and DIES (0.35-0.6); he lifts it and looks INTO the bulb
-    dn = ease((t - 0.25) / 0.2) - ease((t - 1.15) / 0.18)  # (0.65-0.95); it sags, his shoulders drop (1.0-1.2); he looks at US
-    lift = ease((t - 0.65) / 0.3) - ease((t - 1.0) / 0.25)  # (1.3) and holds it 0.5 s
-    sag = ease((t - 1.0) / 0.2)
-    x, y = 556 + 12 * lift, 652 - 26 * lift + 26 * sag
+YEND = 736
+
+
+def s28f(t, L):
+    """v6 (24 Nov, Tomas: "the lamp bothers me most"; three cold tests: "half landed"). 1.8 s, six pictures, the sound's
+    times kept: he HOLDS it lit beside him, over the bonnet (0-0.35); it FLICKERS twice, brighter, and DIES (0.35-0.6):
+    the pool gone, the bulb grey, the frame a shade darker; his head goes down to it and he brings it in, BELOW his chin
+    (0.65-0.95); ONE shake (0.95-1.1); the arm DROPS to his side, the lamp hanging, his shoulders down (1.1-1.3); he
+    looks at US and holds (1.3-1.8). The cable's belly lags the hand and settles after it."""
+    dark = t > 0.35 and (t < 0.4 or 0.47 < t < 0.52 or t > 0.6)
+    dn = ease((t - 0.42) / 0.2) - ease((t - 1.18) / 0.16)
+    up = ease((t - 0.65) / 0.28)
+    sh_ = math.sin((t - 0.95) / 0.15 * 2 * math.pi) * 14 if 0.95 < t < 1.10 else 0.0   # v7: twice as wide, it has to read
+    dr = ease((t - 1.12) / 0.2)
+    rt = ease((t - 1.08) / 0.12)                              # v7: it TURNS down first, then drops, beside his leg: never behind the bonnet
+    x = 538 + 8 * up + 12 * math.sin(math.pi * up) + sh_ + 22 * rt   # v8: the cage DOWN on the bonnet; dead, he turns it UP to
+    y = 668 + 22 * up + (YEND - 690) * dr                    # look into the bulb (below his chin); then it hangs by his leg
+    la = -1.05 + 2.05 * up - 2.9 * rt
+    sw = -sh_ * 1.6 + 16 * math.sin(max(0.0, t - 1.10) * 14) * math.exp(-max(0.0, t - 1.10) * 5) * (1 if t > 1.10 else 0)
     gx_, gf_ = sc.BLOCK[3]["g1"]
-    return (dict(_cam=LAMP_GAG_CAM, moved=dict(g1=(gx_, gf_ + 7 * sag))),
-            dict(g1=dict(targets_xy=[(x + 2, y)], lamp="held", cone_side=0.03 if fl else 1.0, lamp_ang=0.35 + 0.2 * lift - 0.55 * sag,
-                         cable_floor=sc.F + 8,
+    return (dict(_cam=LAMP_GAG_CAM, dim=0.14 if dark else 0.0, moved=dict(g1=(gx_, gf_ + 8 * dr))),
+            dict(g1=dict(targets_xy=[(x, y)], lamp="held", cone_side=0.03 if dark else (1.35 if t > 0.35 else 1.0), lamp_ang=la,
+                         cable_floor=sc.F + 8, cable_swing=sw, elbow_low=True, pool_late=True,
                          turn=0.01 - 0.6 * dn, look_down=12 * dn)))
 
 

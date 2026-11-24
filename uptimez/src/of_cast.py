@@ -447,7 +447,7 @@ def phone(k, x, y, s, screen=None, ang=0.0, face_out=True):
 def creeper(k, x, y, s=1.0):
     """the mechanic's creeper, side on: a padded board on four castors."""
     c = k.c
-    rect(k, x - 70 * s, y - 10 * s, 140 * s, 14 * s, (0.80, 0.16, 0.14), 3510, lw=2.2)
+    rect(k, x - 70 * s, y - 10 * s, 140 * s, 14 * s, (0.30, 0.31, 0.35), 3510, lw=2.2)   # v2 (24 Nov): dark grey, as the set's (red hid his red rag)
     rect(k, x - 64 * s, y - 18 * s, 54 * s, 9 * s, (0.20, 0.20, 0.22), 3511, shadow=False, lw=1.6)   # the head pad
     for wx in (-58, -22, 22, 58):
         c.set_source_rgb(*INK); c.rectangle(x + wx * s - 2 * s, y + 4 * s, 4 * s, 6 * s); c.fill()
@@ -457,6 +457,9 @@ def creeper(k, x, y, s=1.0):
 def rag_cloth(k, x, y, s=1.0, col=(0.92, 0.88, 0.80), ang=0.0):
     """v2 (24 Nov, audit and cold tests: "a white lump"): a CLOTH, draped: it hangs from where it is held, with two folds
     and grease on it. Drawn before the hand that holds it."""
+    if col == RAG_RED:                                        # v3 (24 Nov): the one shop rag (client_of.shop_rag)
+        import client_of as cof_
+        return cof_.shop_rag(k, x, y + 2, s * 0.85, ang)
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
     cut(k, [(-15, -7), (11, -9), (17, 5), (13, 31), (5, 24), (-1, 38), (-9, 27), (-16, 33), (-19, 8)], col, lw=2)
