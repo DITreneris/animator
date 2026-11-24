@@ -363,6 +363,9 @@ def t2():
 
 
 # ---- T3 -----------------------------------------------------------------------------------------------------------------
+POOL = [(250, 610)]
+
+
 def c_side_town(k):
     """c_side with the first street's finish (Tomas's picks, 24 Nov): five houses of their own tone and height, fallen
     plaster, a damp foot, framed windows with sills, a tiled eave, drainpipes, two doors; night: the light pooled round
@@ -404,7 +407,8 @@ def c_side_town(k):
     for y, hh, x0, x1 in ((606, 10, 150, 430), (634, 14, 135, 440), (668, 20, 118, 452), (712, 28, 96, 466)):
         st.poly(k, [(x0, y), (x1, y), (x1 + 6, y + hh), (x0 - 6, y + hh)], (0.93, 0.92, 0.88), 1.2)
     st.poly(k, [(-300, 790), (1000, 790), (1000, 1100), (-300, 1100)], (0.20, 0.20, 0.21), 1.6)      # the near kerb, ours (deeper: the wide camera sits lower)
-    g = cairo.RadialGradient(250, 610, 170, 250, 610, 620)                                           # night: the pool round the crossing
+    px_, py_ = POOL[0]
+    g = cairo.RadialGradient(px_, py_, 170, px_, py_, 620)                                           # night: the pool round the crossing (or where the shot is: on4_cross R)
     g.add_color_stop_rgba(0, 0, 0, 0, 0.0); g.add_color_stop_rgba(0.5, 0, 0, 0, 0.34); g.add_color_stop_rgba(1, 0, 0, 0, 0.66)
     c.set_source(g); c.rectangle(-300, 280, 1300, 520); c.fill()
     was = po.WALL_ST
@@ -464,6 +468,7 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+LAW = [False]                                                # (24 Nov) one scale law on the crossing (on4_cross.dscale): her walk in grows by it; she lies as she fell (the same rig), no other drawing
 CRASH = [False]                                              # (24 Nov, Tomas's picks) the bump restaged: see t3
 T3_MARKS = {"toot": 12.0 / 32.0, "bump": 21.0 / 32.0}        # where the sounds fall, as fractions of 3.1 + 3.2
 
@@ -519,7 +524,7 @@ def t3():
     OFF = 1200
     for i in range(6):                                       # she comes over the crossing, after the car
         t = i / 5.0
-        fr.append(side(OFF, D_STOP, ("up", PX, 610 + (PF - 610) * t, 0.44 + 0.18 * t, RUN if i % 2 == 0 else RUN2,
+        fr.append(side(OFF, D_STOP, ("up", PX, 610 + (PF - 610) * t, (0.44 + 0.18 * t) if not LAW[0] else 1.203 * (0.42 + 0.14 * (610 + (PF - 610) * t - 596.0) / 176.0), RUN if i % 2 == 0 else RUN2,
                                      ("fist", "fist"), 0.0, "peer", (0.8, -0.2))))
     STAND = ("up", PX, PF, 0.62, HERO, ("fist", "fist"), 0.0, "approve", (-0.9, -0.3))               # she sees STOP: stops dead
     fr += [side(OFF, D_STOP, STAND)] * 5
@@ -542,6 +547,8 @@ def t3():
         for j in range(4):                                                                            # a beat: she stands, palm out, the mask askew
             fr.append(side(STOPX + 5, go(j + 1), FACE(0.0, 0, "doubt"), mask=0.30))
         PLANK = lambda ln: ("up", PX + ln * 30, PF - 12 * (ln / 1.38) ** 2, 0.62, STOPP, ("relax_s", "palm"), -ln, "doubt", (1.0, -0.1))   # about her heels; her head comes down where the lying drawing has it
+        if LAW[0]:
+            DOWN = ("up", PX + 45, PF - 14, 0.62, STOPP, ("relax_s", "palm"), -1.5, "doubt", (0.9, -0.6))   # as she fell: on4_cross.LX, LY_, LEAN
         for j, ln in enumerate((0.02, 0.06, 0.12, 0.22, 0.36, 0.54, 0.78, 1.06, 1.38)):               # over she goes, slowly, a plank
             fr.append(side(STOPX + 5, go(j), PLANK(ln), mask=0.30))
         thud = len(fr)
@@ -915,11 +922,19 @@ def t8():
                 x = cx + off if carry else X0 - 70 + off - max(0, i - 18) * 22
                 if x < -60:
                     continue
+                if LAW[0]:                                   # Dad's two bodyguards (dh_cast.guard), at her scale; both hands under her, the money pocketed
+                    import on4_cross as xc
+                    moving = carry or i >= 18
+                    dc.guard(k, x, GYp - 8 - (2.5 if (moving and i % 2) else 0), 0.375, pose=xc.G_CARRY if carry else xc.G_WALK, flip=(j == 1), seed=1600 + j * 40)
+                    continue
                 st.thug(k, x, GYp - 8, 0.40, "open" if i % 2 else (-30, 20, 30, -20), seed=4500 + j,
                         hands=("grab", "grab") if carry or i < 18 else ("grab", "relax"), lean=0.0)
                 for n_ in range(3):                             # v10: a fan of three in his fist, beside his head
                     bill(k, x + 40 + n_ * 4, GYp - 8 - 112 - n_ * 9, 0.5 - 0.3 * n_)
-            if i < 30:
+            if i < 30 and LAW[0]:                            # carried and dropped as she fell: the same rig, stiff, her palm still up
+                STOPP_ = oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, 50, -128)
+                sc.draw_cast(k, [P("pam_cat", cx + 70, GYp - 4 + lift, 0.50, pose(STOPP_, ("relax_s", "palm")) if i < 22 else "hero", "doubt", (0.9, -0.6), lean=-1.5 if i < 22 else -1.45, rim=True)])
+            elif i < 30:
                 c.save(); c.translate(cx, GYp - 6 + lift); c.scale(0.47, 0.47); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
             if i in (16, 17):                                # dropped
                 sc._burst(k, X0 - 150, GYp - 4, 16); sc._burst(k, X0 + 6, GYp - 4, 16)
