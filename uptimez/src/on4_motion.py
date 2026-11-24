@@ -363,7 +363,7 @@ def t6():
     DX, DY, DS = 352, 772, 0.56                                  # v5: Don on the road in front of the bonnet, nearer than the car
     def f(i):
         cam = CA if i < 36 else lerp(CA, CB, ease(min(1.0, (i - 36) / 6.0)))
-        cx = STOPX + (0 if i < 60 else ((i - 60) / 7.0) ** 2 * 420)                # the car backs away
+        cx = STOPX + (0 if i < 57 else ((i - 57) / 7.0) ** 2 * 420)                # the car backs away
         if i < 9:                                                                    # Don comes to the bonnet
             t = i / 8.0; don = P("don", 170 + (DX - 170) * t, 596 + (DY - 596) * t, 0.42 + (DS - 0.42) * t, "stand", "neutral", (0.9, 0.2), paddle_side="GO", paddle_ang=0.9)
         elif i < 32:                                                                 # v5: his glove along the bonnet, back and forth; his back to her
@@ -376,17 +376,17 @@ def t6():
         else:
             t = min(1.0, (i - 62) / 8.0); don = P("don", DX - (DX - 170) * t, DY - (DY - 596) * t, DS - (DS - 0.42) * t, "stand", "neutral", (-0.8, 0), paddle_side="GO", paddle_ang=0.9)
         wave = 24 <= i < 38 and (i // 3) % 2 == 0
-        TH = ((BILLS[1][0] + 10, -40), (BILLS[2][0] + 26, -90))                     # v7: where each shadow stops (behind her), where he leaves
+        TH = (PX - 96, PX + 92)                                                      # v8 (Tomas): one at her head, one at her feet
+        LIFT, GO = 73, 76                                                           # they take the money, pick her up, carry her off
+        cdx = -32.0 * max(0, i - GO)                                                # the carry: everything moves left together
+        cdy = -34.0 * min(1.0, max(0.0, (i - LIFT) / 3.0)) + (4 if (i > GO and i % 2) else 0)
         def thug_at(j):
-            t = (i - (63 + j * 2)) / 8.0
+            t = (i - (60 + j * 2)) / 7.0
             if t < 0:
                 return None
-            x0, x1 = TH[j]
             if t < 1:
-                return (660 - (660 - x0) * t, t, "in")
-            if t < 1.6:
-                return (x0, t, "take")
-            return (x0 - (x0 - x1) * min(1.0, (t - 1.6) / 0.9), t, "go")
+                return (660 - (660 - TH[j]) * t, t, "in")
+            return (TH[j] + cdx, t, "take" if i < GO else "go")
         def after(k):
             c = k.c
             hands = {}
@@ -395,11 +395,11 @@ def t6():
                 if th is None:
                     continue
                 x, t, ph = th
-                st.thug(k, x, 704, 0.40, "open" if int(t * 6) % 2 else (-30, 20, 30, -20), seed=4500 + j,
-                        hands=("grab", "relax") if ph != "in" else ("relax", "relax"), lean=0.0)
-                hands[j] = (x - 6, 704 - 150, ph, t)                                 # the bill held up over his head, to the light
-            c.save(); c.translate(PX, PF - 6); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG)
-            if wave or (i >= 78 and (i // 3) % 2 == 0):                              # her small wave again, to their backs
+                st.thug(k, x, 704, 0.40, "open" if (ph != "take" and int(t * 6) % 2) else (-30, 20, 30, -20), seed=4500 + j,
+                        hands=("grab", "grab") if ph != "in" else ("relax", "relax"), lean=0.0)
+                hands[j] = (x - 6, 704 - 150, ph, t)                                 # the bill held up over his head
+            c.save(); c.translate(PX + cdx, PF - 6 + cdy); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG)
+            if wave:
                 sc._wave(k)
             c.restore()
             car.side(k, cx, 724, 1.0)
@@ -426,7 +426,7 @@ def t6():
                 own = hands.get(0 if j < 2 else 1)                                   # the first shadow takes two, the second one
                 if own and own[2] != "in":
                     hx, hy, ph, tt_ = own
-                    u = min(1.0, (tt_ - 1.0) / 0.4)
+                    u = min(1.0, (tt_ - 1.0) / 0.5)
                     x, y, ang = x + (hx + (j % 2) * 22 - x) * u, y + (hy - (j % 2) * 10 - y) * u, ang * (1 - u) + (0.25 - 0.5 * (j % 2)) * u
                 if x > -30:
                     bill(x, y, ang)
