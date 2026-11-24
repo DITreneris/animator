@@ -1118,7 +1118,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"4.4": 3.0, "6.0": 3.6, "6.05": 0.9, "6.07": 3.0, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"4.4": 3.0, "5.1": 1.2, "6.0": 3.6, "6.05": 0.9, "6.07": 3.0, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():
