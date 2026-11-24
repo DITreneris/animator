@@ -7,6 +7,7 @@ import math
 import os
 import sys
 import cairo
+import kit
 import on4_motion as m
 import on4_scenes as sc
 import on4_cast as oc
@@ -40,9 +41,35 @@ def asym(arms, a=6):
     return (arms[0] + a, arms[1] - a * 0.5, arms[2] + a * 0.7, arms[3] + a)
 
 
+KNEE_K = 0.6                                               # (review: "the knees bend into an X") every knee bend 40 % less
+
+
 def kneel(drop, **kw):
     """_pam's knee dict, or None when the knees are straight"""
+    kw = {k_: (v[0], v[1] * KNEE_K, v[2]) for k_, v in kw.items()}
+    drop = drop * KNEE_K
     return dict(drop=drop, **kw) if drop > 2.5 or kw else None
+
+
+def pam_(k, p, sy=1.0, rot=0.0, kn=None):
+    """her figure over a contact shadow on the ground under her boots (review: she floats)"""
+    who, a, kw = p
+    c = k.c
+    c.save(); c.translate(a[0], a[1] + 2 * a[2]); c.scale(64 * a[2], 9 * a[2]); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.set_source_rgba(0, 0, 0, 0.5); c.fill()
+    return m._pam(k, p, 1.0, sy, rot, kn)
+
+
+def card(k, t, x0=300, x1=372, y=630, period=0.9):
+    """the game goes on: a card dealt across the table, again and again"""
+    u = (t % period) / period
+    if u > 0.6:
+        return
+    v = ease(u / 0.6)
+    c = k.c
+    c.save(); c.translate(x0 + (x1 - x0) * v, y - 10 * math.sin(v * math.pi)); c.rotate(0.3 * v)
+    c.rectangle(-9, -6, 18, 12); c.set_source_rgb(0.96, 0.96, 0.94); c.fill_preserve(); c.set_source_rgb(0.1, 0.1, 0.1); c.set_line_width(1); c.stroke()
+    c.restore()
 
 
 # ---- 1.3: the pose holds; her eyes follow Sofia out; the pose sags; she pulls her coat straight ------------------------
@@ -64,7 +91,7 @@ def a13(t):
         u = ease(seg(t, 2.3, 2.6))
         arms, face, look, rot, kn = lerp(TUG, HERO, u), "proud", (-0.4, -0.2), 0.0, None
     p = P("pam_cat", 220, 730, 0.84, pose(arms, ("fist", "fist")), face, look, rim=True)
-    return draw(shot("1.3", cast=[], after=lambda k: m._pam(k, p, 1.0, breath(t), rot, kn), protect=()))
+    return draw(shot("1.3", cast=[], after=lambda k: pam_(k, p, breath(t), rot, kn), protect=()))
 
 
 # ---- 1.4: the shadows peel off the cobbles and run up the street to a pair of taillights; she turns to follow -------
@@ -107,7 +134,7 @@ def a14(t):
         for x, y, s_ in shadows:
             contact(k, x, y, s_)
     def after(k):
-        m._pam(k, p, 1.0, breath(t), 0.04 * u + weight(d), kn)
+        pam_(k, p, breath(t), 0.04 * u + weight(d), kn)
     return draw(shot("1.4", cast=cast, before=before, after=after, protect=()))
 
 
@@ -121,7 +148,7 @@ def a21(t):
     RAIL = oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 86, -70)               # her right hand on the rail, the left on her hip
     p = P("pam_cat", 186, 420, 0.64, pose(asym(RAIL, 4), ("fist", "grab")), "peer", look, rim=True)
     def after(k):
-        m._pam(k, p, 1.0, breath(t), lean + weight(10), kneel(10))
+        pam_(k, p, breath(t), lean + weight(10), kneel(10))
         sc.railing(k, 380)
     z = 1.0 + 0.22 * ease(seg(t, 0.0, 2.2))                                    # a slow push in, down onto the car
     return draw(shot("2.1", cam=(270 - 40 * (z - 1) / 0.22, 480 + 60 * (z - 1) / 0.22, z), cast=cast, after=after, protect=()))
@@ -142,7 +169,7 @@ def a41(t):
     p = P("pam_cat", 400, 714, 0.50, pose(asym(arms, 4), gest), face, look, rim=True)
     flick = 1.45 <= t < 1.55 or 1.65 <= t < 1.72                               # ONLY FOR YOU goes out twice, then holds
     def after(k):
-        m._pam(k, p, 1.0, breath(t), 0.0, None)
+        pam_(k, p, breath(t), 0.0, None)
         if flick:
             k.c.set_source_rgb(0.03, 0.03, 0.04); k.c.rectangle(96, 392, 348, 34); k.c.fill()
     return draw(shot("4.1", cast=[], after=after, protect=()))
@@ -161,8 +188,9 @@ def a43(t):
         u = ease(seg(t, 0.75, 0.95)); arms, gest, face, look = lerp(UP, ME, u), ("relax_s", "point"), "proud", (-0.2, -0.1)
     elif t < 2.0:                                                              # to the street: left, right: nobody
         arms, gest, face = HERO, ("fist", "fist"), "hopeful"
-        look = (-1.0, 0.1) if t < 1.6 else (1.0, 0.1)
-        rot = -0.06 if t < 1.6 else 0.06
+        look = (-1.0, 0.1) if t < 1.6 else (1.0, 0.1)                         # the eyes first, the head and body after them
+        rot = (-0.06 * ease(seg(t, 1.33, 1.45))) if t < 1.6 else (-0.06 + 0.12 * ease(seg(t, 1.68, 1.82)))
+        kn = kneel(4, l=(0, 6 if t < 1.6 else 0, -1), r=(0, 0 if t < 1.6 else 6, 1))   # the weight onto the other foot
     elif t < 2.35:                                                             # a small smile anyway; the ears patted up
         u = ease(seg(t, 2.0, 2.15)); arms, gest, face, look = lerp(HERO, EARS, u), ("flat", "flat"), "approve", (0.0, 0.0)
         kn = kneel(4 + 6 * abs(math.sin((t - 2.0) * 18)))
@@ -171,15 +199,19 @@ def a43(t):
         x, y, sc_ = 300 + (270 - 300) * u, 712 - 52 * u, 0.50 * (1 - 0.28 * u)
         arms, gest, face, look = (-20, 20, 20, -20) if int(t * 10) % 2 else (20, -20, -20, 20), ("relax_s", "relax_s"), "proud", (0, 0)
     if behind:
-        return draw(shot("4.3", cast=[P("pam_from_behind", x, y - (4 if int(t * 10) % 2 else 0), sc_, pose(arms, gest), face, look)], protect=()))
+        def shadow(k):
+            c = k.c
+            c.save(); c.translate(x, y + 2); c.scale(64 * sc_, 9 * sc_); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+            c.set_source_rgba(0, 0, 0, 0.5); c.fill()
+        return draw(shot("4.3", cast=[P("pam_from_behind", x, y - (2 if int(t * 10) % 2 else 0), sc_, pose(arms, gest), face, look)], before=shadow, protect=()))
     p = P("pam_cat", x, y, sc_, pose(asym(arms, 3), gest), face, look, rim=True)
-    return draw(shot("4.3", cast=[], after=lambda k: m._pam(k, p, 1.0, breath(t), rot, kn), protect=()))
+    return draw(shot("4.3", cast=[], after=lambda k: pam_(k, p, breath(t), rot, kn), protect=()))
 
 
 # ---- 5.1: inside, from where the POV left off: the slow push goes on; the game goes on --------------------------------
 def a51(t):
     u = ease(seg(t, 0.0, 1.2))
-    return draw(shot("5.1", cam=(228 - 30 * u, 590 - 10 * u, 1.4 + 0.12 * u), protect=()))
+    return draw(shot("5.1", cam=(228 - 30 * u, 590 - 10 * u, 1.4 + 0.12 * u), after=lambda k: card(k, t), protect=()))
 
 
 # ---- 5.3: she comes in from the right on her toes, low; the hand into his coat; out with the envelope; back off ------
@@ -189,7 +221,7 @@ def a53(t):
         u = seg(t, 0.0, 0.9); x = 360 - 110 * ease(u)
         st_ = int(t * 10) % 2
         arms, gest, env = (-20, 30, 30, -10), ("relax_s", "relax_s"), False
-        kn = kneel(10, l=(-4, 6 if st_ else 0, -1), r=(4, 0 if st_ else 6, 1)); rot = 0.07
+        kn = kneel(5, l=(-3, 10 if st_ else 0, -1), r=(3, 0 if st_ else 10, 1)); rot = 0.07
     elif t < 1.6:                                                              # the hand into the coat
         u = ease(seg(t, 0.9, 1.25)); x = 250
         arms, gest, env = lerp((-20, 30, 30, -10), LIFT, u), ("relax_s", "grab"), False
@@ -202,30 +234,35 @@ def a53(t):
         arms, gest, env = lerp(LIFT, oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 10, oc.BT + 40), u), ("relax_s", "grab"), True
         kn = kneel(8); rot = 0.03
     p = P("pam_cat", x, 716, 0.46, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env)
-    return draw(shot("5.3", cam=(160, 610, 1.9), cast=[], after=lambda k: m._pam(k, p, 1.0, breath(t), rot, kn), protect=()))
+    def after(k):
+        card(k, t)
+        pam_(k, p, breath(t), rot, kn)
+    z = 1.9 * (1 + 0.03 * ease(seg(t, 0.0, 2.3)))                             # a slow push in
+    return draw(shot("5.3", cam=(160, 610, z), cast=[], after=after, protect=()))
 
 
 # ---- 5.3b: her black glove draws the envelope out of his coat by its edge -----------------------------------------------
 def a53b(t):
-    import hands_ps as hp
+    """5.3b, v4 (review: "an amorphous fist"; the hands rules): the envelope first, then the fingers over it: her thumb on
+    its face at the edge, the index and middle finger behind it (their tips show over the top), the back of the hand,
+    the wrist narrower than the cuff, the sleeve out of the frame's right edge. It comes out slowly and is held 0.6 s."""
     u = ease(seg(t, 0.2, 1.6))
+    GL = (0.22, 0.22, 0.25); RIM = (0.85, 0.85, 0.82)                          # the glove a shade off the coat, rim-lit
     def lift(k):
         c = k.c
         sc.knee_coat(k, env=False, hand=False)
-        ex, ey = 360 - 30 * u, 380 - 50 * u                                    # the envelope: half in the pocket, then out by its edge
-        c.save()
-        if u < 0.7:
-            oc.envelope(k, ex, ey, 2.4)
+        ex, ey = 360 - 34 * u, 378 - 74 * u                                    # the envelope: half in the pocket, then out by its corner
+        oc.envelope(k, ex, ey, 2.4)                                            # v5 (the hand rules: three tries failed, so the series' own grab):
+        if u < 0.75:                                                           # the object first, then the hand over it
             st.poly(k, [(296, 400), (444, 400), (440, 520), (300, 520)], (0.16, 0.17, 0.22), 2.0)   # the pocket over it while it is in
-        else:
-            oc.envelope(k, ex, ey, 2.4)
-        c.restore()
-        gx, gy = ex + 50, ey - 60
-        st.poly(k, [(560, 120 - 40 * u), (gx + 40, gy - 60), (gx + 70, gy + 30), (560, 230 - 40 * u)], oc.COAT, 2.4)   # her sleeve
-        c.push_group(); hp.draw(k, "grab", gx, gy, 70, oc.GLOVE_DARK, (0.6, -0.8), 1); g_ = c.pop_group()
-        for dx_, dy_ in ((-3, 0), (3, 0), (0, -3), (0, 3)):
-            c.save(); c.translate(dx_, dy_); c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.mask(g_); c.restore()
-        hp.draw(k, "grab", gx, gy, 70, oc.GLOVE_DARK, (0.6, -0.8), 1)
+        import hands_ps as hp
+        gx, gy = ex + 104, ey - 26                                             # on its right edge, fingers curled over it, the heart left clear
+        st.poly(k, [(gx + 150, gy - 150), (gx + 20, gy - 40), (gx + 52, gy - 6), (gx + 170, gy - 100)], oc.COAT, 2.4)   # her sleeve, from the corner of the frame
+        c.set_source_rgb(*RIM); c.set_line_width(2); c.move_to(gx + 150, gy - 150); c.line_to(gx + 20, gy - 40); c.stroke()
+        c.push_group(); hp.draw(k, "grab", gx, gy, 104, GL, (-0.7, 0.7), 1); g_ = c.pop_group()
+        for dx_, dy_ in ((-3, 0), (3, 0), (0, -3), (0, 3)):                   # rim-lit off the dark coat
+            c.save(); c.translate(dx_, dy_); c.set_source_rgba(*RIM, 0.9); c.mask(g_); c.restore()
+        hp.draw(k, "grab", gx, gy, 104, GL, (-0.7, 0.7), 1)
         oc.ears(k, 500, 120 - 20 * u, 1.3)
     old = sc.coat_lift
     sc.coat_lift = lift
@@ -235,7 +272,146 @@ def a53b(t):
         sc.coat_lift = old
 
 
-SHOTS = {"1.3": (a13, 2.91), "1.4": (a14, 2.8), "2.1": (a21, 2.2), "4.1": (a41, 2.6), "4.3": (a43, 2.9), "5.1": (a51, 1.2), "5.3": (a53, 2.3), "5.3b": (a53b, 2.3)}
+# ---- 6.1: up from the fall; she pulls a knife out of the boards and slits the envelope with it; the sheet slides out ---
+def a61(t):
+    import on4_props as pr
+    X = 225
+    KX = sc.KNIFE_AT[2][0]                                     # the nearest, at her right
+    ENVH = oc.pm.ik(-1, -84, -170)                             # the envelope out in her left hand, at her shoulder, clear of her face
+    if t < 0.6:                                                # down to it: weight onto the right, the hand to the handle
+        u = ease(seg(t, 0.0, 0.45))
+        arms = ENVH + lerp(oc.pm.ik(1, 50, -128), oc.pm.ik(1, (KX - X) / 0.86, -40), u)
+        kn = kneel(46 * u, l=(-8, 0, -1), r=(14 * u, 0, 1)); rot = 0.18 * u; held = False
+    elif t < 0.9:                                              # up with it
+        u = ease(seg(t, 0.6, 0.9))
+        arms = ENVH + lerp(oc.pm.ik(1, (KX - X) / 0.86, -40), oc.pm.ik(1, 30, -176), u)
+        kn = kneel(46 * (1 - u)); rot = 0.18 * (1 - u); held = True
+    else:                                                      # the slit: across the top of the envelope, then the sheet out
+        u = ease(seg(t, 0.95, 1.2))
+        arms = ENVH + lerp(oc.pm.ik(1, 30, -176), oc.pm.ik(1, -40, -176), u)        # at her chest: nothing over her eyes
+        kn = None; rot = 0.0; held = True
+    p = P("pam_cat", X, 700, 0.86, pose(asym(arms, 3), ("grab", "grab")), "peer" if t < 1.3 else "hopeful", (0.2, -0.6), rim=True)
+    pulled = t >= 0.6
+    def after(k):
+        c = k.c
+        sc.stage_marks(k, skip=(2,) if pulled else ())
+        pts = pam_(k, p, breath(t), rot, kn)
+        sc._spot_on(k)
+        lx, ly = pts["hands"][0]; rx, ry = pts["hands"][1]
+        oc.envelope(k, lx + 6, ly - 34, 1.4)                   # the dream envelope, its heart to us
+        if t > 1.25:                                           # the sheet sliding up out of it
+            v = ease(seg(t, 1.25, 1.8))
+            c.save(); c.translate(lx + 6, ly - 50 - 60 * v); c.rotate(-0.06)
+            c.rectangle(-30, -40, 60, 72); c.set_source_rgb(0.97, 0.97, 0.95); c.fill_preserve(); c.set_source_rgb(*m.INK); c.set_line_width(1.5); c.stroke()
+            c.restore()
+        if held:
+            sc.knife(c, rx, ry - 10, -0.9 if t < 1.2 else -2.2, 1.5)
+        if 0.95 <= t < 1.2:                                    # the slit's flash
+            c.set_source_rgba(1, 1, 1, 0.8); c.set_line_width(3); c.move_to(lx - 30, ly - 58); c.line_to(lx + 42, ly - 58); c.stroke()
+    sc.MARKS[0] = False
+    try:
+        return draw(shot("6.1", cam=(250, 560, 1.4), cast=[], after=after, protect=()))
+    finally:
+        sc.MARKS[0] = True
+
+
+# ---- 6.2: her glove's thumb slides off the sheet: SOFIA, the photograph; the camera in on the circled number ---------
+def a62(t):
+    """v5 (review): her hand holds the sheet at its right edge: the palm off the paper, the thumb across its face (the
+    fingers are behind it). The thumb lies over the end of SOFIA and slides down off it. The camera comes in a little,
+    her face and the number both in frame, and holds 0.5 s."""
+    u = ease(seg(t, 0.15, 0.7)); z = 1.0 + 0.14 * ease(seg(t, 0.4, 1.1))
+    GL = (0.22, 0.22, 0.25); RIM = (0.85, 0.85, 0.82)
+    def after(k):
+        c = k.c
+        ey = 492 + 74 * u                                                      # the thumb's height: on the name, then under it
+        st.poly(k, [(620, ey - 60), (500, ey - 34), (506, ey + 44), (620, ey + 70)], oc.COAT, 2.4)   # her sleeve, from the right edge
+        for col, grow in ((RIM, 3), (GL, 0)):                                  # the palm, off the paper's edge
+            c.new_path(); c.save(); c.translate(506, ey + 10); c.scale(48 + grow, 58 + grow); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+            c.set_source_rgb(*col); c.fill()
+        for col, w in ((RIM, 46), (GL, 40)):                                   # the thumb, short and thick, across the sheet's face
+            c.set_source_rgb(*col); c.set_line_width(w); c.set_line_cap(1); c.move_to(480, ey); c.line_to(404, ey - 8); c.stroke()
+        c.set_source_rgba(0, 0, 0, 0.35); c.set_line_width(2); c.new_path(); c.arc(410, ey - 8, 13, -1.2, 1.2); c.stroke()   # its nail's edge
+    return draw(shot("6.2", cam=(270, 480 - 20 * (z - 1) / 0.14, z), after=after, protect=()))
+
+
+# ---- office -------------------------------------------------------------------------------------------------------
+def _desk_shot(sid, t, cast, after=None, loc=None, cam=None):
+    kw = dict(cast=cast, protect=())
+    if after:
+        kw["after"] = after
+    if loc:
+        kw["loc"] = loc
+    if cam:
+        kw["cam"] = cam
+    return draw(shot(sid, **kw))
+
+
+D_CAM = (668, 598, 2.75)                                    # v5 (review): the office 15 % closer: the actors, not the counter
+
+
+def _pam_asleep(t, x=692, feet=760, look=(0, 0)):
+    return P("pam_awake", x, feet - 1.5 * math.sin(2 * math.pi * 0.22 * t), 0.50, "down", "neutral", look, "arm_up_open")
+
+
+def a71(t):                                                    # asleep on the counter, breathing
+    return draw(shot("7.1", cam=D_CAM, cast=[_pam_asleep(t)], protect=()))
+
+
+def a72(t):                                                    # Sofia in mid-step, eyes on her phone; the envelope into the hand; her mug; on
+    import sofia_dh as sd
+    import on4_props as pr
+    import hands_ps as hp
+    sd.so.POSES["post"] = (sd.so.POSES["hold"][0], sd.so.POSES["hold"][1], 160, 40)
+    x = 560 + 85 * ease(seg(t, 0.0, 0.8)) + 160 * ease(seg(t, 2.5, 3.2))
+    reach = 0.8 <= t < 1.6
+    sof = P("sofia", x, 800 - (4 if int(t * 8) % 2 and (t < 0.8 or t > 2.5) else 0), 0.47, "post" if reach else "hold", "appraise", (0.2, 1.0))
+    v = ease(seg(t, 0.8, 1.4))
+    def post(k):
+        hx, hy = sc.HANDS.get("pam_awake", (706, 510))
+        if t >= 0.8:                                           # up from her hand into Pam's
+            ex, ey = 650 + (hx + 2 - 650) * v, 640 + (hy - 20 - 640) * v
+            pr.envelope(k, ex, ey, 0.26, 0.2 * v + 0.5 * math.sin(v * math.pi) * 0.3)
+            if v >= 1:
+                hp.draw(k, "grab", hx, hy, 15, (0.99, 0.86, 0.70), (0.0, -1.0), 1)
+    loc = "desk8" if t > 2.3 else None                         # her mug at the end of the row
+    return draw(shot("7.2", cam=D_CAM, cast=[_pam_asleep(t), sof], after=post, protect=(), **({"loc": loc} if loc else {})))
+
+
+def a73(t):
+    """the clink wakes her. Expectation: the mask up, a heart on an envelope in her hand: she smiles."""
+    up = t > 0.35
+    face = "neutral" if t < 0.5 else ("approve" if t < 0.85 else "hopeful")   # a gasp, then the smile: a heart, for her
+    p = P("pam_awake", 692, (724 if up else 742) - (4 * math.sin(seg(t, 0.35, 0.6) * math.pi) if up else 0), 0.50, "up" if up else "down", face,
+          (0.4, -0.7) if t > 0.5 else (0, 0), "arm_up_open")
+    return draw(shot("7.3", cam=(696, 628, 3.0), cast=[p], after=sc._sofia_post, protect=()))
+
+
+def a74(t):                                                    # the rota, big; the camera down the column to SUN, then still for 1 s
+    u = ease(seg(t, 0.1, 1.0))
+    return draw(shot("7.4", cam=(270, 440 + 40 * u, 1.0 + 0.10 * u), protect=()))
+
+
+def a75(t):
+    """Realization, then disappointment: the sheet under her chin, her fingertip down the rows to the seventh PAM; her
+    eyes follow it; the brows go, the head sinks a little; held."""
+    import on4_props as pr
+    u = ease(seg(t, 0.2, 1.7))
+    face = "hopeful" if t < 0.35 else ("approve" if t < 0.8 else ("doubt" if t < 1.8 else "fade"))   # smile, the gasp, the brows, gone
+    sink = 5 * ease(seg(t, 1.8, 2.2))
+    p = P("pam_awake", 692, 722 + sink, 0.50, "up", face, (-0.2, 0.7 + 0.3 * u), "stand")
+    def after(k):
+        pr.rota(k, 706, 694, 0.30, -0.05)                      # held under her chin, in both hands
+        for fx in (676, 736):
+            kit.ellipse(k, fx, 652 + (fx - 676) * 0.05, 8, 6, (0.99, 0.86, 0.70), 7600 + fx, shadow=False, lw=1.4)
+        row = min(6, int(u * 7))
+        fy = 673 + row * 9.4
+        kit.ellipse(k, 728, fy, 6, 4.5, (0.99, 0.86, 0.70), 7690, shadow=False, lw=1.3)       # her fingertip on the row's PAM
+        k.c.set_source_rgba(0, 0, 0, 0.25); k.c.set_line_width(1); k.c.move_to(722, fy + 5); k.c.line_to(734, fy + 5); k.c.stroke()
+    return draw(shot("7.5", cam=(702, 648, 3.1), cast=[p], after=after, protect=()))
+
+
+SHOTS = {"1.3": (a13, 2.91), "1.4": (a14, 2.8), "2.1": (a21, 2.2), "4.1": (a41, 2.6), "4.3": (a43, 2.9), "5.1": (a51, 1.2), "5.3": (a53, 2.3), "5.3b": (a53b, 2.3), "6.1": (a61, 2.0), "6.2": (a62, 1.6), "7.1": (a71, 1.4), "7.2": (a72, 3.2), "7.3": (a73, 1.4), "7.4": (a74, 2.0), "7.5": (a75, 2.8)}
 
 
 def frames(sid):

@@ -95,6 +95,96 @@ PUNCH = oc.CAT_POSES["punch"][0]
 _loc0 = sc._loc
 
 
+# ---- v23: 24 drawings a second (Tomas: "max quality", a true rewrite by time) --------------------------------------------
+# Each test's frame function is recorded with its arguments instead of drawn; the drawings between two keys are drawn by
+# the rig from the arguments half way (numbers, arm poses, cameras), not blended pictures. A hold stays a hold (the same
+# arguments), an impact stays on its own drawing (flags and names are not interpolated). TESTS[name](sub=2) gives 24/s.
+class Lazy(object):
+    def __init__(self, fn, a, kw):
+        self.fn, self.a, self.kw = fn, a, kw
+
+    def get(self):
+        if not hasattr(self, "_s"):
+            self._s = self.fn(*[_res(x) for x in self.a], **{k_: _res(v) for k_, v in self.kw.items()})
+        return self._s
+
+
+REC = [False]
+
+
+def _res(x):
+    return x.get() if isinstance(x, Lazy) else x
+
+
+def lazy(fn):
+    def w(*a, **kw):
+        if REC[0]:
+            return Lazy(fn, a, kw)
+        return fn(*a, **kw)
+    w.plain = fn
+    return w
+
+
+def _num(x):
+    return isinstance(x, (int, float)) and not isinstance(x, bool)
+
+
+def _tw(a, b, u):
+    if isinstance(a, Lazy) and isinstance(b, Lazy):
+        if a is b:
+            return a
+        if a.fn is b.fn and len(a.a) == len(b.a) and set(a.kw) == set(b.kw):
+            return Lazy(a.fn, tuple(_tw(x, y, u) for x, y in zip(a.a, b.a)), {k_: _tw(a.kw[k_], b.kw[k_], u) for k_ in a.kw})
+        return a
+    if _num(a) and _num(b):
+        return a + (b - a) * u
+    if isinstance(a, str) and isinstance(b, str):
+        if a != b and a in oc.CAT_POSES and b in oc.CAT_POSES:
+            pa, ga = oc.CAT_POSES[a]; pb = oc.CAT_POSES[b][0]
+            if len(pa) == len(pb) and all(_num(q) for q in tuple(pa) + tuple(pb)):
+                return pose(lerp(pa, pb, u), ga)
+        return a
+    if isinstance(a, (tuple, list)) and isinstance(b, (tuple, list)) and len(a) == len(b):
+        if len(a) == 3 and isinstance(a[0], str) and isinstance(a[1], tuple) and isinstance(a[2], dict) and len(a[1]) > 1 and _num(a[1][0]):
+            if a[0] != b[0] or abs(a[1][0] - b[1][0]) > 150 or abs(a[1][1] - b[1][1]) > 200:      # another figure, or a jump: no sliding
+                return a
+        return type(a)(_tw(x, y, u) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict) and set(a) == set(b):
+        return {k_: _tw(a[k_], b[k_], u) for k_ in a}
+    return a
+
+
+def resolve(fr, sub=1):
+    out = []
+    for j, x in enumerate(fr):
+        out.append(_res(x))
+        nxt = fr[j + 1] if j + 1 < len(fr) else x
+        for q in range(1, sub):
+            out.append(_res(_tw(x, nxt, q / float(sub))) if isinstance(x, Lazy) and isinstance(nxt, Lazy) else out[-1])
+    return out
+
+
+def keys(fn):
+    def w(sub=1):
+        REC[0] = True
+        try:
+            fr = fn()
+        finally:
+            REC[0] = False
+        return resolve(fr, sub)
+    w.__doc__ = fn.__doc__
+    return w
+
+
+def tab(seq, x):
+    """a table of keys read at a fraction: between two entries, half way (numbers, tuples of numbers)"""
+    x = max(0.0, min(len(seq) - 1.0, x))
+    j = int(math.floor(x)); u = x - j
+    if u == 0 or j + 1 >= len(seq):
+        return seq[j]
+    return _tw(seq[j], seq[j + 1], u)
+
+
 def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0):
     """the projected hat shadow (sc.wall_shadow's geometry) with its deformation: w, h scale it on the wall; drip 0..1
     runs it down the wall into a puddle at the wall's foot."""
@@ -152,6 +242,9 @@ def cat_over(s, frames):
     return s
 
 
+cat_over = lazy(cat_over)
+
+
 def t1():
     fr = []
     N = 42 if CAT[0] else 34
@@ -167,6 +260,7 @@ def t1():
         cast = flat + (sofia + pam if sy < 735 else pam + sofia)
         return draw(shot("1.1", cast=cast, before=lambda k: shadow2(k, **sh),
                          after=(lambda k: sc._burst(k, 98, 544, 36)) if burst else None))
+    f = lazy(f)
     i = 0
     if CAT[0]:
         for _ in range(3):                                   # 0.25 s: frame 0, held
@@ -264,8 +358,8 @@ def t2():
     seq += [(KNEE, "hand", d) for d in (0.3, 0.7, 1, 1, 1, 1)]                                     # Dad's hand lies down: agreed
     seq += [(lerp(KNEE, CHEST, ease(t)), "hand", 1) for t in (0.25, 0.5, 0.75, 1.0)]               # he lifts it to his coat
     seq += [(CHEST, "coat", 1)] * 2 + [(lerp(CHEST, KNEE, t), "coat", 1) for t in (0.5, 1.0)] + [(KNEE, "coat", 1)] * 6   # under his lapel
-    return [draw(shot("2.2", loc="seat3", cam=sc.WIDE, cast=(), protect=(),
-                      after=lambda k, a=a: seat3_people(k, *a))) for a in seq]
+    g = lazy(lambda a: draw(shot("2.2", loc="seat3", cam=sc.WIDE, cast=(), protect=(), after=lambda k: seat3_people(k, *a))))
+    return [g(a) for a in seq]
 
 
 # ---- T3 -----------------------------------------------------------------------------------------------------------------
@@ -332,6 +426,7 @@ def t3():
         if kind == "up":
             cast.append(P("pam_cat", px, pf, ps, pose(arms, gest), face, look, lean=lean))
         return draw(shot("3.1", loc="C_side", cam=(300, 610, 1.45), cast=cast, protect=(), before=beam, after=after))
+    side = lazy(side)
     OFF = 1200
     for i in range(6):                                       # she comes over the crossing, after the car
         t = i / 5.0
@@ -448,6 +543,7 @@ def t6():
                     t = min(1.0, (i - 54) / 5.0); x, y, ang = dxn + 44 - 40 * t, dyn - 150 + 50 * t, -0.2 - t
                 bill(x, y, ang)
         return draw(shot("3.1", loc="C_side", cam=cam, cast=[], protect=(), after=after))
+    f = lazy(f)
     return [f(i) for i in range(84)]
 
 
@@ -463,6 +559,7 @@ def t4():
         arms = lerp(UP, DOWN, ease(t))
         cast = [P("pam_cat", 262, 950, 1.5, pose(arms, ("relax_s", "fist")), face, look, env=True, rim=True)]
         return draw(shot("6.6", cast=cast))
+    close = lazy(close)
     for look in ((-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0, 0), (0, 0)):                        # her eyes cross the room: nobody
         fr.append(close(0.0, "hopeful", look))
     for t in (0.1, 0.25, 0.4, 0.55, 0.7, 0.82, 0.92, 1.0):                                         # the arm comes slowly down
@@ -526,6 +623,7 @@ def t5():
                 x = ax + r.uniform(-90, 90); y = ay + r.uniform(20, 260)
                 c.move_to(x, y); c.line_to(x - 5, y + 22); c.stroke()
         return s
+    close = lazy(close); blend_ = lazy(blend)
     for d in (0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 1.0):                                    # the room goes dark round the lamp
         fr.append(close(d, 0))
     last = None
@@ -533,7 +631,7 @@ def t5():
         last = close(1.0, rn); fr.append(last)
     street = draw(shot("1.1"))
     for t in (0.17, 0.33, 0.5, 0.67, 0.83, 1.0):                                                   # the dissolve: the lamp is the streetlamp
-        fr.append(blend(last, street, t))
+        fr.append(blend_(last, street, t))
     for _ in range(6):
         fr.append(street)
     return fr
@@ -617,6 +715,7 @@ def t7():
                 peel(c, *pl)
             return pts
         return draw(shot("2.4", cam=(270, 462, 1.45), cast=[pam] if (pam and not clip) else [], before=before, after=after, protect=()))
+    f = lazy(f)
     fr = []
     for i in range(8):                                       # up the ladder, rung over rung
         t = i / 7.0
@@ -647,6 +746,7 @@ def t7():
     def up(dy, lid, face, look, arms="hero", peel_on=True, pl=None):
         p = IN(dy, face, look, arms)
         return f(p, lid=lid, clip=True, pl=pl if pl else ((310 + 34, HEADY(dy) - 26, 0.9, 0.5) if peel_on else None))
+    up = lazy(up)
     fr.append(up(20, 0.3, "fade", (0, 0)))                   # the lid lifts: ears, a peel
     fr.append(up(55, 0.7, "fade", (0, 0)))
     for dy in (90, 110, 112, 112):                           # up to the chest; the peel hangs on her ear
@@ -704,6 +804,7 @@ def t8():
             if i in (16, 17):                                # dropped
                 sc._burst(k, X0 - 150, GYp - 4, 16); sc._burst(k, X0 + 6, GYp - 4, 16)
         return draw(shot("4.1", cam=CAM, cast=cast, after=after, protect=()))
+    f = lazy(f)
     return [f(i) for i in range(57)]
 
 
@@ -834,14 +935,14 @@ def t9():
             pam = P("pam_cat", X, Y, S_, pose(arms, ("relax_s", "relax_s")), "proud", (0.0, -0.9), rim=True)
             sy = 1.0; kn = dict(drop=6 if up else 0)                  # v16: she gives at the knees with each throw
         elif i < 11:                                         # they come down beside her; her head back, the mouth open for the last
-            land = (i - 8) * 2; teeth = i == 10
+            land = int((i - 8) * 2); teeth = i >= 10
             pam = P("pam_cat", X, Y, S_, pose(lerp(HERO, TADA, 0.4), ("relax_s", "relax_s")), "approve", (0.0, -1.0), rim=True); rot = -0.06; kn = dict(drop=10)
         elif i < 14:                                         # the bow: arms up and out, the knife in her teeth
             land = 4; teeth = True
-            pam = P("pam_cat", X, Y, S_, pose(TADA, ("relax_s", "relax_s")), "proud", (0.3, -0.3), rim=True); rot = 0.05; kn = dict(drop=8 if i == 11 else 4, l=(-3, 0, -1), r=(3, 0, 1))   # the bow: a small curtsey, her head tipped by the knife's weight
+            pam = P("pam_cat", X, Y, S_, pose(TADA, ("relax_s", "relax_s")), "proud", (0.3, -0.3), rim=True); rot = 0.05; kn = dict(drop=8 if int(i) == 11 else 4, l=(-3, 0, -1), r=(3, 0, 1))   # the bow: a small curtsey, her head tipped by the knife's weight
         elif i < 17:                                         # 2: the torch up, the breath in: she rocks back
             land = 5; teeth = False                        # she has spat the fifth into the boards
-            t = (i - 13) / 3.0
+            t = min(1.0, (i - 13) / 3.0)
             arms = oc.pm.ik(-1, -40, oc.BT + 60) + oc.pm.ik(1, 84, -292)
             pam = P("pam_cat", X, Y, S_, pose(arms, ("fist", "fist")), "proud", (0.6, -1.0), rim=True); rot = -0.17 * t; kn = dict(drop=8 * t, r=(10 * t, 0, 1))
         elif i < 25:                                         # forward with it
@@ -851,11 +952,11 @@ def t9():
             scorch = max(0.0, min(1.0, (i - 21) / 3.0))
         elif i < 28:                                         # the bow
             land = 5; scorch = 1.0
-            pam = P("pam_cat", X, Y, S_, pose(TADA, ("fist", "fist")), "proud", (0.3, -0.3), rim=True); kn = dict(drop=8 if i == 25 else 4, l=(-3, 0, -1), r=(3, 0, 1))
+            pam = P("pam_cat", X, Y, S_, pose(TADA, ("fist", "fist")), "proud", (0.3, -0.3), rim=True); kn = dict(drop=8 if int(i) == 25 else 4, l=(-3, 0, -1), r=(3, 0, 1))
         else:                                                # 3: off the boards
             t = ease(min(1.0, (i - 28) / 8.0)); land = 5; scorch = 1.0
             pam = P("pam_cat", X, Y - A_RISE * t, S_, pose(lerp(HERO, FLOAT, t), ("relax_s", "relax_s")), "proud", (0.0, -0.8), rim=True)
-            rot = (-0.20, -0.26, -0.12, 0.16, 0.24, 0.10, -0.06, 0.03)[i - 28] if i < 36 else 0.05 + 0.03 * math.sin(i * 0.6)   # v15: off balance, over, back, found
+            rot = tab((-0.20, -0.26, -0.12, 0.16, 0.24, 0.10, -0.06, 0.03), i - 28) if i < 35 else 0.05 + 0.03 * math.sin(i * 0.6)   # v15: off balance, over, back, found
             kn = dict(drop=0, r=(8 * t, 44 * t, 1), l=(-4 * t, 6 * t, -1))      # v16: one knee drawn up, the other leg hanging
             cam = (290, 560 - 110 * t, 1.4)
         def after(k):
@@ -901,7 +1002,7 @@ def t9():
                     c.new_path(); c.move_to(bx_ - rr * 0.7, by_); c.curve_to(bx_ - rr, by_ - rr, bx_, by_ - rr * 1.3, bx_ + 2, by_ - rr * 2.2)
                     c.curve_to(bx_ + rr * 0.6, by_ - rr * 1.2, bx_ + rr, by_ - rr * 0.6, bx_ + rr * 0.7, by_); c.close_path(); c.set_source_rgb(*col); c.fill()
             if 17 <= i < 25:
-                grow = (0.10, 0.0, 0.45, 0.9, 1.0, 1.0, 0.95, 0.0)[i - 17]   # v15: a small puff, nothing, then all of it, then gone
+                grow = tab((0.10, 0.0, 0.45, 0.9, 1.0, 1.0, 0.95, 0.0), i - 17)   # v15: a small puff, nothing, then all of it, then gone
                 _jet(c, hx + 24, hy + 36, 310 * grow, i)
             if 24 <= i < 31:                                 # one ember left, coming down
                 u = (i - 24) / 7.0
@@ -925,14 +1026,14 @@ def t9():
             return out
         finally:
             sc.MARKS[0] = True
+    f = lazy(f)
     return [f(i) for i in range(43)]
 
 
 def t10():
     """6.05, the booth, 11 drawings: the fire's light crosses the Client's face and is gone; ash comes down on the plan.
     He does not look up. (Drawn after the grade, so the light keeps its colour.)"""
-    fr = []
-    for i in range(11):
+    def g(i):
         s = draw(shot("6.05"))
         c = cairo.Context(s)
         a = max(0.0, math.sin(min(1.0, i / 6.0) * math.pi)) * 0.42
@@ -944,8 +1045,9 @@ def t10():
             y = 300 + (i - 3) * 34 + j * 23
             if 300 < y < 512:
                 c.set_source_rgba(0.12, 0.12, 0.12, 0.9); c.rectangle(150 + (j * 53) % 150 + 6 * math.sin(i + j), y, 5, 4); c.fill()
-        fr.append(s)
-    return fr
+        return s
+    g = lazy(g)
+    return [g(i) for i in range(11)]
 
 
 def t11():
@@ -960,36 +1062,36 @@ def t11():
     def f(i):
         rot = 0.0; dust = 0; kn = None; cam = (290, 560, 1.4); h = 0; dxp = 0
         if i < 16:                                           # v19 (cold test v13 read a leap): she hangs longer, waiting; smile goes; arms and knee come down
-            look = ((0, -0.3), (0, -0.3), (-0.9, 0), (-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0.9, 0), (0, 0.2), (0, 0.2), (0, 0.2), (0, 0.4), (0, 0.6), (0, 0.8), (0, 0.9), (0, 0.9))[i]
+            look = ((0, -0.3), (0, -0.3), (-0.9, 0), (-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0.9, 0), (0, 0.2), (0, 0.2), (0, 0.2), (0, 0.4), (0, 0.6), (0, 0.8), (0, 0.9), (0, 0.9))[int(i)]
             u = max(0, i - 8) / 8.0
             pam = P("pam_cat", X, Y - A_RISE + 3 * math.sin(i * 0.9), S_, pose(lerp(FLOAT, HERO, u), ("relax_s", "relax_s")), "proud" if i < 4 else ("hopeful" if i < 10 else "doubt"), look, rim=True)
             rot = 0.05; cam = (290, 450, 1.4); h = 1.0; kn = dict(drop=0, r=(8 * (1 - u), 44 * (1 - u), 1), l=(-4 * (1 - u), 6 * (1 - u), -1))
         elif i < 18:                                         # down: arms left above her, legs trailing
-            t = (i - 15) / 2.0
+            t = min(1.0, (i - 15) / 2.0)
             pam = P("pam_cat", X, Y - A_RISE * (1 - t * t), S_, pose(TADA, ("relax_s", "relax_s")), "doubt", (0, 1), rim=True)
             cam = (290, 450 + 110 * t, 1.4); h = 1 - t; kn = dict(drop=0, l=(-6, 10, -1), r=(6, 16, 1))
         elif i < 20:                                         # the boards: deep in her knees, arms out
-            d = (44, 54)[i - 18]
+            d = tab((44, 54), i - 18)
             pam = P("pam_cat", X, Y, S_, pose(LOW, ("relax_s", "relax_s")), "doubt", (0, 0.9), rim=True)
-            kn = dict(drop=d, l=(-16, 0, -1), r=(16, 0, 1)); cam = (290, 560 + (8 if i == 18 else 0), 1.4); dust = 2 if i == 18 else 1
+            kn = dict(drop=d, l=(-16, 0, -1), r=(16, 0, 1)); cam = (290, 560 + (8 if int(i) == 18 else 0), 1.4); dust = 2 if int(i) == 18 else 1
         elif i < 23:                                         # one knee gives; a hand goes down for the boards
             j = i - 20
-            rot = (0.10, 0.26, 0.44)[j]
-            pam = P("pam_cat", X, Y, S_, pose(lerp(LOW, REACH, (0.5, 0.9, 1.0)[j]), ("relax_s", "relax_s")), "doubt", (0.8, 0.9), rim=True)
-            kn = dict(drop=(62, 78, 92)[j], l=(-10, 0, -1), r=((30, 52, 70)[j], 0, 1))
+            rot = tab((0.10, 0.26, 0.44), j)
+            pam = P("pam_cat", X, Y, S_, pose(lerp(LOW, REACH, tab((0.5, 0.9, 1.0), j)), ("relax_s", "relax_s")), "doubt", (0.8, 0.9), rim=True)
+            kn = dict(drop=tab((62, 78, 92), j), l=(-10, 0, -1), r=(tab((30, 52, 70), j), 0, 1))
         elif i < 26:                                         # sat down hard, legs out in front of her
             j = i - 23
             rot = 0.0; dxp = 34
             pam = P("pam_cat", X + dxp, Y, S_, pose(LOW, ("relax_s", "relax_s")), "fade", (0, 1), rim=True)
-            kn = dict(drop=100 - (4 if j == 0 else 0), l=(-58, 0, -1), r=(62, 0, 1)); dust = 3 - j; cam = (290, 560 + (8 if j == 0 else 0), 1.4)
+            kn = dict(drop=100 - (4 if int(j) == 0 else 0), l=(-58, 0, -1), r=(62, 0, 1)); dust = 3 - int(j); cam = (290, 560 + (8 if int(j) == 0 else 0), 1.4)
         elif i < 30:                                         # up over one knee, a hand on it
-            t = (i - 25) / 4.0
+            t = min(1.0, (i - 25) / 4.0)
             pam = P("pam_cat", X + 34 * (1 - t), Y, S_, pose(lerp(LOW, HERO, t), ("relax_s", "relax_s")), "fade", (0.2, 0.6), rim=True)
             kn = dict(drop=100 * (1 - t) ** 1.4, l=(-40 * (1 - t), 0, -1), r=(30 * (1 - t), 0, 1)); rot = -0.08 * math.sin(t * math.pi)
         elif i < 32:
-            pam = P("pam_cat", X, Y, S_, "hero", "fade", (0.2, 0.3), rim=True); kn = dict(drop=4 if i == 30 else 0)
+            pam = P("pam_cat", X, Y, S_, "hero", "fade", (0.2, 0.3), rim=True); kn = dict(drop=4 if int(i) == 30 else 0)
         elif i < 35:                                         # she brushes her coat off: nothing happened
-            pam = P("pam_cat", X, Y, S_, pose(BRUSH[i % 2], ("relax_s", "flat")), "peer", (0.5, 0.8), rim=True)
+            pam = P("pam_cat", X, Y, S_, pose(BRUSH[int(i) % 2], ("relax_s", "flat")), "peer", (0.5, 0.8), rim=True)
         else:
             pam = P("pam_cat", X, Y, S_, "hero", "peer", (0.3, 0.3), rim=True)
         def after(k):
@@ -1005,6 +1107,7 @@ def t11():
                         c.new_path(); c.arc(X + dxp + sgn * (60 + 34 * u + j * 22), Y - 8 - 16 * u - (j % 2) * 9, 9 + 10 * u, 0, 2 * math.pi)
                         c.set_source_rgba(0.80, 0.80, 0.78, 0.5 * (1 - u * 0.8)); c.fill()
         return draw(shot("6.07", cam=cam, cast=[], after=after, protect=()))
+    f = lazy(f)
     return [f(i) for i in range(36)]
 
 
@@ -1018,26 +1121,27 @@ def t12():
     fr = []
     cl.PASSAGE_DARK[0] = True
     try:
-        for i in range(13):                                  # the passage
+        def g1(i):                                           # the passage
             u = i / 12.0
             z = 1.45 * (5.2 ** (u ** 1.5))
             bob = 5 * math.sin(i * math.pi / 3) / z
             s_ = draw(shot("4.3", cam=(270, 545 + 50 * u + bob, z), cast=[], protect=()))
             if i >= 11:
                 c = cairo.Context(s_); c.set_source_rgba(1, 1, 0.96, (i - 10) / 3.0); c.paint()
-            fr.append(s_)
+            return s_
     finally:
-        cl.PASSAGE_DARK[0] = False
+        pass
+    g1 = lazy(g1); fr += [g1(i) for i in range(13)]
     for _ in range(2):                                       # the light
         s_ = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c = cairo.Context(s_); c.set_source_rgb(1, 1, 0.96); c.paint(); fr.append(s_)
     FOLD = [0, 26, 70, 92, 140, 172, 230, 252, 300, 340]      # uneven folds
-    for i in range(21):                                      # the hall
+    def g2(i):                                               # the hall
         u = i / 20.0
         z = 1.0 + 0.50 * ease(u)
         cx_ = 240 - 90 * ease(u); cy_ = 560 - 40 * ease(u)
         bob = 6 * math.sin((i + 15) * math.pi / 3)
         op = min(1.0, i / 6.0)
-        def after(k, op=op, i=i):
+        def after(k):
             c = k.c
             if op >= 1.0:
                 return
@@ -1068,11 +1172,13 @@ def t12():
             c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.set_line_width(2.0)
             c.new_path(); c.arc(ex + 22, ey - 8, 26, -2.2, 0.4); c.stroke()
         s_ = draw(shot("5.1", cam=(cx_, cy_ + bob, z), after=after, protect=()))
-        fr.append(s_)
+        return s_
+    g2 = lazy(g2); fr += [g2(i) for i in range(21)]
     return fr
 
 
 TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7, "T8": t8, "T9": t9, "T10": t10, "T11": t11, "T12": t12}
+TESTS = {k_: keys(v_) for k_, v_ in TESTS.items()}
 
 
 def build(name):

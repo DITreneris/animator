@@ -32,6 +32,7 @@ PAPER = (0.99, 0.99, 0.97)
 RED = (0.86, 0.12, 0.16)
 PEN = (0.12, 0.22, 0.62)
 BRASS = (0.72, 0.58, 0.30)
+ROTA_BIG = [False]
 ROTA_INK = [False]                          # (24 Nov) PAM on the rota in pen ink, not red: the heart is the one red
 SEAL = [False]                              # board v6 (opt-in): the red heart seal, the twin of the dream envelope's
 
@@ -223,6 +224,11 @@ def frame0(k):
 def insert74(k):
     c = k.c
     c.set_source_rgb(0.60, 0.48, 0.34); c.paint()
+    if ROTA_BIG[0]:                                     # v5 (review: the joke is the main object): the rota fills the frame
+        envelope(k, 262, 742, 0.80, 0.05, open_=True)
+        c.set_source_rgba(0, 0, 0, 0.25); c.rectangle(112, 166, 330, 450); c.fill()
+        rota(k, 270, 384, 1.5, -0.02)
+        return
     rota(k, 270, 300, 1.1, -0.02)                       # pulled right out: every PAM reads (lesson 111)
     envelope(k, 282, 600, 0.92, 0.05, open_=True)       # under it, the envelope it came in
 

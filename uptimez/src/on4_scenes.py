@@ -436,6 +436,7 @@ oc.CAT_POSES.setdefault("mask_fix", ((-8, 0) + oc.pm.ik(1, 34, oc.HY - 6), ("rel
 DON_REACH = (-70, 20, 8, 0)                                # 3.3: his screen-left arm out and down to the bumper
 
 
+RIM_A = [0.85]                                             # (24 Nov, review) her rim light's strength: 0.6 is the outline 30 % quieter
 FACE_KEY = [False]                                         # (24 Nov, three reviews: dark, but no contrast on the faces) a soft key light on each face in the dream
 KEYS = []
 KEY_WHO = ("pam_cat", "sofia", "client", "don")
@@ -465,7 +466,7 @@ def draw_cast(k, cast):
                 c_ = k.c
                 c_.push_group(); oc.pam_cat(k, *a, **kw); g_ = c_.pop_group()
                 for dx_, dy_ in ((-3, 0), (3, 0), (0, -3)):
-                    c_.save(); c_.translate(dx_, dy_); c_.set_source_rgba(0.82, 0.82, 0.80, 0.85); c_.mask(g_); c_.restore()
+                    c_.save(); c_.translate(dx_, dy_); c_.set_source_rgba(0.82, 0.82, 0.80, RIM_A[0]); c_.mask(g_); c_.restore()
             if cy is not None:                               # 3.6: sitting: only her top half rises from the road
                 k.c.save(); k.c.rectangle(-2000, -2000, 5000, cy + 2000); k.c.clip()
             o = oc.pam_cat(k, *a, **kw)
@@ -682,9 +683,10 @@ def knife(c, x, y, ang, s=1.0, stuck=0.0):
 
 KNIFE_AT = ((120, -0.34), (166, 0.10), (286, -0.06), (332, 0.30), (378, -0.20))   # where they stand in the boards (the fifth after she has had it in her teeth)
 SCORCH = (466, 500)
+MARK_SKIP = []                                             # knives she has taken back out of the boards (6.1 on)
 
 
-def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
+def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0, skip=()):
     c = k.c
     if scorch > 0:                                         # the curtain's edge, burnt: a ragged black hole, embers on its rim, smoke in puffs
         sx_, sy_ = SCORCH
@@ -706,6 +708,8 @@ def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
                 g.add_color_stop_rgba(0, 0.80, 0.80, 0.78, 0.30 * (1 - u) * smoke * scorch); g.add_color_stop_rgba(1, 0.80, 0.80, 0.78, 0)
                 c.set_source(g); c.new_path(); c.arc(px_ + dx_ * r_, py_ + dy_ * r_, r_ * q, 0, 2 * math.pi); c.fill()
     for j, (x, a) in enumerate(KNIFE_AT[:knives]):          # blades in the boards round her feet
+        if j in skip or j in MARK_SKIP:
+            continue
         dp = (0, 12, -6, 16, 4)[j]                           # v19: each at its own depth and angle
         c.save(); c.translate(x + 6, 708 + (j % 2) * 4); c.scale(20, 4); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
         c.set_source_rgba(0, 0, 0, 0.5); c.fill()            # v20: its shadow on the boards, where it went in
@@ -1022,7 +1026,7 @@ def _desk(k, sh, eighth):
         pass
     def props(k_):
         pam_over(k_)
-        dp.coffee_machine(k_, 770, pr.F - 166, 0.62, "ok")
+        dp.coffee_machine(k_, 770 + (8 if OFFICE_MUTE[0] else 0), pr.F - 166, 0.62 * (0.87 if OFFICE_MUTE[0] else 1.0), "ok")   # (review) 13 % smaller: a prop, not an actor
         pr.counter_lamp(k_, *pr.LAMP)
         pr.cups(k_, x0=668, eighth=eighth)
         if sh["id"] == "8.1":
@@ -1045,8 +1049,8 @@ def render(sh, scale=1):
 def _render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
     import on4_club as cl
-    cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True
-    st.NIGHT[0] = True; OFFICE_MUTE[0] = True; FACE_KEY[0] = True
+    cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True; cl.PASSAGE_DARK[0] = True; RIM_A[0] = 0.6
+    st.NIGHT[0] = True; OFFICE_MUTE[0] = True; FACE_KEY[0] = True; pr.ROTA_BIG[0] = True
     car.TAIL_GREY[0] = True; oc.HEART[0] = 1.6; pr.ROTA_INK[0] = True       # (24 Nov) the envelope's heart is the film's one red
     cl.LIMO[0] = (30, 1.15); cl.CLIENT_DY[0] = 0      # the Client stands behind the booth table (his legs reach the floor): left as he was
     st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"; oc.ENV_BIG[0] = 1.25; oc.MASK_UP_V2[0] = True
@@ -1118,7 +1122,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"4.4": 3.0, "5.1": 1.2, "6.0": 3.6, "6.05": 0.9, "6.07": 3.0, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"4.4": 3.0, "5.1": 1.2, "6.1": 2.0, "6.0": 3.6, "6.05": 0.9, "6.07": 3.0, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():
