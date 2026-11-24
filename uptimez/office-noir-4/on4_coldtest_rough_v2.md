@@ -19,3 +19,7 @@ Shared misreads that are staging faults:
 - 1:05: the shredder is still seen in the dark.
 
 Not tested: whether it is funny, voice timing, the mix.
+
+## Correction (same day)
+
+Beat 1 was scored against a wrong intended reading. The script (1.2) has Pam punch the shadow, which slides down the wall while Sofia walks past; both viewers read exactly that. Corrected score: A 4.5 of 5, B 4.5 of 5, a pass. The 0:00 item in the fault list is withdrawn; the other three stand.

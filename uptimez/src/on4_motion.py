@@ -315,20 +315,22 @@ def t6():
     fr = []
     STOPX = PX + 40 + 170
     CA, CB = (300, 610, 1.45), (392, 600, 1.02)
-    BILLS = [(250, 690), (300, 676), (212, 700), (332, 698)]
+    BILLS = [(196, 682), (262, 694), (322, 686)]              # v5: three big ones, the first onto her face
+    DX, DY, DS = 352, 772, 0.56                                  # v5: Don on the road in front of the bonnet, nearer than the car
     def f(i):
         cam = CA if i < 36 else lerp(CA, CB, ease(min(1.0, (i - 36) / 6.0)))
         cx = STOPX + (0 if i < 60 else ((i - 60) / 7.0) ** 2 * 420)                # the car backs away
         if i < 9:                                                                    # Don comes to the bonnet
-            t = i / 8.0; don = P("don", 170 + 240 * t, 596 + 52 * t, 0.42 + 0.08 * t, "stand", "neutral", (0.9, 0.2), paddle_side="GO", paddle_ang=0.9)
-        elif i < 20:
-            don = P("don", 410, 648, 0.50, sc.DON_REACH, "neutral", (-0.6, 0.9), paddle_side="GO", paddle_ang=0.9, lean=-0.16)
-        elif i < 40:
-            don = P("don", 410, 648, 0.50, "inspect", "neutral", (-0.9, -0.5), paddle_side="GO", paddle_ang=0.9)
+            t = i / 8.0; don = P("don", 170 + (DX - 170) * t, 596 + (DY - 596) * t, 0.42 + (DS - 0.42) * t, "stand", "neutral", (0.9, 0.2), paddle_side="GO", paddle_ang=0.9)
+        elif i < 32:                                                                 # v5: his glove along the bonnet, back and forth; his back to her
+            w = (72, -24) if (i // 3) % 2 else (58, -10)
+            don = P("don", DX, DY, DS, (-8, 0) + w, "neutral", (0.9, 0.6), paddle_side="GO", paddle_ang=0.9, lean=0.10)
+        elif i < 40:                                                                 # clean
+            don = P("don", DX, DY, DS, "stand", "pleased", (0.9, 0.3), paddle_side="GO", paddle_ang=0.9)
         elif i < 62:
-            don = P("don", 410, 648, 0.50, "wave", "pleased", (0.8, -0.2), paddle_side="GO", paddle_ang=0.10, whistle_in=(i % 6 < 3))
+            don = P("don", DX, DY, DS, "wave", "pleased", (0.8, -0.2), paddle_side="GO", paddle_ang=0.10, whistle_in=(i % 6 < 3))
         else:
-            t = min(1.0, (i - 62) / 8.0); don = P("don", 410 - 240 * t, 648 - 52 * t, 0.50 - 0.08 * t, "stand", "neutral", (-0.8, 0), paddle_side="GO", paddle_ang=0.9)
+            t = min(1.0, (i - 62) / 8.0); don = P("don", DX - (DX - 170) * t, DY - (DY - 596) * t, DS - (DS - 0.42) * t, "stand", "neutral", (-0.8, 0), paddle_side="GO", paddle_ang=0.9)
         wave = 24 <= i < 38 and (i // 3) % 2 == 0
         def after(k):
             c = k.c
@@ -337,6 +339,7 @@ def t6():
                 sc._wave(k)
             c.restore()
             car.side(k, cx, 724, 1.0)
+            sc.draw_cast(k, [don])                                                   # in front of the car, not on it
             wx, wy = cx + 74, 724 - 86                                               # the rear window
             if 44 <= i < 62:
                 c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(cx + 38, 724 - 96, 72, 22); c.fill()   # the glass down
@@ -350,7 +353,10 @@ def t6():
                     continue
                 t = min(1.0, (i - t0) / 9.0)
                 x = wx - 16 + (bx - (wx - 16)) * t; y = wy + 14 + (by - (wy + 14)) * t * t + math.sin(t * 9 + j) * 8 * (1 - t)
-                ly.bill(k, x, y, 0.4 + j + t * 3, 0.8, seed=j)
+                ly.bill(k, x, y, 0.4 + j + t * 3, 2.0, seed=j)
+                c.save(); c.translate(x, y); c.rotate(0.4 + j + t * 3); c.set_source_rgb(0.12, 0.16, 0.10)
+                c.select_font_face("sans-serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(20)
+                c.move_to(-6, 7); c.show_text("$"); c.restore()
             for j, (x0, x1) in enumerate(((330, 60), (262, -20))):                   # two shadows walk in from the right,
                 if i < 63 + j * 2:
                     continue
@@ -362,7 +368,7 @@ def t6():
                 else:
                     x = x0 - (x0 - x1) * min(1.0, (t - 1.7) / 0.9); lean = 0.0; hands = ("grab", "relax")   # step over her, go
                 st.thug(k, x, 742, 0.38, "open" if int(t * 6) % 2 else (-30, 20, 30, -20), seed=4500 + j, hands=hands, lean=lean)
-        return draw(shot("3.1", loc="C_side", cam=cam, cast=[don], protect=(), after=after))
+        return draw(shot("3.1", loc="C_side", cam=cam, cast=[], protect=(), after=after))
     return [f(i) for i in range(84)]
 
 
@@ -407,7 +413,16 @@ def t5():
         fr.append(draw(shot("8.1")))                         # the rota over the cups, her head down
     r = random.Random(5)
     def close(d, rain):
-        s = dark(draw(shot("8.1", cam=b, protect=())), 0.88 * d, ax, ay + 20)
+        import sys
+        held = [(m, m.shredder) for m in list(sys.modules.values()) if callable(getattr(m, "shredder", None))]
+        for m, _f in held:                                   # v5: no shredder in the last shot (seen in the dark by both cold viewers)
+            m.shredder = lambda *a, **kw: None
+        try:
+            s = draw(shot("8.1", cam=b, protect=()))
+        finally:
+            for m, f_ in held:
+                m.shredder = f_
+        s = dark(s, 0.88 * d, ax, ay + 20)
         c = cairo.Context(s); g = cairo.LinearGradient(0, ay + 180, 0, ay + 236)                    # v4: the floor (the shredder) goes first
         g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0.01, 0.01, 0.02, min(1.0, d * 1.6))
         c.set_source(g); c.paint()
