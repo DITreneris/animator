@@ -203,3 +203,5 @@ Tomas's picks: 5.6 a frame for Pam only (`SHIFT_V4["5.6"] = (480, -40, 1.0)`, So
 | An empty bubble anywhere | none | none | none | the tag misread is gone |
 
 Left, noted: `speech.draw`'s 10–20 px tail is not seen at 270 px by anyone in this round or the last; the board relies on the speaker being alone or the box sitting at their face. `COO?` (the CV's lettering) is read as a caption or Sofía's thought, not speech: fine.
+
+Merge with main (24 Nov, PR #99 was "dirty"): The Offer v40 and Daddy's Home v8 had changed `speech.py` (opt-in SIZE, MONO_SIZE, MAX_W, MONO_BOLD, SIGNS_FIRST) and `speech_gate.py` (the button rail, `avoid=`). Both sides kept: `ROBOT` bolds through main's `_weight`; `check(..., avoid=(), fill=None)`; all four selftest cases kept. With ROBOT and CLEAR off, `speech.draw` is byte-identical to main's, with and without The Offer's settings. Main's new rail check found 3 ep 14 boxes in the rail (2.6, 4.3a, 5.6): the board now passes the rail to `speech.draw` as avoid, and Pam's own 5.6 frame has her at x 160. Checks 38 shots, 0 faults.

@@ -143,6 +143,7 @@ def sky(k):
 # Tomas's picks (23 Nov): the lane bends left out of sight; the arch with its lights shows round the bend; old town in paper
 # cut-out (crooked edges, fallen plaster, a stained base, tiled roof edges, frames and sills, drainpipes).
 
+TOWN = [False]                # (24 Nov, the review of the sky stills) the old-town finish (plaster, damp, frames) on the sets that had none: the lane of 2.1, the crossing from the kerb
 NIGHT = [False]               # (24 Nov, review of the animation stills) the street darker, the light pooled under the lamp
 A_LAMP = (396, 150)            # the loop's join: the counter lamp of 8.2 lands here
 A_ARCH = (206, 560, 50, 104)   # the arch at the bend: centre x, floor y, half width, height (its left half behind the wall)
@@ -213,6 +214,7 @@ def drainpipe(k, P, u, v0=0.0, v1=0.96):
 def setup_a(k, taillights=False):
     c = k.c
     sky(k)
+    import on4_posters as _po; _po.sky(k, "A")              # (24 Nov) a crescent and seven stars, opt-in
     cx, fy, hw, h = A_ARCH
     top = fy - h
     # behind everything: roofs and a chimney over the bend
@@ -338,6 +340,9 @@ def setup_b(k, car=True):
             c.move_to(x0, 480); c.line_to(x0 + r.uniform(-40, 40), 480 - r.uniform(80, 220)); c.stroke()
     poly(k, [(200, 430), (240, 380), (420, 380), (440, 430)], (0.20, 0.10, 0.08))           # the dark roofs at the end
     poly(k, [(205, 430), (360, 430), (360, 570), (205, 570)], CREAM_FAR)                   # the lit house
+    if TOWN[0]:
+        E_ = Plane((205, 430, 570), (360, 430, 570))
+        plaster(k, E_.quad, 63, n=4, col=(0.86, 0.81, 0.68)); stained_base(k, E_, 64, 0.90, (0.70, 0.66, 0.56))
     for x in (222, 252, 330):
         for y in (450, 510):
             poly(k, [(x, y), (x + 16, y), (x + 16, y + 34), (x, y + 34)], WIN_LIT if (x, y) == (222, 510) else WIN, 1.4)
@@ -346,7 +351,13 @@ def setup_b(k, car=True):
     c.set_source_rgb(0.12, 0.11, 0.11); c.new_path(); c.move_to(293, 570); c.line_to(293, 512); c.arc(300, 512, 7, math.pi, 0); c.line_to(307, 570); c.close_path(); c.fill()
     L = Plane((-20, -40, 1010), (205, 300, 572))            # left: a tall plain wall, a drainpipe, a lamp on an arm
     L.fill(k, CREAM)
+    if TOWN[0]:
+        plaster(k, L.quad, 61, n=9)
+        stained_base(k, L, 62, 0.80)
     for u in (0.12, 0.40, 0.62, 0.78):
+        if TOWN[0]:
+            window(k, L, u, u + 0.05, 0.10, 0.30); window(k, L, u, u + 0.05, 0.50, 0.70, lit=u == 0.62)
+            continue
         poly(k, L.quad(u, u + 0.05, 0.10, 0.30), WIN, 1.4)
         poly(k, L.quad(u, u + 0.05, 0.50, 0.70), WIN_LIT if u == 0.62 else WIN, 1.4)
     p0, p1 = L.at(0.30, 0.0), L.at(0.30, 0.94)
@@ -357,6 +368,8 @@ def setup_b(k, car=True):
     lamp_head(k, lp[0] + 46, lp[1] - 16, 0.6)
     R = Plane((560, 330, 940), (362, 470, 574))             # right: the long wall, two gate pillars with tiled caps
     R.fill(k, CREAM_SH)
+    if TOWN[0]:
+        plaster(k, R.quad, 65, n=6, col=(0.60, 0.56, 0.46)); stained_base(k, R, 66, 0.80, (0.46, 0.43, 0.36))
     poly(k, [R.at(0, 0), R.at(1, 0), (R.at(1, 0)[0], R.at(1, 0)[1] - 8), (R.at(0, 0)[0], R.at(0, 0)[1] - 22)], TILE, 1.6)
     for u, w in ((0.10, 0.13), (0.42, 0.10)):
         a, b = R.at(u, 0), R.at(u + w, 0)
@@ -407,6 +420,7 @@ def light_b(c):
 def setup_c(k):
     c = k.c
     sky(k)
+    import on4_posters as _po; _po.sky(k, "C")
     poly(k, [(150, 470), (330, 470), (330, 600), (150, 600)], CREAM_FAR)                    # the far lit house
     poly(k, [(140, 470), (180, 430), (320, 430), (340, 470)], (0.24, 0.12, 0.10))
     for x in (172, 220, 286):

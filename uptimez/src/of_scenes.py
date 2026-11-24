@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v17.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v18.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -251,7 +251,7 @@ def _pt(name, x, f):
 
 BENT_AT = (580, 836)                                      # the Client bent over the bay: x, and his feet (hidden by the car)
 TAIL_K = {"2.9": 0.45}                                     # stage 7: a small face in a wide frame: the tip further in
-SPEECH = [False]                                           # off: board_frame keeps fs_animatic.speech. On is a separate look.
+SPEECH = [True]                                            # v40 (24 Nov, decided): the repo speech.py bubble (Offer settings in board_frame); off = the v39 bubbles (tag uptimez-the-offer-v39)
 MOUTH_AT = {}                                              # mouths a pose knows better than the face point (the profile)
 
 
@@ -416,6 +416,7 @@ def _cast_draw0(k, n, scene, sh, heads):
                 import of_ui as ui                                            # v2 (24 Nov): the one phone UI
                 ui.hand(c_, ui.pam_small if ps["phone"] == "pam" else ui.event)
             oc.phone_grip(k, hx, hy, 0.6, cal, ang=-0.1, skin=co_skin(), body_x=x)                 # v4 hands: held, on his palm
+            gs.protect(c, "calendar phone", hx - 24, hy - 84, hx + 24, hy + 6)                  # v40: no bubble over it
         if ps.get("dent"):                                                    # v10: the roof gives under the palm, 2 drawings
             hx, hy = tg[0]
             c.set_source_rgb(*INK); c.set_line_width(2.4); c.new_path()
@@ -1616,6 +1617,20 @@ def _skin_near(arr, x, y, rad=7):
     return bool(((r > 150) & (r > g + 12) & (g > b + 8) & (r - b > 45)).any())
 
 
+def _speech_too_tall(surf, sh, who, txt, fc, cam, va_):
+    """draw the repo's bubble on a scratch copy and measure it: True when it needs more than 3 rows."""
+    import speech
+    speech.SIZE[0], speech.MONO_SIZE[0], speech.MAX_W[0], speech.MONO_BOLD[0], speech.SIGNS_FIRST[0] = 30, 28, 300, True, True
+    if who == "robot" or va_:
+        return False
+    scratch = cairo.ImageSurface(cairo.FORMAT_RGB24, surf.get_width(), surf.get_height())
+    sc_ = cairo.Context(scratch); sc_.scale(surf.get_width() / 540.0, surf.get_height() / 960.0)
+    head = fc[who]
+    box, _ = speech.draw(Ctx(sc_, 0), txt, head, mouth=(head[0], head[1] + 0.35 * head[2]),
+                         others=[v for n, v in fc.items() if n != who], avoid=[p[1:] for p in gs.PROTECT])
+    return (box[3] - box[1]) > 30 * 1.15 * 3 + 20
+
+
 def board_frame(sh, scene, bubble=True):
     """-> (surface 540 x 960 at 2x, problems). The frame, its line's bubble, and the pixel check of the tail."""
     import numpy as np
@@ -1635,8 +1650,8 @@ def board_frame(sh, scene, bubble=True):
         fc[who] = ((va_[0] - cam[0]) * cam[2] + 270, (va_[1] - cam[1]) * cam[2] + 480, 14.0)   # goes INTO that dark
     if who not in fc:
         return surf, msgs + ["BUBBLE: %s speaks but is not in the frame" % who]
-    if SPEECH[0]:
-        import speech
+    if SPEECH[0] and not _speech_too_tall(surf, sh, who, txt, fc, cam, va_):   # v40: a line that would wrap past 3 rows
+        import speech                                                  # beside the face keeps the v39 bubble over the head
         import speech_gate
         head = fc[who]
         if who == "robot":                                          # the head point is the visor, as drawn
@@ -1665,9 +1680,17 @@ def board_frame(sh, scene, bubble=True):
             aim = (hipx + side * hr, hipy)
         before = speech_gate.snapshot(surf)
         c = cairo.Context(surf)
-        box, tip = speech.draw(Ctx(c, 0), txt.upper() if who == "robot" else txt, head, mouth=mouth, aim=aim,
-                               mono=(who == "robot"), others=[v for n, v in fc.items() if n != who])
-        return surf, list(msgs) + speech_gate.check(surf, box, tip, list(fc.values()), aim=aim, before=before)
+        speech.SIZE[0], speech.MONO_SIZE[0], speech.MAX_W[0], speech.MONO_BOLD[0], speech.SIGNS_FIRST[0] = 30, 28, 300, True, True   # v40 (24 Nov, decided):
+        av_ = [p[1:] for p in gs.PROTECT]                                # the repo's bubble, read on a phone; never over a story prop
+        above_ = (head[0] - head[2] * 0.35, head[1] - head[2] * 0.97) if who == "robot" else None   # people: beside the mouth only
+        if who == "robot":                                               # over the antenna, never across the visor's card
+            aim = None
+        box, tip = speech.draw(Ctx(c, 0), txt.upper() if who == "robot" else txt, head, mouth=mouth, aim=aim, above=above_,
+                               mono=(who == "robot"), others=[v for n, v in fc.items() if n != who], avoid=av_)
+        gp_ = speech_gate.check(surf, box, tip, list(fc.values()), aim=aim, before=before)
+        if who == "robot":                                               # the visor's dark rim is not hair: the tip is ON the visor
+            gp_ = [m for m in gp_ if not m.startswith("TAIL on hair or eyes")]
+        return surf, list(msgs) + gp_
     head = fc[who]
     if who == "robot":                                                # v7: the head point IS the visor, as drawn
         head = (head[0], head[1], head[2] * 1.15)

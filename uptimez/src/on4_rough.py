@@ -19,20 +19,20 @@ MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("2.4",):
        ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("6.3", "6.6"): ("T4", 0, -8), ("8.1", "8.2"): ("T5", 0, -7)}
 OUT = os.path.join(sc.OUT, "on4_rough_v13.mp4")
 NEW = {   # key: (shot, seconds into the shot, who, text)
-    "c1": ("2.2", 1.55, "CLIENT", "Mine until it's done."),
+    "c1": ("2.2", 2.1, "CLIENT", "Mine until it's done."),
     "d1": ("3.1", 1.5, "DON", "Traffic flows."),
     "d2": ("3.3", 1.9, "DON", "Not a scratch."),
     "f1": ("3.4", 1.0, "FATHER", "For the boys."),
     "p1": ("4.1", 0.9, "PAM", "There you are."),
-    "p2": ("5.3", 2.6, "PAM", "Easy."),
+    "p2": ("5.3", 1.75, "PAM", "Easy."),
     "p3": ("6.3", 0.9, "PAM", "Well?"),
 }
 
 
-MOVE7 = {"n2": ("2.1", 0.1)}                                # v7: "I know where to see..." over the spying (2.1-2.2); 2.4 gets its own two lines
+MOVE7 = {"n2": ("2.1", 0.1), "n1": ("1.3", 0.3)}            # n1 earlier (24 Nov, Tomas: longer pauses between the narrator's sentences)                                # v7: "I know where to see..." over the spying (2.1-2.2); 2.4 gets its own two lines
 NARR = {   # v4 (Tomas: the pauses are too long, the narrator is missing): two more of her boasts over the long gaps
-    "n4": ("1.4", 0.5, "Nobody follows me."),              # as the two shadows come up behind her
-    "n5": ("5.1", 0.6, "Nobody sees me coming."),          # as she walks through the club and nobody looks
+    "n4": ("1.4", 0.3, "Nobody follows me."),              # as the two shadows come up behind her
+    "n5": ("5.1", -0.45, "Nobody sees me coming."),          # as she walks through the club and nobody looks
     "n6": ("2.4", 0.7, "I know how to climb."),            # v7 (Tomas): up the ladder; she goes over the rail on its heels
     "n7": ("2.4", 32 / 12.0 + 0.75, "I know how to fall."),   # out of the bin, the peel on her ear
 }
@@ -85,6 +85,37 @@ def new_takes():
     return d, log
 
 
+STOP_GAP = 0.75                                             # (24 Nov, Tomas) where a speaker puts a full stop inside a take: at least this much silence
+
+
+def stops(a, text):
+    """a take with more than one sentence: the silence at each full stop widened to STOP_GAP (the longest quiet stretches
+    inside the take are the stops)"""
+    n_ = sum(text.count(ch) for ch in ".?!") - 1
+    if n_ < 1:
+        return a
+    w = int(0.02 * SR); env = np.sqrt(np.convolve(a ** 2, np.ones(w) / w, "same"))
+    quiet = env < 0.06 * env.max()
+    runs = []; j = 0; L = len(a)
+    while j < L:
+        if quiet[j]:
+            k_ = j
+            while k_ < L and quiet[k_]:
+                k_ += 1
+            if j > 0.15 * SR and k_ < L - 0.15 * SR:
+                runs.append((k_ - j, j, k_))
+            j = k_
+        else:
+            j += 1
+    out = a
+    for ln, j0, j1 in sorted(sorted(runs, reverse=True)[:n_], key=lambda r_: -r_[1]):
+        add = int(STOP_GAP * SR) - ln
+        if add > 0:
+            mid = (j0 + j1) // 2
+            out = np.concatenate([out[:mid], np.zeros(add), out[mid:]])
+    return out
+
+
 def load(p):
     a, sr = sf.read(p)
     if a.ndim > 1:
@@ -111,7 +142,7 @@ def sound(tm, d, total):
     marks = []
     for key, ln in d["lines"].items():
         t = st_(MOVE7[key][0]) + MOVE7[key][1] if key in MOVE7 else st_(ln["shot"]) + vo.LEAD.get(ln["shot"], 0.3)
-        put(voice, load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), t); marks.append((key, round(t, 2)))
+        put(voice, stops(load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), " ".join(p_[0] for p_ in vo.LINES[key][2])), t); marks.append((key, round(t, 2)))
     d2, _ = new_takes()
     for key, (shot, lead, who, txt) in NEW.items():
         t = st_(shot) + lead
@@ -184,12 +215,18 @@ def sound(tm, d, total):
     put(fx, rs(so.hiss(0.6), so.SR), a0 + 1.58, 0.9); put(fx, rs(so.thump(), so.SR), a0 + 1.6, 0.6)  # the fire
     tl = np.arange(int(0.7 * SR)) / SR
     put(fx, np.sin(2 * np.pi * (330 + 520 * tl / 0.7) * tl) * np.minimum(tl / 0.1, 1) * np.minimum((0.7 - tl) / 0.2, 1) * 0.05, a0 + 2.35)   # she rises
-    j0 = int(st_("6.05") * SR); fx[j0:int(st_("6.07") * SR) + int(0.8 * SR)] = 0.0                  # the booth, and her hanging there: nothing at all
+    j0 = int(st_("6.05") * SR); fx[j0:int(st_("6.07") * SR) + int(1.4 * SR)] = 0.0                  # the booth, and her hanging there: nothing at all
     f0 = st_("6.07")
-    put(fx, rs(so.thump(), so.SR), f0 + 10 / 12.0, 1.5)                                             # the boards
-    put(fx, rs(so.thump(), so.SR), f0 + 15 / 12.0, 1.1)                                             # and sat down
-    for j in (24, 25, 26):
+    put(fx, rs(so.thump(), so.SR), f0 + 18 / 12.0, 1.5)                                             # the boards
+    put(fx, rs(so.thump(), so.SR), f0 + 23 / 12.0, 1.1)                                             # and sat down
+    for j in (32, 33, 34):
         put(fx, rs(so.swish(0.14), so.SR), f0 + j / 12.0, 0.3)                                      # the coat brushed off
+    if "4.4" in tm:                                                                                 # the final film: her way in, the knife at the envelope
+        for j in range(4):
+            put(fx, rs(sx.slipper(0.11), getattr(sx, "SR", SR)), st_("4.4") + 0.15 + j * 0.3, 0.45)
+        put(fx, rs(so.swish(0.5), so.SR), st_("4.4") + 1.35, 0.5)                                    # the curtain
+        put(fx, rs(so.metal_click(900, 0.12), so.SR), st_("6.1") + 0.6, 0.6)                         # the knife out of the boards
+        put(fx, rs(so.swish(0.25), so.SR), st_("6.1") + 0.98, 0.6)                                   # the slit
     r0 = st_("8.2") - 0.8
     rain = rs(so.rain(total - r0 + 0.1), so.SR); rain[:int(0.8 * SR)] *= np.linspace(0, 1, int(0.8 * SR))
     put(fx, rain, r0, 1.2)
@@ -200,6 +237,14 @@ def sound(tm, d, total):
         jz.groove(mus, t0, t1, level=0.8)
         j = int(t1 * SR); mus[j:] = 0.0                                                             # cut dead
     mus_end = int(st_("6.0") * SR); mus[mus_end:] = 0.0
+    if "4.4" in tm:                                                                                 # the final film: the band and the effects give way under every line
+        env = np.ones(n)                                                                            # (two lines were not recognized inside the mix, lesson 107)
+        nz = np.nonzero(np.abs(voice) > 1e-4)[0]
+        if len(nz):
+            on = np.zeros(n); on[nz] = 1.0
+            w = int(0.25 * SR); on = np.convolve(on, np.ones(w) / w, "same")
+            env = 1.0 - 0.92 * np.clip(on * 3.0, 0, 1)
+        mus = mus * env; fx = fx * (0.5 + 0.5 * env)
     mix = voice * 1.0 + fx * 0.7 + mus * 0.22
     return mix[:int(total * SR)], marks, dict(bump=round(bump, 2), toot=round(toot, 2))
 

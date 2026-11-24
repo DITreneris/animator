@@ -126,6 +126,7 @@ def front(k, limo=False):
     neon_text(k, "PAM-CAT", 270, 336, 70)
     bulb_strip(k, 70, 470, 368, "ONE EVENING · ONCE IN A LIFETIME", 17)
     neon_text(k, "ONLY FOR YOU", 270, 416, 42)
+    import on4_posters as po; po.club(k)                                   # (24 Nov) her bill by the door, opt-in
     # the arched passage, lit from inside: a vault with its small lamps, the walls, the floor running in to a far opening
     ax0, ax1, at, ab = 178, 362, 478, 660
     cx = (ax0 + ax1) / 2; rr = (ax1 - ax0) / 2

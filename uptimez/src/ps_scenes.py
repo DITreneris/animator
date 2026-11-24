@@ -393,7 +393,7 @@ def cast_56(k):
     return heads
 
 
-PAM_X_56 = [200]
+PAM_X_56 = [160]                                            # her own frame (Sofía out): her box clear of the button rail
 
 
 def fg_56(k):
@@ -993,6 +993,8 @@ def bubble_v4(k, who, text, fc, taken):
     for name, a0, b0, a1, b1 in pc.PROTECT:
         avoid.append((a0, b0, a1, b1))
     avoid.extend(SIGNS_V4)
+    import speech_gate as sg_
+    avoid.append(sg_.RAIL)                                   # main's gate (24 Nov): no box in the app's button rail
     speech.ROBOT[0] = speech.CLEAR[0] = True                 # the series' robot bubble: tinted, bold mono; the wall with no
     if mono and CUR_SHOT[0] in ROBOT_WALL:                   # other face beside it (Tomas 24 Nov, round 5)
         hx, hy, r = head                                     # 3.1a: its line read as Don's on Don's side of its visor; that
