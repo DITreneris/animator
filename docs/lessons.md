@@ -1032,3 +1032,11 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 
 - The Client says it from UNDER the car: no face, the bubble's tail lands on his hips in the dark under the sill. Cold viewers and audits will keep writing "unclear who speaks". It is canon and is not raised again: in a triage table it goes under "decided, stays", with no fix offered.
 - The same for the red rag (Tomas, 24 Nov: "we fixed it a hundred times, closed"): it stays as drawn in v48 (in his hand only, one shape). Viewers' notes on it go under "decided, stays".
+
+## 238. *The Offer* v49 (24 Nov, the last open points of cold test v47)
+
+- A prop that turns over in a gag reads as a shape change ("it flips through odd shapes", 3 of 3). The dead lamp is lifted and tipped, shaken once and let hang: one shape all the way.
+- A shot bound to its voice take cannot be trimmed; a static one is helped by a CUT in the take's own pause to whoever listens (found by measuring the silence in the wav). The line goes on over him in the speaker's own type, beside him, its tail pointing out of the frame toward the speaker; no name card over a story prop (the crown).
+- The reaction a later shot is built on is not spent in the cut-in before it: Don still smiles on "wait.", so the smile can go in one drawing in the next shot.
+- A turned head needs the bubble's tip given by hand too (`BUBBLE_AT[...]["tip"]`): under the car his mouth is beside the head's centre, not under it.
+- "Too fast" shots get their time back before anything else is polished: the review phone 1.7 s, the key 1.3 s, the fresh plan 2.55 s.

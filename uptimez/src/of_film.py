@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 48, 2: 48, 3: 48, 4: 48, 5: 48}
-SOUND = "of_sound_v24.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 49, 2: 49, 3: 49, 4: 49, 5: 49}
+SOUND = "of_sound_v25.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -267,7 +267,9 @@ def _loud(sid, t):
 def s32(t, L):                                             # the visor: the line pops on, and glows as it talks; v2 (cold tests
     k_ = 0.02 + 0.98 * min(1.0, max(0.0, (t / 0.15))) if t < 0.15 else 1.0 + 0.08 * math.sin(min(1.0, (t - 0.15) / 0.12) * math.pi)
     lo = _loud("3.2", t)                                   # 2 of 3 "held too long"): it bobs on its wheel with each word
-    return dict(visor_k=k_, visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4))), {}
+    if t >= 1.10:                                          # v3 (cold test v47, 3 of 3: "a static robot", decided): in the take's
+        return dict(desk="don", don="happy", off_voice=dict(rows=["AGENDA:", "WITHOUT", "HIM."], at=(28, 190)), say_txt="AGENDA: WITHOUT HIM."), {}   # pause, CUT to Don, pleased; it goes on over him
+    return dict(visor_k=k_, visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4)), say_txt="NEW MEETING."), {}
 
 
 def s33(t, L):                                             # he sits up for good news
@@ -419,9 +421,9 @@ def s28f(t, L):
     sh_ = math.sin((t - 0.95) / 0.15 * 2 * math.pi) * 14 if 0.95 < t < 1.10 else 0.0   # v7: twice as wide, it has to read
     dr = ease((t - 1.12) / 0.2)
     rt = ease((t - 1.08) / 0.12)                              # v7: it TURNS down first, then drops, beside his leg: never behind the bonnet
-    x = 538 + 8 * up + 12 * math.sin(math.pi * up) + sh_ + 22 * rt   # v8: the cage DOWN on the bonnet; dead, he turns it UP to
-    y = 668 + 22 * up + (YEND - 690) * dr                    # look into the bulb (below his chin); then it hangs by his leg
-    la = -1.05 + 2.05 * up - 2.9 * rt
+    x = 538 + 8 * up + sh_ + 22 * rt                         # v9 (cold test v47, 3 of 3: "it flips through odd shapes"): no flip.
+    y = 668 - 16 * up + (YEND - 652) * dr                    # Dead, he LIFTS it a little and tips it toward him (the cage stays
+    la = -1.05 + 0.25 * up - 1.1 * rt                        # down), shakes it once, and lets it hang: one shape all the way
     sw = -sh_ * 1.6 + 16 * math.sin(max(0.0, t - 1.10) * 14) * math.exp(-max(0.0, t - 1.10) * 5) * (1 if t > 1.10 else 0)
     gx_, gf_ = sc.BLOCK[3]["g1"]
     return (dict(_cam=LAMP_GAG_CAM, dim=0.14 if dark else 0.0, moved=dict(g1=(gx_, gf_ + 8 * dr))),
@@ -510,7 +512,9 @@ def s09_work(t, L):                                       # the sump sways; he f
 
 def s34b(t, L):                                            # v9: turned to Don, it glows as it talks
     lo = _loud("3.4b", t)
-    return dict(visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4))), {}   # v10: it bobs as it talks
+    if t >= 1.45:                                          # v11: on "wait.", CUT to Don, still smiling, his eyes on the robot
+        return dict(desk="don", don="happy", off_voice=dict(rows=["WAIT."], at=(28, 230)), say_txt="WAIT.", don_over=dict(look=(1, 0))), {}
+    return dict(visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4)), say_txt="CALENDAR SAYS..."), {}   # v10: it bobs as it talks
 
 
 def s35b(t, L):                                            # v9: he turns to the counter: "Pam?"
@@ -537,7 +541,7 @@ def s09_wide(t, L):                                       # v3 (23 Nov, cold tes
 MOTION["0.9"] = s09_wide
 MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
 MOTION["0.10"] = s010_same
-PIN_T = 1.25                                               # v5 (24 Nov, decided): the burnt plan 0.25 s, the fresh one slides
+PIN_T = 1.60                                               # v5 (24 Nov, decided): the burnt plan 0.25 s, the fresh one slides
 MOTION["4.2"] = lambda t, L: (dict(_cam="insert", insert="pin", pin_slide=ease((t - 0.25) / 0.28),   # up over it, the finger pins
                                    pin_u=ease((t - 0.72) / 0.2)), {}) if t < PIN_T else s42_service(t - PIN_T + 0.55, L)
 # v6 (timing v12): the pin held 0.3 s longer, the rest as it was

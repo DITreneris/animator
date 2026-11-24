@@ -76,7 +76,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v23.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v24.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -1777,6 +1777,7 @@ def _speech_too_tall(surf, sh, who, txt, fc, cam, va_):
 
 
 BUBBLE_AT = {                                               # v48: lines placed by hand, in the 540 x 960 frame, per camera
+    "0.5": dict(at={"'under'": (30, 664)}, tip={"'under'": (186, 606)}, rows=["Is it wrong?"]),   # v49: off his working hands
     "2.1": dict(at={"(450, 640, 2.0)": (26, 430), "(467, 772, 1.5)": (26, 214)}, rows=["My son says his", "machine finds anything."]),
     "2.4": dict(at={"(450, 640, 2.0)": (26, 430), "(467, 772, 1.5)": (26, 214)}, rows=["How would you", "run his company?"]),
     "2.6": dict(at={"(450, 640, 2.0)": (26, 470)}, rows=["And then?"]),
@@ -1864,6 +1865,7 @@ def _board_frame_raw(sh, scene, bubble=True):
         cx_, cy_ = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
         d_ = math.hypot(cx_ - mth[0], cy_ - mth[1]) or 1.0
         tip = (mth[0] + (cx_ - mth[0]) / d_ * head[2] * 0.42, mth[1] + (cy_ - mth[1]) / d_ * head[2] * 0.30)
+        tip = man.get("tip", {}).get(repr(sh["cam"]), tip)            # a turned head: the tip given too
         speech.SIZE[0], speech.MONO_SIZE[0], speech.MAX_W[0], speech.MONO_BOLD[0], speech.SIGNS_FIRST[0] = 30, 28, 300, True, True
         speech._paint(k_, box, tip, rows, size, kit.FONT, False)
         surf.flush()
@@ -1871,6 +1873,18 @@ def _board_frame_raw(sh, scene, bubble=True):
     va_ = sh["state"].get("voice_at")                                 # v13 (23 Nov, cold tests 3 of 3, decided): a voice from a
     if va_:                                                           # place we see but a face we don't (under the car): the tail
         fc[who] = ((va_[0] - cam[0]) * cam[2] + 270, (va_[1] - cam[1]) * cam[2] + 480, 14.0)   # goes INTO that dark
+    if who not in fc and sh["state"].get("off_voice"):                # v49: the speaker is out of this picture (a cut inside
+        import speech                                                  # its line): a named card, top left, as the repo draws one
+        speech.SIZE[0], speech.MONO_SIZE[0], speech.MAX_W[0], speech.MONO_BOLD[0], speech.SIGNS_FIRST[0] = 30, 28, 300, True, True
+        ov = sh["state"]["off_voice"]                                  # its rows in the robot's own caps, beside the listener,
+        c = cairo.Context(surf)                                         # clear of his crown; the tail points out of the frame, to it
+        c.select_font_face(kit.MONO, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(28)
+        bw = max(c.text_extents(r_).x_advance for r_ in ov["rows"]) + 28
+        bh = 28 * 1.15 * len(ov["rows"]) + 18
+        x0, y0 = ov["at"]
+        speech._paint(Ctx(c, 0), (x0, y0, x0 + bw, y0 + bh), (x0 - 20, y0 + bh * 0.5), ov["rows"], 28, kit.MONO, True)
+        surf.flush()
+        return surf, msgs
     if who not in fc:
         return surf, msgs + ["BUBBLE: %s speaks but is not in the frame" % who]
     if SPEECH[0] and not _speech_too_tall(surf, sh, who, SAY[sh["id"]][1], fc, cam, va_):   # the WHOLE line decides: its parts share one place   # v40: a line that would wrap past 3 rows
