@@ -15,6 +15,7 @@ import dh_anim7 as V7
 import dh_anim_v8 as E
 import dh_anim3_v8 as A3
 import hands_ps as hp
+import dh_animatic as da
 
 sc = V7.sc
 F, CH, DS_ = V7.F, V7.CH, V7.DS_
@@ -53,13 +54,15 @@ dq.don_zipped = _don_zipped
 # ---- the thumb, drawn here (v7: s7_thumb / _thumb_don): the series' thumbs-up hand (hands_ps "thumb") in place of v7's
 # rectangle on a fist, which read as "a raised index finger" and "a phone" 2 of 2, and the shake as real movement (v7's white
 # "(( ))" marks read as "a ringing phone" 2 of 2).
-GEST = ["relax", "thumb"]                                    # hp.reset(first hand drawn, second): the thumb on his far hand
+GEST = ["relax", "palm"]                                     # hp.reset(first hand drawn, second): the far hand raised
 THUMB_W = 1.3
-# Round 1 (2 viewers, 3 heights, near hand): "clearest" 2/2 and no phone 2/2 at chest height, but beside Father the thumb
-# touched his arm once Father stood near enough to leave room for his box. Round 2: the far hand, at shoulder height against
-# the wall: clear of his ear, the tag and Father.
-THUMB[(-150, -40, 10, 0)] = (-8, 0, 35, 125)
-THUMB[(-146, -34, 4, 0)] = (-8, 0, 31, 119)
+# Round 1 (2 viewers, 3 heights, the "thumb" hand on his near hand): no phone 2/2, but beside Father it touched his arm.
+# Round 2 (the far hand, mute test of the scene): the story 2/2, no phone 2/2, but the thumb read "an index finger" 2/2 (the
+# third time) and the arm "a white V". Rule 178, Tomas (24 Nov): change the gesture. Round 3: his hand up, palm open, the
+# elbow bent: "me! the human!" ("clearest" 2/2: "volunteering", "that's me"; no phone 2/2; the straighter arms read "a pole").
+# After "Approved." it stays up, forgotten.
+THUMB[(-150, -40, 10, 0)] = (-8, 0, 120, 60)
+THUMB[(-146, -34, 4, 0)] = (-8, 0, 116, 56)
 
 
 def thumb_don(k, n, up, shake, face, look, sink, father=None):
@@ -69,13 +72,13 @@ def thumb_don(k, n, up, shake, face, look, sink, father=None):
         dc.father(k, ds.FA2[0], ds.FA2[1], ds.FS, face=father[0], look=father[1])
     pose = THUMB[(-150, -40, 10, 0)] if up else THUMB[(-146, -34, 4, 0)]
     if shake:                                               # it shakes: the forearm trembles, 2 degrees each way
-        pose = (pose[0], pose[1] + (2 if n % 2 else -2)) + tuple(pose[2:])
+        pose = tuple(pose[:3]) + (pose[3] + (2 if n % 2 else -2),)
     hp.reset(*GEST)
     real, cnt = kit.HAND[0], [0]
 
     def big(k_, hx, hy, w, *a):                             # the thumbs-up hand 1.3x: at feed size the thumb read as "a finger" (1 of 2)
         g = GEST[min(cnt[0], 1)]; cnt[0] += 1
-        return real(k_, hx, hy, w * (THUMB_W if g == "thumb" else 1.0), *a)
+        return real(k_, hx, hy, w * (THUMB_W if g in ("thumb", "palm") else 1.0), *a)
     kit.HAND[0] = big
     try:
         d = _dz(k, ds.DON6[0], ds.DON6[1] + sink, 0.60, pose=pose, face=face, look=look)
@@ -85,17 +88,28 @@ def thumb_don(k, n, up, shake, face, look, sink, father=None):
     return d
 
 
+def _way_don(k, pose):
+    hp.reset(*GEST)
+    real = kit.HAND[0]
+    kit.HAND[0] = lambda k_, hx, hy, w, *a: real(k_, hx, hy, w * THUMB_W if hp._N[0] >= 1 else w, *a)
+    try:
+        return _dz(k, ds.DON6[0], ds.DON6[1], DS_, pose=pose, face="happy", look=(-1, 0))
+    finally:
+        kit.HAND[0] = real
+        hp.reset()
+
+
 def r_offer(s, k, o, t, tt, n):                             # 9.4: the arm comes up from his side to the thumb
     i = V7.idx(t)
     if i < 3:
-        u = (0.25, 0.55, 0.85)[i]
-        p = THUMB[(-150, -40, 10, 0)]
-        THUMB["_way"] = (-8, 0, p[2] * u, p[3] * u)
+        # the way up with the elbow bent from the first drawing (a straight in-between slanted down onto the shredder:
+        # "a pole", "pressing the SHRED box" 2/2)
+        THUMB["_way"] = ((-8, 0, 20, 110), (-8, 0, 60, 90), (-8, 0, 95, 72))[i]
         dp.ceo_chair(k, ds.THR5, CH[1], CH[2])
         dc.father(k, ds.FA2[0], ds.FA2[1], ds.FS, face="hard", look=(1, 0))
-        hp.reset(*GEST)
-        _dz(k, ds.DON6[0], ds.DON6[1], DS_, pose=THUMB["_way"], face="happy", look=(-1, 0))
-        hp.reset()
+        thumb_way = THUMB["_way"]
+        THUMB["_now"] = thumb_way
+        d = _way_don(k, thumb_way)
     else:
         thumb_don(k, n, True, False, "happy", (-1, 0), 0, father=("hard", (1, 0)))
 
@@ -116,7 +130,28 @@ def r_react(s, k, o, t, tt, n):                             # 9.5'': frozen, the
     ds._sweat8(k, d["head"], 2)
 
 
-sc.DRAW.update({"9.4": r_offer, "9.4'": r_approved, "9.5''": r_react})
+# ---- 9.2': his one step, toward us (v7: a second black leg and shoe drawn under his feet, "a black blob at his foot" 2/2)
+def r_step(s, k, o, t, tt, n):
+    u = V7.A.ease(min(1.0, t / 0.5))
+    dl._guards(k, ds.GAP7[0], ds.GAP7[1])                  # nothing else moves
+    lift = 5 * (1 - abs(2 * u - 1)) if 0 < u < 1 else 0   # up over the step, down onto the front foot
+    fy, sc_ = F + 22 + 12 * u, ds.FS * (1 + 0.05 * u)
+    dc.father(k, 125, fy - lift, sc_, look=(0.3, 0.1))
+
+
+# ---- 9.5': the hop, the robot off the floor and its shadow on it (v7: impact dashes that rose with it, "floating dashes" 2/2)
+def r_hop(s, k, o, t, tt, n):
+    up = V7.seq(t, [0, 10, 18, 14, 4, 0, 6, 2, 0])
+    rx, ry = da.RB[0], da.RB[1]
+    c = k.c
+    w = 30 * (1 - up / 40.0)
+    c.set_source_rgba(0, 0, 0, 0.20); c.save(); c.translate(rx, ry + 8); c.scale(1, 0.22); c.arc(0, 0, w, 0, 6.2832); c.fill(); c.restore()
+    c.save(); c.translate(0, -up); da._rb("tick")(k, o); c.restore()
+    if s.speaking("9.5", tt):
+        o["say"] = ("Welcome, majority shareholder.", (da.RH[0] + 24, da.RH[1] + 4 - up), 1, False, 20, 200)
+
+
+sc.DRAW.update({"9.2'": r_step, "9.4": r_offer, "9.4'": r_approved, "9.5'": r_hop, "9.5''": r_react})
 
 
 SET_MOVES, SET_AIR, SET_BEHIND = {}, set(), set()

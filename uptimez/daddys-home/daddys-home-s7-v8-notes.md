@@ -28,11 +28,21 @@ speech_gate 60 / 0, dead zones 0, set 0. v7 baseline: same. Film rejoined with s
   - The story reads 2/2: his throne taken over, the robot and the guards side with the visitor, and he ends sweating.
   - No phone 0/2. Nothing touches the tag.
 
-## Open (stopped at 2 rounds)
+## Round 3 (Tomas, 24 Nov: "Ranka aukštyn, delnas"; "Taisom pigius du")
 
-- **The thumb still reads as "an index finger" 2/2**, the third such misread (rule 178: change the gesture, not the grip). His far arm, upper arm down and forearm up, reads as "a white V, a checkmark, a pole" 2/2.
-- **Seen in v7's shots, both viewers the same way:**
-  - the fist on the glass (9.1) reads as "a microphone";
-  - a black blob at Father's foot (9.2', his step);
-  - floating dashes under the robot (9.5', its hop marks).
-  - Also "who says Approved." (1/2): Father's mouth is small at feed size.
+- **The gesture changed (rule 178):** his far hand up, palm open (`hands_ps` "palm", 1.3x), the elbow bent: "me! the human!". After "Approved." it stays up, forgotten, trembling.
+  - Stills, 3 arm angles, 2 viewers: bent elbow "clearest" 2/2 ("volunteering", "that's me"); no phone 2/2; the straighter arms read "a pole".
+  - The arm comes up with the elbow bent from its first drawing. A straight in-between slanted onto the shredder read "a pole, pressing SHRED" 2/2 in the mute test.
+- **9.2':** his step is the drawing moving toward us (5 % bigger, 12 lower, a lift over the step). v7's second leg and shoe under his feet read "a black blob" 2/2.
+- **9.5':** the hop lifts the robot off the floor over its own shadow. v7's impact dashes rose with it ("floating dashes" 2/2).
+- **Mute test** (2 viewers, the whole scene):
+  - the raised hand reads "I approve" / "an oath" 2/2;
+  - no phone 2/2; nothing touches the tag;
+  - the story turn reads 2/2: the visitor becomes the majority shareholder and the bald man ends sweating.
+- **Checks:** gate speech 60/0, zones 0, set 0. Film 96.8 s, −16.6 LUFS, −1.7 dBTP.
+
+## Open
+
+- **Who says "Approved."** (2/2 unsure): the box is Father's, but the raised hand makes viewers think Don approves. The joke wants it clear that the visitor approves himself. Father's mouth is small at feed size. v7 staging, not changed.
+- **The fist on the glass (9.1)** reads "a microphone / a stick" 2/2. Tomas kept it (silhouettes).
+- **The robot's shadow** "jumps" (1/2): the hop reads.
