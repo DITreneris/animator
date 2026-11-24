@@ -293,7 +293,7 @@ def r_up(k, o, t, tt, n):
     dp.ceo_chair(k, cx, CH[1], CH[2])
     if i < V7.HOLD:
         if JUMP_ARC[0] and i == V7.HOLD - 1:                # round 8 (lesson 21): the anticipation, pressed down into the seat
-            with A.About(k.c, THR, CH[1], 1.04, 0.93):     # (0.88 pushed her face down under the app buttons)
+            with A.About(k.c, THR, CH[1], 1.03, 0.96):     # (0.88 pushed her face down under the app buttons)
                 throned(k, THR, CH[1], CH[2], "horrified", (-1, 0))
         else:
             throned(k, THR, CH[1], CH[2], "horrified", (-1, 0) if i else (-0.6, 0))
@@ -442,7 +442,7 @@ SHOTS = {"3.1": ("3A", r_3a, fg_3a, True), "3.2": ("3A", r_3a, fg_3a, True),
          "3.4": ("3C", r_pam, fg_3c, False), "3.5": ("3D", r_don, fg_3d, False),
          "4.1": ("3E", r_thump, fg_3e, False), "4.1'": ("3E", r_sits, fg_3e, False), "4.2": ("3E", r_up, fg_3e, False),
          "4.3": ("3F", r_mom, fg_3f, False)}
-SHIFT = {}                                                  # sid -> (dx, dy[, zoom factor]) in set units
+SHIFT = {"4.1'": (10, 205, 2.0 / 1.45), "4.2": (10, 205, 2.0 / 1.45)}   # round 11: a cut in to Mom and Sofía for "...that chair" and the leap (wide: the cause of the jump was lost)                                                 # sid -> (dx, dy[, zoom factor]) in set units
 CAMS = {"3C": S.CAM_3C, "3D": S.CAM_3D, "3E": (346, 540, 1.45), "3F": (398, 690, 2.3)}   # round 10: setup S3 on the throne's mark (3E), and closer on Mom (3F)
 INS = {"3.3": r_thumb, "3.3'": V7.r_green}
 
