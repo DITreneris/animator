@@ -856,3 +856,13 @@ v27 gave the insert arms an elbow and a sleeve; the v28 cold test still read eve
 - A cut to the whole car running read as "it drove away, then it is back" (3 of 3). The start stays on the key and the rev counter.
 - A fresh sheet over a burnt one must be SEEN going over it: the burnt plan first, then the fresh one slides up, then the pin. A cut straight to the fresh plan read as "the map is whole again".
 - of_film reads the sound file: start the scene renders after of_sound has finished (scene 5 failed on a half-written wav).
+
+## 202. Check the music as a map, not by ear only (The Offer v30, 24 Nov)
+
+Measured from the stems of v29: music on for 12 s of 64.5; the office (14.7 s) had neither music nor radio and 6 s of it sat more than 30 dB under the voice; three new gags and two new shots had no sound of their own; the start-up sound ended after 1.6 s with the car still running.
+
+- After any picture change, list every new action and give it a sound, or decide it is silent. A gag added in the picture is not in the sound until someone puts it there.
+- Print, per section: voice, effects, music, radio (dB RMS), and the 0.25 s windows more than 30 dB under the voice. Silence that was not decided shows up there.
+- A place with no bed needs a tone of its own: the office gets the series' "Open plan" bed, low, cut dead on the call that rings out.
+- A gag gets the silence: the music stops on the lamp's tick and is back on the next shot.
+- Kept as decided: the negotiation has no music. The radio is 8 dB up there, so the gaps are a room, not a mute.
