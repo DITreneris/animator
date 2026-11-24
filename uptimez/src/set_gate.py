@@ -47,8 +47,10 @@ def install():
     """Wrap the series' rigs and set props (each is logged once per call, in world units)."""
     if _INSTALLED[0]:
         return
-    import dh_props, mom_fs, pam_bc, sofia_cs
+    import dh_props, mom_fs, pam_bc, sofia_cs, fs_storyboard, dh_cast
     _wrap(dh_props, "ceo_chair", "prop", "throne")
+    _wrap(fs_storyboard, "don", "person", "don")
+    _wrap(dh_cast, "repairman", "person", "visitor")
     _wrap(mom_fs, "mom", "person", "mom")
     _wrap(pam_bc, "pam", "person", "pam")
     _wrap(sofia_cs, "sofia", "person", "sofia")

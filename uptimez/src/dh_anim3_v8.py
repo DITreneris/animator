@@ -338,17 +338,17 @@ def fg_3e(k, cam, tt, n, box):
 
 
 # ------------------------------------------------------------------ 3F: "Different chair." (round 2's staging)
-SOF3F = 300                                                 # round 9: she peeks back in from the left edge (was 410, behind Mom: "a floating head")
+SOF3F = 290                                                 # round 12 (Tomas: "is she pinned to the wall?"): Mom stands ~30 from the wall, so nobody fits behind her; Sofía is back on the floor beside her, at the left edge
 def r_mom(k, o, t, tt, n):
     dp.ceo_chair(k, THR, CH[1], CH[2])                     # on its mark, to her right as in 3E (she stands beside it)
     after = tt - (V7.AT["4.3"] + len(V7.WAV["4.3"]) / float(V7.SR))
     hp.reset("palm", "palm")
     if after < 0:                                           # frozen; her eyes go up to the price
         lk = (0.2, -0.2) if t < 0.35 else (0.55, -0.7)
-        ds.scs.sofia(k, SOF3F, F - 40, dl.SS * 0.92, "show", "horrified", look=lk, lean=0.14, tablet_kind="none")
+        ds.scs.sofia(k, SOF3F, F + 4, dl.SS, "show", "horrified", look=lk, lean=0.14, tablet_kind="none")
     else:                                                   # after the line: flat, her eyes slide to Mom
         u = min(1.0, after / 0.17)
-        ds.scs.sofia(k, SOF3F, F - 40, dl.SS * 0.92, "show", "deadpan", look=(0.55 + 0.45 * u, -0.7 + 0.9 * u), lean=0.14 - 0.10 * u, tablet_kind="none")
+        ds.scs.sofia(k, SOF3F, F + 4, dl.SS, "show", "deadpan", look=(0.55 + 0.45 * u, -0.7 + 0.9 * u), lean=0.14 - 0.10 * u, tablet_kind="none")
     hp.reset("quiet", "fist")
     m = sb.mfs.mom(k, MOMX, F + 8, dl.MS, "wipe", "sweet", look=(0.5, 0.9), mouth=code("4.3", tt))
     V7.scrub(k, m["hands"][1][0], m["hands"][1][1], n)
@@ -594,7 +594,7 @@ EXITS = {("4.2", "sofia"), ("4.3", "sofia")}                # leaving past the e
 
 SET_MOVES = {("4.2", "throne"): 12}                          # set_gate: the throne's jolt when she leaps off it
 SET_AIR = {("4.2", "sofia")}                                # set_gate: off the floor on purpose (the leap)
-SET_WALKS = {("4.2", "4.3", "sofia")}                       # set_gate: she leapt out of the frame (4.2) and peeks back in, further back, behind Mom (4.3)
+SET_WALKS = {("4.2", "4.3", "sofia")}                       # set_gate: she leapt out of the frame (4.2) and is back at its left edge, beside Mom (4.3)
 
 
 def zone_faults(rect, what):
