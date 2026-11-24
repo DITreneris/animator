@@ -695,6 +695,8 @@ def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
                 c.set_source(g); c.new_path(); c.arc(px_ + dx_ * r_, py_ + dy_ * r_, r_ * q, 0, 2 * math.pi); c.fill()
     for j, (x, a) in enumerate(KNIFE_AT[:knives]):          # blades in the boards round her feet
         dp = (0, 12, -6, 16, 4)[j]                           # v19: each at its own depth and angle
+        c.save(); c.translate(x + 6, 708 + (j % 2) * 4); c.scale(20, 4); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgba(0, 0, 0, 0.5); c.fill()            # v20: its shadow on the boards, where it went in
         c.save(); c.rectangle(-100, -100, 800, 806 + (j % 2) * 4); c.clip()    # the point is in the wood: nothing of it below the boards' line
         knife(c, x, 676 + (j % 2) * 4 + dp, a + math.pi, 2.0); c.restore()
 
@@ -1075,7 +1077,7 @@ def checks(sh, heads):
     return [p for p in probs if (sh["id"], p) not in KNOWN]
 
 
-DUR = {"6.0": 3.6, "6.05": 0.9, "6.07": 1.9, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
+DUR = {"6.0": 3.6, "6.05": 0.9, "6.07": 2.33, "6.2": 1.6, "1.2": 2.3, "2.4": 4.6, "5.3": 4.6, "4.3": 2.9, "6.3": 2.4, "6.6": 2.3, "7.4": 2.0, "7.5": 2.8, "8.1": 3.6}   # rough v2: 2 s from the stage to the office                                         # board v2: 5.2 cut, its second to the lift
 
 
 def _timing():

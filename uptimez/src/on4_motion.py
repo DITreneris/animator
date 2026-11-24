@@ -676,16 +676,50 @@ TADA = oc.pm.ik(-1, -118, -292) + oc.pm.ik(1, 118, -292)      # both arms up and
 FLOAT = oc.pm.ik(-1, -126, -274) + oc.pm.ik(1, 122, -214)     # v14: one arm higher than the other
 
 
-def _pam(k, p, sx=1.0, sy=1.0, rot=0.0):
-    """her figure with a squash (sx, sy) and a turn about her feet: the rig has no knees, so weight is shown by the whole
-    body (review of the stills, 24 Nov)"""
+KNEE = [None]
+
+
+def _knee_legs(k, seed, stance=1.0):
+    """Pam-Cat's legs with knees (v16, opt-in through _pam(knee=...); her own pam_xmas._legs is untouched). The method is
+    dh_poses._leg's: a thigh and a shin along hip, knee, ankle, a round knee. KNEE[0] = dict(drop, l, r): the hips come
+    down by `drop` body units; each leg (dx, lift, dir): the ankle moved sideways and lifted, the knee to its dir side."""
+    px = oc.px
+    c = k.c
+    kn = KNEE[0]; D = kn.get("drop", 0.0)
+    L = (-12) - (px.HEM - 6); half = L / 2.0
+    for side, key in ((-1, "l"), (1, "r")):
+        dx, lift, dr = kn.get(key, (0, 0, side))
+        hip = (side * 15, px.HEM - 6); ank = (side * 15 * stance + dx, -12 - D - lift)
+        vx, vy = ank[0] - hip[0], ank[1] - hip[1]
+        d = min(math.hypot(vx, vy), L - 0.01)
+        h = math.sqrt(max(0.0, half * half - (d / 2) ** 2))
+        mx, my = hip[0] + vx / 2, hip[1] + vy / 2
+        n = math.hypot(vx, vy) or 1.0
+        knee = (mx + dr * h * (vy / n), my - dr * h * (vx / n))
+        for (ax, ay), (bx, by), w in ((hip, knee, 23), (knee, ank, 20)):
+            ang = math.atan2(by - ay, bx - ax); nx, ny = -math.sin(ang) * w / 2, math.cos(ang) * w / 2
+            px.cut(k, [(ax + nx, ay + ny), (bx + nx, by + ny), (bx - nx, by - ny), (ax - nx, ay - ny)], px.TROUSERS, shadow=False, lw=1.8)
+        px.ellipse(k, knee[0], knee[1], 11, 11, px.TROUSERS, seed + 60 + side, shadow=False, lw=1.8)
+        o = 1 if side > 0 else -1
+        px.ellipse(k, ank[0] + o * 3, ank[1] + 6, 15, 8, px.TRAINER, seed + 70 + side * 15, lw=2)
+
+
+def _pam(k, p, sx=1.0, sy=1.0, rot=0.0, knee=None):
+    """her figure with a squash (sx, sy) and a turn about her feet; knee=dict(drop, l, r): bent legs (see _knee_legs)."""
     who, a, kw = p
     c = k.c
-    c.save(); c.translate(a[0], a[1]); c.rotate(rot); c.scale(sx, sy); c.translate(-a[0], -a[1])
-    o = sc.draw_cast(k, [p])["pam_cat"]
+    D = (knee or {}).get("drop", 0.0) * a[2]
+    c.save(); c.translate(a[0], a[1]); c.rotate(rot); c.scale(sx, sy); c.translate(-a[0], -a[1] + D)
+    old = oc.px._legs
+    if knee:
+        KNEE[0] = knee; oc.px._legs = _knee_legs
+    try:
+        o = sc.draw_cast(k, [p])["pam_cat"]
+    finally:
+        oc.px._legs = old; KNEE[0] = None
     c.restore()
     def tr(pt):
-        dx, dy = (pt[0] - a[0]) * sx, (pt[1] - a[1]) * sy
+        dx, dy = (pt[0] - a[0]) * sx, (pt[1] + D - a[1]) * sy
         return (a[0] + dx * math.cos(rot) - dy * math.sin(rot), a[1] + dx * math.sin(rot) + dy * math.cos(rot))
     return dict(head=tr(o["head"]), hands=[tr(h) for h in o["hands"]])
 
@@ -712,12 +746,23 @@ def _jet(c, x0, y0, L, i):
         for pt in up:
             c.line_to(*pt)
         tipx = x0 + L * ln; tipy = y0 - 46 * ln * k_
-        for q in (-0.8, -0.3, 0.25, 0.75):                   # torn tongues at its end
-            c.line_to(tipx + (30 + 40 * r.random()) * w, tipy + q * 100 * w * k_); c.line_to(tipx - 14 * w, tipy + (q + 0.22) * 100 * w * k_)
+        q = -0.95
+        while q < 0.8:                                       # v16: its end in licks of every length, none alike
+            dq = 0.16 + 0.34 * r.random()
+            c.curve_to(tipx + 10 * w, tipy + (q + dq * 0.2) * 100 * w * k_, tipx + (20 + 95 * r.random()) * w * k_, tipy + (q + dq * 0.3) * 100 * w * k_,
+                       tipx + (30 + 110 * r.random()) * w * k_, tipy + (q + dq * 0.55 - 0.1) * 100 * w * k_)
+            c.line_to(tipx - (4 + 22 * r.random()) * w, tipy + (q + dq) * 100 * w * k_)
+            q += dq
         for pt in reversed(dn):
             c.line_to(*pt)
         c.close_path(); c.set_source_rgb(*col); c.fill()
     r = random.Random(i)
+    if k_ > 0.6:                                             # two flames torn off its end
+        for j in range(2):
+            fx_, fy_ = x0 + L * (1.12 + 0.12 * j) , y0 - 46 * k_ - 60 + 110 * j + 20 * r.random()
+            for rr, col in ((15 - 4 * j, st.NEON), (8 - 2 * j, st.GOLD)):
+                c.new_path(); c.move_to(fx_ - rr, fy_); c.curve_to(fx_ - rr, fy_ - rr, fx_ + rr * 0.4, fy_ - rr * 0.8, fx_ + rr * 1.6, fy_ - rr * 1.4)
+                c.curve_to(fx_ + rr, fy_ - rr * 0.2, fx_ + rr, fy_ + rr * 0.8, fx_, fy_ + rr * 0.8); c.close_path(); c.set_source_rgb(*col); c.fill()
     for j in range(9):                                       # sparks
         u = r.random()
         c.new_path(); c.arc(x0 + L * (0.3 + 0.85 * u), y0 - 30 - 150 * u * r.random() + 90 * (r.random() - 0.3), 2.2 + 2 * r.random(), 0, 2 * math.pi)
@@ -744,40 +789,46 @@ def t9():
     X, Y, S_ = A_X, A_Y, A_S
     def f(i):
         cam = (290, 560, 1.4)
-        land = 0; teeth = False; scorch = 0.0; sx = sy = 1.0; rot = 0.0
+        land = 0; teeth = False; scorch = 0.0; sx = sy = 1.0; rot = 0.0; kn = None
         if i < 9:                                            # 1: the knives up
             up = i % 4 < 2
             arms = oc.pm.ik(-1, -84, -306 if up else -236) + oc.pm.ik(1, 84, -236 if up else -306)
             pam = P("pam_cat", X, Y, S_, pose(arms, ("relax_s", "relax_s")), "proud", (0.0, -0.9), rim=True)
-            sy = 1.0 + (0.02 if up else -0.02)
+            sy = 1.0; kn = dict(drop=6 if up else 0)                  # v16: she gives at the knees with each throw
         elif i < 11:                                         # they come down beside her; her head back, the mouth open for the last
             land = (i - 8) * 2; teeth = i == 10
-            pam = P("pam_cat", X, Y, S_, pose(lerp(HERO, TADA, 0.4), ("relax_s", "relax_s")), "approve", (0.0, -1.0), rim=True); rot = -0.06
+            pam = P("pam_cat", X, Y, S_, pose(lerp(HERO, TADA, 0.4), ("relax_s", "relax_s")), "approve", (0.0, -1.0), rim=True); rot = -0.06; kn = dict(drop=10)
         elif i < 14:                                         # the bow: arms up and out, the knife in her teeth
             land = 4; teeth = True
-            pam = P("pam_cat", X, Y, S_, pose(TADA, ("relax_s", "relax_s")), "proud", (0.3, -0.3), rim=True); sy = 1.03 if i == 11 else 1.0
+            pam = P("pam_cat", X, Y, S_, pose(TADA, ("relax_s", "relax_s")), "proud", (0.3, -0.3), rim=True); rot = 0.05; kn = dict(drop=16 if i == 11 else 8, l=(-6, 0, -1), r=(6, 0, 1))   # the bow: a small curtsey, her head tipped by the knife's weight
         elif i < 17:                                         # 2: the torch up, the breath in: she rocks back
             land = 5; teeth = False                        # she has spat the fifth into the boards
             t = (i - 13) / 3.0
             arms = oc.pm.ik(-1, -40, oc.BT + 60) + oc.pm.ik(1, 84, -292)
-            pam = P("pam_cat", X, Y, S_, pose(arms, ("fist", "fist")), "proud", (0.6, -1.0), rim=True); rot = -0.17 * t; sy = 1.0 + 0.03 * t
+            pam = P("pam_cat", X, Y, S_, pose(arms, ("fist", "fist")), "proud", (0.6, -1.0), rim=True); rot = -0.17 * t; kn = dict(drop=8 * t, r=(10 * t, 0, 1))
         elif i < 25:                                         # forward with it
             land = 5
             arms = oc.pm.ik(-1, -40, oc.BT + 60) + oc.pm.ik(1, 84, -292)
-            pam = P("pam_cat", X, Y, S_, pose(arms, ("fist", "fist")), "approve", (0.9, -0.2), rim=True); rot = 0.15 + (0.02 if i % 2 else 0); sy = 0.97
+            pam = P("pam_cat", X, Y, S_, pose(arms, ("fist", "fist")), "approve", (0.9, -0.2), rim=True); rot = 0.13 + (0.02 if i % 2 else 0); kn = dict(drop=14, l=(-16, 0, -1), r=(14, 0, 1))      # a lunge into it
             scorch = max(0.0, min(1.0, (i - 21) / 3.0))
         elif i < 28:                                         # the bow
             land = 5; scorch = 1.0
-            pam = P("pam_cat", X, Y, S_, pose(TADA, ("fist", "fist")), "proud", (0.3, -0.3), rim=True); sy = 1.03 if i == 25 else 1.0
+            pam = P("pam_cat", X, Y, S_, pose(TADA, ("fist", "fist")), "proud", (0.3, -0.3), rim=True); kn = dict(drop=16 if i == 25 else 8, l=(-6, 0, -1), r=(6, 0, 1))
         else:                                                # 3: off the boards
             t = ease(min(1.0, (i - 28) / 8.0)); land = 5; scorch = 1.0
             pam = P("pam_cat", X, Y - A_RISE * t, S_, pose(lerp(HERO, FLOAT, t), ("relax_s", "relax_s")), "proud", (0.0, -0.8), rim=True)
             rot = (-0.20, -0.26, -0.12, 0.16, 0.24, 0.10, -0.06, 0.03)[i - 28] if i < 36 else 0.05 + 0.03 * math.sin(i * 0.6)   # v15: off balance, over, back, found
+            kn = dict(drop=0, r=(8 * t, 44 * t, 1), l=(-4 * t, 6 * t, -1))      # v16: one knee drawn up, the other leg hanging
             cam = (290, 560 - 110 * t, 1.4)
         def after(k):
             c = k.c
             sc.stage_marks(k, knives=land, scorch=scorch, t=i)
-            pts = _pam(k, pam, sx, sy, rot)
+            if 14 <= i < 28:                                 # the torch's shaft first, so her fist closes over it
+                c.push_group(); p0 = _pam(k, pam, sx, sy, rot, kn); c.pop_group()
+                tx, ty = p0["hands"][1]
+                c.set_source_rgb(0.24, 0.24, 0.25); c.set_line_width(9); c.set_line_cap(1); c.move_to(tx - 3, ty + 26); c.line_to(tx + 5, ty - 50); c.stroke()
+                c.set_source_rgb(*INK); c.rectangle(tx - 6, ty - 66, 22, 18); c.fill()
+            pts = _pam(k, pam, sx, sy, rot, kn)
             sc._spot_on(k)
             hx, hy = pts["head"]
             if i < 9:
@@ -794,20 +845,23 @@ def t9():
                 if not teeth:
                     sc.knife(c, hx + 6, hy - 150, math.pi, 2.0)          # the fifth, straight down at her
             if teeth:
-                gy = hy + 36 * S_ / 0.86                              # v15: gripped by the blade just past the guard: the handle out one side, the blade the other, teeth on it
-                sc.knife(c, hx - 16, gy, math.pi / 2, 1.9)
+                gy = hy + 38                                          # v16: bitten: her mouth dark round the blade, the top teeth on it, the handle out one side
+                c.save(); c.translate(hx, gy); c.rotate(rot + 0.10)
+                c.new_path(); c.save(); c.scale(15, 10); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.set_source_rgb(0.10, 0.05, 0.06); c.fill()
+                sc.knife(c, -20, 2, math.pi / 2, 1.9)
                 c.set_source_rgb(0.99, 0.99, 0.97)
-                for tx_ in (-7, 3):
-                    c.rectangle(hx + tx_, gy - 12, 8, 6)                  # her upper teeth, biting down on the flat of it
-                c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.2); c.stroke()
+                for tx_ in (-10, -3, 4):
+                    c.rectangle(tx_, -8, 6, 7)
+                c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.0); c.stroke()
+                c.set_source_rgb(0.72, 0.30, 0.34); c.set_line_width(3)   # her lips over them
+                c.new_path(); c.arc(0, -2, 15, math.pi * 1.12, math.pi * 1.88); c.stroke()
+                c.restore()
             if 14 <= i < 28:
                 tx, ty = pts["hands"][1]
-                c.set_source_rgb(0.20, 0.20, 0.21); c.set_line_width(7); c.move_to(tx, ty + 14); c.line_to(tx + 5, ty - 44); c.stroke()
-                c.set_source_rgb(*INK); c.rectangle(tx - 3, ty - 56, 16, 14); c.fill()
-                _jet(c, tx + 5, ty - 52, -1, i)
-                for rr, col in ((17 + 3 * (i % 2), st.NEON), (10, st.GOLD)):                 # the torch's own flame, a drop
-                    c.new_path(); c.move_to(tx + 5 - rr * 0.7, ty - 56); c.curve_to(tx + 5 - rr, ty - 56 - rr, tx + 5, ty - 56 - rr * 1.3, tx + 5 + 2, ty - 56 - rr * 2.2)
-                    c.curve_to(tx + 5 + rr * 0.6, ty - 56 - rr * 1.2, tx + 5 + rr, ty - 56 - rr * 0.6, tx + 5 + rr * 0.7, ty - 56); c.close_path(); c.set_source_rgb(*col); c.fill()
+                for rr, col in ((22 + 3 * (i % 2), st.NEON), (13, st.GOLD), (5, (1.0, 0.97, 0.86))):   # the torch's own flame: a quarter bigger
+                    bx_, by_ = tx + 5, ty - 66
+                    c.new_path(); c.move_to(bx_ - rr * 0.7, by_); c.curve_to(bx_ - rr, by_ - rr, bx_, by_ - rr * 1.3, bx_ + 2, by_ - rr * 2.2)
+                    c.curve_to(bx_ + rr * 0.6, by_ - rr * 1.2, bx_ + rr, by_ - rr * 0.6, bx_ + rr * 0.7, by_); c.close_path(); c.set_source_rgb(*col); c.fill()
             if 17 <= i < 25:
                 grow = (0.10, 0.0, 0.45, 0.9, 1.0, 1.0, 0.95, 0.0)[i - 17]   # v15: a small puff, nothing, then all of it, then gone
                 _jet(c, hx + 24, hy + 36, 310 * grow, i)
@@ -828,6 +882,8 @@ def t9():
             out = draw(shot("6.0", cam=cam, cast=[], after=after, protect=()))
             if 19 <= i < 24:                                 # the fire's light on her face and glove
                 out = _warm(out, 300, 400, 230, 0.34)
+            elif 14 <= i < 28:                               # the torch's: her hand, her cheek
+                out = _warm(out, 380, 330, 120, 0.22)
             return out
         finally:
             sc.MARKS[0] = True
@@ -855,49 +911,63 @@ def t10():
 
 
 def t11():
-    """6.07, 23 drawings, 1.9 s, v15 (no squashing: the rig has no knees, and a pressed figure read as a digital squash):
-    she hangs, waiting; her eyes cross the room; the arms sink. Nothing. She drops, lands on her feet, sways, and
-    goes over forward, flat on her face on the boards: dust. Then she comes up off them stiff as a plank, as she did
-    at the club's door."""
+    """6.07, 28 drawings, 2.33 s, v16 (knees): she hangs, waiting; her eyes cross the room; the arms sink, the drawn-up
+    knee comes down. Nothing. She drops: lands deep in her knees, arms out; one knee gives, a hand goes down for the
+    boards and misses; she sits down hard, legs out: dust. Then up over one knee, a hand on it; she stands, brushes
+    her coat off twice as if nothing had happened, and is ready."""
     X, Y, S_ = A_X, A_Y, A_S
+    LOW = oc.pm.ik(-1, -110, -150) + oc.pm.ik(1, 110, -150)
+    REACH = oc.pm.ik(-1, -96, -250) + oc.pm.ik(1, 128, -96)
+    BRUSH = (oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 24, -190), oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 44, -150))
     def f(i):
-        rot = 0.0; dust = 0; sy = 1.0
-        if i < 8:                                            # hanging; the smile goes, the arms sink
+        rot = 0.0; dust = 0; kn = None; cam = (290, 560, 1.4); h = 0; dxp = 0
+        if i < 8:                                            # hanging; the smile goes; arms and knee come down
             look = ((-0.9, 0), (-0.9, 0), (0.9, 0), (0.9, 0), (0, 0.2), (0, 0.2), (0, 0.6), (0, 0.9))[i]
-            arms = lerp(FLOAT, HERO, max(0, i - 3) / 5.0)
-            pam = P("pam_cat", X, Y - A_RISE + 3 * math.sin(i * 0.9), S_, pose(arms, ("relax_s", "relax_s")), "proud" if i < 2 else ("hopeful" if i < 5 else "doubt"), look, rim=True)
-            rot = 0.05; cam = (290, 450, 1.4); h = 1.0
-        elif i < 10:                                         # down: the arms left behind above her
+            u = max(0, i - 3) / 5.0
+            pam = P("pam_cat", X, Y - A_RISE + 3 * math.sin(i * 0.9), S_, pose(lerp(FLOAT, HERO, u), ("relax_s", "relax_s")), "proud" if i < 2 else ("hopeful" if i < 5 else "doubt"), look, rim=True)
+            rot = 0.05; cam = (290, 450, 1.4); h = 1.0; kn = dict(drop=0, r=(8 * (1 - u), 44 * (1 - u), 1), l=(-4 * (1 - u), 6 * (1 - u), -1))
+        elif i < 10:                                         # down: arms left above her, legs trailing
             t = (i - 7) / 2.0
             pam = P("pam_cat", X, Y - A_RISE * (1 - t * t), S_, pose(TADA, ("relax_s", "relax_s")), "doubt", (0, 1), rim=True)
-            sy = 1.05; cam = (290, 450 + 110 * t, 1.4); h = 1 - t
-        elif i < 14:                                         # on her feet... and over
-            rot = (-0.08, 0.10, 0.55, 1.20)[i - 10]
-            pam = P("pam_cat", X - 40, Y - (0, 0, 10, 24)[i - 10], S_, pose(lerp(HERO, TADA, 0.5 if i < 12 else 0.9), ("relax_s", "relax_s")), "doubt", (0.6, 0.8), rim=True)
-            cam = (290, 560, 1.4); h = 0
-        elif i < 17:                                         # flat on her face
-            rot = 1.50
-            pam = P("pam_cat", X - 40, Y - 28, S_, pose(TADA, ("relax_s", "relax_s")), "fade", (0, 1), rim=True)
-            cam = (290, 560 + (8 if i == 14 else 0), 1.4); h = 0; dust = 3 - (i - 14)
-        elif i < 21:                                         # up, stiff as a plank
-            t = ease((i - 16) / 4.0)
-            rot = 1.50 * (1 - t)
-            pam = P("pam_cat", X - 40 + 40 * t, Y - 28 * (1 - t), S_, "hero", "fade", (0.2, 0.5), rim=True); cam = (290, 560, 1.4); h = 0
-        else:                                                # her hand to her coat
-            pam = P("pam_cat", X, Y, S_, "hero", "peer", (0.3, 0.3), rim=True); cam = (290, 560, 1.4); h = 0
+            cam = (290, 450 + 110 * t, 1.4); h = 1 - t; kn = dict(drop=0, l=(-6, 10, -1), r=(6, 16, 1))
+        elif i < 12:                                         # the boards: deep in her knees, arms out
+            d = (44, 54)[i - 10]
+            pam = P("pam_cat", X, Y, S_, pose(LOW, ("relax_s", "relax_s")), "doubt", (0, 0.9), rim=True)
+            kn = dict(drop=d, l=(-16, 0, -1), r=(16, 0, 1)); cam = (290, 560 + (8 if i == 10 else 0), 1.4); dust = 2 if i == 10 else 1
+        elif i < 15:                                         # one knee gives; a hand goes down for the boards
+            j = i - 12
+            rot = (0.10, 0.26, 0.44)[j]
+            pam = P("pam_cat", X, Y, S_, pose(lerp(LOW, REACH, (0.5, 0.9, 1.0)[j]), ("relax_s", "relax_s")), "doubt", (0.8, 0.9), rim=True)
+            kn = dict(drop=(62, 78, 92)[j], l=(-10, 0, -1), r=((30, 52, 70)[j], 0, 1))
+        elif i < 18:                                         # sat down hard, legs out in front of her
+            j = i - 15
+            rot = 0.0; dxp = 34
+            pam = P("pam_cat", X + dxp, Y, S_, pose(LOW, ("relax_s", "relax_s")), "fade", (0, 1), rim=True)
+            kn = dict(drop=100 - (4 if j == 0 else 0), l=(-58, 0, -1), r=(62, 0, 1)); dust = 3 - j; cam = (290, 560 + (8 if j == 0 else 0), 1.4)
+        elif i < 22:                                         # up over one knee, a hand on it
+            t = (i - 17) / 4.0
+            pam = P("pam_cat", X + 34 * (1 - t), Y, S_, pose(lerp(LOW, HERO, t), ("relax_s", "relax_s")), "fade", (0.2, 0.6), rim=True)
+            kn = dict(drop=100 * (1 - t) ** 1.4, l=(-40 * (1 - t), 0, -1), r=(30 * (1 - t), 0, 1)); rot = -0.08 * math.sin(t * math.pi)
+        elif i < 24:
+            pam = P("pam_cat", X, Y, S_, "hero", "fade", (0.2, 0.3), rim=True); kn = dict(drop=4 if i == 22 else 0)
+        elif i < 27:                                         # she brushes her coat off: nothing happened
+            pam = P("pam_cat", X, Y, S_, pose(BRUSH[i % 2], ("relax_s", "flat")), "peer", (0.5, 0.8), rim=True)
+        else:
+            pam = P("pam_cat", X, Y, S_, "hero", "peer", (0.3, 0.3), rim=True)
         def after(k):
             c = k.c
-            pts = _pam(k, pam, 1.0, sy, rot); sc._spot_on(k)
+            _pam(k, pam, 1.0, 1.0, rot, kn); sc._spot_on(k)
             if h > 0:
                 c.save(); c.translate(X, Y + 4); c.scale(36 + 34 * (1 - h), 5 + 4 * (1 - h)); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
                 c.set_source_rgba(0, 0, 0, 0.55); c.fill()
-            if dust > 0:                                     # dust off the boards where her face met them
-                hx, hy = pts["head"]; u = (3 - dust) / 3.0
-                for j in range(5):
-                    c.new_path(); c.arc(hx - 30 + j * 26 + 10 * u * (j - 2), Y - 8 - 18 * u - (j % 2) * 10, 9 + 10 * u, 0, 2 * math.pi)
-                    c.set_source_rgba(0.80, 0.80, 0.78, 0.5 * (1 - u * 0.8)); c.fill()
+            if dust > 0:                                     # dust off the boards
+                u = (3 - dust) / 3.0
+                for sgn in (-1, 1):
+                    for j in range(3):
+                        c.new_path(); c.arc(X + dxp + sgn * (60 + 34 * u + j * 22), Y - 8 - 16 * u - (j % 2) * 9, 9 + 10 * u, 0, 2 * math.pi)
+                        c.set_source_rgba(0.80, 0.80, 0.78, 0.5 * (1 - u * 0.8)); c.fill()
         return draw(shot("6.07", cam=cam, cast=[], after=after, protect=()))
-    return [f(i) for i in range(23)]
+    return [f(i) for i in range(28)]
 
 
 TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7, "T8": t8, "T9": t9, "T10": t10, "T11": t11}
