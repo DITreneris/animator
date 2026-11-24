@@ -1168,6 +1168,8 @@ def _render(sh, scale=1):
             lit(c2)
         else:
             ons.vignette(c2, 0.55)
+        if sh["loc"] == "hall":                              # (24 Nov) the neon's red light on the room, in the shot's camera
+            c2.save(); _apply(c2, sh["cam"]); cl.spill(c2); c2.restore()
         for dx_, dy_, r_ in KEYS:                            # the faces' key light, after the dark, so it lifts them out of it
             x_, y_ = c2.device_to_user(dx_, dy_); r_ = c2.device_to_user_distance(r_, 0)[0]
             g = cairo.RadialGradient(x_, y_, r_ * 0.2, x_, y_, r_ * 1.5)

@@ -232,7 +232,7 @@ def sound(tm, d, total):
             for i in (xc.NR + 20, xc.NR + 23):                                                       # GO, to the car: after Father's line
                 whistle(R(i), 0.16, 0.07)
             for q in range(6):                                                                       # each bill lands on her
-                put(fx, rs(so.swish(0.07), so.SR), B(q * 1.6 + 9), 0.40)
+                put(fx, rs(so.swish(0.07), so.SR), B(q * 1.6 + 9 + xc.B_BILL0[0]), 0.40)
             for j, i in enumerate((1, 3, 5, 7, 9)):                                                  # the two bodyguards walk in
                 put(fx, rs(so.thump(), so.SR), G(i), 0.40 if j % 2 else 0.55)
             for q in range(6):                                                                       # he picks them up, one by one
