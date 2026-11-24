@@ -970,7 +970,55 @@ def t11():
     return [f(i) for i in range(28)]
 
 
-TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7, "T8": t8, "T9": t9, "T10": t10, "T11": t11}
+# ---- T12 ----------------------------------------------------------------------------------------------------------------
+def t12():
+    """4.4, v17 (Tomas: a POV of her going in): her eyes. Through the lit arch, walking (the camera bobs on her steps),
+    down the passage to its far opening; the light fills the frame; her black glove parts a velvet curtain; the hall
+    ahead, nearer with each step: the booth, the game, the stage at the end. Nobody turns. 30 drawings, 2.5 s."""
+    import hands_ps as hp
+    import on4_club as cl
+    fr = []
+    for i in range(14):                                      # the passage
+        u = i / 13.0
+        z = 1.45 * (5.2 ** (u ** 1.6))                      # from 4.3's own framing (at 1.0 the set's bottom edge showed)
+        bob = 5 * math.sin(i * math.pi / 3) / z
+        cy = 545 + 50 * u
+        s_ = draw(shot("4.3", cam=(270, cy + bob, z), cast=[], protect=()))
+        if i >= 11:                                          # the light fills it
+            c = cairo.Context(s_); c.set_source_rgba(1, 1, 0.96, (i - 10) / 4.0); c.paint()
+        fr.append(s_)
+    for i in range(16):                                      # the hall
+        u = i / 15.0
+        z = 1.0 + 0.32 * u
+        bob = 6 * math.sin((i + 14) * math.pi / 3)
+        op = min(1.0, i / 5.0)                               # the curtain parts
+        def after(k, op=op, i=i):
+            c = k.c
+            if op < 1.0:
+                for sgn in (-1, 1):                          # the velvet, dark, its folds catching the hall's light
+                    x0 = 270 + sgn * 270 * op
+                    st.poly(k, [(x0, -40), (x0 + sgn * 330, -40), (x0 + sgn * 330, 1000), (x0, 1000)], (0.06, 0.02, 0.03), 2.0)
+                    for j in range(7):
+                        g = cairo.LinearGradient(x0 + sgn * (8 + j * 44), 0, x0 + sgn * (30 + j * 44), 0)
+                        g.add_color_stop_rgba(0, 0.30, 0.10, 0.13, 0); g.add_color_stop_rgba(0.5, 0.36, 0.12, 0.15, 0.9); g.add_color_stop_rgba(1, 0.30, 0.10, 0.13, 0)
+                        c.set_source(g); c.rectangle(min(x0 + sgn * (8 + j * 44), x0 + sgn * (30 + j * 44)), -40, 22, 1040); c.fill()
+                hx_ = 270 - 270 * op - 6; hy_ = 520                # her arm: the coat's sleeve in from the frame's left edge, the glove on the curtain's edge
+                st.poly(k, [(-30, 690), (-30, 610), (hx_ - 34, hy_ - 20), (hx_ - 22, hy_ + 28)], (0.16, 0.16, 0.17), 2.4)
+                c.set_source_rgb(0.30, 0.30, 0.32); c.set_line_width(3); c.move_to(-30, 640); c.line_to(hx_ - 30, hy_ + 6); c.stroke()
+                kit.ellipse(k, hx_ - 14, hy_ + 4, 26, 30, oc.GLOVE_DARK, 7900, shadow=False, lw=2.4)
+                for fy in (-22, -6, 10, 24):
+                    kit.ellipse(k, hx_ + 12, hy_ + fy, 16, 7, oc.GLOVE_DARK, 7901 + fy, shadow=False, lw=2.0)
+                c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.set_line_width(2.2)               # the hall's light on her glove's edge (black on black otherwise)
+                c.new_path(); c.arc(hx_ - 14, hy_ + 4, 27, -1.9, 1.2); c.stroke()
+                for fy in (-22, -6, 10, 24):
+                    c.new_path(); c.arc(hx_ + 12, hy_ + fy, 17, -1.2, 1.2); c.stroke()
+                c.move_to(-30, 610); c.line_to(hx_ - 34, hy_ - 20); c.stroke()
+        s_ = draw(shot("5.1", cam=(240, 560 + bob, z), after=after, protect=()))
+        fr.append(s_)
+    return fr
+
+
+TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7, "T8": t8, "T9": t9, "T10": t10, "T11": t11, "T12": t12}
 
 
 def build(name):
