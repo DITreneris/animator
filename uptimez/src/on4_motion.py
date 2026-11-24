@@ -552,6 +552,16 @@ def t3():
         for j, ln in enumerate((0.02, 0.06, 0.12, 0.22, 0.36, 0.54, 0.78, 1.06, 1.38)):               # over she goes, slowly, a plank
             fr.append(side(STOPX + 5, go(j), PLANK(ln), mask=0.30))
         thud = len(fr)
+        if LAW[0]:                                           # (the review of the stills, Tomas: the plank stays, it bounces) she lands, comes up a hand's breadth, settles; the raised palm rocks after her
+            LIE = lambda ln, ax, ay: ("up", PX + 45, PF - 14, 0.62, oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, ax, ay), ("relax_s", "palm"), -ln, "doubt", (0.9, -0.6))
+            seq = [(1.50, 50, -128, (0, 7), True), (1.42, 58, -142, (0, -3), False), (1.36, 64, -150, (0, 0), False), (1.44, 56, -136, (0, 0), False),
+                   (1.50, 44, -120, (0, 3), False), (1.47, 53, -131, (0, 0), False), (1.50, 50, -128, (0, 0), False)]
+            for j, (ln, ax, ay, sh, du) in enumerate(seq):
+                fr.append(side(STOPX + 5, go(j), LIE(ln, ax, ay), shake=sh, dust=du))
+            for j in range(3):
+                fr.append(side(STOPX + 5, go(j + 1), DOWN))
+            T3_MARKS.update(toot=12.0 / len(fr), bump=hit / float(len(fr)), thud=thud / float(len(fr)))
+            return fr
         fr.append(side(STOPX + 5, D_GO, DOWN, shake=(0, 7), dust=True))
         fr.append(side(STOPX + 5, D_GO2, DOWN, shake=(0, -3)))
         for j in range(6):
@@ -911,7 +921,8 @@ def t8():
         if i >= 30:                                          # up off the pavement, stiff as a plank, about her heels
             t = ease(min(1.0, (i - 30) / 11.0))
             if i < 44:
-                cast = [P("pam_cat", X0, GYp, 0.50, "hero", "doubt", (0.2, -0.4), lean=-1.45 * (1 - t), rim=True)]
+                over = {42: 0.13, 43: -0.06}.get(int(round(i)), 0.0) if LAW[0] else 0.0     # past upright, back, still (Tomas: the plank rises, with the overshoot)
+                cast = [P("pam_cat", X0, GYp, 0.50, "hero", "doubt", (0.2, -0.4), lean=-1.45 * (1 - t) + over, rim=True)]
             elif i < 51:
                 cast = [P("pam_cat", X0, GYp, 0.50, "mask_fix", "doubt", (-0.4, -0.2), rim=True)]
             else:
@@ -933,7 +944,7 @@ def t8():
                     bill(k, x + 40 + n_ * 4, GYp - 8 - 112 - n_ * 9, 0.5 - 0.3 * n_)
             if i < 30 and LAW[0]:                            # carried and dropped as she fell: the same rig, stiff, her palm still up
                 STOPP_ = oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, 50, -128)
-                sc.draw_cast(k, [P("pam_cat", cx + 70, GYp - 4 + lift, 0.50, pose(STOPP_, ("relax_s", "palm")) if i < 22 else "hero", "doubt", (0.9, -0.6), lean=-1.5 if i < 22 else -1.45, rim=True)])
+                sc.draw_cast(k, [P("pam_cat", cx + 70, GYp - 4 + lift, 0.50, pose(STOPP_, ("relax_s", "palm")) if i < 22 else "hero", "doubt", (0.9, -0.6), lean=(-1.5 + (0.045 * math.sin(i * math.pi / 2.0 - 0.9) if carry else (0.10 if i in (16, 17) else 0.0))) if i < 22 else -1.45, rim=True)])
             elif i < 30:
                 c.save(); c.translate(cx, GYp - 6 + lift); c.scale(0.47, 0.47); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
             if i in (16, 17):                                # dropped

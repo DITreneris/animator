@@ -64,6 +64,58 @@ def don(x, y, pose="stand", face="neutral", look=(0.9, 0.2), **kw):
     return P("don", x, y, dscale(y), pose, face, look, **kw)
 
 
+def plen(pts):
+    return sum(math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(pts, pts[1:]))
+
+
+STRIDE = 60.0                                                # a foot's reach ahead of his middle, in his own units
+
+
+def draw_don(k, d, dist=None, dirn=1):
+    """Don; with dist (how far he has walked, px) he walks on two legs: Office Noir 2's solved walk (on2_motion.don_legs,
+    stride: the foot on the ground stays where it is, the body goes over it and drops as the legs open), on the cop
+    (don_ps.WAIST_Y; his one-block trousers are cleared below the belt)."""
+    import on2_motion as o2
+    import don_ps
+    import don_v4 as dv
+    from kit import cut
+    if dist is None:
+        sc.draw_cast(k, [d]); return
+    who, a, kw = d
+    x, y, s_ = a[0], a[1], a[2]
+    u = dist / (4 * STRIDE * s_)
+    steps = [o2.stride(u, STRIDE, 16.0), o2.stride(u + 0.5, STRIDE, 16.0)]
+    drop = 9.0 * max(abs(steps[0][0]), abs(steps[1][0])) / STRIDE                 # lower with the legs apart
+    c = k.c; w = don_ps.WAIST_Y
+    c.save(); c.translate(x, y); c.scale(s_, s_)
+    for hip, (ah, lift) in sorted(zip((-20, 20), steps), key=lambda q: q[1][1]):      # the lifted leg over the planted one
+        fx = hip * 0.5 + ah * dirn
+        cut(k, [(hip - 22, w + drop - 4), (hip + 22, w + drop - 4), (fx + 17, -lift - 9), (fx - 17, -lift - 9)], dv.KHAKI, shadow=False, lw=2)
+        cut(k, [(fx - dirn * 17, -lift - 13), (fx + dirn * 12, -lift - 13), (fx + dirn * 36, -lift - 5), (fx + dirn * 36, -lift), (fx - dirn * 17, -lift)],
+            (0.24, 0.18, 0.13), shadow=False, lw=1.8)
+    c.restore()
+    d2 = (who, (x, y + drop * s_) + tuple(a[3:]) if False else (x, y + drop * s_, s_) + tuple(a[3:]), kw)
+    c.push_group()
+    sc.draw_cast(k, [d2])
+    c.save(); c.set_operator(cairo.OPERATOR_CLEAR)
+    c.rectangle(x - 52 * s_, y + (w + drop + 2) * s_, 104 * s_, (-w + 16) * s_); c.fill(); c.restore()
+    c.pop_group_to_source(); c.paint()
+
+
+def guard(k, x, y, pose, flip, seed, lean=0.0):
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(lean); c.translate(-x, -y)
+    dc.guard(k, x, y, GS, pose=pose, flip=flip, seed=seed)
+    c.restore()
+
+
+def fist(k, x, y, s_=1.0):
+    """a bodyguard's hand under her: a cuff and a fist"""
+    c = k.c
+    c.set_source_rgb(0.97, 0.97, 0.94); c.rectangle(x - 7 * s_, y + 5 * s_, 14 * s_, 5 * s_); c.fill()
+    kit.ellipse(k, x, y, 9 * s_, 7.5 * s_, dc.SKIN_F, 7900 + int(x) % 50, shadow=False, lw=1.6)
+
+
 def path(pts, t):
     """along a polyline, t 0..1 by length"""
     L = [math.hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(pts, pts[1:])]
@@ -79,31 +131,38 @@ CAM_W = (300, 640, 1.45)
 D_W = (398.0, 694.0)                                         # behind the bonnet, the car between him and us
 
 
+WALK_W = [(170, 596), (330, 604), (420, 640), D_W]
+NW = 22                                                      # drawings he walks for (12 a second): about four steps
+
+
 def tw():
     def f(i):
-        if i < 10:                                           # off the kerb, along the far side of the road, in behind the bonnet
-            x, y = path([(170, 596), (330, 604), (420, 640), D_W], m.ease(i / 9.0))
-            d = don(x, y + bob(i), "stand", "neutral", (0.9, 0.3), lean=0.03 if i % 2 else -0.03)
-        elif i < 28:                                         # his glove along the bonnet, out and back
-            out = (i // 3) % 2 == 0
-            d = don(D_W[0], D_W[1], (-74, 26, 8, 0) if out else (-56, 40, 8, 0), "neutral", (-0.8, 0.7), lean=-0.10 if out else -0.06)
-        elif i < 31:                                         # he straightens, the glove up to his eye
-            d = don(D_W[0], D_W[1], (-20, -150, 8, 0), "neutral", (-0.6, -0.3))
+        dist = None
+        if i < NW:                                           # off the kerb, along the far side of the road, in behind the bonnet
+            t = i / float(NW - 1)
+            x, y = path(WALK_W, t); dist = plen(WALK_W) * t
+            d = don(x, y, "stand", "neutral", (0.9, 0.3))
+        elif i < NW + 18:                                    # his glove along the bonnet, out and back, the elbow working
+            u = 0.5 - 0.5 * math.cos(2 * math.pi * (i - NW) / 6.0)
+            d = don(D_W[0], D_W[1], (-56 - 18 * u, 40 - 14 * u, 8, 0), "neutral", (-0.8, 0.7), lean=-0.06 - 0.04 * u)
+        elif i < NW + 21:                                    # he straightens, the glove up to his eye
+            u = (i - NW - 18) / 3.0
+            d = don(D_W[0], D_W[1], (-56 + 36 * u, 40 - 190 * u, 8, 0), "neutral", (-0.6, -0.3), lean=-0.06 * (1 - u))
         else:                                                # clean
             d = don(D_W[0], D_W[1], (-20, -150, 8, 0), "pleased", (-0.6, -0.3))
-        wave = 14 <= i < 28 and (i // 3) % 2 == 0            # her small wave: the palm that was up
-        pm_ = pam("doubt", (0.9, -0.7), (62, -150) if wave else (50, -128))
+        wv = 0.5 - 0.5 * math.cos(2 * math.pi * (i - NW - 4) / 6.0) if NW + 4 <= i < NW + 16 else 0.0     # her small wave: the palm that was up
+        pm_ = pam("doubt", (0.9, -0.7), (50 + 12 * wv, -128 - 22 * wv))
         def after(k):
             shadow(k, LX - 105, LY_ + 44, 125, 8)
-            if d[1][1] < 640:
+            if d[1][1] < 650:
                 shadow(k, d[1][0], d[1][1] + 2, 70 * d[1][2], 11 * d[1][2])
-            sc.draw_cast(k, [d])                             # Don first: the car hides him below the bonnet
+            draw_don(k, d, dist, 1)                          # Don first: the car hides him below the bonnet
             shadow(k, CX, 728, 160 * S_CAR, 8, 0.5)
             car.side(k, CX, 724, S_CAR)
             sc.draw_cast(k, [pm_])
         return m.draw(m.shot("3.1", loc="C_side", cam=CAM_W, cast=[], protect=(), after=after))
     f = m.lazy(f)
-    return [f(i) for i in range(38)]
+    return [f(i) for i in range(NW + 28)]
 
 
 # ---- R: the rear window --------------------------------------------------------------------------------------------------
@@ -112,55 +171,67 @@ D_R = (866.0, 772.0)                                         # on our side, by t
 WX, WY = CX + 74 * S_CAR, 724 - 86 * S_CAR                   # the rear window's middle
 
 
+WALK_R = [(948, 640), (930, 720), D_R]
+NR = 12
+
+
 def tr():
     def f(i):
-        cx = CX + (0 if i < 31 else ((i - 31) / 5.0) ** 2 * 260)                      # at the end it starts to back away
-        if i < 10:                                           # round the tail to our side
-            x, y = path([(948, 640), (930, 720), D_R], m.ease(i / 9.0))
-            d = don(x, y + bob(i), "stand", "neutral", (-0.9, 0.2), lean=0.03 if i % 2 else -0.03)
-        elif i < 28:                                         # his hand out for it; a look; into his vest
-            d = don(D_R[0], D_R[1], (-70, -10, 8, 0) if i < 16 else (-40, 30, 8, 0), "pleased", (-0.6, -0.5) if i < 22 else (-0.3, 0.6))
+        j = i - NR + 10                                      # the old count, from where he stands
+        cx = CX + (0 if j < 31 else ((j - 31) / 5.0) ** 2 * 260)                      # at the end it starts to back away
+        dist = None
+        if i < NR:                                           # round the tail to our side, on his legs
+            t = i / float(NR - 1)
+            x, y = path(WALK_R, t); dist = plen(WALK_R) * t
+            d = don(x, y, "stand", "neutral", (-0.9, 0.2))
+        elif j < 28:                                         # his hand out for it; a look; into his vest
+            u = min(1.0, max(0.0, (j - 15) / 3.0))
+            d = don(D_R[0], D_R[1], (-70 + 30 * u, -10 + 40 * u, 8, 0), "pleased", (-0.6, -0.5) if j < 22 else (-0.3, 0.6))
         else:                                                # GO: the whistle
-            d = don(D_R[0], D_R[1], "wave", "pleased", (-0.8, -0.2), paddle_ang=0.10 if i % 2 else 0.30, whistle_in=True)
+            d = don(D_R[0], D_R[1], "wave", "pleased", (-0.8, -0.2), paddle_ang=0.20 + 0.10 * math.sin(i * math.pi), whistle_in=True)
         def after(k):
             c = k.c
             shadow(k, cx, 728, 160 * S_CAR, 8, 0.5)
             car.side(k, cx, 724, S_CAR)
             wx = WX + (cx - CX)
-            if i >= 7:                                       # the glass down
+            if j >= 7:                                       # the glass down
                 c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(wx - 36 * S_CAR, 724 - 96 * S_CAR, 72 * S_CAR, 22 * S_CAR); c.fill()
-            if 9 <= i < 27:                                  # the cuff and the ringed hand, toward him
-                c.save(); c.translate(wx, WY + 4); c.scale(-1.5, 1.5); c.translate(-wx, -WY - 4)
+            ox = 10 * max(0.0, 1 - abs(j - 13) / 3.0)        # the hand: out to him with his bill; a flick up on each of hers
+            oy = 0.0
+            for q in range(6):
+                oy -= 9 * max(0.0, 1 - abs(j - (17 + q * 1.5)) / 0.8)
+            if 9 <= j < 27:                                  # the cuff and the ringed hand, toward him
+                c.save(); c.translate(wx + ox, WY + 4 + oy); c.scale(-1.5, 1.5); c.translate(-wx, -WY - 4)
                 st.poly(k, [(wx + 30, WY - 6), (wx - 8, WY - 2), (wx - 6, WY + 12), (wx + 30, WY + 10)], dc.VELVET, 1.6)
                 kit.ellipse(k, wx - 16, WY + 8, 11, 8, dc.SKIN_F, 7801, shadow=False, lw=1.6)
                 c.set_source_rgb(*st.GOLD); c.rectangle(wx - 20, WY + 3, 6, 6); c.fill()
                 c.restore()
             shadow(k, d[1][0], d[1][1] + 2, 70 * d[1][2], 11 * d[1][2])
-            sc.draw_cast(k, [d])
-            hx, hy = wx + 26, WY + 16                        # the ringed hand's fingers
+            draw_don(k, d, dist, -1)
+            hx, hy = wx + 26 + ox, WY + 16 + oy              # the ringed hand's fingers
             dx_, dy_ = d[1][0] - 62, d[1][1] - 150           # his glove
-            if 11 <= i < 27:                                 # his: across, a look, into the vest
-                if i < 15:
-                    t = (i - 11) / 4.0; bill(k, hx + (dx_ - hx) * t, hy + (dy_ - hy) * t, 0.2, 1.5)
-                elif i < 22:
+            if 11 <= j < 27:                                 # his: across, a look, into the vest
+                if j < 15:
+                    t = (j - 11) / 4.0; bill(k, hx + (dx_ - hx) * t, hy + (dy_ - hy) * t, 0.2, 1.5)
+                elif j < 22:
                     bill(k, dx_, dy_, -0.2, 1.5)
                 else:
-                    t = (i - 22) / 5.0; bill(k, dx_ + 40 * t, dy_ + 46 * t, -0.2 - t, 1.5 - 0.6 * t)
-            for j in range(6):                               # hers: up over the roof, away to the left
-                t0 = 17 + j * 1.5
-                if i < t0:
+                    t = (j - 22) / 5.0; bill(k, dx_ + 40 * t, dy_ + 46 * t, -0.2 - t, 1.5 - 0.6 * t)
+            for q in range(6):                               # hers: up over the roof, away to the left
+                t0 = 17 + q * 1.5
+                if j < t0:
                     continue
-                t = (i - t0) / 8.0
-                x = hx - 12 - 330 * t; y = hy - 40 - 230 * math.sin(min(1.0, t) * math.pi * 0.62) + 40 * t * t
-                if x > 520:
-                    bill(k, x, y, 0.4 + j + t * 4, 1.3)
+                t = (j - t0) / 8.0
+                x = hx - 12 - 330 * t; y = WY + 16 - 40 - 230 * math.sin(min(1.0, t) * math.pi * 0.62) + 40 * t * t
+                if x > 560:
+                    bill(k, x, y, 0.4 + q + t * 4, 1.3)
         m.POOL[0] = (700, 630)                              # the light where this shot is: the car's tail, under the lit window
         try:
             return m.draw(m.shot("3.1", loc="C_side", cam=CAM_R, cast=[], protect=(), after=after))
         finally:
             m.POOL[0] = (250, 610)
     f = m.lazy(f)
-    return [f(i) for i in range(36)]
+    return [f(i) for i in range(NR + 26)]
 
 
 # ---- B: the bills on her -------------------------------------------------------------------------------------------------
@@ -205,47 +276,74 @@ G_WALK = garm((-78, co.HIP + 40), (78, co.HIP + 40))
 G_DOWN = lambda side: garm((-40, co.HIP + 96), (78, co.HIP + 40)) if side < 0 else garm((-78, co.HIP + 40), (40, co.HIP + 96))
 G_HOLD = lambda side: garm((-112, co.BT + 20), (78, co.HIP + 40)) if side < 0 else garm((-78, co.HIP + 40), (112, co.BT + 20))
 G_CARRY = garm((-46, co.HIP + 84), (46, co.HIP + 84))
-TAKE, LIFT, GO = 10, 22, 27
+G_WATCH = dc.GUARD_POSE                                      # his hands clasped in front of him: the one who keeps watch
+TAKE, GIVE, POCKET, LIFT, GO = 10, 23, 28, 31, 36
+G_REACH = lambda sd, dn: garm((-40 if sd < 0 else -78, co.HIP + (96 if (sd < 0 and dn) else 40) if sd < 0 else co.HIP + 40),
+                              (40 if sd > 0 else 78, co.HIP + (96 if (sd > 0 and dn) else 40) if sd > 0 else co.HIP + 40))
 
 
 def tg():
+    """Tomas's picks after the review of the stills (24 Nov): two men, two jobs. The one at her head bends and picks the
+    bills up one by one; the one at her heels keeps watch, hands clasped, looking up and down the street; the first
+    hands him half; both pocket it; then both bend, hands under her, and she goes up and away, stiff, swaying."""
     def f(i):
-        go = max(0, i - GO)
+        go = max(0.0, i - GO)
         cdx = -30.0 * go
-        lift = -46.0 * m.ease(min(1.0, max(0.0, (i - LIFT) / 4.0))) + (4 if (go and i % 2) else 0)
+        up = m.ease(min(1.0, max(0.0, (i - LIFT) / 4.0)))
+        lift = -46.0 * up
+        sway = 0.045 * math.sin(i * math.pi / 2.0 - 0.9) if go else 0.0             # she swings behind their steps
+        step = (2.5 * abs(math.sin(i * math.pi / 2.0))) if (go or i < TAKE) else 0.0
         gs = []
         for j in (0, 1):
-            side = -1 if j == 0 else 1                       # which hand works: the one toward her middle
-            if i < TAKE:                                     # in from the right, one after the other
-                t = m.ease(min(1.0, max(0.0, (i - j * 1.5) / 7.5)))
+            if i < TAKE:                                     # in from the right, the collector first
+                t = m.ease(min(1.0, max(0.0, (i - j * 2.0) / 7.5)))
                 x = 520 + j * 90 + (GX[j] - 520 - j * 90) * t
-                gs.append((x, GY + (bob(i, 2.5) if t < 1 else 0), G_WALK))
-            elif i < LIFT:                                   # down for the bills, up with them
-                gs.append((GX[j], GY, G_DOWN(-side) if (i - TAKE) < 4 + j * 2 else G_HOLD(-side)))
-            else:                                            # under her, up, and away
-                gs.append((GX[j] + cdx, GY + (bob(i, 2.5) if go else 0), G_CARRY))
-        pm_ = pam("fade" if i < LIFT else "doubt", (0.3, -0.2) if i < LIFT else (0.9, -0.6), (50, -128), dx=cdx, dy=lift)
+                gs.append([x, GY - (step if t < 1 else 0), G_WALK, 0.0, j == 1])
+            elif i < LIFT:
+                if j == 0:                                   # he bends for each bill, and comes up with it
+                    ph = (i - TAKE) % 2.0
+                    dn = i < GIVE - 1 and ph < 1.0
+                    pose = garm((-84, co.HIP + 30), (44, co.HIP + 100)) if dn else garm((-84, co.HIP + 30), (-40, co.HIP + 30))   # down for one; across to the fan in his other hand
+                    if i >= GIVE:                            # half of it across to the other
+                        pose = garm((-84, co.HIP + 30), (118, co.BT + 70)) if i < POCKET else G_WALK
+                    gs.append([GX[0], GY, pose, 0.16 if dn else 0.03, False])
+                else:                                        # the watch: hands clasped; he looks the other way now and then
+                    look_away = (TAKE + 3 <= i < TAKE + 6) or (TAKE + 9 <= i < TAKE + 11)
+                    pose = G_WATCH if i < GIVE else (garm((-118, co.BT + 70), (78, co.HIP + 40)) if i < POCKET else G_WALK)
+                    gs.append([GX[1], GY, pose, 0.0, not look_away])
+            else:                                            # both bend to her, hands under her, up, and away
+                bend = 0.14 * (1 - up) * (1 if j == 0 else -1)
+                gs.append([GX[j] + cdx, GY - step, G_CARRY, bend, j == 1])
+        arm = (50 + 5 * math.sin(i * math.pi / 2.0 - 1.6), -128 + 8 * math.cos(i * math.pi / 2.0 - 1.6)) if go else (50, -128)
+        arms = oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, arm[0], arm[1])
+        pm_ = P("pam_cat", LX + cdx, LY_ + lift, LS, m.pose(arms, ("relax_s", "palm")), "fade" if i < LIFT else "doubt",
+                (0.3, -0.2) if i < LIFT else (0.9, -0.6), lean=LEAN + sway)
         def after(k):
-            for j, (x, y, a) in enumerate(gs):
-                shadow(k, x, GY + 3, 62 * GS, 8 * GS + 3)
+            for j, g in enumerate(gs):
+                shadow(k, g[0], GY + 3, 62 * GS, 8 * GS + 3)
             if lift > -30:
                 shadow(k, LX - 105 + cdx, LY_ + 44, 125, 8, 0.45 * (1 + lift / 46.0) + 0.1)
-            for j, (x, y, a) in enumerate(gs):
-                dc.guard(k, x, y, GS, pose=a, flip=(j == 1), seed=1600 + j * 40)
+            for j, g in enumerate(gs):
+                guard(k, g[0], g[1], g[2], g[4], 1600 + j * 40, g[3])
+            if up > 0.25:                                    # their hands under her (drawn first: she lies on them): at her shoulders, at her ankles
+                yb = LY_ + lift + 27
+                for hx_ in (LX - 168 + cdx, LX - 128 + cdx, LX - 44 + cdx, LX - 8 + cdx):
+                    fist(k, hx_, yb, 1.0)
             sc.draw_cast(k, [pm_])
-            for j, (bx, by) in enumerate(LAND):              # the bills: on her; then three to each fist, a fan beside his head
-                own = j % 2
-                t = min(1.0, max(0.0, (i - TAKE - 3 - own * 2 - (j // 2) * 1.2) / 3.0))
-                gx_, gy_, _ = gs[own]
-                sd = 1 if own == 0 else -1                   # the fist toward her middle
-                fx_, fy_ = gx_ + sd * 112 * GS, gy_ + (co.BT + 20) * GS - 8 - (j // 2) * 9
-                if i >= LIFT:
-                    continue                                 # into their pockets before they take her
-                x, y, ang = bx + (fx_ - bx) * t, by + (fy_ - by) * t, (0.4 + j) * (1 - t) + (0.4 - 0.3 * (j // 2)) * sd * t
+            f0x, f0y = gs[0][0] - 84 * GS, gs[0][1] + (co.HIP + 30) * GS               # the collector's other hand, low at his side: the fan grows there, clear of his face
+            f1x, f1y = gs[1][0] - 118 * GS, gs[1][1] + (co.BT + 70) * GS                # the watch's hand, out to take his half
+            for j, (bx, by) in enumerate(LAND):              # six bills: off her one by one, a fan in his fist; three across; pocketed
+                if i >= POCKET:
+                    continue
+                t = min(1.0, max(0.0, (i - TAKE - 0.6 - j * 2.0) / 1.2))
+                x, y, ang = bx + (f0x - 6 - bx) * t, by + (f0y - by - j * 4) * t, (0.4 + j) * (1 - t) + (-1.2 + 0.10 * j) * t
+                if i >= GIVE and j % 2:                      # every other one goes across
+                    u = min(1.0, (i - GIVE) / 3.0)
+                    x, y, ang = x + (f1x - x) * u, y + (f1y - (j // 2) * 6 - y) * u, ang * (1 - u) + (-0.4 + 0.12 * j) * u
                 bill(k, x, y, ang, 1.3 - 0.2 * t)
         return m.draw(m.shot("3.1", loc="C_side", cam=CAM_G, cast=[], protect=(), after=after))
     f = m.lazy(f)
-    return [f(i) for i in range(43)]
+    return [f(i) for i in range(52)]
 
 
 TESTS = {"W": m.keys(tw), "R": m.keys(tr), "B": m.keys(tb), "G": m.keys(tg)}
