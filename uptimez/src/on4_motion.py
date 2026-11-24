@@ -238,6 +238,11 @@ def cat_over(s, frames):
     if CAT_SOFT[0] and frames in ("in", "full", "full2", "out"):
         x_, y_, s_ = {"in": (40, 1000, 4.0), "full": (190, 800, 4.6), "full2": (330, 560, 4.2), "out": (450, 340, 3.4)}[frames]
         ct.black_cat(kk, x_, y_, s_, "fall", flip=False)
+        c.save(); c.translate(x_, y_); c.scale(s_, s_)       # (Tomas: "why has the cat one eye?") its face to us: two eyes
+        c.new_path(); c.arc(60, -48, 9.5, 0, 2 * math.pi); c.set_source_rgb(*ct.FUR); c.fill()
+        for ex in (50.5, 63.5):
+            ct._eye(c, ex, -48, 4.4, "open")
+        c.restore()
     elif frames == "in":
         ct.black_cat(kk, 70, 1010, 4.2, "fall", flip=False)
     elif frames in ("full", "full2"):
@@ -414,7 +419,12 @@ def seat3_people(k, hand, env, dad, t=None, give=None, lk2=None, fc="plain", ean
         oc.envelope(k, hx + 4, hy - 12, 1.15)
         c.restore()
         kit.ellipse(k, hx, hy + 4, 15, 12, (0.87, 0.70, 0.58), 7700, shadow=False, lw=2.0)        # his thumb over its edge
-    if env == "coat":
+    if env == "coat" and TUCK[0]:                            # (Tomas: "why does he not put it in? why does he fold it?") it goes in behind his lapel: the envelope, then his jacket's front drawn over it again; eang is how far in (0..1)
+        c.save(); c.translate(cx_ - 2 + 40 * eang, cy_ - 6 + 6 * eang); c.rotate(-0.25); oc.envelope(k, 0, 0, 1.0); c.restore()
+        c.save(); c.rectangle(o["head"][0] + 13, cy_ - 60, 200, 200); c.clip()
+        co.client(k, 200, 728, 0.74, arms, fc, look=lk, roll=False, badge=False)
+        c.restore()
+    elif env == "coat":
         oc.envelope(k, cx_ + 6, cy_ - 8, 1.0)
         st.poly(k, [(cx_ - 22, cy_ + 12), (cx_ + 36, cy_ + 2), (cx_ + 40, cy_ + 40), (cx_ - 18, cy_ + 44)], (0.30, 0.36, 0.26), 2.2)   # his jacket over its lower half
     dx = (1 - dad) * 160                                                                           # Dad's ringed hand on the seat
@@ -493,13 +503,13 @@ def t2():
                 S_.append((KNEE, "hand", 0.0, 1.0, (-0.8, 0.1), "suspicious", -0.13))
             for j in range(5):                               # up to his coat, slower at the end
                 u = ease((j + 1) / 5.0); S_.append((lerp(KNEE, CHEST, u), "hand", 0.0, 1.0, None, "plain", -0.13 * (1 - u)))
-            S_ += [(CHEST, "coat", 0.0, 1.0, None, "plain", 0.0)] * 2
+            S_ += [(CHEST, "coat", 0.0, 1.0, None, "plain", 0.25 if TUCK[0] else 0.0), (CHEST, "coat", 0.0, 1.0, None, "plain", 0.6 if TUCK[0] else 0.0)]
             for j in range(3):
-                S_.append((lerp(CHEST, KNEE, ease((j + 1) / 3.0)), "coat", 0.0, 1.0, None, "plain", 0.0))
+                S_.append((lerp(CHEST, KNEE, ease((j + 1) / 3.0)), "coat", 0.0, 1.0, None, "plain", (0.85, 1.0, 1.0)[j] if TUCK[0] else 0.0))
             n0 = len(S_)
             while len(S_) < 52:                              # he pats the lapel flat; a look across into the dark, pleased
                 j = len(S_) - n0
-                S_.append(((62 + 10 * (1 - abs(math.cos(j * math.pi / 4.0))), co.BT + 150 - 26 * abs(math.sin(j * math.pi / 4.0))), "coat", 0.0, 1.0, None, "confident", 0.0))
+                S_.append(((62 + 10 * (1 - abs(math.cos(j * math.pi / 4.0))), co.BT + 150 - 26 * abs(math.sin(j * math.pi / 4.0))), "coat", 0.0, 1.0, None, "confident", 1.0 if TUCK[0] else 0.0))
             PEEK_DUCK[0] = (n0 - 1) / 12.0; PEEK_BLINK[0] = (grip + 1.5) / 12.0
             T2_MARKS.update(grip=grip / 52.0, coat=(n0 - 8) / 52.0)
             N_ = float(len(S_))
@@ -618,6 +628,7 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+TUCK = [False]
 RING_GOLD = [False]                                          # (24 Nov, Tomas's pick) Dad's ring a plain gold band here: no red stone (the film's red is the envelope's heart, the neon and the fire)
 CAT_SOFT = [False]                                           # (24 Nov, cold test: "a monster") 0:00 the cat leaps across the frame, whole, in four drawings: no lens full of fur, no fangs
 WALK12 = [False]                                             # (24 Nov, Tomas's pick) her cat's walk over the crossing: two strides in twelve drawings (was one in six)
