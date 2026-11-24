@@ -15,7 +15,11 @@ import on4_rough as r
 
 DPS = 24
 SR = r.SR
-VER = "v1"
+import on4_posters as po
+import on4_street as st
+
+VER = "v3"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
+po.ON[0] = True; st.TOWN[0] = True
 OUT = os.path.join(sc.OUT, "on4_film_%s.mp4" % VER)
 MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None),
        ("3.1", "3.2"): ("T3", 0, None), ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("3.6",): ("T8", 0, None),

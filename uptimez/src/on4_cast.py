@@ -58,6 +58,7 @@ CAT_POSES = {   # body units (pm.ik); (left hand, right hand) shapes of hands_ps
     "triumph": ((-8, 0) + pm.ik(1, 62, HY - 80), ("relax_s", "fist")),             # 6.3 the envelope held high, off her ear
 }
 ENV_BIG = [1.0]                    # board v9 (opt-in): 1.25 = the held envelope a quarter bigger
+MASK_TILT = [0.0]                  # (24 Nov, the crash) the half mask knocked askew: radians about the head's middle; 0 draws as before
 MASK_UP_V2 = [False]               # board v9 (opt-in): pushed up, the sleep mask keeps its stitched eyes and sits smaller
 
 
@@ -117,7 +118,7 @@ def half_mask(k, hx, hy, s):
     cross the top and bottom of her eye whites a little, so the eyes read narrower and surer, never as goggles (v1);
     the brows (about 3 above the eyes' top) still show in the holes. Eyes at (+-17, +4) in head units."""
     c = k.c
-    c.save(); c.translate(hx, hy); c.scale(s, s)
+    c.save(); c.translate(hx, hy); c.scale(s, s); c.rotate(MASK_TILT[0])
     c.new_path()
     c.move_to(-54, -22); c.curve_to(-40, -14, -16, -15, 0, -8); c.curve_to(16, -15, 40, -14, 54, -22)      # the flicks
     c.curve_to(46, -6, 40, 12, 28, 16); c.curve_to(16, 18, 6, 15, 0, 10); c.curve_to(-6, 15, -16, 18, -28, 16)

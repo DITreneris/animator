@@ -464,8 +464,15 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+CRASH = [False]                                              # (24 Nov, Tomas's picks) the bump restaged: see t3
+T3_MARKS = {"toot": 12.0 / 32.0, "bump": 21.0 / 32.0}        # where the sounds fall, as fractions of 3.1 + 3.2
+
+
 def t3():
-    """v3: the whole beat from the side, one car. She comes over the crossing toward us; Don, on the far kerb, holds STOP
+    """v24 with CRASH (Tomas's picks, 24 Nov): the car brakes, its nose down, and stops a hair short; a tap; it rocks
+    back. Her mask is knocked askew. A beat: she stands, palm out. Then she goes over slowly, stiff as a plank, in
+    the pose she stood in, and lands (the frame shakes). Don blows his whistle on the tap and waves GO all through.
+    v3: the whole beat from the side, one car. She comes over the crossing toward us; Don, on the far kerb, holds STOP
     out at her side; she stops; he flips it, GO to the car, the toot; the car drives in from the right; the bump."""
     fr = []
     STOPP = oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 96, oc.HY + 30)
@@ -474,7 +481,7 @@ def t3():
     D_EDGE = ((-8, 0, 92, -40), "confused", dict(paddle_side="EDGE", chin=1))
     D_GO = ("wave", "pleased", dict(paddle_side="GO", paddle_ang=0.10, whistle_in=True))
     STOPX = PX + 40 + 170 * CAR_S
-    def side(cx, don, pam, burst=False):
+    def side(cx, don, pam, burst=False, pitch=0.0, shake=(0, 0), mask=0.0, dust=False):
         kind, px, pf, ps, arms, gest, lean, face, look = pam
         dpose, dface, dkw = don
         def beam(k):                                         # v21 (review: "a double silhouette at her legs"): the headlights' beam on the road, under her
@@ -492,13 +499,22 @@ def t3():
             c = k.c
             if kind == "down":
                 c.save(); c.translate(PX, PF - 6); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
+            rx = cx + 112 * CAR_S                                # braking: the nose down about the rear wheel
+            c.save(); c.translate(rx, 724); c.rotate(pitch); c.translate(-rx, -724)
             car.side(k, cx, 724, CAR_S)
+            c.restore()
             if burst:
-                sc._burst(k, PX + 34, PF - 60, 40)
+                sc._burst(k, PX + 34, PF - 60, 40 if not CRASH[0] else 22)
+            if dust:                                             # where she lands: her head, her heels
+                sc._burst(k, PX - 150, PF - 2, 16); sc._burst(k, PX + 120, PF + 2, 12)
         cast = [P("don", 170, 596, 0.42, dpose, dface, (0.9, -0.2), **dkw)]
         if kind == "up":
             cast.append(P("pam_cat", px, pf, ps, pose(arms, gest), face, look, lean=lean))
-        return draw(shot("3.1", loc="C_side", cam=(300, 610, 1.45), cast=cast, protect=(), before=beam, after=after))
+        oc.MASK_TILT[0] = mask
+        try:
+            return draw(shot("3.1", loc="C_side", cam=(300 + shake[0], 610 + shake[1], 1.45), cast=cast, protect=(), before=beam, after=after))
+        finally:
+            oc.MASK_TILT[0] = 0.0
     side = lazy(side)
     OFF = 1200
     for i in range(6):                                       # she comes over the crossing, after the car
@@ -510,6 +526,31 @@ def t3():
     fr.append(side(OFF, D_EDGE, STAND))                      # the flip
     fr += [side(OFF, D_GO, STAND)] * 3                       # GO, the toot, to the car
     FACE = lambda lean, dy, face: ("up", PX + lean * 60, PF + dy, 0.62, STOPP, ("relax_s", "palm"), -lean, face, (1.0, -0.1))
+    if CRASH[0]:
+        D_GO2 = ("wave", "pleased", dict(paddle_side="GO", paddle_ang=0.30, whistle_in=True))
+        go = lambda j: D_GO if j % 2 == 0 else D_GO2             # he waves it on, all through
+        DOWN = ("down", 0, 0, 0, HERO, ("fist", "fist"), 0, "", (0, 0))
+        for j, cx in enumerate((STOPX + 330, STOPX + 230, STOPX + 140)):                             # the car drives in; her palm to it
+            fr.append(side(cx, go(j), FACE(0, 0, "approve")))
+        for j, (dx, pt) in enumerate(((78, -0.012), (38, -0.022), (16, -0.026))):                     # it brakes: the nose goes down
+            fr.append(side(STOPX + dx, go(j + 1), FACE(0, 0, "approve"), pitch=pt))
+        fr.append(side(STOPX + 10, D_GO, FACE(0, 0, "approve"), pitch=-0.012))                        # stopped, a hair short
+        hit = len(fr)
+        fr.append(side(STOPX, D_GO, FACE(0.03, 0, "doubt"), burst=True, shake=(4, 0), mask=0.16))     # the tap (his whistle)
+        fr.append(side(STOPX + 6, D_GO2, FACE(0.02, 0, "doubt"), pitch=0.010, shake=(-2, 0), mask=0.30))   # it rocks back
+        fr.append(side(STOPX + 5, D_GO, FACE(0.0, 0, "doubt"), mask=0.30))
+        for j in range(4):                                                                            # a beat: she stands, palm out, the mask askew
+            fr.append(side(STOPX + 5, go(j + 1), FACE(0.0, 0, "doubt"), mask=0.30))
+        PLANK = lambda ln: ("up", PX + ln * 30, PF - 12 * (ln / 1.38) ** 2, 0.62, STOPP, ("relax_s", "palm"), -ln, "doubt", (1.0, -0.1))   # about her heels; her head comes down where the lying drawing has it
+        for j, ln in enumerate((0.02, 0.06, 0.12, 0.22, 0.36, 0.54, 0.78, 1.06, 1.38)):               # over she goes, slowly, a plank
+            fr.append(side(STOPX + 5, go(j), PLANK(ln), mask=0.30))
+        thud = len(fr)
+        fr.append(side(STOPX + 5, D_GO, DOWN, shake=(0, 7), dust=True))
+        fr.append(side(STOPX + 5, D_GO2, DOWN, shake=(0, -3)))
+        for j in range(6):
+            fr.append(side(STOPX + 5, go(j), DOWN))                                                   # she lies; he still waves GO
+        T3_MARKS.update(toot=12.0 / len(fr), bump=hit / float(len(fr)), thud=thud / float(len(fr)))
+        return fr
     for cx in (STOPX + 330, STOPX + 230, STOPX + 140, STOPX + 70, STOPX + 24):                     # the car drives in; she turns her palm to it
         fr.append(side(cx, D_GO, FACE(0, 0, "approve")))
     fr.append(side(STOPX + 6, D_GO, FACE(0, 0, "approve")))
