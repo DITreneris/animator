@@ -44,6 +44,9 @@ def a_fg(k, cam):
 CAM_4B = (471, 712, 2.45)
 
 
+D4B_POSE = [(-22, 62, 22, -62)]
+
+
 def b_people(k, o):
     dp.ceo_chair(k, THR4, CH[1], CH[2])
     hp.reset("quiet", "quiet")
@@ -51,7 +54,7 @@ def b_people(k, o):
     hp.reset("palm", "palm")
     ds.scs.sofia(k, LINE[2][0], LINE[2][1], dl.SS, "hold", "recover", look=(-1, 0))
     hp.reset("fist", "fist")
-    sb.don(k, LINE[1][0], LINE[1][1], 0.60, "vest", "happy", look=(-1, 0))
+    sb.don(k, LINE[1][0], LINE[1][1], 0.60, D4B_POSE[0], "happy", look=(-1, 0))   # hands clasped in front (221, Gestures: "vest" put his arms across Mom and Sofía; at his sides his fists sat by their hands)
 
 
 # ---------------------------------------------------------------- 4C: "We've been expecting you."
@@ -77,10 +80,12 @@ def d_people(k, o):
 
 def d_fg(k, cam):
     S3.counter_near(k, cam, COUNTER[0])
-COUNTER = [600]
+COUNTER = [745]                                             # below her soles (screen 729): at 600 it cut her at the shins, as 3C did
 
 
 # ---------------------------------------------------------------- 4D'': the mug, smaller, held by its handle
+MUG_POSE = [(-8, 0, 30, 95)]                                # hands audit #10 (rules, Gestures): the mug in front of her chest, not
+                                                            # raised beside her head (v8 r1 (-8, 0, 60, 110): at ear height = a phone)
 def d2_people(k, o):
     """Rules page: one hand per wrist; the object, then the fingers over it. The rig draws her hand (logged), the mug is
     drawn at that hand, and the SAME hand call is made again on top (the grip's second pass, as cs_scene1.grip_rect)."""
@@ -93,7 +98,7 @@ def d2_people(k, o):
         return real(*a)
     kit.HAND[0] = rec
     try:
-        q = ds.pb.pam(k, PAM[0], PAM[1], dl.PS, (-8, 0, 60, 110), "neutral", look=(0.2, 0.9), glasses="up")
+        q = ds.pb.pam(k, PAM[0], PAM[1], dl.PS, MUG_POSE[0], "neutral", look=(0.2, 0.9), glasses="up")
     finally:
         kit.HAND[0] = real
     c = k.c
@@ -128,16 +133,20 @@ def d1_insert(k, c):
 
 
 # ---------------------------------------------------------------- 4E (c): the sticker
-CAM_4E = (438, 682, 2.35)
+CAM_4E = (410, 640, 1.85)                  # a step back: the visitor (moved 16 left) and his PREMIUM sticker whole
+
+
+E_POSE = [(-78, -28, 8, 0)]
 
 
 def e_people(k, o):
-    dp.ceo_chair(k, THR4 + 15, CH[1], CH[2])               # 15 right of 4B/4C: its tag clear of his head (v7: 30 left, covered)
+    dp.ceo_chair(k, THR4, CH[1], CH[2])                    # on its mark (set gate, 24 Nov; was +15 for the tag)
     hp.reset("relax", "grab")
-    dc.repairman(k, VX, VF, GS, case=True, look=(0.2, 1))
-    ds._sticker(k, VX, VF)
+    vx = VX - 16                                            # 16 left of 4H's mark: his head clear of the tag with the throne on its mark
+    dc.repairman(k, vx, VF, GS, case=True, look=(0.2, 1))
+    ds._sticker(k, vx, VF)
     hp.reset("palm", "relax")
-    sb.don(k, 480, F + 26, 0.60, (-92, -6, 8, 0), "happy", look=(-1, 0))   # his palm on the sticker
+    sb.don(k, 466, F + 26, 0.60, E_POSE[0], "happy", look=(-1, 0))   # his palm on the sticker, the elbow bent (audit #2: a straight arm = a pole)
     ds._lines(k, [(VX + 14, F - 150, VX + 26, F - 160), (VX + 18, F - 128, VX + 32, F - 128)])
 
 
@@ -178,7 +187,7 @@ def main(only=None):
         surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1080, 1920); c = cairo.Context(surf); c.scale(2, 2)
         d1_insert(Ctx(c, 0), c); os.makedirs(S3.OUT, exist_ok=True); surf.write_to_png(os.path.join(S3.OUT, "4D1.png"))
     if "4D2" in todo:
-        COUNTER[0] = 880; frame("4D2", CAM_4D2, d2_people, d_fg); COUNTER[0] = 600
+        COUNTER[0] = 925; frame("4D2", CAM_4D2, d2_people, d_fg); COUNTER[0] = 745   # below her soles (898)
     if "4E" in todo:
         frame("4E", CAM_4E, e_people, None)
     if "4F" in todo:
@@ -187,5 +196,40 @@ def main(only=None):
         frame("4H", CAM_4H, h_people, h_fg)
 
 
+SET_MOVES = {}                                              # set_gate exceptions for this scene, each with its reason
+SET_AIR = set()
+SET_BEHIND = set()
+SET_WALKS = set()
+
+
+def gate():
+    """The set gate on every frame of the scene (24 Nov: the set is a gate, not a reference)."""
+    import set_gate
+    set_gate.install(); del set_gate.SEQ[:]
+    global frame
+    real = frame
+
+    def logged(name, *a, **kw):
+        set_gate.begin(name)
+        out = real(name, *a, **kw)
+        set_gate.SEQ[-1] = (name, list(set_gate.LOG))
+        return out
+    frame = logged
+    try:
+        main()
+    finally:
+        frame = real
+    bad = 0
+    for sid, log in set_gate.SEQ:
+        for f_ in set_gate.faults(sid, log, moves=SET_MOVES, air=SET_AIR, behind=SET_BEHIND):
+            print("SET %-4s %s" % (sid, f_)); bad += 1
+    for f_ in set_gate.cut_faults(walks=SET_WALKS):
+        print(f_); bad += 1
+    print("set: %d faults" % bad)
+    return bad
+
+
 if __name__ == "__main__":
+    if "gate" in sys.argv[1:]:
+        sys.exit(1 if gate() else 0)
     main(sys.argv[1:] or None)

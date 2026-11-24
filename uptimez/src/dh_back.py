@@ -29,13 +29,13 @@ def _sleeve(c, pts, w):
 UPPER, FORE = 190, 180                                       # fixed bones (rules page: two bones, never stretched)
 
 
-def don_arm(k, x, y, s, arm, side=1, bend=None, cuff=False):
+def don_arm(k, x, y, s, arm, side=1, bend=None, cuff=False, sh_at=(118, 132)):
     """The raised arm alone (drawn after the back, not logged as him: a bubble's tail looks for his crown). Two bones of
     fixed length (of_scenes.ik2), the upper arm wider than the forearm, the wrist narrowest, the sleeve no wider than the
     arm; the elbow bends out, away from his body."""
     import of_scenes as osc
     c = k.c
-    sh = (x + side * 118 * s, y + 132 * s)
+    sh = (x + side * sh_at[0] * s, y + sh_at[1] * s)      # opt-in sh_at: the shoulder joint in his back's units
     tx, ty, shape = arm
     el = osc.ik2((tx, ty), sh, UPPER * s, FORE * s, side if bend is None else bend)
     L_ = math.hypot(tx - el[0], ty - el[1]) or 1.0

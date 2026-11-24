@@ -71,3 +71,9 @@ Sizes are the biggest face's radius at 540, measured on pixels (CU ≥ 120, MCU 
 ## Then
 
 Six full-size frames (4A, 4B, 4C, 4D, 4E c, 4H) for your look before any animation; then the animation, tails, gates, the v7 check and the cold test.
+
+## Round 2 (24 Nov): the set gate and the hands audit
+
+- `python3 dh_s4_v8.py gate` runs `set_gate` on every frame (Don and the visitor are logged too now). It found one fault: 4E's throne 15 right of its mark (moved for the tag). The throne is back on 452; the visitor 16 left (his head clear of the tag) and the camera a step back so his case, his PREMIUM sticker, the tag and SHRED are whole.
+- Hands audit: 4D/4D2 the near counter below Pam's soles (it cut her at the shins, as 3C did); 4D2 the mug in front of her chest (beside her head it is a phone); 4E Don's arm bent at the elbow (straight it was a pole); 4B Don's hands clasped in front (in "vest" his arms crossed Mom and Sofía; at his sides his fists sat by their hands).
+- Scene 3, round 12: 3F Sofía was standing on the wall (Tomas: "is she pinned to the wall?"): Mom stands about 30 units from the wall, so nobody fits behind her. Sofía is back on the floor beside Mom, at the left edge.

@@ -73,6 +73,7 @@ Validate every new check on a known failure first; a check that always passes is
 - **The front desk v4** (`src/fs_set4.py`, [`series/front-desk-set.md`](series/front-desk-set.md)) is the room from episode 10 on: zones A/B/C, home positions, the way out from behind the counter, camera setups S1–S6. Start an episode's staging from it; change it only with a reason written into that doc.
 - **Plan in three sheets:** the clean set, a top-down shot plan (setups + table), a blocking sheet for the hardest beat. Before redrawing a board on a set, test the hardest shot as real camera frames with two cold viewers.
 - **Reactions face their target; the same cast on both sides of a cut; entrances caught mid-step.**
+- **The set is a gate, not a reference** (24 Nov, after Daddy's Home v8 scene 3 moved the throne 404 → 540 between shots and stood Sofía "behind" Mom on her own floor line). `src/set_gate.py` logs every rig and set prop as drawn and fails: a prop off its mark (`PROPS`, from `series/front-desk-set.md`), two overlapping people on one floor line (whoever is behind stands further back: feet higher), a person somewhere else after a cut. An episode lists its exceptions by shot (`SET_MOVES`, `SET_AIR`, `SET_WALKS`) with the reason beside each. A scene's `gate` runs it with the bubble and dead-zone checks; a fix for a bubble or a cold-test note never moves a prop or a person off the set without passing it. Changing the set itself: the doc first, then `PROPS`.
 
 ## Look and voices
 
