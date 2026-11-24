@@ -20,7 +20,7 @@ The prequel shorts here are mostly **540×960 animatics** (30 fps, about 15 s): 
 | **THE ROBOT** | One machine, reassigned: Don's desk robot (*Day One*) → cafeteria waiter (*I Will Replace You*) → HR (from *Raises for Everyone*) | Every statement and stamp technically true; needs human approval for money, access and commitments | Pitched and filtered per episode |
 | **MOM** | Don's mother; Assistant to Don since *The Best Candidate* | Curlers, an old shouting voice; Don shrinks when she enters | Voice F: `bf_alice` + `bm_lewis`, aged |
 | **THE CLIENT** | Owner of ten garages (from *The Onboarding*) | The first real customer; not an idiot. Olive work jacket, VISITOR badge, a head taller than Don | `am_fenrir` −4 semitones |
-| **FATHER** | The investor, a nightclub kingpin (from episode 12, *Daddy's Home*, in concept) | Holds the majority share; can replace the CEO | not cast yet |
+| **FATHER** | The investor, a nightclub kingpin (from episode 12, *Daddy's Home*) | Holds the majority share; can replace the CEO | not cast yet |
 
 ### Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*)
 
@@ -240,6 +240,16 @@ New Year special. SOFÍA dreams she is a femme fatale in a black-and-white city 
 
 Built from `src/`: `on2_motion.py` (timing, the picture, the release; `_v1`…`_v27` kept), `on2_motion_b5.py` and `on2_motion_b68.py` (beats 05 and 06–08), `on2_board.py` (sets), `noir2_cast.py` (the cast in noir), `on2_sound.py` (the takes in `src/on2_voices/`, the mixes), `engine_on.py` (the noir pass; TONE v3 is the new look, `engine_on_v2.py` keeps Office Noir unchanged), `thumb_on2.py` (the cover), `on2_mute_anim.py` (sheets for the cold tests).
 
+### Office Noir 3: The Last Round — [`office-noir-3/`](office-noir-3/)
+
+The Client's dream, between episodes 10 and 11, **release v6 (22 Nov), 540.** Black and white with one red: his gloves and robe. He is a boxer in a dark city, fighting the HR robot for his blueprint hanging over the ring; Mom is the queen of the underground fights, Pam his cutman, Sofía the round-card girl, Detective Don collecting evidence. He wakes on a sofa in one of his garages as Sofía calls.
+
+| File | Notes |
+|---|---|
+| `office_noir_3_release_v6_540.mp4` | **release v6** (film v38): 87.2 s, −15.5 LUFS, −1.1 dBTP, speech 37 of 37; the 1080 master is rebuilt, not committed |
+| `office-noir-3-script-v73.md` | The last script note (the man on the sofa drawn anew); notes v1–v72 kept |
+| `office-noir-3-concept-v1.md`, `ring-set.md`, `on3_cover_v1.png` | Concept, the ring set, the cover |
+
 ### The Best Candidate — [`the-best-candidate/`](the-best-candidate/)
 
 Three candidates for ASSISTANT TO DON, and an HR robot that rules on bias. DON opens each interview with the same question, "What if I made a mistake?", and marks the answers. The small one (three degrees, "and a half") would show him the data: "Too short." The robot: "Height is not protected. Proceed." The nice macho hands SOFÍA her dropped pen, tells Don "Everybody makes mistakes. It's okay.", and gets "Too distracting." ("For whom?"). Then MOM walks in ("Forty years. One very difficult client."), and to Don's question, asked very small this time: "I'd make you apologize." "Sorry." A two-second pause; his phone has 47 missed calls from a client; he answers it: "Sorry." "Good boy." The robot: "She made him answer the client. Hired." At the door she licks her thumb: "DONNIE! Your vest!" and scrubs it. "Donnie. Father is parking." "Why?" "He's applying for your job." It loops on the door. 92.5 s, 35 lines.
@@ -291,17 +301,79 @@ Built from `src/` (`fs_film35.py`, over `fs_film5.py` … `fs_film34.py`, all ke
 
 ### One Star — [`customer-success/`](customer-success/)
 
-Episode 11, **rough cut v5; not final.** Thursday the 11th: every phone in the office buzzes with the Client's post, one star, "Paid $999. They lost my blueprint. My lawyer will call." The robot drafts a reply and Don approves it unread: "Shut off! Our AI does not lose files!" Don phones him: "Nine o'clock. Your office." Friday the 12th, Don presents a plan "recovered" by the AI; the Client: "Is this a joke?" At the door Pam unrolls the plan she taped together, with a hole at bay 7, and the strip from his own pocket fills it. Robot: "The result was obtained by a h-human." He asks for her number and saves it: "finds things". Don: "Customer success." The post gets "UPDATE: Pam found it."; Sofía: "Still one star." Don reads his phone and puffs up. The folder and file names keep the working title (`customer-success/`, `cs_*`).
+Episode 11, **rough cut v13 (24 Nov), the master candidate.** Thursday the 11th: every phone in the office buzzes with the Client's post, one star, "Paid $999. They lost my blueprint. My lawyer will call." The robot drafts a reply and Don approves it unread; Don reads it out: "Stupid human." 🤡. Don phones him: "Nine o'clock. Your office." Friday the 12th, Don presents a site plan "recovered" by the AI; the Client: "Is this a joke?" At the door Pam stops him with a raised palm; his own taped plan slides over the AI's, with a hole at bay 7. Pam: "Check your pocket." The 7 is in his own hand. Robot: "The result was obtained by a h-human." He saves her number: "finds things". Don: "Customer success." The post gets "UPDATE: Pam found it."; Pam answers it: "Some post. Others find."; Sofía: "Still one star." Don reads his phone and puffs up. The folder and file names keep the working title (`customer-success/`, `cs_*`).
 
 | File | Notes |
 |---|---|
-| `one_star_rough_v5_540.mp4` | **Rough cut v5 (21 Nov)**, 540: 61.9 s, 14 lines, −15.7 LUFS, −2.7 dBTP, Whisper 14 of 14. Two cold viewers answered all six direct questions (`cs_cold_test_film_v2.md`). The wall calendar is First Search's (THU 11 → FRI 12). The 1080 file is rebuilt, not committed |
-| `one_star_rough_v4_540.mp4` | Rough v4: before the shared calendar |
-| `customer-success-script-v18.md` | **Current script**, line by line with the shot list and the protect list; v14–v17 kept |
+| `one_star_rough_v13_540.mp4` | **v13 (24 Nov)**, 540: 61.3 s, 16 lines, −15.7 LUFS, peak −2.4 dBFS; all 16 lines word-exact in the final mix. The 1080 file is rebuilt, not committed |
+| `one_star_rough_v12_540.mp4` … `_v6_540.mp4` | v6–v12 of 23 Nov: phone texts inside the screen, layout B (Pam brings the plan), the series' one hand, shot list v19, dry voices, Don's clean "Stupid human." |
+| `one-star-shot-list-v19.md` | **Current shot list:** size, foreground and hands for every shot (five close-ups, two over-the-shoulder shots, a foreground layer with parallax, the 7 insert 4.3s) |
+| `one-star-gates-v1.md`, `one-star-gates-v19-r2.md` | The four new gates on v7 (GV, GD, GH fail) and on v19 (all pass) |
+| `one-star-pam-lines-v1.md` | Pam's two spoken lines, approved before recording |
+| `customer-success-script-v18.md` | The script ("Stupid human." 🤡, scene 4 before layout B); v14–v17 kept |
 | `one-star-layout-v1.md`, `-v2.md`, `cs_layout_v*_scene3..6.png` | The layout pass: every scene laid out before it was animated |
-| `cs_motion_test_v8.md`, `cs_cold_test_film_v1.md`, `-v2.md` | Motion tests v8–v10 and the two cold tests of the whole film |
+| `cs_motion_test_v8.md`, `cs_cold_test_film_v1.md`, `-v2.md` | Motion tests and the earlier cold tests. Cold tests of v8 and v11 (two fresh viewers each): 5 of 5 beats |
 
-Built from `src/` (`cs_scene1.py` … `cs_scene6.py`, `cs_film.py`, `cs_frame.py` for scale and dead zones, `cs_sfx.py`, `cs_cal.py`, `sound_cs.py`): `python3 cs_film.py ../customer-success rough_v5`. **Still open:** Tomas's listen with sound, the final master and the cover.
+Built from `src/`: `cs_scene1.py` … `cs_scene6.py`, `cs_film.py` (the mix), `cs_hands.py` (hand states), `cs_v19.py` (shot list v19), `cs_props.py`, `cs_frame.py`, `cs_sfx.py`, `cs_cal.py`; voices in `src/cs_voices/film_v9`. Each film version has a driver that switches its changes on (`cs_film_v7.py` … `cs_film_v13.py`; earlier versions draw as before). To rebuild v13 at 1080:
+
+```bash
+cd uptimez/src
+python3 cs_film_v8.py ../customer-success 1 2 6
+python3 cs_film_v9.py ../customer-success 4
+python3 cs_film_v12.py ../customer-success 3 5
+python3 cs_film_v13.py ../customer-success     # the mix and the film
+python3 gates_os.py collect && python3 gates_os.py depth && python3 gates_os.py report   # with V19=1 for v19
+```
+
+**Still open:** Tomas's approval of the master, the cover, and one note from the last cold test (who dials whom in the call).
+
+### Daddy's Home — [`daddys-home/`](daddys-home/)
+
+Episode 12, **animation v7 (23 Nov), 540; in the fix pass.** The one-star post goes viral and Don's father sees it: a nightclub kingpin and the company's majority investor, coming today at five, his people first. The office mistakes the coffee-machine repairman for Father's man and shows him everything; then the real Father walks in, and the robot looks at the chair. Frame 0 is Don in the gold CEO throne ($49,999 price tag), his phone ringing DAD; the loop ends on the same call.
+
+| File | Notes |
+|---|---|
+| `daddys_home_anim_v7.mp4`, `_v7_loop.mp4` | **v7**, 540: 96.8 s, all eight scenes, speech bubbles in the Best Candidate style (`src/dh_say.py`), "Stupid human." 🤡 on Father's phone |
+| `daddys-home-script-v2.md` | **Current script**, generated from the eight scene sheets (97.2 s, 37 lines) |
+| `daddys-home-fix-plan-v1.md`, `daddys-home-bubble-lessons-v1.md` | The fix plan (two fix rounds, cold viewers, one more round; the trim to 95 s, music and 1080 come after it) and the 25 bubble rules |
+| `daddys-home-concept-v1..v3.md`, `-plan-v1.md`, `-shot-list-v1.md`, `-spoken-lines-v1..v4.md` | Concept, plan, shot list, approved lines |
+
+Built from `src/` (`dh_scenes.py`, `dh_anim1.py` … `dh_anim8.py`, `dh_say.py`, `dh_props.py`, `dh_film_v7.py`; voices in `src/dh_voices/film_v1`): `cd src && python3 dh_film_v7.py 1` … `8`, then `python3 dh_film_v7.py join`. **Still open:** the fix plan from cold viewers on, music, the 1080 master; Don's rig hands are not yet the series hand.
+
+### The Offer — [`the-offer/`](the-offer/)
+
+Episode 13, *Civil War* 1 of 5, **rough cut v30 (24 Nov), 540.** Father comes to the Client's garage to make him take down the post. Everything he brings to frighten him, the Client turns into garage work, until Father asks how he would run Don's company. "Without him." The Client's terms are Pam. Back at the office, the robot reads the new meeting out loud: AGENDA: WITHOUT HIM.
+
+| File | Notes |
+|---|---|
+| `of_roughcut_v30_540.mp4` | **v30**: 64.5 s, 15 lines, sound v15 (the office bed, the lamp gag's tick, the garage theme back at the pin); G5 and the hand gate pass |
+| `the-offer-script-v6.md` | **Current script**, generated from `src/of_scenes.py` (do not edit by hand); v1–v5 kept |
+| `the-offer-set-v2.md`, `of_hands_v*_sheet.png` | The garage set; the hand sheets the series hand grew from |
+
+Built from `src/` (`of_scenes.py`, `of_set.py`, `of_cast.py`, `client_of.py`). **Still open:** the master and the cover.
+
+### Pick a Side — [`pick-a-side/`](pick-a-side/)
+
+Episode 14, *Civil War* 2 of 5, **board and motion tests (23 Nov); not animated yet.** A secret loyalty meeting: Don tapes a line across the office floor, DON on the tape. The robot fights him over the blinds (the 0:01 joke), Father learns of it from a team photo post (#TeamDon), and the loop ends with Sofía on Father's side. Don, alone in front: "Everyone's with me." Pam: "Some draw lines. Others cross them."
+
+| File | Notes |
+|---|---|
+| `pick-a-side-script-v7.md` | **Current script** (about 61 s), with the blocking of 1.1–1.3; v1–v6 kept |
+| `pick-a-side-spoken-lines-v4.md`, `ps_voices_v2.mp4` | The 19 approved lines and their recorded voices |
+| `pick-a-side-concept-v3.2.md`, `pick-a-side-plan-v1.md` | The approved concept and the production plan |
+| `ps_motion_A/B/C_v*.mp4`, `ps_hands_v1.png` | Motion tests; the series hand (`src/hands_ps.py`) was first drawn here |
+
+Built from `src/ps_scenes.py`. **Still open:** animation (waits for episode 12's fix plan).
+
+### Office Noir: Seven Lives — [`office-noir-4/`](office-noir-4/)
+
+Office Noir 4, Pam's dream (a Valentine's special), **first moving rough v1 (24 Nov).** Pam-Cat is the noir hero who sees everything and does everything right, and keeps trying to be noticed: not the woman she saves, not the cop who runs her over, not the casino with her name in lights. She wakes at her desk, and the only thanks she gets is for coffee.
+
+| File | Notes |
+|---|---|
+| `on4_rough_v1.mp4` | **Rough v1**: the animatic with the four voice takes, 68.9 s |
+| `office-noir-4-script-v16.md` | **Current script**, generated from `src/on4_scenes.py`; board v1–v9 changes listed in it |
+| `office-noir-4-concept-v2.md`, `on4_coldtest_*.md`, `on4_motiontest_v*.md` | The concept and the cold and motion tests of the board |
 
 ### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
 
@@ -347,6 +419,15 @@ Nobody understands what's cloud, local, disk or phone. Storyboard animatics with
 ### History — [`history/saved-locally/`](history/saved-locally/)
 
 The retired first concept, *Saved Locally* (SAVI), v1–v3. Kept as made; see its README.
+
+## Production rules
+
+How every episode is made now; the details live in [`CLAUDE.md`](CLAUDE.md), [`series/production-process.md`](series/production-process.md) and [`../docs/lessons.md`](../docs/lessons.md).
+
+- **Gates before each stage** (G0 series check … G6 audit triage) and four measured gates from 23 Nov ([`gates-v2-plan.md`](gates-v2-plan.md), `src/gates_os.py`): **GV** shot variety (sizes measured from the rendered faces), **GP** proportions, **GD** depth and volume (a foreground layer, no line-ups), **GH** hands. Each check fails on a planted fault before it is trusted.
+- **One hand for the whole cast:** `kit.HAND` with `src/hands_ps.py` (quiet, fist, point, palm, grab, grips); the robot keeps its own grippers.
+- **Voices are dry:** no room reverb on dialogue; an effect only on a character seen as its source. Every line is checked word by word inside the final mix.
+- **One episode, one branch;** 1080 renders are rebuilt, not committed; earlier versions are pinned and new behaviour is opt-in.
 
 ## Build
 
