@@ -739,7 +739,7 @@ SCENES = [
           action="the punch; Sofia sidesteps her (the 0:01 joke)", reaction="the shadow slides down; nobody thanks her",
           before=lambda k: wall_shadow(k, slide=0.55), after=lambda k: _burst(k, 98, 544, 30)),
         S("1.3", "close", "A", (220, 560, 1.9), "The pose holds; her eyes follow Sofia out; the pose sags; she pulls her coat straight.",
-          cast=[P("pam_cat", 220, 730, 0.84, "sag", "fade", (0.8, 0.2))], line="N: I know how to survive.",
+          cast=[P("pam_cat", 220, 730, 0.84, "sag", "fade", (0.8, 0.2), rim=True)], line="N: I know how to survive.",
           action="the pose sags", reaction="Fine. (to where Sofia went)"),
         S("1.4", "wide", "A_tail", WIDE, "The shadows peel off the cobbles and run up the street to a pair of taillights; she turns to follow.",
           cast=[P("thug1", 300, 600, 0.26, "open", seed=4111), P("thug2", 340, 590, 0.24, "open", seed=4112),
@@ -1018,6 +1018,7 @@ def render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
     import on4_club as cl
     cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True
+    st.NIGHT[0] = True
     car.TAIL_GREY[0] = True; oc.HEART[0] = 1.6; pr.ROTA_INK[0] = True       # (24 Nov) the envelope's heart is the film's one red
     cl.LIMO[0] = (30, 1.15); cl.CLIENT_DY[0] = 0      # the Client stands behind the booth table (his legs reach the floor): left as he was
     st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"; oc.ENV_BIG[0] = 1.25; oc.MASK_UP_V2[0] = True

@@ -580,11 +580,25 @@ def t7():
         c = k.c
         st.poly(k, [(-10, GY), (550, GY), (550, 970), (-10, 970)], (0.20, 0.20, 0.21), 2.0)
         sc.platform(k, PY)
-    def f(pam=None, lid=0, shake=0, fall=None, pl=None, burst=False, clip=False):
+    LX = 165                                                 # v20: the ladder she climbs, its rungs every 28 (in frame: 105 cut her at the edge)
+    def ladder(k):
+        c = k.c
+        c.set_source_rgb(0.10, 0.10, 0.11); c.set_line_width(5)
+        for x_ in (LX - 30, LX + 30):
+            c.move_to(x_, PY - 10); c.line_to(x_, GY - 120); c.stroke()
+        c.set_line_width(4)
+        for y_ in range(PY + 10, GY - 120, 28):
+            c.move_to(LX - 30, y_); c.line_to(LX + 30, y_); c.stroke()
+    def f(pam=None, lid=0, shake=0, fall=None, pl=None, burst=False, clip=False, climb=None):
         def before(k):
             scene(k); bin_back(k, lid)
+            if climb is not None:
+                ladder(k)
         def after(k):
             c = k.c
+            if climb is not None:                            # v20 (review): hands on rungs, the opposite foot up, turned to the wall
+                cp, ckn = climb
+                _pam(k, cp, 1.0, 1.0, 0.0, ckn)
             sc.railing(k, RY)
             pts = None
             if fall:                                         # over the rail: drawn in front of it, turning
@@ -602,12 +616,21 @@ def t7():
             return pts
         return draw(shot("2.4", cam=(270, 462, 1.45), cast=[pam] if (pam and not clip) else [], before=before, after=after, protect=()))
     fr = []
-    for i in range(8):                                       # up the ladder
+    for i in range(8):                                       # up the ladder, rung over rung
         t = i / 7.0
-        fr.append(f(P("pam_cat", 105, PY + 150 * (1 - t) - (6 if i % 2 else 0), S_, "hero", "peer", (0.3, -0.6), rim=True)))
+        fy = PY + 150 * (1 - t)
+        side = 1 if (i // 2) % 2 else -1                     # which hand is high
+        def rung_y(y_):                                       # the nearest rung at or above a height
+            r0 = PY + 10
+            return r0 + 28 * math.floor((y_ - r0) / 28.0)
+        hi = (rung_y(fy - 300 * S_) - fy) / S_; lo = (rung_y(fy - 200 * S_) - fy) / S_
+        arms = oc.pm.ik(-1, -60, hi if side < 0 else lo) + oc.pm.ik(1, 60, hi if side > 0 else lo)
+        lift = 40
+        kn = dict(drop=0, l=(0, lift if side > 0 else 0, -1), r=(0, lift if side < 0 else 0, 1))    # the foot opposite the high hand is up
+        fr.append(f(climb=(P("pam_cat", LX, fy, S_, pose(arms, ("grab", "grab")), "peer", (0.3, -0.9), rim=True), kn)))
     for i in range(9):                                       # along the platform, her eyes on the street below
         t = i / 8.0
-        fr.append(f(P("pam_cat", 105 + 205 * t, PY - (5 if i % 2 else 0), S_, "hero", "peer", (0.6, 0.7), rim=True)))
+        fr.append(f(P("pam_cat", LX + (310 - LX) * t, PY - (5 if i % 2 else 0), S_, "hero", "peer", (0.6, 0.7), rim=True)))
     for i in range(12):                                      # further over the rail, and further
         t = i / 11.0
         fr.append(f(P("pam_cat", 310, PY, S_, "hero", "peer" if t < 0.75 else "doubt", (0.4, 1.0), lean=0.62 * t * t + (0.03 if i % 2 else 0), rim=True)))
