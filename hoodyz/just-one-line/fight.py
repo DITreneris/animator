@@ -61,7 +61,7 @@ def robot_palm(c, x, y, ang, s):
 
 def ai_arm(c, sh, tgt, end='fist', L=ARM):
     e, h = P.ik(sh, tgt, L, L, P.DOWN)
-    limb(c, [sh, e, h], 24 * AS, WHITE); ell(c, e[0], e[1], 13, 13); fs(c, GREY, 5)
+    limb(c, [sh, e, h], 24 * AS, WHITE)
     if end == 'fist': ell(c, h[0], h[1], 22, 22); fs(c, WHITE, 6)
     else: robot_palm(c, h[0], h[1], math.atan2(h[1] - e[1], h[0] - e[0]), AS * .9)
     return h
@@ -122,7 +122,7 @@ def hoody_jersey(c, x, gy, k, sway=0.0, f=0):
     for q in (-1, 1):                                                     # his arms, dragged up in the sleeves
         sh = (x + q * 92 * s, neck[1] + 5 * s)
         hd = (x + q * lerp(125, 112, k) * s, lerp(neck[1] + 250 * s, neck[1] - 230 * s, io(k)))
-        e, h = P.ik(sh, hd, 118 * s, 112 * s, P.DOWN if k < .5 else (P.LEFT if q < 0 else P.RIGHT))
+        e, h = P.ik(sh, hd, 118 * s, 112 * s, P.LEFT if q < 0 else P.RIGHT)      # v3: elbows always outward (DOWN crossed the arms into an X)
         limb(c, [sh, e, h], 44 * s, NAVY); K.hand(c, h[0] + 6 * math.sin(f * .9 + q) * k, h[1], s)
     c.restore()
     return neck, (x + 70 * s, F + 10 * s)
@@ -193,7 +193,7 @@ def frame(f, cnt=None, tick=None, cam=None, extra=None, overlay=None, bar=True):
                 if t < 5: tgt = (sh[0] + 50 + 30 * io(t / 5), sh[1] + 60)                     # wind-up: palms drawn back
                 elif t < 8: tgt = (lerp(sh[0] + 80, chest[0], io((t - 5) / 3)), lerp(sh[1] + 60, chest[1] + dy, io((t - 5) / 3)))
                 else: tgt = (chest[0] + (0 if t < 14 else -60), chest[1] + dy)
-                e, h = P.ik(sh, tgt, 130, 130, P.DOWN); limb(c, [sh, e, h], 24 * AS, WHITE); ell(c, *e, 13, 13); fs(c, GREY, 5)
+                e, h = P.ik(sh, tgt, 130, 130, P.DOWN); limb(c, [sh, e, h], 24 * AS, WHITE)
                 robot_palm(c, h[0], h[1], math.atan2(h[1] - e[1], h[0] - e[0]), AS * .9); palms.append(h)
             push_arm(1, 40)                                                # far arm behind the body
             LAST['ai'] = c.user_to_device(x, gy - 280 * AS)
@@ -245,7 +245,7 @@ def frame(f, cnt=None, tick=None, cam=None, extra=None, overlay=None, bar=True):
         a_ = t * 1.1
         for q, sh, ph in ((-1, shL, 0), (1, shR, math.pi)):               # both fists windmilling, short of the robot
             tgt = (sh[0] + 40 + 55 * math.cos(a_ + ph), sh[1] - 10 + 75 * math.sin(a_ + ph))
-            P.hoody_arm(c, sh, tgt, HS, pref=P.LEFT if q < 0 else P.DOWN, hand='grip')
+            P.hoody_arm(c, sh, tgt, HS, pref=P.DOWN, hand='grip')      # v3: both elbows down (LEFT made the far arm a fin behind his head)
         for i in range(2): c.arc(shR[0] + 40, shR[1] - 10, 90 + i * 22, -.6, 1.6); c.set_source_rgba(*INK, .35); c.set_line_width(5); c.stroke()
         myai_at(c, f, AIX, DESK_Y, left=None)
         fh = (head[0] + 85, head[1] - 10)
@@ -303,7 +303,7 @@ def frame(f, cnt=None, tick=None, cam=None, extra=None, overlay=None, bar=True):
             P.hoody_arm(c, shR, (shR[0] + 50, shR[1] - 180), HS, pref=P.RIGHT, hand='palm')
             ft = (hip[0] - 10, hip[1] + 90)
         myai_at(c, f, AIX, DESK_Y, legs=False)
-        e, h = P.ik(hip, ft, 70 * AS, 70 * AS, P.UP); limb(c, [hip, e, h], 34 * AS, WHITE); ell(c, *e, 14, 14); fs(c, GREY, 5)
+        e, h = P.ik(hip, ft, 70 * AS, 70 * AS, P.UP); limb(c, [hip, e, h], 34 * AS, WHITE)
         c.save(); c.translate(*h); c.rotate(math.atan2(h[1] - e[1], h[0] - e[0])); rr(c, -26, -28, 74, 56, 22); fs(c, WHITE, 7); c.restore()
 
     elif g < BEND:                                                         # 6 THE DROPKICK
