@@ -128,3 +128,35 @@ Fix (Tomas "taisom ranka"): the robot a step left (`rx - 18`), its near arm stra
 | Who won | the robot | the robot | the robot | 3 of 3 |
 
 The tick marks are gone. The grip itself is still a half-read after two fixes: at 270 px the robot's short arm and the knob merge with its screen. The beat no longer depends on it (the wants, the light and the winner read 3 of 3); in the film the pull is carried by motion test A, which read the tug in motion.
+
+## Hands and phones audit (24 Nov, against `docs/rules-hands-and-phones.md` on main)
+
+Found and fixed (opt-in under `FIX_V4`; checks 38 shots, 0 faults; the approved layouts v3 rebuild md5-identical from `ps_scenes_v3.py`):
+- **The posted screen's ♥** (3.5, 4.2): Inter has no such glyph, a hex-code box was drawn. Now a drawn heart (`robot_ps.HEART`).
+- **6.1, Pam's phone:** was a dark flat trapezoid with a blue glow and no owner. Now upright in her fist (hands_ps "cup", drawn under her fingers like the mug), small, lit, INVITATION · DAD on it (`pm_ps` pose `reach_ph`, `ps_set.phone_close(buzz=False)`).
+
+Not changed, noted: the ep 14 screens are not drawn through `of_ui.py` (it exists only on main); Don's thumb on APPROVE (`phone_screen` "approved") is a polygon, not the series' hand; the Client's hand in 4.3 is dark brown (the oily handprint?); `hand-validate` and `phone_grip` belong to episode 13's rig. Not yet re-tested on cold viewers.
+
+Cold test of the 6.1 fix (3 new viewers K, L, M; frames 5.6, 5.7, 6.1 and its follow-up, 400 px and 270 px):
+
+| Question | K | L | M | Verdict |
+|---|---|---|---|---|
+| A phone in 6.1 | no | no | "a pink card or paper with a tiny hand on it" | 0 of 3 read Pam's fist as holding a phone |
+| The phone in 5.7 | buzzing, "INVITATION / DAD", lying on a desk | same | same | 3 of 3 read the screen and that it buzzes |
+| Whose | "possibly Pam, a guess" | can't tell | can't tell | 0 of 3 firm (K a guess) |
+| Does anyone know about it | no | no | no | 0 of 3 |
+
+The third version of 6.1's phone (flat by the CV, then dark, then upright in the fist, lit): 6.1 is a shot misread after three fixes, so by the cold-viewer rule it is cut or its thread moved. The screen text is read; the owner is not.
+
+Tomas's pick: take the phone out of 6.1, carry the owner in 5.7. Built (`FIX_V4`): 6.1 has Pam's empty reach and no phone; 5.7 has Pam's purple cardigan sleeve in from the bottom-right corner and her fingertip on the phone below the words, her blue mug beside it. Checks: 38 shots, 0 faults; approved layouts v3 md5-identical.
+
+Cold test (3 new viewers P, Q, R, frames 5.6, 5.7, 6.1 and the follow-up):
+
+| Question | P | Q | R | Verdict |
+|---|---|---|---|---|
+| Whose phone | Pam's, ~70 % (the sleeve) | Pam's, fairly sure (the sleeve) | Pam's, fairly sure (the sleeve) | 3 of 3 (was 0 of 3 firm) |
+| The screen | INVITATION / DAD, buzzing | same | same | 3 of 3 |
+| The arm | Pam's, tapping | Pam's, pressing | Pam's, pointing | 3 of 3 |
+| Anyone in the office knows | no | Pam "uneasy or flat" | no | 0 of 3: the knowing is not carried; the film's 5.7 beat and Don's "Everyone's with me" must carry the irony |
+
+The ownership is read from the sleeve's colour only; the mug is not named as the link any more. Not yet re-tested: the whole board after the heart and 6.1 changes.

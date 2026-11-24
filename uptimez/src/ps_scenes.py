@@ -18,6 +18,7 @@ v3 (board v1's cold test, 3 viewers, 23 Nov): no screen over the door; the CV in
 (5.5); Sofía big, astride the tape (5.6); the blind hangs from Pam's rail; 3.6 the guard's phone lit at his face; 6.1
 the others' eyes off Don. v2 is ps_scenes_v2.py."""
 import json
+import math
 import os
 import re
 import sys
@@ -419,10 +420,8 @@ def cast_61(k):
     hx, hy = o["hands"][0]
     sp.cv_coo(k, hx + 4, hy + (40 if FIX_V4[0] else 4), 0.8)    # held at her chest, COO? up; v4: lower, off her face
     o, heads["pam"] = pam(k, (tape_x(55) - 40, F + 55), "reach", "avert", (1, 0.6), mug=False)  # v3: eyes on her lit phone
-    if FIX_V4[0]:                                            # v4 (Tomas 24 Nov): small, flat, under her fingers, away from
-        pss.pam_phone(k, o["hands"][1][0] + 4, o["hands"][1][1] + 8, 1.6, lit=True)   # Sofía's CV (upright read as hers)
-    else:
-        pss.pam_phone(k, o["hands"][1][0] + 30, o["hands"][1][1] + 10, 1.4, lit=True)
+    if not FIX_V4[0]:                                        # v4 (cold test, 3 fixes, 0 of 3 read a phone in her hand): no phone in
+        pss.pam_phone(k, o["hands"][1][0] + 30, o["hands"][1][1] + 10, 1.4, lit=True)   # 6.1; its owner is read in 5.7 (her hand)
     return heads
 
 
@@ -531,6 +530,12 @@ def ins_phone_57(k):
         k.c.set_source_rgb(*INK); k.c.set_line_width(4); k.c.new_path(); k.c.arc(-18, 0, 10, 1.57, 4.71); k.c.stroke()
         k.c.restore()                                                      # the gap behind her fingers)
         pm.mug_at(k, 430, 600, 2.4)
+        import hands_ps as hp_, pam_mf as pmf_              # v4 (Tomas 24 Nov, hands page): the owner in the frame: Pam's cardigan
+        c = k.c; ex, ey, hx, hy = 575, 1000, 350, 690        # sleeve in from the corner, her fingertip on the phone's edge, below
+        d = ((hx - ex) / math.hypot(hx - ex, hy - ey), (hy - ey) / math.hypot(hx - ex, hy - ey))   # the words
+        for col, lw in ((INK, 118), (pmf_.PURPLE, 110)):
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0); c.move_to(ex, ey); c.line_to(hx - d[0] * 20, hy - d[1] * 20); c.stroke()
+        hp_.draw(k, "point", hx, hy, 66, pmf_.SKIN, d, 1)
         return
     pss.phone_close(k, 270, 520, 1.8)
 
@@ -686,7 +691,7 @@ def render(sh):
     surf = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H)
     c = TextRec(surf); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
-    pss.GUARD_CUES[0] = pss.PLATE_BIG[0] = FIX_V4[0]          # v4's set cues travel with the v4 staging
+    pss.GUARD_CUES[0] = pss.PLATE_BIG[0] = FIX_V4[0]; rp.HEART[0] = FIX_V4[0]          # v4's set cues travel with the v4 staging
     if sh["cam"] == "screen":
         if FIX_V4[0] and sh["id"] in INS_UP:
             c.set_source_rgb(*kit.WALL); c.paint(); c.translate(0, -INS_UP[sh["id"]])

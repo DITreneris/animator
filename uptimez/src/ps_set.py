@@ -273,7 +273,7 @@ def pam_phone(k, x, y, s=1.0, lit=False):
     c.restore()
 
 
-def phone_close(k, x, y, s=1.0, lit=True):
+def phone_close(k, x, y, s=1.0, lit=True, buzz=True):
     """5.7's insert-in-shot: the phone face up, seen from above, INVITATION · DAD readable at 270 px."""
     c = k.c
     c.save(); c.translate(x, y); c.scale(s, s)
@@ -284,7 +284,7 @@ def phone_close(k, x, y, s=1.0, lit=True):
         c.set_font_size(18); e = c.text_extents("INVITATION"); c.move_to(-e.x_advance / 2, -16); c.show_text("INVITATION")
         c.set_source_rgb(*INK); c.set_font_size(36); e = c.text_extents("DAD"); c.move_to(-e.x_advance / 2, 26); c.show_text("DAD")
         c.set_source_rgb(0.06, 0.20, 0.40); c.set_line_width(2.4)
-        for i in (1, 2, 3):                                                            # it buzzes
+        for i in (1, 2, 3) if buzz else ():                                            # it buzzes
             c.new_path(); c.arc(0, 0, 60 + i * 12, -0.5, 0.5); c.stroke(); c.new_path(); c.arc(0, 0, 60 + i * 12, math.pi - 0.5, math.pi + 0.5); c.stroke()
     c.restore()
 
