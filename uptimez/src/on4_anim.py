@@ -553,6 +553,7 @@ def a71(t):                                                    # asleep on the c
     return draw(shot("7.1", cam=D_CAM, cast=[_pam_asleep(t)], protect=()))
 
 
+END2 = [False]                                               # (24 Nov, Tomas: "the ending is too long and too complicated; Sofia is too small, in the dead zone") 7.2 nearer, from the waist up, 2.6 s; the rota once (7.5, one look down, 1.8 s; the insert 7.4 is cut)
 MAIL72 = [False]                                             # (24 Nov, cold test of film v14: "the mail sheet pops in and hovers")
 
 
@@ -564,13 +565,19 @@ def a72(t):                                                    # Sofia in mid-st
     x = 560 + 85 * ease(seg(t, 0.0, 0.8)) + 160 * ease(seg(t, 2.5, 3.2))
     reach = 0.8 <= t < 1.6
     sof = P("sofia", x, 800 - (4 if int(t * 8) % 2 and (t < 0.8 or t > 2.5) else 0), 0.47, "post" if reach else "hold", "appraise", (0.2, 1.0))
+    cam72 = D_CAM; T_UP = (1.15, 1.5); T_MUG = 2.3
+    if END2[0]:                                                # nearer, from the waist up: her face in the upper half of the safe area, the phone, the mail and Pam's hand in one frame; 2.6 s
+        x = 500 + 108 * ease(seg(t, 0.0, 0.6)) + 300 * ease(seg(t, 1.9, 2.6))
+        reach = 0.6 <= t < 1.4
+        sof = P("sofia", x, 872 - (5 if int(t * 8) % 2 and (t < 0.6 or t > 1.9) else 0), 0.90, "post" if reach else "hold", "appraise", (0.2, 1.0))
+        cam72 = (651, 665, 2.44); T_UP = (0.85, 1.2); T_MUG = 1.9
     v = ease(seg(t, 0.8, 1.4))
     def post(k):
         hx, hy = sc.HANDS.get("pam_awake", (706, 510))
-        if MAIL72[0]:                                          # she walks in with it in her phone hand; it goes up with that hand and is slid into Pam's; nothing appears in the air
+        if MAIL72[0] or END2[0]:                               # she walks in with it in her phone hand; it goes up with that hand and is slid into Pam's; nothing appears in the air
             k.c.push_group(); o_ = sd.sofia(k, sof[1][0], sof[1][1], sof[1][2], sof[1][3], "appraise", (0.2, 1.0), tablet_kind=None); k.c.pop_group()
             sx_, sy_ = o_["hands"][1]
-            w_ = ease(seg(t, 1.15, 1.5))
+            w_ = ease(seg(t, *T_UP))
             ex, ey = sx_ + 14 + (hx + 2 - sx_ - 14) * w_, sy_ - 38 + (hy - 20 - sy_ + 38) * w_
             pr.envelope(k, ex, ey, 0.26, 0.12 + 0.08 * w_)
             if w_ >= 1:
@@ -581,8 +588,8 @@ def a72(t):                                                    # Sofia in mid-st
             pr.envelope(k, ex, ey, 0.26, 0.2 * v + 0.5 * math.sin(v * math.pi) * 0.3)
             if v >= 1:
                 hp.draw(k, "grab", hx, hy, 15, (0.99, 0.86, 0.70), (0.0, -1.0), 1)
-    loc = "desk8" if t > 2.3 else None                         # her mug at the end of the row
-    return draw(shot("7.2", cam=D_CAM, cast=[_pam_asleep(t), sof], after=post, protect=(), **({"loc": loc} if loc else {})))
+    loc = "desk8" if t > T_MUG else None                       # her mug at the end of the row
+    return draw(shot("7.2", cam=cam72, cast=[_pam_asleep(t), sof], after=post, protect=(), **({"loc": loc} if loc else {})))
 
 
 def a73(t):
@@ -603,6 +610,16 @@ def a75(t):
     """Realization, then disappointment: the sheet under her chin, her fingertip down the rows to the seventh PAM; her
     eyes follow it; the brows go, the head sinks a little; held."""
     import on4_props as pr
+    if END2[0]:                                                # one look: her eyes drop from the top row to the bottom one, the smile goes, the head sinks; no fingertip; 1.8 s
+        dn = ease(seg(t, 0.30, 0.55))
+        face = "hopeful" if t < 0.50 else ("approve" if t < 0.75 else ("doubt" if t < 1.15 else "fade"))
+        sink = 6 * ease(seg(t, 1.05, 1.45))
+        p = P("pam_awake", 692, 722 + sink, 0.50, "up", face, (-0.2, 0.35 + 0.65 * dn), "stand")
+        def after2(k):
+            pr.rota(k, 706, 694 + sink * 0.6, 0.30, -0.05)
+            for fx in (676, 736):
+                kit.ellipse(k, fx, 652 + sink * 0.6 + (fx - 676) * 0.05, 8, 6, (0.99, 0.86, 0.70), 7600 + fx, shadow=False, lw=1.4)
+        return draw(shot("7.5", cam=(702, 664, 3.1), cast=[p], after=after2, protect=()))   # the camera lower: the seventh row over the caption zone
     u = ease(seg(t, 0.2, 1.7))
     face = "hopeful" if t < 0.35 else ("approve" if t < 0.8 else ("doubt" if t < 1.8 else "fade"))   # smile, the gasp, the brows, gone
     sink = 5 * ease(seg(t, 1.8, 2.2))
