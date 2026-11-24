@@ -8,6 +8,7 @@ import math
 import cairo
 
 SAFE = (18, 96, 522, 820)   # x0, y0, x1, y1 at 540x960 (CLAUDE.md, G5)
+RAIL = (470, 380, 540, 860)  # the app's button rail: no text there (CLAUDE.md "Text", G3 dead zones)
 TAIL_MIN, TAIL_MAX = 10, 20
 
 
@@ -122,8 +123,13 @@ def measured_tip(surface, box, before=None):
     return _attached(white, box, sx, sy)
 
 
-def check(surface, box, tip, faces, above=None, aim=None, before=None):
-    """Fail on a long tail, a tip on hair, eyes or the mouth, a box outside SAFE, or a box over a face.
+def _overlap(a, b):
+    return a[0] < b[2] and a[2] > b[0] and a[1] < b[3] and a[3] > b[1]
+
+
+def check(surface, box, tip, faces, above=None, aim=None, before=None, avoid=()):
+    """Fail on a long tail, a tip on hair, eyes or the mouth, a box outside SAFE, in the button rail, over a face,
+    or over a rect the caller keeps clear (avoid: the signs, story props and hands drawn in this frame).
     above is a bare-scalp or antenna point. aim is a tip the caller measured on this frame
     (a visor rim, the mouth a profile drew, a voice in the dark). A tip landing on either is allowed.
     before is snapshot() from just before this bubble. Returns a list of faults. Empty means it may ship."""
@@ -131,6 +137,12 @@ def check(surface, box, tip, faces, above=None, aim=None, before=None):
     x0, y0, x1, y1 = box
     if x0 < SAFE[0] or y0 < SAFE[1] or x1 > SAFE[2] or y1 > SAFE[3]:
         msgs.append("BUBBLE outside the safe area %s" % (tuple(round(v) for v in box),))
+    if _overlap(box, RAIL):
+        msgs.append("BUBBLE in the right button rail %s" % (tuple(round(v) for v in box),))
+    for a in avoid:
+        if _overlap(box, a):
+            msgs.append("BUBBLE over a sign or prop kept clear %s" % (tuple(round(v) for v in a),))
+            break
     for face in _as_faces(faces):
         if _over_face(box, face):
             msgs.append("BUBBLE over a face")
@@ -285,6 +297,21 @@ def selftest():
     got = check(surf, box, None, [])
     if not any("outside the safe area" in m for m in got):
         bad.append("a box outside SAFE passed: %s" % got)
+
+    surf, c = _blank()                                       # a box in the app's button rail (CLAUDE.md "Text")
+    box = (440, 500, 520, 560)
+    c.set_source_rgb(1, 1, 1); c.rectangle(box[0], box[1], box[2] - box[0], box[3] - box[1]); c.fill()
+    got = check(surf, box, None, [])
+    if not any("button rail" in m for m in got):
+        bad.append("a box in the right rail passed: %s" % got)
+
+    surf, c = _blank()                                       # a box on a sign the caller asked to keep clear
+    sign = (120, 300, 260, 340)
+    box = (150, 320, 300, 380)
+    c.set_source_rgb(1, 1, 1); c.rectangle(box[0], box[1], box[2] - box[0], box[3] - box[1]); c.fill()
+    got = check(surf, box, None, [], avoid=[sign])
+    if not any("over a sign" in m for m in got):
+        bad.append("a box over a kept-clear sign passed: %s" % got)
 
     def clean(surf, c, before):
         head = (160, 420, 48)
