@@ -10,6 +10,13 @@ UptimeZ Inc. · episode 12 · 21 Nov · from script v1.5. v1 and v2 are kept. **
 | 15 | 3.5 | "He won't count." | **"Green is all he sees."** | Recorded 21 Nov (scene 3 review; Tomas: "Improve, what goes good") |
 | 24 | 7.3b | "Incident logged. CEO responsible." | **"CEO responsible."** | Recorded 21 Nov (Tomas: "Ceo responsible. Improve") |
 
+**22 Nov, later (approved by Tomas, recorded):**
+
+| # | Shot | Was | Now | Why |
+|---|---|---|---|---|
+| 6 | 1.2 | "Good news, everyone! My father's coming!" | "Brace yourselves. Dad is coming." | Approved and recorded (1.88 s, heard 3 of 3). |
+| 21 | 6.1 | "Lifetime Premium. On us." | **"Premium. On us."** | "Lifetime" was said twice, so "Then make it lifetime." repeated it. Now the last line tops the first. Recorded (1.16 s, heard 3 of 3). |
+
 On screen only, never said: the invoice is **$80** (the series' currency; it was wrongly in euros until 22 Nov).
 
 **v3: Pam's remark** (Tomas, 21 Nov: "Pam say 4"). Line 27b, new: **"Some inspect. Others drink."** Her formula from episodes 9, 10 and 11. Her voice is the series' own (voice A, `bf_emma`), as in episodes 8 to 10; no audition was needed. This is every line that is said, in order, with who says it to whom, what they mean, how it is said, and what we see while it is said. Mark what to change; I record only after you approve.
@@ -99,7 +106,7 @@ On screen only, never said: the invoice is **$80** (the series' currency; it was
 | # | Shot | Who → to whom | Line | What they mean | How it is said | On screen |
 |---|---|---|---|---|---|---|
 | 20 | 6.1 | Don → the visitor | **"Complete transparency."** | Look how honest we are. | Proud, a wave of the arm | He waves at the robot's dashboard (red numbers, the green star). The visitor looks past it at the counter |
-| 21 | 6.1 | Don → the visitor | **"Lifetime Premium. On us."** | Please tell my father good things. | Lower, confidential, a bribe said as a gift | He presses a gold card into the man's hand: PREMIUM |
+| 21 ✎ | 6.1 | Don → the visitor | **"Premium. On us."** *(recorded 22 Nov; was "Lifetime Premium. On us.")* | Please tell my father good things. | Lower, confidential, a bribe said as a gift | He presses a gold card into the man's hand: PREMIUM |
 | 22 | 6.2 | The robot → the room | **"Premium search is non-functional."** | (A fact.) | Flat, helpful | The robot close |
 | 23 | 6.3 | Don → the robot | **"Then make it lifetime."** | Don't spoil my bribe. | Without a blink, without turning his head | Don close |
 

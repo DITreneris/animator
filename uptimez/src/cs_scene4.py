@@ -35,7 +35,7 @@ from cand_bc import ik
 from cs_board import S, at, base
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v4"
+V = "v5"                                                    # v5: layout B (Pam brings the plan, no hands; her line)
 DPS = 12
 SR = 48000
 TAKES = s1.TAKES
@@ -81,10 +81,10 @@ class Strip:
         sb.pocket_strip = self.op
 
 
-def pam(k, x, pose, face, look, glasses="up", lean=0.0, d=0):
+def pam(k, x, pose, face, look, glasses="up", lean=0.0, d=0, mouth=None):
     c = k.c
     c.save(); c.translate(x, PAM_FEET); c.scale(1.0, br(d, 0.5)); c.translate(-x, -PAM_FEET)
-    o = pb.pam(k, x, PAM_FEET, PAM_S, pose, face, look, glasses=glasses, lean=lean)
+    o = pb.pam(k, x, PAM_FEET, PAM_S, pose, face, look, glasses=glasses, lean=lean, mouth=mouth)
     c.restore()
     return o
 
@@ -106,6 +106,10 @@ ROLL_ARM = (-14, 30)                                        # her screen-left ar
 GLASSES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.3, 0.7, 1, 1, 1, 0.7, 0.3, 0, 0, 0, 0, 0, 0, 0]   # her other hand up and back
 
 
+STOP41 = (20, 150)                                          # her screen-right arm: the forearm up, the palm at him (6 tried)
+HAND41 = ["quiet"]
+
+
 def s4_1(k, d):
     """24 drawings (2.0 s). He is going for the door; Pam steps in from the left, the blue roll upright in her hand;
     he stops short; her other hand goes up and pushes her glasses into her hair (d12); she holds his eye."""
@@ -113,6 +117,10 @@ def s4_1(k, d):
     cx = 318 - (318 - 285) * ease(d / 6.0)
     g = GLASSES[d]
     arm = lerp((8, 0), (158, 38), ease(g))
+    if s1.GRIP[0]:                                                                 # 23 Nov (Tomas): her free hand up, a STOP
+        st = ease((d - 2) / 3.0) * (1 - ease((d - 9) / 2.0))                       # palm at him as she lands (d2-10), then
+        arm = lerp(lerp((8, 0), STOP41, st), (158, 38), ease(g))                    # up to her glasses as before
+        HAND41[0] = "palm" if st > 0.75 else ("grab" if st > 0.2 else "quiet")    # v19: the half-open hand between
     lean = -3.0 * ease((d - 5) / 3.0) * (1 - ease((d - 10) / 4.0))                # he rocks back as she lands
     got = {}
 
@@ -189,8 +197,12 @@ def limb(k, x0, y0, x1, y1, w, sleeve, col, skin, cuff=None, seed=900, thumb=Non
             xx = L * sleeve - 6 - i * 9
             if xx > 4:
                 c.move_to(xx, -w / 2 + 3); c.curve_to(xx + 4, -w / 6, xx + 4, w / 6, xx, w / 2 - 3); c.stroke()
-    ellipse(k, L, 0, w * 0.55, w * 0.50, skin, seed + 2, shadow=False, lw=2.4)
-    if thumb:
+    import hands2 as _h2
+    if _h2.ON[0]:                                                                  # 23 Nov: a hand with fingers at the wrist
+        _h2.hand(k, L - 12, 0, 0.0, w * 0.95, skin, "grip" if thumb else "open", thumb or 1, seed + 2)
+    else:
+        ellipse(k, L, 0, w * 0.55, w * 0.50, skin, seed + 2, shadow=False, lw=2.4)
+    if thumb and not _h2.ON[0]:
         ellipse(k, L - 2, thumb * w * 0.50, w * 0.30, w * 0.20, skin, seed + 3, shadow=False, lw=2)
     if oil:
         c.set_source_rgba(0.15, 0.13, 0.10, 0.35); c.set_line_width(2.2)
@@ -204,10 +216,15 @@ def s4_2(k, d):
     up, and back (d0-8); they unroll her taped plan down over the AI's (d9-17); they leave; a slow push in on the
     gap where 7 should be (d18-27): the problem."""
     c = k.c
-    z = 1.0 + 0.16 * ease((d - 18) / 5.0)
+    z = 1.0 + 0.16 * ease((d - (12 if SILENT[0] else 18)) / 5.0)
     c.save(); c.translate(*GAP_AT); c.scale(z, z); c.translate(-GAP_AT[0], -GAP_AT[1])
     _desk(k)
     x0, y0, w, h = PLAN_BOX
+    if SILENT[0]:                                                                 # v5 (Tomas, 23 Nov): no hands. The plan
+        u = ease(d / 7.0)                                                          # slides in from the top, whole sheet, and lands
+        c.set_source_surface(_plan_surface("before"), 0, -(1 - u) * 720); c.paint()
+        c.restore()
+        return
     u = ease((d - 9) / 8.0)
     ry = y0 + h * u                                                               # the roll's place
     if d >= 9:
@@ -249,6 +266,9 @@ POCKET = (296.0, 691.0)                                     # the blue edge abov
 def s4_2b(k, d):
     """14 drawings (1.2 s). Pam's eyes drop to his pocket; her arm comes up, elbow bent, her finger stopping just
     short of the blue edge sticking out of it; he looks down at it."""
+    t = d / float(DPS)
+    d = min(d, N42b - 1)                                                           # v5: held while she speaks
+    mouth = s3.talk_code(t, *LINE42b) if PAM_LINE[0] else None
     r = ease((d - 2) / 4.0)
     rest = (PX42b + 24, PAM_FEET - 64)
     sh = (PX42b + PAM_SH_R[0] * PAM_S, PAM_FEET + PAM_SH_R[1] * PAM_S)             # her hand 40 units out along the line to
@@ -260,7 +280,8 @@ def s4_2b(k, d):
     got = {}
 
     def pre(k_):
-        got["o"] = pam(k_, PX42b, (-8, 0, a1, a2), "neutral", (1, 0.7), glasses="up", lean=LEAN42b * r, d=d)
+        got["o"] = pam(k_, PX42b, (-8, 0, a1, a2), "neutral", (1, 0.7) if not mouth else (1, 0.2), glasses="up", lean=LEAN42b * r, d=d,
+                       mouth=mouth)
 
     def ex(k_, o):
         if r > 0.5:                                                               # her arm again, over his jacket: from
@@ -274,6 +295,13 @@ def s4_2b(k, d):
                 an = math.atan2(by - ay, bx - ax); nx, ny = -math.sin(an) * 8.5, math.cos(an) * 8.5
                 cut(k_, [(ax + nx, ay + ny), (bx + nx, by + ny), (bx - nx, by - ny), (ax - nx, ay - ny)], col, shadow=False, lw=2)
             ellipse(k_, ex_, ey_, 9, 9, PURPLE, 997, shadow=False, lw=2)
+            if s1.GRIP[0]:                                                         # 23 Nov: the series' pointing hand (hands_ps)
+                import hands_ps as hp
+                s1.PH_DEV.append(c.user_to_device(wx, wy))                         # (the rig's own hand stays out: two-pass)
+                an = math.atan2(wy - ey_, wx - ex_)
+                hp.draw(k_, "point", wx, wy, 19.0, SKIN_PAM, (math.cos(an), math.sin(an)), 1)
+                c.restore()
+                return
             ellipse(k_, wx, wy, 10, 9, SKIN_PAM, 999, shadow=False, lw=2)
             an = math.atan2(wy - ey_, wx - ex_)                                    # her finger, on toward the pocket
             fx, fy = wx + math.cos(an) * 15, wy + math.sin(an) * 15
@@ -304,6 +332,8 @@ def s4_3a(k, d):
     out = d >= 4
     face = "plain" if d < 8 else ("dawning" if d < 10 else "shock")
     look = (0.3, 1) if d < 6 else (0.55, 0.9)
+    if FACE43A[0] and d >= 10:                                                      # (d8-9 stays the dawning: the beat of "...oh")                                                       # v19: embarrassed, not afraid (lesson 128):
+        face, look = FACE43A[0], (0.45, 1.0)                                       # the lids down on the strip, red from the collar
 
     def ex(k_, o):
         if not out:
@@ -315,6 +345,12 @@ def s4_3a(k, d):
         c.set_source_rgba(1, 1, 1, 0.18); c.set_line_width(0.8)
         c.move_to(-4, -26); c.line_to(4, -24); c.stroke()
         c.restore()
+        if s1.GRIP[0]:                                                              # 23 Nov: held like his phone (lesson 178)
+            s1.PH_DEV.append(c.user_to_device(rx, ry))
+            c.save(); c.translate(rx, ry - 2); c.rotate(-0.22)
+            s1.grip_rect(k_, SKIN_CL, -6.5, -34, 13, 40, side=-1)
+            c.restore()
+            return
         ellipse(k_, rx, ry + 1, 7.6, 7.0, SKIN_CL, 774, lw=1.5)                    # his fist round its foot
         ellipse(k_, rx - 5.5, ry - 5, 2.8, 4.4, SKIN_CL, 775, shadow=False, lw=1.2)   # the thumb across it
 
@@ -324,6 +360,39 @@ def s4_3a(k, d):
                  cl=at("client", x=CX, pose=(-8, 0, a1, a2), face=face, look=look)))
     if d >= 9:
         b3.flush(k, "client", min(0.32, (d - 8) * 0.08))
+
+
+FACE43A = [None]
+
+
+# ---- 4.3s (v19) the 7 in his own hand, the new grip -----------------------------------------------------------------------
+
+N43s = 10
+
+
+def s4_3s(k, d):
+    """10 drawings (0.8 s). Close: the strip already turned, the 7 ringed in red, in his own hand: the olive sleeve and
+    its cuff from the bottom, oil in the creases, the thumb across the strip's front, three fingertips round its edge."""
+    c = k.c
+    sb.bg(c, OLIVE)
+    c.set_source_rgba(0, 0, 0, 0.10); c.set_line_width(3)
+    c.move_to(120, 0); c.curve_to(150, 300, 100, 600, 140, 960); c.stroke()
+    sway = 3.0 * math.sin(2 * math.pi * d / float(DPS) / A.BREATH)
+    c.save(); c.translate(270, 400 + sway); c.rotate(-0.16)
+    rect(k, -70, 300, 140, 420, OLIVE, 951, lw=4)                                   # the sleeve
+    rect(k, -78, 270, 156, 44, CUFF, 952, shadow=False, lw=3.5)
+    rect(k, -46, 150, 92, 130, SKIN_CL, 953, shadow=False, lw=4)                    # the wrist
+    rect(k, -75, -250, 150, 430, BLUE, 774, lw=4)                                   # the strip, its face to us
+    c.set_source_rgb(*cp.RED); c.set_line_width(11); c.new_path(); c.arc(0, -60, 66, 0, 6.3); c.stroke()
+    cp.T(c, "7", 0, -16, 128, col=(1, 1, 1))
+    c.set_source_rgb(1, 1, 1); c.set_line_width(5); c.rectangle(-36, 40, 72, 60); c.stroke()
+    for yy in (55, 70, 85):
+        c.move_to(-36, yy); c.line_to(36, yy); c.stroke()
+    s1.grip_rect(k, SKIN_CL, -75, -250, 150, 430, side=-1)
+    c.set_source_rgba(0.25, 0.20, 0.12, 0.55); c.set_line_width(3)                  # oil in the creases
+    for x0, y0, x1, y1 in ((-30, 170, 10, 160), (-20, 200, 25, 192), (60, 120, 90, 100)):
+        c.move_to(x0, y0); c.line_to(x1, y1); c.stroke()
+    c.restore()
 
 
 # ---- 4.3c the proof ----------------------------------------------------------------------------------------------------
@@ -487,10 +556,33 @@ def s4_4(k, d):
 SHOTS = [("4.1", N41, s4_1), ("4.2", N42, s4_2), ("4.2b", N42b, s4_2b), ("4.3a", N43a, s4_3a), ("4.3c", N43c, s4_3c),
          ("4.3b", N43b, s4_3b), ("4.4", N44, s4_4)]
 
+# ---- v5 (Tomas, 23 Nov, layout B): Pam brings the plan with no hands on screen; "Check your pocket."; the taping cut ----
+SILENT = [False]
+PAM_LINE = [False]
+LINE42b = (0.12, 0.12 + 1.19)                                # PAM: "Check your pocket." (film_v7 4.2p)
+N42b5 = 18                                                  # 1.5 s: the line and a beat
+
+
+def s4_3w(k, d):
+    """14 drawings (1.2 s). Cut on his freeze: the plan whole, the 7 in, taped (4.3b's last drawing), held."""
+    s4_3b(k, N43b - 1)
+
+
+SHOTS5 = [("4.1", N41, s4_1), ("4.2", N42, s4_2), ("4.2b", N42b5, s4_2b), ("4.3a", N43a, s4_3a), ("4.3w", 14, s4_3w),
+          ("4.4", N44, s4_4)]
+if V == "v5":
+    SILENT[0] = PAM_LINE[0] = True
+    SHOTS = SHOTS5
+    TAKES = "cs_voices/film_v7"
+
 
 def schedule():
     n = sum(nd for sh, nd, _ in SHOTS[:-1])
-    return [("4.4", n / float(DPS) + LINE44[0])]
+    out = [("4.4", n / float(DPS) + LINE44[0])]
+    if PAM_LINE[0]:
+        st = sum(nd for sh, nd, _ in SHOTS[:SHOTS.index(next(x for x in SHOTS if x[0] == "4.2b"))])
+        out.insert(0, ("4.2p", st / float(DPS) + LINE42b[0]))
+    return out
 
 
 def draw(fn, d):

@@ -1,0 +1,24 @@
+{
+ "shots": [
+  {
+   "shot": "6.3p",
+   "line": {
+    "key": "6.3p",
+    "who": "PAM",
+    "text": "Some post. Others find.",
+    "t0": 6.003,
+    "t1": 7.69
+   }
+  },
+  {
+   "shot": "6.5",
+   "line": {
+    "key": "6.5",
+    "who": "SOFIA",
+    "text": "Still one star.",
+    "t0": 8.217,
+    "t1": 9.092
+   }
+  }
+ ]
+}
