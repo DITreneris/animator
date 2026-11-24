@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 49, 2: 49, 3: 49, 4: 49, 5: 49}
+VER = {1: 50, 2: 50, 3: 50, 4: 50, 5: 50}
 SOUND = "of_sound_v25.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -192,7 +192,9 @@ def s28d(t, L):                                            # SLAM
     T0 = 0.3                                               # v3 (24 Nov, cold test v30: 0 of 3 saw it; at 10 fps it fell for 0.4 s with a small
     u = ease((t - T0) / 0.09)                              # shake): UP with his hand on it for 0.3 s, down in 0.09 s, and the frame JOLTS
     return dict(anim=True, bonnet=1.0 - u, shake=0 if t < T0 + 0.09 else 14 * math.exp(-(t - T0 - 0.09) * 11) * math.sin(t * 110)), \
-        dict(client=dict(kind="slam", slam_b=1.0 - u))
+        dict(client=dict(kind="slam", slam_b=1.0 - u),          # v4 (cold test v43: "a statue"): Father's eyes go to the bonnet as it
+             father=dict(face="low" if t < T0 + 0.05 else ("brow" if t < T0 + 0.4 else "low"),   # falls; at the bang his brow goes up and he rocks back
+                         look=(1, 0.1 + 0.5 * ease((t - 0.1) / 0.2)), lean=-0.03 * (ease((t - T0) / 0.08) - ease((t - T0 - 0.3) / 0.25))))
 
 
 def s28e(t, L):                                            # the key turns; a cough; it runs
@@ -467,10 +469,10 @@ def s23(t, L):
     if u3 > 0:
         gh = om.lerp(out_, LAMP_IN_BAY, u3)
         return st, dict(client=dict(kind="bent", hand_back=False, work=math.sin(t * 2 * math.pi * 1.3) if t > 0.9 else 0.0),
-                        g1=dict(targets_xy=[gh], lamp=True, lamp_xy=gh, cone_side=u3, cable_floor=LAMP_G1[1] - 4, pool=(494, 716), lamp_ang=0.1), father=dict(look=(1, -0.2)))
+                        g1=dict(targets_xy=[gh], lamp=True, lamp_xy=gh, cone_side=u3, cable_floor=LAMP_G1[1] - 4, pool=(494, 716), lamp_ang=0.1), father=dict(look=(1, 0.3 - 0.3 * u3), lean=0.02 * u3), g2=dict(turn=0.55))
     gh = om.lerp(rest, out_, u2)
     return st, dict(client=dict(kind="bent", hand_back=True, hand_back_at=om.lerp(start, out_, u1), lamp_lit=False),
-                    g1=dict(targets_xy=[gh]), father=dict(look=(1, -0.2)))
+                    g1=dict(targets_xy=[gh]), father=dict(look=(1, -0.2 + 0.5 * u2)), g2=dict(turn=0.55 * u2))
 
 
 def s28e2(t, L):                                           # v9: the key turns; at the cough, CUT to the car: it runs
@@ -774,19 +776,21 @@ def render_scene(n):
     return k, dur, probs, m540, m1080
 
 
-def _at_wall(r):
+def _at_wall(r, g2=None):
     """v1 (23 Nov, the loop): bodyguard 2 stands at the wall behind the car from frame 0 (the man who will burn the plan,
     and who pins the fresh one in the last shot), so the last frame and frame 0 are one picture."""
     st, po = r
     st = dict(st, _cast=("g1", "g2"), behind_car=("g2",))
     st["moved"] = dict(st.get("moved", {}), g2=NEW_PLAN_G2)
-    po = dict(po, g2=dict(turn=0.0))
+    po = dict(po, g2=dict(g2 or dict(turn=0.0)))                # v2 (cold test v43, 3 of 3: "a statue"): he reacts
     return st, po
 
 
-MOTION["0.8"] = lambda t, L, f_=MOTION.get("0.8", s08_slam): _at_wall(f_(t, L))
-MOTION["0.10"] = lambda t, L, f_=MOTION.get("0.10", s010_same): _at_wall(f_(t, L))
-MOTION["0.9"] = lambda t, L, f_=MOTION.get("0.9", s09_wide): _at_wall(f_(t, L))   # v2: the same picture as 0.8
+# the man at the wall: frame 0 as it was (turn 0, the loop's last frame); at the slam his head snaps to the roof; on "Off the
+# car." it drops to the legs; when the hand comes off he looks back up, to the front
+MOTION["0.8"] = lambda t, L, f_=MOTION.get("0.8", s08_slam): _at_wall(f_(t, L), dict(turn=-0.55 * om.hold((t - 0.12) / 0.14)))
+MOTION["0.10"] = lambda t, L, f_=MOTION.get("0.10", s010_same): _at_wall(f_(t, L), dict(turn=-0.55 * (1 - om.hold((t - 0.2) / 0.16)), look_down=9 * (1 - om.hold((t - 0.2) / 0.16))))
+MOTION["0.9"] = lambda t, L, f_=MOTION.get("0.9", s09_wide): _at_wall(f_(t, L), dict(turn=-0.55, look_down=9 * ease((t - 0.3) / 0.2)))   # v2: the same picture as 0.8
 DOOR_CAM = (168, 700, 1.9)                                # v1 (23 Nov, decided): the doorway, Father in it, held
 
 

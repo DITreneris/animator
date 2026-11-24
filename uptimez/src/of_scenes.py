@@ -1045,7 +1045,20 @@ def insert_shot(k, sh):
         wx_, wy_ = hw_[0] - 62 * WD_[0], hw_[1] - 62 * WD_[1]          # HIS gold watch, on the wrench wrist
         ellipse(k, wx_, wy_, 21, 21, (0.86, 0.68, 0.22), 3477, lw=2.2)
         ellipse(k, wx_, wy_, 13, 13, (0.10, 0.16, 0.14), 3478, lw=1.6)
-        gs.lamp(k, 330, 96, ang=-1.2, lit=True, glow=False)                            # the lamp, at the top of the frame: the light's source
+        # v50 (cold test v47, 2 of 3: "it dangles from above like a ceiling light"): the lamp is HELD: the bodyguard's black
+        # sleeve and white cuff come in from the top right, his fist round the handle, the cage aimed down at the hands
+        la_ = -0.62
+        lx_, ly_ = 372, 150
+        hx_, hy_ = lx_ + 26 * math.cos(la_), ly_ + 26 * math.sin(la_)
+        ux_, uy_ = math.cos(la_), math.sin(la_)
+        nx_, ny_ = -uy_, ux_
+        w0, w1 = 21, 30
+        cut(k, [(hx_ + 14 * ux_ + w0 * nx_, hy_ + 14 * uy_ + w0 * ny_), (hx_ + 240 * ux_ + w1 * nx_, hy_ + 240 * uy_ + w1 * ny_),
+                (hx_ + 240 * ux_ - w1 * nx_, hy_ + 240 * uy_ - w1 * ny_), (hx_ + 14 * ux_ - w0 * nx_, hy_ + 14 * uy_ - w0 * ny_)], (0.11, 0.11, 0.13), lw=2.4)
+        cut(k, [(hx_ + 10 * ux_ + 19 * nx_, hy_ + 10 * uy_ + 19 * ny_), (hx_ + 22 * ux_ + 20 * nx_, hy_ + 22 * uy_ + 20 * ny_),
+                (hx_ + 22 * ux_ - 20 * nx_, hy_ + 22 * uy_ - 20 * ny_), (hx_ + 10 * ux_ - 19 * nx_, hy_ + 10 * uy_ - 19 * ny_)], (0.97, 0.97, 0.95), shadow=False, lw=1.8)
+        gs.lamp(k, lx_, ly_, ang=la_, lit=True, glow=False, cable=False)
+        _oc.handle_grip(k, hx_, hy_, 24, la_ + math.pi / 2, co_skin())
         c.save(); c.translate(120, 470)                                                 # his red rag, over the block's edge
         # v4 (24 Nov, audit: "a cylinder"; two rags at once): NO rag on the engine: his one rag is in his back pocket
         c.restore()
