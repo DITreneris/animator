@@ -933,3 +933,7 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - A real-app look must not cost the read: the dark call screen was worse than the old plain green one (audit and my own check). Keep the screen LIGHT, the one word big, and clear of the fingers on the grip's edge.
 - On a 100 px wide screen nothing under about 9 units is read: drop helper text and placeholder lines instead of shrinking them.
 - Before / after PNG, old row over new row, is the cheapest review of a restyle; the audit's "stop" criterion is worth taking (it scored the UI 8.2 and pointed at timing and reactions next).
+
+## 219. Rules for hands and phones are on one page (24 Nov)
+
+Eight lessons about hands and two about phones (147–218) had become a diary of versions, some contradicting each other (214's "hand only" against 216's "the owner in the frame"). `docs/rules-hands-and-phones.md` keeps only what holds now, with the superseded lessons named. Read it before drawing a hand, a close-up arm or a phone screen; add to it, not only to this list, when a hand or a screen teaches something new.
