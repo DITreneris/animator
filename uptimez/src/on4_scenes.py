@@ -1,4 +1,9 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v10 = board v8 (24 Nov; v9 pinned). The board's second and last outside
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v11 = board v9 (24 Nov; v10 pinned). The rest of the last outside round
+(frames 16-31): props in hands (the lift's glove rim-lit, the envelope held bigger on a bent arm, the posted envelope in
+her hand, the rota in her fingers and flat on the cups); the light on the actor (the spotlight on her, the club's far wall
+dark, Pam out of the arch's glare); the camera nearer (5.1, the desk, 6.6); 4.3's sign whole; the sleep mask reads pushed
+up. Not taken: a smile at 6.6 ("Of course." is the fall), piling dirty cups (the seven and hers are the count).
+v10 = board v8 (24 Nov; v9 pinned). The board's second and last outside
 round (three reviews, "improve"): figures touch their surfaces, the light acts on the scene, the shadow is a projection.
 3.6 a low close (the A-shaped legs gone); 2.4 she stands ON the platform; 1.1-1.2 the hat shadow runs from the bottom of the
 frame across the cobbles, folds at the wall's foot and climbs the wall (its man unseen), the fist on its outline, and it
@@ -74,6 +79,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "board v9: props in hands, the light on the actor, the camera nearer (5.1 +40%, the desk +20%, 6.6 closer); 4.3 the sign whole; the sleep mask pushed up reads.",
     "board v8: grounding and light (3.6 low close; 2.4 on the platform; 1.1-1.2 the shadow projected from the cobbles up the wall, the fist on it; 3.5 soft rim, contact shadows; hands in 2.3 and 3.4; 2.2 tighter, Dad rim-lit; 3.1 asymmetric with light on the road; 3.2 one burst; bloom -40%).",
     "board v6: timing v2 from the scene file (a/b keys); 4.3 -1.5 s, the rota 2.0 s; the burst at the bumper; the heart seal on both envelopes; faces at the turns; 7.1 an open hand.",
     "board v5: 6.4 and 6.5 cut (the light leaving her misread three times); 6.3 carries it, 6.6 alone on the dark stage; Sofia unimpressed, eyes on her phone, in 1.1-1.2.",
@@ -243,6 +249,9 @@ def coat_lift(k):
     c = k.c
     oc.envelope(k, 330, 330, 2.4)                                                                 # out of the pocket, by its edge
     st.poly(k, [(560, 120), (420, 210), (450, 300), (560, 230)], oc.COAT, 2.4)                 # board v3: her coat sleeve,
+    c.push_group(); hp.draw(k, "grab", 380, 270, 70, oc.GLOVE_DARK, (0.6, -0.8), 1); g_ = c.pop_group()
+    for dx_, dy_ in ((-3, 0), (3, 0), (0, -3), (0, 3)):      # board v9: the black glove rim-lit off the dark coat
+        c.save(); c.translate(dx_, dy_); c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.mask(g_); c.restore()
     hp.draw(k, "grab", 380, 270, 70, oc.GLOVE_DARK, (0.6, -0.8), 1)
     oc.ears(k, 500, 120, 1.3)                                                                     # and a cat ear, at the edge
 
@@ -404,12 +413,14 @@ def P(who, *a, **kw):
     return (who, a, kw)
 
 
-ARM_UP = (-8, 0) + oc.pm.ik(1, 30, oc.HY - 150)
+ARM_UP = (-8, 0) + oc.pm.ik(1, 74, oc.HY - 96)     # board v9: out and up on its elbow, the sleeve seen
 import pm_ps as _pmps
 _pmps.P_HANDS.setdefault("arm_up_open", ("relax", "palm"))  # board v6: the raised hand open (read as a fist)
 kit.ARM_POSES.setdefault("arm_up_open", ARM_UP)             # 7.1 / 6.5: one arm up on its elbow, the hand open
 HAND_STOP = (-8, 0) + oc.pm.ik(1, 80, oc.HY + 10)          # 3.2: one hand up at the headlights
 oc.CAT_POSES.setdefault("punch", (oc.pm.ik(-1, -150, oc.BT + 10) + (8, 0), ("fist", "relax_s")))   # 1.2: the punch at the wall
+oc.CAT_POSES.setdefault("point_sign", ((-8, 0) + oc.pm.ik(1, 86, oc.HY - 66), ("relax_s", "point")))   # 4.3: the elbow bent
+oc.CAT_POSES.setdefault("triumph2", ((-8, 0) + oc.pm.ik(1, 88, oc.HY - 50), ("relax_s", "fist")))      # 6.3: held up on a bent arm
 oc.CAT_POSES.setdefault("stop_palm", (HAND_STOP, ("relax_s", "palm")))      # board v1: the palm open at the car
 oc.CAT_POSES.setdefault("mask_fix", ((-8, 0) + oc.pm.ik(1, 34, oc.HY - 6), ("relax_s", "point")))   # 3.6: a finger to the mask
 DON_REACH = (-70, 20, 8, 0)                                # 3.3: his screen-left arm out and down to the bumper
@@ -435,6 +446,11 @@ def draw_cast(k, cast):
             k.c.save(); k.c.translate(a[0], a[1]); k.c.rotate(lean); k.c.translate(-a[0], -a[1])
         if who == "pam_cat":
             cy = kw.pop("clip_y", None)
+            if kw.pop("rim", False):                         # board v9: a thin rim of light round her
+                c_ = k.c
+                c_.push_group(); oc.pam_cat(k, *a, **kw); g_ = c_.pop_group()
+                for dx_, dy_ in ((-3, 0), (3, 0), (0, -3)):
+                    c_.save(); c_.translate(dx_, dy_); c_.set_source_rgba(0.82, 0.82, 0.80, 0.85); c_.mask(g_); c_.restore()
             if cy is not None:                               # 3.6: sitting: only her top half rises from the road
                 k.c.save(); k.c.rectangle(-2000, -2000, 5000, cy + 2000); k.c.clip()
             o = oc.pam_cat(k, *a, **kw)
@@ -516,11 +532,15 @@ HANDS = {}
 
 def _sofia_post(k):                                        # 7.2: the envelope going into Pam's raised hand (her rig's hand)
     hx, hy = HANDS.get("pam_awake", (706, 510))
-    pr.envelope(k, hx + 4, hy - 26, 0.28, 0.3)
+    pr.envelope(k, hx + 2, hy - 20, 0.26, 0.2)             # board v9: in her fingers: the hand redrawn over its lower edge
+    import hands_ps as hp
+    hp.draw(k, "grab", hx, hy, 15, kit.PEOPLE["PAM"]["skin"] if "skin" in kit.PEOPLE["PAM"] else (0.99, 0.86, 0.70), (0.0, -1.0), 1)
 
 
 def _rota_held(k):                                         # 7.5: the sheet in her hands, close
-    pr.rota(k, 706, 668, 0.28, -0.05)                      # held low in her hands, under her face
+    pr.rota(k, 706, 672, 0.28, -0.05)                      # held low in her hands, under her face
+    for fx in (690, 720):                                  # board v9: her fingertips over its top edge
+        kit.ellipse(k, fx, 632 + (fx - 690) * 0.05, 7, 5, (0.99, 0.86, 0.70), 7600 + fx, shadow=False, lw=1.4)
 
 
 def lying_over(k):                                         # 3.3: her body over Don's feet (he stands behind her)
@@ -610,6 +630,15 @@ def _dark_half(k):                                         # 6.5 (board v4): the
     c.move_to(ex, ey); c.line_to(ex - 4, ey - 22); c.stroke(); c.move_to(ex, ey); c.line_to(ex - 22, ey + 4); c.stroke()
 
 
+def _spot_on(k):                                           # board v9: the beam ON her: the cone over her, its pool at her feet
+    c = k.c
+    c.set_source_rgba(1, 1, 0.92, 0.16)
+    c.move_to(428, 322); c.line_to(110, 700); c.line_to(340, 700); c.line_to(432, 344); c.close_path(); c.fill()
+    c.save(); c.translate(225, 700); c.scale(120, 14)
+    g = cairo.RadialGradient(0, 0, 0, 0, 0, 1); g.add_color_stop_rgba(0, 1, 1, 0.92, 0.6); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
+    c.set_source(g); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
+
+
 def _bills(k):
     import on4_lying as ly
     for (x, y, a) in ((360, 520, 0.3), (330, 560, -0.6), (380, 600, 0.9)):
@@ -693,41 +722,42 @@ SCENES = [
           eyeline="to the car", action="she sits up", reaction="Six left."),
     ]),
     ("04 False recognition", [
-        S("4.1", "wide, low angle", "front", WIDE, "A new place, held: the car parked and empty, the club door, the marquee coming on line "
-          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 330, 712, 0.62, "hero", "approve", (0, -1))],
+        S("4.1", "wide, low angle", "front", (270, 462, 1.05), "A new place, held: the car parked and empty, the club door, the marquee coming on line "
+          "by line; Pam-Cat walks in and stops under it.", cast=[P("pam_cat", 400, 714, 0.70, "hero", "approve", (-0.4, -1), rim=True)],
           protect=[("marquee", (270, 340)), ("the car", (150, 680))], line="Pam: There you are.", eyeline="to the car, then up"),
-        S("4.3", "medium, under the sign", "front", (300, 520, 1.5), "She points up at the sign, then at herself; turns to show "
+        S("4.3", "medium, under the sign", "front", (270, 545, 1.45), "She points up at the sign, then at herself; turns to show "
           "someone: the street is empty. A small smile anyway; she pats her ears up and pushes the door.",
-          cast=[P("pam_cat", 300, 712, 0.62, "point_up", "proud", (0.4, -1))], protect=[("ONLY FOR YOU", (270, 416))],
+          cast=[P("pam_cat", 300, 712, 0.62, "point_sign", "proud", (0.4, -1), lean=0.05)], protect=[("ONLY FOR YOU", (270, 416))],
           eyeline="to the sign, then to nobody", action="the point at the sign, at herself", reaction="Finally."),
     ]),
     ("05 The club", [
-        S("5.1", "wide", "hall", WIDE, "Inside: the booth, the game table, the stage at the end. The Client and the ringed hand over the "
+        S("5.1", "wide", "hall", (228, 590, 1.4), "Inside: the booth, the game table, the stage at the end. The Client and the ringed hand over the "
           "plan; the spotlight on the empty stage.", eyeline="both to the plan"),
         S("5.3", "medium", "hall", (160, 610, 1.9), "Pam-Cat walks to the booth; her gloved hand goes into the Client's coat and comes out "
-          "with the envelope by its edge. Neither man looks up.", cast=[P("pam_cat", 250, 716, 0.46, "lift", "peer", (-0.8, 0.4))],
+          "with the envelope by its edge. Neither man looks up.", cast=[P("pam_cat", 250, 716, 0.46, "lift", "peer", (-0.8, 0.4), rim=True)],
           line="Pam: Easy.", eyeline="Pam to the coat; the men to the plan", action="the lift", reaction="neither looks up"),
         S("5.3b", "insert (b: the lift)", "coat_lift", WIDE, "Her black glove draws the envelope out of his coat by its edge.",
           protect=[("envelope", (300, 470))], action="the lift", reaction="(he doesn't look)"),
     ]),
     ("06 Ignored star", [
         S("6.1", "medium, low", "stage", WIDE, "She steps into the spotlight and opens the envelope.",
-          cast=[P("pam_cat", 225, 700, 0.86, "hero", "proud", (0.3, 0.6), env=True)], eyeline="to the envelope"),
+          cast=[P("pam_cat", 225, 700, 0.86, "hero", "proud", (0.3, 0.6), env=True, rim=True)], eyeline="to the envelope",
+          after=_spot_on),
         S("6.2", "insert", "cv", WIDE, "Sofia's CV, her photograph.", protect=[("photo", (196, 320))]),
         S("6.3", "medium wide", "stage", WIDE, "She lifts it high, the triumph pose, and waits; the music stops.",
-          cast=[P("pam_cat", 225, 700, 0.86, "triumph", "proud", (0.3, -0.6))], line="Pam: Well?",
+          cast=[P("pam_cat", 225, 700, 0.86, "triumph2", "proud", (0.3, -0.6), env=True, rim=True)], line="Pam: Well?", after=_spot_on,
           protect=[("envelope", (270, 420))], eyeline="out to the room"),
         S("6.6", "close, the stage dark", "stage_dark", WIDE, "Her arm comes slowly down; she tucks the envelope in and pats it twice.",
-          cast=[P("pam_cat", 250, 930, 1.20, "sag", "fade", (0.2, 0.4), env=True)], reaction="Of course."),
+          cast=[P("pam_cat", 262, 950, 1.5, "sag", "fade", (0.5, 0.9), env=True, rim=True)], reaction="Of course."),
     ]),
     ("07 Awake", [
-        S("7.1", "S6, the counter's end", "desk7", (714, 606, 2.0), "The match: the shape of 6.5. Pam asleep on the counter, the mask "
+        S("7.1", "S6, the counter's end", "desk7", (704, 580, 2.4), "The match: the shape of 6.5. Pam asleep on the counter, the mask "
           "over her eyes, one arm up, the hand open. The lamp, seven cups, the machine.",
           cast=[P("pam_awake", 692, 760, 0.50, "down", "neutral", (0, 0), "arm_up_open")], dream=False,
           protect=[("her hand", (713, 660)), ("cups", (730, 650))]),
-        S("7.2", "S6", "desk7", (714, 606, 2.0), "Sofia comes round the counter's end mid-step, eyes on her phone; posts the envelope "
+        S("7.2", "S6", "desk7", (704, 580, 2.4), "Sofia comes round the counter's end mid-step, eyes on her phone; posts the envelope "
           "into Pam's raised hand; sets her mug at the end of the row. Clink. Walks on.",
-          cast=[P("pam_awake", 692, 760, 0.50, "down", "neutral", (0, 0), "arm_up_open"), P("sofia", 600, 806, 0.47, "hold", "neutral", (0.2, 0.7))],
+          cast=[P("pam_awake", 692, 760, 0.50, "down", "neutral", (0, 0), "arm_up_open"), P("sofia", 630, 800, 0.47, "hold", "appraise", (0.2, 1.0))],
           line="SOFIA: Only for you.", eyeline="Sofia to her phone, never to Pam", after=_sofia_post, dream=False,
           protect=[("envelope", (706, 510))], action="the posting", reaction="the fingers close on it"),
         S("7.3", "close", "desk7", (692, 640, 3.0), "The clink wakes her; she pushes the mask up, ears up; she looks at her hand.",
@@ -739,7 +769,7 @@ SCENES = [
           protect=[("rota", (706, 668))], eyeline="to the sheet", reaction="Only for me."),
     ]),
     ("08 Back to the dream", [
-        S("8.1", "S6", "desk8", (714, 606, 2.0), "She lays the rota over the cups, pulls the mask back down, head on her arm.",
+        S("8.1", "S6", "desk8", (704, 580, 2.4), "She lays the rota over the cups, pulls the mask back down, head on her arm.",
           cast=[P("pam_awake", 692, 764, 0.50, "down", "hopeful", (0, 0.4), "stand")], dream=False, reaction="Back to work."),
         S("8.2", "close (push in)", "lampclose", WIDE, "The counter lamp; the room goes dark; rain begins under it. Its head is frame 0's "
           "streetlamp: the loop.", protect=[("lamp", st.A_LAMP)], dream=False),
@@ -807,7 +837,11 @@ def _loc(k, name):
     if name == "front":
         cl.FRONT_LIGHT[0] = "v7"; cl.front(k, True); return lambda c_: cl.light_front(c_, True)
     if name == "hall":
-        cl.HALL_LAMP[0] = "v7"; cl.hall(k); return cl.light_hall
+        cl.HALL_LAMP[0] = "v7"; cl.hall(k)
+        g = cairo.LinearGradient(0, 300, 0, 520)             # board v9: the far wall and the ceiling go dark: a night club,
+        g.add_color_stop_rgba(0, 0.02, 0.02, 0.03, 0.80); g.add_color_stop_rgba(1, 0.02, 0.02, 0.03, 0.0)   # lit at its tables
+        k.c.set_source(g); k.c.rectangle(0, 0, 540, 520); k.c.fill()
+        return cl.light_hall
     if name == "plan":
         cl.PLAN_CARD[0] = "v7"; cl.plan_insert(k); return cl.light_inside
     if name == "stage":
@@ -834,7 +868,7 @@ def _loc(k, name):
         pr.insert74(k); return None
     if name == "lampclose":                                  # board v3: darker round the lamp (the SHRED label showed)
         pr.lamp_match(k)
-        g = cairo.RadialGradient(st.A_LAMP[0], st.A_LAMP[1] + 20, 120, st.A_LAMP[0], st.A_LAMP[1] + 20, 420)
+        g = cairo.RadialGradient(st.A_LAMP[0], st.A_LAMP[1] + 20, 70, st.A_LAMP[0], st.A_LAMP[1] + 20, 300)
         g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0.01, 0.01, 0.02, 0.98)
         k.c.set_source(g); k.c.paint()
         return None
@@ -872,7 +906,10 @@ def _desk(k, sh, eighth):
         pr.counter_lamp(k_, *pr.LAMP)
         pr.cups(k_, x0=668, eighth=eighth)
         if sh["id"] == "8.1":
-            pr.rota(k_, 734, pr.F - 168, 0.30, 0.12)
+            c_ = k_.c                                        # board v9: laid flat over the cups (foreshortened), its shadow
+            c_.save(); c_.translate(736, pr.F - 172); c_.scale(1, 0.5)
+            c_.set_source_rgba(0, 0, 0, 0.3); c_.rectangle(-36, -40, 76, 96); c_.fill()
+            pr.rota(k_, 0, 0, 0.34, 0.10); c_.restore()
         heads.update(draw_cast(k_, front))
         if sh["after"]:
             sh["after"](k_)
@@ -882,7 +919,7 @@ def _desk(k, sh, eighth):
 
 def render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
-    st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"
+    st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"; oc.ENV_BIG[0] = 1.25; oc.MASK_UP_V2[0] = True
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W * scale, H * scale); s.set_device_scale(scale, scale)
     c = cairo.Context(s); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
@@ -1224,7 +1261,7 @@ def write_timing_v2(out=OUT):
     return p, d["length"]
 
 
-def board(out=OUT, ver=8):
+def board(out=OUT, ver=9):
     """stage 5: one key frame per shot at 540, generated; two sheets at 400 px tiles, numbered with the time, and a phone
     sheet at 270 px. Neutral copies for the cold viewers go to /tmp/on4_board_cv (frame_NN.png, no names)."""
     import shutil
