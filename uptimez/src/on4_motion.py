@@ -359,7 +359,7 @@ def t6():
     fr = []
     STOPX = PX + 40 + 170
     CA, CB = (300, 610, 1.45), (392, 600, 1.02)
-    BILLS = [(196, 682), (262, 694), (322, 686)]              # v5: three big ones, the first onto her face
+    BILLS = [(196, 682), (236, 700), (262, 686), (292, 702), (322, 688), (350, 700)]   # v10 (Tomas): more of them; six land on her, Don catches a seventh
     DX, DY, DS = 352, 772, 0.56                                  # v5: Don on the road in front of the bonnet, nearer than the car
     def f(i):
         cam = CA if i < 36 else lerp(CA, CB, ease(min(1.0, (i - 36) / 6.0)))
@@ -372,7 +372,7 @@ def t6():
         elif i < 40:                                                                 # clean
             don = P("don", DX, DY, DS, "stand", "pleased", (0.9, 0.3), paddle_side="GO", paddle_ang=0.9)
         elif i < 62:
-            don = P("don", DX, DY, DS, "wave", "pleased", (0.8, -0.2), paddle_side="GO", paddle_ang=0.10, whistle_in=(i % 6 < 3))
+            don = P("don", DX, DY, DS, "wave", "pleased", (0.8, -0.2) if i < 52 else (0.6, -0.9), paddle_side="GO", paddle_ang=0.10, whistle_in=(i % 6 < 3))
         else:
             t = min(1.0, (i - 62) / 8.0); don = P("don", DX - (DX - 170) * t, DY - (DY - 596) * t, DS - (DS - 0.42) * t, "stand", "neutral", (-0.8, 0), paddle_side="GO", paddle_ang=0.9)
         wave = 24 <= i < 38 and (i // 3) % 2 == 0
@@ -417,18 +417,29 @@ def t6():
                 c.select_font_face("sans-serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(20)
                 c.move_to(-6, 7); c.show_text("$"); c.restore()
             for j, (bx, by) in enumerate(BILLS):                                     # the bills: let go, drifting onto her; then up into a shadow's fist
-                t0 = 48 + j * 2
+                t0 = 47 + j * 1.5
                 if i < t0:
                     continue
                 t = min(1.0, (i - t0) / 9.0)
                 x = wx - 16 + (bx - (wx - 16)) * t; y = wy + 14 + (by - (wy + 14)) * t * t + math.sin(t * 9 + j) * 8 * (1 - t)
                 ang = 0.4 + j + t * 3
-                own = hands.get(0 if j < 2 else 1)                                   # the first shadow takes two, the second one
+                own = hands.get(j % 2)                                               # three each
                 if own and own[2] != "in":
                     hx, hy, ph, tt_ = own
                     u = min(1.0, (tt_ - 1.0) / 0.5)
-                    x, y, ang = x + (hx + (j % 2) * 22 - x) * u, y + (hy - (j % 2) * 10 - y) * u, ang * (1 - u) + (0.25 - 0.5 * (j % 2)) * u
+                    n_ = j // 2                                                      # a fan in his fist, beside his head (not over his face)
+                    x, y, ang = x + (hx + 46 + n_ * 5 - x) * u, y + (hy + 34 - n_ * 12 - y) * u, ang * (1 - u) + (0.5 - 0.3 * n_) * u
                 if x > -30:
+                    bill(x, y, ang)
+            if 50 <= i < 70:                                                         # v10: the seventh: Don plucks it out of the air, looks at it, and it is gone into his vest
+                dxn = don[1][0]; dyn = don[1][1]
+                if i < 55:
+                    t = (i - 50) / 5.0; x = wx - 16 + (dxn + 44 - (wx - 16)) * t; y = wy + 14 + (dyn - 150 - (wy + 14)) * t - math.sin(t * math.pi) * 26; ang = 0.6 + t * 4
+                elif i < 62:
+                    x, y, ang = dxn + 44, dyn - 150, -0.2
+                else:
+                    t = min(1.0, (i - 62) / 5.0); x, y, ang = dxn + 44 - 40 * t, dyn - 150 + 50 * t, -0.2 - t
+                if i < 67:
                     bill(x, y, ang)
         return draw(shot("3.1", loc="C_side", cam=cam, cast=[], protect=(), after=after))
     return [f(i) for i in range(84)]
@@ -647,9 +658,8 @@ def t8():
                     continue
                 st.thug(k, x, GYp - 12, 0.44, "open" if i % 2 else (-30, 20, 30, -20), seed=4500 + j,
                         hands=("grab", "grab") if carry or i < 18 else ("grab", "relax"), lean=0.0)
-                bill(k, x - 6, GYp - 12 - 162, 0.25 - 0.5 * j)
-                if j == 0:
-                    bill(k, x + 16, GYp - 12 - 172, -0.2)
+                for n_ in range(3):                             # v10: a fan of three in his fist, beside his head
+                    bill(k, x + 46 + n_ * 5, GYp - 12 - 128 - n_ * 12, 0.5 - 0.3 * n_)
             if i < 30:
                 c.save(); c.translate(cx, GYp - 6 + lift); c.scale(0.66, 0.66); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
             if i in (16, 17):                                # dropped
