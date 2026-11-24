@@ -492,7 +492,107 @@ def t5():
     return fr
 
 
-TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6}
+# ---- T7 -----------------------------------------------------------------------------------------------------------------
+def peel(c, x, y, s=1.0, ang=0.0):
+    """a banana peel: three flaps off a stub. GOLD exactly, so the accent pass keeps a little of its colour."""
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    for a in (-1.15, 0.0, 1.15):
+        c.save(); c.rotate(a)
+        c.move_to(-7, 0); c.curve_to(-12, 14, -8, 30, 0, 40); c.curve_to(8, 30, 12, 14, 7, 0); c.close_path()
+        c.set_source_rgb(*st.GOLD); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
+        c.restore()
+    c.rectangle(-4, -12, 8, 13); c.set_source_rgb(0.25, 0.2, 0.12); c.fill()
+    c.restore()
+
+
+def t7():
+    """2.4, v6 (Tomas): she climbs the fire escape, leans over the rail to see, goes over it into the bin below; the lid
+    slams on the narrator's last word. A beat. The lid lifts: she comes up with a banana peel on her ear, sees it,
+    flicks it off, hero pose, as if nothing happened. 55 drawings, 4.6 s."""
+    PY, RY, GY = 330, 256, 716                               # the platform, the rail's top, the ground
+    BX0, BX1, BY = 200, 420, 566                             # the bin: its mouth
+    S_ = 0.50
+    def bin_back(k, lid):
+        c = k.c
+        st.poly(k, [(BX0 + 8, BY - 6), (BX1 - 8, BY - 6), (BX1 - 8, BY + 30), (BX0 + 8, BY + 30)], (0.06, 0.06, 0.07), 2.0)   # the dark inside
+        if lid > 0:                                          # the lid open: hinged at the back, standing up behind her
+            h = 150 * lid
+            st.poly(k, [(BX0 - 6, BY - 4), (BX1 + 6, BY - 4), (BX1 - 4, BY - 4 - h), (BX0 + 4, BY - 4 - h)], (0.30, 0.30, 0.32), 2.4)
+    def bin_front(k, lid, shake=0):
+        c = k.c
+        c.save(); c.translate(shake, 0)
+        st.poly(k, [(BX0, BY), (BX1, BY), (BX1 - 10, GY), (BX0 + 10, GY)], (0.24, 0.25, 0.26), 2.6)
+        c.set_source_rgb(*INK); c.set_line_width(2)
+        for x in (BX0 + 52, BX0 + 110, BX0 + 168):
+            c.move_to(x, BY + 14); c.line_to(x, GY - 10); c.stroke()
+        st.poly(k, [(BX0 - 8, BY - 8), (BX1 + 8, BY - 8), (BX1 + 8, BY + 8), (BX0 - 8, BY + 8)], (0.34, 0.34, 0.36), 2.4)        # the rim
+        for x in (BX0 + 28, BX1 - 28):                                                                                          # wheels
+            kit.ellipse(k, x, GY, 13, 13, (0.08, 0.08, 0.09), 7700 + x, shadow=False, lw=2)
+        if lid == 0:
+            st.poly(k, [(BX0 - 10, BY - 22), (BX1 + 10, BY - 22), (BX1 + 10, BY - 6), (BX0 - 10, BY - 6)], (0.30, 0.30, 0.32), 2.4)
+        c.restore()
+    def scene(k):                                            # the ground, a pavement line; the platform's shadow on the wall
+        c = k.c
+        st.poly(k, [(-10, GY), (550, GY), (550, 970), (-10, 970)], (0.20, 0.20, 0.21), 2.0)
+        sc.platform(k, PY)
+    def f(pam=None, lid=0, shake=0, fall=None, pl=None, burst=False, clip=False):
+        def before(k):
+            scene(k); bin_back(k, lid)
+        def after(k):
+            c = k.c
+            sc.railing(k, RY)
+            pts = None
+            if fall:                                         # over the rail: drawn in front of it, turning
+                x, y, ang = fall
+                c.save(); c.translate(x, y); c.rotate(ang); c.translate(-x, -y)
+                sc.draw_cast(k, [P("pam_cat", x, y + 60, S_, pose(lerp(HERO, oc.CAT_POSES["triumph2"][0], 0.8), ("relax_s", "relax_s")), "doubt", (0, 0.9), rim=True)])
+                c.restore()
+            if clip and pam:                                 # in the bin: only what shows above its rim
+                pts = sc.draw_cast(k, [pam])
+            bin_front(k, lid, shake)
+            if burst:
+                sc._burst(k, BX0 - 16, BY - 14, 26); sc._burst(k, BX1 + 16, BY - 14, 26)
+            if pl:
+                peel(c, *pl)
+            return pts
+        return draw(shot("2.4", cam=(270, 462, 1.45), cast=[pam] if (pam and not clip) else [], before=before, after=after, protect=()))
+    fr = []
+    for i in range(8):                                       # up the ladder
+        t = i / 7.0
+        fr.append(f(P("pam_cat", 105, PY + 150 * (1 - t) - (6 if i % 2 else 0), S_, "hero", "peer", (0.3, -0.6), rim=True)))
+    for i in range(9):                                       # along the platform, her eyes on the street below
+        t = i / 8.0
+        fr.append(f(P("pam_cat", 105 + 205 * t, PY - (5 if i % 2 else 0), S_, "hero", "peer", (0.6, 0.7), rim=True)))
+    for i in range(12):                                      # further over the rail, and further
+        t = i / 11.0
+        fr.append(f(P("pam_cat", 310, PY, S_, "hero", "peer" if t < 0.75 else "doubt", (0.4, 1.0), lean=0.62 * t * t + (0.03 if i % 2 else 0), rim=True)))
+    for x, y, ang in ((330, 300, 1.7), (325, 400, 2.9), (318, 500, 3.3)):   # over she goes, head first
+        fr.append(f(fall=(x, y, ang)))
+    fr.append(f(lid=0, burst=True, shake=5))                 # the lid slams (the narrator's last word)
+    fr.append(f(lid=0, shake=-4))
+    for _ in range(5):
+        fr.append(f(lid=0))                                  # a beat
+    IN = lambda dy, face, look, arms="hero", lean=0.0: P("pam_cat", 310, BY + 150 - dy, S_, arms, face, look, clip_y=BY, lean=lean, rim=True)
+    HEADY = lambda dy: BY + 150 - dy - 232 * S_ * 1.0
+    def up(dy, lid, face, look, arms="hero", peel_on=True, pl=None):
+        p = IN(dy, face, look, arms)
+        return f(p, lid=lid, clip=True, pl=pl if pl else ((310 + 34, HEADY(dy) - 26, 0.9, 0.5) if peel_on else None))
+    fr.append(up(20, 0.3, "fade", (0, 0)))                   # the lid lifts: ears, a peel
+    fr.append(up(55, 0.7, "fade", (0, 0)))
+    for dy in (90, 110, 112, 112):                           # up to the chest; the peel hangs on her ear
+        fr.append(up(dy, 1.0, "fade", (0.2, 0.2)))
+    for _ in range(3):                                       # her eyes go up to it
+        fr.append(up(112, 1.0, "doubt", (0.8, -1.0)))
+    FLICK = pose(oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, 44, -150), ("relax_s", "fist"))
+    fr.append(up(112, 1.0, "peer", (0.8, -1.0), arms=FLICK))                                        # a flick
+    fr.append(up(112, 1.0, "peer", (0.6, -0.4), arms=FLICK, pl=(420, HEADY(112) - 70, 0.9, 1.9)))
+    fr.append(up(112, 1.0, "proud", (0.3, 0), pl=(470, HEADY(112) + 10, 0.9, 3.2)))
+    while len(fr) < 55:                                      # hero pose, in a bin: nothing happened
+        fr.append(up(116, 1.0, "proud", (0.5, -0.2), peel_on=False, pl=(452, GY - 6, 0.9, 1.5)))
+    return fr
+
+
+TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7}
 
 
 def build(name):
