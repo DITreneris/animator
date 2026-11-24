@@ -133,6 +133,9 @@ def a13(t):
 
 
 # ---- 1.4: the shadows peel off the cobbles and run up the street to a pair of taillights; she turns to follow -------
+ARCH14 = [False]                                             # (24 Nov, cold test of film v14: "an animal, then figures; who are they?"; a blob behind her head) 1.4: the two men stand up together and are in the arch before she walks across it
+
+
 def a14(t):
     RUN = ((-38, 30, 38, -30), (-10, 8, 10, -8), (38, -30, -38, 30), (10, -8, -10, 8))   # four drawings a stride
     YV, YE = 452, 540                                                          # the street's vanishing line; where they reach
@@ -142,6 +145,8 @@ def a14(t):
         c.set_source_rgba(0, 0, 0, 0.45); c.fill()
     def thug(j, x0, y0, s0, seed):
         u = seg(t, 0.15 + (0.30 if m.LAW[0] else 0.12) * j, 2.2 + (0.30 if m.LAW[0] else 0.12) * j)   # (review) the second man a good step behind: in file, not one double shape
+        if ARCH14[0]:                                                          # both up at once (one flat shape and one man read as an animal and its owner); gone into the arch before she is in front of it
+            u = seg(t, 0.10 + 0.10 * j, 1.80 + 0.22 * j)
         if u <= 0:                                                             # still flat on the cobbles: a shadow
             return ("flat", (x0 - 10, y0 + 12, 0.20), dict(seed=seed))
         rise = seg(u, 0.0, 0.14)
@@ -193,7 +198,10 @@ def a14(t):
             w = ease((t - 1.15) / 1.65)                    # bigger with every step, while they go into the arch behind her
             yy = 760 + 180 * w; ss = 0.84 * (yy - YV) / float(760 - YV)
             ar_, ge_, kn, rot_, dx_, kw_ = catwalk((t - 1.15) / 0.92)
-            p = P("pam_cat", 128 + 130 * w + dx_ * ss, yy, ss, pose(ar_, ge_), "peer", (0.0, 0.1), rim=True, **kw_)
+            px_ = 128 + 130 * w
+            if ARCH14[0]:                                  # she keeps to her side of the lane until they are gone, then comes over
+                px_ = 128 + 24 * w + 106 * ease(seg(t, 2.05, 2.8))
+            p = P("pam_cat", px_ + dx_ * ss, yy, ss, pose(ar_, ge_), "peer", (0.0, 0.1), rim=True, **kw_)
     def before(k):
         for x, y, s_ in shadows:
             contact(k, x, y, s_)
@@ -351,6 +359,9 @@ def a51(t):
 
 
 # ---- 5.3: she comes in from the right on her toes, low; the hand into his coat; out with the envelope; back off ------
+BIG53 = [False]                                              # (24 Nov, cold test of film v14: "small, cut by the edge, a red outline like an error") 5.3: she is bigger and whole in the frame, the camera a little to her side; the neon's red a thin edge
+
+
 def a53(t):
     LIFT = oc.CAT_POSES["lift"][0]
     if t < 0.9:                                                                # tiptoe in, low
@@ -373,41 +384,70 @@ def a53(t):
         d_ = 10 if t < 0.9 else (14 if t < 2.0 else 8)
         st2 = int(t * 10) % 2 if t < 0.9 else 0
         kn = dict(drop=d_, l=(-3, 8 if st2 else 0, -1), r=(-3, 0 if (st2 or t >= 0.9) else 8, -1))
-    p = P("pam_cat", x, 716, 0.46, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env, hunt=0.5 if m.LAW[0] else 0.0, rim_red=bool(m.LAW[0]))
+    ps_ = 0.46
+    if BIG53[0]:                                             # nearer to us than he is, on our side of the table, at his elbow; drawn turned over, so the hand with the envelope is the one on his side
+        ps_ = 0.58; x = 150 + (x - 250) * 1.5
+        IN_, OUT_ = oc.pm.ik(1, 100, oc.BT + 40), oc.pm.ik(1, 62, oc.BT + 60)
+        if 0.9 <= t < 1.6:                                   # into his lapel, under his chin
+            arms = lerp((-20, 30, 30, -10), (-8, 0) + IN_, ease(seg(t, 0.9, 1.25)))
+        elif t < 2.0 and t >= 1.6:                           # out with it, between them, clear of his face
+            arms = lerp((-8, 0) + IN_, (-8, 0) + OUT_, ease(seg(t, 1.6, 1.85)))
+        elif t >= 2.0:
+            arms = lerp((-8, 0) + OUT_, oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 10, oc.BT + 40), ease(seg(t, 2.0, 2.3)))
+    p = P("pam_cat", x, 716 + (8 if BIG53[0] else 0), ps_, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env, hunt=0.5 if m.LAW[0] else 0.0, rim_red=bool(m.LAW[0]))
     def after(k):
         card(k, t)
         if m.LAW[0]:                                       # her shadow thrown away from the booth's lamp, along the boards
             c = k.c
             g = cairo.LinearGradient(x, 0, x + 120, 0); g.add_color_stop_rgba(0, 0, 0, 0, 0.5); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
             c.new_path(); c.move_to(x - 16, 712); c.line_to(x + 16, 720); c.line_to(x + 130, 734); c.line_to(x + 120, 716); c.close_path(); c.set_source(g); c.fill()
-        pam_(k, p, breath(t), rot, kn)
+        if BIG53[0]:
+            k.c.save(); k.c.translate(x, 0); k.c.scale(-1, 1); k.c.translate(-x, 0)
+        pam_(k, p, breath(t), -rot if BIG53[0] else rot, kn)
+        if BIG53[0]:
+            k.c.restore()
     z = 1.9 * (1 + 0.03 * ease(seg(t, 0.0, 2.3)))                             # a slow push in
     if m.LAW[0]:                                           # as the envelope comes out: THE HOUSE stutters twice and goes out; ALWAYS COLLECTS burns on
         import on4_club as cl_
         cl_.ROW0[0] = 0.0 if (1.60 <= t < 1.68 or 1.76 <= t < 1.84 or t >= 1.95) else 1.0
+        w0 = sc.RIM_RED_W[0]
+        if BIG53[0]:
+            sc.RIM_RED_W[0] = -1.1                           # turned over: the red stays on the neon's side
         try:
             return draw(shot("5.3", cam=(160, 610, z), cast=[], after=after, protect=()))
         finally:
-            cl_.ROW0[0] = 1.0
+            cl_.ROW0[0] = 1.0; sc.RIM_RED_W[0] = w0
     return draw(shot("5.3", cam=(160, 610, z), cast=[], after=after, protect=()))
 
 
 # ---- 5.3b: her black glove draws the envelope out of his coat by its edge -----------------------------------------------
+LIFT2 = [False]                                              # (24 Nov, cold test of film v14: "two near-static seconds; whose pocket?") 5.3b: the hand comes in, draws it out, takes it away; the coat in the Client's jacket grey
+
+
 def a53b(t):
     """5.3b, v4 (review: "an amorphous fist"; the hands rules): the envelope first, then the fingers over it: her thumb on
     its face at the edge, the index and middle finger behind it (their tips show over the top), the back of the hand,
     the wrist narrower than the cuff, the sleeve out of the frame's right edge. It comes out slowly and is held 0.6 s."""
     u = ease(seg(t, 0.2, 1.6))
+    hin = 0.0; away = 0.0
+    if LIFT2[0]:                                                               # the hand comes in to it, draws it out, and takes it away up to her: moving all through
+        hin = 1 - ease(seg(t, 0.0, 0.35)); u = ease(seg(t, 0.4, 1.45)); away = ease(seg(t, 1.55, 2.3))
     GL = (0.22, 0.22, 0.25); RIM = (0.85, 0.85, 0.82)                          # the glove a shade off the coat, rim-lit
     def lift(k):
         c = k.c
-        sc.knee_coat(k, env=False, hand=False)
-        ex, ey = 360 - 34 * u, 378 - 74 * u                                    # the envelope: half in the pocket, then out by its corner
+        tone = sc.COAT_TONE[:]
+        if LIFT2[0]:
+            sc.COAT_TONE[:] = [(0.44, 0.45, 0.48), (0.36, 0.37, 0.40)]         # the jacket he wears in the hall
+        try:
+            sc.knee_coat(k, env=False, hand=False)
+        finally:
+            sc.COAT_TONE[:] = tone
+        ex, ey = 360 - 34 * u + 96 * away, 378 - 74 * u - 150 * away            # the envelope: half in the pocket, then out by its corner
         oc.envelope(k, ex, ey, 2.4)                                            # v5 (the hand rules: three tries failed, so the series' own grab):
         if u < 0.75:                                                           # the object first, then the hand over it
-            st.poly(k, [(296, 400), (444, 400), (440, 520), (300, 520)], (0.16, 0.17, 0.22), 2.0)   # the pocket over it while it is in
+            st.poly(k, [(296, 400), (444, 400), (440, 520), (300, 520)], (0.36, 0.37, 0.40) if LIFT2[0] else (0.16, 0.17, 0.22), 2.0)   # the pocket over it while it is in
         import hands_ps as hp
-        gx, gy = ex + 104, ey - 26                                             # on its right edge, fingers curled over it, the heart left clear
+        gx, gy = ex + 104 + 120 * hin, ey - 26 - 130 * hin                     # on its right edge, fingers curled over it, the heart left clear
         st.poly(k, [(gx + 150, gy - 150), (gx + 20, gy - 40), (gx + 52, gy - 6), (gx + 170, gy - 100)], oc.COAT, 2.4)   # her sleeve, from the corner of the frame
         c.set_source_rgb(*RIM); c.set_line_width(2); c.move_to(gx + 150, gy - 150); c.line_to(gx + 20, gy - 40); c.stroke()
         c.push_group(); hp.draw(k, "grab", gx, gy, 104, GL, (-0.7, 0.7), 1); g_ = c.pop_group()
@@ -513,6 +553,9 @@ def a71(t):                                                    # asleep on the c
     return draw(shot("7.1", cam=D_CAM, cast=[_pam_asleep(t)], protect=()))
 
 
+MAIL72 = [False]                                             # (24 Nov, cold test of film v14: "the mail sheet pops in and hovers")
+
+
 def a72(t):                                                    # Sofia in mid-step, eyes on her phone; the envelope into the hand; her mug; on
     import sofia_dh as sd
     import on4_props as pr
@@ -524,6 +567,15 @@ def a72(t):                                                    # Sofia in mid-st
     v = ease(seg(t, 0.8, 1.4))
     def post(k):
         hx, hy = sc.HANDS.get("pam_awake", (706, 510))
+        if MAIL72[0]:                                          # she walks in with it in her phone hand; it goes up with that hand and is slid into Pam's; nothing appears in the air
+            k.c.push_group(); o_ = sd.sofia(k, sof[1][0], sof[1][1], sof[1][2], sof[1][3], "appraise", (0.2, 1.0), tablet_kind=None); k.c.pop_group()
+            sx_, sy_ = o_["hands"][1]
+            w_ = ease(seg(t, 1.15, 1.5))
+            ex, ey = sx_ + 14 + (hx + 2 - sx_ - 14) * w_, sy_ - 38 + (hy - 20 - sy_ + 38) * w_
+            pr.envelope(k, ex, ey, 0.26, 0.12 + 0.08 * w_)
+            if w_ >= 1:
+                hp.draw(k, "grab", hx, hy, 15, (0.99, 0.86, 0.70), (0.0, -1.0), 1)
+            return
         if t >= 0.8:                                           # up from her hand into Pam's
             ex, ey = 650 + (hx + 2 - 650) * v, 640 + (hy - 20 - 640) * v
             pr.envelope(k, ex, ey, 0.26, 0.2 * v + 0.5 * math.sin(v * math.pi) * 0.3)

@@ -910,6 +910,9 @@ def blend(a, b, t):
     return s
 
 
+SIGN_OUT = [False]
+
+
 def t5():
     import on4_props as pr
     import random
@@ -942,6 +945,12 @@ def t5():
         finally:
             for m, f_ in held:
                 m.shredder = f_
+        if SIGN_OUT[0]:                                      # the wall sign cut by the frame's corner ("...ST CLIENT"): out of this shot, the wall in its place
+            import struct
+            s.flush(); b_, g_, r_, _a = struct.unpack_from("4B", bytes(s.get_data()), 44 * s.get_stride() + 4 * 262)
+            cw = cairo.Context(s); gw = cairo.LinearGradient(218, 0, 258, 0)
+            gw.add_color_stop_rgba(0, r_ / 255.0, g_ / 255.0, b_ / 255.0, 1); gw.add_color_stop_rgba(1, r_ / 255.0, g_ / 255.0, b_ / 255.0, 0)
+            cw.set_source(gw); cw.rectangle(0, 0, 258, 92); cw.fill()
         c0 = cairo.Context(s)                                # the internal-mail envelope, leaning on the monitor's foot (its heart where frame 0's neon heart is)
         c0.save(); c0.translate(HX, HY + 16); c0.rotate(-0.08)
         c0.rectangle(-24, -30, 48, 40); c0.set_source_rgb(*pr.ENV); c0.fill_preserve(); c0.set_source_rgb(*INK); c0.set_line_width(1.6); c0.stroke()
@@ -1361,7 +1370,7 @@ def t9():
             cam = (290, 560 - 110 * t, 1.4)
         def after(k):
             c = k.c
-            sc.stage_marks(k, knives=land, scorch=scorch, t=i)
+            sc.stage_marks(k, knives=land, scorch=scorch, t=i, flame=(1.0 if i < 28 else max(0.35, 1.0 - (i - 28) / 10.0)) if sc.BURN[0] else 0.0)
             if 14 <= i < 28:                                 # the torch's shaft first, so her fist closes over it
                 c.push_group(); p0 = _pam(k, pam, sx, sy, rot, kn); c.pop_group()
                 tx, ty = p0["hands"][1]
@@ -1512,6 +1521,9 @@ def t11():
 
 
 # ---- T12 ----------------------------------------------------------------------------------------------------------------
+OTS44 = [False]                                              # (24 Nov, cold test of film v14: "whose arm pulls the curtain?") 4.4: over her shoulder, not through her eyes
+
+
 def t12():
     """4.4, v18 (Tomas: a POV of her going in; review): her eyes. Through the arch (its bulbs warm) and down the passage,
     charcoal walls, the light only at its end and wet on the floor; two drawings of white; a velvet curtain: her arm in
@@ -1541,9 +1553,14 @@ def t12():
         cx_ = 240 - 90 * ease(u); cy_ = 560 - 40 * ease(u)
         bob = 6 * math.sin((i + 15) * math.pi / 3)
         op = min(1.0, i / 6.0)
+        def head(k):                                         # OTS44: the back of her head and her ears low in the frame, so the arm has an owner; it sinks out as she walks in
+            if OTS44[0] and i < 11:
+                dn = 0 if i < 6 else (i - 5) * 44
+                sc.draw_cast(k, [P("pam_cat", 130, 1350 + dn, 1.5, "hero", "peer", (0, 0), behind=True, rim=True)])
         def after(k):
             c = k.c
             if op >= 1.0:
+                head(k)
                 return
             hx_, hy_ = 270 - 260 * op, 520
             for sgn in (-1, 1):                              # the velvet, its folds of every width, bunched where she pulls
@@ -1571,6 +1588,7 @@ def t12():
                 kit.ellipse(k, ex + fx_, ey + fy_, 10, 8, oc.GLOVE_DARK, 7901 + n_, shadow=False, lw=1.8)            # the fingers, curled round the edge
             c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.set_line_width(2.0)
             c.new_path(); c.arc(ex + 22, ey - 8, 26, -2.2, 0.4); c.stroke()
+            head(k)
         s_ = draw(shot("5.1", cam=(cx_, cy_ + bob, z), after=after, protect=()))
         return s_
     g2 = lazy(g2); fr += [g2(i) for i in range(21)]
