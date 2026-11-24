@@ -54,14 +54,15 @@ BLOCK = {
     1: dict(father=(120, 884), g1=(206, 862), g2=(40, 870)),
     0: dict(father=(160, 840), g1=(104, 856), g2=(218, 856)),          # 0.3: arriving, in the doorway
     2: dict(father=(96, 880), g1=(240, 872), g2=(470, F + 18), client=(318, 916)),
-    3: dict(father=(380, 884), g1=(596, F + 18), g2=(150, 872), client=(588, 872)),        # v6: bodyguard 1 right of the Client
+    3: dict(father=(380, 884), g1=(596, F + 18), g2=(318, 868), client=(588, 872)),   # v48: g2 stays, at the wall behind his boss        # v6: bodyguard 1 right of the Client
     5: dict(),
 }
 LAMP_HELD = (516, 698)                                     # v9 (22 Nov): beside the bay, low, lighting the engine (not his face)
 LAMP_HIGH = (482, 560)                                     # 2.3 v3: high over the bay, pointing down
 FATHER_LAMP = (450, 640, 2.0)                              # Father's closes in scene 3: the plan whole above, the lamp man behind him
 FX_LAMP = 410
-LAMP_CAM = (530, 770, 1.30)                                # 2.3 (v7): both men whole, the plan whole above them
+LAMP_CAM = (505, 802, 1.20)                               # v48: wider: the second guard at the wall behind his boss
+MED_CAM = (467, 772, 1.5)                                  # v48: the medium inside 2.1 and 2.4: room over Father's head for his line, the plan whole                                # 2.3 (v7): both men whole, the plan whole above them
 
 
 # --- the shots -------------------------------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v21.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v24.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -119,23 +120,23 @@ SCENES = [
           action="CLICK shut", reaction="the mark stays", cast=("g2",), state=dict(burn=1.0), fx="CLICK"),
     ]),
     ("3 · The Offer", "Same bay.", 3, [
-        S("2.1", "TWO-SHOT", (467, 872, 1.80), "Father and the Client, the car between them. Father speaks to him. "
+        S("2.1", "TWO-SHOT", MED_CAM, "Father and the Client, the car between them. Father speaks to him. "
           "**He has only ever spoken to Don.**", line='FATHER: "My son says his machine finds anything."',
-          cast=("father", "client", "g2"), state=dict(bubble_over=True, bonnet=1.0, burn=1.0)),
+          cast=("father", "client"), state=dict(bubble_over=True, bonnet=1.0, burn=1.0)),
         S("2.2", "CLOSE", (560, 780, 2.9), "CLOSE, the Client, back under the bonnet, not looking up.",
           line='CLIENT: "It found nothing."', cast=("client",), state=dict(bonnet=1.0, burn=1.0)),
         S("2.3", "MEDIUM", LAMP_CAM, "MEDIUM on the handover (v2). Without looking he holds the lamp out behind him; bodyguard 1 "
           "takes it unasked and holds it over the engine. **He is a garage hand now.**", action="the lamp, handed back",
           reaction="bodyguard 1 takes it", cast=("father", "client", "g1", "g2"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.3b", "CLOSE", FATHER_LAMP, "CLOSE, Father, watching that. A long look; his eyes go from the lamp to the Client. "
-          "**This is when he decides.**", reaction="he decides", cast=("father", "g1"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
+          "**This is when he decides.**", reaction="he decides", cast=("father", "client", "g1"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.4", "CLOSE", FATHER_LAMP, "CLOSE, Father, the bodyguard with the lamp behind him.",
-          line='FATHER: "How would you run his company?"', cast=("father", "g1"), state=dict(bubble_over=True, bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
+          line='FATHER: "How would you run his company?"', cast=("father", "client", "g1"), state=dict(bubble_over=True, bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.5", "CLOSE", ["client"], "CLOSE, the Client. He straightens up. Checks the watch.", line='CLIENT: "Without him."',
           action="the watch", cast=("client",), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.6a", "CLOSE", FATHER_LAMP, "CLOSE, Father. HELD, silent. He weighs it. Nothing moves.", reaction="nothing moves",
-          cast=("father", "g1"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
-        S("2.6", "CLOSE", FATHER_LAMP, "SAME FRAME. Business.", line='FATHER: "And then?"', cast=("father", "g1"),
+          cast=("father", "client", "g1"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
+        S("2.6", "CLOSE", FATHER_LAMP, "SAME FRAME. Business.", line='FATHER: "And then?"', cast=("father", "client", "g1"),
           state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.7", "MEDIUM", (560, 846, 2.0), "MEDIUM. The Client takes his phone from his top pocket, wipes it on his trousers, turns it "
           "round.", action="the phone, turned round", cast=("client",), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, zmax=1.9)),
@@ -144,10 +145,10 @@ SCENES = [
         S("2.8b", "CLOSE", ["client"], "CLOSE, the Client, phone still held out. His terms from episode 9, now for her.",
           line='CLIENT: "One month. I ask. She finds it."', cast=("client",), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP)),
         S("2.8c", "TWO-SHOT", ["father", "client"], "TWO-SHOT. Father nods once. That is all.", line='FATHER: "Done."',
-          action="one nod", cast=("father", "client", "g1", "g2"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP,
+          action="one nod", cast=("father", "client", "g1"), state=dict(bonnet=1.0, burn=1.0, lamp_held=True, fx=FX_LAMP,
           moved=dict(g1=(900, F + 18)))),          # v12 (23 Nov audit): his head was stacked on the Client's
         S("2.8d", "MEDIUM", ["client"], "MEDIUM, the car. The Client drops the bonnet: SLAM. Wipes it once with the rag.",
-          action="SLAM", cast=("client", "g1"), state=dict(bonnet=0.0, burn=1.0, lamp_held=True, zmax=1.5,
+          action="SLAM", cast=("father", "client", "g1"), state=dict(bonnet=0.0, burn=1.0, lamp_held=True, zmax=1.5,
           moved=dict(g1=(770, F + 18))), fx="SLAM"),      # v13 (cold test 3 of 3: "grabbing him from behind"): a step away
         S("2.8e", "INSERT", "insert", "INSERT, the ignition, his oily fingers on the key. It turns; the engine coughs, catches, "
           "runs: **he fixed it.**", action="the key turns", reaction="the engine runs", state=dict(insert="key"),
@@ -228,15 +229,15 @@ POSES = {
     "2.1": dict(father=dict(face="hard", look=(1, 0)), client=dict(kind="bent")),   # v2: the mouth from the take
     "2.2": dict(client=dict(kind="bent")),
     "2.3": dict(father=dict(look=(1, -0.2)), client=dict(kind="bent", hand_back=True), g1=dict(targets=["handoff"])),
-    "2.3b": dict(father=dict(look=(1, -0.5)), g1=dict(targets=["lamp"], lamp="held")),
-    "2.4": dict(father=dict(face="hard", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
+    "2.3b": dict(client=dict(kind="bent"), father=dict(look=(1, -0.5)), g1=dict(targets=["lamp"], lamp="held")),
+    "2.4": dict(client=dict(kind="bent"), father=dict(face="hard", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
     "2.5": dict(client=dict(kind="watch", look=(1.9, 2.0), face="glance")),
-    "2.6a": dict(father=dict(face="hard", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
-    "2.6": dict(father=dict(face="hard", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
+    "2.6a": dict(client=dict(kind="bent"), father=dict(face="hard", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
+    "2.6": dict(client=dict(kind="bent"), father=dict(face="hard", look=(1, 0)), g1=dict(targets=["lamp"], lamp="held")),
     "2.7": dict(client=dict(kind="pocket", look=(-0.4, 0.8))),
     "2.8b": dict(client=dict(kind="phone_out", look=(-1, 0))),
     "2.8c": dict(father=dict(face="low", look=(1, 0)), client=dict(kind="phone_out", look=(-1, 0)), g1=dict(targets_xy=[(840, 700)], lamp="held")),   # v14: out of the frame, to the right
-    "2.8d": dict(client=dict(kind="slam"), g1=dict(targets_xy=[(780, 690)], lamp="held")),   # v13: he has stepped back with it
+    "2.8d": dict(father=dict(face="low", look=(1, 0)), client=dict(kind="slam"), g1=dict(targets_xy=[(780, 690)], lamp="held")),   # v13: he has stepped back with it
     "2.8f": dict(g1=dict(targets=["lamp"], lamp="held")),
     "2.9": dict(father=dict(look=(1, 0)), g2=dict(targets=["chest_l"], phone="calendar")),
 }
@@ -1044,7 +1045,20 @@ def insert_shot(k, sh):
         wx_, wy_ = hw_[0] - 62 * WD_[0], hw_[1] - 62 * WD_[1]          # HIS gold watch, on the wrench wrist
         ellipse(k, wx_, wy_, 21, 21, (0.86, 0.68, 0.22), 3477, lw=2.2)
         ellipse(k, wx_, wy_, 13, 13, (0.10, 0.16, 0.14), 3478, lw=1.6)
-        gs.lamp(k, 330, 96, ang=-1.2, lit=True, glow=False)                            # the lamp, at the top of the frame: the light's source
+        # v50 (cold test v47, 2 of 3: "it dangles from above like a ceiling light"): the lamp is HELD: the bodyguard's black
+        # sleeve and white cuff come in from the top right, his fist round the handle, the cage aimed down at the hands
+        la_ = -0.62
+        lx_, ly_ = 372, 150
+        hx_, hy_ = lx_ + 26 * math.cos(la_), ly_ + 26 * math.sin(la_)
+        ux_, uy_ = math.cos(la_), math.sin(la_)
+        nx_, ny_ = -uy_, ux_
+        w0, w1 = 21, 30
+        cut(k, [(hx_ + 14 * ux_ + w0 * nx_, hy_ + 14 * uy_ + w0 * ny_), (hx_ + 240 * ux_ + w1 * nx_, hy_ + 240 * uy_ + w1 * ny_),
+                (hx_ + 240 * ux_ - w1 * nx_, hy_ + 240 * uy_ - w1 * ny_), (hx_ + 14 * ux_ - w0 * nx_, hy_ + 14 * uy_ - w0 * ny_)], (0.11, 0.11, 0.13), lw=2.4)
+        cut(k, [(hx_ + 10 * ux_ + 19 * nx_, hy_ + 10 * uy_ + 19 * ny_), (hx_ + 22 * ux_ + 20 * nx_, hy_ + 22 * uy_ + 20 * ny_),
+                (hx_ + 22 * ux_ - 20 * nx_, hy_ + 22 * uy_ - 20 * ny_), (hx_ + 10 * ux_ - 19 * nx_, hy_ + 10 * uy_ - 19 * ny_)], (0.97, 0.97, 0.95), shadow=False, lw=1.8)
+        gs.lamp(k, lx_, ly_, ang=la_, lit=True, glow=False, cable=False)
+        _oc.handle_grip(k, hx_, hy_, 24, la_ + math.pi / 2, co_skin())
         c.save(); c.translate(120, 470)                                                 # his red rag, over the block's edge
         # v4 (24 Nov, audit: "a cylinder"; two rags at once): NO rag on the engine: his one rag is in his back pocket
         c.restore()
@@ -1305,6 +1319,7 @@ DON_EDGE = [90]                                            # v9: with the robot 
 import kit as _kit
 import of_cast as _oc
 import client_of as _cof
+_cof.POCKET_RAG[0] = False                                  # v48 (24 Nov, cold test 3 of 3: "a brick in his pocket"): the rag is in his HAND only
 _cof.NEW_RAG[0] = True                                     # v4 (24 Nov): the one shop rag, this film on
 _kit.HAND[0] = _oc.cartoon_hand  # v11 (23 Nov, decided): one cartoon hand for everyone, episode 13 only
 _kit.ARM_RIM[0] = (0.46, 0.46, 0.52)                       # v1 (23 Nov): the guards' black sleeves get a grey rim
@@ -1774,7 +1789,60 @@ def _speech_too_tall(surf, sh, who, txt, fc, cam, va_):
     return (box[3] - box[1]) > 30 * 1.15 * 3 + 20
 
 
+BUBBLE_AT = {                                               # v48: lines placed by hand, in the 540 x 960 frame, per camera
+    "0.5": dict(at={"'under'": (30, 664)}, tip={"'under'": (186, 606)}, rows=["Is it wrong?"]),   # v49: off his working hands
+    "2.1": dict(at={"(450, 640, 2.0)": (26, 430), "(467, 772, 1.5)": (26, 214)}, rows=["My son says his", "machine finds anything."]),
+    "2.4": dict(at={"(450, 640, 2.0)": (26, 430), "(467, 772, 1.5)": (26, 214)}, rows=["How would you", "run his company?"]),
+    "2.6": dict(at={"(450, 640, 2.0)": (26, 470)}, rows=["And then?"]),
+    "2.8b": dict(at={"['client']": (350, 150), "(575, 785, 2.6)": (360, 130)}, rows=["One month.", "I ask.", "She finds it."]),
+    "2.8c": dict(at={"['father', 'client']": (60, 330)}, rows=["Done."]),
+}
+BUBBLE_LOCKS = {}                                           # (shot, camera, text) -> the bubble as it was drawn ONCE for that picture
+BUBBLE_LOCK_ON = [True]
+BUBBLE_UNLOCKED = []                                        # frames whose bubble was placed on the spot (the gate fails on any)
+
+
+def bubble_key(sh):
+    return (sh["id"], repr(sh["cam"]), sh["state"].get("say_txt"))
+
+
+def lock_bubble(sh, scene):
+    """v47 (24 Nov, Tomas: "the bubble jumps in several places", decided): a bubble is placed ONCE for a picture (one
+    camera, one text) and then stands still: it was placed again on every drawing from the head, so it flipped sides
+    (1.4), shook with the frame (0.9), bobbed with a nodding or walking head (3.2, 2.9) and slid with a lean (2.4).
+    The frame is drawn with and without the bubble; what differs IS the bubble (box, text, tail), kept as a layer."""
+    import numpy as np
+    from scipy import ndimage
+    a, msgs = _board_frame_raw(sh, scene, True)
+    b, _ = _board_frame_raw(sh, scene, False)
+    A = np.ndarray((a.get_height(), a.get_width(), 4), np.uint8, a.get_data()).copy()
+    B = np.ndarray((b.get_height(), b.get_width(), 4), np.uint8, b.get_data())
+    m = ndimage.binary_fill_holes((np.abs(A.astype(int) - B.astype(int))[..., :3].max(axis=2) > 0))
+    P = np.zeros_like(A); P[m] = A[m]; P[m, 3] = 255
+    patch = cairo.ImageSurface.create_for_data(bytearray(P.tobytes()), cairo.FORMAT_ARGB32, a.get_width(), a.get_height())
+    ys, xs = np.nonzero(m)
+    BUBBLE_LOCKS[bubble_key(sh)] = (patch, (int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())) if len(xs) else None)
+    return msgs
+
+
 def board_frame(sh, scene, bubble=True):
+    """the frame with its line's bubble: the picture's LOCKED bubble when there is one (lock_bubble), laid over the frame
+    after everything, so a camera jolt does not move it."""
+    if not bubble or sh["id"] not in SAY or not BUBBLE_LOCK_ON[0]:
+        return _board_frame_raw(sh, scene, bubble)
+    if sh["id"] in BUBBLE_AT and repr(sh["cam"]) in BUBBLE_AT[sh["id"]]["at"]:   # placed by hand: its box is fixed, its tail follows the mouth
+        return _board_frame_raw(sh, scene, True)
+    lk = BUBBLE_LOCKS.get(bubble_key(sh))
+    if lk is None:
+        BUBBLE_UNLOCKED.append(bubble_key(sh))
+        return _board_frame_raw(sh, scene, True)
+    surf, msgs = _board_frame_raw(sh, scene, False)
+    lk[0].set_device_scale(*surf.get_device_scale())                   # pixel for pixel, whatever the frame's scale
+    c = cairo.Context(surf); c.identity_matrix(); c.set_source_surface(lk[0], 0, 0); c.paint(); surf.flush()
+    return surf, msgs
+
+
+def _board_frame_raw(sh, scene, bubble=True):
     """-> (surface 540 x 960 at 2x, problems). The frame, its line's bubble, and the pixel check of the tail."""
     import numpy as np
     import fs_animatic as an
@@ -1788,9 +1856,48 @@ def board_frame(sh, scene, bubble=True):
     if sh["cam"] == "desk":                                           # the desk frame's heads are in set units already mapped
         fc = {n: ((v[0] - cam[0]) * cam[2] + 270, (v[1] - cam[1]) * cam[2] + 480, v[2] * cam[2]) for n, v in f["heads"].items()}
         fc = {("don" if n in ("don", "seat") else n): v for n, v in fc.items()}
+    man = BUBBLE_AT.get(sh["id"])
+    if man and who in fc and repr(sh["cam"]) in man["at"]:
+        # v48 (24 Nov, decided after cold test v47: the bubble jumped across cuts inside a line and sat on the lamp hand
+        # and the phone): this line's box is PUT, the same place in every picture of its shot; the tail goes to the mouth
+        # drawn in THIS frame, so it follows him.
+        head = fc[who]
+        mth = (head[0], head[1] + 0.35 * head[2])
+        if who in MOUTH_AT and sh["cam"] not in ("under", "insert", "desk"):
+            mx, my = MOUTH_AT[who]
+            mth = ((mx - cam[0]) * cam[2] + 270 - 2, (my - cam[1]) * cam[2] + 480 - 3)
+        import speech
+        c = cairo.Context(surf); k_ = Ctx(c, 0)
+        rows = man.get("rows") or [txt]
+        size = 30
+        c.select_font_face(kit.FONT, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL); c.set_font_size(size)
+        bw = max(c.text_extents(r_).x_advance for r_ in rows) + 28
+        bh = size * 1.15 * len(rows) + 18
+        x0, y0 = man["at"][repr(sh["cam"])]
+        box = (x0, y0, x0 + bw, y0 + bh)
+        cx_, cy_ = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+        d_ = math.hypot(cx_ - mth[0], cy_ - mth[1]) or 1.0
+        tip = (mth[0] + (cx_ - mth[0]) / d_ * head[2] * 0.42, mth[1] + (cy_ - mth[1]) / d_ * head[2] * 0.30)
+        tip = man.get("tip", {}).get(repr(sh["cam"]), tip)            # a turned head: the tip given too
+        speech.SIZE[0], speech.MONO_SIZE[0], speech.MAX_W[0], speech.MONO_BOLD[0], speech.SIGNS_FIRST[0] = 30, 28, 300, True, True
+        speech._paint(k_, box, tip, rows, size, kit.FONT, False)
+        surf.flush()
+        return surf, msgs
     va_ = sh["state"].get("voice_at")                                 # v13 (23 Nov, cold tests 3 of 3, decided): a voice from a
     if va_:                                                           # place we see but a face we don't (under the car): the tail
         fc[who] = ((va_[0] - cam[0]) * cam[2] + 270, (va_[1] - cam[1]) * cam[2] + 480, 14.0)   # goes INTO that dark
+    if who not in fc and sh["state"].get("off_voice"):                # v49: the speaker is out of this picture (a cut inside
+        import speech                                                  # its line): a named card, top left, as the repo draws one
+        speech.SIZE[0], speech.MONO_SIZE[0], speech.MAX_W[0], speech.MONO_BOLD[0], speech.SIGNS_FIRST[0] = 30, 28, 300, True, True
+        ov = sh["state"]["off_voice"]                                  # its rows in the robot's own caps, beside the listener,
+        c = cairo.Context(surf)                                         # clear of his crown; the tail points out of the frame, to it
+        c.select_font_face(kit.MONO, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(28)
+        bw = max(c.text_extents(r_).x_advance for r_ in ov["rows"]) + 28
+        bh = 28 * 1.15 * len(ov["rows"]) + 18
+        x0, y0 = ov["at"]
+        speech._paint(Ctx(c, 0), (x0, y0, x0 + bw, y0 + bh), (x0 - 20, y0 + bh * 0.5), ov["rows"], 28, kit.MONO, True)
+        surf.flush()
+        return surf, msgs
     if who not in fc:
         return surf, msgs + ["BUBBLE: %s speaks but is not in the frame" % who]
     if SPEECH[0] and not _speech_too_tall(surf, sh, who, SAY[sh["id"]][1], fc, cam, va_):   # the WHOLE line decides: its parts share one place   # v40: a line that would wrap past 3 rows
@@ -1826,12 +1933,18 @@ def board_frame(sh, scene, bubble=True):
         speech.SIZE[0], speech.MONO_SIZE[0], speech.MAX_W[0], speech.MONO_BOLD[0], speech.SIGNS_FIRST[0] = 30, 28, 300, True, True   # v40 (24 Nov, decided):
         av_ = [p[1:] for p in gs.PROTECT]                                # the repo's bubble, read on a phone; never over a story prop
         above_ = (head[0] - head[2] * 0.35, head[1] - head[2] * 0.97) if who == "robot" else None   # people: beside the mouth only
+        top_ = bool(sh["state"].get("bubble_top"))                       # v47 (2.9): no wall beside his mouth that is not his man's
+        if top_:                                                         # face or the phone: two short rows OVER his head, the
+            above_ = (head[0], head[1] - head[2] * 1.02); aim = None      # tail down to his crown
+            speech.MAX_W[0] = 190
+        speech.TOP_FIRST[0] = top_
         if who == "robot":                                               # over the antenna, never across the visor's card
             aim = None
         box, tip = speech.draw(Ctx(c, 0), txt.upper() if who == "robot" else txt, head, mouth=mouth, aim=aim, above=above_,
                                mono=(who == "robot"), others=[v for n, v in fc.items() if n != who], avoid=av_)
         gp_ = speech_gate.check(surf, box, tip, list(fc.values()), aim=aim, before=before)
-        if who == "robot":                                               # the visor's dark rim is not hair: the tip is ON the visor
+        speech.TOP_FIRST[0] = False
+        if who == "robot" or top_:                                       # the visor's dark rim is not hair: the tip is ON the visor
             gp_ = [m for m in gp_ if not m.startswith("TAIL on hair or eyes")]
         return surf, list(msgs) + gp_
     head = fc[who]

@@ -459,7 +459,7 @@ def rag_cloth(k, x, y, s=1.0, col=(0.92, 0.88, 0.80), ang=0.0):
     and grease on it. Drawn before the hand that holds it."""
     if col == RAG_RED:                                        # v3 (24 Nov): the one shop rag (client_of.shop_rag)
         import client_of as cof_
-        return cof_.shop_rag(k, x, y + 2, s * 0.85, ang)
+        return cof_.shop_rag(k, x, y + 2, s * 1.1, ang)       # v48: bigger: it has to read as a cloth in a wide shot
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
     cut(k, [(-15, -7), (11, -9), (17, 5), (13, 31), (5, 24), (-1, 38), (-9, 27), (-16, 33), (-19, 8)], col, lw=2)

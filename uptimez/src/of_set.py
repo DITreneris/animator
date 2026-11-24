@@ -298,6 +298,13 @@ def car(k, bonnet=0.0, tilt=0.0):
     1 up (scene 3)."""
     c = k.c
     x0, x1 = CAR_X
+    # v5 (24 Nov, Tomas: "does the car's shadow move?"): ONE shadow, in every shot with the car: a soft pool ON THE FLOOR,
+    # drawn before the stands, the wheels and anyone's legs; no edges. It slides and thins a little as the car rocks.
+    c.save(); c.translate((x0 + x1) / 2 - 260 * tilt, SILL + 54); c.scale((x1 - x0) / 2 + 4 - 120 * abs(tilt), 17)
+    g_ = cairo.RadialGradient(0, 0, 0.15, 0, 0, 1)
+    g_.add_color_stop_rgba(0, 0.03, 0.03, 0.05, 0.50); g_.add_color_stop_rgba(0.7, 0.03, 0.03, 0.05, 0.34)
+    g_.add_color_stop_rgba(1, 0.03, 0.03, 0.05, 0.0)
+    c.set_source(g_); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
     if tilt:                                     # v4: rocked on its stands (0.8), about the far stand's foot
         c.save(); c.translate(STANDS[1], SILL + 50); c.rotate(tilt); c.translate(-STANDS[1], -(SILL + 50))
     for sx in STANDS:                                                                        # the axle stands
@@ -451,7 +458,7 @@ def legs(k, out=0.0):
     c.set_source(g); c.arc(0, 0, 110, 0, 2 * math.pi); c.fill()
     c.restore()
     c.restore()
-    c.set_source_rgba(0, 0, 0, 0.18); c.rectangle(CAR_X[0] + 20, SILL + 4, CAR_X[1] - CAR_X[0] - 40, 46); c.fill()   # under the car
+    # v5 (24 Nov, Tomas at 0:00): the grey rectangle that lay OVER the wheels and his legs is gone; the car's shadow is car()'s
 
 
 def lamp_cable(k, hx_, hy_, ang, hang=None, swing=0.0):

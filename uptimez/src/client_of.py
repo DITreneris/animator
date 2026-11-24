@@ -26,6 +26,7 @@ NAVY, NAVY_D = (0.17, 0.22, 0.34), (0.11, 0.14, 0.23)
 TEE, TEE_D = (0.96, 0.95, 0.91), (0.80, 0.79, 0.75)
 RAG = co.RAG
 RAG_V3 = (0.72, 0.19, 0.17)                                # v3: a duller brick red (co.RAG is a loud one)
+POCKET_RAG = [True]                                        # opt-out (The Offer v48): no rag hanging from the back pocket
 NEW_RAG = [False]                                          # opt-in (The Offer sets it): other films keep the old rag, byte for byte
 
 
@@ -171,7 +172,9 @@ def _waist(k, seed):
     c.set_source_rgb(*INK); c.set_line_width(1.6); c.set_line_cap(1)
     c.move_to(-8, HIP - 6); c.curve_to(0, HIP + 4, 2, HIP + 6, 9, HIP + 10); c.stroke()
     c.save(); c.translate(-64, HIP + 10); c.rotate(0.18)                                                    # the rag
-    if NEW_RAG[0]:
+    if not POCKET_RAG[0]:
+        pass
+    elif NEW_RAG[0]:
         shop_rag(k, 0, 0)
     else:
         cut(k, [(-10, -6), (12, -8), (16, 38), (6, 52), (-2, 40), (-12, 50), (-14, 30)], RAG, lw=2)
@@ -312,7 +315,9 @@ def profile(k, x, feet, s=1.0, facing=-1, lean=0.0, face="bored", look_up=0.0, h
     ellipse(k, 50, HIP + 2, 13, 12, NAVY_D, seed + 7, shadow=False, lw=2)
     cut(k, [(42, HIP + 8), (60, HIP + 8), (64, HIP + 58), (46, HIP + 60)], NAVY, shadow=False, lw=2)
     c.save(); c.translate(-42, HIP + 4); c.rotate(0.12)
-    if NEW_RAG[0]:
+    if not POCKET_RAG[0]:
+        pass
+    elif NEW_RAG[0]:
         shop_rag(k, -2, 0)
     else:
         cut(k, [(-12, -4), (8, -6), (12, 40), (2, 54), (-6, 40), (-14, 50), (-16, 28)], RAG, lw=2)

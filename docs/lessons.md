@@ -1002,3 +1002,41 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - A replace by slice (`s[:a] + new + s[b:]`) deletes everything between its anchors: it took out the one-hand-per-wrist hook, and only the frame's own check caught it. Replace exact strings, and read every check line of every still.
 - Moving a camera can cut a sign that was out of frame: test `box_state` for the new camera before posing in it.
 - A sheet of stills sent for an outside audit carries its labels IN the picture (shot, time, BEFORE / NOW). Twice an unlabelled sheet was read as one scene, and story props (the burnt plan) came back as defects.
+
+## 234. *The Offer* v46 (24 Nov, Tomas: "does the car's shadow move? Dad vanishes at 0:38? where do we save time?")
+
+- A shadow is ON THE FLOOR and under everything: the car's was a grey rectangle drawn over the wheels and the legs, in one scene only, and it stood still while the car rocked. Now one soft pool in `of_set.car`, drawn first, in every shot with the car; it slides with the tilt.
+- A character who is in one shot and gone in the next, same frame, has vanished. He stays in the cast of the shot after (2.8d) until we see him leave.
+- Trimming: the room is in silent shots and in SHORT lines' tails; the long lines were already 0.2 s from their cuts. Measure each take against its shot before promising seconds (3.2 s promised, 2.2 s found).
+- Before trimming a shot, read its motion and its sounds: actions and effects sit at fixed times inside it (a look at 0.45 s, a tick at 0.65 s, a ring 1.25 s long) and a shorter shot cuts them off. Re-key the action or leave the shot.
+- A trim can drop a line from the mix without touching it: "Pam?" stopped being heard when 3.3 lost 0.2 s. The sound is built and its lines checked BEFORE any scene renders; `tail` after a command hides its exit code, so do not chain renders on it.
+
+## 235. *The Offer* v47 (24 Nov, Tomas: "the bubble jumps in several places"; cold test, 3 viewers)
+
+- A bubble placed from the head on every drawing follows everything the head does: it flipped sides (1.4), shook with the frame's jolt (0.9), bobbed with a nodding robot and a walking man (3.2, 2.9), slid with a lean (2.4). Measure it: draw each frame with and without the bubble, and the box of what differs is the bubble (`/tmp/bub.py` in the session; 6 of 15 lines moved).
+- A bubble is placed ONCE per picture (one camera, one text), at the drawing 60 % into it, and laid over the frame after everything, so a camera jolt does not move it (`of_scenes.lock_bubble`, `of_film.lock_shot`, `shot_frame`). The gate: a bubble placed on the spot, or more than four placings in a shot, fails the render. 3 of 3 cold viewers: "no bubble moves within a held picture".
+- Not done, and said so: the tail is locked with the box (it does not follow the mouth), and a bubble still takes a new place after a cut inside a line (3 of 3 saw it at 0:18, 0:26, 0:34). Both need the box given from outside in `speech.py` and `fs_animatic.speech`.
+- A layer pasted onto a 2x surface needs the surface's device scale, or it lands twice as big and off the frame.
+- When no wall beside a mouth is free of the listener's face and the prop he holds, the line goes in two short rows over the speaker's head (`bubble_top`, `speech.TOP_FIRST`, opt-in), and the camera comes down a little to make the room.
+
+## 236. *The Offer* v48 (24 Nov, cold test v47 and four decisions)
+
+- Before blaming a trim, read what it cut: "the lamp is suddenly in his hand" (3 of 3) was put down to a 0.3 s trim, but that trim was in the cut-in after it; the handover itself had always been 0.7 s. It is 1.0 s now (out, TAKEN, carried), the cut-in 0.3 s shorter.
+- A line whose picture cuts in the middle keeps ONE place relative to its speaker and ONE wrapping: `of_scenes.BUBBLE_AT` puts the box by hand per camera, and its tail goes to the mouth drawn in that frame, so it follows him. Used where the automatic place failed (five lines); the other ten stay locked per picture.
+- Make the room for a bubble with the camera, not by shrinking the text: the medium inside two long lines pulled back (1.8 to 1.5) so the line sits over his head, the plan whole above it.
+- A prop that reads as a blob at its size is removed, not refined: the pocket rag ("a brick", 3 of 3) is gone; the rag exists only in his hand (`client_of.POCKET_RAG`, opt-out).
+- Close shots draw only their cast, so people "vanish" from them: the Client stays in Father's closes at the bay, and the second guard stands behind his boss in the wide. A man who would be a sliver at the frame's edge is left out of that shot's cast.
+- Build the sound and read ITS exit code before any scene renders (`cmd > log; echo $?`), then read each scene's whole tail.
+
+## 237. *The Offer*: "Off the car." is a decided exception (Tomas, 24 Nov: "for the hundredth time")
+
+- The Client says it from UNDER the car: no face, the bubble's tail lands on his hips in the dark under the sill. Cold viewers and audits will keep writing "unclear who speaks". It is canon and is not raised again: in a triage table it goes under "decided, stays", with no fix offered.
+- The same for the red rag (Tomas, 24 Nov: "we fixed it a hundred times, closed"): it stays as drawn in v48 (in his hand only, one shape). Viewers' notes on it go under "decided, stays".
+
+## 238. *The Offer* v49 (24 Nov, the last open points of cold test v47)
+
+- A prop that turns over in a gag reads as a shape change ("it flips through odd shapes", 3 of 3). The dead lamp is lifted and tipped, shaken once and let hang: one shape all the way.
+- A shot bound to its voice take cannot be trimmed; a static one is helped by a CUT in the take's own pause to whoever listens (found by measuring the silence in the wav). The line goes on over him in the speaker's own type, beside him, its tail pointing out of the frame toward the speaker; no name card over a story prop (the crown).
+- The reaction a later shot is built on is not spent in the cut-in before it: Don still smiles on "wait.", so the smile can go in one drawing in the next shot.
+- A turned head needs the bubble's tip given by hand too (`BUBBLE_AT[...]["tip"]`): under the car his mouth is beside the head's centre, not under it.
+- "Too fast" shots get their time back before anything else is polished: the review phone 1.7 s, the key 1.3 s, the fresh plan 2.55 s.
