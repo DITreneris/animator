@@ -241,6 +241,7 @@ def pam_photo(k, cx, cy, r, seed=0):
     c.set_source_rgb(*INK); c.set_line_width(max(2, r * 0.05)); c.new_path(); c.arc(cx, cy, r, 0, 2 * math.pi); c.stroke()                                          # props v4 (the third props review): see plan(), ai_site(), phone2()
 REPLY_BIG = [False]                                       # props v3: the reply dominates its insert
 SAME_LAYOUT = [False]                                     # props v3: the UPDATE keeps the post's lines where they were
+FIT2 = [False]                                            # v18 (23 Nov, Tomas): every line inside the screen: UPDATE on its own row, Pam's card shorter
 
 
 REPLY_TXT = [None]          # One Star v14 (Tomas, 20 Nov): the company's reply, opt-in, as two lines; None = v13's
@@ -248,6 +249,7 @@ REPLY_V14 = ("\u201cOur AI does", "not lose files.\u201d")  # "Correct. We will 
 REPLY_V15 = ("\u201cShut off!", "Our AI does not", "lose files!\u201d")  # v15 (Tomas): the AI matched his tone, in a
 REPLY_V15_SWEAR = ("\u201cF*ck off!", "Our AI does not", "lose files!\u201d")  # robot's words ("Shut off!"); the swear kept
 REPLY_V14_SMALL = ("\u201cOur AI", "does not lose files.\u201d")   # the same, broken for the small reply row
+REPLY_V18 = ("\u201cStupid", "human.\u201d", "CLOWN")   # v18 (Tomas, 23 Nov): "Shut off!" was not English; the AI insults him
 
 
 def phone2(k, kind="crisis", seed=950):
@@ -275,9 +277,14 @@ def phone2(k, kind="crisis", seed=950):
             for i, s_ in enumerate(("My lawyer", "will call.\u201d")):
                 ex = T(c, s_, x0 + 30, top + (3 + i) * L, Z, col=GREY, bold=True, center=False)
                 c.set_source_rgb(*RED); c.set_line_width(5); c.move_to(x0 + 24, top + (3 + i) * L - 12); c.line_to(x0 + 36 + ex, top + (3 + i) * L - 12); c.stroke()
-            T(c, "UPDATE:", x0 + 250, top + 3 * L, 30, col=GRN, center=False)
-            T(c, "Pam found it.", x0 + 30, top + 5 * L + 14, 46, col=(0.55, 0.16, 0.46), center=False)
-            ry = top + 290
+            if FIT2[0]:                                                       # its own row, under the struck lines
+                T(c, "UPDATE:", x0 + 30, top + 5 * L + 6, 34, col=GRN, center=False)
+                T(c, "Pam found it.", x0 + 30, top + 6 * L + 20, 46, col=(0.55, 0.16, 0.46), center=False)
+                ry = top + 6 * L + 44
+            else:
+                T(c, "UPDATE:", x0 + 250, top + 3 * L, 30, col=GRN, center=False)
+                T(c, "Pam found it.", x0 + 30, top + 5 * L + 14, 46, col=(0.55, 0.16, 0.46), center=False)
+                ry = top + 290
         else:
             for i, s_ in enumerate(("They lost my", "blueprint.")):
                 T(c, s_, x0 + 30, top + i * 46, 34, col=GREY, bold=False, center=False)
@@ -305,9 +312,16 @@ def phone2(k, kind="crisis", seed=950):
                     c.line_to(x0 + 62, ry + 62); c.line_to(x0 + 76, ry + 34); c.stroke()
                     T(c, "UptimeZ:", x0 + 100, ry + 38, 26, center=False, col=GREY)
                     r1, r2, r3 = REPLY_TXT[0]
-                    T(c, r1, x0 + 100, ry + 86, 46, center=False)
-                    T(c, r2, x0 + 30, ry + 134, 36, center=False)
-                    T(c, r3, x0 + 30, ry + 174, 36, center=False)
+                    if r3 == "CLOWN":                                    # v18: "Stupid human." big, and the clown
+                        import clown as _cl
+                        T(c, r1, x0 + 100, ry + 86, 46, center=False)
+                        T(c, r2, x0 + 100, ry + 140, 46, center=False)
+                        c.select_font_face("Inter", 0, 1); c.set_font_size(46)
+                        _cl.clown(c, x0 + 100 + c.text_extents(r2).x_advance + 40, ry + 124, 24)
+                    else:
+                        T(c, r1, x0 + 100, ry + 86, 46, center=False)
+                        T(c, r2, x0 + 30, ry + 134, 36, center=False)
+                        T(c, r3, x0 + 30, ry + 174, 36, center=False)
                     ry += 80
                 else:
                     r1, r2 = REPLY_TXT[0] or ("\u201cCorrect.", "We will recover.\u201d")
@@ -323,7 +337,12 @@ def phone2(k, kind="crisis", seed=950):
                     r1, r2, r3 = REPLY_TXT[0]
                     T(c, "UptimeZ: " + r1, x0 + 100, ry + 46, 30, center=False, bold=(kind == "reply"))
                     T(c, r2, x0 + 100, ry + 84, 30, center=False, bold=(kind == "reply"))
-                    T(c, r3, x0 + 100, ry + 120, 30, center=False, bold=(kind == "reply"))
+                    if r3 == "CLOWN":                                    # v18: the clown after "human."
+                        import clown as _cl
+                        c.select_font_face("Inter", 0, 1 if kind == "reply" else 0); c.set_font_size(30)
+                        _cl.clown(c, x0 + 100 + c.text_extents(r2).x_advance + 32, ry + 74, 16)
+                    else:
+                        T(c, r3, x0 + 100, ry + 120, 30, center=False, bold=(kind == "reply"))
                     ry += 0 if kind == "pam" else 40                           # 6.3b: her card covers the dimmed rest
                 else:
                     r1, r2 = (REPLY_V14_SMALL if REPLY_TXT[0] else None) or ("\u201cCorrect.", "We will recover.\u201d")
@@ -331,8 +350,9 @@ def phone2(k, kind="crisis", seed=950):
                     T(c, r2, x0 + 100, ry + 84, 30, center=False, bold=(kind == "reply"))
             if kind == "reply" and REPLY_BIG[0]:
                 c.save(); c.push_group()
-                _avatar(k, x0 + 44, ry + 150, 16, (0.98, 0.84, 0.40), seed + 9, ring=SOFIA_RING)
-                T(c, "We value every client's journey\u2026", x0 + 70, ry + 156, 20, col=GREY, bold=False, center=False)
+                fy = min(ry + 150, y0 + 820 - 26) if FIT2[0] else ry + 150             # v18: the ring stays on the screen
+                _avatar(k, x0 + 44, fy, 16, (0.98, 0.84, 0.40), seed + 9, ring=SOFIA_RING)
+                T(c, "We value every client's journey\u2026", x0 + 70, fy + 6, 20, col=GREY, bold=False, center=False)
                 c.pop_group_to_source(); c.paint_with_alpha(0.45); c.restore()
             elif kind == "reply":
                 c.save(); c.push_group()
@@ -344,6 +364,16 @@ def phone2(k, kind="crisis", seed=950):
             if SAME_LAYOUT[0]:                                                 # v3: everything but her line steps back
                 c.set_source_rgba(*LIGHT, 0.55); c.rectangle(x0, y0, w, ry + 112 - y0); c.fill()
             py = ry + (112 if SAME_LAYOUT[0] else 130)
+            if PROPS4[0] and FIT2[0]:                                          # v18: over the dimmed reply, inside the screen
+                py = min(ry + 40, y0 + 820 - 172)
+                c.set_source_rgb(0.97, 0.93, 0.98); c.rectangle(x0 + 10, py - 6, w - 20, 166); c.fill()
+                c.set_source_rgb(0.55, 0.16, 0.46); c.set_line_width(3); c.rectangle(x0 + 10, py - 6, w - 20, 166); c.stroke()
+                _avatar(k, x0 + 50, py + 30, 22, (0.40, 0.26, 0.20), seed + 10)
+                ellipse(k, x0 + 50, py + 35, 14, 15, kit.PEOPLE.get("PAM", {}).get("skin", (0.96, 0.82, 0.70)), seed + 11, shadow=False, outline=False)
+                T(c, "PAM", x0 + 84, py + 40, 28, center=False)
+                T(c, "Some post.", x0 + 26, py + 96, 44, center=False)
+                T(c, "Others find.", x0 + 26, py + 146, 44, center=False)
+                return
             if PROPS4[0]:                                                      # v4: her line is the biggest thing on screen
                 py = ry + 86
                 c.set_source_rgb(0.97, 0.93, 0.98); c.rectangle(x0 + 6, py - 6, w - 12, 200); c.fill()

@@ -28,10 +28,10 @@ import cs_scene4 as s4
 from cs_board import S, at, base
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v3"
+V = "v5"                                                   # v5 (23 Nov): PAM says her reply, "Some post. Others find." (film_v7 6.3p)                                                   # v4: the reply under his UPDATE is "Stupid human." (script v18)
 DPS = 12
 SR = 48000
-TAKES = s1.TAKES
+TAKES = s1.TAKES if V != "v5" else "cs_voices/film_v7"
 HI = s1.HI
 ease, br, Breath = s1.ease, s1.br, s1.Breath
 lerp = s4.lerp
@@ -68,6 +68,16 @@ def s6_1(k, d):
         rect(k_, -13, -22, 26, 40, s1.PHONE, 997, lw=1.6)
         c.set_source_rgb(*cp.LIGHT); c.rectangle(-10.5, -19, 21, 33); c.fill()
         c.restore()
+        if s1.GRIP[0]:                                                              # 23 Nov (hand audit 2): both hands
+            from kit import INK                                                     # behind its sides, one thumb each
+            for i, (hx, sgn) in enumerate(((lx, 1), (rx, -1))):                     # over the face, the fingers' edge beside it
+                s1.PH_DEV.append(c.user_to_device(hx, ly if i == 0 else ry))
+                c.save(); c.set_fill_rule(1)
+                c.rectangle(mx - 200, my - 200, 400, 400); c.rectangle(mx - 13, my - 36, 26, 40); c.clip()
+                ellipse(k_, mx - sgn * 15, my - 6, 8.5, 12, SKIN_CL, 980 + i, shadow=False, lw=1.6)
+                c.restore()
+                s1._cap(c, mx - sgn * 16, my - 4, mx - sgn * 5, my - 16, 6.2, SKIN_CL)
+            return
         for i, (hx, sgn) in enumerate(((lx, 1), (rx, -1))):
             ellipse(k_, hx, my, 9, 10, SKIN_CL, 980 + i, lw=1.6)
             ellipse(k_, hx + sgn * 6, my - 12, 3.6, 5.5, SKIN_CL, 984 + i, lw=1.3)
@@ -195,6 +205,10 @@ def s6_3(k, d):
 # ---- 6.3b her line ---------------------------------------------------------------------------------------------------------
 
 N63b = 20
+LINE63p = (0.42, 0.42 + 1.69)                               # v5: her voice, as her card fades in (d3-5)
+PAMLINE = V == "v5"                                         # (a flag, so a later version tag keeps her line)
+if PAMLINE:
+    N63b = 28                                               # 2.3 s: the line and a beat
 
 
 def s6_3b(k, d):
@@ -321,7 +335,10 @@ def schedule():
     st, n = {}, 0
     for sh, nd, _ in SHOTS:
         st[sh] = n / float(DPS); n += nd
-    return [("6.5", st["6.5"] + LINE65[0])]
+    out = [("6.5", st["6.5"] + LINE65[0])]
+    if PAMLINE:
+        out.insert(0, ("6.3p", st["6.3b"] + LINE63p[0]))
+    return out
 
 
 def draw(fn, d):

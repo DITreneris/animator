@@ -55,6 +55,8 @@ FX += [("5.1", d, fx.step(), 0.20) for d in (0, 2, 5)]
 FX += [("3.4", int(round(i * 15 / 12.0)), fx.key(), 0.22) for i in range(12)]
 FX += [("5.3", d, fx.key(), 0.20) for d in range(3, 12)]
 FX += [("6.2", d, fx.key(), 0.20) for d in range(4, 13)]
+FX5 = [("4.2", 2, fx.whoosh(0.3), 0.18), ("4.2", 7, fx.rustle(0.4), 0.30), ("4.3w", 0, fx.tape(0.35), 0.18)]   # v5: the plan slides in and lands; the 7 taped
+BUZZ_V12 = [("1.1", 0.05, 0.23, 0.7), ("1.1", 0.28, 0.92, 0.2)]   # v12: the buzz drops under his first word ("Paid" was lost)
 BUZZ = [("1.1", 0.05, 1.15, 0.7), ("6.3", 0.0, 0.35, 0.35), ("6.3", 0.75, 0.25, 0.25), ("6.6a", 0.0, 0.45, 0.5)]
 
 
@@ -75,7 +77,9 @@ def main(out_dir, tag):
         p = int(t * SR)
         if p < len(a):
             a[p:p + len(x)] += g * x[:len(a) - p]
-    meta = json.load(open(lines[0][2] + "/takes.json"))
+    meta = {}
+    for tk in sorted(set(x[2] for x in lines)):                                    # v5: scenes 4 and 6 take from film_v7
+        meta.update(json.load(open(tk + "/takes.json")))
     voice = np.zeros_like(a)
     for key, t, takes in lines:
         x, _ = sf.read("%s/%s.wav" % (takes, key))
@@ -108,8 +112,9 @@ def main(out_dir, tag):
     tone = tone / np.abs(tone).max() * 0.006 * (1 + 0.15 * np.sin(2 * np.pi * 0.21 * tt))
     tone += 0.0012 * np.sin(2 * np.pi * 100 * tt) + 0.0006 * np.sin(2 * np.pi * 200 * tt)
     a += tone * TONE
-    for shot, d, x, g in FX:
-        put(x, (start[shot] + d) / float(DPS), g * 0.6)
+    for shot, d, x, g in FX + FX5:
+        if shot in start:                                                          # v5: scene 4 lost 4.2's hands, 4.3c and 4.3b
+            put(x, (start[shot] + d) / float(DPS), g * 0.6)
     for shot, off, ln, g in BUZZ:
         put(an.buzz(ln), start[shot] / float(DPS) + off, g * 0.7)
     tmp = "/tmp/cs_film"; os.makedirs(tmp, exist_ok=True)
@@ -117,7 +122,7 @@ def main(out_dir, tag):
     import sound_ob_music as om
     import sound_iwry as si
     L = len(a)
-    at = lambda shot, d: (start[shot] + d) / float(DPS)
+    at = lambda shot, d: (start[shot] + d) / float(DPS) if shot in start else (start["4.3w"] / float(DPS))   # v5: the 7 is in at the cut
     line = dict((k, t) for k, t, _ in lines)
     bars = 8 * max(1, int(round(total / 2.6 / 8)))
     bl, br_, bar = om.bed(L / float(SR), bars, "A")

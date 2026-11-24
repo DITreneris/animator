@@ -1,0 +1,165 @@
+{
+ "total": 60.667,
+ "shots": [
+  {
+   "shot": "1.2",
+   "line": {
+    "key": "1.2",
+    "who": "CLIENT",
+    "text": "Paid $999. They lost my blueprint. My lawyer will call.",
+    "t0": 0.3,
+    "t1": 5.116
+   }
+  },
+  {
+   "shot": "1.4r",
+   "line": {
+    "key": "1.4r",
+    "who": "ROBOT",
+    "text": "Reply drafted. Human approval required.",
+    "t0": 5.5,
+    "t1": 7.868
+   }
+  },
+  {
+   "shot": "1.4d",
+   "line": {
+    "key": "1.4d",
+    "who": "DON",
+    "text": "Approved.",
+    "t0": 8.068,
+    "t1": 8.786
+   }
+  },
+  {
+   "shot": "1.4b",
+   "line": {
+    "key": "1.4b",
+    "who": "ROBOT",
+    "text": "Stupid human.",
+    "t0": 9.583,
+    "t1": 10.522
+   }
+  },
+  {
+   "shot": "2.1",
+   "line": {
+    "key": "2.1",
+    "who": "DON",
+    "text": "Let's fix this together.",
+    "t0": 12.083,
+    "t1": 13.582
+   }
+  },
+  {
+   "shot": "2.2",
+   "line": {
+    "key": "2.2",
+    "who": "CLIENT",
+    "text": "Nine o'clock. Your office.",
+    "t0": 14.1,
+    "t1": 15.796
+   }
+  },
+  {
+   "shot": "3.1r",
+   "line": {
+    "key": "3.1r",
+    "who": "ROBOT",
+    "text": "Blueprint generated. Human approval required.",
+    "t0": 16.433,
+    "t1": 18.872
+   }
+  },
+  {
+   "shot": "3.1d",
+   "line": {
+    "key": "3.1d",
+    "who": "DON",
+    "text": "Approved.",
+    "t0": 19.033,
+    "t1": 19.751
+   }
+  },
+  {
+   "shot": "3.3",
+   "line": {
+    "key": "3.3",
+    "who": "DON",
+    "text": "Recovered.",
+    "t0": 23.083,
+    "t1": 23.918
+   }
+  },
+  {
+   "shot": "3.5",
+   "line": {
+    "key": "3.5",
+    "who": "CLIENT",
+    "text": "Is this a joke?",
+    "t0": 26.333,
+    "t1": 27.407
+   }
+  },
+  {
+   "shot": "4.2p",
+   "line": {
+    "key": "4.2p",
+    "who": "PAM",
+    "text": "Check your pocket.",
+    "t0": 32.537,
+    "t1": 33.726
+   }
+  },
+  {
+   "shot": "4.4",
+   "line": {
+    "key": "4.4",
+    "who": "ROBOT",
+    "text": "The result was obtained by a h-human.",
+    "t0": 37.667,
+    "t1": 39.847
+   }
+  },
+  {
+   "shot": "5.1",
+   "line": {
+    "key": "5.1",
+    "who": "CLIENT",
+    "text": "Your number.",
+    "t0": 41.25,
+    "t1": 42.063
+   }
+  },
+  {
+   "shot": "5.4d",
+   "line": {
+    "key": "5.4d",
+    "who": "DON",
+    "text": "Customer success.",
+    "t0": 48.0,
+    "t1": 49.357
+   }
+  },
+  {
+   "shot": "6.3p",
+   "line": {
+    "key": "6.3p",
+    "who": "PAM",
+    "text": "Some post. Others find.",
+    "t0": 55.087,
+    "t1": 56.774
+   }
+  },
+  {
+   "shot": "6.5",
+   "line": {
+    "key": "6.5",
+    "who": "SOFIA",
+    "text": "Still one star.",
+    "t0": 57.3,
+    "t1": 58.175
+   }
+  }
+ ]
+}

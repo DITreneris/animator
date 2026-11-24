@@ -471,6 +471,7 @@ def _xmap(d):
 # ---------------------------------------------------------------- v21: canon proportions, feet on the floor; who is where
 SC = {"client": 0.52, "robot": 0.40, "sofia": 0.56, "don": 0.60, "pam": 0.54, "mom": 0.54}   # set_ob's ratios (Don = 0.60)
 FOOT = {"client": F + 2, "robot": F + 4, "sofia": F + 4, "don": F + 16, "pam": F + 6, "mom": F + 8}   # on the floor, not the wall
+PERSON_HOOK = [None]                                       # opt-in: f("pre"|"post", name, k) around each person drawn
 HEADS = {}                                                 # name -> (x, y, r) on the canvas, for the animatic's bubbles
 AVOID = []                                                 # v22: boxes (x0, y0, x1, y1) a bubble must not cover (a phone's text)
 
@@ -520,7 +521,11 @@ class _norm:
                 s = SC[name]
                 if F - 50 < feet < F + 4:
                     feet = FOOT[name]
+            if PERSON_HOOK[0]:                              # opt-in (gates, 23 Nov): before and after each person
+                PERSON_HOOK[0]("pre", name, k)
             o = fn(k, x, feet, s, *a, **kw)
+            if PERSON_HOOK[0]:
+                PERSON_HOOK[0]("post", name, k)
             try:
                 hx, hy = o["head"]
                 c = k.c

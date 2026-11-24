@@ -120,6 +120,9 @@ TAPE = (270, 371)                                           # the tape across 7 
 WRITE = (("PAM", 3, 7), ("555 0142", 8, 17))                # the line, the drawings it is written over
 
 
+SLEEVE52 = [0.40, 190]                                      # (sleeve share, the arm's entry x past the pen); v19: whose hand
+
+
 def s5_2(k, d):
     """30 drawings (2.5 s). Close on bay 7, the tape across it. Her pen writes PAM, then 555 0142 (her hand, the
     sleeve shoved up, moving with it). She lifts off; his phone slides in from below, beside her number."""
@@ -148,7 +151,7 @@ def s5_2(k, d):
     if tip:
         sc = HI[0]
         px, py = tx_[0] / sc, tx_[1] / sc
-        s4.limb(k, px + 190, -80, px + 78, py - 96, 84, 0.40, s4.PURPLE, s4.SKIN_PAM, seed=911, thumb=1)
+        s4.limb(k, px + SLEEVE52[1], -80, px + 78, py - 96, 84, SLEEVE52[0], s4.PURPLE, s4.SKIN_PAM, seed=911, thumb=1)
         c.set_source_rgb(*INK); c.set_line_width(15); c.set_line_cap(1)            # the pen in her fingers
         c.move_to(px, py); c.line_to(px + 96, py - 122); c.stroke()
         c.set_source_rgb(*PEN); c.set_line_width(10); c.move_to(px + 8, py - 10); c.line_to(px + 96, py - 122); c.stroke()
