@@ -612,7 +612,53 @@ def t7():
     return fr
 
 
-TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7}
+# ---- T8 -----------------------------------------------------------------------------------------------------------------
+def t8():
+    """3.6, v9 (Tomas): the two shadows carry her in from the right, the money up in their fists, and drop her at the
+    club's door; they walk on and out. She lies there; then she comes up off the pavement stiff as a plank, puts her
+    mask straight, and stands where 4.1 finds her. 57 drawings, 4.75 s, in 4.1's camera."""
+    import on4_lying as ly
+    CAM = (270, 462, 1.05)
+    X0, GYp = 400, 714                                       # where 4.1 has her; the pavement
+    def bill(k, x, y, ang):
+        c = k.c
+        ly.bill(k, x, y, ang, 1.8, seed=0)
+        c.save(); c.translate(x, y); c.rotate(ang); c.set_source_rgb(0.12, 0.16, 0.10)
+        c.select_font_face("sans-serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); c.set_font_size(18)
+        c.move_to(-5, 6); c.show_text("$"); c.restore()
+    def f(i):
+        carry = i < 15
+        cx = X0 - 96 + (1 - i / 14.0) * 330 if carry else X0 - 96         # her middle while carried (she lies head to the left)
+        lift = -40 + (4 if i % 2 else 0) if carry else min(0, -40 + (i - 14) * 22)
+        cast = []
+        if i >= 30:                                          # up off the pavement, stiff as a plank, about her heels
+            t = ease(min(1.0, (i - 30) / 11.0))
+            if i < 44:
+                cast = [P("pam_cat", X0, GYp, 0.70, "hero", "doubt", (0.2, -0.4), lean=-1.45 * (1 - t), rim=True)]
+            elif i < 51:
+                cast = [P("pam_cat", X0, GYp, 0.70, "mask_fix", "doubt", (-0.4, -0.2), rim=True)]
+            else:
+                cast = [P("pam_cat", X0, GYp, 0.70, "hero", "approve", (-0.4, -1), rim=True)]
+        def after(k):
+            c = k.c
+            for j, off in enumerate((-96, 92)):              # the shadows: one at her head, one at her feet; then on, and out to the left
+                x = cx + off if carry else X0 - 96 + off - max(0, i - 18) * 30
+                if x < -60:
+                    continue
+                st.thug(k, x, GYp - 12, 0.44, "open" if i % 2 else (-30, 20, 30, -20), seed=4500 + j,
+                        hands=("grab", "grab") if carry or i < 18 else ("grab", "relax"), lean=0.0)
+                bill(k, x - 6, GYp - 12 - 162, 0.25 - 0.5 * j)
+                if j == 0:
+                    bill(k, x + 16, GYp - 12 - 172, -0.2)
+            if i < 30:
+                c.save(); c.translate(cx, GYp - 6 + lift); c.scale(0.66, 0.66); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
+            if i in (16, 17):                                # dropped
+                sc._burst(k, X0 - 200, GYp - 4, 22); sc._burst(k, X0 + 10, GYp - 4, 22)
+        return draw(shot("4.1", cam=CAM, cast=cast, after=after, protect=()))
+    return [f(i) for i in range(57)]
+
+
+TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6, "T7": t7, "T8": t8}
 
 
 def build(name):

@@ -15,9 +15,9 @@ import on4_voices as vo
 
 FPS = 12
 SR = 48000
-MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None), ("3.1", "3.2"): ("T3", 0, None),
+MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None), ("3.6",): ("T8", 0, None), ("3.1", "3.2"): ("T3", 0, None),
        ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("6.3", "6.6"): ("T4", 0, -8), ("8.1", "8.2"): ("T5", 0, -7)}
-OUT = os.path.join(sc.OUT, "on4_rough_v8.mp4")
+OUT = os.path.join(sc.OUT, "on4_rough_v9.mp4")
 NEW = {   # key: (shot, seconds into the shot, who, text)
     "c1": ("2.2", 1.55, "CLIENT", "Mine until it's done."),
     "d1": ("3.1", 1.5, "DON", "Traffic flows."),
@@ -162,13 +162,14 @@ def sound(tm, d, total):
     put(fx, rs(so.thump(), so.SR), crash, 1.4)
     put(fx, rs(so.metal_click(900, 0.12), so.SR), crash + 0.55, 0.5)                                # the lid lifts
     put(fx, rs(so.swish(0.2), so.SR), crash + 1.3, 0.4); put(fx, rs(so.pop(), so.SR), crash + 1.62, 0.5)   # the peel flicked, landed
+    put(fx, rs(so.thump(), so.SR), st_("3.6") + 16 / 12.0, 1.3)                                     # v9: dropped at the club's door
     r0 = st_("8.2") - 0.8
     rain = rs(so.rain(total - r0 + 0.1), so.SR); rain[:int(0.8 * SR)] *= np.linspace(0, 1, int(0.8 * SR))
     put(fx, rain, r0, 1.2)
     put(fx, rs(so.rain(1.2), so.SR) * np.linspace(1, 0, len(rs(so.rain(1.2), so.SR))), 0.0, 1.2)    # the rain runs through the loop's seam
     # the band: in the dream only; dead on the bump (back when she sits up), dead on "Well?"; nothing awake
     crash = st_("2.4") + 32 / 12.0
-    for t0, t1 in ((1.0, crash), (crash + 1.6, bump), (st_("3.6") + 0.4, st_("6.3") + 0.9)):
+    for t0, t1 in ((1.0, crash), (crash + 1.6, bump), (st_("3.6") + 2.5, st_("6.3") + 0.9)):
         jz.groove(mus, t0, t1, level=0.8)
         j = int(t1 * SR); mus[j:] = 0.0                                                             # cut dead
     mus_end = int((st_("6.3") + 0.9) * SR); mus[mus_end:] = 0.0
