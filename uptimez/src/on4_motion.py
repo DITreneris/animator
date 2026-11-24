@@ -305,7 +305,13 @@ def seat3(k):
     for row in range(0, 12):
         for col in range(-1, 10):
             c.set_source_rgb(0.26, 0.25, 0.24); c.set_line_width(1.6); c.rectangle(col * 64 + (32 if row % 2 else 0), row * 28, 64, 28); c.stroke()
-    st.poly(k, [(330, 60), (470, 60), (470, 250), (330, 250)], (0.05, 0.05, 0.06), 2.2)
+    if PEEK[0]:
+        x0, y0, x1, y1 = PEEK_WIN
+        st.poly(k, [(x0 - 8, y0 - 8), (x1 + 8, y0 - 8), (x1 + 8, y1 + 4), (x0 - 8, y1 + 4)], (0.46, 0.45, 0.43), 2.0)      # the frame
+        st.poly(k, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], (0.05, 0.05, 0.06), 2.2)
+        st.poly(k, [(x0 - 14, y1 - 2), (x1 + 14, y1 - 2), (x1 + 14, y1 + 12), (x0 - 14, y1 + 12)], (0.58, 0.57, 0.54), 2.0)   # the sill
+    else:
+        st.poly(k, [(330, 60), (470, 60), (470, 250), (330, 250)], (0.05, 0.05, 0.06), 2.2)
     st.poly(k, [(-10, 330), (380, 322), (520, 400), (560, 430), (560, 960), (-10, 960)], car.BODY, 2.6)   # the body: roof, pillar
     c.set_source_rgb(*car.BODY_HI); c.set_line_width(3); c.move_to(-10, 336); c.line_to(378, 328); c.line_to(516, 404); c.stroke()
     car._p(c, WIN); c.set_source_rgb(0.07, 0.07, 0.09); c.fill()                                   # the cabin: dark
@@ -360,6 +366,19 @@ def seat3_people(k, hand, env, dad, t=None):
     c.set_source_rgb(*car.CHROME); c.set_line_width(4); c.move_to(-10, 800); c.line_to(430, 800); c.stroke()   # the sill strip
     c.set_source_rgb(0.02, 0.02, 0.03); c.new_path(); c.arc(520, 900, 120, math.pi, 2 * math.pi); c.fill()     # the wheel arch
     car._wheel(c, 520, 900, 96)
+    if PEEK[0] and t is not None:
+        x0, y0, x1, y1 = PEEK_WIN
+        u = ease(min(1.0, max(0.0, (t - 0.25) / 0.4))) * (1 - ease(min(1.0, max(0.0, (t - 2.55) / 0.25))))   # up; and down again before he looks up
+        up2 = max(0.0, min(1.0, (co.BT + 150 - hand[1]) / 88.0))
+        S2 = 0.72; mx = (x0 + x1) / 2.0
+        feet = y1 - 2 + 150 * S2 + 150 * (1 - u)             # her hands' height is the sill's top when she is up
+        arms = oc.pm.ik(-1, -66, -150) + oc.pm.ik(1, 66, -150)
+        if u > 0.02:
+            c.save(); c.rectangle(x0, y0, x1 - x0, y1 - 2 - y0); c.clip()       # in the window: nothing of her below the sill
+            sc.draw_cast(k, [P("pam_cat", mx, feet, S2, pose(arms, ("flat", "flat")), "peer", (-0.7 + 0.15 * up2, 0.9 - 0.25 * up2), rim=True,
+                               tilt=0.06 * math.sin(2 * math.pi * t / 1.7))])
+            c.restore()
+        return
     c.save(); c.translate(486, 300); c.scale(-1, 1)                                                # her ears over the roof's edge:
     if t is not None:                                        # DENSE: she listens: the head eases up and down, an ear's twitch now and then
         c.translate(0, 3.0 * math.sin(2 * math.pi * t / 1.9)); c.rotate(0.05 * math.sin(2 * math.pi * t / 1.3) + (0.10 if 1.25 < t < 1.42 else 0.0))
@@ -486,6 +505,8 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+PEEK = [False]                                               # (24 Nov, Tomas: "the cat's head is bad; put her looking out of the window above?") 2.2-2.3: she comes up in the window over the car, her gloves on its sill, follows the envelope, ducks before he looks up
+PEEK_WIN = (336, 150, 476, 312)                              # clear of the narration card's rows (to y 196, the second row to about x 330)
 DENSE = [False]                                              # (24 Nov, Tomas: where else is the film thin?) twelve different drawings a second in 2.2-2.3, 6.3-6.6, 8.1 and the fall of 2.4: held figures breathe, eyes travel, the fall has its in-betweens
 T7_SLAM = [32]                                               # the drawing the bin's lid slams on (the sound reads it)
 LAW = [False]                                                # (24 Nov) one scale law on the crossing (on4_cross.dscale): her walk in grows by it; she lies as she fell (the same rig), no other drawing
