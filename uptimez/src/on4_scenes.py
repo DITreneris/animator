@@ -650,24 +650,47 @@ def _dark_half(k):                                         # 6.5 (board v4): the
 MARKS = [True]                                             # v18: what her act leaves on the stage (five knives in the boards, a scorch on the curtain)
 
 
-def stage_marks(k, knives=5, scorch=1.0):
+def knife(c, x, y, ang, s=1.0, stuck=0.0):
+    """A throwing knife, point up at ang 0: a tapered blade with its spine, a cross-guard, a bound handle, a pommel.
+    stuck: the part of the blade (0..1) hidden in the boards."""
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    top = -44 + 34 * stuck
+    c.move_to(-5, -8); c.line_to(-3, top + 10); c.line_to(0, top); c.line_to(4, top + 12); c.line_to(5, -8); c.close_path()
+    c.set_source_rgb(0.95, 0.95, 0.92); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.1); c.stroke()
+    if stuck < 0.5:
+        c.set_source_rgb(0.55, 0.55, 0.55); c.set_line_width(0.8); c.move_to(0, -10); c.line_to(0, top + 8); c.stroke()
+    c.rectangle(-10, -9, 20, 5); c.set_source_rgb(0.75, 0.75, 0.72); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.0); c.stroke()   # the guard
+    c.rectangle(-4, -4, 8, 20); c.set_source_rgb(0.14, 0.14, 0.15); c.fill_preserve(); c.set_source_rgb(0.6, 0.6, 0.6); c.set_line_width(0.8); c.stroke()
+    for yy in (0, 5, 10):
+        c.move_to(-4, yy); c.line_to(4, yy + 2); c.stroke()
+    c.new_path(); c.arc(0, 19, 5, 0, 2 * math.pi); c.set_source_rgb(0.75, 0.75, 0.72); c.fill_preserve(); c.set_source_rgb(*INK); c.stroke()
+    c.restore()
+
+
+KNIFE_AT = ((120, -0.22), (166, 0.14), (286, -0.12), (332, 0.20), (378, -0.16))   # where they stand in the boards (the fifth after she has had it in her teeth)
+SCORCH = (466, 500)
+
+
+def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0):
     c = k.c
-    if scorch > 0:                                         # the curtain's edge, burnt: a black patch, an ember line, smoke
-        c.new_path()                                         # a ragged hole, not an oval
+    if scorch > 0:                                         # the curtain's edge, burnt: a ragged black hole, embers on its rim, smoke in puffs
+        sx_, sy_ = SCORCH
+        c.new_path()
         for a_ in range(0, 360, 24):
-            q = (38 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
-            (c.move_to if a_ == 0 else c.line_to)(476 + q * math.cos(math.radians(a_)), 470 + 1.5 * q * math.sin(math.radians(a_)))
-        c.close_path(); c.set_source_rgba(0.01, 0.01, 0.01, 0.95); c.fill_preserve()
-        c.set_source_rgb(*st.NEON); c.set_line_width(2.0); c.set_dash([7, 9]); c.stroke(); c.set_dash([])
-        c.set_source_rgba(0.8, 0.8, 0.78, 0.5); c.set_line_width(5)
-        for j in range(3):
-            c.move_to(452 + j * 16, 410); c.curve_to(440 + j * 16, 370, 470 + j * 16, 340, 456 + j * 16, 300); c.stroke()
-    for j, (x, a) in enumerate(((132, -0.25), (176, 0.15), (276, -0.12), (318, 0.22), (356, -0.3))[:knives]):   # blades in the boards round her feet
-        c.save(); c.translate(x, 706 + (j % 2) * 5); c.rotate(a); c.scale(2.2, 2.2)
-        c.move_to(-4, -16); c.line_to(0, 0); c.line_to(5, -16); c.close_path(); c.set_source_rgb(0.93, 0.93, 0.90); c.fill_preserve()   # what shows of the blade
-        c.set_source_rgb(*INK); c.set_line_width(1.0); c.stroke()
-        c.rectangle(-5, -32, 11, 16); c.set_source_rgb(0.10, 0.10, 0.11); c.fill_preserve(); c.set_source_rgb(0.5, 0.5, 0.5); c.stroke()
-        c.restore()
+            q = (36 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
+            (c.move_to if a_ == 0 else c.line_to)(sx_ + q * math.cos(math.radians(a_)), sy_ + 1.5 * q * math.sin(math.radians(a_)))
+        c.close_path(); c.set_source_rgba(0.01, 0.01, 0.01, 0.96); c.fill()
+        for a_ in range(100, 290, 21):
+            q = (36 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
+            c.new_path(); c.arc(sx_ + q * math.cos(math.radians(a_)), sy_ + 1.5 * q * math.sin(math.radians(a_)), 2.6, 0, 2 * math.pi)
+            c.set_source_rgb(*st.NEON); c.fill()
+        for j in range(6):                                 # puffs, each bigger and fainter, wandering up and out
+            u = ((j + (t % 6) / 6.0) / 6.0)
+            c.new_path(); c.arc(sx_ - 14 + 26 * math.sin(j * 1.9 + u * 3) + 18 * u, sy_ - 60 - 190 * u, 10 + 26 * u, 0, 2 * math.pi)
+            c.set_source_rgba(0.78, 0.78, 0.76, 0.42 * (1 - u) * smoke * scorch); c.fill()
+    for j, (x, a) in enumerate(KNIFE_AT[:knives]):          # blades in the boards round her feet
+        c.save(); c.rectangle(-100, -100, 800, 806 + (j % 2) * 4); c.clip()    # the point is in the wood: nothing of it below the boards' line
+        knife(c, x, 676 + (j % 2) * 4, a + math.pi, 2.0); c.restore()
 
 
 def _spot_on(k):                                           # board v9: the beam ON her: the cone over her, its pool at her feet
