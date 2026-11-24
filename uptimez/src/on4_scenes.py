@@ -1,4 +1,8 @@
-"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v11 = board v9 (24 Nov; v10 pinned). The rest of the last outside round
+"""OFFICE NOIR 4: SEVEN LIVES, the scene file, v12 (24 Nov; v11 pinned): for the motion tests (on4_motion.py). 2.2: of Dad
+only his velvet cuff and ringed hand on the seat (three cold viewers read the suit cut at the chin as "a headless suit on
+a hanger"; the hall and the stage already show him so). MOT: opt-in motion parameters (the car's place, the tapping
+finger, the envelope's way into the coat); empty, everything draws as board v9.
+v11 = board v9 (24 Nov; v10 pinned). The rest of the last outside round
 (frames 16-31): props in hands (the lift's glove rim-lit, the envelope held bigger on a bent arm, the posted envelope in
 her hand, the rota in her fingers and flat on the cups); the light on the actor (the spotlight on her, the club's far wall
 dark, Pam out of the arch's glare); the camera nearer (5.1, the desk, 6.6); 4.3's sign whole; the sleep mask reads pushed
@@ -79,6 +83,7 @@ TIMING = "on4_timing_v1.json"
 DEAD = lambda x, y: y > 720 or (x > 470 and 380 < y < 860)
 
 CHANGES = [
+    "v12: 2.2 shows of Dad only his cuff and ringed hand on the seat.",
     "board v9: props in hands, the light on the actor, the camera nearer (5.1 +40%, the desk +20%, 6.6 closer); 4.3 the sign whole; the sleep mask pushed up reads.",
     "board v8: grounding and light (3.6 low close; 2.4 on the platform; 1.1-1.2 the shadow projected from the cobbles up the wall, the fist on it; 3.5 soft rim, contact shadows; hands in 2.3 and 3.4; 2.2 tighter, Dad rim-lit; 3.1 asymmetric with light on the road; 3.2 one burst; bloom -40%).",
     "board v6: timing v2 from the scene file (a/b keys); 4.3 -1.5 s, the rota 2.0 s; the burst at the bumper; the heart seal on both envelopes; faces at the turns; 7.1 an open hand.",
@@ -209,17 +214,20 @@ def knee_insert(k):
     oc.envelope(k, 200, 540, 2.6)
     c.save(); c.translate(236, 548); c.scale(26, 9); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
     c.set_source_rgba(0, 0, 0, 0.45); c.fill()                                                  # the fingertip's contact shadow
-    hp.draw(k, "point", 300, 452, 110, SK, (-0.55, 0.85), 1)                                   # his finger on the envelope
+    tap = MOT.get("tap", 0.0) * 34                           # the finger lifted off it (0: on it)
+    hp.draw(k, "point", 300 + tap * 0.5, 452 - tap, 110, SK, (-0.55, 0.85), 1)                 # his finger on the envelope
     st.poly(k, [(560, 110), (336, 372), (392, 428), (560, 250)], (0.20, 0.22, 0.28), 2.4)      # his sleeve, from him, to the wrist
     st.poly(k, [(340, 384), (362, 366), (384, 388), (362, 406)], (0.85, 0.80, 0.55), 1.6)      # the watch at the cuff
     c.new_path(); c.arc(470, 30, 130, 0.25, math.pi - 0.25); c.set_source_rgb(*SK); c.fill_preserve()
     c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()                                   # his jaw, at the top
+    c.save(); c.translate((1 - MOT.get("dad", 1.0)) * 200, 0)                                   # Dad's hand comes in (0: out of frame)
     st.poly(k, [(560, 610), (440, 630), (444, 690), (560, 700)], dc.VELVET, 2.4)               # Dad's cuff,
     hp.draw(k, "palm", 400, 660, 96, dc.SKIN_F, (-1.0, 0.0), -1)                                # his hand flat on the seat,
     c.save(); c.translate(346, 664); c.rotate(-0.05)                                            # board v8: a gold band round one
     c.set_source_rgb(*INK); c.rectangle(-9, -17, 18, 34); c.fill()                              # finger, a small red stone on it
     c.set_source_rgb(*st.GOLD); c.rectangle(-7, -15, 14, 30); c.fill()
     c.set_source_rgb(*INK); c.rectangle(-8, -8, 16, 16); c.fill(); c.set_source_rgb(*st.NEON); c.rectangle(-6, -6, 12, 12); c.fill()
+    c.restore()
     c.restore()
 
 
@@ -604,11 +612,20 @@ def wall_shadow(k, state="aim", slide=0.0):
     c.restore(); c.restore()
 
 
-def _into_coat(k):                                         # 2.2 (board v4): he slides it into his own coat; her ears outside
+def _into_coat(k):                                         # 2.2: he slides it into his own coat; her ears outside
+    import dh_cast as dc
+    import hands_ps as hp
     c = k.c
-    oc.envelope(k, 208, 640, 1.1)                                                                  # half into his coat, at his chest
-    c.set_source_rgb(0.24, 0.24, 0.30); c.rectangle(184, 650, 52, 24); c.fill()                   # the lapel over its lower half
-    c.set_source_rgb(*INK); c.set_line_width(2); c.rectangle(184, 650, 52, 24); c.stroke()
+    t = MOT.get("coat", 1.0)                                 # 0: on his knee .. 1: half into his coat, under the lapel
+    ex, ey = 208 + (1 - t) * 40, 640 + (1 - t) * 46
+    oc.envelope(k, ex, ey, 1.1)
+    if t > 0.85:
+        c.set_source_rgb(0.24, 0.24, 0.30); c.rectangle(184, 650, 52, 24); c.fill()                # the lapel over its lower half
+        c.set_source_rgb(*INK); c.set_line_width(2); c.rectangle(184, 650, 52, 24); c.stroke()
+    st.poly(k, [(540, 640), (430, 650), (432, 690), (540, 696)], dc.VELVET, 2.2)                # v12: of Dad, his cuff and
+    hp.draw(k, "palm", 404, 672, 60, dc.SKIN_F, (-1.0, 0.0), -1)                                  # ringed hand on the seat
+    c.set_source_rgb(*INK); c.rectangle(380, 660, 12, 22); c.fill(); c.set_source_rgb(*st.GOLD); c.rectangle(382, 662, 8, 18); c.fill()
+    c.set_source_rgb(*st.NEON); c.rectangle(382, 667, 8, 8); c.fill()
     c.save(); c.translate(500, 470); c.scale(-1, 1)                                                # her ears and the top of her head,
     kit.ellipse(k, 0, 0, 70, 60, (0.10, 0.09, 0.10), 7501, shadow=False, lw=2.2)                  # at the window's edge, outside
     oc.ears(k, 0, 0, 0.9)
@@ -676,7 +693,7 @@ SCENES = [
         S("2.2", "medium, through the window", "back_seat", (270, 590, 1.08), "The back seat: the Client, whole; beside him a velvet sleeve, "
           "a ringed hand on a knee, a chin (the window's top cuts Dad at the chin).",
           cast=[P("client", 170, 820, 0.66, "open", "plain", look=(0.7, 0.4), roll=False, badge=False),
-                P("father", 370, 596, 0.78, (-20, 30, 20, -30), "hard", (-0.6, 0.6))],
+                ],
           eyeline="both to the envelope", after=_into_coat),
         S("2.3", "insert, 1.2 s", "knee", WIDE, "Through the window: the envelope on the Client's knee, his finger taps it twice; the "
           "ringed hand lays itself flat on the seat: agreed.", protect=[("envelope", (200, 540)), ("ring", (346, 664))],
@@ -777,6 +794,7 @@ SCENES = [
 ]
 
 KNOWN = {}
+MOT = {}                                                   # motion parameters (on4_motion.py); empty = the board's drawing
 
 
 def _loc(k, name):
@@ -809,10 +827,14 @@ def _loc(k, name):
         knee_insert(k); return None
     if name in ("C", "C_turn", "C_bump"):
         loc_c(k)
-        if name == "C_turn":                                 # v3: head on at the junction (the three-quarter read as two cars)
+        if "car" in MOT:                                     # the motion test: the car anywhere between the junction and her
+            cy_, cs_ = MOT["car"]
+            car.reflect(k, lambda: car.front(k, 250, cy_, cs_), cy_, 0.25, 20)
+        elif name == "C_turn":                               # v3: head on at the junction (the three-quarter read as two cars)
             car.reflect(k, lambda: car.front(k, 250, 640, 0.52), 640, 0.25, 20)
-        if name == "C_bump":
+        if name == "C_bump" and "car" not in MOT:
             car.reflect(k, lambda: car.front(k, 250, 702, 1.15), 702, 0.25, 30)
+        if name == "C_bump" and MOT.get("car", (702,))[0] > 690:
             g = cairo.RadialGradient(292, 640, 10, 292, 640, 130)       # board v1: the headlights light her from behind
             g.add_color_stop_rgba(0, 1, 1, 0.95, 0.85); g.add_color_stop_rgba(1, 1, 1, 0.95, 0)
             k.c.set_source(g); k.c.rectangle(130, 480, 330, 260); k.c.fill()
