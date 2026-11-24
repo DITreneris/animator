@@ -75,7 +75,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v15.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v16.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -678,8 +678,8 @@ def garage_shot(k, sh, scene, heads, cam):
         px, py = 300, 812
         for col, lw in ((INK, 66), (dc.SUIT, 60)):                            # v9 (24 Nov, cold test 3 of 3: "a black diagonal",
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0)       # "floating"; decided: hand + SHORT THICK forearm):
-            c.move_to(px + 36, py + 30); c.line_to(px + 190, py - 20); c.stroke()   # his sleeve, as wide as the hand, straight
-        c.save(); c.translate(px + 62, py + 21.5); c.rotate(math.atan2(-50, 154))    # out of the frame's right edge
+            c.move_to(px + 36, py + 30); c.line_to(px + 112, py + 6); c.stroke()   # his sleeve, as wide as the hand, straight
+        c.save(); c.translate(px + 62, py + 21.5); c.rotate(math.atan2(-50, 154))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
         rect(k, -9, -35, 18, 70, (0.97, 0.97, 0.94), 3409, shadow=False, lw=1.8)            # his white cuff, at the phone
         c.restore()
         S04, A04 = 90 / 44.0, 0.0                                             # v7: the same phone grip as every phone, big
@@ -799,17 +799,17 @@ def insert_shot(k, sh):
     elif kind == "pin":                                                            # v2 (23 Nov, cold tests 3 of 3: the plan "healed"):
         u_ = sh["state"].get("pin_u", 1.0)                                             # v5 (24 Nov, cold test 3 of 3: "the burnt map is
         sl_ = sh["state"].get("pin_slide", 1.0)                                        # whole again", "a pole from the floor"; decided):
-        Z_, CX_, CY_ = 2.45, 408, 520                                                  # the BURNT plan is there, with its hole; the FRESH
-        c.save(); c.translate(270, 480); c.scale(Z_, Z_); c.translate(-CX_, -CY_)      # one slides up over it under his hand, and his
+        Z_, CX_, CY_, DY_ = 2.45, 408, 520, 40                                                   # the BURNT plan is there, with its hole; the FRESH
+        c.save(); c.translate(270, 480 + DY_); c.scale(Z_, Z_); c.translate(-CX_, -CY_)      # one slides up over it under his hand, and his
         gs.room(k); gs.plan(k, 1.0)                                                    # finger pins its bottom corner. It is covered,
         c.save(); c.translate(0, 340 * (1 - sl_))
         gs.plan(k, 0.0)                                                                # not healed (gs.DON_RING: 3 ringed, DON)
         c.restore(); c.restore()
-        px_, py_ = (336 - CX_) * Z_ + 270, (579 - CY_) * Z_ + 480 + 340 * (1 - sl_) * Z_   # the fresh plan's bottom left corner
+        px_, py_ = (336 - CX_) * Z_ + 270, (579 - CY_) * Z_ + 480 + DY_ + 340 * (1 - sl_) * Z_   # the fresh plan's bottom left corner
         ph_ = (px_ + 34 + 10 * (1 - u_), py_ + 78 + 18 * (1 - u_))
-        sh_ = (ph_[0] + 200, 1000)                                                     # v6 (24 Nov, cold test v30: "a pole" 3 of 3): HE is in the
-        pd_ = insert_arm(c, ph_, bend(ph_, sh_, 70, -1), sh_, 70, (0.92, 0.74, 0.60), (0.11, 0.11, 0.13),   # frame: a bent suit arm,
-                         cuff=(0.97, 0.97, 0.95), torso=(0.11, 0.11, 0.13))                    # his shoulder and the jacket's body behind it
+        sh_ = (ph_[0] + 60, 1400)                                                     # v6 (24 Nov, cold test v30: "a pole" 3 of 3): HE is in the
+        pd_ = insert_cuff(c, ph_, bend(ph_, sh_, 70, -1), 70, (0.92, 0.74, 0.60), (0.11, 0.11, 0.13),   # v7: HAND + CUFF only
+                          cuff=(0.97, 0.97, 0.95), stub=230)
         _oc.ps_hand(k, "point", ph_[0], ph_[1], 84, (0.92, 0.74, 0.60), pd_, 1)        # his INDEX finger on the pin (hands_ps "point")
         if u_ > 0.5:
             ellipse(k, px_, py_, 14, 14, (0.85, 0.12, 0.12), 3497, lw=2.4)              # the red pin, in
@@ -852,8 +852,7 @@ def insert_shot(k, sh):
         fh_ = (330 + (290 - 330) * bo2_, 470 + (250 - 470) * bo2_)                          # v4: the far hand comes up with the plug
         for side, (hx, hy, sx_, sy_) in enumerate(((hw_[0], hw_[1], 30, 70), (fh_[0], fh_[1], 500, 720))):
             el_ = bend((hx, hy), (sx_, sy_), 60, 1 if side == 0 else 1)                   # v8 (24 Nov, cold test v30: "tubes" 3 of 3): his
-            dd_ = insert_arm(c, (hx, hy), el_, (sx_, sy_), 54, (0.80, 0.62, 0.50), (0.97, 0.97, 0.95),   # T-shirt shoulder and chest are IN
-                             torso=(0.97, 0.97, 0.95))                                    # the frame, the elbow bent
+            dd_ = insert_cuff(c, (hx, hy), el_, 54, (0.80, 0.62, 0.50), None)                         # v9: HAND + bare wrist only
             if side == 1 and bo2_ > 0:                                                # v4: his far fist round the plug
                 _oc.ps_hand(k, "fist", hx - 12 * dd_[0], hy - 12 * dd_[1], 64, (0.80, 0.62, 0.50), dd_, 1)
                 continue
@@ -1293,6 +1292,25 @@ def bend(hand, shoulder, off, side=1):
     mx, my = (hand[0] + shoulder[0]) / 2, (hand[1] + shoulder[1]) / 2
     dx, dy = shoulder[0] - hand[0], shoulder[1] - hand[1]; L = math.hypot(dx, dy) or 1.0
     return (mx + side * off * -dy / L, my + side * off * dx / L)
+
+
+def insert_cuff(c, hand, elbow, w, skin, sleeve, cuff=None, stub=26):
+    """v3 (24 Nov, cold test v31: arms read "a pole / floating" 3 of 3 whatever their length; decided "hand + wrist cuff only"):
+    NO arm. The hand, big, with a short stub of sleeve and its cuff (a suit), or a bare wrist (a T-shirt). The direction
+    is the old forearm's. Returns it, as insert_arm does."""
+    dl = math.hypot(hand[0] - elbow[0], hand[1] - elbow[1]); d = ((hand[0] - elbow[0]) / dl, (hand[1] - elbow[1]) / dl)
+    back = (hand[0] - d[0] * (stub + 14), hand[1] - d[1] * (stub + 14))
+    parts = []
+    if cuff is not None:
+        parts.append(((back[0], back[1]), (hand[0] - d[0] * 14, hand[1] - d[1] * 14), w * 0.98, w * 0.92, sleeve))
+        cx_, cy_ = hand[0] - d[0] * 14, hand[1] - d[1] * 14
+        parts.append(((cx_ - d[0] * 6, cy_ - d[1] * 6), (cx_ + d[0] * 6, cy_ + d[1] * 6), w * 0.84, w * 0.84, cuff))
+    else:
+        parts.append(((back[0], back[1]), (hand[0] - d[0] * 14, hand[1] - d[1] * 14), w * 0.80, w * 0.80, skin))
+    for e, ink in ((3.5, True), (0.0, False)):
+        for p0, p1, w0, w1, col in parts:
+            _limb(c, p0, p1, w0, w1, INK if ink else col, e)
+    return d
 
 
 def insert_arm(c, hand, elbow, shoulder, w, skin, sleeve, cuff=None, torso=None):

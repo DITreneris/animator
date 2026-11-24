@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 31, 2: 31, 3: 31, 4: 31, 5: 31}
-SOUND = "of_sound_v16.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 32, 2: 32, 3: 32, 4: 32, 5: 32}
+SOUND = "of_sound_v17.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -111,13 +111,19 @@ def _work(t):
     return math.sin(t * 2 * math.pi * 1.3)
 
 
-CUT_21 = 1.9                                              # v2 (23 Nov, cold tests 3 of 3: "4 s of one frame, I'd scroll"):
+CUT_21 = 1.3                                              # v2 (23 Nov, cold tests 3 of 3: "4 s of one frame, I'd scroll"):
 
 
-def s21(t, L):                                             # Father speaks to him; he keeps working. CLOSE on Father first, then
-    if t < CUT_21:                                         # the two-shot: the line goes on over the cut, the Client never looks up
-        return dict(_cam=sc.FATHER_LAMP, _cast=("father", "g2")), dict(client=dict(kind="bent", work=_work(t)))
-    return {}, dict(client=dict(kind="bent", work=_work(t)))
+def s21(t, L):                                             # v3 (24 Nov, cold test v31: 'My son says...' drags, 4 s; decided): THREE pictures over the one
+    cl = dict(client=dict(kind="bent", work=_work(t)))     # line (lesson 197): Father close (the guard behind him adjusts his
+    fx_, ff_ = sc.BLOCK[3]["father"]                       # sunglasses), the two-shot (Father's open hand),
+    gu = ease((t - 1.5) / 0.3) - ease((t - 2.5) / 0.3)     # and Father again; the Client never looks up
+    gest = dict(targets_xy=[(fx_ + 34 + 30 * gu, ff_ - 96 - 78 * gu)]) if gu > 0.02 else {}
+    if t < CUT_21:
+        return dict(_cam=sc.FATHER_LAMP, _cast=("father", "g2")), cl
+    if t < 2.55:
+        return {}, dict(father=dict(face="hard", look=(1, 0), **gest), **cl)
+    return dict(_cam=sc.FATHER_LAMP, _cast=("father", "g2")), dict(father=dict(face="brow" if t > 3.55 else "hard", look=(1, 0)), **cl)
 
 
 def s22(t, L):
@@ -142,19 +148,8 @@ def s27(t, L):                                             # the phone out of th
 GAG_AT = 1.1                                               # v2 (23 Nov, decided: the mid-film gag): after "Done.", CUT to
 
 
-def s28c(t, L):                                            # one nod: down and back up. Then the gag: bodyguard 2, behind
-    if t < GAG_AT:                                         # Father, is looking PAM up for himself; Father's eyes go to him;
-        return {}, dict(father=dict(face="low" if 0.25 < t < 0.7 else "hard"))   # the phone goes down
-    u = t - GAG_AT
-    x2, f2 = 120, 872
-    up, dn = (x2 + 30, f2 - 150), (x2 + 26, f2 - 92)
-    push = ease((u - 0.55) / 0.25)                         # v3 (24 Nov, cold test: seen 3 of 3, understood 0 of 3; decided: body
-    ph = om.lerp(up, dn, push)                             # size): CLOSER, and Father's own hand comes across and pushes it down
-    # v3 (24 Nov, cold test v30: B read Father's reach to the guard's clasped hands as "holding hands"): Father does not reach.
-    # The guard himself lowers the phone, once Father's eyes are on him.
-    g2 = dict(targets_xy=[ph], phone="pam") if push < 0.95 else dict(targets_xy=[ph])
-    return (dict(_cam=PAM_GAG_CAM, _cast=("g2", "father"), moved=dict(father=(214, 880), g2=(x2, f2))),
-            dict(father=dict(face="hard" if u < 0.25 else "brow", look=(1, 0) if u < 0.25 else (-1.6, 0.3)), g2=g2))
+def s28c(t, L):                                            # v4 (24 Nov, cold test v31: the PAM gag read as "proof of the deal", 0 of 3 as a joke; decided
+    return {}, dict(father=dict(face="low" if 0.25 < t < 0.7 else "hard"))   # CUT): "Done." and one nod, then straight to the key
 
 
 PAM_GAG_CAM = (166, 742, 3.4)
@@ -375,19 +370,26 @@ def s26(t, L):                                             # v1: "And then?" -- 
 LAMP_GAG_CAM = (606, 700, 2.6)                             # the guard and the lamp fill the frame; the plan is out, to the left
 
 
-def s28f(t, L):                                            # v3 (24 Nov, cold test 3 of 3: "eight identical frames"; decided: body
-    fl = t > 0.45 and (t < 0.5 or 0.58 < t < 0.63 or t > 0.72)   # size): CLOSE on him and the lamp. It flickers and DIES. He looks
-    dn = ease((t - 0.3) / 0.2) - ease((t - 1.5) / 0.2)     # down at it, SHAKES it twice, nothing; then he looks at us
-    sh = math.sin((t - 0.95) * 2 * math.pi * 4.0) if 0.95 < t < 1.45 else 0.0
-    x, y = 556, 652                                        # he has lifted it in front of him, to look at it
+def s28f(t, L):                                            # v4 (24 Nov, cold test v31: "the lamp gag doesn't land" 3 of 3; decided "look into the
+    fl = t > 0.45 and (t < 0.5 or 0.58 < t < 0.63 or t > 0.72)   # bulb, sigh, look at us"): it flickers and DIES (0.45-0.75); he
+    dn = ease((t - 0.3) / 0.2) - ease((t - 1.55) / 0.2)    # lifts it to his face and looks INTO the bulb (0.8-1.2); it sags in his
+    lift = ease((t - 0.8) / 0.4) - ease((t - 1.35) / 0.35)  # hand with a sigh (1.3-1.55, his head drops further); then he looks at
+    sag = ease((t - 1.3) / 0.25) * (1 - ease((t - 1.55) / 0.3))   # US (1.75) and holds it to the end (~0.45 s)
+    x, y = 556 + 12 * lift, 652 - 26 * lift + 12 * sag
     return (dict(_cam=LAMP_GAG_CAM),
-            dict(g1=dict(targets_xy=[(x + 2, y + 15 * sh)], lamp="held", cone_side=0.03 if fl else 1.0, lamp_ang=0.35 + 0.34 * sh,
+            dict(g1=dict(targets_xy=[(x + 2, y)], lamp="held", cone_side=0.03 if fl else 1.0, lamp_ang=0.35 + 0.2 * lift - 0.3 * sag,
                          cable_floor=sc.F + 8,                              # v14 (24 Nov, cold test v30: "a pole", "a staff", "a rifle" 3 of 3): the cord HANGS
-                         turn=0.01 - 0.6 * dn, look_down=12 * dn)))
+                         turn=0.01 - 0.6 * dn, look_down=12 * dn + 8 * sag)))
+
+
+def s28b(t, L):                                            # v2 (24 Nov, cold test v31: the held 'One month' shot dragged): after the line's first half, CUT to
+    if t < 1.35:                                           # Father, his eyes on the held-out phone, and the line goes on over him
+        return {}, {}
+    return dict(_cam=(580, 790, 3.2), _cast=("client",)), {}
 
 
 MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14,
-          "2.1": s21, "2.2": s22, "2.3b": s23b, "2.5": s25, "2.7": s27, "2.8c": s28c, "2.8d": s28d, "2.8e": s28e,
+          "2.1": s21, "2.2": s22, "2.3b": s23b, "2.5": s25, "2.7": s27, "2.8b": s28b, "2.8c": s28c, "2.8d": s28d, "2.8e": s28e,
           "2.9": s29, "2.4": s24, "2.6": s26, "2.8f": s28f,
           "3.2": s32, "3.3": s33, "3.5": s35, "3.6": s36, "3.7": s37,
           "4.1": s41, "4.2": s42}
@@ -481,7 +483,8 @@ def s09_wide(t, L):                                       # v3 (23 Nov, cold tes
     x, f = sc.BLOCK[1]["g1"]                               # first word the legs KICK (out and back) and the knee works; the
     kick = 16 * math.sin(math.pi * min(1.0, max(0.0, (t - 0.12) / 0.25)))   # guard's head drops to look down AT the legs
     lk = ease(min(1.0, max(0.0, (t - 0.25) / 0.2)))       # (a listener looks at whoever speaks)
-    return dict(_cam=sc.CAR_CAM, _cast=("g1",), legs_work=math.sin(t * 2 * math.pi * 2.0), legs_jolt=kick), \
+    return dict(_cam=sc.CAR_CAM, _cast=("g1",), legs_work=math.sin(t * 2 * math.pi * 2.0), legs_jolt=kick,
+                shake=(9 * math.exp(-(t - 0.2) * 12) * math.sin(t * 100)) if t > 0.2 else 0.0), \
         dict(g1=dict(targets_xy=[(322, 654)], push=True, turn=0.7 * lk, look_down=10 * lk))
 
 

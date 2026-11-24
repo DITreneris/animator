@@ -894,3 +894,11 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 - A character reaching toward another's clasped hands reads as "holding hands". The guard lowers his own phone; nobody reaches.
 - A mute test at 4 fps cannot show a 0.05 s flicker or a 0.1 s fall: add the 8-10 fps strip for any beat under 0.5 s, before judging it a FAIL.
 - A shot's length is its take plus the 0.15 s lead (2.8b 2.2 s, 3.2 2.05 s); the rest is a drag.
+
+## 214. UptimeZ ep. 13 *The Offer* v32 (24 Nov): inserts without arms, a gag that is a reaction, a joke that is cut
+
+- Arms in inserts failed 3 of 3 at every length ("a pole", "floating") in v27–v31. v32: **hand + wrist stub only** (`insert_cuff`), the owner is in the frame by his hand alone. The zone rule (no burnt row below y 720) stops the pin hand's wrist reaching the frame's edge, so there the stub still runs to the bottom: check by cold test whether it reads as a sleeve or a pole.
+- A gag that "doesn't land" needs the *reaction*, not more business: the lamp dies, he lifts it to look into it, sighs, then looks at us and holds 0.4 s (8 fps strip shows the hold).
+- A joke read by 0 of 3 is cut, not repaired (the PAM tail): 2.8c 2.1 -> 1.15 s.
+- Cutting away inside a long line must keep the speaker in frame (G5 BUBBLE check): push in on the speaker instead of cutting to the listener.
+- Shorter shots move the ASR windows: "Pam?" fell to 1 of 3 until the office bed went 0.75 -> 0.6. Re-run the delivered-mix check after every timing change.
