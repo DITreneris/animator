@@ -17,7 +17,7 @@ FPS = 12
 SR = 48000
 MOT = {("1.1", "1.2"): ("T1", 0, 31), ("2.2", "2.3"): ("T2", 0, None), ("3.1", "3.2"): ("T3", 0, None),
        ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("6.3", "6.6"): ("T4", 0, -8), ("8.1", "8.2"): ("T5", 0, -7)}
-OUT = os.path.join(sc.OUT, "on4_rough_v3.mp4")
+OUT = os.path.join(sc.OUT, "on4_rough_v4.mp4")
 NEW = {   # key: (shot, seconds into the shot, who, text)
     "c1": ("2.2", 1.3, "CLIENT", "Mine until it's done."),
     "d1": ("3.1", 1.5, "DON", "Traffic flows."),
@@ -27,6 +27,29 @@ NEW = {   # key: (shot, seconds into the shot, who, text)
     "p2": ("5.3", 2.6, "PAM", "Easy."),
     "p3": ("6.3", 0.9, "PAM", "Well?"),
 }
+
+
+NARR = {   # v4 (Tomas: the pauses are too long, the narrator is missing): two more of her boasts over the long gaps
+    "n4": ("1.4", 0.5, "Nobody follows me."),              # as the two shadows come up behind her
+    "n5": ("5.1", 0.6, "Nobody sees me coming."),          # as she walks through the club and nobody looks
+}
+
+
+def narr_takes(kind):
+    """the narrator's new lines, made as takes_v1's were (on4_voices.take: falling pitch, the noir chain, the recognizer)"""
+    d = os.path.join(vo.OUT, "takes_v3"); os.makedirs(d, exist_ok=True)
+    logp = os.path.join(d, "takes.json")
+    log = json.load(open(logp)) if os.path.exists(logp) else {}
+    for key, (shot, lead, txt) in NARR.items():
+        p = os.path.join(d, key + ".wav")
+        if os.path.exists(p) and key in log:
+            continue
+        vo.LINES[key] = (shot, "PAM_N", [(txt, 0)])
+        a, m = vo.take(key, kind)
+        sf.write(p, np.asarray(a, dtype=np.float32), vo.SR); log[key] = m
+        print("take", key, m["ok"], m["asr"][0], m["len"])
+    json.dump(log, open(logp, "w"), indent=1)
+    return d
 
 
 def new_takes():
@@ -90,6 +113,27 @@ def sound(tm, d, total):
     for key, (shot, lead, who, txt) in NEW.items():
         t = st_(shot) + lead
         put(voice, load(os.path.join(d2, key + ".wav")), t); marks.append((key, round(t, 2)))
+    d3 = narr_takes(d.get("narration", "A"))
+    for key, (shot, lead, txt) in NARR.items():
+        t = st_(shot) + lead
+        put(voice, load(os.path.join(d3, key + ".wav")), t); marks.append((key, round(t, 2)))
+    # the office (v4): its own sounds instead of words. Room tone, the machine, her steps, paper, the head going down
+    import sound_day1 as dd
+    import sound_xmas as sx
+    rng = np.random.default_rng(7)
+    o0, o1 = st_("7.1"), st_("8.2")
+    L = int((o1 - o0) * SR); tt_ = np.arange(L) / SR
+    k = np.ones(600) / 600
+    tone = np.convolve(rng.standard_normal(L), k, "same") * 0.9 + 0.012 * np.sin(2 * np.pi * 100 * tt_)
+    tone *= np.clip(np.minimum(tt_ / 0.15, (o1 - o0 - tt_) / 1.5), 0, 1)
+    put(fx, tone, o0, 0.14)                                                                         # about 28 dB under her line (measured)
+    put(fx, rs(so.hiss(1.1), so.SR), o0 + 0.1, 0.30)                                                # the machine lets off steam
+    put(fx, rs(dd.pour(0.9), dd.SR), st_("7.5") + 0.3, 0.10)                                        # and drips on
+    for j in range(3):                                                                              # Sofia comes up to the counter
+        put(fx, rs(sx.slipper(0.11), getattr(sx, "SR", SR)), st_("7.2") + 0.15 + j * 0.36, 0.5 + 0.1 * (j % 2))
+    for t0 in (st_("7.3") + 0.2, st_("7.5") + 1.2):                                                 # paper: the rota, then in her hands
+        put(fx, rs(so.swish(0.22), so.SR), t0, 0.22); put(fx, rs(so.swish(0.16), so.SR), t0 + 0.2, 0.16)
+    put(fx, rs(so.thump(), so.SR), st_("8.1") + 0.5, 0.45)                                          # her head back on the counter
     span31 = tm["3.1"]["dur"] + tm["3.2"]["dur"]
     bump = st_("3.1") + span31 * 21.0 / 32.0                 # T3's hit drawing
     toot = st_("3.1") + span31 * 12.0 / 32.0

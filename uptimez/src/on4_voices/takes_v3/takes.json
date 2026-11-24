@@ -1,0 +1,50 @@
+{
+ "n4": {
+  "key": "n4",
+  "shot": "1.4",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "nobody follows me",
+  "len": 1.55,
+  "asr": [
+   "Nobody follows me.",
+   "Nobody follows me.",
+   "Nobody follows me."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "Nobody follows me.",
+    "speed": 0.9,
+    "pitch_start": 209.6,
+    "pitch_end": 160.0,
+    "falls": true
+   }
+  ],
+  "saturated": 0.01
+ },
+ "n5": {
+  "key": "n5",
+  "shot": "5.1",
+  "who": "PAM_N",
+  "kind": "A",
+  "text": "nobody sees me coming",
+  "len": 1.75,
+  "asr": [
+   "nobody sees me coming.",
+   "Nobody sees me coming.",
+   "Nobody sees me coming."
+  ],
+  "ok": 3,
+  "phrases": [
+   {
+    "phrase": "Nobody sees me coming.",
+    "speed": 0.9,
+    "pitch_start": 206.9,
+    "pitch_end": 158.9,
+    "falls": true
+   }
+  ],
+  "saturated": 0.02
+ }
+}
