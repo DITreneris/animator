@@ -1,0 +1,86 @@
+{
+ "c1": {
+  "shot": "2.2",
+  "who": "CLIENT",
+  "text": "Mine until it's done.",
+  "asr": [
+   "mine until it's done.",
+   "Mine until it's done.",
+   "mine until it's done."
+  ],
+  "ok": 3,
+  "len": 1.33
+ },
+ "d1": {
+  "shot": "3.1",
+  "who": "DON",
+  "text": "Traffic flows.",
+  "asr": [
+   "traffic flows",
+   "traffic flows",
+   "traffic flows."
+  ],
+  "ok": 3,
+  "len": 0.98
+ },
+ "d2": {
+  "shot": "3.3",
+  "who": "DON",
+  "text": "Not a scratch.",
+  "asr": [
+   "Not a scratch.",
+   "Not a scratch",
+   "Not a scratch."
+  ],
+  "ok": 3,
+  "len": 0.92
+ },
+ "p1": {
+  "shot": "4.1",
+  "who": "PAM",
+  "text": "There you are.",
+  "asr": [
+   "There you are.",
+   "There you are.",
+   "There you are."
+  ],
+  "ok": 3,
+  "len": 1.02
+ },
+ "p2": {
+  "shot": "5.3",
+  "who": "PAM",
+  "text": "Easy.",
+  "asr": [
+   "Easy",
+   "Easy",
+   "Easy"
+  ],
+  "ok": 3,
+  "len": 0.63
+ },
+ "p3": {
+  "shot": "6.3",
+  "who": "PAM",
+  "text": "Well?",
+  "asr": [
+   "Well",
+   "Well",
+   "Well"
+  ],
+  "ok": 3,
+  "len": 0.54
+ },
+ "f1": {
+  "shot": "3.4",
+  "who": "FATHER",
+  "text": "For the boys.",
+  "asr": [
+   "for the boys",
+   "for the boys",
+   "for the boys."
+  ],
+  "ok": 3,
+  "len": 1.29
+ }
+}

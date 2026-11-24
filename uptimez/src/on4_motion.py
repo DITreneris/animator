@@ -229,17 +229,17 @@ def c_side(k):
     """3.2 from the side of the road: the far houses, the road, the crossing's bars, the lamp."""
     c = k.c
     c.set_source_rgb(0.03, 0.03, 0.04); c.paint()
-    st.poly(k, [(-10, 360), (300, 360), (300, 300), (420, 300), (420, 380), (550, 380), (550, 568), (-10, 568)], (0.90, 0.89, 0.86), 2.2)
-    for x in (40, 110, 200, 340, 460):
+    st.poly(k, [(-300, 360), (300, 360), (300, 300), (420, 300), (420, 380), (1000, 380), (1000, 568), (-300, 568)], (0.90, 0.89, 0.86), 2.2)
+    for x in (-120, -40, 40, 110, 200, 340, 460, 560, 640, 720, 800):
         st.poly(k, [(x, 430), (x + 34, 430), (x + 34, 500), (x, 500)], (0.06, 0.06, 0.07), 1.6)
-    st.poly(k, [(-10, 568), (550, 568), (550, 584), (-10, 584)], (0.62, 0.61, 0.58), 1.6)        # the far kerb
-    st.poly(k, [(-10, 584), (550, 584), (550, 790), (-10, 790)], st.ROAD, 1.6)
+    st.poly(k, [(-300, 568), (1000, 568), (1000, 584), (-300, 584)], (0.62, 0.61, 0.58), 1.6)        # the far kerb
+    st.poly(k, [(-300, 584), (1000, 584), (1000, 790), (-300, 790)], st.ROAD, 1.6)
     c.set_source_rgba(0, 0, 0, 0.25); c.set_line_width(1.2)
     for y in range(596, 790, 16):
-        c.move_to(-10, y); c.line_to(550, y); c.stroke()
+        c.move_to(-300, y); c.line_to(1000, y); c.stroke()
     for y, hh, x0, x1 in ((606, 10, 150, 430), (634, 14, 135, 440), (668, 20, 118, 452), (712, 28, 96, 466)):
         st.poly(k, [(x0, y), (x1, y), (x1 + 6, y + hh), (x0 - 6, y + hh)], (0.93, 0.92, 0.88), 1.2)
-    st.poly(k, [(-10, 790), (550, 790), (550, 960), (-10, 960)], (0.20, 0.20, 0.21), 1.6)        # the near kerb, ours
+    st.poly(k, [(-300, 790), (1000, 790), (1000, 960), (-300, 960)], (0.20, 0.20, 0.21), 1.6)        # the near kerb, ours
     c.set_source_rgb(0.62, 0.62, 0.64); c.set_line_width(8); c.move_to(60, 584); c.line_to(60, 250); c.stroke()
     c.set_source_rgb(*INK); c.set_line_width(5); c.move_to(60, 584); c.line_to(60, 250); c.stroke()
     st.lamp_head(k, 60, 250, 0.8)
@@ -307,6 +307,65 @@ def t3():
     return fr
 
 
+def t6():
+    """3.3-3.5 in the same side camera (Tomas, rough v2), one long shot, 7 s: she lies under the bumper; Don comes off the
+    kerb to the bonnet, lays his glove on it, holds it up to his eye: clean; her small wave; the rear window comes down,
+    the ringed hand lets the bills go, they drift onto her; the car backs away; two shadows walk in, pluck the bills
+    off her, step over her and go. Nobody looks down."""
+    fr = []
+    STOPX = PX + 40 + 170
+    CA, CB = (300, 610, 1.45), (392, 600, 1.02)
+    BILLS = [(250, 690), (300, 676), (212, 700), (332, 698)]
+    def f(i):
+        cam = CA if i < 36 else lerp(CA, CB, ease(min(1.0, (i - 36) / 6.0)))
+        cx = STOPX + (0 if i < 60 else ((i - 60) / 7.0) ** 2 * 420)                # the car backs away
+        if i < 9:                                                                    # Don comes to the bonnet
+            t = i / 8.0; don = P("don", 170 + 240 * t, 596 + 52 * t, 0.42 + 0.08 * t, "stand", "neutral", (0.9, 0.2), paddle_side="GO", paddle_ang=0.9)
+        elif i < 20:
+            don = P("don", 410, 648, 0.50, sc.DON_REACH, "neutral", (-0.6, 0.9), paddle_side="GO", paddle_ang=0.9, lean=-0.16)
+        elif i < 40:
+            don = P("don", 410, 648, 0.50, "inspect", "neutral", (-0.9, -0.5), paddle_side="GO", paddle_ang=0.9)
+        elif i < 62:
+            don = P("don", 410, 648, 0.50, "wave", "pleased", (0.8, -0.2), paddle_side="GO", paddle_ang=0.10, whistle_in=(i % 6 < 3))
+        else:
+            t = min(1.0, (i - 62) / 8.0); don = P("don", 410 - 240 * t, 648 - 52 * t, 0.50 - 0.08 * t, "stand", "neutral", (-0.8, 0), paddle_side="GO", paddle_ang=0.9)
+        wave = 24 <= i < 38 and (i // 3) % 2 == 0
+        def after(k):
+            c = k.c
+            c.save(); c.translate(PX, PF - 6); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG)
+            if wave:
+                sc._wave(k)
+            c.restore()
+            car.side(k, cx, 724, 1.0)
+            wx, wy = cx + 74, 724 - 86                                               # the rear window
+            if 44 <= i < 62:
+                c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(cx + 38, 724 - 96, 72, 22); c.fill()   # the glass down
+            if 46 <= i < 60:                                                         # the cuff and the ringed hand out of it
+                st.poly(k, [(wx + 30, wy - 6), (wx - 8, wy - 2), (wx - 6, wy + 12), (wx + 30, wy + 10)], dc.VELVET, 1.6)
+                kit.ellipse(k, wx - 16, wy + 8, 11, 8, dc.SKIN_F, 7801, shadow=False, lw=1.6)
+                c.set_source_rgb(*st.GOLD); c.rectangle(wx - 20, wy + 3, 6, 6); c.fill()
+            for j, (bx, by) in enumerate(BILLS):                                     # the bills: let go, drifting onto her, plucked
+                t0 = 48 + j * 2
+                if i < t0 or i >= 74 + j * 2:
+                    continue
+                t = min(1.0, (i - t0) / 9.0)
+                x = wx - 16 + (bx - (wx - 16)) * t; y = wy + 14 + (by - (wy + 14)) * t * t + math.sin(t * 9 + j) * 8 * (1 - t)
+                ly.bill(k, x, y, 0.4 + j + t * 3, 0.8, seed=j)
+            for j, (x0, x1) in enumerate(((330, 60), (262, -20))):                   # two shadows walk in from the right,
+                if i < 63 + j * 2:
+                    continue
+                t = (i - (63 + j * 2)) / 9.0
+                if t < 1:
+                    x = 660 - (660 - x0) * t; lean = 0.0; hands = ("relax", "relax")
+                elif t < 1.7:
+                    x = x0; lean = -0.5; hands = ("grab", "relax")                    # bend, pluck,
+                else:
+                    x = x0 - (x0 - x1) * min(1.0, (t - 1.7) / 0.9); lean = 0.0; hands = ("grab", "relax")   # step over her, go
+                st.thug(k, x, 742, 0.38, "open" if int(t * 6) % 2 else (-30, 20, 30, -20), seed=4500 + j, hands=hands, lean=lean)
+        return draw(shot("3.1", loc="C_side", cam=cam, cast=[don], protect=(), after=after))
+    return [f(i) for i in range(84)]
+
+
 # ---- T4 -----------------------------------------------------------------------------------------------------------------
 def t4():
     fr = []
@@ -349,6 +408,9 @@ def t5():
     r = random.Random(5)
     def close(d, rain):
         s = dark(draw(shot("8.1", cam=b, protect=())), 0.88 * d, ax, ay + 20)
+        c = cairo.Context(s); g = cairo.LinearGradient(0, ay + 180, 0, ay + 236)                    # v4: the floor (the shredder) goes first
+        g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0.01, 0.01, 0.02, min(1.0, d * 1.6))
+        c.set_source(g); c.paint()
         if rain:
             c = cairo.Context(s); c.set_source_rgba(1, 1, 1, 0.5 * rain); c.set_line_width(2)
             for _ in range(26):
@@ -368,7 +430,7 @@ def t5():
     return fr
 
 
-TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5}
+TESTS = {"T1": t1, "T2": t2, "T3": t3, "T4": t4, "T5": t5, "T6": t6}
 
 
 def build(name):
@@ -379,7 +441,7 @@ def build(name):
         os.remove(os.path.join(d, f_))
     for i, s in enumerate(fr):
         s.write_to_png(os.path.join(d, "%03d.png" % i))
-    mp4 = os.path.join(OUT, "on4_motion_%s_v3.mp4" % name.lower())
+    mp4 = os.path.join(OUT, "on4_motion_%s_v4.mp4" % name.lower())
     tmp = mp4[:-4] + "_tmp.mp4"
     r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(FPS), "-i", os.path.join(d, "%03d.png"),
                         "-vf", "fps=24,format=yuv420p", "-c:v", "libx264", "-crf", "18", "-preset", "veryfast", tmp])
@@ -393,7 +455,7 @@ def build(name):
         c.save(); c.translate(x, y); c.scale(0.5, 0.5); c.set_source_surface(s, 0, 0); c.paint(); c.restore()
         c.set_source_rgb(0.1, 0.1, 0.1); c.select_font_face("Inter", 0, 1); c.set_font_size(13)
         c.move_to(x, y + h + 16); c.show_text("%d   %.2f s" % (i + 1, i / FPS))
-    png = os.path.join(OUT, "on4_motion_%s_v3.png" % name.lower())
+    png = os.path.join(OUT, "on4_motion_%s_v4.png" % name.lower())
     sh.write_to_png(png)
     sh.write_to_png("/tmp/on4_mot/%d.png" % (list(TESTS).index(name) + 1))
     return mp4, png, len(fr)
