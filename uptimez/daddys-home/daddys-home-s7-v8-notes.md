@@ -46,3 +46,17 @@ speech_gate 60 / 0, dead zones 0, set 0. v7 baseline: same. Film rejoined with s
 - **Who says "Approved."** (2/2 unsure): the box is Father's, but the raised hand makes viewers think Don approves. The joke wants it clear that the visitor approves himself. Father's mouth is small at feed size. v7 staging, not changed.
 - **The fist on the glass (9.1)** reads "a microphone / a stick" 2/2. Tomas kept it (silhouettes).
 - **The robot's shadow** "jumps" (1/2): the hop reads.
+
+## v8c (24 Nov): Father presses it himself (Tomas: "Tėvas pats paspaudžia APPROVE")
+
+- **Fault:** who approves read "Don" 2/2 in the whole-film and scene tests: his raised hand, and Father's box beside him.
+- **Now:**
+  - 9.4 is Don alone (the throne behind him), his hand coming up: "me!".
+  - 9.4' cuts back to 9.3's frame, slightly wider and left. Father, at the robot by the door, takes one step to it and, without a look at Don, touches its screen himself. "Approved." is in his box on his left, and the robot's face goes to the green tick.
+  - Father reaches Don off the screen before 9.5''.
+- **Placement:**
+  - The robot's chest is below his hand's reach, so he presses its face, a screen; its face is what turns green.
+  - The in-between keeps the elbow bent.
+- **Lessons applied:** 179 (his own shoulder, the target in reach: he steps in rather than straightening the arm), 207 (a point), contact all the way, 263, 417/264.
+- **Mute test** (2 viewers): "the grey-haired man approves himself; the caption is next to him and his touch turns the robot green" 2/2. Don's hand "doesn't matter, the robot ignores him" 2/2.
+- **Checks:** gate speech 60/0, zones 0, set 0.
