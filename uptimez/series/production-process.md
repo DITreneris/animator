@@ -114,7 +114,7 @@ Each row lists what goes in, what comes out, what must pass, and whether Tomas a
 | 8 | **Rough cut** | Scenes, takes | The full film: voices, effects, room tone, music | **G5** in full; **G4**: two cold viewers on 4 fps sheets plus 8 fps strips of quick beats, the open prompt **and** direct questions (lesson 106), and "what felt rushed or slow" | **4** |
 | 9 | **Polish** | Tomas's notes, cold viewers, reviews | Film versions, within the budget of 5 | Each version is a numbered fix list; each fix is shown in the render (full size, frame by frame), and every instance of that drawing is checked, not just the one reported (lesson 56) | — |
 | 10 | **Reviews** | Outside reviews | A triage table: OK / partial / fail / disagree, what correlates, which points undo Tomas's choices | **G6**: two rounds at most; protect list intact | — |
-| 11 | **Master and cover** | The approved film | 1080 master (delivered, not committed), 540 copy (committed), the cover | G5 on the final AAC; a clean-checkout rebuild; cover read at 120 px and in the profile crop | **5** |
+| 11 | **Master and cover** | The approved film | 1080 master and 540 preview (rebuilt locally, not committed from 24 Nov per `.gitignore`), the cover (committed) | G5 on the final AAC; a clean-checkout rebuild; cover read at 120 px and in the profile crop | **5** |
 | 12 | **Close** | The master | `<ep>-film-vN.md` (the film as built, shot by shot); lessons; README, INDEX and STORYLINE rows written from the built film; old render frames deleted | Committed and pushed when Tomas asks; a pull request per episode | — |
 
 ## Cold viewers (decided: board, motion tests, rough cut)
@@ -129,8 +129,8 @@ Cold viewers see the episode three times: the **board** (stage 5), each **motion
 ## Working rules at every stage
 
 - **"Fixed" means seen in the render.** Look at the changed shot at full size, frame by frame, before saying it. A contact sheet is for finding faults, not for confirming fixes.
-- **Never break earlier work.** New behaviour is opt-in, the previous file is pinned as `_vN`, and approved renders rebuild md5-identical (see `../CLAUDE.md`).
-- **Each version is a new file** copied from the one before; earlier builders stay.
+- **Never break earlier work.** New behaviour on shared modules is opt-in, existing `_vN` files stay untouched, and approved renders rebuild md5-identical (see `../CLAUDE.md`).
+- **Pinning (decided 24 Nov):** for new episodes, pin each approved stage or cut with an immutable `git tag` (for example, `uptimez-<ep>-vN`) rather than copying whole `_vN.py` files in `src/`. Existing `_vN.py` files stay as built.
 - **Disk:** the build keeps only the current version's frame folder. Old folders and test renders are deleted at each version (lesson 122).
 - **Language and commits:** reply in Lithuanian when Tomas writes Lithuanian. Commit and push only when he asks, on the episode branch, never to main.
 

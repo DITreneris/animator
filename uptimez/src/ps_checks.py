@@ -140,8 +140,10 @@ def check_don(cast):
 # --- tails --------------------------------------------------------------------------------------------------------------
 class FillRec(cairo.Context):
     """keeps every filled path's points (device units) and every text box, for the tail check."""
+    def __new__(cls, surf):
+        return super().__new__(cls, surf)
+
     def __init__(self, surf):
-        super().__init__()
         self.fills, self.texts = [], []
 
     def _keep(self):
@@ -281,7 +283,7 @@ def frame_checks(ps, heads):
     if getattr(ps, "FIX_V4", [False])[0]:                    # board v3: bc_sb's bubbles (their tips as drawn)
         for b in ps.BUBBLES_V4:
             tip, box = b["tip"], b["box"]
-            ln = math.hypot(max(box[0] - tip[0], 0, tip[0] - box[2]), max(box[1] - tip[1], 0, tip[1] - box[3]))
+            ln = 0.0 if tip is None else math.hypot(max(box[0] - tip[0], 0, tip[0] - box[2]), max(box[1] - tip[1], 0, tip[1] - box[3]))
             out += check_tail(b["who"], tip, b["face"], b["text"], ln, b["form"])
         return out
     for who, tip, face, said, ln in TAILS:

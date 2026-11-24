@@ -35,7 +35,7 @@ These rules apply to the episodes in this folder only, not to the rest of the re
 - "/grill-me": ask numbered decisions with lettered options, recommended first; he answers like "all a". Then build exactly what was picked.
 - **Say his idea back in one line** before writing a concept doc on it (who does what): the Untitled doc was first built on the wrong character.
 - Critiques get an ok / fail table with evidence and "what correlates".
-- No real brands or logos. Never break shipped renders: new versions in new folders, old ones rebuild byte for byte.
+- No real brands or logos. Never break shipped renders: existing versioned folders (`v1/`, `v2/`…) stay untouched and rebuild byte for byte; from 24 Nov on, new episodes pin versions with immutable `git tag`s (plus opt-in flags on shared kits) rather than duplicating code trees.
 - **His choices are the protect list.** An opening, an ending or a loop he picked is not changed on a test's advice; propose it and let him decide.
 - **One structural change per round,** shown next to the version before. When a version comes back worse, return to the last good one and fix that, instead of inventing a new one.
 - **Polish has a limit:** agree the number of polish iterations with him up front (two worked for Untitled), then stop and hand over.
