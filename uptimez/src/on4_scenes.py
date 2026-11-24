@@ -1026,7 +1026,7 @@ def _desk(k, sh, eighth):
         pass
     def props(k_):
         pam_over(k_)
-        dp.coffee_machine(k_, 770, pr.F - 166, 0.62, "ok")
+        dp.coffee_machine(k_, 770 + (8 if OFFICE_MUTE[0] else 0), pr.F - 166, 0.62 * (0.87 if OFFICE_MUTE[0] else 1.0), "ok")   # (review) 13 % smaller: a prop, not an actor
         pr.counter_lamp(k_, *pr.LAMP)
         pr.cups(k_, x0=668, eighth=eighth)
         if sh["id"] == "8.1":
@@ -1050,7 +1050,7 @@ def _render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
     import on4_club as cl
     cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True; cl.PASSAGE_DARK[0] = True; RIM_A[0] = 0.6
-    st.NIGHT[0] = True; OFFICE_MUTE[0] = True; FACE_KEY[0] = True
+    st.NIGHT[0] = True; OFFICE_MUTE[0] = True; FACE_KEY[0] = True; pr.ROTA_BIG[0] = True
     car.TAIL_GREY[0] = True; oc.HEART[0] = 1.6; pr.ROTA_INK[0] = True       # (24 Nov) the envelope's heart is the film's one red
     cl.LIMO[0] = (30, 1.15); cl.CLIENT_DY[0] = 0      # the Client stands behind the booth table (his legs reach the floor): left as he was
     st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"; oc.ENV_BIG[0] = 1.25; oc.MASK_UP_V2[0] = True
