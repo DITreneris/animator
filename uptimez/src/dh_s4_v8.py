@@ -84,7 +84,12 @@ COUNTER = [745]                                             # below her soles (s
 
 
 # ---------------------------------------------------------------- 4D'': the mug, smaller, held by its handle
-MUG_POSE = [(-8, 0, 30, 95)]                                # hands audit #10 (rules, Gestures): the mug in front of her chest, not
+MUG_POSE = [(-8, 0, 30, 95)]
+MUG_TIP = [0.0]
+MUG_DIR = [-1]
+MUG_S = [1.6]                                               # round 4: bigger, held (cold test: "a card or a phone")
+MUG_OFF = [-4]                                              # its handle in her fist (at -26 it hung off it)
+# MUG_POSE: hands audit #10 (rules, Gestures): the mug in front of her chest, not
                                                             # raised beside her head (v8 r1 (-8, 0, 60, 110): at ear height = a phone)
 def d2_people(k, o):
     """Rules page: one hand per wrist; the object, then the fingers over it. The rig draws her hand (logged), the mug is
@@ -105,12 +110,18 @@ def d2_people(k, o):
     n0, a, m = calls[-1]                                     # her right hand (screen right, drawn second)
     hx, hy = a[1], a[2]
     c.save(); c.set_matrix(m)
-    s = 1.1                                                  # in her hand's units (PS 0.54): about 60 % of v7's mug
-    c.save(); c.translate(hx, hy); c.rotate(2.75); c.scale(s, s); c.translate(-26, 0)   # held by its handle: the body clear of her fist
+    s = MUG_S[0]                                             # in her hand's units (PS 0.54); 1.1 = about 60 % of v7's mug
+    tip = MUG_TIP[0]                                         # animation: 0 upright .. 1 upside down, its mouth to us (empty)
+    c.save(); c.translate(hx, hy); c.rotate(2.75 + MUG_DIR[0] * 2.9 * tip); c.scale(s, s); c.translate(MUG_OFF[0], 0)   # held by its handle
     c.set_source_rgb(*INK); c.set_line_width(4); c.new_path(); c.arc(13, 0, 9, -1.4, 1.4); c.stroke()   # the handle, showing
     c.set_source_rgb(0.98, 0.98, 0.96); c.set_line_width(2); c.new_path(); c.arc(13, 0, 9, -1.4, 1.4); c.stroke()
     kit.cut(k, [(-10, -12), (10, -12), (9, 12), (-9, 12)], (0.36, 0.62, 0.80), shadow=False, lw=2)
-    kit.ellipse(k, 0, -12, 10, 3.2, (0.15, 0.12, 0.10), 3551, shadow=False, lw=1.6)
+    if tip < 0.4:
+        kit.ellipse(k, 0, -12, 10, 3.2, (0.15, 0.12, 0.10), 3551, shadow=False, lw=1.6)
+    else:                                                    # its mouth turned to us: white inside, a dry ring, nothing
+        kit.ellipse(k, 0, -12, 10, 3.2 + 5.5 * tip, (0.97, 0.96, 0.92), 3551, shadow=False, lw=1.8)
+        c.set_source_rgb(0.62, 0.48, 0.34); c.set_line_width(1.4); c.save(); c.translate(0, -12); c.scale(1, 0.75)
+        c.new_path(); c.arc(0, 0, 6, 0, 6.2832); c.restore(); c.stroke()
     c.restore()
     hp._N[0] = n0; hp.hand(*a)                               # the same hand, again, over the mug
     c.restore()

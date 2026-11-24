@@ -43,6 +43,7 @@ def _wrap(mod, fn_name, kind, name, xi=1, fi=2, si=3, s_default=1.0):
             pass
         return real(*a, **kw)
     logged._set_gate = True
+    logged._real = real                         # for measuring passes on a scratch surface (not part of the drawing)
     setattr(mod, fn_name, logged)
 
 
@@ -54,6 +55,8 @@ def install():
     _wrap(dh_props, "ceo_chair", "prop", "throne")
     _wrap(fs_storyboard, "don", "person", "don")
     _wrap(dh_cast, "repairman", "person", "visitor")
+    import sofia_dh
+    _wrap(sofia_dh, "sofia", "person", "sofia")
     _wrap(mom_fs, "mom", "person", "mom")
     _wrap(pam_bc, "pam", "person", "pam")
     _wrap(sofia_cs, "sofia", "person", "sofia")
