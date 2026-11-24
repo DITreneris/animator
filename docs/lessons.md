@@ -1031,3 +1031,4 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 ## 237. *The Offer*: "Off the car." is a decided exception (Tomas, 24 Nov: "for the hundredth time")
 
 - The Client says it from UNDER the car: no face, the bubble's tail lands on his hips in the dark under the sill. Cold viewers and audits will keep writing "unclear who speaks". It is canon and is not raised again: in a triage table it goes under "decided, stays", with no fix offered.
+- The same for the red rag (Tomas, 24 Nov: "we fixed it a hundred times, closed"): it stays as drawn in v48 (in his hand only, one shape). Viewers' notes on it go under "decided, stays".
