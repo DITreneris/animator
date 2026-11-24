@@ -15,9 +15,9 @@ import on4_voices as vo
 
 FPS = 12
 SR = 48000
-MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None), ("3.6",): ("T8", 0, None), ("6.0",): ("T9", 0, None), ("3.1", "3.2"): ("T3", 0, None),
+MOT = {("1.1", "1.2"): ("T1", 0, 39), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None), ("3.6",): ("T8", 0, None), ("6.0",): ("T9", 0, None), ("6.05",): ("T10", 0, None), ("6.07",): ("T11", 0, None), ("3.1", "3.2"): ("T3", 0, None),
        ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("6.3", "6.6"): ("T4", 0, -8), ("8.1", "8.2"): ("T5", 0, -7)}
-OUT = os.path.join(sc.OUT, "on4_rough_v12.mp4")
+OUT = os.path.join(sc.OUT, "on4_rough_v13.mp4")
 NEW = {   # key: (shot, seconds into the shot, who, text)
     "c1": ("2.2", 1.55, "CLIENT", "Mine until it's done."),
     "d1": ("3.1", 1.5, "DON", "Traffic flows."),
@@ -163,22 +163,43 @@ def sound(tm, d, total):
     put(fx, rs(so.metal_click(900, 0.12), so.SR), crash + 0.55, 0.5)                                # the lid lifts
     put(fx, rs(so.swish(0.2), so.SR), crash + 1.3, 0.4); put(fx, rs(so.pop(), so.SR), crash + 1.62, 0.5)   # the peel flicked, landed
     put(fx, rs(so.thump(), so.SR), st_("3.6") + 16 / 12.0, 1.3)                                     # v9: dropped at the club's door
-    a0 = st_("6.0")                                                                                 # v12: her act
-    for j in range(5):
-        put(fx, rs(so.swish(0.12), so.SR), a0 + 0.1 + j * 0.22, 0.35)                                # the knives turning
-    put(fx, rs(so.hiss(0.9), so.SR), a0 + 1.5, 0.8); put(fx, rs(so.thump(), so.SR), a0 + 1.55, 0.6)  # the fire
-    tl = np.arange(int(1.1 * SR)) / SR
-    put(fx, np.sin(2 * np.pi * (330 + 520 * tl / 1.1) * tl * (1 + 0.004 * np.sin(2 * np.pi * 6 * tl))) * np.minimum(tl / 0.1, 1) * np.minimum((1.1 - tl) / 0.2, 1) * 0.06, a0 + 2.4)   # she rises
+    a0 = st_("6.0")                                                                                 # v13: her act: the band is silent; a snare and a cymbal
+    import scipy.signal as sg_
+    def roll(d, lvl0=0.5, lvl1=1.0):
+        n_ = int(d * SR); tt_ = np.arange(n_) / SR
+        nz = rng.standard_normal(n_)
+        bb, aa = sg_.butter(2, [900 / (SR / 2), 6000 / (SR / 2)], "band"); nz = sg_.lfilter(bb, aa, nz)
+        hits = (1 - (tt_ * 26 % 1.0)) ** 3                                                           # 26 strokes a second
+        return nz * hits * (lvl0 + (lvl1 - lvl0) * tt_ / d) * np.minimum(tt_ / 0.03, 1) * 0.30
+    def cymbal(d=0.7):
+        n_ = int(d * SR); tt_ = np.arange(n_) / SR
+        nz = rng.standard_normal(n_); bb, aa = sg_.butter(2, 5000 / (SR / 2), "high"); nz = sg_.lfilter(bb, aa, nz)
+        return nz * np.exp(-tt_ / 0.22) * 0.22 + np.sin(2 * np.pi * 180 * tt_) * np.exp(-tt_ / 0.04) * 0.25
+    for t0, d, cy in ((0.0, 0.90, 0.92), (1.17, 0.90, 2.08), (2.35, 0.65, 3.0)):
+        put(fx, roll(d), a0 + t0); put(fx, cymbal(), a0 + cy)
+    for j in range(4):
+        put(fx, rs(so.swish(0.12), so.SR), a0 + 0.1 + j * 0.2, 0.3)                                  # the knives turning
+    put(fx, rs(so.thump(), so.SR), a0 + 0.84, 0.5)                                                  # into the boards
+    put(fx, rs(so.hiss(0.2), so.SR), a0 + 1.42, 0.3)                                                # the small puff
+    put(fx, rs(so.hiss(0.6), so.SR), a0 + 1.58, 0.9); put(fx, rs(so.thump(), so.SR), a0 + 1.6, 0.6)  # the fire
+    tl = np.arange(int(0.7 * SR)) / SR
+    put(fx, np.sin(2 * np.pi * (330 + 520 * tl / 0.7) * tl) * np.minimum(tl / 0.1, 1) * np.minimum((0.7 - tl) / 0.2, 1) * 0.05, a0 + 2.35)   # she rises
+    j0 = int(st_("6.05") * SR); fx[j0:int(st_("6.07") * SR) + int(0.8 * SR)] = 0.0                  # the booth, and her hanging there: nothing at all
+    f0 = st_("6.07")
+    put(fx, rs(so.thump(), so.SR), f0 + 10 / 12.0, 1.5)                                             # the boards
+    put(fx, rs(so.thump(), so.SR), f0 + 15 / 12.0, 1.1)                                             # and sat down
+    for j in (24, 25, 26):
+        put(fx, rs(so.swish(0.14), so.SR), f0 + j / 12.0, 0.3)                                      # the coat brushed off
     r0 = st_("8.2") - 0.8
     rain = rs(so.rain(total - r0 + 0.1), so.SR); rain[:int(0.8 * SR)] *= np.linspace(0, 1, int(0.8 * SR))
     put(fx, rain, r0, 1.2)
     put(fx, rs(so.rain(1.2), so.SR) * np.linspace(1, 0, len(rs(so.rain(1.2), so.SR))), 0.0, 1.2)    # the rain runs through the loop's seam
     # the band: in the dream only; dead on the bump (back when she sits up), dead on "Well?"; nothing awake
     crash = st_("2.4") + 32 / 12.0
-    for t0, t1 in ((1.0, crash), (crash + 1.6, bump), (st_("3.6") + 2.5, st_("6.3") + 0.9)):
+    for t0, t1 in ((1.0, crash), (crash + 1.6, bump), (st_("3.6") + 2.5, st_("6.0"))):
         jz.groove(mus, t0, t1, level=0.8)
         j = int(t1 * SR); mus[j:] = 0.0                                                             # cut dead
-    mus_end = int((st_("6.3") + 0.9) * SR); mus[mus_end:] = 0.0
+    mus_end = int(st_("6.0") * SR); mus[mus_end:] = 0.0
     mix = voice * 1.0 + fx * 0.7 + mus * 0.22
     return mix[:int(total * SR)], marks, dict(bump=round(bump, 2), toot=round(toot, 2))
 

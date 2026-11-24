@@ -800,7 +800,7 @@ def t9():
             pam = P("pam_cat", X, Y, S_, pose(lerp(HERO, TADA, 0.4), ("relax_s", "relax_s")), "approve", (0.0, -1.0), rim=True); rot = -0.06; kn = dict(drop=10)
         elif i < 14:                                         # the bow: arms up and out, the knife in her teeth
             land = 4; teeth = True
-            pam = P("pam_cat", X, Y, S_, pose(TADA, ("relax_s", "relax_s")), "proud", (0.3, -0.3), rim=True); rot = 0.05; kn = dict(drop=16 if i == 11 else 8, l=(-6, 0, -1), r=(6, 0, 1))   # the bow: a small curtsey, her head tipped by the knife's weight
+            pam = P("pam_cat", X, Y, S_, pose(TADA, ("relax_s", "relax_s")), "proud", (0.3, -0.3), rim=True); rot = 0.05; kn = dict(drop=8 if i == 11 else 4, l=(-3, 0, -1), r=(3, 0, 1))   # the bow: a small curtsey, her head tipped by the knife's weight
         elif i < 17:                                         # 2: the torch up, the breath in: she rocks back
             land = 5; teeth = False                        # she has spat the fifth into the boards
             t = (i - 13) / 3.0
@@ -813,7 +813,7 @@ def t9():
             scorch = max(0.0, min(1.0, (i - 21) / 3.0))
         elif i < 28:                                         # the bow
             land = 5; scorch = 1.0
-            pam = P("pam_cat", X, Y, S_, pose(TADA, ("fist", "fist")), "proud", (0.3, -0.3), rim=True); kn = dict(drop=16 if i == 25 else 8, l=(-6, 0, -1), r=(6, 0, 1))
+            pam = P("pam_cat", X, Y, S_, pose(TADA, ("fist", "fist")), "proud", (0.3, -0.3), rim=True); kn = dict(drop=8 if i == 25 else 4, l=(-3, 0, -1), r=(3, 0, 1))
         else:                                                # 3: off the boards
             t = ease(min(1.0, (i - 28) / 8.0)); land = 5; scorch = 1.0
             pam = P("pam_cat", X, Y - A_RISE * t, S_, pose(lerp(HERO, FLOAT, t), ("relax_s", "relax_s")), "proud", (0.0, -0.8), rim=True)
