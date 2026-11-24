@@ -436,6 +436,11 @@ oc.CAT_POSES.setdefault("mask_fix", ((-8, 0) + oc.pm.ik(1, 34, oc.HY - 6), ("rel
 DON_REACH = (-70, 20, 8, 0)                                # 3.3: his screen-left arm out and down to the bumper
 
 
+FACE_KEY = [False]                                         # (24 Nov, three reviews: dark, but no contrast on the faces) a soft key light on each face in the dream
+KEYS = []
+KEY_WHO = ("pam_cat", "sofia", "client", "don")
+
+
 def draw_cast(k, cast):
     """Draws each figure; returns {who: rig points}."""
     import client_ob as co
@@ -514,6 +519,11 @@ def draw_cast(k, cast):
                 o = dict(o); o["head"] = rot(o["head"])
                 if "hands" in o:
                     o["hands"] = [rot(h) for h in o["hands"]]
+        if FACE_KEY[0] and who in KEY_WHO and o and "head" in o:
+            hx_, hy_ = o["head"]
+            dx_, dy_ = k.c.user_to_device(hx_, hy_)
+            r_ = abs(k.c.user_to_device_distance(0, 80 * a[2])[1])
+            KEYS.append((dx_, dy_, r_))
         out[who] = o
     return out
 
@@ -982,10 +992,23 @@ def _to_screen(cam, p):
     return (270 + (p[0] - fx) * z, 480 + (p[1] - fy) * z)
 
 
+OFFICE_MUTE = [False]                                      # (24 Nov, review of the heart) the machine grey and the screen quieter: the heart leads
+
+
 def _desk(k, sh, eighth):
     """the front desk set at S6 world units: Pam behind the counter, the props, the rest of the cast in front."""
     import fs_set4 as fs4
     import dh_props as dp
+    import fs_set3 as s3
+    if OFFICE_MUTE[0] and not getattr(dp, "_muted", False):
+        dp._muted = True
+        dp.MACH, dp.MACH_D = (0.52, 0.52, 0.54), (0.36, 0.36, 0.38)
+        _mon = s3.monitor
+        def monitor(k_, x, y, s_=1.0):
+            _mon(k_, x, y, s_)
+            c_ = k_.c; c_.save(); c_.translate(x, y); c_.scale(s_, s_)
+            c_.set_source_rgba(0.62, 0.64, 0.68, 0.55); c_.rectangle(-26, -44, 52, 32); c_.fill(); c_.restore()
+        s3.monitor = monitor
     heads = {}
     back = [p for p in sh["cast"] if p[0] == "pam_awake"]
     front = [p for p in sh["cast"] if p[0] != "pam_awake"]
@@ -1015,10 +1038,15 @@ def _desk(k, sh, eighth):
 
 
 def render(sh, scale=1):
+    del KEYS[:]
+    return _render(sh, scale)
+
+
+def _render(sh, scale=1):
     oc.CROSSBELT[0] = False; st.C_POST[0] = "v7"; oc.ENV_SEAL[0] = True; pr.SEAL[0] = True
     import on4_club as cl
     cl.MOTTO[0] = True; cl.ARCH_WARM[0] = True
-    st.NIGHT[0] = True
+    st.NIGHT[0] = True; OFFICE_MUTE[0] = True; FACE_KEY[0] = True
     car.TAIL_GREY[0] = True; oc.HEART[0] = 1.6; pr.ROTA_INK[0] = True       # (24 Nov) the envelope's heart is the film's one red
     cl.LIMO[0] = (30, 1.15); cl.CLIENT_DY[0] = 0      # the Client stands behind the booth table (his legs reach the floor): left as he was
     st.BLOOM[0] = 0.6; car.CABIN_HAND[0] = "v2"; oc.ENV_BIG[0] = 1.25; oc.MASK_UP_V2[0] = True
@@ -1065,6 +1093,11 @@ def render(sh, scale=1):
             lit(c2)
         else:
             ons.vignette(c2, 0.55)
+        for dx_, dy_, r_ in KEYS:                            # the faces' key light, after the dark, so it lifts them out of it
+            x_, y_ = c2.device_to_user(dx_, dy_); r_ = c2.device_to_user_distance(r_, 0)[0]
+            g = cairo.RadialGradient(x_, y_, r_ * 0.2, x_, y_, r_ * 1.5)
+            g.add_color_stop_rgba(0, 1, 1, 0.96, 0.20); g.add_color_stop_rgba(1, 1, 1, 0.96, 0)
+            c2.set_source(g); c2.paint()
     return s, heads
 
 

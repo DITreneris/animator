@@ -315,12 +315,14 @@ def t3():
     def side(cx, don, pam, burst=False):
         kind, px, pf, ps, arms, gest, lean, face, look = pam
         dpose, dface, dkw = don
-        def after(k):
+        def beam(k):                                         # v21 (review: "a double silhouette at her legs"): the headlights' beam on the road, under her
             c = k.c
             if cx < 900:
                 g = cairo.LinearGradient(cx - 170 * CAR_S, 0, cx - 170 * CAR_S - 250, 0)
                 g.add_color_stop_rgba(0, 1, 1, 0.92, 0.5); g.add_color_stop_rgba(1, 1, 1, 0.92, 0)
                 c.set_source(g); c.move_to(cx - 168 * CAR_S, 724 - 72 * CAR_S); c.line_to(cx - 168 * CAR_S - 262, 600); c.line_to(cx - 168 * CAR_S - 262, 720); c.line_to(cx - 168 * CAR_S, 724 - 52 * CAR_S); c.close_path(); c.fill()
+        def after(k):
+            c = k.c
             if kind == "down":
                 c.save(); c.translate(PX, PF - 6); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
             car.side(k, cx, 724, CAR_S)
@@ -329,7 +331,7 @@ def t3():
         cast = [P("don", 170, 596, 0.42, dpose, dface, (0.9, -0.2), **dkw)]
         if kind == "up":
             cast.append(P("pam_cat", px, pf, ps, pose(arms, gest), face, look, lean=lean))
-        return draw(shot("3.1", loc="C_side", cam=(300, 610, 1.45), cast=cast, protect=(), after=after))
+        return draw(shot("3.1", loc="C_side", cam=(300, 610, 1.45), cast=cast, protect=(), before=beam, after=after))
     OFF = 1200
     for i in range(6):                                       # she comes over the crossing, after the car
         t = i / 5.0
@@ -506,10 +508,10 @@ def t5():
         c0.restore()
         s = dark(s, 0.88 * d, ax, ay + 20)
         c0 = cairo.Context(s)                                # its heart, after the dark: it stays lit, the one red, and turns into frame 0's
-        g = cairo.RadialGradient(HX, HY, 4, HX, HY, 60)
+        g = cairo.RadialGradient(HX, HY, 4, HX, HY, 80)
         g.add_color_stop_rgba(0, st.NEON[0], st.NEON[1], st.NEON[2], 0.45 * d); g.add_color_stop_rgba(1, st.NEON[0], st.NEON[1], st.NEON[2], 0)
         c0.set_source(g); c0.paint()
-        oc.seal(c0, HX, HY, 15)
+        oc.seal(c0, HX, HY, 22)                            # (review) as big as frame 0's neon heart
         c = cairo.Context(s); g = cairo.LinearGradient(0, ay + 180, 0, ay + 236)                    # v4: the floor (the shredder) goes first
         g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0.01, 0.01, 0.02, min(1.0, d * 1.6))
         c.set_source(g); c.paint()
