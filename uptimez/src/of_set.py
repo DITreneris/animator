@@ -393,6 +393,8 @@ def stand(k, x, top):
     rect(k, x - 6, top - 4, 12, 16, STEEL, 3070 + x, shadow=False, lw=1.4)
 
 
+LEGS_ROT = [0.0]                                           # v4 (24 Nov, audit: "no in-betweens"): the creeper swivels as it rolls out, rad
+LEGS_TORSO = [0.0]                                         # 0..1: his shirt, then his head, come out from under the sill after his hips
 LEGS_WORK = [0.0]                                          # stage 7: the bent leg's small tap while he works (-1..1)
 
 
@@ -406,6 +408,16 @@ def legs(k, out=0.0):
     hip_y = ly - 46                                                                           # under the car's body
     w = LEGS_WORK[0]
     c.set_line_cap(1); c.set_line_join(1)
+    c.save(); c.translate(lx, hip_y); c.rotate(LEGS_ROT[0]); c.translate(-lx, -hip_y)
+    if LEGS_TORSO[0] > 0:                                                                     # on his back on the board: shirt, shoulders, head
+        L_ = 96 * LEGS_TORSO[0]
+        rect(k, lx - 30, hip_y - L_ - 30, 60, L_ + 34, (0.24, 0.24, 0.26), 3090, lw=2)           # the board under him
+        cut(k, [(lx - 26, hip_y), (lx - 30, hip_y - L_ * 0.8), (lx - 22, hip_y - L_), (lx + 22, hip_y - L_), (lx + 30, hip_y - L_ * 0.8), (lx + 26, hip_y)],
+            (0.97, 0.97, 0.95), shadow=False, lw=2.2)
+        if LEGS_TORSO[0] > 0.6:
+            ellipse(k, lx, hip_y - L_ - 20, 22, 24, (0.80, 0.62, 0.50), 3091, shadow=False, lw=2.2)
+            c.save(); c.rectangle(lx - 30, hip_y - L_ - 50, 60, 18); c.clip()
+            ellipse(k, lx, hip_y - L_ - 22, 23, 24, (0.16, 0.13, 0.11), 3092, shadow=False, lw=2.0); c.restore()
     c.set_source_rgba(0, 0, 0, 0.28)                                                          # contact shadows first
     for (sx, sy, rx, ry) in ((lx - 30, ly + 58, 26, 7), (lx + 40, ly + 48, 22, 6), (lx - 18, ly + 22, 14, 30)):
         c.save(); c.translate(sx, sy); c.scale(rx, ry); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
@@ -430,6 +442,7 @@ def legs(k, out=0.0):
     c.restore()
     rect(k, lx - 26, hip_y - 8, 52, 18, NAVY_T, 3083, lw=2)                                     # v3: the seat of the trousers,
     c.set_source_rgb(0.25, 0.17, 0.10); c.rectangle(lx - 26, hip_y - 10, 52, 6); c.fill()      # the belt: one body, two legs
+    c.restore()
     c.save(); c.rectangle(CAR_X[0], SILL - 4, CAR_X[1] - CAR_X[0], 120); c.clip()             # only in the gap under the body
     c.save(); c.translate(lx + 6, SILL + 4); c.scale(1.0, 0.55)                               # the hips go into the dark under
     g = cairo.RadialGradient(0, 0, 10, 0, 0, 110)                                              # the car: a soft pool, between the

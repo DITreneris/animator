@@ -33,9 +33,10 @@ LINES = [
     ("2.8b", "CLIENT", "One month. I ask. She finds it.", "One month.|I ask.@1.3|She finds it."),
     ("2.8c", "FATHER", "Done.", None),
     ("2.9", "FATHER", "Put it in the calendar.", None),
-    ("3.2", "ROBOT", "New meeting. Agenda: without him.", "New meeting.|Agenda: without him."),
+    ("3.2", "ROBOT", "New meeting. Agenda: without him.", "New meet-ing.|Agenda: without him."),   # v6: "meeting" was heard "miring"
     ("3.3", "DON", "Without who?", None),
-    ("3.4b", "ROBOT", "Calendar says... you'll see.", "Calendar says.||You'll see."),     # v3 (23 Nov): nobody answers
+    ("3.4b", "ROBOT", "Calendar says... wait.", "Calendar says.||Wait."),   # v6 (24 Nov, Tomas: "you'll say"; decided "wait"): this voice says "see" as "say"
+    #     # v3 (23 Nov): nobody answers
     ("3.5b", "DON", "Pam?", None),
 ]
 LEAD, TAIL = 0.15, 0.20          # a line starts 0.15 s into its shot and leaves 0.20 s after it (v10: was 0.35)

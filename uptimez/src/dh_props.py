@@ -78,6 +78,7 @@ def _price_tag(k, style, seed):
     c.restore()
 
 
+CROWN_ROT = [0.0]                                          # opt-in (24 Nov, episode 13): the crown rocks on the throne, rad
 TAG = [False]                                              # opt-in (22 Nov, Tomas: "add price tag"): the price still hanging off the crown
 REPLY_V18 = [False]                                        # opt-in (23 Nov, Tomas): the reply is "Stupid human." and a clown
 STARS_FIT = [False]                                        # opt-in (v8): the phone's empty stars kept inside its screen
@@ -121,10 +122,12 @@ def ceo_chair(k, x, feet, s=1.0, seed=2000, lean=0.0, sink=0.0, puff=False, seat
                 c.move_to(bx, yy); c.line_to(bx + sx * 26, yy + 34); c.stroke(); c.move_to(bx, yy); c.line_to(bx + sx * 26, yy - 34); c.stroke()
             ellipse(k, bx, yy, 5, 5, GOLD, seed + 30 + row * 5 + int(bx), shadow=False, lw=1.4)
     # one crown, big
+    c.save(); c.translate(0, -372); c.rotate(CROWN_ROT[0]); c.translate(0, 372)
     cut(k, [(-44, -372), (-56, -430), (-28, -402), (0, -446), (28, -402), (56, -430), (44, -372)], GOLD, lw=2.6)
     rect(k, -46, -382, 92, 14, GOLD_D, seed + 4, shadow=False, lw=2)
     for dx, dy in ((-56, -432), (0, -448), (56, -432)):
         ellipse(k, dx, dy, 7, 7, (0.62, 0.05, 0.12), seed + 20 + dx, shadow=False, lw=1.6)
+    c.restore()
     for sx in (-1, 1):                                                       # the arms
         cut(k, [(sx * 80, -110), (sx * 98, -112), (sx * 100, -168), (sx * 88, -172)], GOLD, shadow=False, lw=2.2)
         cut(k, [(sx * 72, -178), (sx * 114, -178), (sx * 116, -160), (sx * 74, -160)], LEATHER, lw=2.2)

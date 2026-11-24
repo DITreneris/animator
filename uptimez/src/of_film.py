@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 40, 2: 40, 3: 40, 4: 40, 5: 40}
-SOUND = "of_sound_v19.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 43, 2: 43, 3: 43, 4: 43, 5: 43}
+SOUND = "of_sound_v21.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -52,7 +52,7 @@ def _T(sid, t):
     return sc._timing()[sid]["start"] + t
 
 
-LAND_AT = ("1.3", 0.50)                                    # the burning 7 lands by his boot
+LAND_AT = ("1.3", 0.62)                                    # the burning 7 lands by his boot
 FLOOR_BURN = 4.6                                           # and burns out in this long
 
 
@@ -72,37 +72,67 @@ def s12(t, L):                                             # v2 (23 Nov): the li
                                                                           lid=1.0 if t > 0.25 else 0.0))
 
 
-def s13(t, L):                                             # v2: he TEARS the burning 7 off and flings it over the car: it lands by
-    import of_set as gs                                    # the boot (the boot doesn't move); then the creeper rolls out past it;
-    bx, by = gs.bay7()                                     # he sits up, looks at the fire by his feet, then at his watch
-    ft = _T("1.3", t)
-    fly = None if t < 0.15 else min(1.0, (t - 0.15) / 0.35)
-    st = dict(burn=0.7 if t < 0.15 else 0.8, fire=1.0 if t < 0.15 else 0.25, fire_t=ft,
+FIRE_CAM = (366, 846, 2.4)                                 # the cut (grill 24 Nov): the boot and the place the burning 7 lands
+
+
+def s13(t, L):                                             # v5 (24 Nov, grill: the exposure sheet, 36 drawings, 14 key poses with 1.4):
+    import of_set as gs                                    # 0-0.18 he TEARS the burning 7 off; 0.18-0.55 it flies; CUT 0.55-0.95 CLOSE on
+    bx, by = gs.bay7()                                     # the boot: it lands (0.62), the knee jerks, the heels dig in; CUT 0.95 WIDE: he
+    ft = _T("1.3", t)                                      # rolls out on the red creeper, side on, lying (to 1.33); it stops, he slides on
+    fly = None if t < 0.18 else min(1.0, (t - 0.18) / 0.44)   # (1.47); elbow (1.53), palm (1.67), up (1.8), over and back (2.0); the fire; the watch
+    st = dict(burn=0.7 if t < 0.18 else 0.8, fire=1.0 if t < 0.18 else 0.25, fire_t=ft,
               sheet_fly=fly if (fly is not None and fly < 1.0) else None, sheet_floor=_floor("1.3", t))
-    g2 = dict(targets_xy=[(bx - 6, by - 20) if t < 0.15 else (bx + 30, by - 70)], lighter=1.0, lid=1.0)
-    gu_ = ease((t - 0.5) / 0.3)                             # v3 (cold test v37, 3 of 3 "a statue"): bodyguard 1's head follows the creeper out
+    g2 = dict(targets_xy=[(bx - 6, by - 20) if t < 0.18 else (bx + 30, by - 70)], lighter=1.0, lid=1.0)
+    gu_ = ease((t - 0.62) / 0.3)                           # bodyguard 1 looks down at him and steps aside, out of his way
     g1 = dict(turn=0.6 * gu_, look_down=12 * gu_)
-    if t < 0.88:
-        out = gs.LEGS_OUT * ease((t - 0.55) / 0.30)
-        return dict(st, _cast=("father", "g1", "g2"), sit=False, legs_out_v=out), dict(g2=g2, g1=g1)
-    look = (0.6, 1.0) if t < 1.10 else (0.9, 2.0)              # at the fire by his feet, then down at the watch
-    return st, dict(g2=g2, g1=g1, client=dict(kind="sit", look=look, face="glance" if t >= 1.10 else "bored"))
+    gx_, gf_ = sc.BLOCK[2]["g1"]
+    cx_, cf_ = sc.BLOCK[2]["client"][0] - 28, sc.BLOCK[2]["client"][1]   # clear of the fire and the lamp while he lies
+    st["moved"] = dict(g1=(gx_ - 78 * ease((t - 0.66) / 0.3), gf_), client=(cx_, cf_))
+    if t < 0.95:
+        jerk = -10 * math.sin(min(1.0, max(0.0, (t - 0.66) / 0.14)) * math.pi) + 7 * ease((t - 0.80) / 0.12)
+        st = dict(st, _cast=("father", "g1", "g2"), sit=False, legs_out_v=jerk, legs_work=1.6 * ease((t - 0.80) / 0.1))
+        if t >= 0.55:
+            st["_cam"] = FIRE_CAM
+        return st, dict(g2=g2, g1=g1)
+    u = min(1.0, (t - 0.95) / 0.38); roll = 1 - (1 - u) ** 2.2                                    # out fast, slowing
+    brake = math.sin(min(1.0, max(0.0, (t - 1.33) / 0.14)) * math.pi)                            # the board stops; he slides on a little
+    e1, e2, e3 = ease((t - 1.47) / 0.16), ease((t - 1.62) / 0.18), ease((t - 1.80) / 0.17)       # v6 (audit): 0.5 s, through 45 and 60 degrees
+    back = 1.32 + 0.05 * brake - 0.37 * e1 - 0.47 * e2 - 0.48 * e3 - 0.09 * math.sin(min(1.0, max(0.0, (t - 1.97) / 0.2)) * math.pi)
+    lag = lambda u: 1.32 - 0.37 * ease((u - 1.47) / 0.16) - 0.47 * ease((u - 1.62) / 0.18) - 0.48 * ease((u - 1.80) / 0.17)
+    head = 0.55 * (lag(t - 0.13) - lag(t)) if t > 1.47 else 0.0                                   # his head comes up 2 drawings after his trunk
+    hips = -10 * (e2 - e3) - 4 * e3                                                               # his hips shift back on the board as the weight goes over them
+    prop = None
+    if t >= 1.45:                                          # v7 (audit: "the arm is swapped, not moved"): ONE path for the far hand to the end
+        fx_, fy_ = cx_ + 60 - 16 * e2 - 6 * e3, cf_ - 2    # of the shot: on the floor by his shoulder, in under him as he comes up (never at
+        rx_, ry_ = cx_ + 40, cf_ - 36                      # full reach: the elbow stays bent), then 0.3 s up onto the board's edge
+        w_ = ease((t - 1.98) / 0.3)
+        prop = (fx_ + (rx_ - fx_) * w_, fy_ + (ry_ - fy_) * w_ - 8 * math.sin(math.pi * w_))
+    look = (0.2, -0.8) if t < 1.7 else ((0.4, -0.3) if t < 2.1 else ((0.6, 1.0) if t < 2.35 else (0.9, 2.0)))
+    return st, dict(g2=g2, g1=g1, client=dict(kind="sit", look=look, face="glance" if t >= 2.35 else "bored", back=back, flick=0.0, head=head,
+                                               prop=prop, under=86 * (1 - roll), slide=4 * brake + hips, roll=9.0 * roll))
 
 
 SMOTHER_AT = (2.75, 3.15)                                  # v3 (23 Nov, decided): after the line, the rag on the fire
 
 
-def s14(t, L):                                             # "Burn them...": he wipes his hands on the rag as he talks; then,
-    import of_set as gs                                    # not looking, he presses the rag down on the burning 7 and takes it
-    a, b = SMOTHER_AT
-    gs.SMOTHER[0] = 0.0
-    cl = dict(kind="sit", look=(-1, -0.2), wipe=math.sin(t * 2 * math.pi * 0.9))
+def s14(t, L):                                             # v5 (grill 24 Nov, 54 drawings): "Burn": the far hand comes up off the board
+    import of_set as gs                                    # (0.15-0.33); "them": a short flick DOWN at the fire (0.4-0.47); it hangs through
+    a, b = SMOTHER_AT                                      # the full stop (to 0.8) and comes down (to 1.07). "Your son": his eyes to Father,
+    gs.SMOTHER[0] = 0.0                                    # he sits back 4 degrees. Then, not looking, the far hand takes the rag off his
+    fk = 0.5 * ease((t - 0.15) / 0.18) + 0.5 * ease((t - 0.38) / 0.09) - ease((t - 0.84) / 0.24)   # knee and presses it on the fire
+    sh_ = ease((t - 0.12) / 0.15) - ease((t - 0.8) / 0.25)                # his shoulder and trunk go with it, a beat BEFORE the hand
+    fid = math.sin(min(1.0, max(0.0, (t - 1.7) / 0.3)) * math.pi) + math.sin(min(1.0, max(0.0, (t - 2.3) / 0.3)) * math.pi)
+    cl = dict(kind="sit", look=(-1, -0.2) if t > 1.1 else (0.5, 0.5), flick=max(0.0, fk), fidget=fid,
+              back=0.07 * ease((t - 1.13) / 0.14) + 0.06 * sh_, head=-0.05 * sh_ + 0.04 * ease((t - 1.2) / 0.2))
     fl = _floor("1.4", min(t, a))
+    sx, sy = gs.SHEET_LAND
+    cl["hands_at"] = (sx - 4, sy - 10)
+    a0 = a - 0.5                                                          # v6 (audit: "it appears"): reach 0.3 s, close on it 0.2 s, then carry
+    cl["rag_to"] = 0.5 * ease((t - a0) / 0.3) + 0.5 * ease((t - a) / (b - a)) if t >= a0 else None
+    if cl["rag_to"] is None:
+        cl.pop("rag_to"); cl.pop("hands_at")
     if t >= a:
-        u = ease((t - a) / (b - a))
-        sx, sy = gs.SHEET_LAND
-        cl["hands_at"] = (sx - 4, sy - 10 + 6 * (1 - u)) if t < b + 0.2 else (sx - 30 * min(1, (t - b - 0.2) / 0.2) - 4, sy - 40)
-        gs.SMOTHER[0] = u if t < b else 1.0
+        gs.SMOTHER[0] = ease((t - a) / (b - a)) if t < b else 1.0
         if t >= b:
             fl = None
     return dict(sheet_floor=fl, fire_t=_T("1.4", t), burn=0.8), dict(client=cl)
@@ -438,8 +468,6 @@ RUN_CAM = (350, 790, 1.25)                                 # the whole car, nose
 
 
 MOTION["2.3"] = s23
-MOTION["1.3"] = lambda t, L: s13(t * 1.3 / 1.6, L)   # v3 (timing v11, cold tests 3 of 3 "too fast"): the throw, the roll-out
-                                                    # and the sit-up at 0.8x speed
 MOTION["2.8e"] = lambda t, L: s28e(max(0.0, t - 0.3), L)   # v11 (24 Nov, cold test 3 of 3 "the car leaves, then is back"): no cut
 _old_28e = lambda t, L: s28e2(max(0.0, t - 0.3), L)   # v10 (timing v11): his fingers on the key 0.3 s, then the turn
 for _sid, _fn in om.veto():
@@ -509,6 +537,31 @@ VISEME = {"A": "M", "B": "C", "C": "E", "D": "A", "E": "O", "F": "U", "G": "F", 
 _CUES = {}
 
 
+LIP_AHEAD = 2 / 30.0
+
+
+def accent(sid, t):
+    """v1 (24 Nov, decided): 0..1, a stressed syllable of the speaker this drawing (the take's loudness rising fast);
+    the speaker's head dips with it."""
+    if sid not in sc.SAY:
+        return 0.0
+    if sid not in _TAKE:
+        a, sr = sf.read(os.path.join(TAKES, "%s.wav" % sid))
+        _TAKE[sid] = (a, sr)
+    a, sr = _TAKE[sid]
+    def env(x):
+        if x < 0 or x > len(a) / sr:
+            return 0.0
+        seg = a[int(x * sr):int((x + 0.06) * sr)]
+        return float(np.sqrt(np.mean(seg ** 2))) / (np.abs(a).max() + 1e-9) if len(seg) else 0.0
+    tt = t - LEAD
+    best = 0.0
+    for back in (0.0, 0.05, 0.10, 0.15):                    # the dip lasts ~0.2 s after the rise
+        rise = env(tt - back) - env(tt - back - 0.12)
+        best = max(best, min(1.0, max(0.0, rise / 0.25)) * (1 - back / 0.2))
+    return best
+
+
 def mouth_at(sid, t):
     """the mouth for the speaker of shot sid, t seconds into the shot (None: not speaking). v2 (23 Nov, decided): the
     take's own mouth shapes (Rhubarb Lip Sync, of_voices/visemes/<shot>.json, phonetic, with the line's text), held
@@ -519,7 +572,7 @@ def mouth_at(sid, t):
         a, sr = sf.read(os.path.join(TAKES, "%s.wav" % sid))
         _TAKE[sid] = (a, sr)
     a, sr = _TAKE[sid]
-    tt = t - LEAD
+    tt = t - LEAD + LIP_AHEAD                              # v3 (24 Nov, decided): the mouth 2 frames ahead of the sound
     if tt < 0 or tt > len(a) / sr:
         return None
     vp = os.path.join(TAKES, "..", "visemes", "%s.json" % sid)
@@ -608,6 +661,8 @@ def render_scene(n):
                 sc.POSES[sid] = base
             who = sc.SAY.get(sid, (None,))[0]
             oc.NOW[0] = st0 + t                                    # v1 (23 Nov): the film's clock, for blinks and breaths
+            oc.SHOT_T[0] = t
+            oc.ACCENT[0] = (who, accent(sid, t))
             oc.LOOP_T[0] = sc._timing_total()
             mc_ = mouth_at(sid, t)
             oc.MOUTH[0] = mc_ if who == "client" else None

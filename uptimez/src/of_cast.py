@@ -137,7 +137,11 @@ def arms_to(x, feet, s, flip=False, targets=(), rest=None):
 
 def guard(k, x, feet, s, flip=False, targets=(), turn=0.0, seed=1600):
     pose = arms_to(x, feet, s, flip, targets, rest=dc.GUARD_POSE) if targets else None
-    o = dc.guard(k, x, feet, s, pose=pose, flip=flip, seed=seed)
+    dc.COIL_DX[0] = max(-9.0, min(9.0, -14.0 * follow("coil%d" % seed, turn, 1.8, 0.3)))   # v2 (24 Nov): the coil trails his head
+    try:
+        o = dc.guard(k, x, feet, s, pose=pose, flip=flip, seed=seed)
+    finally:
+        dc.COIL_DX[0] = 0.0
     if turn:
         _turn_head(k, x, feet, s, flip, turn, seed)
     return o
@@ -230,10 +234,16 @@ def father(k, x, feet, s, face="hard", look=(1, 0), targets=()):
             free[side] = ik(side * 40, sy, tx, ty, 48, 48, side)
         pose = tuple(list(free.get(-1, (-8, 0))) + list(free.get(1, (8, 0))))
     dc.BROW_UP[0] = 14 if face == "brow2" else 9; dc.BROW_DARK[0] = face == "brow2"                                # v8: his one move, big enough to read
+    dd_ = dart("father", FATHER_MOUTH[0] is not None)
+    look = (look[0] + dd_[0], look[1] + dd_[1]) if look else look
     dc.MOUTH_CODE[0] = FATHER_MOUTH[0]; dc.BLINK[0] = blink("father")
+    acc_ = ACCENT[0][1] if ACCENT[0][0] == "father" else 0.0                     # v9 (24 Nov): the chain swings after him
+    T_ = (x + 0.10 * (targets[0][0] - x) if targets else x) / s + 6 * acc_
+    dc.CHAIN_DX[0] = max(-7.0, min(7.0, -1.6 * follow("father_chain", T_, 1.5, 0.22)))
     try:
         o = dc.father(k, x, feet, s, pose=pose, face="brow" if face == "brow2" else face, look=look)
     finally:
+        dc.CHAIN_DX[0] = 0.0
         dc.BROW_UP[0] = 9; dc.BROW_DARK[0] = False; dc.MOUTH_CODE[0] = None; dc.BLINK[0] = False
     _stubble(k, o["head"], s, low=face == "low")
     return o
@@ -281,6 +291,9 @@ def _narrow(fn):
 
 MOUTH = [None]                                             # the film's lip sync: a mouth code for the Client this drawing
 FATHER_MOUTH = [None]; DON_MOUTH = [None]                  # v2 (23 Nov, decided): lip sync for every speaker with a mouth
+SHOT_T = [None]                                            # v2 (24 Nov): time into the current shot (a blink on the cut)
+LIVE = [True]                                              # v2 (24 Nov, decided): irregular blinks, eye darts while listening
+ACCENT = [(None, 0.0)]                                     # v1 (24 Nov): (speaker, 0..1 stress) this drawing
 NOW = [None]                                               # v1 (23 Nov, decided: no frozen frames): the film's clock this drawing
 
 
@@ -292,15 +305,78 @@ def _fit(period):
     return T / max(1, round(T / period)) if T else period
 
 
+def _blink_times(name, total=120.0):
+    """v2 (24 Nov, decided): irregular blinks, 2-6 s apart, one in seven a double; each face its own fixed sequence."""
+    import random
+    r = random.Random("blink-" + name)
+    t, out = r.uniform(0.6, 2.0), []
+    while t < total:
+        out.append(t)
+        if r.random() < 0.14:
+            out.append(t + 0.27)                                  # a double blink
+        t += r.uniform(2.0, 6.0)
+    return out
+
+
+_BT = {}
+
+
 def blink(name):
-    """a blink, 2 drawings, on each face's own clock (the film's time, so a cut doesn't reset it); never in the
-    first or the last half second (frame 0 and the loop's last frame stay the same drawing)."""
+    """a blink, 2-4 drawings (0.13 s), on each face's own clock (the film's time, so a cut doesn't reset it); never in
+    the first or the last half second (frame 0 and the loop's last frame stay the same drawing). v2: irregular, and a
+    blink on a cut (the first 0.04-0.17 s of a shot), as a real eye does when the view changes."""
     if NOW[0] is None:
         return False
     if NOW[0] < 0.5 or (LOOP_T[0] and NOW[0] > LOOP_T[0] - 0.5):
         return False
-    period, off = {"client": (3.3, 0.4), "father": (4.1, 1.7), "don": (2.9, 2.2)}.get(name, (3.7, 0.0))
-    return (NOW[0] + off) % period < 0.13
+    if not LIVE[0]:
+        period, off = {"client": (3.3, 0.4), "father": (4.1, 1.7), "don": (2.9, 2.2)}.get(name, (3.7, 0.0))
+        return (NOW[0] + off) % period < 0.13
+    if SHOT_T[0] is not None and 0.04 <= SHOT_T[0] < 0.17 and __import__("zlib").crc32(name.encode()) % 2 == 0:
+        return True
+    bt = _BT.setdefault(name, _blink_times(name))
+    return any(0.0 <= NOW[0] - b < 0.13 for b in bt)
+
+
+def dart(name, speaking):
+    """v1 (24 Nov, decided): a listener's eyes shift a little and come back every 1.5-3 s (0.25-0.5 s away); the
+    speaker's stay put. Returns an offset for look=(x, y)."""
+    if not LIVE[0] or speaking or NOW[0] is None or NOW[0] < 0.5 or (LOOP_T[0] and NOW[0] > LOOP_T[0] - 0.5):
+        return (0.0, 0.0)
+    import random
+    r = random.Random("dart-" + name)
+    t = r.uniform(0.8, 1.6)
+    while t < NOW[0]:
+        hold = r.uniform(0.25, 0.5)
+        dx, dy = r.choice((-1, 1)) * r.uniform(0.25, 0.45), r.uniform(-0.15, 0.2)
+        if NOW[0] < t + hold:
+            return (dx, dy)
+        t += hold + r.uniform(1.5, 3.0)
+    return (0.0, 0.0)
+
+
+_SPR = {}
+
+
+def follow(key, target, hz=1.6, zeta=0.25):
+    """v1 (24 Nov, decided: secondary motion): a damped spring that chases target on the film's clock; returns
+    (where it is) - target, the lag of a thing that hangs or springs (a chain, a coil, an antenna). Frames come in order
+    in a render; a jump in time (a still, a new scene) starts it at rest."""
+    if NOW[0] is None or not LIVE[0]:
+        return 0.0
+    st = _SPR.get(key)
+    if st is None or not (0.0 < NOW[0] - st[0] < 0.2):
+        _SPR[key] = (NOW[0], target, 0.0)
+        return 0.0
+    t0, p, v = st
+    dt = NOW[0] - t0
+    w = 2 * math.pi * hz
+    for _ in range(4):
+        h = dt / 4
+        a = -w * w * (p - target) - 2 * zeta * w * v
+        v += a * h; p += v * h
+    _SPR[key] = (NOW[0], p, v)
+    return p - target
 
 
 def breath(name):
@@ -309,7 +385,8 @@ def breath(name):
         return 0.0
     ph = {"client": 0.0, "father": 1.3, "g1": 2.1, "g2": 0.7, "don": 1.9, "pam": 2.6, "robot": 0.0}.get(name, 0.5)
     P = _fit(3.4)                                          # a whole number of breaths in the film: the loop's join holds
-    return 0.007 * math.sin(2 * math.pi * (NOW[0] + ph * P / 3.4) / P) if name != "robot" else 0.0
+    amp = 0.012 if LIVE[0] else 0.007                      # v2 (24 Nov, decided): the chest and shoulders rise (of_scenes)
+    return amp * math.sin(2 * math.pi * (NOW[0] + ph * P / 3.4) / P) if name != "robot" else 0.0
 
 
 @_narrow
@@ -321,11 +398,15 @@ def client(k, x, feet, s, look=(-1, 0), targets=(), clip_hip=False, face="bored"
         c.save(); c.rectangle(x - 300, hip - 500, 600, 506); c.clip()
     import client_of as cof                                   # the garage outfit (client_of v1, 22 Nov)
     old_f = old_g = None
-    if blink("client"):                                       # v1 (23 Nov): his blink, every lid shut for 2 drawings
+    bl_, ht_ = blink("client"), HEAD_TILT[0]
+    if bl_ or ht_:                                            # v1 (23 Nov): his blink; v2 (24 Nov): his head's own tilt (it LAGS)
         old_f, old_g = dict(co.FACES), dict(cof.FACES)        # (the garage faces are client_of's own table)
-        co.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in co.FACES.items()})
-        cof.FACES.update({kk: dict(vv, lid=0.98) for kk, vv in cof.FACES.items()})
+        up_ = lambda vv: dict(vv, tilt=vv.get("tilt", 0.0) + ht_, **(dict(lid=0.98) if bl_ else {}))
+        co.FACES.update({kk: up_(vv) for kk, vv in co.FACES.items()})
+        cof.FACES.update({kk: up_(vv) for kk, vv in cof.FACES.items()})
     try:
+        dd_ = dart("client", MOUTH[0] is not None)
+        look = (look[0] + dd_[0], look[1] + dd_[1]) if look else look
         o = cof.client(k, x, feet, s, pose, face, look=look, mouth=MOUTH[0])
     finally:
         if old_f is not None:
@@ -373,8 +454,28 @@ def creeper(k, x, y, s=1.0):
         ellipse(k, x + wx * s, y + 13 * s, 6 * s, 6 * s, (0.30, 0.30, 0.32), 3512 + wx, shadow=False, lw=1.6)
 
 
-def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wipe=0.0, hands_at=None):
-    """sat up on the creeper: the board on the floor, his seat on it, knees up, the rag between his hands."""
+def rag_cloth(k, x, y, s=1.0, col=(0.92, 0.88, 0.80), ang=0.0):
+    """v2 (24 Nov, audit and cold tests: "a white lump"): a CLOTH, draped: it hangs from where it is held, with two folds
+    and grease on it. Drawn before the hand that holds it."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    cut(k, [(-15, -7), (11, -9), (17, 5), (13, 31), (5, 24), (-1, 38), (-9, 27), (-16, 33), (-19, 8)], col, lw=2)
+    c.set_source_rgba(0.35, 0.30, 0.25, 0.75); c.set_line_width(1.5); c.set_line_cap(1)
+    c.move_to(-6, -2); c.line_to(-9, 26); c.stroke(); c.move_to(5, -3); c.line_to(6, 23); c.stroke()
+    c.set_source_rgba(0.15, 0.12, 0.10, 0.5)
+    for px, py, r in ((-2, 10, 4), (10, 14, 3)):
+        c.arc(px, py, r, 0, 2 * math.pi); c.fill()
+    c.restore()
+
+
+def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wipe=0.0, hands_at=None, back=0.0, flick=None,
+               prop=None, rag_to=None, roll=0.0, head=0.0, fidget=0.0):
+    """sat up on the creeper: the board on the floor, his seat on it, knees up. v3 (24 Nov, audit: "both hands move,
+    crossed lines, a lump"): flick is None -> the old two-handed rag (pinned films); else ONE passive hand holds the rag
+    on his near knee and the other rests on the board, and flicks (0..1) lazily toward the fire. back: his trunk tipped
+    back about the seat, rad (the sit-up's in-betweens)."""
+    if flick is not None:
+        return _client_sit3(k, x, floor, s, look, face, hands_at, back, flick, prop, rag_to, roll, head, fidget)
     creeper(k, x - 20, floor - 14, 0.9)
     seat = floor - 30
     c = k.c
@@ -391,6 +492,161 @@ def client_sit(k, x, floor, s, look=(-1, -0.2), rag_hands=True, face="bored", wi
                face=face)
     if rag_hands:
         rag(k, hands[0] + 2, hands[1] + 2, 1.1)
+    return o
+
+
+RAG_RED = (0.84, 0.20, 0.16)
+
+
+def fist2(k, x, y, r, skin, ang, flip=1):
+    """v1 (24 Nov, audit: "petals, stuck on"; decided: a new relaxed fist for the Client's two sitting shots only): ONE
+    silhouette: the back of the hand, the folded fingers as a rounded front, the thumb lying across them. ang: the
+    forearm's direction (the hand continues it); flip: which side the thumb lies on."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(r, r * flip)
+
+    def body():
+        c.new_path(); c.move_to(-0.95, -0.52); c.curve_to(-0.3, -0.78, 0.55, -0.80, 0.98, -0.42)
+        c.curve_to(1.30, -0.10, 1.28, 0.42, 0.92, 0.66); c.curve_to(0.45, 0.90, -0.40, 0.78, -0.95, 0.52); c.close_path()
+
+    def thumb():
+        c.new_path(); c.move_to(-0.55, -0.58); c.curve_to(-0.05, -1.08, 0.75, -1.02, 0.90, -0.62)
+        c.curve_to(0.96, -0.36, 0.60, -0.30, 0.30, -0.44); c.curve_to(0.0, -0.50, -0.30, -0.40, -0.55, -0.58); c.close_path()
+    for fn in (body, thumb):                                                  # every outline first, then every fill: no seam inside
+        fn(); c.set_source_rgb(*INK); c.set_line_width(0.40); c.set_line_join(1); c.stroke()
+    for fn in (body, thumb):
+        fn(); c.set_source_rgb(*skin); c.fill()
+    c.set_source_rgba(INK[0], INK[1], INK[2], 0.55); c.set_line_width(0.09); c.set_line_cap(1)
+    for i in range(3):                                                        # the folded fingers: three short creases, not petals
+        yy = -0.12 + i * 0.30
+        c.move_to(0.62, yy); c.curve_to(0.86, yy + 0.02, 1.02, yy + 0.06, 1.10, yy + 0.12); c.stroke()
+    c.move_to(-0.50, -0.56); c.curve_to(-0.1, -0.42, 0.3, -0.42, 0.62, -0.36); c.stroke()   # the thumb's lower edge on the fist
+    c.restore()
+
+
+def _no_seams(tmp, px):
+    """erase the dark lines INSIDE the white shirt (shoulder / sleeve / trunk joints): a dark pixel whose neighbourhood
+    is mostly shirt-white is painted shirt-white. Outer outlines have something else on one side and stay."""
+    import numpy as np
+    tmp.flush()
+    H, W = tmp.get_height(), tmp.get_width()
+    a = np.ndarray((H, W, 4), np.uint8, tmp.get_data())
+    ys, xs = np.nonzero(a[..., 3] > 200)
+    if not len(ys):
+        return
+    y0, y1, x0, x1 = max(0, ys.min() - 2), min(H, ys.max() + 3), max(0, xs.min() - 2), min(W, xs.max() + 3)
+    r = a[y0:y1, x0:x1]
+    op = r[..., 3] > 200
+    white = op & (r[..., 0] > 222) & (r[..., 1] > 228) & (r[..., 2] > 228)
+    dark = op & (r[..., :3].max(axis=2) < 110)
+    n = max(3, int(round(px * 1.6)))
+    ii = np.pad(white.astype(np.int32), ((n + 1, n), (n + 1, n))).cumsum(0).cumsum(1)
+    hh, ww = white.shape
+    box = ii[2 * n + 1:2 * n + 1 + hh, 2 * n + 1:2 * n + 1 + ww] - ii[:hh, 2 * n + 1:2 * n + 1 + ww] - ii[2 * n + 1:2 * n + 1 + hh, :ww] + ii[:hh, :ww]
+    frac = box / float((2 * n + 1) ** 2)
+    kill = dark & (frac > 0.56)
+    wcol = tuple(int(v) for v in np.median(r[white][:, :3], axis=0)) + (255,) if white.any() else (242, 247, 247, 255)
+    for _ in range(2):                                                        # and the line's anti-aliased edges beside them
+        grow = kill.copy()
+        grow[1:, :] |= kill[:-1, :]; grow[:-1, :] |= kill[1:, :]; grow[:, 1:] |= kill[:, :-1]; grow[:, :-1] |= kill[:, 1:]
+        kill = grow & op & ~white & (frac > 0.50) & (np.abs(r[..., 0].astype(int) - r[..., 2].astype(int)) < 28)
+    r[kill] = wcol
+    tmp.mark_dirty()
+KNEE_AT = (-50, -20)                                       # v4 (audit: "a white bulge, a fist stuck on"): the old point was 12 px from his
+# shoulder, so the whole arm folded into a lump. Here the sleeve, the forearm and the hand are one line down onto his thigh
+HEAD_TILT = [0.0]                                          # the Client's head, rad, on top of his face's own tilt
+
+
+def _client_sit3(k, x, floor, s, look, face, hands_at, back, flick, prop=None, rag_to=None, roll=0.0, head=0.0, fidget=0.0):
+    """v2 (24 Nov, grill: 14 key poses). back: the trunk tipped back about the seat (1.4 = lying on the board).
+    prop: a floor point his far hand presses on while he sits up. flick: None/0..1 rest -> raised (0.5) -> DOWN at the
+    fire (1). rag_to: 0..1 the far hand goes to the knee and takes the rag (0..0.5), then carries it to hands_at.
+    roll: the castors' turn. The rag is the red shop rag, hanging from the knee hand."""
+    c = k.c
+    creeper(k, x - 20, floor - 14, 0.9)
+    for wx in (-58, -22, 22, 58):                                             # a spoke on each castor: they TURN as it rolls
+        cx_, cy_ = x - 20 + wx * 0.9, floor - 14 + 13 * 0.9
+        c.set_source_rgb(*INK); c.set_line_width(1.4)
+        c.move_to(cx_ - 4.5 * math.cos(roll), cy_ - 4.5 * math.sin(roll)); c.line_to(cx_ + 4.5 * math.cos(roll), cy_ + 4.5 * math.sin(roll)); c.stroke()
+    seat = floor - 30
+    for sx, (kx, fx) in ((-1, (x - 62, x - 90)), (1, (x - 30, x - 56))):
+        for col, lw in ((INK, 30 * s / 0.52), ((0.17, 0.22, 0.34), 25 * s / 0.52)):
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+            c.move_to(x + sx * 8, seat); c.line_to(kx, seat - 44); c.line_to(fx, floor - 6); c.stroke()
+        cut(k, [(fx - 18, floor - 14), (fx + 8, floor - 14), (fx + 10, floor), (fx - 20, floor)], (0.42, 0.27, 0.14), shadow=False, lw=2)
+    hip_feet = seat - co.HIP * s
+
+    def inv(p):                                                               # a world point, into the tipped trunk's frame
+        dx, dy = p[0] - x, p[1] - seat
+        return (x + dx * math.cos(-back) - dy * math.sin(-back), seat + dx * math.sin(-back) + dy * math.cos(-back))
+    kdx_, kdy_ = KNEE_AT
+    knee = (x + kdx_ + 2 * fidget, seat + kdy_ - 2 * fidget)                  # its fingers shift a little: it is alive
+    rest, up, down = (x + 40, seat - 6), (x + 50, seat - 44), (x + 74, seat - 16)
+    f = flick or 0.0
+    if f <= 0.5:
+        act = (rest[0] + (up[0] - rest[0]) * f * 2, rest[1] + (up[1] - rest[1]) * f * 2)
+    else:
+        act = (up[0] + (down[0] - up[0]) * (f - 0.5) * 2, up[1] + (down[1] - up[1]) * (f - 0.5) * 2)
+    ragp = (knee[0] - 4, knee[1] + 16)                                        # it hangs from his fist, below it, in sight
+    if prop is not None:
+        act = prop
+    if rag_to is not None and hands_at is not None:
+        if rag_to <= 0.5:
+            u = rag_to * 2
+            act = (rest[0] + (knee[0] + 14 - rest[0]) * u, rest[1] + (knee[1] + 6 - rest[1]) * u - 14 * math.sin(math.pi * u))
+        else:
+            u = (rag_to - 0.5) * 2
+            act = (knee[0] + 14 + (hands_at[0] - knee[0] - 14) * u, knee[1] + 6 + (hands_at[1] - knee[1] - 6) * u - 16 * math.sin(math.pi * u))
+            ragp = (act[0], act[1] + 14 - 12 * u)
+    wk = max(0.0, min(1.0, 1.0 - back / 0.5))                                 # v3 (Tomas: "a pretzel"): lying, the near hand rests on his
+    wk = wk * wk * (3 - 2 * wk)                                               # hip (the trunk's own frame); it goes to the knee as he comes up
+    hipT = (x - 30, seat - 26)
+    ik_ = inv(knee)
+    kT = (hipT[0] + (ik_[0] - hipT[0]) * wk, hipT[1] + (ik_[1] - hipT[1]) * wk)
+    sideT = (x + 30, seat - 26)                                               # lying: the far hand by his side too
+    w2 = max(0.0, min(1.0, 1.0 - (back - 0.95) / 0.35)) if prop is not None else wk
+    w2 = w2 * w2 * (3 - 2 * w2)
+    ia_ = inv(act)
+    tg = [kT, (sideT[0] + (ia_[0] - sideT[0]) * w2, sideT[1] + (ia_[1] - sideT[1]) * w2)]
+    c.save(); c.translate(x, seat); c.rotate(back); c.translate(-x, -seat)
+    rp = inv(ragp) if (rag_to is not None and rag_to > 0.5) else (kT[0] - 4, kT[1] + 16)
+    held_ = rag_to is not None and rag_to > 0.5
+    sw = max(-0.5, min(0.5, 0.012 * follow("rag", ragp[0] + ragp[1], 1.4, 0.2)))   # its hem trails the hand
+    if not held_:
+        rag_cloth(k, kT[0] - 2, kT[1] + 6, 1.0, col=RAG_RED, ang=-back + sw)    # the cloth FIRST: his fingers close over its top
+    HEAD_TILT[0] = head
+    tgt_ = c.get_target()
+    W_, H_ = (tgt_.get_width(), tgt_.get_height()) if hasattr(tgt_, "get_width") else (1080, 1920)
+    if W_ < 64 or not LIVE[0]:                                                # the camera's scratch pass: no pixels to clean
+        try:
+            o = client(k, x, hip_feet, s, look=look, targets=tg, clip_hip=True, face=face)
+        finally:
+            HEAD_TILT[0] = 0.0
+    else:                                                                     # v4 (audit: "double outlines at the shoulders, hands stuck on"):
+        tmp = cairo.ImageSurface(cairo.FORMAT_ARGB32, W_, H_)                 # he is drawn apart, the seams inside his shirt cleaned, then pasted
+        tmp.set_device_scale(*tgt_.get_device_scale())
+        tc = cairo.Context(tmp); tc.set_matrix(c.get_matrix())
+        base_h, got_h = kit.HAND[0], []
+        kit.HAND[0] = lambda k_, hx, hy, w_, skin, seed, ang, side: got_h.append((k_.c.user_to_device(hx, hy), ang, k_.c.get_matrix()))
+        try:                                                                  # his rig hands are NOT drawn: fist2 goes where they were
+            o = client(kit.Ctx(tc, 0), x, hip_feet, s, look=look, targets=tg, clip_hip=True, face=face)
+        finally:
+            HEAD_TILT[0] = 0.0; kit.HAND[0] = base_h
+        tc.set_source_rgb(0.17, 0.22, 0.34); tc.save(); tc.translate(x, seat + 1); tc.scale(13, 9.5)   # the knot is tucked away
+        tc.arc(0, 0, 1, 0, 2 * math.pi); tc.restore(); tc.fill()
+        m_ = c.get_matrix(); zoom = math.sqrt(abs(m_.xx * m_.yy - m_.xy * m_.yx)) * tgt_.get_device_scale()[0]
+        _no_seams(tmp, 2.2 * s * zoom / 0.52)
+        c.save(); c.identity_matrix(); c.set_source_surface(tmp, 0, 0); c.paint(); c.restore()
+        skin_ = co.SKIN
+        for dev, dvec, mat_ in got_h:                                        # at the wrist the rig computed, along its own forearm
+            ux_, uy_ = c.device_to_user(*dev)
+            ddx, ddy = mat_.transform_distance(dvec[0], dvec[1])
+            vx_, vy_ = c.device_to_user_distance(ddx, ddy)
+            a_ = math.atan2(vy_, vx_)
+            fist2(k, ux_ + 8 * math.cos(a_), uy_ + 8 * math.sin(a_), 11.0 * s / 0.52, skin_, a_, -1 if ux_ < x else 1)
+    if held_:
+        rag_cloth(k, rp[0], rp[1], 1.0, col=RAG_RED, ang=-back + sw)            # carried to the fire: it hangs from the far hand
+    c.restore()
     return o
 
 
@@ -652,7 +908,11 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
     """Don in the throne: dq.don_seated's own drawing, with his arms and face set (pose: kit angles); forward: he sits up."""
     c = k.c
     cs = s
-    dp.ceo_chair(k, x, floor, cs)
+    dp.CROWN_ROT[0] = max(-0.18, min(0.18, -0.9 * follow("crown", forward + 0.4 * sweat / 3.0, 2.2, 0.18)))   # v8: it rocks
+    try:
+        dp.ceo_chair(k, x, floor, cs)
+    finally:
+        dp.CROWN_ROT[0] = 0.0
     seat_y = floor - 110 * cs + 4 * s
     feet = seat_y - dq.WAIST * s
     c.save(); c.rectangle(x - 200 * s, seat_y - 400 * s, 400 * s, 400 * s + 2); c.clip()
@@ -661,7 +921,8 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
     def draw_d():
         c.save(); c.translate(x, seat_y); c.scale(1.0, 1.0 + br_); c.translate(-x, -seat_y)
         try:
-            return sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=look)
+            dd_ = dart("don", DON_MOUTH[0] is not None)                               # v9 (24 Nov): his eyes dart as he listens
+            return sb.don(k, x, feet, s, pose or (-150, -110, 150, 110), face, look=(look[0] + dd_[0], look[1] + dd_[1]) if look else look)
         finally:
             c.restore()
     o = held(k, draw_d, lambda o_: list(o_["hands"][:2])) if phone_dad else draw_d()   # v5 (hand audit): the phone and the clutch
@@ -703,8 +964,18 @@ def don_throne(k, x, floor, s, face="happy", look=(1, 0), pose=None, sweat=0, ph
 TURN_DX = 34                                               # the head's slide at a full turn (ep 12 used 14: too small)
 
 
-def robot(k, x, feet, s, turn=0.0):
-    """turn 0..1: its head turning toward Don (episode 12's 10.5a at 1); the smile never changes."""
+def robot(k, x, feet, s, turn=0.0, bob=0.0):
+    """turn 0..1: its head turning toward Don (episode 12's 10.5a at 1); the smile never changes. v3 (24 Nov): the
+    antenna whips after the head and the bob."""
+    import waiter_kit as wk_
+    wk_.ANT_DX[0] = max(-10.0, min(10.0, -1.4 * follow("antenna", 18 * turn + bob, 3.0, 0.16)))
+    try:
+        return _robot(k, x, feet, s, turn)
+    finally:
+        wk_.ANT_DX[0] = 0.0
+
+
+def _robot(k, x, feet, s, turn=0.0):
     if turn <= 0:
         return dq.robot_state(k, x, feet, s, "idle")
     o = dq.rm.robot(k, x, feet, s, (0.0, 0, 0, (-8, 0), (8, 0)), "eager", (turn, 0), 1, head_dx=TURN_DX * turn * 0.5, head_rot=0.0)
