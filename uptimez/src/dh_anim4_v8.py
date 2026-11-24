@@ -40,7 +40,7 @@ ROWS, T0, TOTAL = sc.rows, sc.T0, sc.total
 seq = V7.seq
 NOBUB = A3.NOBUB
 THR = dl.CH[0]                                              # the throne on its set mark in every shot (S.THR4 448 is within 4)
-VX = S.VX - 16                                              # the visitor in 4E and 4H (round 2: his head clear of the tag)
+VX = S.VX - 8                                               # the visitor in 4E and 4H (round 2: -16, his head clear of the tag; round 4: 8 back, so Don reaches him)
 DONX = 466                                                  # Don in 4E and 4G
 
 
@@ -55,9 +55,14 @@ def say(k, text, cam, head, n):
 def r_a(k, o, t, tt, n):
     x = seq(t, [84, 98, 112, 122, 128])                     # caught mid-step, already in (v7's walk)
     bob = seq(t, [0, -5, 0, -4, 0])
+    if 1.05 <= t < 1.40:                                    # round 4 (cold test: 2 s and nothing moves): a half step in
+        bob = (-4, 0, -3, 0)[min(3, int((t - 1.05) * DPS))]; x += 6 * min(1.0, (t - 1.05) / 0.3)
+    elif t >= 1.40:
+        x += 6
+    look = (0.6, 0) if t < 0.5 else ((-0.7, 0.1) if t < 0.95 else ((0.8, -0.1) if t < 1.45 else (0.2, 0.2)))   # round the room
     hp.reset("relax", "grab")
     with A.About(k.c, x, F + 8, 1.0, 1.0, bob):
-        q = dc.repairman(k, x, F + 8, S.GS, case=True, look=(0.6, 0))
+        q = dc.repairman(k, x, F + 8, S.GS, case=True, look=look)
     o["head"] = q["head"]
 
 
@@ -108,7 +113,10 @@ def fg_d(k, cam, tt, n, box):
 
 
 def r_d2(k, o, t, tt, n):
+    """5.4'' (round 4): the mug goes over in three drawings, its empty mouth to us; she looks in; her mouth opens, shuts."""
+    S.MUG_TIP[0] = seq(t, [0.0, 0.0, 0.35, 0.75, 1.0])
     S.d2_people(k, o)
+    S.MUG_TIP[0] = 0.0
 
 
 def fg_d2(k, cam, tt, n, box):
@@ -139,15 +147,34 @@ def r_e(k, o, t, tt, n):
         V7.shredding(k, n)
         visitor(k, o, (0.8, 0.2))
         x, pose = DONX + 40 * min(1.0, t / 0.25), (-30, 0, 30, 0)
-    else:                                                   # (c) back, and the sticker slapped on
-        visitor(k, o, (0.2, 1) if t > 0.25 else (0.6, 0.2))
-        if t >= 0.17:
-            ds._sticker(k, VX, S.VF)
-        u = min(1.0, t / 0.17)
-        x = DONX + 40 * (1 - u)
-        pose = tuple(a + (b - a) * u for a, b in zip((-30, 0, 30, 0), S.E_POSE[0][:2] + (8, 0)))
-        if 0.17 <= t < 0.42:
-            ds._lines(k, [(VX + 14, F - 150, VX + 26, F - 160), (VX + 18, F - 128, VX + 32, F - 128)])
+    else:                                                   # (c) round 4 (cold test: "the sticker just appears"; rules 223, 225):
+        i = int(t * DPS + 1e-6)                             # he comes back with it in his hand (shown), presses it on with
+        on = i >= 3                                         # his palm (the burst), keeps the palm on it, then lets go
+        visitor(k, o, (0.2, 1) if i >= 5 else (0.6, 0.2))
+        x = DONX + 40 - 52 * min(1.0, t / 0.083)          # he steps in (his head stays clear of the tag) and reaches him at full arm
+        if i >= 8:
+            x = DONX - 12 + 12 * min(1.0, (t - 8.0 / DPS) / 0.25)   # and back
+        stick = stuck_at()
+        if on:
+            draw_sticker(k, *stick)
+        if i < 3:                                           # the sticker in his hand, held up toward the visitor
+            pose = (-60 - 15 * i, -20 - 4 * i, 8, 0)           # his other arm down: his right is the box's wall
+        elif i < 8:                                         # the palm flat on it, contact all the way
+            pose = reach(x, stick)
+        else:                                               # let go: the hand drops to his side, the sticker stays
+            pose = (-30, 0, 8, 0)
+        if 3 <= i <= 4:
+            ds._lines(k, [(stick[0] - 50, stick[1] - 40, stick[0] - 62, stick[1] - 52), (stick[0] + 30, stick[1] - 44, stick[0] + 40, stick[1] - 58),
+                          (stick[0] - 56, stick[1] + 18, stick[0] - 70, stick[1] + 22)])
+        hp.reset("palm", "relax")
+        if i < 3:                                           # the object first, at his hand; his fingers drawn over it
+            scratch = Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0)
+            hx, hy = _don_real()(scratch, x, F + 26, DS_, pose, "happy")["hands"][0]
+            draw_sticker(k, hx - 14, hy - 6, S.GS * 0.85)
+        d = don_at(k, x, F + 26, pose, "happy", (-1, 0), tt, still=True)
+        A.mouth(k, d["head"], DS_, max(sc.loud("6.1a", tt), sc.loud("6.1b", tt)))
+        o["head"] = d["head"]
+        return
     hp.reset("palm", "relax")
     d = don_at(k, x, F + 26, pose, "happy", (-1, 0), tt)
     A.mouth(k, d["head"], DS_, max(sc.loud("6.1a", tt), sc.loud("6.1b", tt)))
@@ -156,27 +183,89 @@ def r_e(k, o, t, tt, n):
 
 def fg_e(k, cam, tt, n, box):
     A3.AVOID_EXTRA[:] = []
+    if tt >= T0["6.1''"]:                                   # the sticker is the point of this line: no box on it
+        sx, sy = sticker_at(VX, S.VF)
+        x0, y0, _ = S.to_screen(cam, sx - 50 * S.GS, sy - 50 * S.GS)
+        x1, y1, _ = S.to_screen(cam, sx + 50 * S.GS, sy + 50 * S.GS)
+        A3.AVOID_EXTRA.append((x0, y0, x1, y1))
     if sc.speaking("6.1a", tt):
         say(k, "Complete..." if tt < T0["6.1'"] else "...transparency.", cam, box["head"], n)
+    for t_ in ("Premium.", "On us."):                       # his right (the throne side): his left is the sticker and his palm
+        A3.HELD.setdefault(t_, (None, 1))
     if sc.speaking("6.1b", tt):
         say(k, "Premium." if sc.since("6.1b", tt) < 0.62 else "On us.", cam, box["head"], n)
 
 
+def sticker_at(x, feet):
+    """Where ds._sticker puts the PREMIUM sticker on the visitor (its centre), in world units."""
+    return (x - 10 * S.GS, feet + (ds.co_BT + 80) * S.GS)
+
+
+def draw_sticker(k, cx, cy, s_=None):
+    import math as m_
+    s_ = s_ or S.GS
+    pts = [(cx + m_.cos(2 * m_.pi * i / 24) * (46 if i % 2 else 39) * s_, cy + m_.sin(2 * m_.pi * i / 24) * (46 if i % 2 else 39) * s_) for i in range(24)]
+    kit.cut(k, pts, dp.GOLD, lw=2)
+    kit.text(k, "PREMIUM", cx, cy + 5 * s_, 16.5 * s_, kit.INK)
+
+
+_REACH = {}
+
+
+def _don_real():
+    return getattr(sb.don, "_real", sb.don)                 # a measuring pass is not a drawing: the set gate must not log it
+STUCK = [None]                                              # where his palm put the sticker (set once; 4H draws it there too)
+
+
+def stuck_at():
+    """Where the sticker goes: as near the pass as Don's palm reaches from DONX - 12."""
+    if STUCK[0] is None:
+        want = sticker_at(VX, S.VF)
+        scratch = Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0)
+        h = _don_real()(scratch, DONX - 12, F + 26, DS_, reach(DONX - 12, want), "happy")["hands"][0]
+        STUCK[0] = (h[0] - 10, want[1]) if h[0] - 10 > want[0] else want
+    return STUCK[0]
+
+
+def reach(x, target):
+    """Don's arm angles putting his screen-left hand on target (world units), by search; cached."""
+    key = (round(x), round(target[0]), round(target[1]))
+    if key not in _REACH:
+        scratch = Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0)
+        best = None
+        for a0 in range(-130, -20, 4):
+            for a1 in range(-90, 60, 4):
+                h = _don_real()(scratch, x, F + 26, DS_, (a0, a1, 8, 0), "happy")["hands"][0]
+                d2 = (h[0] - target[0]) ** 2 + (h[1] - target[1]) ** 2
+                if best is None or d2 < best[0]:
+                    best = (d2, (a0, a1, 8, 0))
+        _REACH[key] = best[1]
+    return _REACH[key]
+
+
 # ------------------------------------------------------------------ 4F: the robot, over the visitor's shoulder
 def r_f(k, o, t, tt, n):
-    pass
+    """6.2 (round 4: it held 2 s, nothing moving): the robot bobs on its words, as v7's r_robot."""
+    import dh_animatic as da
+    dy = robot_bob(tt, n)
+    k.c.save(); k.c.translate(0, dy); da._rb("idle")(k, o); k.c.restore()
+    o["robot_head"] = (da.RH[0], da.RH[1] + dy)
 
 
 def fg_f(k, cam, tt, n, box):
     A3.AVOID_EXTRA[:] = []
     S.f_fg(k, cam)
-    if sc.speaking("6.2", tt) and "robot_head" in box:
+    if sc.speaking("6.2", tt) and box.get("robot_head"):
         say(k, "Premium search is non-functional.", cam, box["robot_head"], n)
 
 
 def r_f_robot(k, o, t, tt, n):
     if "robot" in o:
         o["robot_head"] = o["robot"]["screen"]
+
+
+def robot_bob(tt, n):
+    return -2 if (sc.speaking("6.2", tt) and n % 2) else 0   # small: its box follows the antenna (at -4 it jumped)
 
 
 # ------------------------------------------------------------------ 4G: Don, close
@@ -205,7 +294,7 @@ def r_h(k, o, t, tt, n):
     c.save(); c.translate(VX, py); c.rotate(lean); c.translate(-VX, -py)
     hp.reset("relax", "grab")
     dc.repairman(k, VX, S.VF, S.GS, case=True, look=(0.15, 1) if lean > 0 else (-0.3, 0.2))
-    ds._sticker(k, VX, S.VF)
+    draw_sticker(k, *stuck_at())                            # where his palm put it in 4E
     c.restore()
 
 
@@ -217,16 +306,17 @@ def fg_h(k, cam, tt, n, box):
 SHOTS = {"5.1": ("4A", r_a, fg_a, False), "5.2": ("4B", r_b, fg_none, False), "5.3": ("4C", r_c, fg_c, False),
          "5.4": ("4D", r_d, fg_d, False), "5.4''": ("4D2", r_d2, fg_d2, False),
          "6.1": ("4E", r_e, fg_e, False), "6.1'": ("4E", r_e, fg_e, False), "6.1''": ("4E", r_e, fg_e, False),
-         "6.2": ("4F", r_f_robot, fg_f, True), "6.3": ("4G", r_g, fg_g, False), "6.4": ("4H", r_h, fg_h, False)}
+         "6.2": ("4F", r_f, fg_f, False), "6.3": ("4G", r_g, fg_g, False), "6.4": ("4H", r_h, fg_h, False)}
 def _m(cam, dx=0, dy=0):
     return (cam[0] + dx, cam[1] + dy, cam[2])
 
 
 CAMS = {"4A": S.CAM_4A, "4B": (480, 712, 2.3), "4C": _m(S.CAM_4C, 0, -8), "4D": S.CAM_4D, "4D2": S.CAM_4D2,
-        "4E": _m(S.CAM_4E, 0, -22), "4F": _m(S.CAM_4F, 0, 14), "4G": CAM_4G, "4H": S.CAM_4H}
+        "4E": (426, 618, 1.72), "4F": _m(S.CAM_4F, 0, 14), "4G": CAM_4G, "4H": S.CAM_4H}
 # (gate, 24 Nov) 4B up: Sofía's face out of the app buttons; 4C, 4E down: the tag's string under the title bar;
 # 4F up: the robot's face out of the caption quarter
 INS = {"5.4'": i_pass}
+SHIFT_CAM = {}
 SET_MOVES = {}
 SET_AIR = set()
 SET_BEHIND = set()
@@ -248,6 +338,8 @@ def frame(tt, n, hi=1):
             return surf, sid
         name, draw, fg, robot = SHOTS[sid]
         cam = CAMS[name]
+        if sid in SHIFT_CAM:                                # a cut in for one line (the camera only, lesson 358)
+            cam = SHIFT_CAM[sid]
         box = {}
 
         def fn(k_, o_):

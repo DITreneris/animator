@@ -43,6 +43,7 @@ def _wrap(mod, fn_name, kind, name, xi=1, fi=2, si=3, s_default=1.0):
             pass
         return real(*a, **kw)
     logged._set_gate = True
+    logged._real = real                         # for measuring passes on a scratch surface (not part of the drawing)
     setattr(mod, fn_name, logged)
 
 
