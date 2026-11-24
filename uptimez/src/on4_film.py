@@ -18,7 +18,7 @@ SR = r.SR
 import on4_posters as po
 import on4_street as st
 
-VER = "v11"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
+VER = "v12"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
 po.ON[0] = True; st.TOWN[0] = True
 import on4_cross as xc
 m.CRASH[0] = True; m.LAW[0] = True; m.CAR_S = xc.S_CAR      # v4: the bump as a tap; v5: one scale law on the crossing, the plank bounces
@@ -26,6 +26,7 @@ m.TESTS.update(xc.TESTS)                                     # v5: the crossing 
 sc.DUR.update({"3.2": 2.8, "3.3": 88 / 12.0, "3.4": 22 / 12.0, "3.5": 52 / 12.0})   # 3.3 is halved between 3.3 and 3.3b: 44 drawings each
 CEIL = 0.50                                                  # v4: 0.56 gave -0.9 dBFS after AAC with the new effects (the limit is -1)
 sc.DUR["2.3"] = 2.75; r.NEW["c1"] = ("2.2", 2.95, "CLIENT", "Mine until it's done.")   # v11: the handover has its beats (52 keys); his line as it goes under his lapel
+r.CLEAR += ["f1", "p2", "p3", "c1"]; r.RETAKE.update(f1=os.path.join(r.vo.OUT, "takes_v5", "f1.wav"), p2=os.path.join(r.vo.OUT, "takes_v5", "p2.wav"))   # takes chosen through the master's own chain (knee, AAC)   # v12: the lines the recognizer lost in the mix stand alone
 m.GIVE[0] = True                                             # v11: Dad's hand gives the envelope, the Client takes it
 m.CATWALK[0] = True                                          # v9: her cat's walk over the crossing and along the fire escape; the car drives up in 2.1; the hunting face
 m.PEEK[0] = True                                             # v8: she watches from the window over the car
@@ -37,6 +38,7 @@ r.NEW["d2"] = ("3.3", 2.9, "DON", "Not a scratch.")          # after her line; w
 r.NEW["f1"] = ("3.3b", 1.0, "FATHER", "For the boys.")       # as the ringed hand lets the bills go
 r.RETAKE["d2"] = os.path.join(r.vo.OUT, "takes_v4", "d2.wav")   # a slower take (0.82): the first was not heard in the mix
 r.RETAKE["f1"] = os.path.join(r.vo.OUT, "takes_v4", "f1.wav")   # "For, the boys." at 0.8, -1 semitone: heard 3 of 3 alone
+r.RETAKE.update(f1=os.path.join(r.vo.OUT, "takes_v5", "f1.wav"), p2=os.path.join(r.vo.OUT, "takes_v5", "p2.wav"))   # v12 (after the v4 takes above, which were overriding these)
 OUT = os.path.join(sc.OUT, "on4_film_%s.mp4" % VER)
 MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None),
        ("3.1", "3.2"): ("T3", 0, None), ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("3.6",): ("T8", 0, None),

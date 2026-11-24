@@ -86,6 +86,8 @@ def new_takes():
 
 
 SCENE3 = [False]                                            # (24 Nov, Tomas: "the music goes and it is dreary and silent, why?") the crossing after the bump: a short silence, then the bass alone; the engine idling, the night, the glove's squeak, each bill, the shadows' steps, his whistle; the bump as a tap and a thud (on4_motion.CRASH)
+VGAIN = {}                                                  # key -> gain of a line of NEW (a quiet take lifted over the scene)
+CLEAR = []                                                  # keys whose line gets silence under it: no band, no effects (on4_film sets them)
 RETAKE = {}                                                 # key -> wav: a later take of a line of NEW (on4_film sets it)
 STOP_GAP = 0.75                                             # (24 Nov, Tomas) where a speaker puts a full stop inside a take: at least this much silence
 
@@ -146,9 +148,13 @@ def sound(tm, d, total):
         t = st_(MOVE7[key][0]) + MOVE7[key][1] if key in MOVE7 else st_(ln["shot"]) + vo.LEAD.get(ln["shot"], 0.3)
         put(voice, stops(load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), " ".join(p_[0] for p_ in vo.LINES[key][2])), t); marks.append((key, round(t, 2)))
     d2, _ = new_takes()
+    _clear = []
     for key, (shot, lead, who, txt) in NEW.items():
         t = st_(shot) + lead
-        put(voice, load(RETAKE.get(key, os.path.join(d2, key + ".wav"))), t); marks.append((key, round(t, 2)))
+        a_ = load(RETAKE.get(key, os.path.join(d2, key + ".wav"))) * VGAIN.get(key, 1.0)
+        put(voice, a_, t); marks.append((key, round(t, 2)))
+        if key in CLEAR:
+            _clear.append((t - 0.25, t + len(a_) / float(SR) + 0.45))
     d3 = narr_takes(d.get("narration", "A"))
     for key, (shot, lead, txt) in NARR.items():
         t = st_(shot) + lead
@@ -262,7 +268,7 @@ def sound(tm, d, total):
         span2 = tm["2.2"]["dur"] + tm["2.3"]["dur"]
         put(fx, rs(so.swish(0.14), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["grip"], 0.35)
         put(fx, rs(so.swish(0.10), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["grip"] + 0.3, 0.25)
-        put(fx, rs(so.swish(0.18), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["coat"], 0.30)
+        put(fx, rs(so.swish(0.18), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["coat"] - 0.55, 0.30)   # before his line, not under it
     crash = st_("2.4") + __import__("on4_motion").T7_SLAM[0] / 12.0                                                                  # v6: T7's lid
     put(fx, rs(so.swish(0.3), so.SR), crash - 0.27, 0.6)                                            # she goes over
     tc = np.arange(int(0.7 * SR)) / SR
@@ -328,6 +334,11 @@ def sound(tm, d, total):
             w = int(0.25 * SR); on = np.convolve(on, np.ones(w) / w, "same")
             env = 1.0 - 0.92 * np.clip(on * 3.0, 0, 1)
         mus = mus * env; fx = fx * (0.5 + 0.5 * env)
+        for t0, t1 in _clear:                                # these lines alone: everything else out for their length, 0.1 s ramps
+            j0, j1 = max(0, int(t0 * SR)), min(n, int(t1 * SR)); r_ = int(0.1 * SR)
+            g_ = np.ones(n); g_[j0:j1] = 0.0
+            g_[max(0, j0 - r_):j0] = np.linspace(1, 0, len(g_[max(0, j0 - r_):j0])); g_[j1:j1 + r_] = np.linspace(0, 1, len(g_[j1:j1 + r_]))
+            mus = mus * g_; fx = fx * g_
     mix = voice * 1.0 + fx * 0.7 + mus * 0.22
     return mix[:int(total * SR)], marks, dict(bump=round(bump, 2), toot=round(toot, 2))
 

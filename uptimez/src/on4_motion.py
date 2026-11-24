@@ -368,7 +368,9 @@ def seat3_people(k, hand, env, dad, t=None, give=None, lk2=None, fc="plain", ean
             c.restore()
             if env == "both":                                # and the Client's thumb on its other edge: for a moment both hold it
                 kit.ellipse(k, hx, hy + 4, 15, 12, (0.87, 0.70, 0.58), 7700, shadow=False, lw=2.0)
-    st.poly(k, [(760 + dx, 556), (420 + dx, 566), (422 + dx, 606), (760 + dx, 616)], dc.VELVET, 2.2) if give is not None else st.poly(k, [(560 + dx, 560), (420 + dx, 566), (422 + dx, 606), (560 + dx, 612)], dc.VELVET, 2.2)
+    st.poly(k, [(760 + dx, 556), (420 + dx, 566), (422 + dx, 606), (760 + dx, 616)], (0.34, 0.33, 0.36), 2.2) if give is not None else st.poly(k, [(560 + dx, 560), (420 + dx, 566), (422 + dx, 606), (560 + dx, 612)], dc.VELVET, 2.2)
+    if give is not None:                                     # a white cuff: the sleeve read as part of the dark
+        st.poly(k, [(430 + dx, 565), (418 + dx, 566), (420 + dx, 607), (432 + dx, 606)], (0.95, 0.95, 0.92), 1.6)
     kit.ellipse(k, 392 + dx, 590, 34, 15, dc.SKIN_F, 7702, shadow=False, lw=2.2)                  # v3: palm down, flat on the seat
     for i_ in range(4):
         drum = 4.0 * max(0.0, math.sin(2 * math.pi * 2.2 * t - i_ * 1.1)) if (t is not None and dad >= 1 and env == "hand" and not give) else 0.0   # DENSE: his fingers drum while he waits
