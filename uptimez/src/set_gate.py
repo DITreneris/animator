@@ -8,6 +8,8 @@ staging against the set, so nothing stopped it. This gate does, on every drawing
   2. Two people whose figures overlap on screen with their feet on the same floor line (within `SAME_LINE`): one of
      them must stand further back (feet higher) to be "behind".
   3. A person who is somewhere else after a cut (more than `CUT_JUMP` world units), unless the episode lists the walk.
+  4. A person whose feet are above the floor line (the wall's foot, F): standing on the wall. Off the floor on purpose
+     (a leap: `air`) or behind something that hides the feet (the counter: `behind`) is listed by the episode.
 
 It logs the draw calls themselves (the rigs' and props' own functions, wrapped), so it sees what was drawn, in world
 units. Use: `install()` once; `begin(sid)` before each drawing; `faults()` after it; `cut_faults()` at the end.
@@ -19,6 +21,7 @@ F = 800
 PROPS = {"throne": (452, F + 8, 0.60)}          # front-desk-set.md v5: the CEO chair on Don's mark, zone B
 SAME_LINE = 12                                  # feet closer than this (world units) are one floor line
 CUT_JUMP = 40                                   # a person further than this from where he was before the cut has moved
+FLOOR_TOL = 2                                   # feet this far above the wall's foot still stand on the floor
 WIDTH = 130                                     # a person's width in world units at scale 1, hair and arms (for "overlap on screen")
 
 LOG = []                                        # this drawing: (kind, name, x, feet, s)
@@ -69,7 +72,7 @@ def end():
         SEQ[-1] = (sid, list(LOG))
 
 
-def faults(sid=None, log=None, moves=(), air=()):
+def faults(sid=None, log=None, moves=(), air=(), behind=()):
     """This drawing's faults. moves: {(sid, prop): max distance} a prop may travel from its mark in that shot (a roll,
     a jolt). air: {(sid, person)} a person off the floor on purpose (a jump)."""
     log = LOG if log is None else log
@@ -82,6 +85,9 @@ def faults(sid=None, log=None, moves=(), air=()):
             if d > moves.get((sid, name), 4) or abs(s - ps_) > 0.02:
                 out.append("SET %s off its mark (%d, %d, %.2f): at (%d, %d, %.2f)" % (name, px, pf, ps_, x, feet, s))
     people = [(n, x, f, s) for k, n, x, f, s in log if k == "person"]
+    for n, x, f, s in people:                   # 24 Nov (Tomas: "is she pinned to the wall?"): 3F Sofía at F-40
+        if f < F - FLOOR_TOL and (sid, n) not in air and (sid, n) not in behind:
+            out.append("FLOOR %s's feet at %d, above the floor line (%d): standing on the wall" % (n, f, F))
     seen = {}
     for n, x, f, s in people:                   # a rig drawn twice in one drawing (an iso redraw) is one person
         seen.setdefault(n, (n, x, f, s))
@@ -122,7 +128,7 @@ def cut_faults(seq=None, walks=()):
 
 def selftest():
     """Each planted fault must fail; the set as written must pass."""
-    ok = [("prop", "throne", 452, 808, 0.60), ("person", "mom", 300, 808, 0.54), ("person", "sofia", 400, 782, 0.56)]
+    ok = [("prop", "throne", 452, 808, 0.60), ("person", "mom", 300, 808, 0.54), ("person", "sofia", 400, 804, 0.56)]
     assert not faults("x", ok), faults("x", ok)
     bad_throne = [("prop", "throne", 540, 808, 0.60)]
     assert faults("x", bad_throne) and faults("x", bad_throne)[0].startswith("SET")
@@ -130,7 +136,10 @@ def selftest():
     same_line = [("person", "mom", 446, 808, 0.54), ("person", "sofia", 410, 804, 0.56)]   # v8 round 7, 3F
     assert any(f.startswith("DEPTH") for f in faults("3F", same_line))
     behind = [("person", "mom", 446, 808, 0.54), ("person", "sofia", 410, 776, 0.50)]
-    assert not faults("3F", behind)
+    assert [f for f in faults("3F", behind) if f.startswith("FLOOR")]          # "behind" her, but on the wall (round 9)
+    deeper = [("person", "mom", 446, 830, 0.54), ("person", "sofia", 410, 804, 0.50)]
+    assert not faults("3F", deeper)                                            # behind her on the floor: further back, still on it
+    assert not faults("4D", [("person", "pam", 692, 728, 0.5)], behind={("4D", "pam")})   # at her counter: feet hidden
     assert not faults("J", same_line, air={("J", "sofia")})
     seq = [("3E", [("person", "mom", 300, 808, 0.54)]), ("3F", [("person", "mom", 446, 808, 0.54)])]   # v8: 300 -> 446
     assert cut_faults(seq) and cut_faults(seq)[0].startswith("CUT")

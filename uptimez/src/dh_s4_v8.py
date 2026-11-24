@@ -198,6 +198,7 @@ def main(only=None):
 
 SET_MOVES = {}                                              # set_gate exceptions for this scene, each with its reason
 SET_AIR = set()
+SET_BEHIND = set()
 SET_WALKS = set()
 
 
@@ -220,7 +221,7 @@ def gate():
         frame = real
     bad = 0
     for sid, log in set_gate.SEQ:
-        for f_ in set_gate.faults(sid, log, moves=SET_MOVES, air=SET_AIR):
+        for f_ in set_gate.faults(sid, log, moves=SET_MOVES, air=SET_AIR, behind=SET_BEHIND):
             print("SET %-4s %s" % (sid, f_)); bad += 1
     for f_ in set_gate.cut_faults(walks=SET_WALKS):
         print(f_); bad += 1

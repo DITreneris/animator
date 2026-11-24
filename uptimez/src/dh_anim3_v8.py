@@ -594,6 +594,7 @@ EXITS = {("4.2", "sofia"), ("4.3", "sofia")}                # leaving past the e
 
 SET_MOVES = {("4.2", "throne"): 12}                          # set_gate: the throne's jolt when she leaps off it
 SET_AIR = {("4.2", "sofia")}                                # set_gate: off the floor on purpose (the leap)
+SET_BEHIND = set()                                          # set_gate: feet hidden behind something (the counter); none here
 SET_WALKS = {("4.2", "4.3", "sofia")}                       # set_gate: she leapt out of the frame (4.2) and is back at its left edge, beside Mom (4.3)
 
 
@@ -630,7 +631,7 @@ def gate():
         set_gate.begin(None)
         surf, sid = me.frame(n / float(DPS), n, 1)
         set_gate.SEQ[-1] = (sid, list(set_gate.LOG))
-        for f_ in set_gate.faults(sid, moves=SET_MOVES, air=SET_AIR):
+        for f_ in set_gate.faults(sid, moves=SET_MOVES, air=SET_AIR, behind=SET_BEHIND):
             sc[(sid, f_)] += 1
         if sid in INS:                                      # inserts: the v7 drawings, no faces to place
             continue
