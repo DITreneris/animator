@@ -55,6 +55,8 @@ def install():
     _wrap(dh_props, "ceo_chair", "prop", "throne")
     _wrap(fs_storyboard, "don", "person", "don")
     _wrap(dh_cast, "repairman", "person", "visitor")
+    import sofia_dh
+    _wrap(sofia_dh, "sofia", "person", "sofia")
     _wrap(mom_fs, "mom", "person", "mom")
     _wrap(pam_bc, "pam", "person", "pam")
     _wrap(sofia_cs, "sofia", "person", "sofia")

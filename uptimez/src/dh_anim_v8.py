@@ -68,7 +68,9 @@ def frame(sc, tt, n, hi=1):
         c.identity_matrix(); c.scale(hi, hi)
         for fg in getattr(sc, "FG8", {}).get(sid, ()):
             fg(sc, k, cam, t, tt, n, box)
-        if "say" in box and not NOBUB[0]:
+        if "say" in box and not NOBUB[0] and box["say"][0] in getattr(sc, "CARD8", {}):
+            A3.say(k, box["say"][0], None, n, name=sc.CARD8[box["say"][0]])     # an off-screen speaker: a named card
+        elif "say" in box and not NOBUB[0]:
             txt, w = box["say"][0], box["say"][1]
             tip = (270 + (w[0] - cam[0]) * cam[2], 480 + (w[1] - cam[1]) * cam[2])
             A3.say(k, txt, tip, n)
@@ -113,7 +115,7 @@ def gate(sc, me, moves=None, air=None, behind=None, walks=None, entrances=None, 
                 for f_ in A3.zone_faults((hx - r, hy - r, hx + r, hy + r), "face"):
                     if (sid, rec.get("name")) in (foreground or set()):
                         continue
-                    if f_ == "at the frame's edge" and (sid, rec.get("name")) in (entrances or set()) and n - int(sc.T0[sid] * DPS) < 2:
+                    if f_ in ("at the frame's edge", "under the buttons") and (sid, rec.get("name")) in (entrances or set()) and n - int(sc.T0[sid] * DPS) < 2:
                         continue
                     zc[("face %s" % rec.get("name"), sid, f_)] += 1
         for a in (A3._avoid(solid=True) if sid not in flying else ()):
