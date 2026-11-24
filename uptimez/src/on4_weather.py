@@ -65,8 +65,15 @@ def rings(c, shot, t):
         c.save(); c.translate(x, y); c.scale((5 + 16 * a) * g, (5 + 16 * a) * g * 0.3); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.stroke()
 
 
-def post(s, shot, t):
+LIGHT = [False]                                              # the repo's solved light (light_on3.auto, Office Noir 3 after Tomas asked why 1 and 2 looked better): a pool round the measured heads, the rest sinks, faces lifted from above, its vignette and grain
+
+
+def post(s, shot, t, heads=()):
     """over the finished drawing, under the words"""
+    if LIGHT[0] and not shot.startswith(("7.", "8.")) and RAMP[0] > 0:
+        hs = [(h[0], h[1], h[2] / 50.0) for h in heads]
+        lit = l3.auto(s, hs, RAMP[0], int(t * 12), max([h[2] for h in heads] or [0]) > 110, glow=True, pool=True)
+        c0 = cairo.Context(s); c0.set_source_surface(lit, 0, 0); c0.paint()
     if not ON[0]:
         return s
     if shot in STREET and RAMP[0] > 0:
@@ -74,7 +81,7 @@ def post(s, shot, t):
         rings(c, shot, t)
         for dt_, dx_ in ((0.0, 0), (0.37, 61), (0.71, -47)):      # three layers of Office Noir 2's streaks: one was too thin on this film's light walls
             c.push_group(); c.translate(dx_, 0); o2.rain(sc.Ctx(c, 0), t + dt_); c.translate(-dx_, 0); c.pop_group_to_source(); c.paint_with_alpha(RAMP[0])
-    if not shot.startswith(("7.", "8.")) and RAMP[0] > 0:
+    if not shot.startswith(("7.", "8.")) and RAMP[0] > 0 and not LIGHT[0]:   # with LIGHT the grain is light_on3's own
         l3._grain(s, GRAIN_A * RAMP[0], int(t * 12))
     return s
 
