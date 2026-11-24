@@ -152,7 +152,10 @@ def r_push(s_, k, o, t, tt, n):                              # 2.3b: the shove; 
 # ---- 2.2: "I didn't steal anything!" (JUMP[0] replaces v7's "shock" pose, both fists beside his ears)
 # Test (2 viewers, v7 and 3 poses): v7's fists "holding the price tag" 2/2; open palms raised beside his head, elbows bent:
 # "hands up, not me", "don't shoot" ("clearest" 2/2, no phone 2/2); the lower poses read "by his headset".
-JUMP = [(-100, -90, 100, 90)]
+# Round 3 (Tomas, 24 Nov: "hands at his chest"; rule 178 after the third "by his ear" read of a raised palm): his palm flat on
+# his chest, the near arm down: "who, me? I swear" (2 viewers, 4 chest poses: "innocence" 2/2, no phone or ear 2/2; two
+# hands meeting read "a handshake", crossed arms "defensive").
+JUMP = [(-8, 0, 5, -120)]
 
 
 def r_jump(k, o, t, tt, n):
@@ -167,7 +170,7 @@ def r_jump(k, o, t, tt, n):
         hp.reset()
 
 
-JUMP_G = ("palm", "palm")
+JUMP_G = ("relax", "palm")
 
 sc.DRAW.update({"2.2": lambda s_, k, o, t, tt, n: r_jump(k, o, t, tt, n),
                 "2.3a": lambda s_, k, o, t, tt, n: r_hand(k, o, t, tt, n),
@@ -176,8 +179,7 @@ sc.DRAW.update({"2.2": lambda s_, k, o, t, tt, n: r_jump(k, o, t, tt, n),
 
 sc.SHIFT = {"1.3": (64, 52),                                  # her head and box up, out of the button rail (v7's frame: the box in it)
             "2.2": (0, 10, 0.84)}                          # wider and right: wall for his box (v7: no wall, the box on his face)
-JUMP_L = [(-50, -110)]                                      # round 2: one palm up read "touching his ear/headset" 2/2; both palms
-#                                                             again (2/2 in stills), the near one at his shoulder: off the price tag and under his box
+JUMP_L = [None]
 
 SET_MOVES = {("2.3b", "throne"): 400, ("2.5", "throne"): 400, ("2.5'", "throne"): 60}   # the shove, the roll back, the bump
 SET_AIR = {("2.2", "don")}                                   # his jump

@@ -44,6 +44,15 @@ Lessons applied:
 
 ## Open (stopped at 2 rounds)
 
-- **The oath palm by his head** still reads "at his headset / ear" 2/2. It is the third ear read, so rule 178 says change the gesture: hands clutching his chest, or both hands up high.
+- ~~The oath palm by his head~~: done in round 3, below.
 - **His hand on the throne's arm** reads "shaking hands with the chair" 2/2.
 - **The empty frames after the throne rolls out** (the coat stand and a red dot on the floor) confuse 2/2. This is v7's.
+
+## Round 3 (Tomas: "hands at his chest")
+
+- **2.2:** his palm flat on his chest, the near arm down ("who, me? I swear"). The raised palm by his head was the third "at his ear / headset" read (rule 178).
+- **Stills test** (4 chest poses, 2 viewers):
+  - "innocence" 2/2 (one viewer's first pick, the other's second);
+  - no phone or ear 2/2;
+  - two hands meeting read "a handshake / wringing", crossed arms "defensive".
+- **Checks:** gate 77 / 0, zones 0, set 0. Film rejoined.
