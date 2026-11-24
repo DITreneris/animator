@@ -371,14 +371,22 @@ CHECKS = []                                                 # (n, text, faults) 
 BOXES = []                                                  # (n, text, box) for the zone audit
 
 
-def _avoid():
-    """The logged signs (price tag, screen, filter), redrawn alone by dh_speech: one rect per piece."""
+def _avoid(solid=False):
+    """The logged signs (price tag, screen, filter), redrawn alone by dh_speech: one rect per piece. solid=True (the
+    dead-zone check): thin lines are opened away first, so a tag's hanging string and ring are not "the sign" (24 Nov,
+    scene 4: the label whole and legible at y 120, its string at 77 counted it "under the title bar")."""
     import dh_speech as SP
     from scipy import ndimage
     out = []
     if SP.KEEP:
-        lab, nl = ndimage.label(SP.keep_mask())
-        for sl in ndimage.find_objects(lab):
+        m = SP.keep_mask()
+        if solid:
+            m = ndimage.binary_opening(m, iterations=4)
+        lab, nl = ndimage.label(m)
+        areas = ndimage.sum(m, lab, range(1, nl + 1)) if nl else []
+        for i, sl in enumerate(ndimage.find_objects(lab)):
+            if solid and areas[i] < 0.4 * max(areas):       # the knot it hangs from, not the label
+                continue
             out.append((sl[1].start, sl[0].start, sl[1].stop, sl[0].stop))
     return out
 
@@ -651,7 +659,7 @@ def gate():
                     if f_ == "at the frame's edge" and (sid, rec.get("name")) in EXITS:
                         continue                            # an entrance caught mid-step at the edge (G2b), 2 drawings
                     zc[("face %s" % rec.get("name"), sid, f_)] += 1
-        for a in _avoid():
+        for a in _avoid(solid=True):
             for f_ in zone_faults(a, "sign"):
                 zc[("sign", sid, f_)] += 1
     by = collections.OrderedDict()
