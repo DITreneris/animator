@@ -1002,3 +1002,11 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - A replace by slice (`s[:a] + new + s[b:]`) deletes everything between its anchors: it took out the one-hand-per-wrist hook, and only the frame's own check caught it. Replace exact strings, and read every check line of every still.
 - Moving a camera can cut a sign that was out of frame: test `box_state` for the new camera before posing in it.
 - A sheet of stills sent for an outside audit carries its labels IN the picture (shot, time, BEFORE / NOW). Twice an unlabelled sheet was read as one scene, and story props (the burnt plan) came back as defects.
+
+## 234. *The Offer* v46 (24 Nov, Tomas: "does the car's shadow move? Dad vanishes at 0:38? where do we save time?")
+
+- A shadow is ON THE FLOOR and under everything: the car's was a grey rectangle drawn over the wheels and the legs, in one scene only, and it stood still while the car rocked. Now one soft pool in `of_set.car`, drawn first, in every shot with the car; it slides with the tilt.
+- A character who is in one shot and gone in the next, same frame, has vanished. He stays in the cast of the shot after (2.8d) until we see him leave.
+- Trimming: the room is in silent shots and in SHORT lines' tails; the long lines were already 0.2 s from their cuts. Measure each take against its shot before promising seconds (3.2 s promised, 2.2 s found).
+- Before trimming a shot, read its motion and its sounds: actions and effects sit at fixed times inside it (a look at 0.45 s, a tick at 0.65 s, a ring 1.25 s long) and a shorter shot cuts them off. Re-key the action or leave the shot.
+- A trim can drop a line from the mix without touching it: "Pam?" stopped being heard when 3.3 lost 0.2 s. The sound is built and its lines checked BEFORE any scene renders; `tail` after a command hides its exit code, so do not chain renders on it.

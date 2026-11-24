@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 45, 2: 45, 3: 45, 4: 45, 5: 45}
-SOUND = "of_sound_v22.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 46, 2: 46, 3: 46, 4: 46, 5: 46}
+SOUND = "of_sound_v23.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -317,7 +317,7 @@ def s41(t, L):                                             # v3 (23 Nov, cold te
     u = t - 1.1                                            # v4 (timing v12, cold tests 3 of 3 "too fast"): DECLINED held 1.0 s
     th = ease((u - 0.25) / 0.2)
     return dict(_cam=DONNIE_CAM, hand_dx=0.0, buzz=3 * math.sin(u * 2 * math.pi * 18) if u < 0.3 else 0.0,
-                thumb=th if u < 1.4 else 0.0, declined=u > 0.45, donnie_down=u > 1.45), {}
+                thumb=th if u < 1.1 else 0.0, declined=u > 0.45, donnie_down=u > 1.15), {}   # v5 (timing v22): DECLINED held 0.7 s
 
 
 DONNIE_CAM = (98, 668, 3.0)                                # v3: the phone big enough to read on a phone
@@ -349,8 +349,8 @@ def s010_same(t, L):                                       # the SAME frame as t
     x, f = sc.BLOCK[1]["g1"]
     roof, off = sc._pt("roof", x, f), sc._pt("off_r", x, f)
     u = om.hold(t / 0.13)                                  # two drawings
-    back = -30 * om.hold((t - 0.12) / 0.20)
-    turn = -1.0 * om.hold((t - 0.45) / 0.20)              # then he looks left, to Father (off screen)
+    back = -30 * om.hold((t - 0.10) / 0.16)                # v2 (timing v22): 0.55 s: off, back, and his head round to Father
+    turn = -1.0 * om.hold((t - 0.24) / 0.18)              # then he looks left, to Father (off screen)
     return dict(_cam=sc.CAR_CAM, _cast=("g1",)), dict(g1=dict(targets_xy=[om.lerp(roof, off, u)], back=back, turn=turn, push=False))
 
 
@@ -460,8 +460,8 @@ def s23(t, L):
     u3 = om.hold((t - 0.55) / 0.30)
     st = dict(moved=dict(g1=LAMP_G1), front_of_car=("g1",))
     if t >= 0.7:                                           # v7 (23 Nov, decided): CUT IN, 0.9 s: his hands in the light; the bolt comes free
-        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 1.2 else 0.0,
-                    bay_reach=ease((t - 1.2) / 0.3), bolt_out=ease((t - 1.6) / 0.35), bay_u=1.0), {}     # v8 (timing v11): the cut-in 1.2 s, the bolt later
+        return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 0.9 else 0.0,
+                    bay_reach=ease((t - 0.9) / 0.3), bolt_out=ease((t - 1.3) / 0.35), bay_u=1.0), {}     # v9 (timing v22): 0.3 s less of the turning     # v8 (timing v11): the cut-in 1.2 s, the bolt later
     if u3 > 0:
         gh = om.lerp(out_, LAMP_IN_BAY, u3)
         return st, dict(client=dict(kind="bent", hand_back=False, work=math.sin(t * 2 * math.pi * 1.3) if t > 0.9 else 0.0),
