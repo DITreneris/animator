@@ -1049,3 +1049,15 @@ Audit of 0:00–0:01: the first joke (the portrait on Don's head) landed at 3.7 
 - **The gesture was chosen by silhouette** (rule 0.2): three black shapes (hands on the plaque, one hand up, both up), two cold viewers, both read the symmetric "ta-da" (C) as "proudly wearing it"; the one-hand variants read as steadying or stumbling.
 - **A moving hand needs its elbow chosen.** Two-bone IK that keeps the lower elbow folded both forearms across his belly on the way up; pick the elbow out to his side, and bypass the film's own pose tween (it re-eases every new tuple and crossed them again).
 - **Not done:** the closer framing (#4 of the audit), because v33's rule (the shredder's label above the bottom quarter) leaves no room.
+
+## 240. *The Offer* v51 (25 Nov, Tomas's /grill-me on what was left after cold test v50)
+
+Four fixes, all read 3 of 3 by the v50 cold viewers, plus pacing:
+
+- **Robot over Don (0:48, 0:53):** the off-screen card now has the robot's own small head at the frame's left edge, the tail into it. The name "ROBOT:" had covered the crown; a face says who without words.
+- **Bubbles across mid-line cuts (0:19, 0:28):** 2.1 and 2.4 had a cut inside Father's line, and the two pictures had no free area in common, so the box jumped. Now: one picture each; 2.1 pushes in slowly (zoom 2.0 to 2.3) holding his head on screen, 2.4 stays still (a push put the lamp under the app buttons, the zone gate). The box stays, the tail follows. 2.8b and 2.9 kept their cuts, with one box for both pictures.
+- **Lamp handover (0:23):** the same move in a closer frame (`HANDOVER_CAM`): out, taken, carried, big.
+- **Lamp gag (0:42):** the drop over 0.45 s and the turn over 0.38 s; the body turns back after it.
+- **Pacing (timing v25):** 0.4 +0.3 s, 4.1 +0.3 s (DECLINED held), 1.4 −0.16 s, 2.1 −0.12 s, 2.8 −0.2 s. The drags at 0:12 and 0:17 are mostly the voice itself; the takes were not touched.
+- **Cover:** A3 without the fire's smoke on his wrist and without the rag in the corner (`of_set.SMOKE`, a cover-only hook).
+
