@@ -164,6 +164,10 @@ def stage(k, lit="pam"):
         c.move_to(440, 320); c.line_to(120, 700); c.line_to(330, 700); c.line_to(446, 336); c.close_path(); c.fill()
 
 
+CV_SOFIA = [False]                                         # (24 Nov, cold test of film v14: nobody was sure the photograph is the blonde) the photograph is this film's Sofia: her ponytail and earrings, no hat
+CV_AT = [0, 154, 0.60]
+
+
 def cv_sheet(k, x, y, s=1.0, ang=0.0):
     """Office Noir 3's CV (garage_on3.cv: CV, lines, 555 0142 circled), its own copy for this episode (lesson 160), with
     her photograph big and her name under it (board v3: the small photograph read as Pam's own CV)."""
@@ -178,7 +182,10 @@ def cv_sheet(k, x, y, s=1.0, ang=0.0):
     c.save(); c.rectangle(-42, -46, 84, 82); c.clip(); c.set_source_rgb(0.70, 0.72, 0.76); c.paint()
     old = s3.V5[0]; s3.V5[0] = True
     try:
-        s3.her(k, 0, -46 + 200, 0.58, (0, 0))
+        if CV_SOFIA[0]:
+            draw_cast(k, [P("sofia", CV_AT[0], CV_AT[1], CV_AT[2], "hold", "appraise", (0.0, 0.0))])
+        else:
+            s3.her(k, 0, -46 + 200, 0.58, (0, 0))
     finally:
         s3.V5[0] = old
     c.restore()
@@ -231,17 +238,20 @@ def knee_insert(k):
     c.restore()
 
 
+COAT_TONE = [(0.20, 0.22, 0.28), (0.16, 0.17, 0.22)]       # the insert's coat and its lapel (on4_anim.LIFT2 sets the Client's own jacket grey)
+
+
 def knee_coat(k, env=True, hand=True):
     """2.3b: the Client's coat open, the envelope half into the inside pocket, his hand flat on it."""
     c = k.c
     c.set_source_rgb(0.10, 0.10, 0.11); c.paint()
-    st.poly(k, [(40, 120), (520, 120), (520, 900), (40, 900)], (0.20, 0.22, 0.28), 2.4)          # his coat, close
+    st.poly(k, [(40, 120), (520, 120), (520, 900), (40, 900)], COAT_TONE[0], 2.4)          # his coat, close
     st.poly(k, [(150, 120), (300, 120), (280, 760), (200, 760)], (0.95, 0.95, 0.93), 2.0)        # the shirt
-    st.poly(k, [(300, 120), (470, 300), (420, 900), (280, 760)], (0.16, 0.17, 0.22), 2.4)        # the lapel held open
+    st.poly(k, [(300, 120), (470, 300), (420, 900), (280, 760)], COAT_TONE[1], 2.4)        # the lapel held open
     st.poly(k, [(300, 380), (440, 380), (436, 420), (300, 420)], (0.08, 0.08, 0.10), 1.6)        # the pocket's mouth
     if env:
         oc.envelope(k, 360, 360, 2.4)                                                             # half in
-    st.poly(k, [(296, 400), (444, 400), (440, 520), (300, 520)], (0.16, 0.17, 0.22), 2.0)        # the pocket over it
+    st.poly(k, [(296, 400), (444, 400), (440, 520), (300, 520)], COAT_TONE[1], 2.0)        # the pocket over it
     if hand:                                                 # board v3: whose: his cuff and watch on the patting hand, his jaw
         st.poly(k, [(100, 560), (200, 470), (240, 500), (140, 600)], (0.20, 0.22, 0.28), 2.2)      # his sleeve
         kit.ellipse(k, 250, 460, 60, 40, (0.87, 0.70, 0.58), 7111, shadow=False, lw=2.2)
@@ -455,6 +465,7 @@ oc.CAT_POSES.setdefault("mask_fix", ((-8, 0) + oc.pm.ik(1, 34, oc.HY - 6), ("rel
 DON_REACH = (-70, 20, 8, 0)                                # 3.3: his screen-left arm out and down to the bumper
 
 
+RIM_RED_W = [2.2]                                          # the red edge's width (on4_anim.BIG53 thins it)
 RIM_A = [0.85]                                             # (24 Nov, review) her rim light's strength: 0.6 is the outline 30 % quieter
 FACE_KEY = [False]                                         # (24 Nov, three reviews: dark, but no contrast on the faces) a soft key light on each face in the dream
 KEYS = []
@@ -482,8 +493,18 @@ def draw_cast(k, cast):
         if lean:
             k.c.save(); k.c.translate(a[0], a[1]); k.c.rotate(lean); k.c.translate(-a[0], -a[1])
         if who == "pam_cat":
+            oc.HUNT[0] = kw.pop("hunt", 0.0)
             cy = kw.pop("clip_y", None)
+            behind = kw.pop("behind", False)                 # (24 Nov) her back to us, with the walk's knees and hips (pam_from_behind has neither)
+            twist = kw.pop("twist", 0.0)                     # (24 Nov, the walk's review) her shoulders against her hips: the same drawing cut at the belt, the upper half turned about it
             tilt = kw.pop("tilt", 0.0)                       # (24 Nov) her head a little behind her body: the same drawing twice, cut at the neck, the head's half turned about it
+            rim_red = kw.pop("rim_red", False)               # (24 Nov) in the club: the neon's red on her edge toward it, a little white from the lamp above; not the sticker's white all round
+            if rim_red:
+                kw.pop("rim", None)
+                c_ = k.c
+                c_.push_group(); oc.pam_cat(k, *a, **kw); g_ = c_.pop_group()
+                c_.save(); c_.translate(-RIM_RED_W[0], -0.6 * RIM_RED_W[0] / 2.2); c_.set_source_rgb(*st.NEON); c_.mask(g_); c_.restore()
+                c_.save(); c_.translate(0, -2.5); c_.set_source_rgba(0.82, 0.82, 0.80, 0.4); c_.mask(g_); c_.restore()
             if kw.pop("rim", False):                         # board v9: a thin rim of light round her
                 c_ = k.c
                 c_.push_group(); oc.pam_cat(k, *a, **kw); g_ = c_.pop_group()
@@ -491,13 +512,28 @@ def draw_cast(k, cast):
                     c_.save(); c_.translate(dx_, dy_); c_.set_source_rgba(0.82, 0.82, 0.80, RIM_A[0]); c_.mask(g_); c_.restore()
             if cy is not None:                               # 3.6: sitting: only her top half rises from the road
                 k.c.save(); k.c.rectangle(-2000, -2000, 5000, cy + 2000); k.c.clip()
-            if tilt:
-                c_ = k.c; ny_ = a[1] + (oc.HY + 52) * a[2]
-                c_.save(); c_.rectangle(a[0] - 600, ny_, 1200, 1200); c_.clip(); o = oc.pam_cat(k, *a, **kw); c_.restore()
-                c_.save(); c_.translate(a[0], ny_); c_.rotate(tilt); c_.translate(-a[0], -ny_)
-                c_.rectangle(a[0] - 600, ny_ - 1200, 1200, 1200); c_.clip(); oc.pam_cat(k, *a, **kw); c_.restore()
+            def _upper():
+                if tilt:
+                    c_ = k.c; ny_ = a[1] + (oc.HY + 52) * a[2]
+                    c_.save(); c_.rectangle(a[0] - 600, ny_, 1200, 1200); c_.clip(); o_ = oc.pam_cat(k, *a, **kw); c_.restore()
+                    c_.save(); c_.translate(a[0], ny_); c_.rotate(tilt); c_.translate(-a[0], -ny_)
+                    c_.rectangle(a[0] - 600, ny_ - 1200, 1200, 1200); c_.clip(); oc.pam_cat(k, *a, **kw); c_.restore()
+                    return o_
+                return oc.pam_cat(k, *a, **kw)
+            if twist:
+                c_ = k.c; wy_ = a[1] - 150 * a[2]            # her belt
+                c_.save(); c_.rectangle(a[0] - 600, wy_, 1200, 1200); c_.clip(); o = oc.pam_cat(k, *a, **kw); c_.restore()
+                c_.save(); c_.translate(a[0], wy_); c_.rotate(twist); c_.translate(-a[0], -wy_)
+                c_.rectangle(a[0] - 600, wy_ - 1200, 1200, 1200 + 7 * a[2]); c_.clip(); _upper(); c_.restore()
             else:
-                o = oc.pam_cat(k, *a, **kw)
+                o = _upper()
+            if behind:                                       # the back of her head over her face: her brown bob, the ears
+                hx, hy = o["head"]; s_ = a[2]
+                if twist:
+                    wy_ = a[1] - 150 * s_; dx_, dy_ = hx - a[0], hy - wy_
+                    hx, hy = a[0] + dx_ * math.cos(twist) - dy_ * math.sin(twist), wy_ + dx_ * math.sin(twist) + dy_ * math.cos(twist)
+                kit.ellipse(k, hx, hy - 4 * s_, 62 * s_, 58 * s_, (0.36, 0.30, 0.27), 7301, shadow=False, lw=2.4)
+                oc.ears(k, hx, hy, s_)
             if cy is not None:
                 k.c.restore()
         elif who == "pam_from_behind":                       # her back to us: the figure, the face covered by the back of
@@ -557,6 +593,7 @@ def draw_cast(k, cast):
             st.cast(k, *a, **kw); o = {}
         else:
             raise ValueError(who)
+        oc.HUNT[0] = 0.0
         if BREATH[0] != 1.0 and not lean:
             k.c.restore()
         if lean:
@@ -737,10 +774,50 @@ SCORCH = (466, 500)
 MARK_SKIP = []                                             # knives she has taken back out of the boards (6.1 on)
 
 
-def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0, skip=()):
+BURN = [False]                                             # (24 Nov, cold test of film v14: the scorch was read as a smoking lamp) the burn inside the frame, away from the lamp: a hole with the brick wall seen through it, flames on its rim while it burns, then embers and smoke
+BURN_AT = (418, 520)
+
+
+def _burn_hole(k, sx_, sy_, scorch, flame, t):
+    c = k.c
+    def rim(a_):
+        q = (36 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
+        return sx_ + q * math.cos(math.radians(a_)), sy_ + 1.5 * q * math.sin(math.radians(a_))
+    c.save(); c.new_path()
+    for a_ in range(0, 360, 24):
+        (c.move_to if a_ == 0 else c.line_to)(*rim(a_))
+    c.close_path(); c.set_source_rgb(0.01, 0.01, 0.01); c.set_line_width(7); c.stroke_preserve()      # the charred edge
+    c.clip()
+    c.set_source_rgb(0.30, 0.30, 0.31); c.paint()            # the wall behind the curtain
+    c.set_source_rgb(0.16, 0.16, 0.17); c.set_line_width(1.6)
+    for r_ in range(-6, 7):
+        yy = sy_ + r_ * 14
+        c.move_to(sx_ - 70, yy); c.line_to(sx_ + 70, yy)
+        for b_ in range(-3, 4):
+            xx = sx_ + b_ * 30 + (15 if r_ % 2 else 0); c.move_to(xx, yy); c.line_to(xx, yy + 14)
+    c.stroke()
+    c.restore()
+    for a_ in range(0, 360, 21):                             # embers all round its rim
+        x_, y_ = rim(a_)
+        c.new_path(); c.arc(x_, y_, 2.6, 0, 2 * math.pi); c.set_source_rgb(1.0, 0.92, 0.70); c.fill()
+    if flame > 0:                                            # it burns: tongues up off the rim, the fire's own two colours (they keep them through the grade)
+        for j, a_ in enumerate((200, 232, 262, 292, 324, 20, 160)):
+            x_, y_ = rim(a_)
+            h = (44 + 16 * math.sin(t * 2.1 + j * 1.7)) * flame * (0.7 if j > 4 else 1.0)
+            for w_, hh, col in ((13, h, st.NEON), (7, h * 0.6, st.GOLD)):
+                c.new_path(); c.move_to(x_ - w_, y_ + 3); c.curve_to(x_ - w_, y_ - hh * 0.5, x_ - 2, y_ - hh * 0.6, x_ + 2 * math.sin(t + j), y_ - hh)
+                c.curve_to(x_ + 3, y_ - hh * 0.5, x_ + w_, y_ - hh * 0.4, x_ + w_, y_ + 3); c.close_path(); c.set_source_rgb(*col); c.fill()
+
+
+def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0, skip=(), flame=0.0):
     c = k.c
     if scorch > 0:                                         # the curtain's edge, burnt: a ragged black hole, embers on its rim, smoke in puffs
-        sx_, sy_ = SCORCH
+        sx_, sy_ = BURN_AT if BURN[0] else SCORCH
+        if BURN[0]:
+            _burn_hole(k, sx_, sy_, scorch, flame, t)
+        c.save()
+        if BURN[0]:
+            c.rectangle(0, 0, 0, 0); c.clip()              # the old hole and embers are not drawn; the smoke below is
         c.new_path()
         for a_ in range(0, 360, 24):
             q = (36 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
@@ -750,6 +827,7 @@ def stage_marks(k, knives=5, scorch=1.0, smoke=1.0, t=0, skip=()):
             q = (36 + 14 * math.sin(a_ * 0.31) + 9 * math.sin(a_ * 0.83)) * scorch
             c.new_path(); c.arc(sx_ + q * math.cos(math.radians(a_)), sy_ + 1.5 * q * math.sin(math.radians(a_)), 2.6, 0, 2 * math.pi)
             c.set_source_rgb(1.0, 0.92, 0.70); c.fill()
+        c.restore()
         for j in range(6):                                 # v19: smoke in soft clumps (three lobes each), bigger and fainter as they rise
             u = ((j + (t % 6) / 6.0) / 6.0)
             px_, py_ = sx_ - 14 + 26 * math.sin(j * 1.9 + u * 3) + 18 * u, sy_ - 60 - 190 * u
@@ -1149,6 +1227,8 @@ def _render(sh, scale=1):
             lit(c2)
         else:
             ons.vignette(c2, 0.55)
+        if sh["loc"] == "hall":                              # (24 Nov) the neon's red light on the room, in the shot's camera
+            c2.save(); _apply(c2, sh["cam"]); cl.spill(c2); c2.restore()
         for dx_, dy_, r_ in KEYS:                            # the faces' key light, after the dark, so it lifts them out of it
             x_, y_ = c2.device_to_user(dx_, dy_); r_ = c2.device_to_user_distance(r_, 0)[0]
             g = cairo.RadialGradient(x_, y_, r_ * 0.2, x_, y_, r_ * 1.5)

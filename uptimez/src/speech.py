@@ -151,7 +151,7 @@ def _paint(k, box, tip, rows, size, font, mono=False):
         kit.text(k, row, cx, top + i * lead, size, font=font, center=True, bold=_weight(font) == cairo.FONT_WEIGHT_BOLD)
 
 
-def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None, others=(), avoid=()):
+def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None, others=(), avoid=(), pin=None):
     """head is (x, y, r) in 540 space, or None for a speaker who is off the frame.
     mouth is the mouth drawn in this frame. above is a bare scalp or an antenna; without it the tail stays beside the face.
     aim is a tip measured on this frame (a visor rim, a profile mouth, a voice in the dark). The box sits beside it.
@@ -170,6 +170,14 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
     hx, hy, r = head
     my = mouth[1] if mouth is not None else hy + 0.35 * r
     faces = list(others) + [head]
+    if pin is not None:                                      # opt-in (lesson 784): the box where it was put on the line's first drawing; only the tail follows the head
+        side = 1 if (pin[0] + pin[2]) / 2.0 > hx else -1
+        tip = aim if aim is not None else (hx + side * r * 0.82, my)
+        if (TAIL_MIN + 3 <= _gap(tip, pin) <= TAIL_MAX - 1 and pin[1] + 8 <= tip[1] <= pin[3] - 8
+                and not _hits(pin, faces, avoid)):
+            rows, size, font, _bw, _bh = _metrics(k, text, mono, max(48, pin[2] - pin[0] - 28))
+            _paint(k, pin, tip, rows, size, font)
+            return pin, tip
 
     def room_for(side, tip):
         if side > 0:

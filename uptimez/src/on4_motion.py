@@ -173,6 +173,7 @@ def keys(fn):
             REC[0] = False
         return resolve(fr, sub)
     w.__doc__ = fn.__doc__
+    w.raw = fn
     return w
 
 
@@ -185,7 +186,17 @@ def tab(seq, x):
     return _tw(seq[j], seq[j + 1], u)
 
 
-def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0):
+HIT = [False]                                                # (24 Nov, cold test of film v14: nobody could say who felled the shadow) the punch as a blow: a wind-up we see, a step in, her arm rim-lit on the shadow, a hit-stop, his hat knocked off; he folds and slides down with no streaks
+
+
+def _hat(c, x, y, rot, s=1.0):
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s)
+    c.rectangle(-58, -6, 116, 12); c.fill()
+    c.new_path(); c.move_to(-36, -6); c.line_to(-30, -54); c.line_to(30, -54); c.line_to(36, -6); c.close_path(); c.fill()
+    c.restore()
+
+
+def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0, hat=None, jolt=0.0):
     """the projected hat shadow (sc.wall_shadow's geometry) with its deformation: w, h scale it on the wall; drip 0..1
     runs it down the wall into a puddle at the wall's foot."""
     c = k.c
@@ -200,9 +211,12 @@ def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0):
     if hh > 0.05:
         c.save(); c.translate(bx, by)
         c.transform(cairo.Matrix(0.74 * w * (1 + 0.9 * drip), -0.74 * w, 0, hh, 0, 0)); c.rotate(lean)
-        al.shadow_man(k, 0, 0, 0.98, "knife", state, flip=True)
+        c.translate(-jolt, 0)                                # knocked back along the wall, away from her
+        al.shadow_man(k, 0, 0, 0.98, "knife", state, flip=True, hat=hat is None)
+        if hat is not None and len(hat) == 3:                # his hat in the air: (dx, dy, turn) from where it sat
+            c.set_source_rgba(0.02, 0.02, 0.03, 0.86); _hat(c, hat[0], -360 * 0.98 + hat[1], hat[2])
         c.restore()
-    if drip > 0:                                            # streaks running down the wall
+    if drip > 0 and not HIT[0]:                             # streaks running down the wall
         c.set_source_rgba(0.02, 0.02, 0.03, 0.85)
         for i, dx in enumerate((-50, -20, 10, 40, 64)):
             x0 = bx + dx; y0 = by - dx - 250 * (1 - drip) * (0.6 + 0.1 * i)
@@ -211,6 +225,8 @@ def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0):
     if drip > 0:                                            # the puddle at the wall's foot
         c.save(); c.translate(bx + 30, by + 20); c.rotate(-0.78); c.scale(110 * drip, 26 * drip)
         c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.set_source_rgba(0.02, 0.02, 0.03, 0.9); c.fill()
+    if hat is not None and len(hat) == 4:                    # the hat on the cobbles by what is left of him: (x, y, turn, size)
+        c.set_source_rgba(0.02, 0.02, 0.03, 0.9); _hat(c, hat[0], hat[1], hat[2], hat[3])
 
 
 CAT = [True]                                                 # v6 (Tomas): Office Noir 1's black cat leaps across the lens at 0:00.25
@@ -220,7 +236,15 @@ def cat_over(s, frames):
     """the cat, drawn after the grade so its eyes keep their colour (as on_film does): frames = [(x, y, scale, flip)] or "full" """
     import cat_on as ct
     c = cairo.Context(s); kk = sc.Ctx(c, 0)
-    if frames == "in":
+    if CAT_SOFT[0] and frames in ("in", "full", "full2", "out"):
+        x_, y_, s_ = {"in": (40, 1000, 4.0), "full": (190, 800, 4.6), "full2": (330, 560, 4.2), "out": (450, 340, 3.4)}[frames]
+        ct.black_cat(kk, x_, y_, s_, "fall", flip=False)
+        c.save(); c.translate(x_, y_); c.scale(s_, s_)       # (Tomas: "why has the cat one eye?") its face to us: two eyes
+        c.new_path(); c.arc(60, -48, 9.5, 0, 2 * math.pi); c.set_source_rgb(*ct.FUR); c.fill()
+        for ex in (50.5, 63.5):
+            ct._eye(c, ex, -48, 4.4, "open")
+        c.restore()
+    elif frames == "in":
         ct.black_cat(kk, 70, 1010, 4.2, "fall", flip=False)
     elif frames in ("full", "full2"):
         big = frames == "full2"
@@ -252,14 +276,24 @@ def t1():
     def sof(i):
         t = i / float(N)
         return (330 + 70 * t + (5 if i % 4 < 2 else -5), 650 + 560 * t * t + 80 * t - (7 if i % 2 else 0), 0.50 + 0.5 * t)   # v3: steps
-    def f(i, arms, lean, face, look, sh, burst=False, hop=0):
+    def f(i, arms, lean, face, look, sh, burst=False, hop=0, dx=0, fx=""):
         sx, sy, ss = sof(i)
         sofia = [P("sofia", sx, sy, ss, "hold", "appraise", (0.2, 1.0))] if sy < 1180 else []
-        pam = [P("pam_cat", 220, 730 - hop, 0.84, pose(arms, ("fist", "fist")), face, look, lean=lean)]
+        kw = dict(lean=lean)
+        pam = [P("pam_cat", 220 + dx, 730 - hop, 0.84, pose(arms, ("fist", "fist")), face, look, **kw)]
         flat = []
         cast = flat + (sofia + pam if sy < 735 else pam + sofia)
+        def aft(k):
+            c = k.c
+            if fx in ("swing", "star"):                      # the fist's path: lines along the blow, not a ghost (lessons 150, 160)
+                c.set_source_rgba(1, 1, 1, 0.9); c.set_line_cap(1)
+                for j, (yy, x0, x1) in enumerate(((524, 236, 176), (538, 250, 168), (552, 240, 182))):
+                    c.set_line_width(4 if j == 1 else 2.5); c.move_to(x0 + dx, yy); c.line_to(x1 + dx, yy); c.stroke()
+                c.set_line_cap(0)
+            if fx == "star":
+                sc._burst(k, 62, 540, 44)
         return draw(shot("1.1", cast=cast, before=lambda k: shadow2(k, **sh),
-                         after=(lambda k: sc._burst(k, 98, 544, 36)) if burst else None))
+                         after=aft if fx in ("swing", "star") else ((lambda k: sc._burst(k, 98, 544, 36)) if burst else None)))
     f = lazy(f)
     i = 0
     if CAT[0]:
@@ -278,6 +312,8 @@ def t1():
     else:
         for _ in range(6):                                   # 0.5 s: the threat, held; her eyes already on it
             fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
+    if HIT[0]:
+        return _t1_hit(fr, f, i, N)
     for t in (0.4, 0.8, 1.0):                                # the wind-up: the fist back, the weight back
         fr.append(f(i, lerp(HERO, WIND, t), 0.07 * t, "peer", (-1.0, -0.4), dict())); i += 1
     fr.append(f(i, lerp(WIND, PUNCH, 0.6), -0.04, "peer", (-1.0, -0.3), dict())); i += 1          # the strike
@@ -294,6 +330,34 @@ def t1():
     return fr
 
 
+def _t1_hit(fr, f, i, N):
+    """the blow, in the same number of keys as before (nothing after it moves): two keys of the old settle are spent on
+    the wind-up and one of the slide on the hit-stop."""
+    del fr[-2:]; i -= 2                                      # the two held hero keys before the wind-up
+    WIND2 = oc.pm.ik(-1, -58, -262) + oc.pm.ik(1, 58, -150)  # the fist cocked by her ear on his side (clear of her face), the other hand a guard
+    MID = oc.pm.ik(-1, -112, oc.BT - 8) + oc.pm.ik(1, 46, -130)
+    PUNCH2 = oc.pm.ik(-1, -152, oc.BT + 6) + oc.pm.ik(1, 40, -120)
+    for t, d in ((0.5, 6), (1.0, 14), (1.0, 18), (1.0, 18)):  # the wind-up: the weight back and away from him, held
+        fr.append(f(i, lerp(HERO, WIND2, t), 0.16 * t, "peer", (-1.0, -0.4), dict(), dx=d)); i += 1
+    fr.append(f(i, MID, -0.04, "peer", (-1.0, -0.3), dict(), dx=-14, fx="swing")); i += 1                           # the step in
+    hit = dict(w=1.1, h=0.96, lean=-0.16, state="down", hat=(-34, -64, -0.5), jolt=22)
+    fr.append(f(i, PUNCH2, -0.08, "peer", (-1.0, -0.3), hit, dx=-30, fx="star")); i += 1                            # contact: he jolts back, his hat lifts
+    fr.append(fr[-1]); i += 1; fr.append(fr[-1]); i += 1     # the hit-stop: three keys on one drawing
+    hy = lambda u: (150 + 30 * u, 690 + 112 * u * u, -1.2 + 1.0 * u, 0.62)
+    for sh in (dict(w=1.25, h=0.8, lean=-0.2, state="down", hat=(-80, -150, -1.3), jolt=34),
+               dict(w=1.45, h=0.62, lean=-0.24, state="down", hat=(-150, -140, -2.3), jolt=34),
+               dict(w=1.5, h=0.6, lean=-0.24, drip=0.35, state="down", hat=hy(0.3)),
+               dict(w=1.5, h=0.6, lean=-0.24, drip=0.65, state="down", hat=hy(0.7)),
+               dict(w=1.5, h=0.6, lean=-0.24, drip=0.88, state="down", hat=hy(1.0))):
+        fr.append(f(i, PUNCH2, -0.08, "peer", (-1.0, 0.2), sh, dx=-30)); i += 1                                     # he folds and slides down the wall; she holds the fist out
+    end = dict(drip=1.0, state="down", hat=hy(1.0))
+    for t in (0.5, 1.0):                                     # she turns to be thanked
+        fr.append(f(i, lerp(PUNCH2, HERO, t), -0.04 * (1 - t), "proud", (0.7, 0.3), end, dx=-30 * (1 - t))); i += 1
+    while i < N:                                             # Sofia walks past and out; the pose held at nobody
+        fr.append(f(i, HERO, 0, "proud" if i < N - 6 else "fade", (0.7, 0.6), end)); i += 1
+    return fr
+
+
 # ---- T2 -----------------------------------------------------------------------------------------------------------------
 WIN = [(70, 372), (410, 372), (470, 450), (470, 610), (70, 610)]
 
@@ -305,7 +369,13 @@ def seat3(k):
     for row in range(0, 12):
         for col in range(-1, 10):
             c.set_source_rgb(0.26, 0.25, 0.24); c.set_line_width(1.6); c.rectangle(col * 64 + (32 if row % 2 else 0), row * 28, 64, 28); c.stroke()
-    st.poly(k, [(330, 60), (470, 60), (470, 250), (330, 250)], (0.05, 0.05, 0.06), 2.2)
+    if PEEK[0]:
+        x0, y0, x1, y1 = PEEK_WIN
+        st.poly(k, [(x0 - 8, y0 - 8), (x1 + 8, y0 - 8), (x1 + 8, y1 + 4), (x0 - 8, y1 + 4)], (0.46, 0.45, 0.43), 2.0)      # the frame
+        st.poly(k, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], (0.05, 0.05, 0.06), 2.2)
+        st.poly(k, [(x0 - 14, y1 - 2), (x1 + 14, y1 - 2), (x1 + 14, y1 + 12), (x0 - 14, y1 + 12)], (0.58, 0.57, 0.54), 2.0)   # the sill
+    else:
+        st.poly(k, [(330, 60), (470, 60), (470, 250), (330, 250)], (0.05, 0.05, 0.06), 2.2)
     st.poly(k, [(-10, 330), (380, 322), (520, 400), (560, 430), (560, 960), (-10, 960)], car.BODY, 2.6)   # the body: roof, pillar
     c.set_source_rgb(*car.BODY_HI); c.set_line_width(3); c.move_to(-10, 336); c.line_to(378, 328); c.line_to(516, 404); c.stroke()
     car._p(c, WIN); c.set_source_rgb(0.07, 0.07, 0.09); c.fill()                                   # the cabin: dark
@@ -318,7 +388,12 @@ def seat3(k):
     c.restore()
 
 
-def seat3_people(k, hand, env, dad, t=None):
+T2_MARKS = {}
+PEEK_DUCK = [2.55]                                           # when she goes down again (GIVE sets it: as he looks up)
+PEEK_BLINK = [None]                                          # GIVE: when he takes it: her one slow blink
+
+
+def seat3_people(k, hand, env, dad, t=None, give=None, lk2=None, fc="plain", eang=0.0):
     """his hand at `hand` (body units, co._ik target), the envelope at his hand (env: "hand") or under his lapel ("coat")."""
     c = k.c
     c.save(); car._p(c, WIN); c.clip()
@@ -330,28 +405,48 @@ def seat3_people(k, hand, env, dad, t=None):
         lk = (0.25 + 0.65 * to_dad - 0.2 * up_, 0.9 - 0.3 * to_dad - 0.55 * up_)
         if env == "coat" and up_ < 0.05:                     # put away: a look across at Dad
             lk = (0.85, 0.3)
-    c.push_group(); o = co.client(k, 200, 728, 0.74, arms, "plain", look=lk, roll=False, badge=False); c.pop_group()
+        if lk2 is not None:
+            lk = lk2
+    c.push_group(); o = co.client(k, 200, 728, 0.74, arms, fc, look=lk, roll=False, badge=False); c.pop_group()
     hx, hy = o["hands"][1]
     cx_, cy_ = o["head"][0] + 14, o["head"][1] + 104       # his chest, under the left lapel
     if t is not None:
         c.save(); c.translate(200, 728); c.rotate(0.035 * up_); c.scale(1.0, 1.0 + 0.008 * math.sin(2 * math.pi * t / 2.6)); c.translate(-200, -728)
-    o = co.client(k, 200, 728, 0.74, arms, "plain", look=lk, roll=False, badge=False)
+    o = co.client(k, 200, 728, 0.74, arms, fc, look=lk, roll=False, badge=False)
     if t is not None:
         c.restore()
     if env == "hand":
+        c.save(); c.translate(hx + 4, hy - 12); c.rotate(eang); c.translate(-(hx + 4), -(hy - 12))    # it turns in his fingers as it changes hands
         oc.envelope(k, hx + 4, hy - 12, 1.15)
+        c.restore()
         kit.ellipse(k, hx, hy + 4, 15, 12, (0.87, 0.70, 0.58), 7700, shadow=False, lw=2.0)        # his thumb over its edge
-    if env == "coat":
+    if env == "coat" and TUCK[0]:                            # (Tomas: "why does he not put it in? why does he fold it?") it goes in behind his lapel: the envelope, then his jacket's front drawn over it again; eang is how far in (0..1)
+        c.save(); c.translate(cx_ - 2 + 40 * eang, cy_ - 6 + 6 * eang); c.rotate(-0.25); oc.envelope(k, 0, 0, 1.0); c.restore()
+        c.save(); c.rectangle(o["head"][0] + 13, cy_ - 60, 200, 200); c.clip()
+        co.client(k, 200, 728, 0.74, arms, fc, look=lk, roll=False, badge=False)
+        c.restore()
+    elif env == "coat":
         oc.envelope(k, cx_ + 6, cy_ - 8, 1.0)
         st.poly(k, [(cx_ - 22, cy_ + 12), (cx_ + 36, cy_ + 2), (cx_ + 40, cy_ + 40), (cx_ - 18, cy_ + 44)], (0.30, 0.36, 0.26), 2.2)   # his jacket over its lower half
     dx = (1 - dad) * 160                                                                           # Dad's ringed hand on the seat
-    st.poly(k, [(560 + dx, 560), (420 + dx, 566), (422 + dx, 606), (560 + dx, 612)], dc.VELVET, 2.2)
+    if give is not None:                                     # GIVE: the hand out toward the Client, the envelope in its fingers (give 1 = held out; 0 = flat on the seat)
+        c.translate((312 - 348) * give, (566 - 585) * give)
+        if env in ("dad", "both"):
+            c.save(); c.translate(348 + dx - 22, 573); c.rotate(eang); c.translate(-(348 + dx - 22), -573)
+            oc.envelope(k, 348 + dx - 22, 585 - 12, 1.15)    # the object first, his fingers over its edge after (the hands' rule)
+            c.restore()
+            if env == "both":                                # and the Client's thumb on its other edge: for a moment both hold it
+                kit.ellipse(k, hx, hy + 4, 15, 12, (0.87, 0.70, 0.58), 7700, shadow=False, lw=2.0)
+    st.poly(k, [(760 + dx, 556), (420 + dx, 566), (422 + dx, 606), (760 + dx, 616)], (0.34, 0.33, 0.36), 2.2) if give is not None else st.poly(k, [(560 + dx, 560), (420 + dx, 566), (422 + dx, 606), (560 + dx, 612)], dc.VELVET, 2.2)
+    if give is not None:                                     # a white cuff: the sleeve read as part of the dark
+        st.poly(k, [(430 + dx, 565), (418 + dx, 566), (420 + dx, 607), (432 + dx, 606)], (0.95, 0.95, 0.92), 1.6)
     kit.ellipse(k, 392 + dx, 590, 34, 15, dc.SKIN_F, 7702, shadow=False, lw=2.2)                  # v3: palm down, flat on the seat
     for i_ in range(4):
-        drum = 4.0 * max(0.0, math.sin(2 * math.pi * 2.2 * t - i_ * 1.1)) if (t is not None and dad >= 1 and env == "hand") else 0.0   # DENSE: his fingers drum while he waits
+        drum = 4.0 * max(0.0, math.sin(2 * math.pi * 2.2 * t - i_ * 1.1)) if (t is not None and dad >= 1 and env == "hand" and not give) else 0.0   # DENSE: his fingers drum while he waits
         kit.ellipse(k, 362 + dx - i_ * 2, 580 + i_ * 6 - drum, 14, 5, dc.SKIN_F, 7703 + i_, shadow=False, lw=1.6)
     c.set_source_rgb(*INK); c.rectangle(372 + dx, 576, 11, 14); c.fill(); c.set_source_rgb(*st.GOLD); c.rectangle(374 + dx, 578, 7, 10); c.fill()
-    c.set_source_rgb(*st.NEON); c.rectangle(374 + dx, 580, 7, 6); c.fill()
+    if not RING_GOLD[0]:
+        c.set_source_rgb(*st.NEON); c.rectangle(374 + dx, 580, 7, 6); c.fill()
     c.restore()
     car._p(c, WIN); c.set_source_rgb(*car.CHROME); c.set_line_width(4); c.stroke()                 # the window's chrome
     c.set_source_rgb(*INK); c.set_line_width(2.4); c.move_to(40, 340); c.line_to(40, 900); c.stroke()   # the door's shut lines
@@ -360,6 +455,19 @@ def seat3_people(k, hand, env, dad, t=None):
     c.set_source_rgb(*car.CHROME); c.set_line_width(4); c.move_to(-10, 800); c.line_to(430, 800); c.stroke()   # the sill strip
     c.set_source_rgb(0.02, 0.02, 0.03); c.new_path(); c.arc(520, 900, 120, math.pi, 2 * math.pi); c.fill()     # the wheel arch
     car._wheel(c, 520, 900, 96)
+    if PEEK[0] and t is not None:
+        x0, y0, x1, y1 = PEEK_WIN
+        u = ease(min(1.0, max(0.0, (t - 0.25) / 0.4))) * (1 - ease(min(1.0, max(0.0, (t - PEEK_DUCK[0]) / (0.5 if GIVE[0] else 0.25)))))   # up; and down again before he looks up
+        up2 = max(0.0, min(1.0, (co.BT + 150 - hand[1]) / 88.0))
+        S2 = 0.72; mx = (x0 + x1) / 2.0
+        feet = y1 - 2 + 150 * S2 + 150 * (1 - u)             # her hands' height is the sill's top when she is up
+        arms = oc.pm.ik(-1, -66, -172) + oc.pm.ik(1, 66, -172)   # the gloves whole above the sill
+        if u > 0.02:
+            c.save(); c.rectangle(x0, y0, x1 - x0, y1 - 2 - y0); c.clip()       # in the window: nothing of her below the sill
+            sc.draw_cast(k, [P("pam_cat", mx, feet, S2, pose(arms, ("flat", "flat")), "peer", (-0.7 + 0.15 * up2, 0.9 - 0.25 * up2), rim=True,
+                               hunt=0.45 * min(1.0, max(0.0, (t - 0.9) / 0.4)) + (0.55 * max(0.0, 1 - abs(t - PEEK_BLINK[0]) / 0.22) if PEEK_BLINK[0] else 0.0))])            # no head tilt here: at this size the cut at her neck shows
+            c.restore()
+        return
     c.save(); c.translate(486, 300); c.scale(-1, 1)                                                # her ears over the roof's edge:
     if t is not None:                                        # DENSE: she listens: the head eases up and down, an ear's twitch now and then
         c.translate(0, 3.0 * math.sin(2 * math.pi * t / 1.9)); c.rotate(0.05 * math.sin(2 * math.pi * t / 1.3) + (0.10 if 1.25 < t < 1.42 else 0.0))
@@ -374,6 +482,41 @@ def t2():
     seq += [(CHEST, "coat", 1)] * 2 + [(lerp(CHEST, KNEE, t), "coat", 1) for t in (0.5, 1.0)] + [(KNEE, "coat", 1)] * 6   # under his lapel
     g = lazy(lambda a: draw(shot("2.2", loc="seat3", cam=sc.WIDE, cast=(), protect=(), after=lambda k: seat3_people(k, *a))))
     if DENSE[0]:                                             # 43 keys for 3.6 s: the holds longer now that they live
+        if GIVE[0]:                                          # v2 (the review; Tomas: more drawings): 52 keys, 4.33 s
+            REACH = (150, co.BT + 120)
+            S_ = []                                          # his hand, who has the envelope, Dad's hand in 0..1, give 0..1, his look, his face, the envelope's turn
+            for j in range(5):                               # he waits, empty-handed, his eyes ahead
+                S_.append((KNEE, "none", 0.0, 1.0, (0.4, 0.3), "plain", 0.0))
+            for j in range(8):                               # out of the dark: the ringed hand, the envelope held out to him; his eyes go to it, a brow goes up
+                u = ease((j + 1) / 8.0); S_.append((KNEE, "dad", u, 1.0, (0.4 + 0.5 * u, 0.3 + 0.4 * u), "plain" if j < 3 else "confident", 0.10 * (1 - u)))
+            for j in range(2):                               # a beat: he does not snatch
+                S_.append((KNEE, "dad", 1.0, 1.0, (0.9, 0.7), "confident", 0.0))
+            for j in range(5):                               # his hand goes to it
+                u = ease((j + 1) / 5.0); S_.append((lerp(KNEE, REACH, u), "dad", 1.0, 1.0, (0.9, 0.7), "confident", 0.0))
+            grip = len(S_)
+            for j in range(3):                               # both hold it: a quarter of a second
+                S_.append((REACH, "both", 1.0, 1.0, (0.9, 0.7), "plain", 0.03 * j))
+            for j in range(5):                               # Dad's hand lets go and draws back into the dark; the Client brings it to his knee, turning it face up to him
+                u = ease((j + 1) / 5.0); S_.append((lerp(REACH, KNEE, u), "hand", 1.0 - u, 1.0, (0.9 - 0.65 * u, 0.7 + 0.2 * u), "plain", 0.09 - 0.22 * u))
+            for j in range(5):                               # he looks at it; the corner of his mouth
+                S_.append((KNEE, "hand", 0.0, 1.0, (0.25, 0.9), "plain" if j < 2 else "confident", -0.13 + 0.03 * math.sin(j * 1.3)))
+            for j in range(2):                               # a look to the side before it goes away
+                S_.append((KNEE, "hand", 0.0, 1.0, (-0.8, 0.1), "suspicious", -0.13))
+            for j in range(5):                               # up to his coat, slower at the end
+                u = ease((j + 1) / 5.0); S_.append((lerp(KNEE, CHEST, u), "hand", 0.0, 1.0, None, "plain", -0.13 * (1 - u)))
+            S_ += [(CHEST, "coat", 0.0, 1.0, None, "plain", 0.25 if TUCK[0] else 0.0), (CHEST, "coat", 0.0, 1.0, None, "plain", 0.6 if TUCK[0] else 0.0)]
+            for j in range(3):
+                S_.append((lerp(CHEST, KNEE, ease((j + 1) / 3.0)), "coat", 0.0, 1.0, None, "plain", (0.85, 1.0, 1.0)[j] if TUCK[0] else 0.0))
+            n0 = len(S_)
+            while len(S_) < 52:                              # he pats the lapel flat; a look across into the dark, pleased
+                j = len(S_) - n0
+                S_.append(((62 + 10 * (1 - abs(math.cos(j * math.pi / 4.0))), co.BT + 150 - 26 * abs(math.sin(j * math.pi / 4.0))), "coat", 0.0, 1.0, None, "confident", 1.0 if TUCK[0] else 0.0))
+            PEEK_DUCK[0] = (n0 - 1) / 12.0; PEEK_BLINK[0] = (grip + 1.5) / 12.0
+            T2_MARKS.update(grip=grip / 52.0, coat=(n0 - 8) / 52.0)
+            N_ = float(len(S_))
+            g2 = lazy(lambda hand, env, dad, gv, lk2, fc, ea, t_: draw(shot("2.2", loc="seat3", cam=(270, 480 + 8 * t_ / 4.33, 1.0 + 0.03 * t_ / 4.33), cast=(), protect=(),
+                                                                         after=lambda k: seat3_people(k, hand, env, dad, t_, gv, lk2, fc, ea))))
+            return [g2(h_, e_, d_, gv_, lk_, fc_, ea_, i / 12.0) for i, (h_, e_, d_, gv_, lk_, fc_, ea_) in enumerate(S_)]
         seq = [(KNEE, "hand", 0)] * 4 + seq[:16] + [(KNEE, "hand", 1)] * 2 + seq[16:-6]
         seq += [((62 + 10 * (1 - abs(math.cos(j * math.pi / 4.0))), co.BT + 150 - 26 * abs(math.sin(j * math.pi / 4.0))), "coat", 1) for j in range(43 - len(seq))]   # the hand does not lie dead: it pats the lapel flat, twice
         return [g(a + (i / 12.0,)) for i, a in enumerate(seq)]
@@ -486,10 +629,19 @@ PX, PF = 300, 716                                            # where she stands 
 CAR_S = 1.45                                                 # v11 (proportion audit): the limousine against the people: roof at Don's shoulder, bonnet at her hip (was 1.0: a toy)
 
 
+TUCK = [False]
+RING_GOLD = [False]                                          # (24 Nov, Tomas's pick) Dad's ring a plain gold band here: no red stone (the film's red is the envelope's heart, the neon and the fire)
+CAT_SOFT = [False]                                           # (24 Nov, cold test: "a monster") 0:00 the cat leaps across the frame, whole, in four drawings: no lens full of fur, no fangs
+WALK12 = [False]                                             # (24 Nov, Tomas's pick) her cat's walk over the crossing: two strides in twelve drawings (was one in six)
+GIVE = [False]                                               # (24 Nov, Tomas: "who hands what to whom?") 2.2-2.3: Dad's ringed hand comes out of the dark holding the envelope out; the Client takes it, looks, puts it under his lapel
+CATWALK = [False]                                            # (24 Nov) her cat's walk (on4_anim.catwalk) over the crossing and along the fire escape
+PEEK = [False]                                               # (24 Nov, Tomas: "the cat's head is bad; put her looking out of the window above?") 2.2-2.3: she comes up in the window over the car, her gloves on its sill, follows the envelope, ducks before he looks up
+PEEK_WIN = (336, 150, 476, 312)                              # clear of the narration card's rows (to y 196, the second row to about x 330)
 DENSE = [False]                                              # (24 Nov, Tomas: where else is the film thin?) twelve different drawings a second in 2.2-2.3, 6.3-6.6, 8.1 and the fall of 2.4: held figures breathe, eyes travel, the fall has its in-betweens
 T7_SLAM = [32]                                               # the drawing the bin's lid slams on (the sound reads it)
 LAW = [False]                                                # (24 Nov) one scale law on the crossing (on4_cross.dscale): her walk in grows by it; she lies as she fell (the same rig), no other drawing
 CRASH = [False]                                              # (24 Nov, Tomas's picks) the bump restaged: see t3
+TEETER = [False]                                             # (24 Nov, cold test of film v14: "a frozen picture") the second between the tap and the fall is acted: eyes to the bumper, a sway onto it and off
 T3_MARKS = {"toot": 12.0 / 32.0, "bump": 21.0 / 32.0}        # where the sounds fall, as fractions of 3.1 + 3.2
 
 
@@ -520,8 +672,11 @@ def t3():
                 gshadow(k, px, pf + 2, 70 * ps, 11 * ps)
             else:
                 gshadow(k, PX + 6, PF + 4, 120, 8)                                           # under her, lying
+        walk = pam[10] if len(pam) > 10 else None
         def after(k):
             c = k.c
+            if walk:                                         # her cat's walk: knees, hips, shoulders (drawn here: the plain cast has no knees)
+                _pam(k, P("pam_cat", px + walk["dx"] * ps, pf, ps, pose(arms, gest), face, look, tilt=walk["tilt"], twist=walk["twist"], hunt=walk["hunt"]), 1.0, 1.0, walk["rot"], walk["kn"])
             if kind == "down":
                 c.save(); c.translate(PX, PF - 6); c.scale(0.6, 0.6); c.translate(-330, -690); ly.body(k); ly.head(k, *ly.HEAD, ly.ANG); c.restore()
             rx = cx + 112 * CAR_S                                # braking: the nose down about the rear wheel
@@ -533,7 +688,7 @@ def t3():
             if dust:                                             # where she lands: her head, her heels
                 sc._burst(k, PX - 150, PF - 2, 16); sc._burst(k, PX + 120, PF + 2, 12)
         cast = [P("don", 170, 596, 0.42, dpose, dface, (0.9, -0.2), **dkw)]
-        if kind == "up":
+        if kind == "up" and not walk:
             cast.append(P("pam_cat", px, pf, ps, pose(arms, gest), face, look, lean=lean))
         oc.MASK_TILT[0] = mask
         if kind == "up" and len(pam) > 9 and pam[9]:         # her head behind her body as she lands (on4_scenes: tilt)
@@ -544,7 +699,14 @@ def t3():
             oc.MASK_TILT[0] = 0.0
     side = lazy(side)
     OFF = 1200
-    for i in range(6):                                       # she comes over the crossing, after the car
+    NW_ = 12 if WALK12[0] else 6
+    for i in range(NW_ if CATWALK[0] else 0):                # her cat's walk over the crossing: one stride in the six drawings
+        import on4_anim as an_
+        t = i / float(NW_ - 1); y_ = 610 + (PF - 610) * t
+        ar_, ge_, kn_, rot_, dx_, kw_ = an_.catwalk(i / 6.0)
+        fr.append(side(OFF, D_STOP, ("up", PX, y_, 1.203 * (0.42 + 0.14 * (y_ - 596.0) / 176.0), ar_, ge_, 0.0, "peer", (0.0, 0.1), 0.0,
+                                     dict(kn=kn_, rot=rot_, dx=dx_, **kw_))))
+    for i in range(0 if CATWALK[0] else 6):                  # she comes over the crossing, after the car
         t = i / 5.0
         fr.append(side(OFF, D_STOP, ("up", PX, 610 + (PF - 610) * t, (0.44 + 0.18 * t) if not LAW[0] else 1.203 * (0.42 + 0.14 * (610 + (PF - 610) * t - 596.0) / 176.0), RUN if i % 2 == 0 else RUN2,
                                      ("fist", "fist"), 0.0, "peer", (0.8, -0.2))))
@@ -566,7 +728,11 @@ def t3():
         fr.append(side(STOPX, D_GO, FACE(0.03, 0, "doubt"), burst=True, shake=(4, 0), mask=0.16))     # the tap (his whistle)
         fr.append(side(STOPX + 6, D_GO2, FACE(0.02, 0, "doubt"), pitch=0.010, shake=(-2, 0), mask=0.30))   # it rocks back
         fr.append(side(STOPX + 5, D_GO, FACE(0.0, 0, "doubt"), mask=0.30))
-        for j in range(4):                                                                            # a beat: she stands, palm out, the mask askew
+        if TEETER[0]:                                        # the beat acted, in the same four keys: her eyes go down to the bumper on her hip and back up; she sways onto it, then off it, and over
+            FACE2 = lambda lean, look, sag: ("up", PX + lean * 60, PF, 0.62, oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 96 - sag * 0.3, oc.HY + 30 + sag), ("relax_s", "palm"), -lean, "doubt", look)
+            for j, (ln, lk, sg) in enumerate(((-0.02, (0.8, 0.7), 10), (-0.06, (0.7, 1.0), 26), (-0.06, (0.7, 1.0), 30), (-0.02, (1.0, -0.5), 12))):
+                fr.append(side(STOPX + 5, go(j + 1), FACE2(ln, lk, sg), mask=0.30 + 0.04 * j))
+        for j in range(0 if TEETER[0] else 4):                                                        # a beat: she stands, palm out, the mask askew
             fr.append(side(STOPX + 5, go(j + 1), FACE(0.0, 0, "doubt"), mask=0.30))
         PLANK = lambda ln: ("up", PX + ln * 30, PF - 12 * (ln / 1.38) ** 2, 0.62, STOPP, ("relax_s", "palm"), -ln, "doubt", (1.0, -0.1))   # about her heels; her head comes down where the lying drawing has it
         if LAW[0]:
@@ -764,6 +930,10 @@ def blend(a, b, t):
     return s
 
 
+SIGN_OUT = [False]
+END_HOLD = [14]                                              # the drawings she lies for before the room goes dark (film v16: 6)
+
+
 def t5():
     import on4_props as pr
     import random
@@ -780,7 +950,7 @@ def t5():
             finally:
                 sc.BREATH[0] = 1.0
         held81 = lazy(held81)
-        for i in range(14):
+        for i in range(END_HOLD[0]):
             fr.append(held81(1.0 + 0.011 * math.sin(2 * math.pi * i / 16.0)))   # the rota over the cups, her head down; asleep, she breathes
     else:
       for _ in range(6):
@@ -796,6 +966,12 @@ def t5():
         finally:
             for m, f_ in held:
                 m.shredder = f_
+        if SIGN_OUT[0]:                                      # the wall sign cut by the frame's corner ("...ST CLIENT"): out of this shot, the wall in its place
+            import struct
+            s.flush(); b_, g_, r_, _a = struct.unpack_from("4B", bytes(s.get_data()), 44 * s.get_stride() + 4 * 262)
+            cw = cairo.Context(s); gw = cairo.LinearGradient(218, 0, 258, 0)
+            gw.add_color_stop_rgba(0, r_ / 255.0, g_ / 255.0, b_ / 255.0, 1); gw.add_color_stop_rgba(1, r_ / 255.0, g_ / 255.0, b_ / 255.0, 0)
+            cw.set_source(gw); cw.rectangle(0, 0, 258, 92); cw.fill()
         c0 = cairo.Context(s)                                # the internal-mail envelope, leaning on the monitor's foot (its heart where frame 0's neon heart is)
         c0.save(); c0.translate(HX, HY + 16); c0.rotate(-0.08)
         c0.rectangle(-24, -30, 48, 40); c0.set_source_rgb(*pr.ENV); c0.fill_preserve(); c0.set_source_rgb(*INK); c0.set_line_width(1.6); c0.stroke()
@@ -825,8 +1001,12 @@ def t5():
         beat = lambda j: max(0.0, math.sin(2 * math.pi * j / 10.0)) ** 2
         for j in range(20):
             fr.append(close(0.25 + 0.75 * ease((j + 1) / 20.0), 0, 0, beat(j)))
-        for j in range(24):                                  # the eyes open; a blink; they drop a little and come back; still for the loop
-            fr.append(close(1.0, 0.3 + 0.7 * min(1.0, j / 10.0) if j < 22 else 1.0, 1 if j in (14, 15) else (2 if j in (17, 18, 19) else 0), beat(20 + j) if j < 18 else 0.0))
+        last = None
+        for j in range(18):                                  # the eyes open; a blink; they drop a little and come back; still for the loop
+            last = close(1.0, 0.3 + 0.7 * min(1.0, j / 8.0) if j < 16 else 1.0, 1 if j in (10, 11) else (2 if j in (13, 14) else 0), beat(20 + j) if j < 14 else 0.0); fr.append(last)
+        street = draw(shot("1.1"))
+        for t in (0.17, 0.33, 0.5, 0.67, 0.83, 1.0):         # the dissolve: the lamp is the streetlamp (as before: the loop)
+            fr.append(blend_(last, street, t))
         return fr
     for d in (0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 1.0):                                    # the room goes dark round the lamp
         fr.append(close(d, 0))
@@ -895,7 +1075,7 @@ def t7():
         for y_ in range(PY + 10, GY - 120, 28):
             c.move_to(LX - 30, y_); c.line_to(LX + 30, y_); c.stroke()
     BMX = (BX0 + BX1) / 2.0
-    def f(pam=None, lid=0, shake=0, fall=None, pl=None, burst=False, clip=False, climb=None, tilt=0.0):
+    def f(pam=None, lid=0, shake=0, fall=None, pl=None, burst=False, clip=False, climb=None, tilt=0.0, walkp=None):
         def before(k):
             scene(k)
             k.c.save(); k.c.translate(BMX, GY); k.c.rotate(tilt); k.c.translate(-BMX, -GY)      # the bin rocks about its wheels
@@ -905,6 +1085,8 @@ def t7():
                 ladder(k)
         def after(k):
             c = k.c
+            if walkp is not None:                            # along the platform in her cat's walk
+                _pam(k, walkp[0], 1.0, 1.0, walkp[2], walkp[1])
             if climb is not None:                            # v20 (review): hands on rungs, the opposite foot up, turned to the wall
                 cp, ckn = climb
                 _pam(k, cp, 1.0, 1.0, 0.0, ckn)
@@ -949,7 +1131,12 @@ def t7():
         lift = 40
         kn = dict(drop=0, l=(0, lift if side > 0 else 0, -1), r=(0, lift if side < 0 else 0, 1))    # the foot opposite the high hand is up
         fr.append(f(climb=(P("pam_cat", LX, fy, S_, pose(arms, ("grab", "grab")), "peer", (0.3, -0.9), rim=True), kn)))
-    for i in range(9):                                       # along the platform, her eyes on the street below
+    for i in range(9 if CATWALK[0] else 0):                  # along the platform: a stride and a half, her eyes on the street below
+        import on4_anim as an_
+        t = i / 8.0
+        ar_, ge_, kn_, rot_, dx_, kw_ = an_.catwalk(i / 6.0)
+        fr.append(f(walkp=(P("pam_cat", LX + (310 - LX) * t + dx_ * S_, PY, S_, pose(ar_, ge_), "peer", (0.6, 0.7), rim=True, **kw_), kn_, rot_)))
+    for i in range(0 if CATWALK[0] else 9):                  # along the platform, her eyes on the street below
         t = i / 8.0
         fr.append(f(P("pam_cat", LX + (310 - LX) * t, PY - (5 if i % 2 else 0), S_, "hero", "peer", (0.6, 0.7), rim=True)))
     NL = 10 if DENSE[0] else 12
@@ -1204,7 +1391,7 @@ def t9():
             cam = (290, 560 - 110 * t, 1.4)
         def after(k):
             c = k.c
-            sc.stage_marks(k, knives=land, scorch=scorch, t=i)
+            sc.stage_marks(k, knives=land, scorch=scorch, t=i, flame=(1.0 if i < 28 else max(0.35, 1.0 - (i - 28) / 10.0)) if sc.BURN[0] else 0.0)
             if 14 <= i < 28:                                 # the torch's shaft first, so her fist closes over it
                 c.push_group(); p0 = _pam(k, pam, sx, sy, rot, kn); c.pop_group()
                 tx, ty = p0["hands"][1]
@@ -1355,6 +1542,9 @@ def t11():
 
 
 # ---- T12 ----------------------------------------------------------------------------------------------------------------
+OTS44 = [False]                                              # (24 Nov, cold test of film v14: "whose arm pulls the curtain?") 4.4: over her shoulder, not through her eyes
+
+
 def t12():
     """4.4, v18 (Tomas: a POV of her going in; review): her eyes. Through the arch (its bulbs warm) and down the passage,
     charcoal walls, the light only at its end and wet on the floor; two drawings of white; a velvet curtain: her arm in
@@ -1384,9 +1574,14 @@ def t12():
         cx_ = 240 - 90 * ease(u); cy_ = 560 - 40 * ease(u)
         bob = 6 * math.sin((i + 15) * math.pi / 3)
         op = min(1.0, i / 6.0)
+        def head(k):                                         # OTS44: the back of her head and her ears low in the frame, so the arm has an owner; it sinks out as she walks in
+            if OTS44[0] and i < 11:
+                dn = 0 if i < 6 else (i - 5) * 44
+                sc.draw_cast(k, [P("pam_cat", 130, 1350 + dn, 1.5, "hero", "peer", (0, 0), behind=True, rim=True)])
         def after(k):
             c = k.c
             if op >= 1.0:
+                head(k)
                 return
             hx_, hy_ = 270 - 260 * op, 520
             for sgn in (-1, 1):                              # the velvet, its folds of every width, bunched where she pulls
@@ -1414,6 +1609,7 @@ def t12():
                 kit.ellipse(k, ex + fx_, ey + fy_, 10, 8, oc.GLOVE_DARK, 7901 + n_, shadow=False, lw=1.8)            # the fingers, curled round the edge
             c.set_source_rgba(0.85, 0.85, 0.82, 0.9); c.set_line_width(2.0)
             c.new_path(); c.arc(ex + 22, ey - 8, 26, -2.2, 0.4); c.stroke()
+            head(k)
         s_ = draw(shot("5.1", cam=(cx_, cy_ + bob, z), after=after, protect=()))
         return s_
     g2 = lazy(g2); fr += [g2(i) for i in range(21)]

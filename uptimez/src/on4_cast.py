@@ -58,6 +58,7 @@ CAT_POSES = {   # body units (pm.ik); (left hand, right hand) shapes of hands_ps
     "triumph": ((-8, 0) + pm.ik(1, 62, HY - 80), ("relax_s", "fist")),             # 6.3 the envelope held high, off her ear
 }
 ENV_BIG = [1.0]                    # board v9 (opt-in): 1.25 = the held envelope a quarter bigger
+HUNT = [0.0]                       # (24 Nov, two reviews: "too friendly"; Tomas agreed) her hunting face, 0..1: the lids come down over her eyes, the smile is small and to one side
 MASK_TILT = [0.0]                  # (24 Nov, the crash) the half mask knocked askew: radians about the head's middle; 0 draws as before
 MASK_UP_V2 = [False]               # board v9 (opt-in): pushed up, the sleep mask keeps its stitched eyes and sits smaller
 
@@ -169,6 +170,32 @@ def seal(c, x, y, r):
     c.set_source_rgb(0.93, 0.13, 0.22); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(max(1.0, r * 0.18)); c.stroke()
 
 
+BLINK = [False]
+TAIL = [False]                                               # (24 Nov, Tomas's pick) Pam-Cat has a tail: out from under the coat at her belt's height, an S up beside her, its tip curling; it sways (TAIL_PH, radians)
+TAIL_PH = [0.0]
+
+
+def tail(k, x, feet, s, ph=0.0):
+    c = k.c
+    sw = math.sin(ph); sw2 = math.sin(ph * 2 + 0.6)
+    c.save(); c.translate(x, feet); c.scale(s, s)
+    y0 = BT + 104                                            # under the belt, behind her hip
+    pts = [(-30, y0), (-74 - 6 * sw, y0 + 26), (-104 - 12 * sw, y0 - 22), (-96 - 20 * sw, y0 - 78), (-82 - 24 * sw + 6 * sw2, y0 - 118), (-98 - 26 * sw + 12 * sw2, y0 - 140)]
+    def path(n=len(pts)):
+        c.new_path(); c.move_to(*pts[0])
+        for i in range(1, n - 1):
+            mx, my = (pts[i][0] + pts[i + 1][0]) / 2.0, (pts[i][1] + pts[i + 1][1]) / 2.0
+            c.curve_to(pts[i][0], pts[i][1], pts[i][0], pts[i][1], mx, my)
+        if n == len(pts):
+            c.line_to(*pts[-1])
+    c.set_line_cap(1); c.set_line_join(1)
+    for col, w in ((INK, 15.5), (COAT_DARK, 11.5)):          # the coat's dark, an ink edge: one piece with her
+        c.set_source_rgb(*col); c.set_line_width(w); path(); c.stroke()
+    c.set_source_rgb(0.30, 0.30, 0.32); c.set_line_width(2.2); path(4); c.stroke()      # a little light along its back
+    c.set_line_cap(0); c.set_line_join(0)
+    c.restore()
+
+
 def pam_cat(k, x, feet, s=0.54, pose="hero", face="proud", look=(0, 0), seed=40, env=False):
     """Pam-Cat. Returns the rig's points. pose "sag": the whole figure bent forward and settled lower (a slump, not a
     stand). With the envelope ("triumph", or env=True) the figure is drawn once off-screen to find the fist, the
@@ -177,6 +204,8 @@ def pam_cat(k, x, feet, s=0.54, pose="hero", face="proud", look=(0, 0), seed=40,
     p, gest = CAT_POSES.get(pose, (pose, ("relax_s", "relax_s")))
 
     def draw():
+        if TAIL[0]:
+            tail(k, x, feet, s, TAIL_PH[0])                  # behind her: drawn first
         with _swap((kit.PEOPLE["PAM"], "body", COAT), (pm, "PURPLE", COAT), (pm, "PURPLE_DARK", COAT_DARK),
                    (px, "TROUSERS", SUIT_LEG), (px, "TROUSERS_DARK", SUIT_LEG_DARK), (px, "TRAINER", BOOT),
                    (kit.HAND, 0, _gloved(GLOVE_DARK)), (pm, "_costume", _coat_costume)):
@@ -185,6 +214,27 @@ def pam_cat(k, x, feet, s=0.54, pose="hero", face="proud", look=(0, 0), seed=40,
             coat_details(k, x, feet, s)
             hp.redraw_late(k)
         hx_, hy_ = o_["head"]
+        if BLINK[0]:                                         # (the words, 24 Nov) her lids down for a blink: skin over each eye and a lash line, under the mask
+            SK_ = kit.PEOPLE["PAM"]["skin"]
+            c.save(); c.translate(hx_, hy_); c.scale(s, s)
+            for sx in (-17, 17):
+                c.new_path(); c.arc(sx, 4, 13.5, 0, 2 * math.pi); c.set_source_rgb(*SK_); c.fill()
+                c.set_source_rgb(*INK); c.set_line_width(2.8); c.set_line_cap(1); c.move_to(sx - 10, 7); c.curve_to(sx - 4, 11, sx + 4, 11, sx + 10, 7); c.stroke(); c.set_line_cap(0)
+            c.restore()
+        if HUNT[0] > 0.02:                                   # over the drawn face, under the mask (pam_ss keeps its own face hook, so this is laid on the head's point)
+            SK = kit.PEOPLE["PAM"]["skin"]; hv = HUNT[0]
+            c.save(); c.translate(hx_, hy_); c.scale(s, s)
+            for sx in (-17, 17):                             # the lids: skin down over the top of each eye, a lash line under it
+                c.save(); c.new_path(); c.arc(sx, 4, 13.5, 0, 2 * math.pi); c.clip()
+                ly_ = 4 - 13.5 + 27 * 0.52 * hv - (2.0 if sx > 0 else 0.0) * hv        # one a little higher: not a matched pair
+                c.set_source_rgb(*SK); c.rectangle(sx - 15, -12, 30, ly_ + 12); c.fill()
+                c.set_source_rgb(*INK); c.set_line_width(2.6); c.move_to(sx - 14, ly_ + sx * 0.06 * hv); c.line_to(sx + 14, ly_ - sx * 0.06 * hv); c.stroke()
+                c.restore()
+            c.set_source_rgb(*SK); c.save(); c.translate(0, 31); c.scale(19, 11); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+            c.set_source_rgb(0.62, 0.20, 0.26); c.set_line_width(3.6); c.set_line_cap(1)          # the smile: shut, small, up at one corner
+            c.move_to(-8, 31); c.curve_to(-2, 33.5, 5, 33, 11, 27.5 - 1.5 * hv); c.stroke()
+            c.set_line_cap(0)
+            c.restore()
         ears(k, hx_, hy_, s)
         half_mask(k, hx_, hy_, s)
         return o_

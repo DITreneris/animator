@@ -12,6 +12,8 @@ import numpy as np
 import soundfile as sf
 import on4_scenes as sc
 import on4_voices as vo
+LENS = {}                                                    # line -> its take's length in seconds, as mixed (on4_text reads it)
+END2 = [False]                                               # film v16: the office's sounds on the shorter ending
 
 FPS = 12
 SR = 48000
@@ -86,6 +88,8 @@ def new_takes():
 
 
 SCENE3 = [False]                                            # (24 Nov, Tomas: "the music goes and it is dreary and silent, why?") the crossing after the bump: a short silence, then the bass alone; the engine idling, the night, the glove's squeak, each bill, the shadows' steps, his whistle; the bump as a tap and a thud (on4_motion.CRASH)
+VGAIN = {}                                                  # key -> gain of a line of NEW (a quiet take lifted over the scene)
+CLEAR = []                                                  # keys whose line gets silence under it: no band, no effects (on4_film sets them)
 RETAKE = {}                                                 # key -> wav: a later take of a line of NEW (on4_film sets it)
 STOP_GAP = 0.75                                             # (24 Nov, Tomas) where a speaker puts a full stop inside a take: at least this much silence
 
@@ -144,15 +148,21 @@ def sound(tm, d, total):
     marks = []
     for key, ln in d["lines"].items():
         t = st_(MOVE7[key][0]) + MOVE7[key][1] if key in MOVE7 else st_(ln["shot"]) + vo.LEAD.get(ln["shot"], 0.3)
-        put(voice, stops(load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), " ".join(p_[0] for p_ in vo.LINES[key][2])), t); marks.append((key, round(t, 2)))
+        a0_ = stops(load(os.path.join(vo.OUT, "takes_v1", key + ".wav")), " ".join(p_[0] for p_ in vo.LINES[key][2])); LENS[key] = len(a0_) / float(SR)
+        put(voice, a0_, t); marks.append((key, round(t, 2)))
     d2, _ = new_takes()
+    _clear = []
     for key, (shot, lead, who, txt) in NEW.items():
         t = st_(shot) + lead
-        put(voice, load(RETAKE.get(key, os.path.join(d2, key + ".wav"))), t); marks.append((key, round(t, 2)))
+        a_ = load(RETAKE.get(key, os.path.join(d2, key + ".wav"))) * VGAIN.get(key, 1.0)
+        put(voice, a_, t); marks.append((key, round(t, 2))); LENS[key] = len(a_) / float(SR)
+        if key in CLEAR:
+            _clear.append((t - 0.25, t + len(a_) / float(SR) + 0.45))
     d3 = narr_takes(d.get("narration", "A"))
     for key, (shot, lead, txt) in NARR.items():
         t = st_(shot) + lead
-        put(voice, load(os.path.join(d3, key + ".wav")), t); marks.append((key, round(t, 2)))
+        a3_ = load(os.path.join(d3, key + ".wav")); LENS[key] = len(a3_) / float(SR)
+        put(voice, a3_, t); marks.append((key, round(t, 2)))
     # the office (v4): its own sounds instead of words. Room tone, the machine, her steps, paper, the head going down
     import sound_day1 as dd
     import sound_xmas as sx
@@ -166,8 +176,8 @@ def sound(tm, d, total):
     put(fx, rs(so.hiss(1.1), so.SR), o0 + 0.1, 0.30)                                                # the machine lets off steam
     put(fx, rs(dd.pour(0.9), dd.SR), st_("7.5") + 0.3, 0.10)                                        # and drips on
     for j in range(3):                                                                              # Sofia comes up to the counter
-        put(fx, rs(sx.slipper(0.11), getattr(sx, "SR", SR)), st_("7.2") + 0.15 + j * 0.36, 0.5 + 0.1 * (j % 2))
-    for t0 in (st_("7.3") + 0.2, st_("7.5") + 1.2):                                                 # paper: the rota, then in her hands
+        put(fx, rs(sx.slipper(0.11), getattr(sx, "SR", SR)), st_("7.2") + (0.08 + j * 0.24 if END2[0] else 0.15 + j * 0.36), 0.5 + 0.1 * (j % 2))
+    for t0 in (st_("7.3") + 0.2, st_("7.5") + (0.15 if END2[0] else 1.2)):                                                 # paper: the rota, then in her hands
         put(fx, rs(so.swish(0.22), so.SR), t0, 0.22); put(fx, rs(so.swish(0.16), so.SR), t0 + 0.2, 0.16)
     put(fx, rs(so.thump(), so.SR), st_("8.1") + 0.5, 0.45)                                          # her head back on the counter
     span31 = tm["3.1"]["dur"] + tm["3.2"]["dur"]
@@ -179,12 +189,14 @@ def sound(tm, d, total):
         bump = st_("3.1") + span31 * m_.T3_MARKS["bump"]; toot = st_("3.1") + span31 * m_.T3_MARKS["toot"]
         thud = st_("3.1") + span31 * m_.T3_MARKS["thud"] if "thud" in m_.T3_MARKS else None
     C0 = 0.67                                                                                       # v5: the cat first (8 drawings)
+    import on4_motion as _m
+    HK = -1 / 12.0 if _m.HIT[0] else 0.0                                                            # film v15: the blow lands one drawing earlier (its hit-stop is longer)
     put(fx, rs(so.hiss(0.5), so.SR), 0.25, 0.45)                                                     # the cat across the lens: hiss and yowl
     ty = np.arange(int(0.42 * SR)) / SR; fq = 620 + 900 * np.sin(np.pi * ty / 0.42) ** 0.7 + 40 * np.sin(2 * np.pi * 31 * ty)
     yowl = np.sin(2 * np.pi * np.cumsum(fq) / SR); yowl = np.tanh((yowl + 0.5 * np.sin(4 * np.pi * np.cumsum(fq) / SR)) * 2.0)
     put(fx, yowl * np.minimum(ty / 0.02, 1) * np.minimum((0.42 - ty) / 0.08, 1) * 0.10, 0.27)
     put(fx, rs(so.thump(), so.SR), 0.33, 0.8)
-    put(fx, rs(so.swish(0.3), so.SR), 0.72 + C0, 0.9); put(fx, rs(so.thump(), so.SR), 0.85 + C0, 1.6)       # the punch
+    put(fx, rs(so.swish(0.3), so.SR), 0.72 + C0 + HK, 0.9); put(fx, rs(so.thump(), so.SR), 0.85 + C0 + HK, 1.6)       # the punch
     put(fx, rs(so.swish(0.9), so.SR), 1.0 + C0, 0.5)                                                     # the shadow runs down the wall
     t_ = np.arange(int(0.5 * SR)) / SR                                                             # the whistle's toot
     if not (SCENE3[0] and thud is not None):                 # with the tap he blows on the tap; the flip's toot sat on "Traffic flows."
@@ -226,7 +238,7 @@ def sound(tm, d, total):
             for i in (xc.NR + 20, xc.NR + 23):                                                       # GO, to the car: after Father's line
                 whistle(R(i), 0.16, 0.07)
             for q in range(6):                                                                       # each bill lands on her
-                put(fx, rs(so.swish(0.07), so.SR), B(q * 1.6 + 9), 0.40)
+                put(fx, rs(so.swish(0.07), so.SR), B(q * 1.6 + 9 + xc.B_BILL0[0]), 0.40)
             for j, i in enumerate((1, 3, 5, 7, 9)):                                                  # the two bodyguards walk in
                 put(fx, rs(so.thump(), so.SR), G(i), 0.40 if j % 2 else 0.55)
             for q in range(6):                                                                       # he picks them up, one by one
@@ -256,7 +268,19 @@ def sound(tm, d, total):
                 put(fx, rs(so.thump(), so.SR), t6(i), (0.45 if j % 2 else 0.6) * (0.5 if i < 70 else 1.0))
     if SCENE3[0] != "cross":
         put(fx, rs(so.swish(0.6), so.SR), st_("3.4") + 0.9, 0.35)                                   # the bills
-    put(fx, rs(iw.clink(), getattr(iw, "SR", SR)), st_("7.2") + 2.4, 0.8)                           # her mug set down
+    put(fx, rs(iw.clink(), getattr(iw, "SR", SR)), st_("7.2") + (2.25 if END2[0] else 2.4), 0.8)    # her mug set down
+    import on4_motion as _m2
+    if _m2.GIVE[0] and _m2.T2_MARKS:                         # (the review) paper: as it changes hands; as it goes under his lapel
+        span2 = tm["2.2"]["dur"] + tm["2.3"]["dur"]
+        put(fx, rs(so.swish(0.14), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["grip"], 0.35)
+        put(fx, rs(so.swish(0.10), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["grip"] + 0.3, 0.25)
+        put(fx, rs(so.swish(0.18), so.SR), st_("2.2") + span2 * _m2.T2_MARKS["coat"] - 0.55, 0.30)   # before his line, not under it
+    if _m2.LAW[0] and SCENE3[0]:                             # the neon's stutter: two dry ticks and a buzz dying
+        t5 = st_("5.3")
+        for tt in (1.60, 1.76, 1.95):
+            put(fx, rs(so.metal_click(2400, 0.03), so.SR), t5 + tt, 0.35)
+        tb = np.arange(int(0.3 * SR)) / SR
+        put(fx, np.sign(np.sin(2 * np.pi * 100 * tb)) * np.exp(-tb / 0.08) * 0.03, t5 + 1.95)
     crash = st_("2.4") + __import__("on4_motion").T7_SLAM[0] / 12.0                                                                  # v6: T7's lid
     put(fx, rs(so.swish(0.3), so.SR), crash - 0.27, 0.6)                                            # she goes over
     tc = np.arange(int(0.7 * SR)) / SR
@@ -281,7 +305,7 @@ def sound(tm, d, total):
         nz = rng.standard_normal(n_); bb, aa = sg_.butter(2, 5000 / (SR / 2), "high"); nz = sg_.lfilter(bb, aa, nz)
         return nz * np.exp(-tt_ / 0.22) * 0.22 + np.sin(2 * np.pi * 180 * tt_) * np.exp(-tt_ / 0.04) * 0.25
     for t0, d, cy in ((0.0, 0.90, 0.92), (1.17, 0.90, 2.08), (2.35, 0.65, 3.0)):
-        put(fx, roll(d), a0 + t0); put(fx, cymbal(), a0 + cy)
+        put(fx, roll(d), a0 + t0); put(fx, cymbal() * (0.55 if SCENE3[0] else 1.0), a0 + cy)   # (24 Nov) the cymbal lower: its edge rang over -1 dBFS after the AAC
     for j in range(4):
         put(fx, rs(so.swish(0.12), so.SR), a0 + 0.1 + j * 0.2, 0.3)                                  # the knives turning
     put(fx, rs(so.thump(), so.SR), a0 + 0.84, 0.5)                                                  # into the boards
@@ -322,6 +346,11 @@ def sound(tm, d, total):
             w = int(0.25 * SR); on = np.convolve(on, np.ones(w) / w, "same")
             env = 1.0 - 0.92 * np.clip(on * 3.0, 0, 1)
         mus = mus * env; fx = fx * (0.5 + 0.5 * env)
+        for t0, t1 in _clear:                                # these lines alone: everything else out for their length, 0.1 s ramps
+            j0, j1 = max(0, int(t0 * SR)), min(n, int(t1 * SR)); r_ = int(0.1 * SR)
+            g_ = np.ones(n); g_[j0:j1] = 0.0
+            g_[max(0, j0 - r_):j0] = np.linspace(1, 0, len(g_[max(0, j0 - r_):j0])); g_[j1:j1 + r_] = np.linspace(0, 1, len(g_[j1:j1 + r_]))
+            mus = mus * g_; fx = fx * g_
     mix = voice * 1.0 + fx * 0.7 + mus * 0.22
     return mix[:int(total * SR)], marks, dict(bump=round(bump, 2), toot=round(toot, 2))
 

@@ -46,8 +46,8 @@ KNEE_K = 0.6                                               # (review: "the knees
 
 def kneel(drop, **kw):
     """_pam's knee dict, or None when the knees are straight"""
-    if m.LAW[0] and not kw and drop <= 20:                 # (24 Nov) no squat with both knees out (a diamond): the weight on one leg, the other loose
-        return relax(min(1.0, drop / 12.0))
+    if m.LAW[0] and not kw and drop <= 20:                 # (24 Nov) no squat with both knees out (a diamond); and (Tomas: "she sways like a drunk") no shifting about either:
+        return None                                        # standing, she stands; she moves when she walks (catwalk)
     kw = {k_: (v[0], v[1] * KNEE_K, v[2]) for k_, v in kw.items()}
     drop = drop * KNEE_K * (0.5 if m.LAW[0] else 1.0)
     return dict(drop=drop, **kw) if drop > 2.5 or kw else None
@@ -57,6 +57,32 @@ def relax(u):
     """(24 Nov, the review of 1.4: both knees bent, the trunk not answering) her weight on her screen-left leg, straight;
     the other loose: its heel up a little, its knee out, the foot a little aside. u 0..1. No squat."""
     return dict(drop=2.0 * u, r=(9.0 * u, 10.0 * u, 1)) if u > 0.05 else None
+
+
+def catwalk(ph, away=False):
+    """(24 Nov, Tomas: "her walk lacks a cat's manners"; v2 after the review) one stride, ph 0..1 (two steps), from the
+    front. Each foot set down on one line under her middle, the free foot low and round (a glide, not a march); the
+    hips swing out over the standing leg; the shoulders turn the other way (the figure cut at the belt); the head tips
+    back again and stays level; one glove on her hip, the other arm loose with a limp wrist; a held beat as each foot
+    lands; the hunting face. Returns (arms, gest, knee, rot, dx, kw) for pam_ and P (kw: tilt, twist, hunt)."""
+    h = (ph % 1.0) * 2.0
+    left_stands = h < 1.0
+    u0 = h % 1.0
+    u = 0.5 - 0.5 * math.cos(math.pi * min(1.0, max(0.0, (u0 - 0.12) / 0.76)))   # held at each contact, quick through the pass
+    sw = math.sin(math.pi * u)
+    side = -1 if left_stands else 1
+    s_ = side * math.sin(math.pi * min(1.0, u * 1.1 + 0.08))                    # the hips out over the standing leg
+    LINE = 14
+    free_dx = (-side) * (-LINE) * (0.2 + 0.8 * u) + (-side) * 14 * (1 - u) * sw
+    stand = (side * -LINE, 0.0, side)
+    free = (free_dx, 7.0 * sw, -side)                        # low: it slides
+    kn = dict(drop=0.5 + 1.2 * abs(math.cos(math.pi * u)), l=stand if left_stands else free, r=free if left_stands else stand)
+    a = math.cos(math.pi * h)
+    if away:                                               # the second walk (Tomas: she may walk twice, the walk a little different): leaving, her back to us: both arms loose, the hips wider, no tilt of the head
+        arms = oc.pm.ik(-1, -34 + 9 * a, oc.BT + 134 - 3 * abs(a)) + oc.pm.ik(1, 34 + 9 * a, oc.BT + 134 - 3 * abs(a))
+        return arms, ("relax_s", "relax_s"), kn, 0.085 * s_, 19.0 * s_, dict(twist=-0.12 * s_, behind=True)
+    arms = tuple(HERO[:2]) + oc.pm.ik(1, 34 + 9 * a, oc.BT + 132 - 3 * abs(a))   # screen-left glove on her hip; the other swings, loose
+    return arms, ("fist", "relax_s"), kn, 0.075 * s_, 16.0 * s_, dict(tilt=-0.03 * s_, twist=-0.10 * s_, hunt=0.5)
 
 
 def pam_(k, p, sy=1.0, rot=0.0, kn=None):
@@ -91,14 +117,14 @@ def a13(t):
         u = ease(seg(t, 0.9, 1.6))
         arms, face, look, rot, kn = asym(lerp(HERO, SAG, u), 8 * u), "fade", (0.9, 0.2 + 0.4 * u), 0.05 * u + weight(14 * u), kneel(14 * u)
         if m.LAW[0]:
-            rot, kn = -0.03 * u, relax(u)
+            rot, kn = 0.0, None                            # she stands firm: only her arms and face let down
     elif t < 2.3:                                                              # the coat pulled straight: two tugs, a lift
         u = seg(t, 1.6, 2.3)
         tug = abs(math.sin(u * 2 * math.pi))
         arms, face, look = asym(lerp(SAG, TUG, min(1.0, u * 3)), 5), "peer", (0.0, 0.8)
         kn = kneel(14 * (1 - u) + 8 * tug); rot = weight(14 * (1 - u) + 8 * tug) - 0.03 * tug
         if m.LAW[0]:
-            kn = relax(max(0.0, 1 - u * 1.4)); rot = -0.03 * max(0.0, 1 - u * 1.4) - 0.02 * tug
+            kn = None; rot = 0.0
     else:                                                                      # and the pose again, as if
         u = ease(seg(t, 2.3, 2.6))
         arms, face, look, rot, kn = lerp(TUG, HERO, u), "proud", (-0.4, -0.2), 0.0, None
@@ -107,6 +133,9 @@ def a13(t):
 
 
 # ---- 1.4: the shadows peel off the cobbles and run up the street to a pair of taillights; she turns to follow -------
+ARCH14 = [False]                                             # (24 Nov, cold test of film v14: "an animal, then figures; who are they?"; a blob behind her head) 1.4: the two men stand up together and are in the arch before she walks across it
+
+
 def a14(t):
     RUN = ((-38, 30, 38, -30), (-10, 8, 10, -8), (38, -30, -38, 30), (10, -8, -10, 8))   # four drawings a stride
     YV, YE = 452, 540                                                          # the street's vanishing line; where they reach
@@ -116,6 +145,8 @@ def a14(t):
         c.set_source_rgba(0, 0, 0, 0.45); c.fill()
     def thug(j, x0, y0, s0, seed):
         u = seg(t, 0.15 + (0.30 if m.LAW[0] else 0.12) * j, 2.2 + (0.30 if m.LAW[0] else 0.12) * j)   # (review) the second man a good step behind: in file, not one double shape
+        if ARCH14[0]:                                                          # both up at once (one flat shape and one man read as an animal and its owner); gone into the arch before she is in front of it
+            u = seg(t, 0.10 + 0.10 * j, 1.80 + 0.22 * j)
         if u <= 0:                                                             # still flat on the cobbles: a shadow
             return ("flat", (x0 - 10, y0 + 12, 0.20), dict(seed=seed))
         rise = seg(u, 0.0, 0.14)
@@ -159,10 +190,18 @@ def a14(t):
     kn = kneel(d, r=(10 * step, 8 * math.sin(step * math.pi * 2) ** 2, 1)) if step > 0 else kneel(d)
     rot_ = 0.04 * u + weight(d)
     if m.LAW[0]:                                                               # (Tomas: "where does she go?"; the review) she does not walk on the spot: she stays, her weight goes onto one leg, she turns to the arch and leans after them
-        lean_ = ease(seg(t, 2.0, 2.7))
-        p = P("pam_cat", 150 - 4 * u + 6 * lean_, 760, 0.84, pose(asym(lerp(HERO, (-30, 40, 34, -26), u), 6 * u), ("fist", "relax_s" if u > 0.5 else "fist")),
-              "approve" if t < 1.0 else "peer", (0.6 * (1 - u) + 0.9 * u, -0.6 - 0.2 * u), rim=True)
-        kn = relax(u); rot_ = -0.03 * u + 0.05 * lean_
+        if t < 1.15:                                       # she stands firm and watches them go: only her eyes move
+            p = P("pam_cat", 128, 760, 0.84, pose(HERO, ("fist", "fist")), "approve" if t < 0.9 else "peer", (0.6 + 0.3 * seg(t, 0.3, 0.9), -0.6), rim=True,
+                  hunt=0.5 * seg(t, 0.9, 1.1))
+            kn = None; rot_ = 0.0
+        else:                                              # (Tomas: "she must come from far, nearer, to the camera") and she walks: toward us down the lane, her cat's walk,
+            w = ease((t - 1.15) / 1.65)                    # bigger with every step, while they go into the arch behind her
+            yy = 760 + 180 * w; ss = 0.84 * (yy - YV) / float(760 - YV)
+            ar_, ge_, kn, rot_, dx_, kw_ = catwalk((t - 1.15) / 0.92)
+            px_ = 128 + 130 * w
+            if ARCH14[0]:                                  # she keeps to her side of the lane until they are gone, then comes over
+                px_ = 128 + 24 * w + 106 * ease(seg(t, 2.05, 2.8))
+            p = P("pam_cat", px_ + dx_ * ss, yy, ss, pose(ar_, ge_), "peer", (0.0, 0.1), rim=True, **kw_)
     def before(k):
         for x, y, s_ in shadows:
             contact(k, x, y, s_)
@@ -172,6 +211,9 @@ def a14(t):
 
 
 # ---- 2.1: on the fire escape, looking down; the car; the shadow at its rear window points back down the lane ---------
+LOW21 = [False]                                              # (24 Nov, the words) 2.1: the push in goes down less, so her head stays under the narrator's card
+
+
 def a21(t):
     lean = 0.06 + 0.04 * ease(seg(t, 0.2, 1.0))                               # she leans over, further
     point = seg(t, 0.8, 1.2)                                                   # the shadow's arm comes up, points down the lane
@@ -184,7 +226,76 @@ def a21(t):
         pam_(k, p, breath(t), lean + weight(10), kneel(10))
         sc.railing(k, 380)
     z = 1.0 + 0.22 * ease(seg(t, 0.0, 2.2))                                    # a slow push in, down onto the car
-    return draw(shot("2.1", cam=(270 - 40 * (z - 1) / 0.22, 480 + 60 * (z - 1) / 0.22, z), cast=cast, after=after, protect=()))
+    if m.LAW[0]:                                           # (24 Nov, Tomas: "what does the car do? should it not come nearer?") the limousine drives up the lane to her wall and
+        z = max(z, 1.002)                                  # never the exact wide camera: its light (with the parked car's red tail glow) came on for the first drawing only
+        import on4_car as car_                             # stops under her; Dad's two men walk beside it; she drops behind the rail and her eyes follow it in
+        import on4_cross as xc
+        u = 0.06 + 0.94 * (1 - (1 - seg(t, 0.0, 1.7)) ** 2)   # it slows as it comes (already moving on the first drawing)
+        cy = 576 + (735 - 576) * u
+        cs = 0.36 * (105 + 285 * (cy - 576) / 384.0) / 105.0
+        cx = 302 + 23 * (cy - 576) / 384.0 - 14 * u
+        nose = -0.02 * math.sin(math.pi * seg(t, 1.5, 1.9))                    # it stops: the nose dips and comes back
+        duck = ease(seg(t, 0.3, 0.75))                       # v2 (the review): down on her haunches: hips down and back, the trunk forward
+        turn = ease(seg(t, 0.7, 1.0))                        # her head comes round to it last
+        hunt = 0.6 * ease(seg(t, 1.8, 2.1))                  # and at the end her eyes narrow; a small smile
+        D = 44 * duck
+        look = (0.3 + 0.6 * turn - 0.2 * u * turn, 0.5 + 0.45 * turn)
+        ARMS = oc.pm.ik(-1, -58, -126 - D) + lerp(oc.pm.ik(1, 62, -126), oc.pm.ik(1, 40, -84 - D), duck)   # one glove stays on the rail, the other comes down to her knee
+        p = P("pam_cat", 186, 420, 0.64, pose(ARMS, ("grab", "relax_s" if duck > 0.5 else "grab")), "peer", look, rim=True, tilt=0.10 * turn, hunt=hunt)
+        gd = [(-1, 10.0, 11.0, 1.70), (1, -16.0, 9.2, 1.86)]                    # each of Dad's men: side, how far ahead of the car's nose, his own pace, when he stops
+        gp = []
+        for j, (sgn, ahead, pace, stop) in enumerate(gd):
+            gu = 0.06 + 0.94 * (1 - (1 - seg(t, 0.0, stop)) ** 2)              # his own walk, not the car's
+            gy = 576 + (735 - 576) * gu + ahead * cs
+            gs_ = 0.27 * 0.36 * (105 + 285 * (gy - 576) / 384.0) / 105.0
+            gx = 302 + 23 * (gy - 576) / 384.0 - 14 * gu + sgn * (104 * cs + 16)
+            tn = math.sin((t - 1.9) * 9.0) * seg(t, 1.9, 2.0) if j == 0 else 0.0     # stopped, the first looks up the street and down it (never up at her)
+            gp.append((gx, gy, gs_, j == 1, (t * pace + j * 1.6) if t < stop else None, tn))
+        def before(k):
+            c = k.c
+            for x0, x1 in ((0, 250), (540, 330)):            # night: the lane's walls darker toward the frame's edges
+                g = cairo.LinearGradient(x0, 0, x1, 0)
+                g.add_color_stop_rgba(0, 0, 0, 0, 0.62); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+                c.set_source(g); c.rectangle(min(x0, x1), 420, abs(x1 - x0), 540); c.fill()
+            g = cairo.LinearGradient(0, 760, 0, 960); g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0, 0, 0, 0.55)
+            c.set_source(g); c.rectangle(0, 760, 540, 200); c.fill()
+            for sgn in (-1, 1):                              # the headlights: two beams down the cobbles
+                lx = cx + sgn * 62 * cs; ly_ = cy - 44 * cs; L = 190 * cs + 60
+                g = cairo.LinearGradient(0, ly_, 0, ly_ + L)
+                g.add_color_stop_rgba(0, 1, 1, 0.94, 0.50); g.add_color_stop_rgba(1, 1, 1, 0.94, 0.0)
+                c.new_path(); c.move_to(lx - 10 * cs, ly_ + 30 * cs); c.line_to(lx + 10 * cs, ly_ + 30 * cs)
+                c.line_to(lx + sgn * 30 * cs + 46 * cs, ly_ + L); c.line_to(lx + sgn * 30 * cs - 46 * cs, ly_ + L); c.close_path(); c.set_source(g); c.fill()
+            for gx, gy, gs_, fl, st__, tn in gp:             # their long shadows down the lane toward us, from the lit house behind them
+                L = 420 * gs_; out = (gx - cx) * 0.22
+                g = cairo.LinearGradient(0, gy, 0, gy + L); g.add_color_stop_rgba(0, 0, 0, 0, 0.55); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+                c.new_path(); c.move_to(gx - 70 * gs_, gy + 2); c.line_to(gx + 70 * gs_, gy + 2)
+                c.line_to(gx + out + 110 * gs_, gy + L); c.line_to(gx + out - 110 * gs_, gy + L); c.close_path(); c.set_source(g); c.fill()
+            c.save(); c.translate(cx, cy); c.rotate(nose); c.translate(-cx, -cy)
+            car_.reflect(k, lambda: car_.front(k, cx, cy, cs), cy, 0.25, 20)
+            c.restore()
+            gs0 = xc.GS
+            try:
+                for j, (gx, gy, gs_, fl, st__, tn) in sorted(enumerate(gp), key=lambda q: q[1][1]):
+                    xc.GS = gs_
+                    xc.guard(k, gx, gy + 4, xc.G_WALK, fl, 1600 + j * 40, 0.0, st__, tn)
+            finally:
+                xc.GS = gs0
+        def after2(k):
+            was = sc.RIM_A[0]; sc.RIM_A[0] = 0.35             # a thinner rim: she read as a sticker
+            try:
+                pam_(k, p, breath(t), 0.05 + 0.13 * duck, dict(drop=D, l=(-10 * duck, 0, 1), r=(4 * duck, 0, 1)) if duck > 0.03 else None)
+            finally:
+                sc.RIM_A[0] = was
+            sc.railing(k, 380)
+            c = k.c                                          # the frame's corners
+            g = cairo.RadialGradient(270, 500, 300, 270, 500, 620); g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0, 0, 0, 0.4)
+            c.set_source(g); c.rectangle(-100, -100, 800, 1200); c.fill()
+        car_.B_END_OFF[0] = True
+        try:
+            return draw(shot("2.1", cam=(270 - 40 * (z - 1) / 0.22, 480 + (24 if LOW21[0] else 60) * (z - 1) / 0.22, z), cast=[], before=before, after=after2, protect=()))
+        finally:
+            car_.B_END_OFF[0] = False
+    return draw(shot("2.1", cam=(270 - 40 * (z - 1) / 0.22, 480 + (24 if LOW21[0] else 60) * (z - 1) / 0.22, z), cast=cast, after=after, protect=()))
 
 
 # ---- 4.1: at the club's door, where they dropped her: dust off, "There you are." to the car, the sign flickers, she looks up
@@ -251,6 +362,9 @@ def a51(t):
 
 
 # ---- 5.3: she comes in from the right on her toes, low; the hand into his coat; out with the envelope; back off ------
+BIG53 = [False]                                              # (24 Nov, cold test of film v14: "small, cut by the edge, a red outline like an error") 5.3: she is bigger and whole in the frame, the camera a little to her side; the neon's red a thin edge
+
+
 def a53(t):
     LIFT = oc.CAT_POSES["lift"][0]
     if t < 0.9:                                                                # tiptoe in, low
@@ -273,30 +387,70 @@ def a53(t):
         d_ = 10 if t < 0.9 else (14 if t < 2.0 else 8)
         st2 = int(t * 10) % 2 if t < 0.9 else 0
         kn = dict(drop=d_, l=(-3, 8 if st2 else 0, -1), r=(-3, 0 if (st2 or t >= 0.9) else 8, -1))
-    p = P("pam_cat", x, 716, 0.46, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env)
+    ps_ = 0.46
+    if BIG53[0]:                                             # nearer to us than he is, on our side of the table, at his elbow; drawn turned over, so the hand with the envelope is the one on his side
+        ps_ = 0.58; x = 150 + (x - 250) * (1.5 if x < 250 else 0.3)      # she comes in a long way; with the envelope she only draws back a hand's breadth (her "Easy." is said there)
+        IN_, OUT_ = oc.pm.ik(1, 100, oc.BT + 40), oc.pm.ik(1, 62, oc.BT + 60)
+        if 0.9 <= t < 1.6:                                   # into his lapel, under his chin
+            arms = lerp((-20, 30, 30, -10), (-8, 0) + IN_, ease(seg(t, 0.9, 1.25)))
+        elif t < 2.0 and t >= 1.6:                           # out with it, between them, clear of his face
+            arms = lerp((-8, 0) + IN_, (-8, 0) + OUT_, ease(seg(t, 1.6, 1.85)))
+        elif t >= 2.0:
+            arms = lerp((-8, 0) + OUT_, oc.pm.ik(-1, -30, oc.BT + 60) + oc.pm.ik(1, 10, oc.BT + 40), ease(seg(t, 2.0, 2.3)))
+    p = P("pam_cat", x, 716 + (8 if BIG53[0] else 0), ps_, pose(arms, gest), "peer", (-0.8, 0.4), rim=True, env=env, hunt=0.5 if m.LAW[0] else 0.0, rim_red=bool(m.LAW[0]))
     def after(k):
         card(k, t)
-        pam_(k, p, breath(t), rot, kn)
+        if m.LAW[0]:                                       # her shadow thrown away from the booth's lamp, along the boards
+            c = k.c
+            g = cairo.LinearGradient(x, 0, x + 120, 0); g.add_color_stop_rgba(0, 0, 0, 0, 0.5); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+            c.new_path(); c.move_to(x - 16, 712); c.line_to(x + 16, 720); c.line_to(x + 130, 734); c.line_to(x + 120, 716); c.close_path(); c.set_source(g); c.fill()
+        if BIG53[0]:
+            k.c.save(); k.c.translate(x, 0); k.c.scale(-1, 1); k.c.translate(-x, 0)
+        pam_(k, p, breath(t), -rot if BIG53[0] else rot, kn)
+        if BIG53[0]:
+            k.c.restore()
     z = 1.9 * (1 + 0.03 * ease(seg(t, 0.0, 2.3)))                             # a slow push in
+    if m.LAW[0]:                                           # as the envelope comes out: THE HOUSE stutters twice and goes out; ALWAYS COLLECTS burns on
+        import on4_club as cl_
+        cl_.ROW0[0] = 0.0 if (1.60 <= t < 1.68 or 1.76 <= t < 1.84 or t >= 1.95) else 1.0
+        w0 = sc.RIM_RED_W[0]
+        if BIG53[0]:
+            sc.RIM_RED_W[0] = -1.1                           # turned over: the red stays on the neon's side
+        try:
+            return draw(shot("5.3", cam=(160, 610, z), cast=[], after=after, protect=()))
+        finally:
+            cl_.ROW0[0] = 1.0; sc.RIM_RED_W[0] = w0
     return draw(shot("5.3", cam=(160, 610, z), cast=[], after=after, protect=()))
 
 
 # ---- 5.3b: her black glove draws the envelope out of his coat by its edge -----------------------------------------------
+LIFT2 = [False]                                              # (24 Nov, cold test of film v14: "two near-static seconds; whose pocket?") 5.3b: the hand comes in, draws it out, takes it away; the coat in the Client's jacket grey
+
+
 def a53b(t):
     """5.3b, v4 (review: "an amorphous fist"; the hands rules): the envelope first, then the fingers over it: her thumb on
     its face at the edge, the index and middle finger behind it (their tips show over the top), the back of the hand,
     the wrist narrower than the cuff, the sleeve out of the frame's right edge. It comes out slowly and is held 0.6 s."""
     u = ease(seg(t, 0.2, 1.6))
+    hin = 0.0; away = 0.0
+    if LIFT2[0]:                                                               # the hand comes in to it, draws it out, and takes it away up to her: moving all through
+        hin = 1 - ease(seg(t, 0.0, 0.35)); u = ease(seg(t, 0.4, 1.45)); away = ease(seg(t, 1.55, 2.3))
     GL = (0.22, 0.22, 0.25); RIM = (0.85, 0.85, 0.82)                          # the glove a shade off the coat, rim-lit
     def lift(k):
         c = k.c
-        sc.knee_coat(k, env=False, hand=False)
-        ex, ey = 360 - 34 * u, 378 - 74 * u                                    # the envelope: half in the pocket, then out by its corner
+        tone = sc.COAT_TONE[:]
+        if LIFT2[0]:
+            sc.COAT_TONE[:] = [(0.44, 0.45, 0.48), (0.36, 0.37, 0.40)]         # the jacket he wears in the hall
+        try:
+            sc.knee_coat(k, env=False, hand=False)
+        finally:
+            sc.COAT_TONE[:] = tone
+        ex, ey = 360 - 34 * u + 96 * away, 378 - 74 * u - 150 * away            # the envelope: half in the pocket, then out by its corner
         oc.envelope(k, ex, ey, 2.4)                                            # v5 (the hand rules: three tries failed, so the series' own grab):
         if u < 0.75:                                                           # the object first, then the hand over it
-            st.poly(k, [(296, 400), (444, 400), (440, 520), (300, 520)], (0.16, 0.17, 0.22), 2.0)   # the pocket over it while it is in
+            st.poly(k, [(296, 400), (444, 400), (440, 520), (300, 520)], (0.36, 0.37, 0.40) if LIFT2[0] else (0.16, 0.17, 0.22), 2.0)   # the pocket over it while it is in
         import hands_ps as hp
-        gx, gy = ex + 104, ey - 26                                             # on its right edge, fingers curled over it, the heart left clear
+        gx, gy = ex + 104 + 120 * hin, ey - 26 - 130 * hin                     # on its right edge, fingers curled over it, the heart left clear
         st.poly(k, [(gx + 150, gy - 150), (gx + 20, gy - 40), (gx + 52, gy - 6), (gx + 170, gy - 100)], oc.COAT, 2.4)   # her sleeve, from the corner of the frame
         c.set_source_rgb(*RIM); c.set_line_width(2); c.move_to(gx + 150, gy - 150); c.line_to(gx + 20, gy - 40); c.stroke()
         c.push_group(); hp.draw(k, "grab", gx, gy, 104, GL, (-0.7, 0.7), 1); g_ = c.pop_group()
@@ -360,6 +514,9 @@ def a61(t):
 
 
 # ---- 6.2: her glove's thumb slides off the sheet: SOFIA, the photograph; the camera in on the circled number ---------
+THUMB62 = [False]                                            # (24 Nov, cold test: "a grey tube") 6.2: a gloved hand on the sheet's edge, not a rod
+
+
 def a62(t):
     """v5 (review): her hand holds the sheet at its right edge: the palm off the paper, the thumb across its face (the
     fingers are behind it). The thumb lies over the end of SOFIA and slides down off it. The camera comes in a little,
@@ -370,9 +527,17 @@ def a62(t):
         c = k.c
         ey = 492 + 74 * u                                                      # the thumb's height: on the name, then under it
         st.poly(k, [(620, ey - 60), (500, ey - 34), (506, ey + 44), (620, ey + 70)], oc.COAT, 2.4)   # her sleeve, from the right edge
-        for col, grow in ((RIM, 3), (GL, 0)):                                  # the palm, off the paper's edge
+        for col, grow in (() if THUMB62[0] else ((RIM, 3), (GL, 0))):          # the palm, off the paper's edge
             c.new_path(); c.save(); c.translate(506, ey + 10); c.scale(48 + grow, 58 + grow); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
             c.set_source_rgb(*col); c.fill()
+        if THUMB62[0]:                                                         # the series' own gloved hand (hands_ps), gripping the sheet's edge: thumb on its face, fingers behind
+            import hands_ps as hp
+            ey2 = 452 + 66 * u                                                  # on the name's height, then down beside the grey lines: neither the name nor the number under it
+            c.push_group(); hp.draw(k, "grab", 512, ey2, 104, GL, (-1.0, 0.1), 1); g_ = c.pop_group()
+            for dx_, dy_ in ((-3, 0), (3, 0), (0, -3), (0, 3)):
+                c.save(); c.translate(dx_, dy_); c.set_source_rgba(*RIM, 0.9); c.mask(g_); c.restore()
+            hp.draw(k, "grab", 512, ey2, 104, GL, (-1.0, 0.1), 1)
+            return
         for col, w in ((RIM, 46), (GL, 40)):                                   # the thumb, short and thick, across the sheet's face
             c.set_source_rgb(*col); c.set_line_width(w); c.set_line_cap(1); c.move_to(480, ey); c.line_to(404, ey - 8); c.stroke()
         c.set_source_rgba(0, 0, 0, 0.35); c.set_line_width(2); c.new_path(); c.arc(410, ey - 8, 13, -1.2, 1.2); c.stroke()   # its nail's edge
@@ -402,6 +567,10 @@ def a71(t):                                                    # asleep on the c
     return draw(shot("7.1", cam=D_CAM, cast=[_pam_asleep(t)], protect=()))
 
 
+END2 = [False]                                               # (24 Nov, Tomas: "the ending is too long and too complicated; Sofia is too small, in the dead zone") 7.2 nearer, from the waist up, 2.6 s; the rota once (7.5, one look down, 1.8 s; the insert 7.4 is cut)
+MAIL72 = [False]                                             # (24 Nov, cold test of film v14: "the mail sheet pops in and hovers")
+
+
 def a72(t):                                                    # Sofia in mid-step, eyes on her phone; the envelope into the hand; her mug; on
     import sofia_dh as sd
     import on4_props as pr
@@ -410,16 +579,31 @@ def a72(t):                                                    # Sofia in mid-st
     x = 560 + 85 * ease(seg(t, 0.0, 0.8)) + 160 * ease(seg(t, 2.5, 3.2))
     reach = 0.8 <= t < 1.6
     sof = P("sofia", x, 800 - (4 if int(t * 8) % 2 and (t < 0.8 or t > 2.5) else 0), 0.47, "post" if reach else "hold", "appraise", (0.2, 1.0))
+    cam72 = D_CAM; T_UP = (1.15, 1.5); T_MUG = 2.3
+    if END2[0]:                                                # nearer, from the waist up: her face in the upper half of the safe area, the phone, the mail and Pam's hand in one frame; 2.6 s
+        x = 500 + 108 * ease(seg(t, 0.0, 0.6)) + 300 * ease(seg(t, 2.2, 2.6))      # she stands till her line is out (it ends at 1.98), then goes
+        reach = 0.6 <= t < 1.4
+        sof = P("sofia", x, 890 - (5 if int(t * 8) % 2 and (t < 0.6 or t > 2.2) else 0), 0.90, "post" if reach else "hold", "appraise", (0.2, 1.0))
+        cam72 = (651, 665, 2.44); T_UP = (0.85, 1.2); T_MUG = 2.2
     v = ease(seg(t, 0.8, 1.4))
     def post(k):
         hx, hy = sc.HANDS.get("pam_awake", (706, 510))
+        if MAIL72[0] or END2[0]:                               # she walks in with it in her phone hand; it goes up with that hand and is slid into Pam's; nothing appears in the air
+            k.c.push_group(); o_ = sd.sofia(k, sof[1][0], sof[1][1], sof[1][2], sof[1][3], "appraise", (0.2, 1.0), tablet_kind=None); k.c.pop_group()
+            sx_, sy_ = o_["hands"][1]
+            w_ = ease(seg(t, *T_UP))
+            ex, ey = sx_ + 14 + (hx + 2 - sx_ - 14) * w_, sy_ - 38 + (hy - 20 - sy_ + 38) * w_
+            pr.envelope(k, ex, ey, 0.26, 0.12 + 0.08 * w_)
+            if w_ >= 1:
+                hp.draw(k, "grab", hx, hy, 15, (0.99, 0.86, 0.70), (0.0, -1.0), 1)
+            return
         if t >= 0.8:                                           # up from her hand into Pam's
             ex, ey = 650 + (hx + 2 - 650) * v, 640 + (hy - 20 - 640) * v
             pr.envelope(k, ex, ey, 0.26, 0.2 * v + 0.5 * math.sin(v * math.pi) * 0.3)
             if v >= 1:
                 hp.draw(k, "grab", hx, hy, 15, (0.99, 0.86, 0.70), (0.0, -1.0), 1)
-    loc = "desk8" if t > 2.3 else None                         # her mug at the end of the row
-    return draw(shot("7.2", cam=D_CAM, cast=[_pam_asleep(t), sof], after=post, protect=(), **({"loc": loc} if loc else {})))
+    loc = "desk8" if t > T_MUG else None                       # her mug at the end of the row
+    return draw(shot("7.2", cam=cam72, cast=[_pam_asleep(t), sof], after=post, protect=(), **({"loc": loc} if loc else {})))
 
 
 def a73(t):
@@ -440,6 +624,16 @@ def a75(t):
     """Realization, then disappointment: the sheet under her chin, her fingertip down the rows to the seventh PAM; her
     eyes follow it; the brows go, the head sinks a little; held."""
     import on4_props as pr
+    if END2[0]:                                                # one look: her eyes drop from the top row to the bottom one, the smile goes, the head sinks; no fingertip; 1.8 s
+        dn = ease(seg(t, 0.30, 0.55))
+        face = "hopeful" if t < 0.50 else ("approve" if t < 0.75 else ("doubt" if t < 1.15 else "fade"))
+        sink = 6 * ease(seg(t, 1.05, 1.45))
+        p = P("pam_awake", 692, 722 + sink, 0.50, "up", face, (-0.2, 0.35 + 0.65 * dn), "stand")
+        def after2(k):
+            pr.rota(k, 706, 694 + sink * 0.6, 0.30, -0.05)
+            for fx in (676, 736):
+                kit.ellipse(k, fx, 652 + sink * 0.6 + (fx - 676) * 0.05, 8, 6, (0.99, 0.86, 0.70), 7600 + fx, shadow=False, lw=1.4)
+        return draw(shot("7.5", cam=(702, 664, 3.1), cast=[p], after=after2, protect=()))   # the camera lower: the seventh row over the caption zone
     u = ease(seg(t, 0.2, 1.7))
     face = "hopeful" if t < 0.35 else ("approve" if t < 0.8 else ("doubt" if t < 1.8 else "fade"))   # smile, the gasp, the brows, gone
     sink = 5 * ease(seg(t, 1.8, 2.2))

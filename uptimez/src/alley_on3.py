@@ -27,7 +27,7 @@ CAMS = {"A1": (380, 1120, 0.71),                           # the alley, end to e
         "A3": (330, 1150, 1.25)}                           # him and the nearest shadow
 
 
-def shadow_man(k, x, y, s=1.0, weapon="gun", state="aim", flip=False):
+def shadow_man(k, x, y, s=1.0, weapon="gun", state="aim", flip=False, hat=True):
     """A man's shadow on the wall, feet at (x, y): hat, coat, one arm. state: "aim" (the weapon out at him), "down"
     (lowered), "up" (both hands up, empty). He is to screen left of them unless flip."""
     c = k.c
@@ -36,8 +36,9 @@ def shadow_man(k, x, y, s=1.0, weapon="gun", state="aim", flip=False):
     c.new_path()                                            # the coat
     c.move_to(-64, 0); c.line_to(-52, -250); c.line_to(-34, -300); c.line_to(34, -300); c.line_to(52, -250); c.line_to(64, 0); c.close_path(); c.fill()
     c.arc(0, -338, 36, 0, 2 * math.pi); c.fill()             # the head
-    c.rectangle(-58, -366, 116, 12); c.fill()                # the brim
-    c.new_path(); c.move_to(-36, -366); c.line_to(-30, -414); c.line_to(30, -414); c.line_to(36, -366); c.close_path(); c.fill()
+    if hat:                                                  # hat=False (Office Noir 4, the punch): bare-headed, his hat knocked off
+        c.rectangle(-58, -366, 116, 12); c.fill()            # the brim
+        c.new_path(); c.move_to(-36, -366); c.line_to(-30, -414); c.line_to(30, -414); c.line_to(36, -366); c.close_path(); c.fill()
     c.set_line_width(30); c.set_line_cap(1)
     if state == "up":
         for sx in (-1, 1):

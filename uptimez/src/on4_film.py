@@ -18,13 +18,20 @@ SR = r.SR
 import on4_posters as po
 import on4_street as st
 
-VER = "v6"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
+VER = "v18"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
 po.ON[0] = True; st.TOWN[0] = True
 import on4_cross as xc
 m.CRASH[0] = True; m.LAW[0] = True; m.CAR_S = xc.S_CAR      # v4: the bump as a tap; v5: one scale law on the crossing, the plank bounces
 m.TESTS.update(xc.TESTS)                                     # v5: the crossing after the bump in four shots (W, R, B, G), not one wide take
-sc.DUR.update({"3.2": 2.8, "3.3": 88 / 12.0, "3.4": 22 / 12.0, "3.5": 52 / 12.0})   # 3.3 is halved between 3.3 and 3.3b: 44 drawings each
+sc.DUR.update({"3.2": 2.8, "3.3": 88 / 12.0, "3.4": 36 / 12.0, "3.5": 52 / 12.0})   # 3.3 is halved between 3.3 and 3.3b: 44 drawings each
 CEIL = 0.50                                                  # v4: 0.56 gave -0.9 dBFS after AAC with the new effects (the limit is -1)
+sc.DUR["2.3"] = 2.75; r.NEW["c1"] = ("2.2", 2.95, "CLIENT", "Mine until it's done.")   # v11: the handover has its beats (52 keys); his line as it goes under his lapel
+r.CLEAR += ["f1", "p2", "p3", "c1"]; r.RETAKE.update(f1=os.path.join(r.vo.OUT, "takes_v5", "f1.wav"), p2=os.path.join(r.vo.OUT, "takes_v5", "p2.wav"))   # takes chosen through the master's own chain (knee, AAC)   # v12: the lines the recognizer lost in the mix stand alone
+xc.FWD[0] = True; import on4_club as _cl; _cl.TUBE[0] = True   # v13: the car drives on forward past her; the motto as neon tubing
+m.GIVE[0] = True                                             # v11: Dad's hand gives the envelope, the Client takes it
+m.CATWALK[0] = True                                          # v9: her cat's walk over the crossing and along the fire escape; the car drives up in 2.1; the hunting face
+m.PEEK[0] = True                                             # v8: she watches from the window over the car
+m.DENSE[0] = True                                            # v7: twelve different drawings a second in 2.2-2.3, 2.4's fall, 6.3-6.6, 8.1-8.2
 r.SCENE3[0] = "cross"                                        # v4: the crossing's sound after the bump; v5: on the four shots
 r.NARR["n8"] = ("3.3", 0.3, "Nobody stops for me.")          # v4 (Tomas): as she lies there and waves, and they all step over her
 r.NEW["d1"] = ("3.1", 1.25, "DON", "Traffic flows.")         # clear of his whistle on the tap
@@ -32,12 +39,23 @@ r.NEW["d2"] = ("3.3", 2.9, "DON", "Not a scratch.")          # after her line; w
 r.NEW["f1"] = ("3.3b", 1.0, "FATHER", "For the boys.")       # as the ringed hand lets the bills go
 r.RETAKE["d2"] = os.path.join(r.vo.OUT, "takes_v4", "d2.wav")   # a slower take (0.82): the first was not heard in the mix
 r.RETAKE["f1"] = os.path.join(r.vo.OUT, "takes_v4", "f1.wav")   # "For, the boys." at 0.8, -1 semitone: heard 3 of 3 alone
+r.RETAKE.update(f1=os.path.join(r.vo.OUT, "takes_v5", "f1.wav"), p2=os.path.join(r.vo.OUT, "takes_v5", "p2.wav"))   # v12 (after the v4 takes above, which were overriding these)
+m.HIT[0] = True; m.TEETER[0] = True; xc.FAR[0] = True   # v15 (cold test of v14): the punch as a blow; the second after the tap acted; the car in the far lane, the bills in the air as it leaves
+an.BIG53[0] = True; sc.BURN[0] = True; sc.CV_SOFIA[0] = True; an.ARCH14[0] = True; m.OTS44[0] = True; an.LIFT2[0] = True; m.SIGN_OUT[0] = True   # v16 (cold test of v14, second round)
+an.END2[0] = True; r.END2[0] = True; m.END_HOLD[0] = 6     # v16 (Tomas: the ending too long, Sofia too small): the rota once, Sofia from the waist up
+sc.DUR.update({"7.1": 1.2, "7.2": 2.6, "7.3": 1.2, "7.4": 0.0, "7.5": 1.8, "8.1": 3.6 - 8 / 12.0})
+an.LOW21[0] = True                                          # the words: her head under the card in 2.1
+r.NEW["p3"] = (r.NEW["p3"][0], r.NEW["p3"][1], r.NEW["p3"][2], "Anyone?"); r.RETAKE["p3"] = os.path.join(r.vo.OUT, "takes_v6", "p3_any.wav")   # v17 (Tomas): "Well?" was never heard in the mix (1 of 3; four new takes 0 of 3); "Anyone?" is heard 3 of 3 and is the fourth "nobody"
+import on4_cast as _oc
+m.CAT_SOFT[0] = True; m.TUCK[0] = True; m.RING_GOLD[0] = True; m.WALK12[0] = True; an.THUMB62[0] = True; _oc.TAIL[0] = True   # v17: the cat whole with two eyes, the envelope behind his lapel, a gold ring, two strides on the crossing, a hand on the CV, her tail
+import on4_weather as _wx; _wx.ON[0] = True; _wx.LIGHT[0] = True   # v18: Office Noir 3's light on the dream (light_on3.auto), Office Noir 2's rain on the street, wet cobbles, grain
 OUT = os.path.join(sc.OUT, "on4_film_%s.mp4" % VER)
 MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None),
        ("3.1", "3.2"): ("T3", 0, None), ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("3.6",): ("T8", 0, None),
        ("4.4",): ("T12", 0, None), ("6.0",): ("T9", 0, None), ("6.05",): ("T10", 0, None), ("6.07",): ("T11", 0, None),
        ("6.3", "6.6"): ("T4", 0, -16), ("8.1", "8.2"): ("T5", 0, -14)}
 del MOT[("3.3", "3.3b", "3.4", "3.5")]                       # v5
+MOT[("6.3", "6.6")] = ("T4", 0, None); MOT[("8.1", "8.2")] = ("T5", 0, None)   # v7: DENSE's own counts (56 and 58 keys)
 MOT.update({("3.3",): ("W", 0, None), ("3.3b",): ("R", 0, None), ("3.4",): ("B", 0, None), ("3.5",): ("G", 0, None)})
 
 

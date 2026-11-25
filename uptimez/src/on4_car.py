@@ -66,11 +66,14 @@ def _stars(c, x0, y0, x1, y1, n, seed):
         c.set_source_rgb(1, 0.97, 0.88); c.new_path(); c.arc(x, y, r.uniform(0.5, 1.1), 0, 2 * math.pi); c.fill()
 
 
+WHEEL_ROT = [0.0]            # (24 Nov) the spokes turned by this (radians): the wheels roll with the road covered
+
+
 def _wheel(c, x, y, R):
     c.new_path(); c.arc(x, y, R, 0, 2 * math.pi); _fs(c, INK, 2.0)                       # the tyre
     c.new_path(); c.arc(x, y, R * 0.74, 0, 2 * math.pi); _fs(c, (0.20, 0.20, 0.23), 1.4)  # the rim's dish
     for i in range(16):                                                                   # many fine spokes
-        a = i * math.pi / 8
+        a = i * math.pi / 8 + WHEEL_ROT[0]
         _line(c, (x + math.cos(a) * R * 0.2, y + math.sin(a) * R * 0.2),
               (x + math.cos(a + 0.12) * R * 0.70, y + math.sin(a + 0.12) * R * 0.70), CHROME, 1.6)
     c.new_path(); c.arc(x, y, R * 0.72, 0, 2 * math.pi); c.set_source_rgb(*CHROME); c.set_line_width(2.2); c.stroke()
@@ -343,8 +346,13 @@ def _in_setup(which, draw_car, glow_car, **kw):
     return s
 
 
+B_END_OFF = [False]              # (24 Nov) 2.1: the car is not parked at the lane's end: it drives up (on4_anim.a21)
+
+
 def b_end(k):
     """1.4 / 2.1: waiting at the end of the lane, from behind (replaces the old sedan of setup B)."""
+    if B_END_OFF[0]:
+        return
     reflect(k, lambda: rear(k, 300, 574, 0.36), 574, 0.25, 20)
 
 

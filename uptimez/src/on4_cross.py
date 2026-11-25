@@ -25,6 +25,9 @@ import dh_cast as dc
 import kit
 
 P = sc.P
+B_BILL0 = [0.0]                                              # the drawing of 3.4 the first bill starts on (the sound reads it)
+FWD = [False]                                                # (24 Nov, Tomas: "after the crash the car leaves backwards") it drives on, forward: out onto the far side of the road, round her, and off to the left
+FAR = [False]                                                # (24 Nov, cold test of film v14: "the limo drives over her and she does not react") 3.4: the car passes in the far lane, road between its tyres and her; her raised palm goes with its wind; the bills are in the air as its tail leaves
 S_CAR = 1.65
 PAM_K, GUARD_K = 1.203, 0.903
 NOSE = 345.0                                                 # the bumper, where it stopped (T3: STOPX + 5 - 170 S)
@@ -43,6 +46,25 @@ def bob(i, a=3.0):
 def pam(face="doubt", look=(0.9, -0.6), arm=(50, -128), dx=0.0, dy=0.0):
     arms = oc.pm.ik(-1, -30, oc.BT - 30) + oc.pm.ik(1, arm[0], arm[1])
     return P("pam_cat", LX + dx, LY_ + dy, LS, m.pose(arms, ("relax_s", "palm")), face, look, lean=LEAN)
+
+
+def car_fwd(k, cx, cb, s_):
+    """the limousine rolling (FWD): its soft shadow, a dark contact under each tyre, the spokes turned by the road covered"""
+    shadow(k, cx, cb + 4, 160 * s_, 8, 0.5)
+    for wx in (-114, 104):
+        shadow(k, cx + wx * s_, cb + 1, 34 * s_, 5, 0.75)
+    car.WHEEL_ROT[0] = (cx - CX) / (28.0 * s_)
+    try:
+        car.side(k, cx, cb, s_)
+    finally:
+        car.WHEEL_ROT[0] = 0.0
+
+
+def pam_shadow(k, dx=0.0, a=1.0):
+    """under her, lying: the soft one, and darker where her head and her heels press on the road"""
+    shadow(k, LX - 105 + dx, LY_ + 44, 125, 8, 0.45 * a)
+    if FWD[0]:
+        shadow(k, LX - 200 + dx, LY_ + 40, 34, 5, 0.6 * a); shadow(k, LX - 6 + dx, LY_ + 40, 30, 5, 0.6 * a)
 
 
 def shadow(k, x, y, rx, ry=7, a=0.45):
@@ -166,6 +188,10 @@ def tr():
     def f(i):
         j = i - NR + 10                                      # the old count, from where he stands
         cx = CX + (0 if j < 31 else ((j - 31) / 5.0) ** 2 * 260)                      # at the end it starts to back away
+        cb = 724.0
+        if FWD[0]:                                           # it pulls out to the far side and forward (to the left)
+            q = max(0.0, (j - 28) / 13.0)
+            cx = CX - 360 * q * q; cb = 724 - 30 * m.ease(min(1.0, q * 1.6))
         dist = None
         if i < NR:                                           # round the tail to our side, on his legs
             t = i / float(NR - 1)
@@ -178,11 +204,14 @@ def tr():
             d = don(D_R[0], D_R[1], "wave", "pleased", (-0.8, -0.2), paddle_ang=0.20 + 0.10 * math.sin(i * math.pi), whistle_in=True)
         def after(k):
             c = k.c
-            shadow(k, cx, 728, 160 * S_CAR, 8, 0.5)
-            car.side(k, cx, 724, S_CAR)
+            if FWD[0]:
+                car_fwd(k, cx, cb, S_CAR)
+            else:
+                shadow(k, cx, cb + 4, 160 * S_CAR, 8, 0.5)
+                car.side(k, cx, cb, S_CAR)
             wx = WX + (cx - CX)
             if j >= 7:                                       # the glass down
-                c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(wx - 36 * S_CAR, 724 - 96 * S_CAR, 72 * S_CAR, 22 * S_CAR); c.fill()
+                c.set_source_rgb(0.02, 0.02, 0.03); c.rectangle(wx - 36 * S_CAR, cb - 96 * S_CAR, 72 * S_CAR, 22 * S_CAR); c.fill()
             ox = 10 * max(0.0, 1 - abs(j - 13) / 3.0)        # the hand: out to him with his bill; a flick up on each of hers
             oy = 0.0
             for q in range(6):
@@ -229,22 +258,38 @@ LAND = [(206, 694), (232, 710), (258, 692), (284, 708), (308, 692), (330, 708)] 
 def tb():
     def f(i):
         cx = CX + 260 + (i / 6.0) ** 2 * 300                 # the car going, out of frame by the eighth drawing
+        if FWD[0]:                                           # it passes behind her, right to left, and is gone by the eleventh drawing
+            cx = CX - 360 - 56.0 * i - 2.2 * i * i             # on from where 3.3b left it, at the speed it had (55 a drawing), still gathering
+        B0 = 14.0 if FWD[0] else 0.0                         # (the review) the car is gone by the eighth drawing; half a second of her alone; then the bills
+        if FAR[0]:
+            B0 = 7.0                                         # the first bill comes into frame as the car's tail leaves it: one event, not two
+        B_BILL0[0] = B0
         look = (0.9, -0.9) if i < 8 else (0.3, -0.2)
-        pm_ = pam("doubt" if i < 14 else "fade", look, (50, -128))
+        if FWD[0]:                                           # her eyes go with it, right to left; then up at what is coming down
+            look = (0.9 - 1.8 * min(1.0, i / 8.0), -0.5) if i < 9 else ((-0.9, -0.3) if i < 14 else (0.2, -0.9))
+        arm = (50, -128)
+        if FAR[0]:                                           # the car's wind takes her raised palm with it, and lets it back
+            u = max(0.0, 1 - abs(i - 4.0) / 4.0)
+            arm = (50 - 26 * u, -128 - 14 * u)
+        pm_ = pam("doubt" if i < 14 + B0 else "fade", look, arm)
         def after(k):
-            shadow(k, LX - 105, LY_ + 44, 125, 8)
-            if cx - 170 * S_CAR < 420:
+            pam_shadow(k)
+            if FWD[0]:
+                if cx + 175 * S_CAR > 40:
+                    cb_ = 652.0 if FAR[0] else 694.0
+                    car_fwd(k, cx, cb_, S_CAR * dscale(cb_) / dscale(694.0))
+            elif cx - 170 * S_CAR < 420:
                 shadow(k, cx, 728, 160 * S_CAR, 8, 0.5); car.side(k, cx, 724, S_CAR)
             sc.draw_cast(k, [pm_])
             for j, (bx, by) in enumerate(LAND):              # down out of the dark, swinging, onto her
-                t = min(1.0, max(0.0, (i - j * 1.6) / 9.0))
-                if i < j * 1.6:
+                t = min(1.0, max(0.0, (i - B0 - j * 1.6) / 9.0))
+                if i < B0 + j * 1.6:
                     continue
                 x = bx + 150 * (1 - t) + math.sin(t * 7 + j) * 16 * (1 - t); y = 330 + (by - 330) * (t ** 1.4)
                 bill(k, x, y, 0.4 + j + (1 - t) * 3, 1.3)
         return m.draw(m.shot("3.1", loc="C_side", cam=CAM_B, cast=[], protect=(), after=after))
     f = m.lazy(f)
-    return [f(i) for i in range(22)]
+    return [f(i) for i in range(36 if FWD[0] else 22)]
 
 
 # ---- G: the bodyguards ---------------------------------------------------------------------------------------------------
