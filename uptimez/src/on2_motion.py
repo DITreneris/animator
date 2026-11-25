@@ -250,10 +250,23 @@ def stands(cc, x, y, s=1.0):
         cc.move_to(x - w + (i % 2) * 8 * s, yy); cc.line_to(x + w - ((i + 1) % 2) * 10 * s, yy); cc.stroke()
 
 
+def glints(c, x0, x1, y0, y1, n_, t, seed=1, a=0.55):
+    """on4_weather.glints, copied: importing on4_weather imports a second on2_motion, which takes b5 and b68 over
+    (use()) from the film being rendered"""
+    import random
+    d = int(t * 6)
+    c.set_line_cap(1)
+    for i in range(n_):
+        r = random.Random(seed * 131 + i * 17 + (d + i) // 5)
+        x = r.uniform(x0, x1); y = r.uniform(y0, y1); g = 0.5 + (y - y0) / max(1.0, y1 - y0)
+        c.set_source_rgba(1, 1, 0.97, a * r.uniform(0.4, 1.0)); c.set_line_width(2.0 * g)
+        w = r.uniform(5, 14) * g; c.move_to(x - w, y); c.line_to(x + w, y); c.stroke()
+    c.set_line_cap(0)
+
+
 def wet(k, floor, lamp, t):
     """v32: the road wet. Office Noir 4's glints (on4_weather.glints), the lamp's light smeared down the stones, and
     splashes where the rain lands."""
-    import on4_weather as wx
     cc = k.c
     if lamp:
         lx = lamp[0] - 30
@@ -267,7 +280,7 @@ def wet(k, floor, lamp, t):
                 w = 22 + i * 7 + 6 * math.sin(t * 5 + i)
                 cc.set_source_rgba(1, 1, 0.96, 0.34 - i * 0.035); cc.set_line_width(2.4 + i * 0.5); cc.set_line_cap(1)
                 cc.move_to(lx - w, yy); cc.line_to(lx + w, yy); cc.stroke()
-    wx.glints(cc, 0, 540, floor + 44, 940, 26, t, 11, 0.42)
+    glints(cc, 0, 540, floor + 44, 940, 26, t, 11, 0.42)
     d = int(round(t * 12))
     for i in range(6):                                                    # a splash: two short strokes up from where a drop lands
         r = (i * 97 + (d // 2) * 61) % 500 + 20, floor + 50 + (i * 53 + (d // 2) * 89) % max(1, int(880 - floor))
