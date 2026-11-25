@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v35"
+V = "v36"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -87,6 +87,7 @@ V32 = [True]                                              # v32 (25 Nov, the rev
 V33 = [True]                                              # v33 (25 Nov, the hands audit; Tomas: "tobulinam"): the series' one hand (hands_ps) on her rig, a shape per pose; her inserts a forearm from the frame's edge with that hand (on2_hands). False draws v32
 V34 = [True]                                              # v34 (25 Nov, the hand sheet's review; Tomas: "tvarkom"): hands_ps's glove mode for her hands (one silhouette, slimmer tapered fingers). False draws v33
 V35 = [True]                                              # v35 (25 Nov, cold test v34, Tomas's picks; the last round for the hands): the note and the number over her shoulder; the wrap as fur on her shoulders; the Shadow's sleeve; the detective's elbow; her beckon, her hand over her mouth, her back's hands; the bartender's fist. False draws v34
+# v36 (25 Nov, Tomas: "undo it"): v35 without the Shadow's sleeve and rim (on2_board.arm_in at 42-45 s and 55 s, noir2_cast.shadow) (noir2_cast.SLEEVE off); nothing else changes
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 

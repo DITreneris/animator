@@ -195,7 +195,7 @@ def arm_in(k, x0, y0, x1, y1, w=58):
     """The Shadow's arm from off screen to his lit hand at (x1, y1): a black sleeve, a white cuff, the watch, fingers."""
     n._seg(k, x0, y0, x1, y1, w, w * 0.78, n.BLACK)
     g = math.atan2(y1 - y0, x1 - x0)
-    if n.ARMS2[0]:                                         # v35 (Noir 2): his sleeve's edge in the light, so the hand has an arm; the hand is hands_ps's
+    if n.ARMS2[0] and n.SLEEVE[0]:                         # v35 (Noir 2; off from v36, "a wire with a glove" 3/3): his sleeve's edge in the light, so the hand has an arm; the hand is hands_ps's
         import hands_ps as hp
         px_, py_ = -math.sin(g), math.cos(g)
         k.c.set_source_rgb(0.62, 0.62, 0.66); k.c.set_line_width(3.0); k.c.set_line_cap(1)

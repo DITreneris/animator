@@ -218,7 +218,7 @@ def shadow(k, x, feet, s=1.0, pose="open", hat_tilt=-0.10, lit_hand=1, look_down
         c.save(); c.translate(-44, bt + 20); c.rotate(a * math.pi / 4); c.set_line_width(1.6)
         c.move_to(-6, 0); c.line_to(6, 0); c.stroke(); c.restore()
     c.restore()
-    if lit_hand is not None and ARMS2[0]:                  # v35: the sleeve to it, black, its edge caught by the light, the cuff white
+    if lit_hand is not None and ARMS2[0] and SLEEVE[0]:    # v35 (off from v36, cold test v35: "a wire with a glove", 3/3): the sleeve to it, black, its edge caught by the light, the cuff white
         wx, wy = o["hands"][lit_hand]
         sx_, sy_ = x + (1 if lit_hand else -1) * 52 * s, feet + (bt + 20) * s
         mx_, my_ = (sx_ + wx) / 2 + (8 if lit_hand else -8) * s, (sy_ + wy) / 2 + 14 * s
@@ -987,6 +987,7 @@ def money(k, x, y, s=1.0, ang=0.0, n=5, seed=690):
 
 
 FUR = [False]                                              # (25 Nov, Noir 2 v35, cold test v34: the wrap read as "black tubes", "a second pair of arms", "an umbrella") a fur stole: a tufted edge, worn on the shoulders
+SLEEVE = [False]                                           # v35's sleeve on the Shadow's lit hand; off (Tomas, 25 Nov: undo it)
 ARMS2 = [False]                                            # (25 Nov, v35) the Shadow's lit hand on a sleeve from his shoulder; the detective's lens arm bent at the elbow; the bartender's bottle hand; her back's hands steady
 HIDE3 = [False]                                            # (25 Nov, v32: "v31's glove is a card") four fingers bent round her face, the thumb apart, folds at the wrist
 BACK3 = [False]                                            # (25 Nov, v32) from behind: the wrap hangs as cloth, uneven strands, bigger heels
