@@ -418,6 +418,9 @@ def film_frames(tmp):
         span = grp if grp else (ids[i],)
         end = tm[span[-1]]["start"] + tm[span[-1]]["dur"]
         count = int(round(end * F.DPS)) - n
+        if count <= 0 and not grp and ids[i] not in an.SHOTS:
+            i += 1   # v23: a shot cut to zero length (6.05) draws nothing
+            continue
         cuts.append((ids[i], n))
         if grp:
             t_, a, b = F.MOT[grp]
