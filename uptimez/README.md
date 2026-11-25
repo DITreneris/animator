@@ -347,15 +347,17 @@ Built from `src/` (`dh_scenes.py`, `dh_anim1.py` … `dh_anim8.py`, `dh_say.py`,
 
 ### The Offer — [`the-offer/`](the-offer/)
 
-Episode 13, *Civil War* 1 of 5, **rough cut v30 (24 Nov), 540.** Father comes to the Client's garage to make him take down the post. Everything he brings to frighten him, the Client turns into garage work, until Father asks how he would run Don's company. "Without him." The Client's terms are Pam. Back at the office, the robot reads the new meeting out loud: AGENDA: WITHOUT HIM.
+Episode 13, *Civil War* 1 of 5, **master v54 (25 Nov), 1080 (not in git).** Father comes to the Client's garage to make him take down the post. Everything he brings to frighten him, the Client turns into garage work, until Father asks how he would run Don's company. "Without him." The Client's terms are Pam. Back at the office, the robot reads the new meeting out loud: AGENDA: WITHOUT HIM. Father declines Don's call and slaps the phone face down on his car's roof; the film's first frame, a fist on a car roof, is the second blow (the loop is a match cut, v53).
 
 | File | Notes |
 |---|---|
-| `of_roughcut_v30_540.mp4` | **v30**: 64.5 s, 15 lines, sound v15 (the office bed, the lamp gag's tick, the garage theme back at the pin); G5 and the hand gate pass |
+| `of_roughcut_v54_540.mp4`, the 1080 master | **v54**: 64.0 s, 15 lines, timing v26, sound v27; G5 and the hand gate pass. Rendered by `of_film.py 1`…`5`, `of_sound.py`, `of_cut.py`; not in git (`of_roughcut_v30_540.mp4` is the last committed cut) |
+| `of_cold_test_v52.md` | Cold test v52 (3 viewers) and the two tests of the new ending (v53, v54) |
+| `of_release.md` | Title, caption, pinned comment, cover |
 | `the-offer-script-v6.md` | **Current script**, generated from `src/of_scenes.py` (do not edit by hand); v1–v5 kept |
 | `the-offer-set-v2.md`, `of_hands_v*_sheet.png` | The garage set; the hand sheets the series hand grew from |
 
-Built from `src/` (`of_scenes.py`, `of_set.py`, `of_cast.py`, `client_of.py`). **Still open:** the master and the cover.
+Built from `src/` (`of_scenes.py`, `of_film.py`, `of_set.py`, `of_cast.py`, `client_of.py`, `of_sound.py`, `of_cut.py`). **Still open** (cold test v52, waiting for a decision): the robot's off-screen lines still read as Don's, props without a hand (the lighter at 0:16, the lamp in the gag and the insert), "Burn them." and the phone at 0:04. Decided and closed: "Off the car." from under the car, the red rag.
 
 ### Pick a Side — [`pick-a-side/`](pick-a-side/)
 

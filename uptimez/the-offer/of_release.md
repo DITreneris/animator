@@ -1,11 +1,11 @@
-# The Offer: release text (v51, 25 Nov)
+# The Offer: release text (v54, 25 Nov)
 
 ## Title
 Dad met my only customer.
 
 ## Caption
 He came to burn the garage. He left with a new CEO. 🔥
-Watch the plan on the back wall: the last frame isn't the first one.
+Watch where Dad puts his phone down. Then watch the first second again.
 
 UptimeZ Inc., episode 13. The Civil War starts here (1/5).
 

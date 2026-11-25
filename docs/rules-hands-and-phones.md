@@ -101,6 +101,14 @@ Read by cold viewers, in this order of what failed: one stroke from the edge = "
 - **A held prop drops over 0.4 s or more,** and the body turns back AFTER the drop, not with it. A drop and a turn in the same 0.1 s read as a jump (2.8f, v51).
 - **One prop, one shape, one place.** The red rag is in his hand only, drawn the same everywhere (`client_of.shop_rag`); no pocket rag, no second rag in an insert (v48, decided).
 
+### Inserts and the loop (The Offer v53–v54, 25 Nov)
+
+- **An insert's object carries its own signs.** A black band with a grey panel read as "seat backs or a counter" (2 of 2); with a windscreen, a pillar, side windows, handles, an aerial and a mirror it read as a car at once.
+- **A match cut needs the first action finished.** A phone stopped a hand above the roof read as "a jump"; landed in the last two drawings (burst, thud, the car dips), the next shot's fist read as the second blow (2 of 2: "a match cut, intended").
+- **Land the two actions in the same part of the frame,** so the eye doesn't travel across the cut.
+- **A loop that is a match cut gets its own gate** (`of_cut.slap_ok`: the last frame IS the declared picture), and the planted faults move with the picture: a fault outside the checked band was "caught by: NOTHING".
+- **An end card that explains is read as a glitch.** The fresh plan pinned over the burnt one failed 3 of 3 from v30 to v52; an action replaced it.
+
 ## 2. Speech bubbles (The Offer v47–v51)
 
 - **A line's box stands still for the whole line.** It is placed once and pasted as a layer after the frame; only the tail follows the mouth drawn in each frame (`lock_bubble`, `BUBBLE_AT`).
