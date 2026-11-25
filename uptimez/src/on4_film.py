@@ -18,7 +18,7 @@ SR = r.SR
 import on4_posters as po
 import on4_street as st
 
-VER = "v21"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
+VER = "v22"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
 po.ON[0] = True; st.TOWN[0] = True
 import on4_cross as xc
 m.CRASH[0] = True; m.LAW[0] = True; m.CAR_S = xc.S_CAR      # v4: the bump as a tap; v5: one scale law on the crossing, the plank bounces
@@ -52,6 +52,7 @@ import on4_weather as _wx; _wx.ON[0] = True; _wx.LIGHT[0] = True   # v18: Office
 _wx.SIDE[0] = True                                          # v19: side light (frame and figures), one fainter rain layer, grain halved, the light at 0.5 (Tomas: "a little too dark")
 m.LOOP2[0] = True; _wx.SEAM[0] = True; sc.DUR.update({"8.1": 2.2, "8.2": 1.3})   # v20 (the loop, Tomas's picks): the dark 1 s, the lane up through it over 1.2 s, the eyes where the cat leaps from, one rain and one light through the seam, the opening three keys shorter
 m.CAT3[0] = True; m.CAT4[0] = True; m.CAT5[0] = True       # v21: the cat leaps straight at the camera again, one detailed cat on all seven drawings, over the camera and away; a shake on the lens drawing
+_wx.SHAKE[0] = True; import on4_club as _cl; _cl.CHASE[0] = True   # v22: the camera jolts on the blows; the theatre's bulbs run, the dealers deal (steam and the tail's follow left off: they did not read)
 OUT = os.path.join(sc.OUT, "on4_film_%s.mp4" % VER)
 MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None),
        ("3.1", "3.2"): ("T3", 0, None), ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("3.6",): ("T8", 0, None),
