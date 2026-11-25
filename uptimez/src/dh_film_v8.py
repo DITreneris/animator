@@ -42,8 +42,47 @@ def dur(p):
     return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", p]))
 
 
+# Trims (25 Nov, Tomas: a light trim of these three places): frame ranges [a, b) at 30 fps cut from a scene's picture and
+# its sound together, so the lines and effects after them keep their sync. Only silent, repeated drawings.
+CUTS = {5: [(48, 54), (71, 78)],      # 7.1b the case: the ticks after its two clicks; the end of the open hold (the brush stays)
+        7: [(36, 51)],                # 9.1b the door opening between the knock and the guards stepping apart
+        8: [(375, 386), (395, 405)]}  # 10.6a, 10.6c: the robot's second and third look between the HR CAM shots
+FPS = 30
+
+
+def _fresh(n, f):
+    """A scene's picture must be newer than its code (25 Nov: two old renders tracked in git came back with a git stash and
+    went into three joins). Refuses the join instead."""
+    import glob
+    src = glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), "dh_anim%d_v8.py" % n))
+    if src and os.path.getmtime(f) < os.path.getmtime(src[0]):
+        sys.exit("join refused: %s is older than %s; render scene %d again" % (f, os.path.basename(src[0]), n))
+
+
+def _cut(n, f):
+    """The scene's picture without CUTS[n], re-encoded with the scenes' own settings."""
+    out = "/tmp/dh_s%d_cut.mp4" % n
+    keep = "+".join("between(n,%d,%d)" % (a, b - 1) for a, b in CUTS[n])
+    subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", f, "-vf", "select='not(%s)',setpts=N/%d/TB" % (keep, FPS),
+                           "-an", "-c:v", "libx264", "-crf", "19", "-preset", "veryfast", "-pix_fmt", "yuv420p",
+                           "-r", str(FPS), out])
+    return out
+
+
+def _video(n, f):
+    """The scene's picture alone (25 Nov: a scene file's AAC starts before 0, and the concat demuxer moved its picture one
+    frame late; the film's sound comes from the scenes' wav anyway)."""
+    out = "/tmp/dh_s%d_video.mp4" % n
+    subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", f, "-an", "-c:v", "copy", out])
+    return out
+
+
 def join():
     files = ["%s/dh_s%d_anim_%s.mp4" % (OUT, n, VERS[n]) for n in range(1, 9)]
+    for n in range(1, 9):
+        _fresh(n, files[n - 1])
+    full = list(files)
+    files = [_cut(n, f) if n in CUTS else _video(n, f) for n, f in zip(range(1, 9), files)]
     lst = "/tmp/dh_film_v8_list.txt"
     open(lst, "w").write("".join("file '%s'\n" % os.path.abspath(f) for f in files))
     out = "%s/daddys_home_anim_v8.mp4" % OUT
@@ -52,6 +91,13 @@ def join():
     parts = []
     for n in range(1, 9):
         w, sr = sf.read("/tmp/dh_s%d_%s/a.wav" % (n, VERS[n]))
+        if n in CUTS:                                       # the same frames out of its sound
+            L0 = int(round(dur(full[n - 1]) * sr))
+            w = w[:L0] if len(w) >= L0 else np.concatenate([w, np.zeros(L0 - len(w))])
+            keep = np.ones(len(w), bool)
+            for a, b in CUTS[n]:
+                keep[int(round(a * sr / FPS)):int(round(b * sr / FPS))] = False
+            w = w[keep]
         L = int(round(dur(files[n - 1]) * sr))
         w = w[:L] if len(w) >= L else np.concatenate([w, np.zeros(L - len(w))])
         parts.append(w)
