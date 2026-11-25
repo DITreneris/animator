@@ -19,6 +19,7 @@ from kit import Ctx, INK
 DPS, FPS = 15, 30
 OUT = ps.OUT
 SCENES = {1: ["1.1", "1.2a", "1.3", "1.4"],
+          4: ["4.1", "4.2", "4.3"],
           3: ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7"],
           2: ["2.1", "2.1b", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.9b", "2.10", "2.11"]}                 # v3 (Tomas 25 Nov): 1.2b cut (misread 3 times), its 0.5 s to 1.3
 import json as _json
@@ -27,6 +28,8 @@ DUR = {k: v["len"] for k, v in TIMING.items()}               # the takes' timing
 DUR["1.3"] += DUR["1.2b"]                                    # v3: 1.3 starts where 1.2b did; its take stays where it was
 TAKE_AT = {k: list(v["take_at"]) for k, v in TIMING.items()}
 TAKE_AT["1.3"] = [TAKE_AT["1.3"][0] + DUR["1.2b"]]
+DUR["4.3"] += 0.40                                           # Tomas 25 Nov (plan §7 a): Father's take 0.4 s later, the
+TAKE_AT["4.3"] = [TAKE_AT["4.3"][0], TAKE_AT["4.3"][1] + 0.40]   # guards' close gets 0.45 s between the lines
 SIP_ON = [False]                                             # 3.7's sip: tried v3/v4, read as "a phone" 3 rounds; Tomas 25 Nov:
 DUR["3.7"] += 0.40 if SIP_ON[0] else 0.0                     # the silence without the sip, the cup at her chin (the board)
 
@@ -460,10 +463,51 @@ def s37(t):
     return ps.S("3.7", base["cam"], base["room"], cast)
 
 
+# --- scene 4 ------------------------------------------------------------------------------------------------------------
+def s41(t):
+    """red neon over the booth, one flicker; bodyguard 1's black sleeve lifts the #TeamDon phone into the frame."""
+    u = ease(t / 0.30)
+    def draw(k):
+        ps.BRIDGE_DROP[0] = 420 * (1 - u)
+        try:
+            ps.ins_booth_wide(k)
+        finally:
+            ps.BRIDGE_DROP[0] = 0.0
+        if 0.10 <= t < 0.17:                                 # the neon's one flicker: the room drops a step
+            k.c.set_source_rgba(0, 0, 0, 0.45); k.c.paint()
+    return ps.S("4.1", "screen", draw=draw)
+
+
+def s42(t):
+    """the oily finger comes in along its line and lands on the heel, its print: motion test J."""
+    ps.FINGER_42[0] = ease(min(1.0, t / 0.7))
+    return BOARD["4.2"]
+
+
+A_43, B_43 = 0.95, 1.45                                      # 4.3a the Client .. 4.3b the guards' close .. 4.3c Father
+
+
+def s43(t):
+    """4.3a "That one."; 4.3b the guards turn away and pinch their noses, the stink rises (no line); 4.3c Father: "Invite
+    her." The board's three framings (BOOTH_PART_V4), drawn in turn."""
+    part = 0 if t < A_43 else (2 if t < B_43 else 1)
+    pu = ease((t - A_43 - 0.02) / 0.20) if t >= A_43 else 0.0
+    def draw(k):
+        ps.PART[0] = part
+        ps.PINCH_43[0] = pu if t < B_43 else 1.0
+        ps.STINK_RISE[0] = 60 * t
+        try:
+            return ps.ins_booth_43(k)
+        finally:
+            ps.PINCH_43[0] = 1.0; ps.STINK_RISE[0] = 0.0
+    return ps.S("4.3", "screen", draw=draw)
+
+
 SHOT_FN = {"1.1": s11, "1.2a": s12a, "1.2b": s12b, "1.3": s13, "1.4": s14,
            "2.1": s21, "2.1b": s21b, "2.2": s22, "2.3": s23, "2.4": s24, "2.5": s25, "2.6": s26, "2.7": s27,
            "2.9": s29, "2.10": s210, "2.11": s211,
-           "3.1": s31, "3.2": s32, "3.3": s33, "3.4": s34, "3.5": s35, "3.6": s36, "3.7": s37}
+           "3.1": s31, "3.2": s32, "3.3": s33, "3.4": s34, "3.5": s35, "3.6": s36, "3.7": s37,
+           "4.1": s41, "4.2": s42, "4.3": s43}
 HOLDS = {"2.8": "the heel insert, held by the script (0.6 s at least)", "2.9b": "Sofía flat, only her mouth moves"}
 
 
@@ -521,7 +565,10 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 1}
+STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
+           ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
+           ("4.3", 1.3, "noses pinched"), ("4.3", 2.2, "Invite her.")]
 STILLS3 = [("3.1", 0.3, "the arm telescopes"), ("3.1", 1.8, "Chin up: in to Mom"), ("3.2", 0.02, "FLASH"), ("3.2", 1.5, "the photo"),
            ("3.3", 0.8, "Public post?"), ("3.4", 0.10, "the arm up"), ("3.4", 0.40, "it sinks, the phone slides"),
            ("3.4", 0.60, "APPROVED"), ("3.4", 1.15, "thumb back up"), ("3.5", 0.35, "the slide"), ("3.6", 0.1, "before"),
@@ -533,7 +580,7 @@ STILLS2 = [("2.1", 0.5, "the tape rips"), ("2.1", 1.2, "the feet hop"), ("2.1b",
            ("2.5", 1.3, "her half salute"), ("2.5", 1.75, "the smile in the cup"), ("2.6", 0.08, "Mom plants"),
            ("2.7", 0.6, "Sofía stops mid-step"), ("2.9", 0.8, "Border breach"), ("2.10", 0.5, "And you?"),
            ("2.10", 1.6, "Both."), ("2.10", 2.4, "Don's face"), ("2.11", 0.4, "the haul"), ("2.11", 1.3, "the bump")]
-STILLS = {3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
+STILLS = {4: STILLS4, 3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
               ("1.2a", 0.45, "the blind lands"), ("1.3", 0.3, "the blind still sways"),
               ("1.4", 0.2, "1.4a opens wide"), ("1.4", 1.2, "pushed in: Don speaks"), ("1.4", 1.9, "the roll up"), ("1.4", 2.5, "the three look")]}
 
@@ -681,6 +728,16 @@ def sound(n, path):
     def tone(f0, f1, d, k_=8.0):
         tt = osd.t_(d); ph = 2 * np.pi * np.cumsum(np.linspace(f0, f1, len(tt))) / SR
         return np.sin(ph) * np.minimum(1.0, tt / 0.005) * np.exp(-tt * k_)
+    if n == 4:                                               # the sound map (plan v2 §7)
+        S_ = starts
+        for b in range(int(total / 0.48) + 1):                # the club's bass, low, through the whole stretch
+            osd.put(buf, tone(55, 48, 0.30, 9), b * 0.48, 0.30)
+        osd.put(buf, tone(120, 120, 0.6, 1.0) * 0.5, S_["4.1"], 0.06)                 # 4.1 the neon's hum
+        sm = osd.lp(osd.noise(0.12), 5) * np.exp(-osd.t_(0.12) * 25)
+        osd.put(buf, sm, S_["4.2"] + 0.70, 0.35)                                      # 4.2 the smudge as it lands
+        sn = osd.hp(osd.noise(0.25), 2) * np.sin(np.pi * osd.t_(0.25) / 0.25)
+        osd.put(buf, sn, S_["4.3"] + A_43 + 0.05, 0.12)                               # 4.3b a sharp sniff
+        osd.put(buf, osd.hp(osd.noise(0.4), 3) * np.sin(np.pi * osd.t_(0.4) / 0.4), S_["4.3"] + TAKE_AT["4.3"][1] + 1.45, 0.20)  # send
     if n == 3:                                               # the sound map (plan v2 §2)
         S_ = starts
         wh = tone(300, 900, 0.5, 2.5) * (1 + 0.4 * np.sin(2 * np.pi * 60 * osd.t_(0.5)))
@@ -804,7 +861,7 @@ def film(n, ver=1):
     return not real
 
 
-STRIP8 = {1: (0.0, 2.8), 2: (1.6, 4.4), 3: (7.6, 10.4)}                      # 2: 2.1b's slap and 2.2's spin
+STRIP8 = {1: (0.0, 2.8), 2: (1.6, 4.4), 3: (7.6, 10.4), 4: (2.6, 5.0)}                      # 2: 2.1b's slap and 2.2's spin
 
 
 def sheets(n, frames):

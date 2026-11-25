@@ -615,3 +615,17 @@ The blue mug at her face reads as a phone (the episode's other prop), the sip fa
 
 3.7 +0.40 s; the sip held 0.36 s at her mouth (two 4 fps drawings), eyes up into the cup, two slurps. 2 fresh viewers: 0/2, "she raises a phone, photographs / checks the post". Third round the cup reads as a phone → the rule changes the gesture or the prop (Tomas's call: Pam's mug is part of her look).
 Tomas 25 Nov: the silence without the sip (`SIP_ON = False`, the board's cup at her chin); scene 3 v5 = v3 without the sip. 4.3: Father's take 0.4 s later (plan v2 §7).
+
+## Scene 4 (`ps_film.py film 4`, 92 drawings, 6.1 s with Father's take +0.4 s, −15.5 LUFS)
+
+Built (plan v2 §7): 4.1 the neon's flicker, the black sleeve lifts the #TeamDon phone (`BRIDGE_DROP`); 4.2 motion test J; 4.3 the board's three framings in turn: 4.3a "That one.", 4.3b the guards turn and pinch (`PINCH_43` 0→1 from the rig's GUARD_POSE to the board's pinch, in 0.20 s), the stink lines rise all through (`STINK_RISE`), 4.3c "Invite her." Sound: the club's bass, the neon's hum, the smudge, a sniff, the send.
+
+| Beat (3 fresh viewers, scene 3's sheet before it for context) | v1 |
+|---|---|
+| A casino back room; the photo came by Don's public post | 3/3 |
+| The finger picks the blonde in the white coat | 3/3 (whose finger: "the scruffy man's, probably" 3/3) |
+| The guards hold their noses: the Client stinks | 3/3 |
+| Father decides: "Invite her." | 3/3 |
+| Father doesn't react to the smell | 3/3 |
+
+5 of 5. Shared, not beats: the cut 4.3b → 4.3c "same room?" 3/3 unsure.

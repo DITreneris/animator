@@ -648,6 +648,17 @@ def _post_bridge(k):
     under the neon: the office and the booth share one prop (the cold-viewer skill: two places need one visible link)."""
     c = k.c
     import of_cast as ocs
+    c.save(); c.translate(0, BRIDGE_DROP[0])                 # ps_film: the phone lifted into the frame (0 = the board)
+    try:
+        _post_bridge_(k, c, ocs)
+    finally:
+        c.restore()
+
+
+BRIDGE_DROP = [0.0]
+
+
+def _post_bridge_(k, c, ocs):
     px, py, ps_ = 270, 560, 1.25
     palm, body_x = (300, 690), 520                           # his right hand from the bottom right (his body off frame, right)
     c.set_source_rgb(0.06, 0.06, 0.08); c.new_path()             # his sleeve
@@ -734,6 +745,10 @@ def ins_booth_43(k):
     return {n: (x * s_ + tx, y * s_ + ty, r * s_) for n, (x, y, r) in h.items() if -40 < x * s_ + tx < W + 40}
 
 
+PINCH_43 = [1.0]                                             # ps_film: the guards' turn and pinch, 0..1 (1 = the board)
+STINK_RISE = [0.0]                                           # ps_film: px the stink lines have risen (0 = the board)
+
+
 def _booth_guards(k, seat, tbl):
     """4.3 (Tomas's picks, 25 Nov): Father's two bodyguards stand behind the bench either side of the oily Client; as he
     leans in they turn away, mirrored, and pinch their noses; three green stink lines rise off him (ep 9: he smells of gas
@@ -746,10 +761,13 @@ def _booth_guards(k, seat, tbl):
     for i, gx in enumerate((300, 548)):
         sgn, flip = (-1, False) if i == 0 else (1, True)
         c.save(); c.rectangle(-200, -200, 1400, tbl + 200); c.clip()          # behind the bench: nothing of them under the table
-        c.translate(gx, tbl); c.rotate(sgn * 0.13); c.translate(-gx, -tbl)
+        c.translate(gx, tbl); c.rotate(sgn * 0.13 * PINCH_43[0]); c.translate(-gx, -tbl)
         dc.ARM_FRONT[0] = 1                                  # the pinching arm is HIS OWN, drawn after his head (dh_cast, opt-in):
         try:                                                 # one hand per wrist (179, 208). A second hand drawn on top of the
-            o = dc.guard(k, gx, seat + 10, gs, pose=(dc.GUARD_POSE[0], dc.GUARD_POSE[1], -100, -60), flip=flip)
+            pu = PINCH_43[0]                                 # ps_film: 0 = arms down, upright .. 1 = the board's pinch
+            pz = (dc.GUARD_POSE[0], dc.GUARD_POSE[1], dc.GUARD_POSE[2] + (-100 - dc.GUARD_POSE[2]) * pu,
+                  dc.GUARD_POSE[3] + (-60 - dc.GUARD_POSE[3]) * pu)
+            o = dc.guard(k, gx, seat + 10, gs, pose=pz, flip=flip)
         finally:                                             # rig's hidden one failed hand_gate ("two at one wrist", 4.5 px apart)
             dc.ARM_FRONT[0] = None
         HANDS_LOG.extend(o["hands"])
@@ -758,11 +776,11 @@ def _booth_guards(k, seat, tbl):
             hp.draw(k, "fist", nose[0] + 3, nose[1] + 3, 30 * gs, (0.91, 0.67, 0.55), (0.7, -0.7), 1)
             grip("pinch", (nose[0] + 3, nose[1] + 3))
         c.restore()
-        a = sgn * 0.13                                       # his head where the lean put it (for the bubbles to keep off)
+        a = sgn * 0.13 * PINCH_43[0]                         # his head where the lean put it (for the bubbles to keep off)
         dx, dy = o["head"][0] - gx, o["head"][1] - tbl
         heads["guard%d" % (i + 1)] = (gx + dx * math.cos(a) - dy * math.sin(a), tbl + dx * math.sin(a) + dy * math.cos(a), 44 * gs)
     for j, x in enumerate((352, 424, 496)):
-        y = seat - 400 - 18 * (j % 2)
+        y = seat - 400 - 18 * (j % 2) - STINK_RISE[0] - 14 * math.sin(STINK_RISE[0] / 9.0 + j)   # ps_film: they rise
         for col, lw in (((0.10, 0.16, 0.05), 11), ((0.56, 0.78, 0.22), 6)):
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.new_path(); c.move_to(x, y + 110)
             c.curve_to(x - 30, y + 80, x + 30, y + 60, x, y + 36); c.curve_to(x - 26, y + 18, x + 20, y + 8, x, y - 10); c.stroke()
