@@ -1080,3 +1080,12 @@ Four fixes, all read 3 of 3 by the v50 cold viewers, plus pacing:
 - **A cable lags the hand.** Its belly swings against the hand's speed (−2.2 × px per 0.08 s, ±26 px), in the Client's hand and the guard's.
 - **A weight sways when the arm stops** (the lamp, 0.14 rad, damped), and the body turns back only after the drop (1.45 s).
 - **An off-screen speaker leans in.** The robot's head, bigger (r 46), leans in from the edge in 0.2 s at the cut, the card under its chin, and leans out after the line; the card goes with it.
+
+## 243. *The Offer* v53 (25 Nov, cold test v52, Tomas: "the concept changed, we can think of something else")
+
+The end card (a fresh plan pinned over the burnt one, DON circled) read as "a glitch" or "a flash-forward" for 3 of 3, in every version since v30. Decided: no plan at the end.
+
+- **The loop is a match cut on an action.** After DECLINED (held 0.3 s longer), Father, outside at his black car, brings the phone down, face down, on its roof. The film ends a hand above the roof (0.6 s); frame 0's fist on the blue car's roof lands the blow, with the film's own SLAM.
+- **The last frame doesn't show the wall,** so nothing "heals": the burnt plan is never beside the whole one.
+- **The loop gate changed with it** (`of_cut.slap_ok`): the last frame must BE that picture (bright street, black roof, velvet sleeve); the planted faults were rebuilt and are caught. The old gate (the set identical to frame 0) is kept in the file, unused.
+- **Timing v26:** 4.2 2.55 → 0.6 s, 4.1 2.8 → 3.1 s; the film 65.6 → 64.0 s. The paper and pin sounds are gone; the garage theme comes back on DECLINED and runs through the seam.

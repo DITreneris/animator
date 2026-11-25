@@ -76,7 +76,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v25.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v26.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -917,6 +917,36 @@ def insert_shot(k, sh):
         c.save(); c.translate(225, 520); brand.mark(c, 0, 0, 90); c.restore()            # the mark on the glass
         gs.protect(c, "the mark on the glass", 225, 520, 315, 610)
         rect(k, 0, 900, 540, 60, (0.48, 0.49, 0.52), 3720, shadow=False, lw=2)           # the pavement
+    elif kind == "slap":                                                           # v53 (25 Nov, cold test v52, 3 of 3: the fresh plan read
+        import dh_cast as dc_                                                      # as "a glitch"; decided): no plan. Outside, at his black
+        u_ = sh["state"].get("slap_u", 0.0)                                         # car: Father brings the phone down, face down, on its ROOF.
+        c.set_source_rgb(0.99, 0.96, 0.86); c.paint()                               # The film ends a hand above it; frame 0's fist lands it.
+        c.set_source_rgb(0.88, 0.86, 0.78); c.rectangle(0, 470, 540, 200); c.fill()  # the bright street, the far kerb
+        ROOF = 636
+        c.new_path(); c.move_to(-20, 960); c.line_to(-20, ROOF + 30); c.curve_to(120, ROOF - 6, 420, ROOF - 6, 560, ROOF + 30)
+        c.line_to(560, 960); c.close_path(); c.set_source_rgb(0.07, 0.07, 0.08); c.fill_preserve()
+        c.set_source_rgb(*INK); c.set_line_width(4); c.stroke()
+        c.set_source_rgba(1, 1, 1, 0.16); c.set_line_width(7); c.set_line_cap(1)      # the gloss along the roof
+        c.new_path(); c.move_to(60, ROOF + 36); c.curve_to(180, ROOF + 16, 360, ROOF + 16, 480, ROOF + 36); c.stroke()
+        c.set_source_rgb(0.30, 0.34, 0.40); c.new_path(); c.move_to(70, 960); c.line_to(96, 790); c.line_to(444, 790); c.line_to(470, 960)
+        c.close_path(); c.fill()                                                     # the glass below it
+        hy_ = 300 + (ROOF - 62 - 300) * u_ * u_                                      # it comes down faster and faster
+        hx_ = 262 - 14 * (1 - u_)
+        if u_ > 0.45:                                                                # the air above it
+            c.set_source_rgba(0.08, 0.08, 0.10, 0.55); c.set_line_width(4)
+            for j, dx_ in enumerate((-84, -34, 30, 86)):
+                c.new_path(); c.move_to(hx_ + dx_, hy_ - 150 - 26 * (j % 2)); c.line_to(hx_ + dx_, hy_ - 150 - 26 * (j % 2) - 90 * u_); c.stroke()
+        c.save(); c.translate(hx_, hy_ + 34); c.rotate(-0.06)                         # the phone, its dark back up, flat under his palm
+        c.new_path(); c.move_to(-96, -24); c.line_to(112, -24); c.line_to(98, 20); c.line_to(-112, 20); c.close_path()   # seen a little from above: a slab
+        c.set_source_rgb(0.13, 0.13, 0.15); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3.4); c.set_line_join(1); c.stroke()
+        c.new_path(); c.move_to(-112, 20); c.line_to(98, 20); c.line_to(98, 30); c.line_to(-112, 30); c.close_path()
+        c.set_source_rgb(0.05, 0.05, 0.06); c.fill_preserve(); c.set_source_rgb(*INK); c.stroke()
+        c.set_source_rgb(0.34, 0.35, 0.38); c.new_path(); c.arc(-78, -8, 8, 0, 2 * math.pi); c.fill()   # its camera: the BACK is up
+        c.restore()
+        sh_ = (590, hy_ - 250)                                                       # HE is in it: the velvet shoulder at the edge, the elbow up
+        hd_ = (hx_ + 6, hy_ + 8)
+        pd_ = insert_arm(c, hd_, bend(hd_, sh_, 80, -1), sh_, 60, dc_.SKIN_F, dc_.VELVET, cuff=(0.97, 0.97, 0.95), torso=dc_.VELVET)
+        _oc.ps_hand(k, "grab", hd_[0] - 10 * pd_[0], hd_[1] - 10 * pd_[1], 76, dc_.SKIN_F, pd_, 1)   # the series' hand, over the phone
     elif kind == "pin":                                                            # v2 (23 Nov, cold tests 3 of 3: the plan "healed"):
         u_ = sh["state"].get("pin_u", 1.0)                                             # v5 (24 Nov, cold test 3 of 3: "the burnt map is
         sl_ = sh["state"].get("pin_slide", 1.0)                                        # whole again", "a pole from the floor"; decided):
