@@ -1,6 +1,6 @@
 # Office Noir 4 – status at film v21 (25 Nov)
 
-Pinned: tag `uptimez-on4-v21` (commit 8c90a3e). Built by `python3 src/on4_text.py` (picture, words, sound in one run).
+Pinned: commit 8c90a3e (tag `uptimez-on4-v21` made locally; pushing tags from this session was refused, 403). Built by `python3 src/on4_text.py` (picture, words, sound in one run).
 
 ## Where it stands
 
