@@ -211,6 +211,9 @@ def limb(k, x0, y0, x1, y1, w, sleeve, col, skin, cuff=None, seed=900, thumb=Non
     c.restore()
 
 
+LEAD42 = [0]                                         # v18: drawings of the slide already done at d0 (cs_v18)
+
+
 def s4_2(k, d):
     """28 drawings (2.3 s). Top shot, the AI's sheet on the desk. Her hands come in: one shoves the other's sleeve
     up, and back (d0-8); they unroll her taped plan down over the AI's (d9-17); they leave; a slow push in on the
@@ -221,7 +224,8 @@ def s4_2(k, d):
     _desk(k)
     x0, y0, w, h = PLAN_BOX
     if SILENT[0]:                                                                 # v5 (Tomas, 23 Nov): no hands. The plan
-        u = ease(d / 7.0)                                                          # slides in from the top, whole sheet, and lands
+        u = ease((d + LEAD42[0]) / (7.0 + LEAD42[0]))                              # slides in from the top, whole sheet, and lands
+                                                                                   # (v18 LEAD42: already on its way at d0)
         c.set_source_surface(_plan_surface("before"), 0, -(1 - u) * 720); c.paint()
         c.restore()
         return

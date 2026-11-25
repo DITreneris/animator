@@ -266,27 +266,30 @@ def _shapes14():
 CLUTCH = (-20, 120, 20, -120)                                # v16: elbows out, the hands meet at the phone, not crossed
 
 
+LOCK66 = [False]                                                                  # v18 (cs_v18)
+
+
 def _phone_between(k, o, d, buzz):
     """v15f: the phone in his right hand (the series' phone grip, its back to us, the thumb toward his middle), his
     left hand flat over its foot, clamping it to his chest."""
     import of_cast as _oc
     (lx, ly), (rx, ry) = o["don"]["hands"]
     mx, my = (lx + rx) / 2.0, (ly + ry) / 2.0 - 4
-    j = (1.5 if d % 2 else -1.5) if buzz else 0.0
+    j = (1.5 if d % 2 else -1.5) if buzz and not LOCK66[0] else 0.0                # v18: locked (the hands changed every drawing)
     sk = kit.PEOPLE["DON"]["skin"]
     c = k.c
     gx, gy = (rx, ry) if rx > lx else (lx, ly)                                    # the phone in his screen-right hand;
     s1.PH_DEV.append(c.user_to_device(gx, gy))                                    # the other hand is the rig's own, beside it
     hx_ = o["don"]["head"][0]
     _oc.phone_grip(k, gx + j, gy, 0.55, screen=None, ang=-0.12, skin=sk, body_x=hx_, back=True)
-    if buzz:
-        v14._buzz(k.c, mx, my - 6, 15, 16, 1.8)
+    if buzz:                                                                      # v18: the zigzags outside his hands, at
+        v14._buzz(k.c, mx, my - 6, 30 if LOCK66[0] else 15, 16, 1.8)              # the phone's edges (they read as red marks on them)
 
 
 def s6_6a(k, d):
     """14 drawings. His phone buzzes in his hand; this time he clamps it to his chest with both hands, swells, grins,
     eyes shut: nothing is getting away (the answer to 0:00)."""
-    p = ease((d - 3) / 3.0)
+    p = ease((d - 3) / 3.0) if not LOCK66[0] else (ease((d - 3) / 2.0) if d < 5 else 1.0)   # v18: clamped by d5, then still
     pose = lerp(kit.ARM_POSES["phone_r"], CLUTCH, p)
     face = "neutral" if d < 3 else ("grin" if d < 9 else "happy")
 

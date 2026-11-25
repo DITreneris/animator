@@ -78,3 +78,24 @@ All behind `cs_v17.install()`; v16 rebuilds as before.
 
 QA v17 master: 1996 frames, -15.6 LUFS, -2.3 dBFS, bubbles 12/0, hand and elbow gates 0 at 1080 and 540; PSNR vs the 540
 film 35.0 average, no shot dips below v16; speech 15/16 ("Approved." as above).
+
+## v18: the cold viewers' remaining notes (25 Nov evening, /grill-me)
+
+Rebuild: `python3 cs_film_v18.py ../customer-success 2`; all behind `cs_v18.install()`.
+
+| Pick | Done |
+|---|---|
+| 0:01 the phone jumped from his hands into the air | One in-between drawing: his hands rising (-100, -90, 100, 90), the phone just off his left fist, beside his head, not over it. The wide gives up its last drawing, so the film's clock is v17's |
+| 0:32 the throw a pole | After the release the arm goes on down and bends (FOLLOW35 (-10, 5, 40, 70) over 0.25 s) |
+| 0:55 a knot of arms, "a blue pole" | 6.1: one hand holds the phone at his chest, the other hangs; the roll is gone |
+| 1:04 his hands changed every drawing | 6.6a clamped by d5 and still (no jitter); the buzz zigzags outside his hands |
+| 0:13 a lone calendar | 2.1 opens on Don (no wall calendar first) |
+| 0:36 an empty desk | 4.2 the plan already sliding in at d0 (LEAD42 5) |
+| 0:43 a blank grey sign | 4.4 HUMAN✓ turned by d2 (FLIP44 (0, 2)) |
+| 1:03 her phone jumped up | 6.5 up over 5 drawings |
+| The 7 in his pocket | Left as is (the joke: he lost it himself) |
+
+8 fps check of the toss, the throw and the hit, and the loop (the FRI wide → Don's buzzing phone): as intended.
+Speech 15/16 ("Approved." as before). The check is fragile: moving the Client's 1.2 line by 1/12 s changed the mix
+by about -32 dB around 15 s and Whisper lost "Nine o'clock." and "Still one star."; with LINE12 back at 1.42 both pass
+at 2/3. Before release: two or three people with sound, on a phone.

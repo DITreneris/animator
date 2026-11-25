@@ -44,6 +44,7 @@ BACK = s1.LINE_D[1] + 0.15                                 # then the arm goes h
 GEO14 = {}
 ARM14 = ["paddle"]                                         # v15 (bubbles): "none", the phone held low
 ELBOW14 = [1]                                              # v17: -1 lifts the elbow out of his body's outline at the visor
+FOLLOW35 = [None]                                          # v18: 3.5's follow-through pose after the release (cs_v18)
 DOOR31b = [False]                                          # v17: the handle, rail, glints and PUSH sticker (cs_v17)
 LEAN14 = [0.0]                                             # v17: how far he leans in for the visor (0: v14; cs_v17 sets it)
 
@@ -379,8 +380,10 @@ def s3_5(k, d):
         pose = up
     elif t < THROW:
         u = _ease((t - WIND[0]) / (WIND[1] - WIND[0])); pose = tuple(a + (b - a) * u for a, b in zip(up, wind))
-    else:
+    elif FOLLOW35[0] is None or t < THROW + 0.17:
         u = _ease((t - THROW) / 0.17); pose = tuple(a + (b - a) * u for a, b in zip(wind, out))
+    else:                                                                         # v18: on through, down and bent (it held
+        u = _ease((t - THROW - 0.17) / 0.25); pose = tuple(a + (b - a) * u for a, b in zip(out, FOLLOW35[0]))   # out: a pole)
     lean = 5 if t < THROW else 8                                                  # v15e: steady while he speaks (the locked bubble sat on his leaning face)
     cu = _ease((t - WIND[0]) / 0.4)
     cam = tuple(a + (b - a) * cu for a, b in zip(*CAM35))
