@@ -477,3 +477,18 @@ Shared notes (not beats):
 - `check v5`: 0 faults, hand gate included. Board v3 md5-identical. Sheet: `ps_booth_bridge_v1.png`. Not cold-tested.
 
 **Not built: the invitation in Sofía's hand.** Picked from my option, but the script and concept v3.2 say the invitation is **Pam's**: her phone lies on the counter from 1.2, lights up INVITATION · DAD in 5.7, and in 6.1 Pam's hand reaches across the line for it (the Client's condition for Father is Pam). The viewer who read "it's Pam's" was right. My option assumed Sofía; it would undo canon. Put back to Tomas.
+
+## Phones against the repo's rules (25 Nov, Tomas: "kaip vaizduojame telefonus, kaip patobulinti?")
+
+Rules checked: `docs/rules-hands-and-phones.md` §1 "A phone in a hand" and §2 "Phone screens", and lessons 225 (the holder visible or implied), 226 (one UI kit; the story's word the biggest; nothing under ~9 units; light screens) and 295 (a cropped word reads as another word).
+
+Fixed, all behind `GAGS_V5`; with the switch off the screens are md5-identical and board v3 is unchanged:
+- **One UI kit.** `ps_ui.py` draws episode 14's screens on episode 13's `of_ui` (status bar, app bar, card, pill, avatar):
+  - 3.3–3.4: PUBLIC POST?, the biggest thing on the screen, then APPROVE turning green with a tick;
+  - 3.5 and 4.1: the #TeamDon post;
+  - 5.7 and 6.1: Pam's invitation is episode 13's own `of_ui.invite` (DAD).
+- **4.2:** the push-in is a pinch-zoom into the photo with no caption, so the cut word "amDon" is gone (lesson 295). The heel point is re-measured for the new layout (`ps_ui.HEEL_PT`).
+- **3.4:** the robot's phone is in the board frame, the gag's payoff pose, the green pad by his thumb (`PHONE_34`).
+- `check v5`: 0 faults. Sheet: `ps_phones_v1.png`.
+
+**Not fixed, 6.1: Pam's hand has no owner** (rule 225; this is why 2 of 3 couldn't tell whose invitation it is). I grid-searched 6.1's framing (x −150 to −60, y −240 to −180, zoom 1.28 and 1.33) to bring Pam's face in. Every framing that shows her cuts a sign (OUR FIRST CLIENT, the throne's INVESTOR card, DON on the floor, ASSISTANT TO DON). Moving Pam off her mark is not allowed (the set rule). Needs a decision from Tomas.

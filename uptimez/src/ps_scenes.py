@@ -386,8 +386,14 @@ def cast_33(k):
     return heads
 
 
+PHONE_34 = dict(arms=((-95, 0), (-80, 0)), tele=-1.57, sel=0.6, s=0.58)   # GAGS_V5: the gag's payoff pose (ps_gags/L6)
+
+
 def cast_34(k):
     heads = {}
+    if GAGS_V5[0]:                                           # Tomas, 25 Nov ("3.4 telefonas didesnis"): the robot's phone in the
+        p_ = PHONE_34                                        # frame, big, the green APPROVED pad under his thumb (one thumb)
+        robot(k, "rob_tape", selfie=p_["sel"], phone="approved", arms=p_["arms"], tele=p_["tele"], phone_s=p_["s"])
     _, heads["don"] = don(k, (tape_x(140) - 190, F + 140), "thumbs", "grin", (0, -0.3), chin=1)
     return heads
 
@@ -635,11 +641,12 @@ def _prints_v4(k):
     import client_ob as cob
     c = k.c
     s_ = 7.0                                                 # the phone's own heel point: (22.3, 13.6) in its units
-    px, py = HEEL_42[0] - 22.3 * s_ - 100, HEEL_42[1] - 13.6 * s_ + 46   # measured: her heel sits 100 px right, 46 up
+    hp_ = __import__("ps_ui").HEEL_PT if rp.UI_KIT[0] else (22.3, 13.6)   # the UI kit's post puts the photo elsewhere
+    px, py = HEEL_42[0] - hp_[0] * s_ - 100, HEEL_42[1] - hp_[1] * s_ + 46   # measured: her heel sits 100 px right, 46 up
     import ps_checks as pc
     pc.NO_DECLARE[0] = True                                  # the screen fills the frame: the story rect is the heel + finger
     try:
-        rp.phone_screen(k, px, py, s_, "posted")
+        rp.phone_screen(k, px, py, s_, "zoom" if rp.UI_KIT[0] else "posted")
     finally:
         pc.NO_DECLARE[0] = False
     hx, hy = HEEL_42
@@ -925,6 +932,7 @@ def v55(v):
 def gags_v5(on=True):
     """Board v4: FIX_V4 plus Tomas's picks of 25 Nov (HR? on the CV, the treat, the bodyguards, the CV smaller)."""
     FIX_V4[0] = on or FIX_V4[0]; GAGS_V5[0] = on; sp.CV_WORD[0] = "HR?" if on else "COO?"
+    rp.UI_KIT[0] = pss.UI_KIT[0] = on                        # Tomas, 25 Nov: the phone screens through episode 13's UI kit
     v55("C" if on else None)                                 # Tomas, 25 Nov (after an outside review of A/B/C): C, HR? at the foot
 
 
