@@ -96,3 +96,19 @@ Stills to Tomas: 1.1 frame 0, 1.1 mid-pull, 1.2a landing, 1.2b cup, 1.3 ☀ and 
 - 6.1: the case and the stand carry Pam's ownership; ask the scene 6 and whole-film cold tests directly.
 - The v9 lines (3.4, 4.3, 5.2, 5.3) against their takes: recheck timing per split shot when scenes 3–5 are built.
 - The commit of the phone fixes (25 Nov) waits for Tomas.
+
+## 7. Scene 4: the plan (25 Nov, before building)
+
+0:42.6–0:48.4 (5.8 s in script v9), three shots, three new moves. Built under the rules that held for scenes 1–3: stills first (sent, not waited on), a camera locked to the board's key frame unless a shot asks for its own, the board's text unchanged, 3 cold viewers with a question per new move.
+
+| Shot | s | Drawings | What moves | The one visible change | Reused | Sound | Cold-test question |
+|---|---|---|---|---|---|---|---|
+| 4.1 | 0.6 | 9 | the neon buzzes on (one flicker); bodyguard 1's black sleeve lifts the #TeamDon phone into the frame under it | the phone comes up | board v4's bridge (`_post_bridge`, of_cast.phone_grip) | club bass, low; the neon's hum | "Where is this, and how did the photo get there?" |
+| 4.2 | 2.2 | 33 | the oily finger stops on Pam (print 1), slides to the heel, spreads to zoom, print 2 | prints, the zoom | motion test J (FINGER_42), the v4 `point_t` finger | two soft smudges | "Who is the finger interested in?" |
+| 4.3a | ~0.95 | 14 | the Client leans in, points at the phone: "That one." | the lean, the point | the board's booth, BOOTH_PART_V4 part 0 | — | "Who wants whom invited?" |
+| 4.3b | ≥0.4 | 6+ | both guards turn away, mirrored, pinch their noses; the green stink lines rise | the turn, the lines (wavy, rising) | `_booth_guards`, CLOSE_43 | a sniff, a gag (short) | "Why do the two men hold their noses?" |
+| 4.3c | rest | ~22 | Father looks at the phone, nods once: "Invite her."; the Client sits back: a black handprint on the velvet | the nod (one drawing, lesson 132), the print | part 1 | a send whoosh on the nod | "Does the man in the middle react to the smell?" |
+
+**One timing decision first (Tomas):** in v3 timing Father's take starts at 1.13 s, so a 4.3b close between the two lines would last 0.18 s — below a readable hold (0.4 s, lessons 23, 999). Options: (a) Father's take 0.4 s later, 4.3 = 3.33 s, the film +0.4 s (recommended); (b) the noses inside 4.3a's frame, behind the Client while he talks (no close); (c) the close after "Invite her.", the handprint moves to it.
+
+**Before building:** the hand sheet for the pinch (rules §0: both guards' hands at their noses, measured gaps at feed size), the stink lines as a moving path (not three static strokes), and the booth's dead zones (the rail at x > 470).

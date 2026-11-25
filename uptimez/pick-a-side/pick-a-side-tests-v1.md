@@ -610,3 +610,7 @@ Built: 3.1 cuts in to Mom for "Chin up, Donnie." (its own camera, nudged clear o
 | What Pam does with the cup | 0/2: "a phone, a selfie / photographing the pose" |
 
 The blue mug at her face reads as a phone (the episode's other prop), the sip falls on one 4 fps drawing. Steam off the rim was tried and dropped: from the drawn hand point it either crossed her eyes or floated off the mug (not converging, rule 5).
+
+### Scene 3 v4 (Tomas: "1", the longer sip)
+
+3.7 +0.40 s; the sip held 0.36 s at her mouth (two 4 fps drawings), eyes up into the cup, two slurps. 2 fresh viewers: 0/2, "she raises a phone, photographs / checks the post". Third round the cup reads as a phone → the rule changes the gesture or the prop (Tomas's call: Pam's mug is part of her look).
