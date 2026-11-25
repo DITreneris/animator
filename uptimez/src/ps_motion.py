@@ -73,7 +73,7 @@ def tug_state(t):
     return 0.0, None
 
 
-def shot_A(t):
+def shot_A(t, v4=False):
     u, who = tug_state(t)
     n = u / 0.92                                              # 0 up .. 1 down
     top = pss.GY0 - 10 + 12
@@ -89,6 +89,8 @@ def shot_A(t):
         hi = (-176, 0); lo = (-150, -24)                     # its near hand: yanked up as he pulls, down as it pulls
         arm = (lerp(lo[0], hi[0], n), lerp(lo[1], hi[1], n))
         rx, rf = ps.at("rob_cord")
+        if v4:                                               # the film (ps_film, board v4): the robot a step left of the door
+            rx -= 30; hi = (-180, 0); arm = (lerp(lo[0], hi[0], n), lerp(lo[1], hi[1], n))   # frame, as board v4's 1.1
         o2, heads["robot"] = ps.robot(k, (rx + 12, rf), arms=(arm, (8, 0)), visor="sun" if n > 0.5 else None,
                                       tilt=(0.10 if who == "robot" else 0.0))
         c = k.c

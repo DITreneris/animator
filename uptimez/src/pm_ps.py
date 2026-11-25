@@ -23,6 +23,7 @@ import don_ps as dp
 from kit import Ctx, INK, cut, rect, ellipse
 
 MUG = (0.36, 0.62, 0.80)
+MUG_RING = [False]
 TAPE = dp.TAPE
 STOOL = (0.55, 0.58, 0.62)
 PHY, PBT = pm.HY, pm.BT
@@ -50,6 +51,14 @@ def pam(k, x, feet, s=0.54, pose="stand", face="neutral", look=(0, 0), mug=True,
                 mug_at(k, hx + dx * 14 * s, hy + dy * 14 * s + 4 * s, s)      # past the fingers: the forearm shows
         if late:
             hp.redraw_late(k)
+        if MUG_RING[0] and mug and g == "cup":               # its thumb over the mug's front, apart from the fingers
+            hx, hy = o["hands"][1]
+            (dx, dy), _ = hp.DIRS[1]
+            c = k.c; c.set_line_cap(1)
+            for col, lw in ((INK, 9.5 * s), (pb.SKIN if hasattr(pb, "SKIN") else (0.98, 0.84, 0.70), 6.5 * s)):
+                c.set_source_rgb(*col); c.set_line_width(lw); c.new_path()
+                c.move_to(hx + dx * 2 * s, hy - 5 * s); c.line_to(hx + dx * 13 * s, hy - 12 * s); c.stroke()
+            c.set_line_cap(0)
     finally:
         kit.HAND[0] = old
     return o
@@ -67,7 +76,11 @@ def mug_at(k, x, y, s, tilt=0.0):
     """Her blue mug, held: the body behind her fingers, the handle on the far side."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(tilt); c.scale(s, s)
-    c.set_source_rgb(*INK); c.set_line_width(4); c.new_path(); c.arc(-22, 0, 9, 1.8, 4.5); c.stroke()
+    if MUG_RING[0]:                                          # opt-in (Pick a Side film, review 25 Nov: "the handle must
+        for col, lw in ((INK, 10), (MUG, 5)):                # read"): a blue ring, outlined, not a dark line on her purple
+            c.set_source_rgb(*col); c.set_line_width(lw); c.new_path(); c.arc(-22, 0, 10, 1.6, 4.7); c.stroke()
+    else:
+        c.set_source_rgb(*INK); c.set_line_width(4); c.new_path(); c.arc(-22, 0, 9, 1.8, 4.5); c.stroke()
     cut(k, [(-16, -22), (16, -22), (14, 22), (-14, 22)], MUG, shadow=False, lw=2.2)
     ellipse(k, 0, -22, 16, 4.5, (0.24, 0.16, 0.10), 3551, shadow=False, lw=1.6)
     c.restore()

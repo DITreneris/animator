@@ -145,11 +145,27 @@ def _tug_11(k):
     return heads
 
 
+LIGHT_V5 = [False]                                           # ps_film (stage 7): the slanting daylight (light_in)
+
+
 def light_in(k):
     """v4 (Tomas 24 Nov: the sun icon read as "a sun", never "more light"): when the blind is down, daylight falls
     through the bare glass onto whoever is in front of it: three warm bands, no new words."""
     c = k.c
     x0, y0, w, h = pss.GX0, pss.GY0, pss.GW, pss.GH
+    if LIGHT_V5[0]:                                          # the film (outside review 25 Nov: "upright bands read as glass
+        c.save()                                             # plates"): faint at the glass, slanting, widening and brightest
+        c.rectangle(x0 - 40, y0, w + 260, h + 150); c.clip()  # where they land on the floor in front
+        g = cairo.LinearGradient(0, y0, 0, y0 + h + 150)
+        g.add_color_stop_rgba(0, 1.0, 0.90, 0.45, 0.04); g.add_color_stop_rgba(0.75, 1.0, 0.90, 0.45, 0.22)
+        g.add_color_stop_rgba(1, 1.0, 0.90, 0.45, 0.36)
+        for a, b in ((0.12, 0.28), (0.44, 0.56), (0.74, 0.88)):
+            c.new_path()
+            c.move_to(x0 + w * a, y0); c.line_to(x0 + w * b, y0)
+            c.line_to(x0 + w * b + 150, y0 + h + 150); c.line_to(x0 + w * a + 70, y0 + h + 150); c.close_path()
+            c.set_source(g); c.fill()
+        c.restore()
+        return
     c.save()
     c.rectangle(x0, y0, w, h + 60); c.clip()                 # through the glass and onto the floor in front, not the wall
     for i, (a, b) in enumerate(((0.10, 0.30), (0.42, 0.58), (0.72, 0.92))):
@@ -203,6 +219,10 @@ def cast_13(k):
 
 
 NO_STRIP_14 = [True]
+LOOK_14 = [1.0]                                              # ps_film (stage 7): the three's look, 0 on Don .. 1 the board's
+FACES_14 = [None]                                            # ps_film: (pam, mom, sofia) faces for the look; None = the board's
+ROLL_RIGHT_14 = [False]                                      # ps_film 1.4a: the roll in his frame-right hand (his box is left)
+LIFT_14 = [1.0]                                              # ps_film: the roll, 0 at his side .. 1 up (the board)
 TRIO_DX_14 = [0]                                            # tried 150/220 (review round 1): the frame goes too wide; kept
 
 
@@ -210,19 +230,22 @@ def cast_14(k):
     heads = {}
     dx_ = 200
     t_ = TRIO_DX_14[0] if FIX_V4[0] else 0             # v4 review round 1: the trio further off, his box between
-    _, heads["pam"] = pam(k, (300 + t_, F + 20), "cup_mid", "doubt", (0.6, 0))
-    _, heads["mom"] = mom(k, (370 + t_, F + 16), "folded", "unimpressed", (-0.6, 0))
-    _, heads["sofia"] = sofia(k, (440 + t_, F + 24), "hip_out", "smile", (-1, 0))
+    lk = LOOK_14[0]                                          # the film (ps_film): 0 = all three on Don, 1 = the board's look
+    fp, fm, fs = FACES_14[0] or ("doubt", "unimpressed", "smile")   # the film: the three's reactions (review 25 Nov)
+    _, heads["pam"] = pam(k, (300 + t_, F + 20), "cup_mid", fp, (-0.8 + 1.4 * lk, 0))
+    _, heads["mom"] = mom(k, (370 + t_, F + 16), "folded", fm, (-0.8 + 0.2 * lk, 0))
+    _, heads["sofia"] = sofia(k, (440 + t_, F + 24), "hip_out", fs, (-1, 0))
     tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
     hh = dp.don(Ctx(cairo.Context(tmp), 0), dx_, F + 90, SC["don"], "stand", "neutral", (0, 0))["head"]
     dp.blind_cape(k, hh, SC["don"])
     if FIX_V4[0]:                                            # v4 (Tomas 24 Nov): the roll in his other hand (frame left), so
         p_ = dp.POSES["lift_roll"]                           # his bubble sits on his right with a short tail, clear of it
-        o, heads["don"] = don(k, (dx_, F + 90), (-p_[2], -p_[3], -p_[0], -p_[1]), "hollow", (0, 0), hands=("fist", "fist"))
+        up_ = (-p_[2], -p_[3], -p_[0], -p_[1]) if not ROLL_RIGHT_14[0] else p_; lo_ = (-8, 0, 8, 0); lf = LIFT_14[0]   # the film: the roll comes up
+        o, heads["don"] = don(k, (dx_, F + 90), tuple(a + (b - a) * lf for a, b in zip(lo_, up_)), "hollow", (0, 0), hands=("fist", "fist"))
         dp.cape_rail(k, o["head"], SC["don"])
         if not NO_STRIP_14[0]:                               # round 1 fix: the strip between his hands framed his box
             dp.tape_strip(k, o["hands"][0], o["hands"][1], SC["don"])   # like a sign he holds (2 of 3): the roll alone
-        dp.tape_roll(k, *o["hands"][0], SC["don"] * 0.9)
+        dp.tape_roll(k, *o["hands"][1 if ROLL_RIGHT_14[0] else 0], SC["don"] * 0.9)
         return heads
     o, heads["don"] = don(k, (dx_, F + 90), "lift_roll", "hollow", (0, 0))
     dp.cape_rail(k, o["head"], SC["don"])
@@ -382,7 +405,7 @@ def cast_31(k):
 
 def cast_33(k):
     heads = {}
-    _, heads["robot"] = robot(k, "rob_tape", selfie=0.6, phone="public", visor="public", arms=((-95, 0), (120, 40)))
+    _, heads["robot"] = robot(k, "rob_tape", selfie=0.6, phone="public", visor="ask" if GAGS_V5[0] else "public", arms=((-95, 0), (120, 40)))
     return heads
 
 
@@ -517,14 +540,21 @@ def cast_61(k):
         x_, y_ = pss.PHONE_AT                                # counter buzzes behind Don, 5.7's own phone small and upright
         k.c.save(); k.c.translate(x_, y_ - 26); k.c.rotate(-0.08)   # (bare arcs read as "a blue spiral", cold test)
         pss.phone_close(k, 0, 0, 0.34, lit=True, buzz=True)
+        if GAGS_V5[0]:                                       # review 25 Nov: "hangs in the air": it sits in a desk stand,
+            pss.phone_stand(k, 0, 110 * 0.34, 0.34)          # its lip over the phone's foot
         k.c.restore()
-    o, heads["pam"] = pam(k, (tape_x(55) - 40, F + 55), "reach", "avert", (1, 0.6), mug=False)  # v3: eyes on her lit phone
+    o, heads["pam"] = pam(k, (tape_x(55) - 40, F + 55), PAM_61[0] if GAGS_V5[0] else "reach", "avert", (1, 0.6), mug=False)  # v3: eyes on her lit phone
     if not FIX_V4[0]:                                        # v4 (cold test, 3 fixes, 0 of 3 read a phone in her hand): no phone in
         pss.pam_phone(k, o["hands"][1][0] + 30, o["hands"][1][1] + 10, 1.4, lit=True)   # 6.1; its owner is read in 5.7 (her hand)
     return heads
 
 
 DON_X_61 = [110]
+# GAGS_V5 (review 25 Nov: "Pam's action unclear"): her arm toward her phone on the counter. The phone is 3 arm lengths away
+# (behind her, up), so the hand stops at 0.92 of the reach along that line (lesson 179: never a straight pole).
+pm.P_POSES["reach_up"] = (-8, 0) + pm.pm.ik(1, 91, -286); pm.P_HANDS["reach_up"] = ("relax_s", "grab")
+pm.P_POSES["reach_pt"] = (-8, 0) + pm.pm.ik(1, 91, -286); pm.P_HANDS["reach_pt"] = ("relax_s", "point_t")
+PAM_61 = ["reach"]
 
 
 FACE_61B = ["shock"]
@@ -554,9 +584,12 @@ def fg_61b(k):
     return {"don": (hx, hy, R["don"] * s_)}
 
 
+DON_61 = [("thumbs", None)]                                            # GAGS_V5 (phone review 25 Nov): (pose, hands) for 6.1's Don;
+                                                             # was "vest": two fists (lesson 207: toes); silhouette test 2/2 picked thumbs
 def fg_61(k):
     """Don, near, big, front-left on his side, facing us: drawn in frame units."""
-    o = dp.don(k, DON_X_61[0] if FIX_V4[0] else 170, 1150, 0.60 * 2.5, "vest", "smug", (0, 0), chin=1)   # v4: left, the tape seen
+    pose, hands = DON_61[0] if (GAGS_V5[0] and DON_61[0]) else ("vest", None)
+    o = dp.don(k, DON_X_61[0] if FIX_V4[0] else 170, 1150, 0.60 * 2.5, pose, "smug", (0, 0), chin=1, hands=hands)   # v4: left, the tape seen
     return {"don": (o["head"][0], o["head"][1], R["don"] * 0.60 * 2.5)}
 
 
@@ -578,7 +611,8 @@ def ins_photo(k, flash=True):
 def ins_screen(kind):
     def f(k):
         k.c.set_source_rgb(0.20, 0.20, 0.24); k.c.paint()
-        rp.phone_screen(k, 270, 500, 2.3, kind)
+        big = GAGS_V5[0] and kind == "posted"
+        rp.phone_screen(k, 270, 430 if big else 500, 2.95 if big else 2.3, kind)   # GAGS_V5: 3.5 phone +35 %
     return f
 
 
@@ -654,13 +688,16 @@ def _prints_v4(k):
     if FINGER_42[0] >= 1.0:                                  # the print only once the finger has landed
         c.save(); c.translate(hx + 4, hy + 6); c.rotate(0.3); c.scale(16, 21)
         c.set_source_rgba(0.08, 0.05, 0.03, 0.45); c.arc(0, 0, 1, 0, 6.3); c.fill(); c.restore()
-    w = 84
+    w = 72 if GAGS_V5[0] else 84                             # GAGS_V5 (review 25 Nov): the finger 15 % thinner
     d = (-0.55, -0.83)                                       # up-left from below the photo: the finger, not his hand, over her
     back = (1.0 - FINGER_42[0]) * 320                        # motion: it comes in along its own line from the edge
     wx, wy = hx - d[0] * (1.35 * w + back), hy - d[1] * (1.35 * w + back)
     ofs.insert_cuff(c, (wx, wy), (wx - d[0] * 60, wy - d[1] * 60), w, cob.SKIN, (0.95, 0.94, 0.90), cuff=(0.95, 0.94, 0.90))
-    hp.draw(k, "point", wx, wy, w, cob.SKIN, d, 1)
-    grip("point", (wx, wy))
+    g42 = "point_t" if GAGS_V5[0] else "point"               # GAGS_V5 (phone review 25 Nov): the grease dots read as eyes;
+    hp.draw(k, g42, wx, wy, w, cob.SKIN, d, 1)               # a clean index, no thumb (lesson: Daddy's Home point_t)
+    grip(g42, (wx, wy))
+    if GAGS_V5[0]:
+        return
     c.set_source_rgba(0.12, 0.07, 0.03, 0.75)               # grease on the knuckles and under the nail (his hands, canon)
     for (ox, oy, r) in ((-6, 8, 9), (10, -4, 7)):
         c.new_path(); c.arc(wx + ox, wy + oy, r, 0, 6.3); c.fill()
@@ -801,12 +838,35 @@ def cast_55(k):
 
 
 HOLD_57 = [True]
+H57 = ["held"]                                               # GAGS_V5 (review 25 Nov: 5.7 FAIL, "crumpled paper"; cold test 2/2 "held"): "grab" (board),
+                                                             # "held" (episode 13's approved of_cast.phone_grip), "fist"
+
+
+def pmf_57():
+    import pam_mf
+    return pam_mf
 
 
 def ins_phone_57(k):
     k.c.set_source_rgb(0.55, 0.48, 0.40); k.c.paint()
     if FIX_V4[0]:                                            # v4 (cold test: "Don's phone?" 2 of 3): beside it, Pam's blue mug
-        pss.phone_close(k, 230, 520, 1.8)
+        held = GAGS_V5[0] and H57[0] == "held"
+        if held:                                             # episode 13's phone hand (of_cast.phone_grip), drawn big: the
+            import of_cast as ocs_                           # palm behind the phone, her sleeve into it, the thumb and three
+            pal = (230, 680)                                 # fingertips over its edges (the palm out under its foot)
+            c_ = k.c
+            for col, lw in ((INK, 118), (pmf_57().PURPLE, 110)):
+                c_.set_source_rgb(*col); c_.set_line_width(lw); c_.set_line_cap(0); c_.move_to(575, 1000); c_.line_to(pal[0] + 40, pal[1] + 60); c_.stroke()
+            ocs_.phone_grip(k, pal[0], pal[1], 4.4, body_x=700, part="back", skin=pmf_57().SKIN, ink=0.45)
+            c_.save(); c_.new_path()                         # cold test 2/2: "the fingertips float like beads": the back of
+            x0_, y0_, w_, h_, r_ = 82, 528, 70, 182, 30      # the fingers behind the phone's left edge joins them to the palm
+            c_.arc(x0_ + r_, y0_ + r_, r_, math.pi, 1.5 * math.pi); c_.arc(x0_ + w_ - r_, y0_ + r_, r_, 1.5 * math.pi, 2 * math.pi)
+            c_.arc(x0_ + w_ - r_, y0_ + h_ - r_, r_, 0, 0.5 * math.pi); c_.arc(x0_ + r_, y0_ + h_ - r_, r_, 0.5 * math.pi, math.pi); c_.close_path()
+            c_.set_source_rgb(*pmf_57().SKIN); c_.fill_preserve(); c_.set_source_rgb(*INK); c_.set_line_width(4.0); c_.stroke(); c_.restore()
+        pss.phone_close(k, 230, 500 if held else 520, 1.8)  # held: 20 up, the case's foot out of the bottom quarter
+        if held:
+            ocs_.phone_grip(k, pal[0], pal[1], 4.4, body_x=700, part="front", skin=pmf_57().SKIN, ink=0.45, thumb_tip=(22.5, 0))
+            grip("phone", pal, 1, 1)
         k.c.save(); k.c.translate(430, 600); k.c.scale(2.4, 2.4)           # its handle joined to the body (mug_at hides
         k.c.set_source_rgb(*INK); k.c.set_line_width(4); k.c.new_path(); k.c.arc(-18, 0, 10, 1.57, 4.71); k.c.stroke()
         k.c.restore()                                                      # the gap behind her fingers)
@@ -814,9 +874,11 @@ def ins_phone_57(k):
         import hands_ps as hp_, pam_mf as pmf_              # v4 (Tomas 24 Nov, hands page): the owner in the frame: Pam's cardigan
         c = k.c; ex, ey, hx, hy = 575, 1000, 350, 690        # sleeve in from the corner, her fingertip on the phone's edge, below
         d = ((hx - ex) / math.hypot(hx - ex, hy - ey), (hy - ey) / math.hypot(hx - ex, hy - ey))   # the words
+        if held:                                             # its sleeve and hand are drawn above, round the phone
+            return
         for col, lw in ((INK, 118), (pmf_.PURPLE, 110)):
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0); c.move_to(ex, ey); c.line_to(hx - d[0] * 20, hy - d[1] * 20); c.stroke()
-        hp_.draw(k, "grab" if HOLD_57[0] else "point", hx, hy, 66, pmf_.SKIN, d, 1)   # round 1 fix: a tap read as
+        hp_.draw(k, ("fist" if GAGS_V5[0] and H57[0] == "fist" else "grab") if HOLD_57[0] else "point", hx, hy, 66, pmf_.SKIN, d, 1)   # round 1 fix: a tap read as
         return                                               # her SENDING it (2 of 3); a grip round its edge receives it
     pss.phone_close(k, 270, 520, 1.8)
 
@@ -910,7 +972,8 @@ def hands_validate():
         finally:
             PART[0] = None; PLANT_HAND[0] = False
         res.append(hand_checks())
-    FIX_V4[0], GAGS_V5[0], sp.CV_WORD[0] = was
+    gags_v5(was[1])                                          # all of gags_v5's switches back (UI kit, case, v55 leaked into
+    FIX_V4[0], GAGS_V5[0], sp.CV_WORD[0] = was               # `check` v3 before, 25 Nov)
     del GRIPS_LOG[:]; del HANDS_LOG[:]
     ok = bool(res[0]) and not res[1]
     print("hands   %s | planted: %s | real: %s" % ("OK " if ok else "BAD", (res[0][:1] or ["(nothing caught)"])[0][:80], res[1][:1] or "pass"))
@@ -933,6 +996,7 @@ def gags_v5(on=True):
     """Board v4: FIX_V4 plus Tomas's picks of 25 Nov (HR? on the CV, the treat, the bodyguards, the CV smaller)."""
     FIX_V4[0] = on or FIX_V4[0]; GAGS_V5[0] = on; sp.CV_WORD[0] = "HR?" if on else "COO?"
     rp.UI_KIT[0] = pss.UI_KIT[0] = on                        # Tomas, 25 Nov: the phone screens through episode 13's UI kit
+    pss.CASE[0] = on                                         # Tomas, 25 Nov (review: B): Pam's phone in her purple flower case
     v55("C" if on else None)                                 # Tomas, 25 Nov (after an outside review of A/B/C): C, HR? at the foot
 
 
@@ -976,6 +1040,7 @@ def board_keys(sh, line):
 _CHK = [None]                                               # check_all's per-frame checks (run right after each key frame)
 DEBUG_V4, WHY = [False], [""]                                               # board key frames that show one of the shot's lines each
 IN_HAND_V4 = ()                                             # review round 1: 6.1 keeps the counter phone (lit, buzzing)
+ROOM_OWN = [False]                                           # ps_film: a moving shot brings its own room (the blind's height)
 ROOM_V4 = {"1.1": dict(blind="down", u=0.45 * 0.92, dim=False, cords=False)}
 ROOM_V4["6.2"] = ROOM_V4["1.1"]                              # review round 1: the loop's last frame IS frame 0 (lessons 257, 659)   # 1.1: the tug's key frame (cords to hands)
 CAM_V4 = {}
@@ -1025,7 +1090,7 @@ def _pass(k, sh, cam):
     c.save()
     if cam:
         sbv.view(c, *cam)
-    room_ = ROOM_V4.get(sh["id"], sh["room"]) if FIX_V4[0] else sh["room"]
+    room_ = ROOM_V4.get(sh["id"], sh["room"]) if FIX_V4[0] and not ROOM_OWN[0] else sh["room"]
     _floor_on(c, room_)
     pss.room(k, **dict(dict(phone=None), **room_))
     heads = sh["cast"](k) if sh["cast"] else {}
@@ -1091,7 +1156,7 @@ def covered(sh, cam, surf, texts):
     bare = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H)
     cb = TextRec(bare); kb = Ctx(cb, 0); cb.set_source_rgb(*kit.WALL); cb.paint()
     cb.save(); sbv.view(cb, *cam)
-    room_ = ROOM_V4.get(sh["id"], sh["room"]) if FIX_V4[0] else sh["room"]
+    room_ = ROOM_V4.get(sh["id"], sh["room"]) if FIX_V4[0] and not ROOM_OWN[0] else sh["room"]
     _floor_on(cb, room_)
     pss.room(kb, **dict(dict(phone=None), **room_)); cb.restore()
     surf.flush(); bare.flush()

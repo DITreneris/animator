@@ -492,3 +492,70 @@ Fixed, all behind `GAGS_V5`; with the switch off the screens are md5-identical a
 - `check v5`: 0 faults. Sheet: `ps_phones_v1.png`.
 
 **Not fixed, 6.1: Pam's hand has no owner** (rule 225; this is why 2 of 3 couldn't tell whose invitation it is). I grid-searched 6.1's framing (x −150 to −60, y −240 to −180, zoom 1.28 and 1.33) to bring Pam's face in. Every framing that shows her cuts a sign (OUR FIRST CLIENT, the throne's INVESTOR card, DON on the floor, ASSISTANT TO DON). Moving Pam off her mark is not allowed (the set rule). Needs a decision from Tomas.
+
+## Phone review fixes (25 Nov, board v4, all behind GAGS_V5)
+
+| Item | Fix | Result |
+|---|---|---|
+| 4.2 grease dots read as eyes | `point_t`, no dots (rules §1 "big or turned hands") | clean index on Sofía's heel |
+| 3.5 phone too small | scale 2.3 → 2.95 (+28 %), y 500 → 430; 3.1 broke the bottom-quarter zone | `check v5` 0 faults |
+| DAD not the biggest word | `pss.phone_close` uses episode 13's own `of_ui.invite_small` (DAD 30, INVITATION 13.2); no new code | 5.7 and the counter phone in 6.1 |
+| 3.3 PUBLIC POST? said twice | new visor kind "ask": one big "?" | bubble carries the words |
+| 6.1 Don's two fists (lesson 207: "toes") | silhouette test, 3 variants (thumbs in vest / thumbs up / arm out), 2 cold viewers: both picked thumbs up, both found "arm out" hardest | `DON_61 = ("thumbs", None)` |
+
+Lessons applied: 163, 207, 263, 264, 417, rules §0 and §1. Board v3 unchanged (git clean), `check` and `check v5` 0 faults. Stills: ps_phones_v2.png.
+
+## Review 2 of the phone frames (25 Nov, 8.3/10, Tomas: B + hands → LOCK)
+
+| Item | Fix | Result |
+|---|---|---|
+| Pam's phone not tied to her (B) | `pss.CASE`: muted purple case, 3 cream flowers on the rim (case 136×240, screen untouched); the flat counter phone in the same purple | 5.7, 6.1, 1.2 |
+| 6.1 phone hangs in the air | `pss.phone_stand`: a dark desk stand, its lip over the phone's foot; the phone stays on its mark | reads as standing |
+| 5.7 "crumpled paper" hand | 3 variants (grab / episode 13's `of_cast.phone_grip` held / fist), 2 cold viewers: both picked "held", both found the fingertips "floating beads" → the back of the fingers drawn behind the phone's left edge; the phone 20 px up (case out of the bottom quarter) | `H57 = "held"` |
+| 4.2 finger too thick | w 84 → 72 (−15 %) | |
+| 6.1 Pam reaches for her phone | tried `reach_up` / `reach_pt` (target 0.92 of reach along the line to the phone, lesson 179): the phone is 3 arm lengths behind and above her, Pam is hidden by Mom, the raised arm reads as Mom's hand. Not used; the case carries the ownership | kept "reach" |
+| Bug | `hands_validate()` left gags_v5's UI kit, case and v55 switched on inside `check` v3; now restored | `check` 0, `check v5` 0 |
+
+Board v3 unchanged (git clean). Stills: ps_phones_v3.png.
+
+## Film, scene 1 v1 (25 Nov, `ps_film.py film 1`, 122 drawings, 8.06 s, −15.3 LUFS, AAC true peak −2.3 dB)
+
+Built: `ps_film.py` (of_film's shape: one map, cameras locked to the board's key frames, lips from the take's loudness, bubbles as long as the take, sound from of_sound's synth: rattle ×4 rising, the slam and the slats, the cup's cut clink, room tone). Fixes found in the frames: the falling blind drew a second face (blind_over's gap) → plain slats in the air; board v4's ROOM_V4 froze 1.1's blind half down → `ROOM_OWN` (the film's room); the open mouth sat above the drawn one → on the line.
+
+| Beat | Round 1 (2 viewers, blind frozen) | Round 2 (2 viewers, fixed; viewer D read the memory notes: half-contaminated) |
+|---|---|---|
+| Tug of war over the blind, the robot wins | 2/2 the blind; the dimming "a glitch" 2/2 | 2/2, the light explained by the blind 2/2 |
+| The blind falls on Don | 2/2 | 2/2 |
+| 1.2b the three hear the crash, Pam's cup stops | 0/2: "out of nowhere" | 0/2: "a cutaway with no setup" → **staging fault** (nothing moves in it at 4 or 8 fps) |
+| "This meeting does not exist." (Don) | 2/2 | 2/2 |
+| "My father has a meeting. Without me." (Don), the three react | 1/2 Don | 1/2 Don, 1/2 "can't tell" (Don small in the wide, the tail unreadable); reactions 2/2 |
+
+Shared: the roll in 1.4 read as "a coin / a gold object" (3 of 4).
+
+### Scene 1 v2 (`ps_film_s1_v2_540.mp4`)
+
+Built: 1.2b the three chatting, the crash: heads snap to it, a startle hop, the cup jolts and stops (faces: frozen / stern / surprised, the rigs' own); 1.4a Don close while he speaks (his own camera, the roll in his frame-right hand so it rises clear of his box), then 1.4b the three; dead-zone faults counted only when a prop rests 5 drawings (of_film's held_only: the roll passes the rail in 4).
+
+| Beat | v2 (2 fresh viewers, images only) |
+|---|---|
+| Tug of war, the robot wins | 2/2 |
+| The blind falls on Don | 2/2 |
+| 1.2b the three hear the crash | **0/2 a third time** ("a static cutaway"; the 4 fps sheet samples only after the hit) → rule: change the gesture, not its position |
+| "This meeting does not exist." | 2/2 |
+| "My father has a meeting." is Don's, the roll is tape | 2/2, roll 2/2 "a roll of tape, probably" |
+
+4 of 5 beats: G4 passes. Shared, not a beat: the cut 1.3 → 1.4a read as "another room" 2/2.
+
+### Scene 1 v3 (`ps_film_s1_v3_540.mp4`, Tomas: 1.2b cut, 1.4 opens wide)
+
+Built: 1.2b out, its 0.5 s at the head of 1.3 (the take keeps its time); 1.4 opens on the board's wide (the door, the three, one room) and pushes in to Don (0.20–0.50 s); the box comes on after the push (it hopped three times riding it; 0.35 s late on the line); signs crossing the frame's edge during a camera move count as passing (fewer than 5 drawings).
+
+| Beat | v3 (2 fresh viewers, images only) |
+|---|---|
+| Tug of war over the blind, the robot wins | 2/2 |
+| The blind falls on Don | 2/2 |
+| "This meeting does not exist." | 2/2 |
+| Same room (the asked question) | 2/2 ("the window glass at the left edge, the floor carries on") |
+| Don's line, the three react to it | 2/2 |
+
+5 of 5. Shared, not beats: the roll 0/2 named ("a megaphone? a ring?"; v2 2/2 "tape, probably"); the bent slat across his eye read as "an eyepatch" 2/2 (and in v1).
