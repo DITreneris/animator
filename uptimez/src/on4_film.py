@@ -18,7 +18,7 @@ SR = r.SR
 import on4_posters as po
 import on4_street as st
 
-VER = "v18"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
+VER = "v19"                                                   # v2: the pauses in the sound only; v3 (24 Nov): the town's bills and chalk, the sky, the old-town finish
 po.ON[0] = True; st.TOWN[0] = True
 import on4_cross as xc
 m.CRASH[0] = True; m.LAW[0] = True; m.CAR_S = xc.S_CAR      # v4: the bump as a tap; v5: one scale law on the crossing, the plank bounces
@@ -49,6 +49,7 @@ r.NEW["p3"] = (r.NEW["p3"][0], r.NEW["p3"][1], r.NEW["p3"][2], "Anyone?"); r.RET
 import on4_cast as _oc
 m.CAT_SOFT[0] = True; m.TUCK[0] = True; m.RING_GOLD[0] = True; m.WALK12[0] = True; an.THUMB62[0] = True; _oc.TAIL[0] = True   # v17: the cat whole with two eyes, the envelope behind his lapel, a gold ring, two strides on the crossing, a hand on the CV, her tail
 import on4_weather as _wx; _wx.ON[0] = True; _wx.LIGHT[0] = True   # v18: Office Noir 3's light on the dream (light_on3.auto), Office Noir 2's rain on the street, wet cobbles, grain
+_wx.SIDE[0] = True                                          # v19: side light (frame and figures), one fainter rain layer, grain halved, the light at 0.5 (Tomas: "a little too dark")
 OUT = os.path.join(sc.OUT, "on4_film_%s.mp4" % VER)
 MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None),
        ("3.1", "3.2"): ("T3", 0, None), ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("3.6",): ("T8", 0, None),

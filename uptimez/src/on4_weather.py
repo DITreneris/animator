@@ -66,7 +66,7 @@ def rings(c, shot, t):
 
 
 GRAIN_K = [0.5]                                              # (25 Nov) the grain half as strong: at 540 its specks are twice the size they are at 1080
-STRENGTH = [0.75]                                            # light_on3.auto at full strength left this film at 0.22 mean (Office Noir 1: 0.26, 2: 0.28)
+STRENGTH = [0.5]                                             # light_on3.auto at full strength left this film at 0.22 mean (Office Noir 1: 0.26, 2: 0.28)
 LIGHT = [False]                                              # the repo's solved light (light_on3.auto, Office Noir 3 after Tomas asked why 1 and 2 looked better): a pool round the measured heads, the rest sinks, faces lifted from above, its vignette and grain
 
 
@@ -81,7 +81,7 @@ def _once(figs):
 
 
 SIDE = [False]                                               # (25 Nov, Tomas: "let us look for side light; no blinds") one source a scene: the far side of the frame sinks (engine_on.side_light, Office Noir 2) and the far half of each figure (light_on3.auto's key, Office Noir 3)
-KEYS = {"1": ("right", 0.18), "2": ("right", 0.16), "3": ("left", 0.16), "4": ("left", 0.18), "5": ("left", 0.18), "6": ("right", 0.16)}   # where the light is: the lane's lamp, the car's lamps, the arch, the neon, the spot
+KEYS = {"1": ("right", 0.12), "2": ("right", 0.11), "3": ("left", 0.11), "4": ("left", 0.12), "5": ("left", 0.12), "6": ("right", 0.11)}   # where the light is: the lane's lamp, the car's lamps, the arch, the neon, the spot
 RAIN_A = [0.55]                                              # one layer of Office Noir 2's streaks, this much of their own 0.20
 
 
