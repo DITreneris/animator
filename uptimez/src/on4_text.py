@@ -63,11 +63,22 @@ def _wrap(mod, name, who):
         br = CLOCK["live"] and CLOCK.get("breath") and who in ("client", "don", "sofia")
         if br:                                               # a slow rise and fall about the feet (motion_on3.alive's 0.7 %)
             k.c.save(); k.c.translate(x, feet); k.c.scale(1.0, 1.0 + 0.007 * math.sin(2 * math.pi * (CLOCK["T"] / 3.4 + len(who) / 7.0))); k.c.translate(-x, -feet)
+        grp = CLOCK["live"] and CLOCK.get("figs") is not None and who in ("pam", "client", "don", "sofia")
+        if grp:
+            k.c.push_group()                                 # the figure's own outline, for light that falls on it (motion_on3's figs)
         try:
             o = f(k, x, feet, s, *a, **kw)
         finally:
             if who == "pam":
                 oc.BLINK[0] = False
+            if grp:
+                pat = k.c.pop_group(); k.c.set_source(pat); k.c.paint()
+                try:
+                    m_ = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); mc = cairo.Context(m_); mc.set_matrix(k.c.get_matrix()); mc.set_source(pat); mc.paint()
+                    hx_, hy_ = k.c.user_to_device(x, feet - 300 * s)
+                    CLOCK["figs"].append((m_, hx_, hy_, math.hypot(*k.c.user_to_device_distance(s, 0)), who.upper()))
+                except Exception:
+                    pass
         try:
             hx, hy = o["head"]
             c = k.c
@@ -350,7 +361,7 @@ def clock(T, total, ls):
             bl.add(who)
     k_ = max(1, int(round(2.0 * total / (2 * math.pi))))
     oc.TAIL_PH[0] = 2 * math.pi * k_ * T / total             # whole turns over the film: the last drawing's tail is frame 0's
-    CLOCK.update(say=say, blink=bl, live=True, breath=not edge, T=T)
+    CLOCK.update(say=say, blink=bl, live=True, breath=not edge, T=T, figs=[] if WX.LIGHT[0] else None)
 
 
 def film_frames(tmp):
@@ -364,14 +375,17 @@ def film_frames(tmp):
     def one(make, shot_id):
         T = n / float(F.DPS)
         clock(T, total, ls); HEADS.clear()
-        WX.T[0] = T; WX.RAMP[0] = min(1.0, T / 0.6)
+        WX.T[0] = T; WX.RAMP[0] = min(1.0, T / 0.6); WX.TOTAL[0] = total
+        m.LOOP_RAIN[0] = 0.0; m.LOOP_MIX[0] = 0.0
         s = make()
+        if WX.SEAM[0]:
+            WX.RAMP[0] = m.LOOP_MIX[0] if T > total / 2 else 1.0; WX.RAINK[0] = m.LOOP_RAIN[0]
         heads = dict(HEADS)
         CLOCK["live"] = False
         if WX.ON[0] or WX.LIGHT[0]:
             sid = [q for q in ids if q in tm and tm[q]["dur"] > 0 and tm[q]["start"] <= T + 1e-6][-1]
             o_ = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c_ = cairo.Context(o_); c_.set_source_surface(s, 0, 0); c_.paint()
-            s = WX.post(o_, sid, T, list(heads.values()))
+            s = WX.post(o_, sid, T, list(heads.values()), CLOCK.get("figs") or [])
         for ln in ls:
             key, t0, t1, kind = ln[0], ln[1], ln[2], ln[3]
             end = t1 if kind != "bubble" else min(t1 + LINGER, shot_end(t0, tm) - 1.0 / F.DPS)

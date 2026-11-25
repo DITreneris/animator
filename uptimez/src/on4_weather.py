@@ -65,30 +65,74 @@ def rings(c, shot, t):
         c.save(); c.translate(x, y); c.scale((5 + 16 * a) * g, (5 + 16 * a) * g * 0.3); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.stroke()
 
 
-STRENGTH = [0.75]                                            # light_on3.auto at full strength left this film at 0.22 mean (Office Noir 1: 0.26, 2: 0.28)
+GRAIN_K = [0.5]                                              # (25 Nov) the grain half as strong: at 540 its specks are twice the size they are at 1080
+STRENGTH = [0.5]                                             # light_on3.auto at full strength left this film at 0.22 mean (Office Noir 1: 0.26, 2: 0.28)
 LIGHT = [False]                                              # the repo's solved light (light_on3.auto, Office Noir 3 after Tomas asked why 1 and 2 looked better): a pool round the measured heads, the rest sinks, faces lifted from above, its vignette and grain
 
 
-def post(s, shot, t, heads=()):
+def _once(figs):
+    """a figure drawn twice (its rim pass, then itself) is shaded once"""
+    seen = set(); out = []
+    for f in figs:
+        key = (f[4], round(f[1] / 6.0), round(f[2] / 6.0))
+        if key not in seen:
+            seen.add(key); out.append(f)
+    return out
+
+
+SIDE = [False]                                               # (25 Nov, Tomas: "let us look for side light; no blinds") one source a scene: the far side of the frame sinks (engine_on.side_light, Office Noir 2) and the far half of each figure (light_on3.auto's key, Office Noir 3)
+KEYS = {"1": ("right", 0.12), "2": ("right", 0.11), "3": ("left", 0.11), "4": ("left", 0.12), "5": ("left", 0.12), "6": ("right", 0.11)}   # where the light is: the lane's lamp, the car's lamps, the arch, the neon, the spot
+RAIN_A = [0.55]                                              # one layer of Office Noir 2's streaks, this much of their own 0.20
+
+
+RAINK = [0.0]                                                # 8.1, 8.2: how much of the street's rain is in the office's dark (on4_motion.LOOP_RAIN)
+SEAM = [False]                                               # one rain, one light through the loop's seam: frame 0 is rained on and lit as the last drawing is
+TOTAL = [85.8]
+
+
+def post(s, shot, t, heads=(), figs=()):
     """over the finished drawing, under the words"""
-    if LIGHT[0] and not shot.startswith(("7.", "8.")) and RAMP[0] > 0:
-        hs = [(h[0], h[1], h[2] / 50.0) for h in heads]
+    end = shot.startswith("8.")
+    lk = (RAMP[0] if end else 1.0) if SEAM[0] else (0.0 if shot.startswith(("7.", "8.")) else RAMP[0])      # the light's share
+    rk = (RAINK[0] if end else (1.0 if shot in STREET else 0.0)) if SEAM[0] else (RAMP[0] if shot in STREET else 0.0)
+    if shot.startswith("7."):
+        lk = rk = 0.0
+    if LIGHT[0] and lk > 0:
         import numpy as np
+        hs = [(h[0], h[1], h[2] / 50.0) for h in heads]
         s.flush(); src = np.frombuffer(bytes(s.get_data()), np.uint8).reshape(960, s.get_stride() // 4, 4)[:, :540].copy()
-        lit = l3.auto(s, hs, RAMP[0] * STRENGTH[0], int(t * 12), max([h[2] for h in heads] or [0]) > 110, glow=True, pool=True)
+        key, am = KEYS.get("1" if end else shot[0], ("top", 0.0)) if SIDE[0] else ("top", 0.0)
+        g0 = l3._grain
+        l3._grain = lambda surf, a=10.0, seed=0: g0(surf, a * GRAIN_K[0], seed)
+        try:
+            lit = l3.auto(s, hs, lk * STRENGTH[0], int(t * 12), max([h[2] for h in heads] or [0]) > 110, glow=True, pool=True,
+                          figs=_once(figs) if key != "top" else (), key=key)
+        finally:
+            l3._grain = g0
+        if key != "top":
+            import engine_on as eng
+            cl_ = cairo.Context(lit); eng.side_light(cl_, 0, 0, 540, 960, from_left=key == "left", amount=am * lk)
         c0 = cairo.Context(s); c0.set_source_surface(lit, 0, 0); c0.paint(); s.flush()
         buf = np.frombuffer(s.get_data(), np.uint8).reshape(960, s.get_stride() // 4, 4)
         red = (src[:, :, 2].astype(np.int16) - src[:, :, 1]) > 60                         # the key red (the heart, the neon, the fire) keeps its own light: the pool does not dim it
         buf[:, :540][red] = src[red]; s.mark_dirty()
     if not ON[0]:
         return s
-    if shot in STREET and RAMP[0] > 0:
+    if rk > 0:
         c = cairo.Context(s)
-        rings(c, shot, t)
-        for dt_, dx_ in ((0.0, 0), (0.37, 61), (0.71, -47)):      # three layers of Office Noir 2's streaks: one was too thin on this film's light walls
-            c.push_group(); c.translate(dx_, 0); o2.rain(sc.Ctx(c, 0), t + dt_); c.translate(-dx_, 0); c.pop_group_to_source(); c.paint_with_alpha(RAMP[0])
-    if not shot.startswith(("7.", "8.")) and RAMP[0] > 0 and not LIGHT[0]:   # with LIGHT the grain is light_on3's own
-        l3._grain(s, GRAIN_A * RAMP[0], int(t * 12))
+        tr = t
+        if SEAM[0]:                                          # the streaks' fall repeats every 1040/1500 s: a whole number of falls in the film, so the last drawing's rain is frame 0's
+            per = 1040.0 / 1500.0
+            tr = t * (round(TOTAL[0] / per) * per / TOTAL[0])
+            RAMP_R = min(1.0, t / 0.5, max(0.0, (TOTAL[0] - t) / 0.5))                    # the rings on the ground are not periodic: none at the two ends
+        else:
+            RAMP_R = RAMP[0]
+        keep = RAMP[0]; RAMP[0] = RAMP_R * (rk if not end else 0.0)
+        try:
+            rings(c, "1.1" if end else shot, t)
+        finally:
+            RAMP[0] = keep
+        c.push_group(); o2.rain(sc.Ctx(c, 0), tr); c.pop_group_to_source(); c.paint_with_alpha(rk * RAIN_A[0])
     return s
 
 

@@ -190,7 +190,7 @@ def sound(tm, d, total):
         thud = st_("3.1") + span31 * m_.T3_MARKS["thud"] if "thud" in m_.T3_MARKS else None
     C0 = 0.67                                                                                       # v5: the cat first (8 drawings)
     import on4_motion as _m
-    HK = -1 / 12.0 if _m.HIT[0] else 0.0                                                            # film v15: the blow lands one drawing earlier (its hit-stop is longer)
+    HK = (-1 / 12.0 if _m.HIT[0] else 0.0) + (-3 / 12.0 if _m.LOOP2[0] else 0.0) + (1 / 12.0 if _m.CAT3[0] else 0.0) + (1 / 12.0 if _m.CAT4[0] else 0.0)             # film v20: the opening three keys shorter                                                            # film v15: the blow lands one drawing earlier (its hit-stop is longer)
     put(fx, rs(so.hiss(0.5), so.SR), 0.25, 0.45)                                                     # the cat across the lens: hiss and yowl
     ty = np.arange(int(0.42 * SR)) / SR; fq = 620 + 900 * np.sin(np.pi * ty / 0.42) ** 0.7 + 40 * np.sin(2 * np.pi * 31 * ty)
     yowl = np.sin(2 * np.pi * np.cumsum(fq) / SR); yowl = np.tanh((yowl + 0.5 * np.sin(4 * np.pi * np.cumsum(fq) / SR)) * 2.0)
@@ -326,7 +326,10 @@ def sound(tm, d, total):
         put(fx, rs(so.metal_click(900, 0.12), so.SR), st_("6.1") + 0.6, 0.6)                         # the knife out of the boards
         put(fx, rs(so.swish(0.25), so.SR), st_("6.1") + 0.98, 0.6)                                   # the slit
     r0 = st_("8.2") - 0.8
-    rain = rs(so.rain(total - r0 + 0.1), so.SR); rain[:int(0.8 * SR)] *= np.linspace(0, 1, int(0.8 * SR))
+    if _m.LOOP2[0]:
+        r0 = st_("8.1") + 0.5                                                                      # film v20: the rain comes up as the room goes dark: no hole of silence before it
+    fi_ = 1.2 if _m.LOOP2[0] else 0.8
+    rain = rs(so.rain(total - r0 + 0.1), so.SR); rain[:int(fi_ * SR)] *= np.linspace(0, 1, int(fi_ * SR))
     put(fx, rain, r0, 1.2)
     put(fx, rs(so.rain(1.2), so.SR) * np.linspace(1, 0, len(rs(so.rain(1.2), so.SR))), 0.0, 1.2)    # the rain runs through the loop's seam
     # the band: in the dream only; dead on the bump (back when she sits up), dead on "Well?"; nothing awake
