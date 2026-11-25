@@ -222,11 +222,12 @@ def motion_mix(rows, total, kind="A", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -298,11 +299,12 @@ def motion_mix3(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -370,11 +372,12 @@ def motion_mix4(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -474,11 +477,12 @@ def motion_mix5(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -624,11 +628,12 @@ def motion_mix6(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -774,11 +779,12 @@ def motion_mix7(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -925,11 +931,12 @@ def motion_mix8(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -1082,11 +1089,12 @@ def motion_mix9(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -1240,11 +1248,12 @@ def motion_mix10(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -1397,11 +1406,12 @@ def motion_mix11(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -1558,11 +1568,12 @@ def motion_mix12(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -1726,11 +1737,12 @@ def motion_mix13(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -1899,11 +1911,12 @@ def motion_mix14(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -2073,11 +2086,12 @@ def motion_mix15(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav"):
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
@@ -2273,11 +2287,12 @@ def motion_mix16(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav", leads=No
         t_ = so.tt(0.26)                                                  # its wings, coming at us faster
         sw = so.si.lp(np.random.default_rng(8).standard_normal(len(t_)), 20) * (t_ / 0.26) ** 2 * 0.9
         put(0.06, sw, 1.4)
-        put(0.25, so.thump(), 1.8)                                        # the wing on the lens: low, full
+        put(0.20, so.thump(), 1.2)                                        # the wing on the lens: low, full (v42: before "New", a little lower)
         put(0.25, so.swish(0.22), 1.0)
         put(total - 0.20, so.swish(0.16), 0.5)                            # on the lamp it opens its wings: the seam
         quiet = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((0.95 - tsec) / 0.05, 0, 1)
-        music = music * quiet; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
+        quiet_m = 1.0 - 0.85 * np.clip((tsec - 0.33) / 0.02, 0, 1) * np.clip((1.55 - tsec) / 0.30, 0, 1)   # v42: the music back after "Eve", not under it
+        music = music * quiet_m; rain = rain * quiet; fx[int(0.36 * SR):int(0.95 * SR)] *= 0.15     # then nothing until the first shot
     env = np.zeros(n)                                                     # duck the music under her voice
     for _, _, t0, t1 in spans:
         env[int((t0 - 0.25) * SR):int((t1 + 0.20) * SR)] = 1.0
