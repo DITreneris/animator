@@ -251,8 +251,26 @@ def m5_2(k, tl, dur):
     if getattr(m, "V37", [False])[0]:                                     # v37 (3/3: "a plank across her"): the glass at his own eye, beside his head
         lx, ly = hx0 + 150 + 30 * math.sin(math.pi * min(1.0, f * 1.15)), 700 + 12 * math.cos(f * 4)
         if wink:                                                          # v38: the glass has gone past her, to the left, down the room
-            lx, ly = lx - 110 - 14 * (d - 22), ly + 40
+            rp = min(1.0, (d - 21) / 2.0) * min(1.0, (28 - d) / 2.0) if getattr(m, "V39", [False])[0] else 1.0   # v39: eased out and back, no jump
+            lx, ly = lx - (110 + 14 * (d - 22)) * rp, ly + 40 * rp
+    v39 = getattr(m, "V39", [False])[0]
+    n.ARM3[0] = v39
+    del n.ARM3[1:]
     n.detective_back(k, hx0, 760 - n.d.HY * 2.4, 2.4, arm=(lx - 6, ly + 30))     # v9: his back, big and close
+    if v39 and len(n.ARM3) > 1:                                           # v39: the glass is in his hand already; what it shows, at its own place
+        (gx_, gy_), R = n.ARM3.pop()
+        gx_, gy_ = cc.device_to_user(gx_, gy_); R = abs(cc.device_to_user_distance(R, 0)[0])
+        n.ARM3[0] = False
+        cc.save(); cc.new_path(); cc.arc(gx_, gy_, R - 8, 0, 2 * math.pi); cc.clip()
+        cc.set_source_rgb(0.78, 0.80, 0.76); cc.paint()
+        n.money(k, gx_ - 2, gy_ + 46 * R / 57.0, 4.6 * R / 57.0, -0.20 + 0.10 * math.sin(f * 5), 2, 712)
+        g = cairo.RadialGradient(gx_ - 18, gy_ - 18, 4, gx_, gy_, R)
+        g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0.0)
+        cc.set_source(g); cc.paint(); cc.restore()
+        cc.set_source_rgb(*INK); cc.set_line_width(5); cc.new_path(); cc.arc(gx_, gy_, R - 8, 0, 2 * math.pi); cc.stroke()
+        cc.set_source_rgb(*n.SILVER); cc.set_line_width(2.2); cc.new_path(); cc.arc(gx_, gy_, R - 3, 0, 2 * math.pi); cc.stroke()
+        return
+    n.ARM3[0] = False
     if len(n.ARMS2) > 1:                                                  # v35: his hand stopped where his arm reaches; the glass with it
         lx, ly = cc.device_to_user(*n.ARMS2.pop())
         lx, ly = lx + 6, ly - 30

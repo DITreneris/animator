@@ -987,6 +987,7 @@ def money(k, x, y, s=1.0, ang=0.0, n=5, seed=690):
 
 
 FUR = [False]                                              # (25 Nov, Noir 2 v35, cold test v34: the wrap read as "black tubes", "a second pair of arms", "an umbrella") a fur stole: a tufted edge, worn on the shoulders
+ARM3 = [False]                                             # (25 Nov, Noir 2 v39, the arm's review) the detective's lens arm: two bones of fixed length, tapering, a round elbow with one fold, his hand (hands_ps fist) on the handle, the glass drawn in his hand's frame
 SLEEVE = [False]                                           # v35's sleeve on the Shadow's lit hand; off (Tomas, 25 Nov: undo it)
 ARMS2 = [False]                                            # (25 Nov, v35) the Shadow's lit hand on a sleeve from his shoulder; the detective's lens arm bent at the elbow; the bartender's bottle hand; her back's hands steady
 HIDE3 = [False]                                            # (25 Nov, v32: "v31's glove is a card") four fingers bent round her face, the thumb apart, folds at the wrist
@@ -1590,6 +1591,45 @@ def detective_back(k, x, feet, s=1.0, steps=None, arm=None, wrap=False, seed=560
             seg_to = c.device_to_user(*arm_dev)
         else:
             seg_to = (side * 64, bt + 132)
+        if ARM3[0] and side == 1 and arm is not None:      # v39: the arm of the review: one sleeve, tapered, bent at a round elbow; the glass bound to the hand
+            import hands_ps as hp
+            sx_, sy_ = side * 50, bt + 16
+            U, F_ = 82.0, 76.0
+            tx, ty = seg_to
+            L = math.hypot(tx - sx_, ty - sy_)
+            if L > (U + F_) * 0.97:
+                f_ = (U + F_) * 0.97 / L; tx, ty = sx_ + (tx - sx_) * f_, sy_ + (ty - sy_) * f_; L = (U + F_) * 0.97
+            a0 = math.atan2(ty - sy_, tx - sx_)
+            cosb = max(-1.0, min(1.0, (U * U + L * L - F_ * F_) / (2 * U * L)))
+            b_ = math.acos(cosb)
+            cands = [(sx_ + U * math.cos(a0 + b_), sy_ + U * math.sin(a0 + b_)), (sx_ + U * math.cos(a0 - b_), sy_ + U * math.sin(a0 - b_))]
+            ex_, ey_ = max(cands, key=lambda e_: e_[0] * side + 0.3 * e_[1])              # the elbow out, away from his body, and down
+            c.set_line_cap(1); c.set_line_join(1)
+            for col, wu, wf in ((INK, 33, 24), (T, 28.5, 19.5)):                            # one sleeve: the upper arm, then the forearm, narrower
+                c.set_source_rgb(*col)
+                c.set_line_width(wu); c.new_path(); c.move_to(sx_, sy_); c.line_to(ex_, ey_); c.stroke()
+                c.set_line_width(wf); c.new_path(); c.move_to(ex_, ey_); c.line_to(tx, ty); c.stroke()
+            c.set_source_rgb(*T); c.new_path(); c.arc(ex_, ey_, 13.0, 0, 2 * math.pi); c.fill()     # the elbow, round
+            c.set_source_rgb(*TS); c.set_line_width(2.0)                                     # one fold inside the elbow
+            mx_, my_ = (ex_ * 0.7 + tx * 0.3), (ey_ * 0.7 + ty * 0.3)
+            c.new_path(); c.move_to(ex_ + (mx_ - ex_) * 0.2, ey_ + (my_ - ey_) * 0.2 - 6); c.curve_to(ex_ - 2, ey_ - 4, ex_ - 6, ey_ + 2, ex_ - 10, ey_ + 8); c.stroke()
+            af = math.atan2(ty - ey_, tx - ex_)
+            c.set_source_rgb(*TS); c.set_line_width(2.2)                                     # the cuff
+            c.new_path(); c.move_to(tx - math.cos(af) * 8 - math.sin(af) * 10, ty - math.sin(af) * 8 + math.cos(af) * 10)
+            c.line_to(tx - math.cos(af) * 8 + math.sin(af) * 10, ty - math.sin(af) * 8 - math.cos(af) * 10); c.stroke()
+            hx_, hy_ = tx + math.cos(af) * 10, ty + math.sin(af) * 10
+            lang = 0.55 + 0.25 * (af + math.pi / 2)                                          # the glass: up and toward her, turning a little with the wrist
+            magnifier(k, hx_, hy_ + 6, 1.25, lang, seed=700)
+            keep = hp.GLOVE[0]; hp.GLOVE[0] = None
+            try:
+                hp.draw(k, "fist", tx, ty, 26, d.SKIN, (math.cos(af), math.sin(af)), 1)      # his fingers over the handle, the thumb across them
+            finally:
+                hp.GLOVE[0] = keep
+            r_ = 19.0 * 1.25
+            lcx, lcy = hx_ + math.sin(lang) * (22 + 19) * 1.25, hy_ + 6 - math.cos(lang) * (22 + 19) * 1.25
+            ARM3.append((c.user_to_device(lcx, lcy), c.user_to_device_distance(r_, 0)[0]))
+            hands.append(c.user_to_device(tx, ty))
+            continue
         if ARMS2[0] and side == 1 and arm is not None:     # v35: two bones; the hand pulled in to reach, the elbow down
             L = math.hypot(seg_to[0] - sx_, seg_to[1] - sy_); R = 150.0
             if L > R * 0.95:
