@@ -82,5 +82,17 @@
   ],
   "ok": 3,
   "len": 1.29
+ },
+ "e1": {
+  "shot": "3.2",
+  "who": "PAM",
+  "text": "Excuse me?",
+  "asr": [
+   "Excuse me.",
+   "Excuse me.",
+   "Excuse me."
+  ],
+  "ok": 3,
+  "len": 0.87
  }
 }
