@@ -130,6 +130,9 @@ def _behind_then_thumb(k, hx, hy, w, skin, d, obj, thumb_from, thumb_to):
     oc._capsule(k.c, thumb_from[0], thumb_from[1], thumb_to[0], thumb_to[1], 0.24 * w, skin)
 
 
+PAM_CUFF = (0.36, 0.22, 0.50)
+
+
 def s5_2_pen(k, px, py):
     """5.2 v15g: the pen in a tripod: the hand behind the pen, the pen over it, the thumb pinching its front near the
     tip; the sleeve stub from the top right."""
@@ -139,9 +142,11 @@ def s5_2_pen(k, px, py):
 
     def pen():
         c.set_source_rgb(*INK); c.set_line_width(15); c.set_line_cap(1)
-        c.move_to(px, py); c.line_to(px + 120, py - 152); c.stroke()
-        c.set_source_rgb(*s5.PEN); c.set_line_width(10); c.move_to(px + 8, py - 10); c.line_to(px + 120, py - 152); c.stroke()
-    osc.insert_cuff(c, (hx + 18, hy - 22), (hx + 18 - d[0] * 300, hy - 22 - d[1] * 300), 50, s4.SKIN_PAM, s4.PURPLE, cuff=None, stub=40)
+        c.move_to(px, py); c.line_to(px + 104, py - 132); c.stroke()            # v17: shorter, its end over her hand, not her sleeve
+        c.set_source_rgb(*s5.PEN); c.set_line_width(10); c.move_to(px + 8, py - 10); c.line_to(px + 104, py - 132); c.stroke()
+    stub = max(40.0, (hy - 22 + 40) / d[1] - 14)                                  # v17: her purple sleeve out of the top edge
+    osc.insert_cuff(c, (hx + 18, hy - 22), (hx + 18 - d[0] * 300, hy - 22 - d[1] * 300), 54, s4.SKIN_PAM, s4.PURPLE,
+                    cuff=PAM_CUFF, stub=stub)                                    # (a bare stub read as nobody's hand)
     _behind_then_thumb(k, hx, hy, 58, s4.SKIN_PAM, d, pen, (hx + 24, hy - 4), (px + 40, py - 44))
 
 
@@ -151,6 +156,7 @@ def install():
     if ON[0]:
         return
     ON[0] = True
+    hp.PALM_VAR[0] = True                                                         # v17: open-palm fingers of unequal length (One Star only)
     import client_ob
     client_ob.limb = client_limb
     client_ob.client = _round_shoulder_client(client_ob)
@@ -224,9 +230,8 @@ def s5_2(k, d):
         tip = (-W / 2 + 40, -80 - (s5.WRITE[0][1] - d) * 60)
     tx_ = c.user_to_device(*tip) if tip else None
     c.restore()
-    if tip:
-        sc = s1.HI[0]
-        s5_2_pen(k, tx_[0] / sc, tx_[1] / sc)
+    if tip:                                                                       # v17: back through the context, not / HI:
+        s5_2_pen(k, *c.device_to_user(*tx_))                                       # a scratch surface without the device scale
     if d >= 20:
         u = s1.ease((d - 20) / 6.0)
         x, y = 372, 640 + (1 - u) * 420
@@ -383,9 +388,9 @@ def install_free():
     """3.1 his fist shuts on air in front of the robot, not inside it; 4.2b Pam's finger bigger and stopping clear of
     his hand, above the pocket; 5.2a her hands out of the close-up (the frame up a little, her eyes with it)."""
     import cs_v14 as V
-    V.GRAB_AT[0] = (404.0, 724.0)                                                 # low, at the slot's height, clear of the visor
+    V.GRAB_AT[0] = (410.0, 730.0)                                                 # low, at the slot's height, clear of the visor (v17: 6 px further)
     V.LUNGE = 10.0
-    s3.POINT_AT = (406.0, 700.0)                                                  # the point stops short of the visor
+    s3.POINT_AT = (418.0, 706.0)                                                  # the point stops short of the visor (v17: (406, 700) touched it on d2-d5)
     s4.POCKET = (300.0, 660.0)
     s4.STOP41 = (40, 115)                                                          # v16: the STOP palm out at him, not folded to her shoulder
     s4.REACH42b[0] = 33.0                                                         # v16: 30 folded the arm (bend 140, lesson 231)
