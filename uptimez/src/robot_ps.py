@@ -26,6 +26,7 @@ STEEL, STEEL_D = (0.72, 0.74, 0.78), (0.50, 0.52, 0.56)
 S_OFFICE = 0.66                                            # 13's office scale (lesson 138), 95 % of Don
 
 
+UI_KIT = [False]                                            # opt-in (Pick a Side, 25 Nov): the screens via ps_ui / of_ui
 PAD_THUMB = [True]                                          # opt-in off (3.4's gag): Don's own rig thumb presses the pad; a drawn-in
                                                             # thumb as well is a second hand (one hand per wrist)
 HEART = [False]                                             # opt-in (ep 14 v4): the posted screen's heart drawn, not the missing glyph
@@ -154,6 +155,14 @@ def phone_screen(k, x, y, s, kind="photo", seed=4700):
     c = k.c
     c.save(); c.translate(x, y); c.scale(s, s)
     rect(k, -60, -104, 120, 208, (0.08, 0.08, 0.09), seed, shadow=False, lw=2.6)
+    if UI_KIT[0] and kind in ("public", "approved", "posted", "zoom"):   # opt-in (Pick a Side, 25 Nov): episode 13's UI kit
+        import ps_ui
+        import of_ui
+        fn = (ps_ui.post if kind == "posted" else (lambda c_, H: ps_ui.post(c_, H, False)) if kind == "zoom"
+              else (lambda c_, H: ps_ui.public(c_, H, kind == "approved")))
+        of_ui.full(c, -52, -94, 104, 188, fn)
+        c.restore()
+        return
     c.set_source_rgb(0.96, 0.96, 0.98); c.rectangle(-52, -94, 104, 188); c.fill()
     ph = team_photo()
     c.save(); c.translate(-48, -74); c.scale(96 / 184, 96 / 184); c.set_source_surface(ph, 0, 0); c.paint(); c.restore()

@@ -40,6 +40,7 @@ THRONE = dp.CHAIR
 PHONE_AT = (640, 640)
 
 
+UI_KIT = [False]                                            # opt-in (25 Nov): Pam's phone via episode 13's of_ui.invite
 DOOR_OPEN = [0.0]                                           # opt-in (ep 14 gags, 25 Nov): 5.3, the robot opens the door (0..1)
 
 
@@ -287,7 +288,13 @@ def phone_close(k, x, y, s=1.0, lit=True, buzz=True):
     c.save(); c.translate(x, y); c.scale(s, s)
     rect(k, -60, -110, 120, 220, (0.10, 0.10, 0.12), 4960, shadow=False, lw=2.2)
     rect(k, -52, -98, 104, 196, (0.97, 0.94, 0.86) if lit else (0.06, 0.06, 0.08), 4961, shadow=False, lw=1.2)
-    if lit:                                                  # episode 13's invitation (of_scenes 3.6): the same card
+    if lit and UI_KIT[0]:                                    # opt-in (25 Nov): episode 13's invitation screen itself (of_ui)
+        import of_ui
+        of_ui.full(c, -52, -98, 104, 196, of_ui.invite)
+        c.set_source_rgb(0.06, 0.20, 0.40); c.set_line_width(2.4)
+        for i in (1, 2, 3) if buzz else ():
+            c.new_path(); c.arc(0, 0, 60 + i * 12, -0.5, 0.5); c.stroke(); c.new_path(); c.arc(0, 0, 60 + i * 12, math.pi - 0.5, math.pi + 0.5); c.stroke()
+    elif lit:                                                # episode 13's invitation (of_scenes 3.6): the same card
         c.select_font_face("Lilita One"); c.set_source_rgb(0.55, 0.16, 0.46)
         c.set_font_size(18); e = c.text_extents("INVITATION"); c.move_to(-e.x_advance / 2, -16); c.show_text("INVITATION")
         c.set_source_rgb(*INK); c.set_font_size(36); e = c.text_extents("DAD"); c.move_to(-e.x_advance / 2, 26); c.show_text("DAD")

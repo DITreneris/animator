@@ -418,3 +418,77 @@ Fixed:
 Now: `check v5` 0 faults with the hand gate on; `check` (board v3) 0 faults; board v3 and Daddy's Home's cast sheet md5-identical. `ps_gag_pose_v3.mp4` and its strip replace v2.
 
 Still open in section 0: the three-silhouette test with two cold viewers (step 2) and the gaps re-measured on the 270 px tile (step 3) are not done; nothing was shown to viewers this round. In 5.5 the word HR? sits just under her mouth, over her chin.
+
+## 5.5: HR? off her mouth, variant C (25 Nov)
+
+The CV word covered Sofía's mouth in 5.5. Tomas had three variants drawn (`ps_55_abc.png`):
+- **A:** the word smaller in 5.5. Still over her mouth.
+- **B:** her CV hand lower (pose `chest_low`). Her mouth is clear, but the word sits on her chin.
+- **C:** HR? at the sheet's foot in every shot. Her face is clear in all three shots.
+
+An outside review rated C 9/10, B 7.5, A 5.5 (fail). Tomas: proceed with C plus the review's three fixes:
+- **P0:** 5.2's nib now sits just under the ?, not over it (`PEN_C`).
+- **P1:** HR? 12 % bigger in 6.1.
+- **P2:** a gap between the word and the sheet's edge.
+
+C is the default with `GAGS_V5`. `check v5`: 0 faults. Board v3 is md5-identical. Script v9 regenerated. Frames: `ps_55_c_final.png`.
+
+## Section 0, step 2: the silhouette test (25 Nov)
+
+Three black variants per gesture at 270 px, two cold viewers (BO, BP), neutral prompt:
+- **Booth** (`ps_sil_booth_v1.png`, 1 is the board's): 1 the nose pinch, 2 a flat hand over the face with the other fanning, 3 leaning away with palms out.
+- **Oil can** (`ps_sil_can_v1.png`, 1 is the board's): 1 held up by its handle, 2 still in the guard's hand, 3 hugged in both arms.
+- **Don's arm** (`ps_sil_pose_v1.png`, 1 is the gag's): 1 the arm dropped halfway, 2 hanging at his knee, 3 the other hand propping the elbow.
+
+| Gesture | Variant | BO | BP | Verdict |
+|---|---|---|---|---|
+| Booth | 1 (board) | "no gesture, a blob" | "nothing happening" | **0 of 2** |
+| Booth | 2 | "a raised fist" | "a fist, a punch or a cheer" | The clearest shape, but the wrong meaning |
+| Booth | 3 | "phone or covering the mouth, muddy" | "hand to chin, a phone or a face-cover" | Muddy |
+| Oil can | 1 (board) | "reaches to its shoulder" | "hands it something" | The can is lost in the merge |
+| Oil can | 3 | "the robot spreads its arms" | "pushing it; the robot recoils" | Clearest, but read as a push |
+| Don | 1 (the gag) | "two thumbs up" | "hands up, wait" | The pose reads; the drop does not show |
+
+**All three gestures fail the silhouette test.** Each one happens in front of a body (a hand at the face, a can against a torso, an arm across a chest), so in black it merges into the figure. In colour, the nose pinch with the stink lines and the oil can each read 2 of 2 (round 4). The rules page asks for negative space around a gesture that must read in silhouette.
+
+## Board v4: whole-board cold test (25 Nov)
+
+All 43 key frames with bubbles, numbered with time stamps: two sheets at 200 px and one at phone size (135 px). Three new viewers (BQ, BR, BS), the whole-board prompt with the loop question, plus direct questions on HR?, the booth and the oil can.
+
+| Beat / question | BQ | BR | BS | Verdict |
+|---|---|---|---|---|
+| Don's situation: shut out of Dad's meeting, sure everyone is with him, played | yes | yes | yes | 3 of 3 |
+| Sides: Pam his, Mom neutral, Sofía switching, the robot "both" | yes | yes | yes | 3 of 3 |
+| The loop leads back into the start | yes | yes | yes | 3 of 3 |
+| **HR? on the CV: the robot's job, a threat to it** | yes | yes | yes ("it doesn't notice, it just got oil") | **3 of 3** |
+| **The oil can: a bribe, the robot delighted** | yes | yes | yes | **3 of 3** |
+| **The booth: the bodyguards pinch their noses at the smell** | "just stand guard"; the green lines "smell or tension" | "a stink or smoke gag, a hand near his face" | "a hand to his ear or chest"; the lines "smell, smoke or tension" | **1 of 3** (the stills test was 2 of 2). At board size the pinch is too small; the lines alone carry it |
+
+Shared notes (not beats):
+- **The red room is rushed and reads as a new subplot**, "a different movie": 3 of 3. This was already the case on board v3.
+- **Who the Dad invitation is for** is unclear: 2 of 3. One viewer thought it was Pam's.
+- Funniest: "BOTH." 3 of 3, the one heel 3 of 3, "SMILE. RECORDING." 2 of 3, the oil 2 of 3.
+- Slow: Don's standing shots in frames 8–10 and his walk along the line (36–37): 3 of 3.
+
+## The booth's close and the #TeamDon bridge (25 Nov, Tomas: "tvarkom")
+
+- **4.3b:** a new close on both bodyguards, noses pinched, between the Client's "That one." (4.3a) and Father's "Invite her." (now 4.3c). No line. The shot keeps its length and its timing for now (`CLOSE_43`). Board v4 now has 44 key frames.
+- **4.1:** the #TeamDon post just seen in the office (3.5), on the phone the silhouette lifted at the door (3.6), now in bodyguard 1's black-sleeved hand under the neon. Episode 13's approved phone hand (`of_cast.phone_grip`), declared to the hand gate with its thumb toward his body. The office and the booth now share one visible prop.
+- `check v5`: 0 faults, hand gate included. Board v3 md5-identical. Sheet: `ps_booth_bridge_v1.png`. Not cold-tested.
+
+**Not built: the invitation in Sofía's hand.** Picked from my option, but the script and concept v3.2 say the invitation is **Pam's**: her phone lies on the counter from 1.2, lights up INVITATION · DAD in 5.7, and in 6.1 Pam's hand reaches across the line for it (the Client's condition for Father is Pam). The viewer who read "it's Pam's" was right. My option assumed Sofía; it would undo canon. Put back to Tomas.
+
+## Phones against the repo's rules (25 Nov, Tomas: "kaip vaizduojame telefonus, kaip patobulinti?")
+
+Rules checked: `docs/rules-hands-and-phones.md` §1 "A phone in a hand" and §2 "Phone screens", and lessons 225 (the holder visible or implied), 226 (one UI kit; the story's word the biggest; nothing under ~9 units; light screens) and 295 (a cropped word reads as another word).
+
+Fixed, all behind `GAGS_V5`; with the switch off the screens are md5-identical and board v3 is unchanged:
+- **One UI kit.** `ps_ui.py` draws episode 14's screens on episode 13's `of_ui` (status bar, app bar, card, pill, avatar):
+  - 3.3–3.4: PUBLIC POST?, the biggest thing on the screen, then APPROVE turning green with a tick;
+  - 3.5 and 4.1: the #TeamDon post;
+  - 5.7 and 6.1: Pam's invitation is episode 13's own `of_ui.invite` (DAD).
+- **4.2:** the push-in is a pinch-zoom into the photo with no caption, so the cut word "amDon" is gone (lesson 295). The heel point is re-measured for the new layout (`ps_ui.HEEL_PT`).
+- **3.4:** the robot's phone is in the board frame, the gag's payoff pose, the green pad by his thumb (`PHONE_34`).
+- `check v5`: 0 faults. Sheet: `ps_phones_v1.png`.
+
+**Not fixed, 6.1: Pam's hand has no owner** (rule 225; this is why 2 of 3 couldn't tell whose invitation it is). I grid-searched 6.1's framing (x −150 to −60, y −240 to −180, zoom 1.28 and 1.33) to bring Pam's face in. Every framing that shows her cuts a sign (OUR FIRST CLIENT, the throne's INVESTOR card, DON on the floor, ASSISTANT TO DON). Moving Pam off her mark is not allowed (the set rule). Needs a decision from Tomas.
