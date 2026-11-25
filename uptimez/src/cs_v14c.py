@@ -23,6 +23,7 @@ import cs_hands as ch
 import kit
 from cs_scene1 import S, at, base, sb, ellipse
 from cs_board import X
+from kit import INK
 
 DPS = 12
 
@@ -78,15 +79,21 @@ def s4_1(k, d):
 # ---- 2.1 ---------------------------------------------------------------------------------------------------------------
 
 def s2_1(k, d):
-    """26 drawings. The phone held in front of him, the mic already at his mouth (sales mode). v15b (Tomas: "0:14 has no
-    emotion; Don must be nervous here"): he has just been sued in public, so he talks wide-eyed, brows up, sweat
-    running off his scalp, the phone shaking in his hand; his other hand quiet at his side."""
+    """26 drawings. The phone held in front of him, the mic at his mouth (sales mode). v15c (Tomas's review: "not just
+    panic; he must try desperately to look competent while panicking inside"): a progression, not one level.
+    d0-4 the professional: a confident grin, calm eyes. d5- the worry grows: brows up at their inner ends (the right one
+    higher), eyes wide; he says the line through a clenched, too-wide grin; his eyes go to the phone, away, back; a big
+    drop slides down off his scalp; he sinks a little into his shoulders. After the line: the forced grin, held."""
     from cand_bc import ik
     t = d / float(DPS)
     a1, a2 = ik(s2.SH_R[0], s2.SH_R[1], s2.REST_R[0], s2.REST_R[1], s2.LN, s2.LN, -1)
     talk = 0.0
     if s2.LINE21 <= t <= s2.LINE21 + 1.5:
-        talk = (1.0, 0.5, 1.0, 0.0)[int((t - s2.LINE21) * DPS / 2) % 4]
+        talk = (1.0, 0.5, 1.0, 0.2)[int((t - s2.LINE21) * DPS / 2) % 4]
+    worry = ease((d - 4) / 5.0)
+    face = "neutral" if d < 5 else "shock"
+    look = ((1, 0) if d < 9 else (0.2, 0.9) if d < 12 else (-0.9, -0.3) if d < 15 else (1, 0))
+    sink = 1.0 - 0.022 * worry
 
     def back(k_):
         s2.cs_cal.wall(k_, s2.cs_cal.THU, t=d / float(DPS))
@@ -94,18 +101,59 @@ def s2_1(k, d):
     def ex(k_, o):
         (lx, ly), (rx, ry) = o["don"]["hands"]
         hx, hy = (lx, ly) if lx < rx else (rx, ry)
-        j = (1.2, -0.8, 0.9, -1.3)[d % 4]                                          # the phone shakes in his hand
+        j = (1.2, -0.8, 0.9, -1.3)[d % 4] * worry                                 # the phone shakes in his hand
         s1.phone_held(k_, hx + j, hy + 0.5 * j, sb.SC["don"], ang=0.22 + 0.03 * j, buzz=False, d=d, seed=941)
         s1.fist(k_, hx + j, hy + 0.5 * j, sb.SC["don"], kit.PEOPLE["DON"]["skin"], 945)
-        _sweat(k_, o["don"]["head"], sb.SC["don"], d)
+        if d >= 6:
+            _sweat(k_, o["don"]["head"], sb.SC["don"], d)
 
-    with s1.A.Don(s1.A.MOUTH, talk), s1.Breath(sb, "don", s1.br(d, 0.0, 0.010)):
+    with _Face(s1.A.MOUTH, talk, worry), s1.Breath(sb, "don", s1.br(d, 0.0, 0.010) * sink):
         u = ease((d - s2.PAN21[0]) / float(s2.PAN21[1] - s2.PAN21[0]))
         cam = tuple(a_ + (b_ - a_) * u for a_, b_ in zip(s2.CAL21, s2.CAM21))
         S(k, cam, auto=False, mic="down", portrait="hang", back=back, extra=ex,
           **base(cl=False, sf=False, pm=False, mm=False, rb=False, door=0.0,
-                 dn=at("don", pose=H.PHONE_L + (a1, a2), face="shock", look=(-0.3, 0.6) if d < 3 else
-                       ((1, 0) if (d // 5) % 2 else (0.6, -0.2)))))                # eyes darting, not resting
+                 dn=at("don", pose=H.PHONE_L + (a1, a2), face=face, look=look)))
+
+
+class _Face(s1.A.Don):
+    """Don's signs (boom, hair) with the forced grin and the worried brows drawn first, in his head's own units."""
+    def __init__(self, pts, talk, worry):
+        s1.A.Don.__init__(self, pts, 0.0)
+        self.say, self.worry = talk, worry
+
+    def __enter__(self):
+        s1.A.Don.__enter__(self)
+        inner = sb.don_signs
+        say, worry = self.say, self.worry
+
+        def signs(k, head, s, mic, hair):
+            c = k.c
+            hx, hy = head
+            c.save(); c.translate(hx, hy); c.scale(s, s); c.set_line_cap(1); c.set_line_join(1)
+            skin = s1.A.kit_skin_don()
+            ellipse(k, 0, 31, 17, 15, skin, 714, shadow=False, outline=False)              # the face's own mouth covered
+            o = 7.0 * say
+            c.new_path()                                                                   # the grin: too wide, corners up,
+            c.move_to(-18, 22); c.curve_to(-9, 27, 9, 27, 18, 22)                          # teeth clenched; talking, the jaw
+            c.curve_to(13, 33 + o, -13, 33 + o, -18, 22); c.close_path()                   # drops a little, teeth still showing
+            c.set_source_rgb(0.98, 0.97, 0.94); c.fill_preserve()
+            c.set_source_rgb(*INK); c.set_line_width(2.6); c.stroke()
+            if o > 0.5:
+                c.new_path(); c.move_to(-12, 27.5); c.curve_to(-4, 29 + o * 0.5, 4, 29 + o * 0.5, 12, 27.5)
+                c.curve_to(8, 29.5 + o, -8, 29.5 + o, -12, 27.5); c.close_path()
+                c.set_source_rgb(0.40, 0.10, 0.10); c.fill()
+            c.set_line_width(1.3)
+            for x in (-9, -3, 3, 9):                                                       # the teeth
+                c.move_to(x, 24.5 + abs(x) * -0.1); c.line_to(x, 26.5); c.stroke()
+            if worry > 0.05:                                                               # brows up at their inner ends,
+                c.set_source_rgb(0.13, 0.11, 0.12); c.set_line_width(4.4)                  # the right one higher
+                lift = 4.0 * worry
+                c.move_to(-29, -11); c.line_to(-8, -13 - lift); c.stroke()
+                c.move_to(29, -12); c.line_to(8, -15 - 1.4 * lift); c.stroke()
+            c.restore()
+            inner(k, head, s, mic, hair)
+        sb.don_signs = signs
+        return self
 
 
 def _sweat(k, head, s, d):
@@ -113,9 +161,11 @@ def _sweat(k, head, s, d):
     hx, hy = head
     for i, (ox, oy, ph) in enumerate(((-40, -38, 0), (42, -32, 7), (-46, -14, 13))):
         u = ((d + ph) % 18) / 18.0
+        if i == 0:                                                                 # the big one slides all the way, once
+            u = min(1.0, (d - 6) / 16.0)
         x = hx + ox * s
         y = hy + (oy + 34 * u) * s
-        r = 4.2 * s * (1 - 0.3 * u)
+        r = (5.6 if i == 0 else 3.6) * s * (1 - 0.2 * u)
         c = k.c
         c.new_path(); c.move_to(x, y - 2.4 * r); c.curve_to(x + 1.1 * r, y - 0.6 * r, x + r, y + r, x, y + r)
         c.curve_to(x - r, y + r, x - 1.1 * r, y - 0.6 * r, x, y - 2.4 * r); c.close_path()
