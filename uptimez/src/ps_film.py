@@ -361,9 +361,16 @@ def s211(t):
 
 
 # --- scene 3 ------------------------------------------------------------------------------------------------------------
+MOM_31 = 1.40                                               # 3.1: Mom's line from 1.52; the cut in to her just before it
+
+
 def s31(t):
-    """the arm telescopes up, Don swings into his pose: motion test E's first 0.8 s (approved), then held on its lines."""
-    return dict(pm_.shot_E(min(t, 0.79)), own_cam=True)
+    """the arm telescopes up, Don swings into his pose: motion test E's first 0.8 s (approved), then held on its lines;
+    v3 (Tomas 25 Nov; cold test 3/3 "who says 'Chin up'?"): a short cut in to Mom for her line."""
+    sh = pm_.shot_E(min(t, 0.79))
+    if t >= MOM_31:
+        return ps.S("3.1c", ["mom"], sh["room"], sh["cast"])   # its own locked camera, framed on her face
+    return dict(sh, own_cam=True)
 
 
 def s32(t):
@@ -429,17 +436,20 @@ def s36(t):
     return ps.S("3.6", base["cam"], room, base["cast"])
 
 
+SIP_37 = 2.06                                               # v3 (Tomas 25 Nov: "matomas gurkšnis"): after her line, a visible sip
+
+
 def s37(t):
     """Pam sees the glow (eyes out), her mouth opens to warn him, she looks at Don posing; her cup comes up to her chin
     and she says it into the cup."""
     import pm_ps
-    q = ease((t - 0.45) / 0.45)
+    q = ease((t - 0.45) / 0.45) + 0.32 * (ease((t - SIP_37) / 0.18) - 0.35 * ease((t - SIP_37 - 0.25) / 0.12))   # v3: the sip
     a, b = pm_ps.P_POSES["cup_mid"], pm_ps.P_POSES["cup_chin"]
     pm_ps.P_POSES["cup_t"] = tuple(x + (y - x) * q for x, y in zip(a, b)); pm_ps.P_HANDS["cup_t"] = ("relax_s", "cup")
     base = BOARD["3.7"]
     def cast(k):
         heads = {}
-        face = "shock" if 0.15 <= t < 0.40 else "doubt"
+        face = "shock" if 0.15 <= t < 0.40 else ("quiet" if SIP_37 + 0.05 <= t < SIP_37 + 0.30 else "doubt")
         look = (1, -0.4) if t < 0.35 else (-1, 0)
         _, heads["pam"] = ps.pam(k, "pam_don", "cup_t", face, look)
         return heads
@@ -495,7 +505,7 @@ PUSH = {"1.4a": ("1.4", 0.20, 0.50)}                         # v3 (cold test 2/2
                                                              # the three, one room), then pushes in to Don
 
 
-NUDGE = {"1.4b": (10, 10, 1.3), "1.4a": (0, 40, 1.0), "2.2": (26, 0, 1.0), "2.10c": (112, 0, 1.0)}   # 2.2: the front tag (before the spin) whole                                   # 1.4b: $49,999, SHRED off the right, OUR FIRST CLIENT off the top
+NUDGE = {"1.4b": (10, 10, 1.3), "1.4a": (0, 40, 1.0), "2.2": (26, 0, 1.0), "2.10c": (112, 0, 1.0), "3.1c": (52, 64, 1.0)}   # 2.2: the front tag (before the spin) whole                                   # 1.4b: $49,999, SHRED off the right, OUR FIRST CLIENT off the top
 
 
 def draw(sid, t):
@@ -507,11 +517,11 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 1}
-STILLS3 = [("3.1", 0.3, "the arm telescopes"), ("3.1", 1.8, "Chin up"), ("3.2", 0.02, "FLASH"), ("3.2", 1.5, "the photo"),
+STILLS_VER = {1: 4, 2: 1, 3: 2}
+STILLS3 = [("3.1", 0.3, "the arm telescopes"), ("3.1", 1.8, "Chin up: in to Mom"), ("3.2", 0.02, "FLASH"), ("3.2", 1.5, "the photo"),
            ("3.3", 0.8, "Public post?"), ("3.4", 0.10, "the arm up"), ("3.4", 0.40, "it sinks, the phone slides"),
            ("3.4", 0.60, "APPROVED"), ("3.4", 1.15, "thumb back up"), ("3.5", 0.35, "the slide"), ("3.6", 0.1, "before"),
-           ("3.6", 0.8, "DING"), ("3.7", 0.25, "she sees it"), ("3.7", 1.5, "into the cup")]
+           ("3.6", 0.8, "DING"), ("3.7", 0.25, "she sees it"), ("3.7", 1.5, "into the cup"), ("3.7", 2.25, "the sip")]
 STILLS2 = [("2.1", 0.5, "the tape rips"), ("2.1", 1.2, "the feet hop"), ("2.1b", 0.40, "SLAP: the card"),
            ("2.1b", 0.75, "it rolls off"), ("2.2", 0.50, "he sees the tag"), ("2.2", 0.72, "the spin"),
            ("2.2", 1.20, "the card to the room"), ("2.3", 0.10, "the stamp"), ("2.3", 0.9, "the roll points"),
@@ -675,6 +685,8 @@ def sound(n, path):
         osd.put(buf, sh_, S_["3.2"] + 0.0, 0.6); osd.put(buf, sh_, S_["3.2"] + 0.05, 0.4)   # 3.2 the shutter
         osd.put(buf, tone(1320, 1320, 0.35, 6) + 0.6 * tone(1760, 1760, 0.35, 6), S_["3.4"] + MEET_34, 0.18)   # 3.4 chime
         osd.put(buf, osd.hp(osd.noise(0.35), 3) * np.sin(np.pi * osd.t_(0.35) / 0.35), S_["3.5"] + 0.15, 0.25)  # whoosh
+        sl = osd.lp(osd.noise(0.22), 4) * np.sin(np.pi * osd.t_(0.22) / 0.22) ** 2
+        osd.put(buf, sl, S_["3.7"] + SIP_37 + 0.08, 0.30)                          # 3.7 the sip (a small slurp)
         ding = tone(1046, 1046, 0.9, 3.5) + 0.5 * tone(1568, 1568, 0.9, 4.5)
         osd.put(buf, osd.lp(ding, 6), S_["3.6"] + DING_36, 0.16)                   # 3.6 DING, outside, muffled
     if n == 2:                                               # the sound map (plan v2 §2)

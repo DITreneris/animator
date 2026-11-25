@@ -599,3 +599,14 @@ Built: 3.1–3.2 test E (the arm, FLASH, the photo), 3.1 held on its two lines; 
 | Pam notices, says it into her cup | notices 3/3; the cup as her answer weak ("she doesn't act") |
 
 Shared: "Chin up, Donnie." 3/3 can't tell who says it (Mom, small, behind); 3.5 opened on two dark drawings 2/3 (the second insert painted over the first: fixed, v2).
+
+### Scene 3 v3 (Tomas 25 Nov: "trumpai priartinam prie Mamos", "matomas gurkšnis")
+
+Built: 3.1 cuts in to Mom for "Chin up, Donnie." (its own camera, nudged clear of INVESTOR and the robot's face); 3.7 after her line a sip: the cup up to her mouth, eyes shut, back down a little, a small slurp.
+
+| Question (2 fresh viewers, 4 fps sheet) | v3 |
+|---|---|
+| Who says "Chin up, Donnie." | 2/2 Mom |
+| What Pam does with the cup | 0/2: "a phone, a selfie / photographing the pose" |
+
+The blue mug at her face reads as a phone (the episode's other prop), the sip falls on one 4 fps drawing. Steam off the rim was tried and dropped: from the drawn hand point it either crossed her eyes or floated off the mug (not converging, rule 5).
