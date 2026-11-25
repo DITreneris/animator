@@ -890,6 +890,11 @@ def money(k, x, y, s=1.0, ang=0.0, n=5, seed=690):
     c.restore()
 
 
+NO_BAG = [False]                                           # (25 Nov, Noir 2 v31) no silver tube in her hand: 2/3 cold viewers took it for the blueprint she only finds later
+HIDE2 = [False]                                            # (25 Nov) g_hide's hand over her mouth as a glove with fingers ("a stack of red bars", 2/3)
+BACK2 = [False]                                            # (25 Nov) star_back: hair to the shoulder blades, shoulders and arms seen ("a helmet", "gloves float", 3/3)
+
+
 def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0), mouth=None, lean=0.0, lag=(0, 0),
          wrap=True, bag=None, run=False, mirror=False, fan=False, roll=False, lipstick=False, sparkle=0.0, seed=7,
          curl=0.6, phase=None):
@@ -926,7 +931,7 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
             shx, shy = x + so.SH[i][0] * s, feet + so.SH[i][1] * s
             if ey > shy + 26 * s:                           # only on an arm that hangs; a raised arm has let it slip
                 _drape(k, ex, ey, s, seed + 350 + i, side=-1 if i == 0 else 1, sh=(shx, shy))
-    if bag if bag is not None else pose in ("g_stand", "g_pose", "g_mirror", "g_fan"):
+    if (bag if bag is not None else pose in ("g_stand", "g_pose", "g_mirror", "g_fan")) and not NO_BAG[0]:
         clutch(k, lx + 13 * s, ly - 10 * s, s * 0.95, -0.22, seed + 360)
         ellipse(k, lx, ly, 10.2 * s, 10.2 * s, KEY, seed + 361, shadow=False, lw=2 * s)
     if mirror or pose == "g_mirror":
@@ -953,6 +958,15 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
     if pose == "g_hide":                                   # her gloved hand over her mouth
         hx, hy = o["head"]
         c.save(); c.translate(hx + 2 * s, hy + 33 * s); c.rotate(-0.16); c.scale(s, s)
+        if HIDE2[0]:                                       # one glove: the wrist, the palm, four fingers together, the thumb under
+            cut(k, [(34, -8), (20, -11), (20, 11), (34, 12)], KEY, shadow=False, lw=1.7)
+            cut(k, [(22, -14), (-14, -14), (-22, -9), (-23, 4), (-18, 10), (22, 13)], KEY, shadow=False, lw=1.9)
+            c.set_source_rgb(*GOWN_SHADE); c.set_line_width(1.5); c.set_line_cap(1)
+            for fy in (-7.5, -1.5, 4.5):
+                c.move_to(-20, fy); c.line_to(4, fy + 1); c.stroke()
+            c.save(); c.translate(8, 13); c.rotate(0.5); ellipse(k, -6, 0, 10, 4.6, KEY, seed + 345, shadow=False, lw=1.6); c.restore()
+            c.restore()
+            return o
         ellipse(k, 17, 1, 13, 14, KEY, seed + 340, shadow=False, lw=1.7)
         for i, fy in enumerate((-9.6, -3.4, 2.8, 9.0)):
             c.save(); c.translate(-4, fy); c.rotate(0.05 * (i - 1.5))
@@ -988,6 +1002,9 @@ def star_back(k, x, feet, s=1.0, step=None, wrap=True, lag=(0, 0), seed=7):
     c.set_source_rgb(0.80, 0.56, 0.43); c.set_line_width(1.6); c.move_to(0, bt + 8); c.line_to(0, bt + 44); c.stroke()
     swing = 16 * math.sin(math.pi * 2 * ph) if step is not None else 0.0
     arms = [(-39, -12 + swing, 8), (39, 12 + swing, -8)]
+    if BACK2[0]:                                           # her shoulders, and the arms out from them
+        cut(k, [(-50, bt + 2), (-36, bt - 8), (36, bt - 8), (50, bt + 2), (46, bt + 22), (-46, bt + 22)], so.SKIN, shadow=False, lw=2)
+        arms = [(-46, -16 + swing, 10), (46, 16 + swing, -10)]
     elbows = []
     for sx, a1, a2 in arms:
         _glove_arm(k, sx, bt + 14, a1, a2, seed + 9 + sx, w=15)
@@ -1018,12 +1035,16 @@ def star_back(k, x, feet, s=1.0, step=None, wrap=True, lag=(0, 0), seed=7):
     back = [(-52 + lgx, hy - 30), (-72 + lgx * 1.4, bt + 30), (-66 + lgx * 1.8, bt + 96 + lgy), (-46 + lgx * 1.8, bt + 108 + lgy),
             (-18 + lgx * 1.8, bt + 102 + lgy), (18 + lgx * 1.8, bt + 102 + lgy), (46 + lgx * 1.8, bt + 108 + lgy),
             (66 + lgx * 1.8, bt + 96 + lgy), (72 + lgx * 1.4, bt + 30), (52 + lgx, hy - 30)]
+    if BACK2[0]:
+        back = [(-50 + lgx, hy - 30), (-56 + lgx * 1.2, bt - 6), (-44 + lgx * 1.4, bt + 34 + lgy), (-22 + lgx * 1.4, bt + 42 + lgy), (0, bt + 36 + lgy),
+                (22 + lgx * 1.4, bt + 42 + lgy), (44 + lgx * 1.4, bt + 34 + lgy), (56 + lgx * 1.2, bt - 6), (50 + lgx, hy - 30)]
     if wrap and LOOK[0] < 4:                               # v2, v3: her hair gathered forward over one shoulder (too short)
         back = [(-52, hy - 30), (-58, hy + 30), (-40, hy + 52), (-14, hy + 58), (14, hy + 58), (40, hy + 52), (58, hy + 30), (52, hy - 30)]
     cut(k, back, ss.HAIR, lw=2.2)
     if LOOK[0] >= 4:                                       # v4: the same long hair as from the front, down to her waist
         c.set_source_rgb(*ss.HAIR_SHADE); c.set_line_width(2.2); c.set_line_cap(1)
-        for sx, top, bot in ((-46, hy + 30, bt + 96), (-24, hy + 44, bt + 100), (0, hy + 40, bt + 98), (24, hy + 44, bt + 100), (46, hy + 30, bt + 96)):
+        for sx, top, bot in (((-34, hy + 30, bt + 30), (-16, hy + 44, bt + 36), (0, hy + 40, bt + 32), (16, hy + 44, bt + 36), (34, hy + 30, bt + 30)) if BACK2[0] else
+                             ((-46, hy + 30, bt + 96), (-24, hy + 44, bt + 100), (0, hy + 40, bt + 98), (24, hy + 44, bt + 100), (46, hy + 30, bt + 96))):
             c.move_to(sx + lgx, top); c.curve_to(sx * 1.08 + lgx * 1.4, (top + bot) / 2, sx * 1.10 + lgx * 1.7, bot - 20, sx * 1.04 + lgx * 1.8, bot + lgy); c.stroke()
     ellipse(k, 0, hy, 54, 52, ss.HAIR, seed + 20, shadow=False, lw=2)
     c.set_source_rgb(*INK); c.set_line_width(2)

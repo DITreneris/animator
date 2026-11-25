@@ -350,6 +350,30 @@ def wipe(c, u):
     wing3(c, x, 620, 210, rot=-0.55, side=1)
 
 
+def flight(c, x, y, S, up=True, glow=0.4):
+    """v31 (cold test v30, 3/3 "crow, cat, coat?"): the one drawing that says raven. Side on, beak down-left, both
+    wings open, black against the lamp's light. up: wings raised (False: on the downstroke, nearer)."""
+    g = cairo.RadialGradient(x, y, 20, x, y, S * 2.6)
+    g.add_color_stop_rgba(0, 0.92, 0.92, 0.88, glow); g.add_color_stop_rgba(1, 0.92, 0.92, 0.88, 0.0)
+    c.set_source(g); c.new_path(); c.arc(x, y, S * 2.6, 0, 2 * math.pi); c.fill()
+    c.save(); c.translate(x, y); c.rotate(-0.38); c.scale(S / 100.0, S / 100.0)
+    a = -0.95 if up else 1.25
+    c.save(); c.translate(10, -8); c.rotate(a - 0.25); c.scale(0.52, 0.52)                       # the far wing
+    wing3(c, 0, 0, 100, rot=0.0, side=1); c.restore()
+    _poly(c, [(60, -6), (130, -22), (168, -4), (160, 14), (120, 14), (64, 14)], BODY, 4.0)         # the tail, a wedge
+    _poly(c, [(-70, -8), (-44, -30), (10, -34), (64, -18), (70, 8), (30, 30), (-30, 32), (-64, 18)], BODY, 4.0)   # the body
+    _poly(c, [(-36, 30), (-22, 50), (-8, 34), (6, 52), (20, 32)], BODY, 3.0)                        # the feet, tucked
+    _poly(c, [(-112, -6), (-98, -34), (-66, -40), (-50, -20), (-56, 12), (-84, 20)], BODY, 4.0)      # the head
+    _poly(c, [(-108, -16), (-170, 2), (-162, 12), (-104, 8)], BEAK, 3.4)                             # the heavy beak
+    _poly(c, [(-96, 14), (-88, 34), (-78, 18), (-70, 34), (-62, 14)], BODY, 2.6)                     # the throat
+    _eye3(c, -86, -18, 7.0, side=1)
+    _rim(c, [(-98, -34), (-66, -40), (-44, -30), (10, -34), (64, -18)], 4.0)
+    c.save(); c.translate(-4, -10); c.rotate(a); c.scale(0.62, 0.62)                             # the near wing
+    wing3(c, 0, 0, 100, rot=0.0, side=1); c.restore()
+    c.restore()
+
+
+KEYS4 = ("fly", "fly2", "head", "strike", "wipe", "wipe2", "gone")     # v31: 0.00 and 0.08 s are the raven whole, in the lamp's light
 KEYS3 = ("dive", "turn", "head", "strike", "wipe", "wipe2", "gone")    # 0.00 .. 0.50; 1.2 is under "wipe2" and after it
 BG3 = (11, 11, 11, 11, 11, 12, 12)                                  # which shot is under each: 1.1 (no leg, door shut), 1.2's first drawing
 
@@ -381,6 +405,10 @@ def draw3(s, key, behind=None):
         perched(c, *PERCH)
     elif key == "coil":
         perched(c, *PERCH, coil=1.0)
+    elif key == "fly":
+        flight(c, 352, 236, 92, up=True)
+    elif key == "fly2":
+        flight(c, 320, 330, 150, up=False, glow=0.3)
     elif key == "dive":
         launch3(c, 370, 270, 62, stretch=0.35)
         for i in range(4):

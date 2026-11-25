@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v30"
+V = "v31"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -82,6 +82,7 @@ if rv.RAVEN[0]:
 V30 = [True]                                              # v30 (25 Nov, cold test v29, Tomas's picks): "I only want my blueprint", the wing's gap, no leg at 0:11, the push to her face, "The usual." hers, the desk from the side, owners for the bar's hands; False draws v29
 if V30[0]:
     PLAN28["7.2b"] = ("7.2b", 16 / 12.0, "c1b", -0.55)       # the pop lands on "-print" (7.3 starts 1.37 s into the take; the pop is 2 drawings in)
+V31 = [True]                                              # v31 (25 Nov, cold test v30, Tomas's picks): the raven whole in the lamp's light at 0:00 and no red gap; no tube in her hand before the office; the compact open with her in its mirror, her shadow over it; her back; faces for the bar's guests; a glove over her mouth; the seam two drawings early. False draws v30
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
@@ -546,6 +547,41 @@ def m2_5(k, tl):
         cc.move_to(-20, 140 + i * 140); cc.line_to(560, 110 + i * 140); cc.stroke()
     cc.set_source_rgba(1, 1, 1, 0.16); cc.save(); cc.translate(250, 600); cc.scale(260, 200); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi)
     cc.restore(); cc.fill()
+    if V31[0]:                                                          # v31: the compact open on the stones, her in its mirror, going; her shadow over it
+        d = int(round(tl * 12))
+        if d < 2:
+            n.compact2(k, 250, 250 + 190 * d, 4.6, 0.5 - 0.35 * d)
+        else:
+            if d < 6:
+                g = ease((d - 2) / 3.0)
+                cc.save(); cc.translate(250, 690); cc.scale(0.3 + 0.5 * g, 0.3 + 0.5 * g); cc.translate(-250, -690)
+                cc.push_group(); n.powder_puff(k, 250, 690, 4.0); cc.pop_group_to_source(); cc.paint_with_alpha(1.0 - 0.6 * g)
+                cc.restore()
+            n.compact2(k, 250, 560 - (10 if d == 2 else 0), 5.4, -0.10)
+            mx, my, mr = 250 + 5.4 * 17 * math.sin(-0.10) * -1, 560 - 5.4 * 17, 5.4 * 14     # its mirror
+            mx, my = 250 - 9, 560 - 92
+            cc.save(); cc.new_path(); cc.arc(mx, my, mr, 0, 2 * math.pi); cc.clip()
+            u = min(1.0, (d - 2) / 6.0); sc_ = 1.55 - 0.95 * u                               # her, from behind, in it: smaller and smaller
+            fx_, fy_ = mx - 14 + 30 * u, my + 70 - 40 * u
+            cc.set_source_rgb(*n.KEY); cc.new_path(); cc.move_to(fx_ - 34 * sc_, fy_); cc.line_to(fx_ - 12 * sc_, fy_ - 52 * sc_); cc.line_to(fx_ - 16 * sc_, fy_ - 74 * sc_)
+            cc.line_to(fx_ + 16 * sc_, fy_ - 74 * sc_); cc.line_to(fx_ + 12 * sc_, fy_ - 52 * sc_); cc.line_to(fx_ + 34 * sc_, fy_); cc.close_path(); cc.fill()
+            for sx__ in (-1, 1):                                              # her arms, pumping
+                cc.set_line_width(7 * sc_); cc.set_line_cap(1); cc.move_to(fx_ + sx__ * 16 * sc_, fy_ - 70 * sc_)
+                cc.line_to(fx_ + sx__ * 30 * sc_, fy_ - (48 if (d + (sx__ > 0)) % 2 else 62) * sc_); cc.stroke()
+            cc.set_source_rgb(0.86, 0.86, 0.88); cc.new_path(); cc.rectangle(fx_ - 22 * sc_, fy_ - 112 * sc_, 44 * sc_, 44 * sc_); cc.fill()   # her hair
+            cc.set_source_rgb(*INK); cc.set_line_width(2); cc.rectangle(fx_ - 22 * sc_, fy_ - 112 * sc_, 44 * sc_, 44 * sc_); cc.stroke()
+            cc.move_to(fx_, fy_ - 112 * sc_); cc.line_to(fx_, fy_ - 76 * sc_); cc.stroke()
+            cc.restore()
+            if 3 <= d < 7:                                                # her shadow, running, across the stones
+                sx_ = -160 + 190 * (d - 3)
+                cc.set_source_rgba(0.02, 0.02, 0.03, 0.62)
+                cc.new_path(); cc.move_to(sx_, 960); cc.line_to(sx_ + 110, 720); cc.line_to(sx_ + 190, 720); cc.line_to(sx_ + 250, 960); cc.close_path(); cc.fill()
+                cc.new_path(); cc.arc(sx_ + 150, 676, 58, 0, 2 * math.pi); cc.fill()
+            if d >= 5:
+                n.footprints(k, 330, 760, 4.2, n=1, step=30)
+            if d >= 7:
+                n.footprints(k, 440, 640, 3.6, n=1, step=30)
+        return
     if tl < 2 / 12.0:                                                   # the compact, falling
         n.compact2(k, 230, 330 + 1500 * tl, 3.6, 0.9 + tl * 6)
     else:
@@ -986,6 +1022,7 @@ CLOCK = {"1": 55, "2": 55, "3": 56, "4": 57, "5": 58, "6": 59, "7": 59, "8": 60}
 
 
 def frame(row, tl, t):
+    n.NO_BAG[0] = n.HIDE2[0] = n.BACK2[0] = V31[0]
     if rv.RAVEN[0] and not END.get("on") and row["shot"] == "1.1" and int(round(tl * 12)) >= 5:    # v29: 1.2's start is rounded up past
         row, tl = [r for r in timing.rows if r["shot"] == "1.2"][0], 0.0                # its drawing; the wipe is on 1.2 already
     fn, tilt, post = SHOTS[row["shot"]]
@@ -1041,12 +1078,12 @@ def frame(row, tl, t):
         if END.get("on"):
             key = "coil" if END.get("last") else "perch"
         elif row["shot"] == "1.1" and dd < 5:
-            key = rv.KEYS3[dd]
+            key = (rv.KEYS4 if V31[0] else rv.KEYS3)[dd]
         elif row["shot"] == "1.2" and dd < 2:
             key = rv.KEYS3[5 + dd]
         if key:
             behind = None
-            if V30[0] and key in ("strike", "wipe"):                     # v30: her red through the wing's gap
+            if V30[0] and not V31[0] and key in ("strike", "wipe"):                     # v30: her red through the wing's gap
                 END["plain"] = True
                 try:
                     behind = frame([r for r in timing.rows if r["shot"] == "1.2"][0], 0.0, 0.0)

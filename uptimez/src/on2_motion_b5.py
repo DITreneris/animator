@@ -105,7 +105,25 @@ def m5_1(k, tl, dur):
         if m.LOOK3[0]:                                                    # v13: the arm, from the dark at the edge of the frame
             hx_, hy_ = x - flip * out, y + 3.2 * e
             n._seg(k, -60 if flip > 0 else m.W + 60, hy_ + 120, hx_ - flip * 40, hy_ + 10, 46, 40, n.BLACK, 2.4)
-        if getattr(m, "V30", [False])[0]:                                 # v30: whose arm: a guest at the frame's edge, shoulder and head
+        if getattr(m, "V31", [False])[0]:                                 # v31: a guest with a face at the frame's edge, the arm from his shoulder
+            cc_ = k.c
+            gx = 46 if flip > 0 else m.W - 46
+            gy = y + 3.2 * e - 150
+            cc_.set_source_rgb(*n.BLACK)                                    # his jacket, shoulder to the frame's edge
+            cc_.new_path(); cc_.move_to(gx - flip * 110, gy + 330); cc_.line_to(gx - flip * 100, gy + 78); cc_.line_to(gx + flip * 30, gy + 62)
+            cc_.line_to(gx + flip * 74, gy + 100); cc_.line_to(gx + flip * 70, gy + 330); cc_.close_path(); cc_.fill()
+            n._seg(k, gx + flip * 50, gy + 104, x - flip * out - flip * 40, y + 3.2 * e + 10, 44, 38, n.BLACK, 2.4)
+            cc_.set_source_rgb(0.95, 0.95, 0.93); cc_.new_path(); cc_.move_to(gx - flip * 14, gy + 62); cc_.line_to(gx + flip * 22, gy + 60); cc_.line_to(gx + flip * 2, gy + 112); cc_.close_path(); cc_.fill()
+            cut(k, [(gx - flip * 8, gy + 68), (gx + flip * 10, gy + 62), (gx + flip * 10, gy + 76)], n.BLACK, shadow=False, lw=1.5)   # a bow tie
+            ellipse(k, gx, gy, 46, 52, (0.72, 0.72, 0.74), 880 + d_in, shadow=False, lw=2.4)          # his head, to her
+            cc_.set_source_rgb(*n.BLACK); cc_.new_path(); cc_.arc(gx, gy - 6, 48, math.pi * 1.05, math.pi * 1.95); cc_.close_path(); cc_.fill()   # hair, slicked
+            ex_ = gx + flip * 20
+            ellipse(k, ex_, gy - 2, 8, 9, (0.97, 0.97, 0.95), 884 + d_in, shadow=False, lw=1.8)
+            cc_.set_source_rgb(*INK); cc_.new_path(); cc_.arc(ex_ + flip * 3, gy - 2, 4, 0, 2 * math.pi); cc_.fill()
+            cc_.set_line_width(3); cc_.set_line_cap(1); cc_.move_to(ex_ - 10, gy - 16); cc_.line_to(ex_ + 10, gy - 19); cc_.stroke()
+            cc_.move_to(gx + flip * 8, gy + 26); cc_.curve_to(gx + flip * 18, gy + 34, gx + flip * 30, gy + 30, gx + flip * 34, gy + 22); cc_.stroke()   # he smiles
+            cut(k, [(gx + flip * 44, gy + 4), (gx + flip * 58, gy + 12), (gx + flip * 44, gy + 16)], (0.72, 0.72, 0.74), shadow=False, lw=2)   # his nose, in profile
+        elif getattr(m, "V30", [False])[0]:                               # v30: whose arm: a guest at the frame's edge, shoulder and head
             ox = 14 if flip > 0 else m.W - 14
             oy = y + 3.2 * e + 150
             cc_ = k.c; cc_.set_source_rgb(*n.BLACK)

@@ -600,11 +600,14 @@ def m8_7(k, tl, dur):
     d = d12_(tl)
     last = int(round(dur * 12)) - 1
     g = m.ease(max(0.0, (d - 3) / float(last - 3)))                      # held, then in
+    v31 = getattr(m, "V31", [False])[0]
+    if v31:                                                               # v31: the window is the frame two drawings early, the taxi in its place by then
+        g = m.ease(min(1.0, max(0.0, (d - 3) / float(last - 5))))
     wx, wy, ww, wh = WIN
     x1, y1, w1 = m.lerp(wx, 0, g), m.lerp(wy, 0, g), m.lerp(ww, m.W, g)
     z = w1 / ww
     row = [r for r in m.timing.rows if r["shot"] == "1.1"][0]
-    m.TAXI_DX[0] = -440 * (1 - m.ease(min(1.0, d / float(last)))) ** 2   # it comes in from the left and stops in its place
+    m.TAXI_DX[0] = -440 * (1 - m.ease(min(1.0, d / float(last - 2 if v31 else last)))) ** 2   # it comes in from the left and stops in its place
     raven = getattr(m, "rv", None) is not None and m.rv.RAVEN[0]
     if raven:                                                             # v29: the raven on the lamp in the window; on the last drawing, crouched to spring
         m.END.update(on=True, last=(d == last))
@@ -613,7 +616,7 @@ def m8_7(k, tl, dur):
     finally:
         m.TAXI_DX[0] = 0.0
         m.END.clear()
-    if d == last:
+    if d == last or (v31 and d >= last - 2):
         cc.set_source_surface(street, 0, 0); cc.paint(); return
     cc.save(); cc.translate(x1, y1); cc.scale(z, z); cc.translate(-wx, -wy)
     b.party(k, 760)
