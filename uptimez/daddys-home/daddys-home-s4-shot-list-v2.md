@@ -71,3 +71,30 @@ Sizes are the biggest face's radius at 540, measured on pixels (CU ≥ 120, MCU 
 ## Then
 
 Six full-size frames (4A, 4B, 4C, 4D, 4E c, 4H) for your look before any animation; then the animation, tails, gates, the v7 check and the cold test.
+
+## Round 2 (24 Nov): the set gate and the hands audit
+
+- `python3 dh_s4_v8.py gate` runs `set_gate` on every frame (Don and the visitor are logged too now). It found one fault: 4E's throne 15 right of its mark (moved for the tag). The throne is back on 452; the visitor 16 left (his head clear of the tag) and the camera a step back so his case, his PREMIUM sticker, the tag and SHRED are whole.
+- Hands audit: 4D/4D2 the near counter below Pam's soles (it cut her at the shins, as 3C did); 4D2 the mug in front of her chest (beside her head it is a phone); 4E Don's arm bent at the elbow (straight it was a pole); 4B Don's hands clasped in front (in "vest" his arms crossed Mom and Sofía; at his sides his fists sat by their hands).
+- Scene 3, round 12: 3F Sofía was standing on the wall (Tomas: "is she pinned to the wall?"): Mom stands about 30 units from the wall, so nobody fits behind her. Sofía is back on the floor beside Mom, at the left edge.
+
+## Animation v8 round 1 (24 Nov): `dh_anim4_v8.py`
+
+- v7's clock, takes and mix (`dh_anim4.sc`); the pictures from `dh_s4_v8.py` round 3; bubbles by `dh_anim3_v8.say` (speech.draw + speech_gate); `python3 dh_anim4_v8.py gate`: speech_gate 113/0, dead zones 0, set 0. −17.1 LUFS (v7 the same), peak −1.8 dBFS, v7 baseline same.
+- Cameras moved for the zones (4B, 4C, 4E, 4F, 4G: the tag whole); the dead-zone sign check now ignores a tag's hanging string (`_avoid(solid=True)`; validated: 4C raised 28 still fails 25 drawings). Over-the-shoulder pieces from behind (the robot in 4A, Don in 4H) are not faces for the zone check.
+- Cold test (two viewers, mute): the visitor is the coffee man (2 of 2, from the badge and OUT OF ORDER); the last look reads, deadpan (2 of 2); everyone else ignores him and Don "sells" him (2 of 2). Misread: 4A holds 2 s with nothing moving; the robot in 4A reads as "a menu icon on a pole"; Pam's mug reads as "a card or a phone" (2 of 2) and her beat "goes nowhere"; the sticker appears between two drawings (2 of 2); Don's arm to the chest "rubbery, over-long"; 4F the robot holds 2 s with no action; the rooms (window, counter, throne) don't connect.
+
+## Animation v8 round 2 (24 Nov)
+
+- 4D'': Pam's mug bigger (1.6) with its handle in her fist, and it goes over in three drawings, its empty white mouth to us. Viewers: "a blue card, then a white round thing, a cup and saucer?" (2 of 2): the tip reads as a different object, not as "empty".
+- 4E (c): Don steps in (his head clear of the tag), the sticker in his hand drawn under his fingers, his palm on it for 5 drawings with a burst, then he lets go; it stays where his palm put it (4H too). His lines go on his right, off the sticker. Viewers: "Don presses a gold sticker onto his chest and pulls back; PREMIUM" (2 of 2). Open: the sticker is first seen already at the chest ("we never see him take it out"); the reaching arm "a straight stick".
+- 4A: he looks round the room, a half step at 1.05 s; 4F: the robot bobs 2 px on its words. Viewers: both still "frozen for 2 s" (2 of 2): too small to see at feed size.
+- set_gate: wrapped functions carry `_real`, so a measuring pass on a scratch surface is not logged as a drawing (it had made a "cut" fault for Don).
+- Gates: speech_gate 113/0, dead zones 0, set 0; −17.1 LUFS; v7 baseline same; scene 3 still passes.
+
+## Animation v8 round 3 (24 Nov, Tomas: "keičiam", then "darom")
+
+- 4D'': the mug is cut (five more mug gestures drawn: at her lips, shaken upside down, peered into, held out, mouth to us; at feed size the mug stays "a blue rectangle", the third failed fix of the shot). Instead she looks at his case and points at the OUT OF ORDER machine, arm out and up, on the 4D camera (the machine whole). Silhouette/still test: 2 of 2 "points at the machine" (variant 2 of 3; finger straight up read "a question", open palm "a wave"). Cold test: 2 of 2 "she points at the broken machine: that's his job" (one: "small in the frame").
+- 4E: the sticker shown in Don's hand at the end of 6.1' (held out by its edge). Cold test: still "appears from nowhere / floats near the throne" (2 of 2): it reads as floating, not held. Open.
+- 4A, 4F: slow push in (10 %, 6 %). Cold test: still "2 s, nothing moves" (2 of 2). Open.
+- Gates: speech_gate 113/0, dead zones 0, set 0; −17.1 LUFS; v7 baseline same.

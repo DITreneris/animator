@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 39, 2: 38, 3: 39, 4: 39, 5: 39}
-SOUND = "of_sound_v18.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 50, 2: 50, 3: 50, 4: 50, 5: 50}
+SOUND = "of_sound_v25.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -52,8 +52,8 @@ def _T(sid, t):
     return sc._timing()[sid]["start"] + t
 
 
-LAND_AT = ("1.3", 0.50)                                    # the burning 7 lands by his boot
-FLOOR_BURN = 4.6                                           # and burns out in this long
+LAND_AT = ("1.3", 0.62)                                    # the burning 7 lands by his boot
+FLOOR_BURN = 5.6                                           # and burns out in this long
 
 
 def _floor(sid, t):
@@ -72,37 +72,68 @@ def s12(t, L):                                             # v2 (23 Nov): the li
                                                                           lid=1.0 if t > 0.25 else 0.0))
 
 
-def s13(t, L):                                             # v2: he TEARS the burning 7 off and flings it over the car: it lands by
-    import of_set as gs                                    # the boot (the boot doesn't move); then the creeper rolls out past it;
-    bx, by = gs.bay7()                                     # he sits up, looks at the fire by his feet, then at his watch
-    ft = _T("1.3", t)
-    fly = None if t < 0.15 else min(1.0, (t - 0.15) / 0.35)
-    st = dict(burn=0.7 if t < 0.15 else 0.8, fire=1.0 if t < 0.15 else 0.25, fire_t=ft,
+FIRE_CAM = (366, 846, 2.4)                                 # the cut (grill 24 Nov): the boot and the place the burning 7 lands
+
+
+def s13(t, L):                                             # v5 (24 Nov, grill: the exposure sheet, 36 drawings, 14 key poses with 1.4):
+    import of_set as gs                                    # 0-0.18 he TEARS the burning 7 off; 0.18-0.55 it flies; CUT 0.55-0.95 CLOSE on
+    bx, by = gs.bay7()                                     # the boot: it lands (0.62), the knee jerks, the heels dig in; CUT 0.95 WIDE: he
+    ft = _T("1.3", t)                                      # rolls out on the red creeper, side on, lying (to 1.33); it stops, he slides on
+    fly = None if t < 0.18 else min(1.0, (t - 0.18) / 0.44)   # (1.47); elbow (1.53), palm (1.67), up (1.8), over and back (2.0); the fire; the watch
+    st = dict(burn=0.7 if t < 0.18 else 0.8, fire=1.0 if t < 0.18 else 0.25, fire_t=ft,
               sheet_fly=fly if (fly is not None and fly < 1.0) else None, sheet_floor=_floor("1.3", t))
-    g2 = dict(targets_xy=[(bx - 6, by - 20) if t < 0.15 else (bx + 30, by - 70)], lighter=1.0, lid=1.0)
-    gu_ = ease((t - 0.5) / 0.3)                             # v3 (cold test v37, 3 of 3 "a statue"): bodyguard 1's head follows the creeper out
+    g2 = dict(targets_xy=[(bx - 6, by - 20) if t < 0.18 else (bx + 30, by - 70)], lighter=1.0, lid=1.0)
+    gu_ = ease((t - 0.62) / 0.3)                           # bodyguard 1 looks down at him and steps aside, out of his way
     g1 = dict(turn=0.6 * gu_, look_down=12 * gu_)
-    if t < 0.88:
-        out = gs.LEGS_OUT * ease((t - 0.55) / 0.30)
-        return dict(st, _cast=("father", "g1", "g2"), sit=False, legs_out_v=out), dict(g2=g2, g1=g1)
-    look = (0.6, 1.0) if t < 1.10 else (0.9, 2.0)              # at the fire by his feet, then down at the watch
-    return st, dict(g2=g2, g1=g1, client=dict(kind="sit", look=look, face="glance" if t >= 1.10 else "bored"))
+    gx_, gf_ = sc.BLOCK[2]["g1"]
+    cx_, cf_ = sc.BLOCK[2]["client"][0] - 50, sc.BLOCK[2]["client"][1]   # clear of the fire and the lamp while he lies
+    st["moved"] = dict(g1=(gx_ - 78 * ease((t - 0.66) / 0.3), gf_), client=(cx_, cf_))
+    if t < 0.95:
+        jerk = -10 * math.sin(min(1.0, max(0.0, (t - 0.66) / 0.14)) * math.pi) + 7 * ease((t - 0.80) / 0.12)
+        st = dict(st, _cast=("father", "g1", "g2"), sit=False, legs_out_v=jerk, legs_work=1.6 * ease((t - 0.80) / 0.1))
+        if t >= 0.55:
+            st["_cam"] = FIRE_CAM
+        return st, dict(g2=g2, g1=g1)
+    t = t - 0.22 if t > 1.17 else min(t, 0.95)             # v8 (cold test v43, 3 of 3 "he is already out after the cut"): the wide
+    u = min(1.0, max(0.0, (t - 0.95) / 0.42)); roll = 1 - (1 - u) ** 2.0   # shot holds 0.2 s on the legs, THEN he rolls out, in view                                    # out fast, slowing
+    brake = math.sin(min(1.0, max(0.0, (t - 1.33) / 0.14)) * math.pi)                            # the board stops; he slides on a little
+    e1, e2, e3 = ease((t - 1.47) / 0.16), ease((t - 1.62) / 0.18), ease((t - 1.80) / 0.17)       # v6 (audit): 0.5 s, through 45 and 60 degrees
+    back = 1.32 + 0.05 * brake - 0.37 * e1 - 0.47 * e2 - 0.48 * e3 - 0.09 * math.sin(min(1.0, max(0.0, (t - 1.97) / 0.2)) * math.pi)
+    lag = lambda u: 1.32 - 0.37 * ease((u - 1.47) / 0.16) - 0.47 * ease((u - 1.62) / 0.18) - 0.48 * ease((u - 1.80) / 0.17)
+    head = 0.55 * (lag(t - 0.13) - lag(t)) if t > 1.47 else 0.0                                   # his head comes up 2 drawings after his trunk
+    hips = -10 * (e2 - e3) - 4 * e3                                                               # his hips shift back on the board as the weight goes over them
+    prop = None
+    if t >= 1.45:                                          # v7 (audit: "the arm is swapped, not moved"): ONE path for the far hand to the end
+        fx_, fy_ = cx_ + 60 - 16 * e2 - 6 * e3, cf_ - 2    # of the shot: on the floor by his shoulder, in under him as he comes up (never at
+        rx_, ry_ = cx_ + 40, cf_ - 36                      # full reach: the elbow stays bent), then 0.3 s up onto the board's edge
+        w_ = ease((t - 1.98) / 0.3)
+        prop = (fx_ + (rx_ - fx_) * w_, fy_ + (ry_ - fy_) * w_ - 8 * math.sin(math.pi * w_))
+    look = (0.2, -0.8) if t < 1.7 else ((0.4, -0.3) if t < 2.1 else ((0.6, 1.0) if t < 2.35 else (0.9, 2.0)))
+    return st, dict(g2=g2, g1=g1, client=dict(kind="sit", look=look, face="glance" if t >= 2.35 else "bored", back=back, flick=0.0, head=head,
+                                               prop=prop, under=86 * (1 - roll), slide=4 * brake + hips, roll=9.0 * roll))
 
 
 SMOTHER_AT = (2.75, 3.15)                                  # v3 (23 Nov, decided): after the line, the rag on the fire
 
 
-def s14(t, L):                                             # "Burn them...": he wipes his hands on the rag as he talks; then,
-    import of_set as gs                                    # not looking, he presses the rag down on the burning 7 and takes it
-    a, b = SMOTHER_AT
-    gs.SMOTHER[0] = 0.0
-    cl = dict(kind="sit", look=(-1, -0.2), wipe=math.sin(t * 2 * math.pi * 0.9))
+def s14(t, L):                                             # v5 (grill 24 Nov, 54 drawings): "Burn": the far hand comes up off the board
+    import of_set as gs                                    # (0.15-0.33); "them": a short flick DOWN at the fire (0.4-0.47); it hangs through
+    a, b = SMOTHER_AT                                      # the full stop (to 0.8) and comes down (to 1.07). "Your son": his eyes to Father,
+    gs.SMOTHER[0] = 0.0                                    # he sits back 4 degrees. Then, not looking, the far hand takes the rag off his
+    fk = 0.5 * ease((t - 0.15) / 0.18) + 0.5 * ease((t - 0.38) / 0.09) - ease((t - 0.84) / 0.24)   # knee and presses it on the fire
+    sh_ = ease((t - 0.12) / 0.15) - ease((t - 0.8) / 0.25)                # his shoulder and trunk go with it, a beat BEFORE the hand
+    fid = math.sin(min(1.0, max(0.0, (t - 1.7) / 0.3)) * math.pi) + math.sin(min(1.0, max(0.0, (t - 2.3) / 0.3)) * math.pi)
+    cl = dict(kind="sit", look=(-1, -0.2) if t > 1.1 else (0.5, 0.5), flick=max(0.0, fk), fidget=fid,
+              back=0.07 * ease((t - 1.13) / 0.14) + 0.06 * sh_, head=-0.05 * sh_ + 0.04 * ease((t - 1.2) / 0.2))
     fl = _floor("1.4", min(t, a))
+    sx, sy = gs.SHEET_LAND
+    cl["hands_at"] = (sx - 4, sy - 10)
+    a0 = a - 0.5                                                          # v6 (audit: "it appears"): reach 0.3 s, close on it 0.2 s, then carry
+    cl["rag_to"] = 0.5 * ease((t - a0) / 0.3) + 0.5 * ease((t - a) / (b - a)) if t >= a0 else None
+    if cl["rag_to"] is None:
+        cl.pop("rag_to"); cl.pop("hands_at")
     if t >= a:
-        u = ease((t - a) / (b - a))
-        sx, sy = gs.SHEET_LAND
-        cl["hands_at"] = (sx - 4, sy - 10 + 6 * (1 - u)) if t < b + 0.2 else (sx - 30 * min(1, (t - b - 0.2) / 0.2) - 4, sy - 40)
-        gs.SMOTHER[0] = u if t < b else 1.0
+        gs.SMOTHER[0] = ease((t - a) / (b - a)) if t < b else 1.0
         if t >= b:
             fl = None
     return dict(sheet_floor=fl, fire_t=_T("1.4", t), burn=0.8), dict(client=cl)
@@ -120,12 +151,12 @@ def s21(t, L):                                             # v3 (24 Nov, cold te
     cl = dict(client=dict(kind="bent", work=_work(t)))     # line (lesson 197): Father close (the guard behind him adjusts his
     fx_, ff_ = sc.BLOCK[3]["father"]                       # sunglasses), the two-shot (Father's open hand),
     gu = ease((t - 0.35) / 0.3) - ease((t - 3.2) / 0.3) + 0.12 * math.sin(t * 5.0) * (1 if 0.7 < t < 3.0 else 0)   # v4: his open hand up through the whole line
-    gest = dict(targets_xy=[(fx_ + 34 + 30 * gu, ff_ - 96 - 78 * gu)]) if gu > 0.02 else {}
+    gest = dict(targets_xy=[(fx_ + 34 + 30 * gu, ff_ - 96 - 78 * gu)], show_hand=True) if gu > 0.02 else {}
     if t < CUT_21:
-        return dict(_cam=sc.FATHER_LAMP, _cast=("father", "g2")), dict(father=dict(face="hard", look=(1, 0), lean=0.03 * gu, **gest), **cl)
+        return dict(_cam=sc.FATHER_LAMP, _cast=("father", "client")), dict(father=dict(face="hard", look=(1, 0), lean=0.03 * gu, **gest), **cl)
     if t < 2.55:
         return {}, dict(father=dict(face="hard", look=(1, 0), **gest), **cl)
-    return dict(_cam=sc.FATHER_LAMP, _cast=("father", "g2")), dict(father=dict(face="brow" if t > 3.55 else "hard", look=(1, 0), lean=0.03 * gu, **gest), **cl)
+    return dict(_cam=sc.FATHER_LAMP, _cast=("father", "client")), dict(father=dict(face="brow" if t > 3.55 else "hard", look=(1, 0), lean=0.03 * gu, **gest), **cl)
 
 
 def s22(t, L):
@@ -161,7 +192,9 @@ def s28d(t, L):                                            # SLAM
     T0 = 0.3                                               # v3 (24 Nov, cold test v30: 0 of 3 saw it; at 10 fps it fell for 0.4 s with a small
     u = ease((t - T0) / 0.09)                              # shake): UP with his hand on it for 0.3 s, down in 0.09 s, and the frame JOLTS
     return dict(anim=True, bonnet=1.0 - u, shake=0 if t < T0 + 0.09 else 14 * math.exp(-(t - T0 - 0.09) * 11) * math.sin(t * 110)), \
-        dict(client=dict(kind="slam", slam_b=1.0 - u))
+        dict(client=dict(kind="slam", slam_b=1.0 - u),          # v4 (cold test v43: "a statue"): Father's eyes go to the bonnet as it
+             father=dict(face="low" if t < T0 + 0.05 else ("brow" if t < T0 + 0.4 else "low"),   # falls; at the bang his brow goes up and he rocks back
+                         look=(1, 0.1 + 0.5 * ease((t - 0.1) / 0.2)), lean=-0.03 * (ease((t - T0) / 0.08) - ease((t - T0 - 0.3) / 0.25))))
 
 
 def s28e(t, L):                                            # the key turns; a cough; it runs
@@ -183,13 +216,14 @@ def s29(t, L):                                             # on his way to the d
     feet = [(-a * 0.9, lift), (0.0, 0.0)] if n % 2 == 0 else [(0.0, 0.0), (-a * 0.9, lift)]
     bob = 3 * math.sin(math.pi * min(1.0, ph / 0.7))
     cam = WALK_CAM if t < 1.1 else CAL_CAM                 # v3 (cold tests 3 of 3: it drags; "a calculator"): CUT IN on the two
-    return dict(_cam=cam, father_step=feet, moved=dict(father=(x, 880 - bob), g2=(120, 872))), {}   # of them, the calendar readable
+    x = max(x, 226.0)                                      # v4 (cold test v43): he stops BESIDE his man, not behind him
+    return dict(_cam=cam, father_step=feet if x > 226.0 else None, bubble_top=True, moved=dict(father=(x, 880 - (bob if x > 226.0 else 0)), g2=(120, 872))), {}   # of them, the calendar readable
 
 
-CAL_CAM = (172, 770, 2.6)
+CAL_CAM = (172, 752, 2.6)
 
 
-WALK_CAM = (170, 815, 1.8)                                 # locked: he walks through the frame (a following camera jumped)
+WALK_CAM = (170, 795, 1.8)                                 # locked: he walks through the frame (a following camera jumped)
 
 
 VETO_AT = (505, 880)                                       # v9 (22 Nov, decided): Father shuts the lighter himself
@@ -235,7 +269,9 @@ def _loud(sid, t):
 def s32(t, L):                                             # the visor: the line pops on, and glows as it talks; v2 (cold tests
     k_ = 0.02 + 0.98 * min(1.0, max(0.0, (t / 0.15))) if t < 0.15 else 1.0 + 0.08 * math.sin(min(1.0, (t - 0.15) / 0.12) * math.pi)
     lo = _loud("3.2", t)                                   # 2 of 3 "held too long"): it bobs on its wheel with each word
-    return dict(visor_k=k_, visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4))), {}
+    if t >= 1.10:                                          # v3 (cold test v47, 3 of 3: "a static robot", decided): in the take's
+        return dict(desk="don", don="happy", off_voice=dict(rows=["AGENDA:", "WITHOUT", "HIM."], at=(28, 190)), say_txt="AGENDA: WITHOUT HIM."), {}   # pause, CUT to Don, pleased; it goes on over him
+    return dict(visor_k=k_, visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4)), say_txt="NEW MEETING."), {}
 
 
 def s33(t, L):                                             # he sits up for good news
@@ -285,7 +321,7 @@ def s41(t, L):                                             # v3 (23 Nov, cold te
     u = t - 1.1                                            # v4 (timing v12, cold tests 3 of 3 "too fast"): DECLINED held 1.0 s
     th = ease((u - 0.25) / 0.2)
     return dict(_cam=DONNIE_CAM, hand_dx=0.0, buzz=3 * math.sin(u * 2 * math.pi * 18) if u < 0.3 else 0.0,
-                thumb=th if u < 1.4 else 0.0, declined=u > 0.45, donnie_down=u > 1.45), {}
+                thumb=th if u < 1.1 else 0.0, declined=u > 0.45, donnie_down=u > 1.15), {}   # v5 (timing v22): DECLINED held 0.7 s
 
 
 DONNIE_CAM = (98, 668, 3.0)                                # v3: the phone big enough to read on a phone
@@ -317,8 +353,8 @@ def s010_same(t, L):                                       # the SAME frame as t
     x, f = sc.BLOCK[1]["g1"]
     roof, off = sc._pt("roof", x, f), sc._pt("off_r", x, f)
     u = om.hold(t / 0.13)                                  # two drawings
-    back = -30 * om.hold((t - 0.12) / 0.20)
-    turn = -1.0 * om.hold((t - 0.45) / 0.20)              # then he looks left, to Father (off screen)
+    back = -30 * om.hold((t - 0.10) / 0.16)                # v2 (timing v22): 0.55 s: off, back, and his head round to Father
+    turn = -1.0 * om.hold((t - 0.24) / 0.18)              # then he looks left, to Father (off screen)
     return dict(_cam=sc.CAR_CAM, _cast=("g1",)), dict(g1=dict(targets_xy=[om.lerp(roof, off, u)], back=back, turn=turn, push=False))
 
 
@@ -358,7 +394,7 @@ def s24(t, L):                                             # v1 (23 Nov audit, d
     gu = ease((t - 0.7) / 0.3) - ease((t - 2.7) / 0.3)     # every shot"): his hand comes up, open, toward the Client, on the question
     gest = dict(targets_xy=[(fx_ + 34 + 30 * gu, ff_ - 96 - 78 * gu)]) if gu > 0.02 else {}
     if t >= 1.5:                                           # v3 (cold tests 3 of 3: it drags): CUT to the medium, the question
-        return (dict(_cam=(467, 872, 1.80), _cast=("father", "client")),   # lands on the Client, at the engine (2.1's two-shot)
+        return (dict(_cam=sc.MED_CAM, _cast=("father", "client")),   # lands on the Client, at the engine (2.1's two-shot)
                 dict(father=dict(face=face, lean=ln, look=(1, 0), **gest), client=dict(kind="bent", work=_work(t))))
     return {}, dict(father=dict(face=face, lean=ln, look=(1, 0), **gest))
 
@@ -369,26 +405,39 @@ def s26(t, L):                                             # v1: "And then?" -- 
     return {}, dict(father=dict(face=face, lean=ln, look=(1, 0)))
 
 
-LAMP_GAG_CAM = (606, 700, 2.6)                             # the guard and the lamp fill the frame; the plan is out, to the left
+LAMP_GAG_CAM = (590, 696, 2.9)                             # the guard and the lamp fill the frame; the plan is out, to the left
 
 
-def s28f(t, L):                                            # v5 (24 Nov, cold test v37: "long for what it delivers", "his face does not react"): 1.8 s.
-    fl = t > 0.35 and (t < 0.4 or 0.47 < t < 0.52 or t > 0.6)   # It flickers and DIES (0.35-0.6); he lifts it and looks INTO the bulb
-    dn = ease((t - 0.25) / 0.2) - ease((t - 1.15) / 0.18)  # (0.65-0.95); it sags, his shoulders drop (1.0-1.2); he looks at US
-    lift = ease((t - 0.65) / 0.3) - ease((t - 1.0) / 0.25)  # (1.3) and holds it 0.5 s
-    sag = ease((t - 1.0) / 0.2)
-    x, y = 556 + 12 * lift, 652 - 26 * lift + 26 * sag
+YEND = 736
+
+
+def s28f(t, L):
+    """v6 (24 Nov, Tomas: "the lamp bothers me most"; three cold tests: "half landed"). 1.8 s, six pictures, the sound's
+    times kept: he HOLDS it lit beside him, over the bonnet (0-0.35); it FLICKERS twice, brighter, and DIES (0.35-0.6):
+    the pool gone, the bulb grey, the frame a shade darker; his head goes down to it and he brings it in, BELOW his chin
+    (0.65-0.95); ONE shake (0.95-1.1); the arm DROPS to his side, the lamp hanging, his shoulders down (1.1-1.3); he
+    looks at US and holds (1.3-1.8). The cable's belly lags the hand and settles after it."""
+    dark = t > 0.35 and (t < 0.4 or 0.47 < t < 0.52 or t > 0.6)
+    dn = ease((t - 0.42) / 0.2) - ease((t - 1.18) / 0.16)
+    up = ease((t - 0.65) / 0.28)
+    sh_ = math.sin((t - 0.95) / 0.15 * 2 * math.pi) * 14 if 0.95 < t < 1.10 else 0.0   # v7: twice as wide, it has to read
+    dr = ease((t - 1.12) / 0.2)
+    rt = ease((t - 1.08) / 0.12)                              # v7: it TURNS down first, then drops, beside his leg: never behind the bonnet
+    x = 538 + 8 * up + sh_ + 22 * rt                         # v9 (cold test v47, 3 of 3: "it flips through odd shapes"): no flip.
+    y = 668 - 16 * up + (YEND - 652) * dr                    # Dead, he LIFTS it a little and tips it toward him (the cage stays
+    la = -1.05 + 0.25 * up - 1.1 * rt                        # down), shakes it once, and lets it hang: one shape all the way
+    sw = -sh_ * 1.6 + 16 * math.sin(max(0.0, t - 1.10) * 14) * math.exp(-max(0.0, t - 1.10) * 5) * (1 if t > 1.10 else 0)
     gx_, gf_ = sc.BLOCK[3]["g1"]
-    return (dict(_cam=LAMP_GAG_CAM, moved=dict(g1=(gx_, gf_ + 7 * sag))),
-            dict(g1=dict(targets_xy=[(x + 2, y)], lamp="held", cone_side=0.03 if fl else 1.0, lamp_ang=0.35 + 0.2 * lift - 0.55 * sag,
-                         cable_floor=sc.F + 8,
+    return (dict(_cam=LAMP_GAG_CAM, dim=0.14 if dark else 0.0, moved=dict(g1=(gx_, gf_ + 8 * dr))),
+            dict(g1=dict(targets_xy=[(x, y)], lamp="held", cone_side=0.03 if dark else (1.35 if t > 0.35 else 1.0), lamp_ang=la,
+                         cable_floor=sc.F + 8, cable_swing=sw, elbow_low=True, pool_late=True,
                          turn=0.01 - 0.6 * dn, look_down=12 * dn)))
 
 
 def s28b(t, L):                                            # v2 (24 Nov, cold test v31: the held 'One month' shot dragged): after the line's first half, CUT to
     if t < 1.35:                                           # Father, his eyes on the held-out phone, and the line goes on over him
         return {}, {}
-    return dict(_cam=(580, 790, 3.2), _cast=("client",)), {}
+    return dict(_cam=(575, 785, 2.6), _cast=("client",)), {}
 
 
 MOTION = {"0.2": s02, "0.3": s03, "1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14,
@@ -410,20 +459,20 @@ def s23(t, L):
     start, out_ = (bx - 30, 718), (bx + 60, 724)
     x, f = LAMP_G1                                         # v5 (23 Nov, lesson 292): he stands at the bay's side, in front
     rest = (x - 44, f - 120)
-    u1 = om.hold(t / 0.30)
-    u2 = om.hold((t - 0.30) / 0.22)
-    u3 = om.hold((t - 0.55) / 0.30)
+    u1 = om.hold(t / 0.34)                                 # v10 (cold test v47, 3 of 3: "suddenly in the suit's hand"): the
+    u2 = om.hold((t - 0.40) / 0.28)                        # handover takes 1.0 s: out, TAKEN, carried to the bay; then the cut-in
+    u3 = om.hold((t - 0.72) / 0.26)
     st = dict(moved=dict(g1=LAMP_G1), front_of_car=("g1",))
-    if t >= 0.7:                                           # v7 (23 Nov, decided): CUT IN, 0.9 s: his hands in the light; the bolt comes free
+    if t >= 1.0:                                           # v7 (23 Nov, decided): CUT IN, 0.9 s: his hands in the light; the bolt comes free
         return dict(_cam="insert", insert="bay", work=math.sin(t * 2 * math.pi * 1.3) if t < 1.2 else 0.0,
-                    bay_reach=ease((t - 1.2) / 0.3), bolt_out=ease((t - 1.6) / 0.35), bay_u=1.0), {}     # v8 (timing v11): the cut-in 1.2 s, the bolt later
+                    bay_reach=ease((t - 1.2) / 0.3), bolt_out=ease((t - 1.6) / 0.35), bay_u=1.0), {}     # v9 (timing v22): 0.3 s less of the turning     # v8 (timing v11): the cut-in 1.2 s, the bolt later
     if u3 > 0:
         gh = om.lerp(out_, LAMP_IN_BAY, u3)
         return st, dict(client=dict(kind="bent", hand_back=False, work=math.sin(t * 2 * math.pi * 1.3) if t > 0.9 else 0.0),
-                        g1=dict(targets_xy=[gh], lamp=True, lamp_xy=gh, cone_side=u3, cable_floor=LAMP_G1[1] - 4, pool=(494, 716), lamp_ang=0.1), father=dict(look=(1, -0.2)))
+                        g1=dict(targets_xy=[gh], lamp=True, lamp_xy=gh, cone_side=u3, cable_floor=LAMP_G1[1] - 4, pool=(494, 716), lamp_ang=0.1), father=dict(look=(1, 0.3 - 0.3 * u3), lean=0.02 * u3), g2=dict(turn=0.55))
     gh = om.lerp(rest, out_, u2)
     return st, dict(client=dict(kind="bent", hand_back=True, hand_back_at=om.lerp(start, out_, u1), lamp_lit=False),
-                    g1=dict(targets_xy=[gh]), father=dict(look=(1, -0.2)))
+                    g1=dict(targets_xy=[gh]), father=dict(look=(1, -0.2 + 0.5 * u2)), g2=dict(turn=0.55 * u2))
 
 
 def s28e2(t, L):                                           # v9: the key turns; at the cough, CUT to the car: it runs
@@ -438,8 +487,6 @@ RUN_CAM = (350, 790, 1.25)                                 # the whole car, nose
 
 
 MOTION["2.3"] = s23
-MOTION["1.3"] = lambda t, L: s13(t * 1.3 / 1.6, L)   # v3 (timing v11, cold tests 3 of 3 "too fast"): the throw, the roll-out
-                                                    # and the sit-up at 0.8x speed
 MOTION["2.8e"] = lambda t, L: s28e(max(0.0, t - 0.3), L)   # v11 (24 Nov, cold test 3 of 3 "the car leaves, then is back"): no cut
 _old_28e = lambda t, L: s28e2(max(0.0, t - 0.3), L)   # v10 (timing v11): his fingers on the key 0.3 s, then the turn
 for _sid, _fn in om.veto():
@@ -467,7 +514,9 @@ def s09_work(t, L):                                       # the sump sways; he f
 
 def s34b(t, L):                                            # v9: turned to Don, it glows as it talks
     lo = _loud("3.4b", t)
-    return dict(visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4))), {}   # v10: it bobs as it talks
+    if t >= 1.45:                                          # v11: on "wait.", CUT to Don, still smiling, his eyes on the robot
+        return dict(desk="don", don="happy", off_voice=dict(rows=["WAIT."], at=(28, 230)), say_txt="WAIT.", don_over=dict(look=(1, 0))), {}
+    return dict(visor_glow=lo, robot_bob=-6 * lo * abs(math.sin(t * 2 * math.pi * 2.4)), say_txt="CALENDAR SAYS..."), {}   # v10: it bobs as it talks
 
 
 def s35b(t, L):                                            # v9: he turns to the counter: "Pam?"
@@ -494,7 +543,7 @@ def s09_wide(t, L):                                       # v3 (23 Nov, cold tes
 MOTION["0.9"] = s09_wide
 MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
 MOTION["0.10"] = s010_same
-PIN_T = 1.25                                               # v5 (24 Nov, decided): the burnt plan 0.25 s, the fresh one slides
+PIN_T = 1.60                                               # v5 (24 Nov, decided): the burnt plan 0.25 s, the fresh one slides
 MOTION["4.2"] = lambda t, L: (dict(_cam="insert", insert="pin", pin_slide=ease((t - 0.25) / 0.28),   # up over it, the finger pins
                                    pin_u=ease((t - 0.72) / 0.2)), {}) if t < PIN_T else s42_service(t - PIN_T + 0.55, L)
 # v6 (timing v12): the pin held 0.3 s longer, the rest as it was
@@ -509,6 +558,31 @@ VISEME = {"A": "M", "B": "C", "C": "E", "D": "A", "E": "O", "F": "U", "G": "F", 
 _CUES = {}
 
 
+LIP_AHEAD = 2 / 30.0
+
+
+def accent(sid, t):
+    """v1 (24 Nov, decided): 0..1, a stressed syllable of the speaker this drawing (the take's loudness rising fast);
+    the speaker's head dips with it."""
+    if sid not in sc.SAY:
+        return 0.0
+    if sid not in _TAKE:
+        a, sr = sf.read(os.path.join(TAKES, "%s.wav" % sid))
+        _TAKE[sid] = (a, sr)
+    a, sr = _TAKE[sid]
+    def env(x):
+        if x < 0 or x > len(a) / sr:
+            return 0.0
+        seg = a[int(x * sr):int((x + 0.06) * sr)]
+        return float(np.sqrt(np.mean(seg ** 2))) / (np.abs(a).max() + 1e-9) if len(seg) else 0.0
+    tt = t - LEAD
+    best = 0.0
+    for back in (0.0, 0.05, 0.10, 0.15):                    # the dip lasts ~0.2 s after the rise
+        rise = env(tt - back) - env(tt - back - 0.12)
+        best = max(best, min(1.0, max(0.0, rise / 0.25)) * (1 - back / 0.2))
+    return best
+
+
 def mouth_at(sid, t):
     """the mouth for the speaker of shot sid, t seconds into the shot (None: not speaking). v2 (23 Nov, decided): the
     take's own mouth shapes (Rhubarb Lip Sync, of_voices/visemes/<shot>.json, phonetic, with the line's text), held
@@ -519,7 +593,7 @@ def mouth_at(sid, t):
         a, sr = sf.read(os.path.join(TAKES, "%s.wav" % sid))
         _TAKE[sid] = (a, sr)
     a, sr = _TAKE[sid]
-    tt = t - LEAD
+    tt = t - LEAD + LIP_AHEAD                              # v3 (24 Nov, decided): the mouth 2 frames ahead of the sound
     if tt < 0 or tt > len(a) / sr:
         return None
     vp = os.path.join(TAKES, "..", "visemes", "%s.json" % sid)
@@ -573,6 +647,80 @@ def held_only(probs):
     return out
 
 
+BUBBLE_PICTURES = {}
+
+
+def shot_frame(sh0, t, tm, call):
+    """one drawing of a shot at t: the motion's state and poses, the film's clock, the mouth; then call(sh)."""
+    sid = sh0["id"]
+    L = tm[sid]["len"]; st0 = tm[sid]["start"]
+    fn = MOTION.get(sid, still)
+    st_over, pose_over = fn(t, L)
+    st_over = dict(st_over)
+    cast = st_over.pop("_cast", None)
+    cam_ = st_over.pop("_cam", None)
+    sh = dict(sh0, state=dict(sh0["state"], **st_over))
+    if cam_ is not None:
+        sh["cam"] = cam_
+    if cast is not None:
+        sh["cast"] = cast
+    saved = sc.POSES.get(sid)
+    if pose_over:
+        base = dict(saved or {})
+        for who, ps in pose_over.items():
+            base[who] = dict(base.get(who, {}), **ps)
+        sc.POSES[sid] = base
+    who = sc.SAY.get(sid, (None,))[0]
+    oc.NOW[0] = st0 + t                                    # v1 (23 Nov): the film's clock, for blinks and breaths
+    oc.SHOT_T[0] = t
+    oc.ACCENT[0] = (who, accent(sid, t))
+    oc.LOOP_T[0] = sc._timing_total()
+    mc_ = mouth_at(sid, t)
+    oc.MOUTH[0] = mc_ if who == "client" else None
+    oc.FATHER_MOUTH[0] = mc_ if who == "father" else None
+    oc.DON_MOUTH[0] = mc_ if who == "don" else None
+    try:
+        if sid in SPLIT:                                    # v12 (cold tests 3 of 3): two short bubbles, not one long
+            fr_, parts = SPLIT[sid]
+            mouth_at(sid, 0.0)
+            a_, sr_ = _TAKE[sid]
+            u_ = (t - LEAD) / (len(a_) / sr_)
+            sh = dict(sh, state=dict(sh["state"], say_txt=parts[0] if u_ < fr_ else parts[1]))
+        return call(sh)
+    finally:
+        oc.MOUTH[0] = oc.FATHER_MOUTH[0] = oc.DON_MOUTH[0] = None
+        if saved is None:
+            sc.POSES.pop(sid, None)
+        else:
+            sc.POSES[sid] = saved
+
+
+def lock_shot(sh0, scene, tm):
+    """v47: place each of this shot's bubbles ONCE per picture (camera and text), at the drawing 60 % into that
+    picture's bubble, when a lean or a turn has settled. -> the bubble checks' messages for those drawings."""
+    sid = sh0["id"]
+    if sid not in sc.SAY:
+        return []
+    L = tm[sid]["len"]; st0 = tm[sid]["start"]
+    nd = max(1, int(round((st0 + L) * DPS)) - int(round(st0 * DPS)))
+    keys = {}
+    for i in range(nd):
+        t = i / DPS
+        if bubble_on(sid, t):
+            k__ = shot_frame(sh0, t, tm, sc.bubble_key)
+            if sid in sc.BUBBLE_AT and k__[1] in sc.BUBBLE_AT[sid]["at"]:
+                continue                                       # placed by hand
+            keys.setdefault(shot_frame(sh0, t, tm, sc.bubble_key), []).append(t)
+    out = []
+    BUBBLE_PICTURES[sid] = [(k_[1], k_[2], ts[0], ts[-1]) for k_, ts in keys.items()]
+    if len(keys) > 4:                                      # the gate: a camera that moves under a line re-places it every drawing
+        out.append((sid, 0, 0.0, "BUBBLE %s: placed %d times in one shot (a moving camera under a line)" % (sid, len(keys))))
+    for key, ts in keys.items():
+        tr = ts[int(0.6 * (len(ts) - 1))]
+        out += [(sid, int(round(tr * DPS)), tr, q) for q in shot_frame(sh0, tr, tm, lambda sh: sc.lock_bubble(sh, scene))]
+    return out
+
+
 def render_scene(n):
     title, where, scene, shots = sc.SCENES[n - 1]
     tm = sc._timing()
@@ -589,45 +737,13 @@ def render_scene(n):
         fn = MOTION.get(sid, still)
         st0 = tm[sid]["start"]                                 # v2 (rough cut): drawings on the timeline's own grid, so
         nd = max(1, int(round((st0 + L) * DPS)) - int(round(st0 * DPS)))   # the picture never drifts from the sound
+        probs += lock_shot(sh0, scene, tm)                    # v47: its bubbles, placed once per picture
         for i in range(nd):
             t = i / DPS
-            st_over, pose_over = fn(t, L)
-            st_over = dict(st_over)
-            cast = st_over.pop("_cast", None)
-            cam_ = st_over.pop("_cam", None)
-            sh = dict(sh0, state=dict(sh0["state"], **st_over))
-            if cam_ is not None:
-                sh["cam"] = cam_
-            if cast is not None:
-                sh["cast"] = cast
-            saved = sc.POSES.get(sid)
-            if pose_over:
-                base = dict(saved or {})
-                for who, ps in pose_over.items():
-                    base[who] = dict(base.get(who, {}), **ps)
-                sc.POSES[sid] = base
-            who = sc.SAY.get(sid, (None,))[0]
-            oc.NOW[0] = st0 + t                                    # v1 (23 Nov): the film's clock, for blinks and breaths
-            oc.LOOP_T[0] = sc._timing_total()
-            mc_ = mouth_at(sid, t)
-            oc.MOUTH[0] = mc_ if who == "client" else None
-            oc.FATHER_MOUTH[0] = mc_ if who == "father" else None
-            oc.DON_MOUTH[0] = mc_ if who == "don" else None
-            try:
-                if sid in SPLIT:                                    # v12 (cold tests 3 of 3): two short bubbles, not one long
-                    fr_, parts = SPLIT[sid]
-                    mouth_at(sid, 0.0)
-                    a_, sr_ = _TAKE[sid]
-                    u_ = (t - LEAD) / (len(a_) / sr_)
-                    sh = dict(sh, state=dict(sh["state"], say_txt=parts[0] if u_ < fr_ else parts[1]))
-                surf, p = sc.board_frame(sh, scene, bubble=bubble_on(sid, t))
-            finally:
-                oc.MOUTH[0] = oc.FATHER_MOUTH[0] = oc.DON_MOUTH[0] = None
-                if saved is None:
-                    sc.POSES.pop(sid, None)
-                else:
-                    sc.POSES[sid] = saved
+            surf, p = shot_frame(sh0, t, tm, lambda sh: sc.board_frame(sh, scene, bubble=bubble_on(sid, t)))
             probs += [(sid, i, t, q) for q in p]
+            while sc.BUBBLE_UNLOCKED:                              # the gate: every bubble in the film is a locked one
+                probs.append((sid, i, t, "BUBBLE %s: placed on the spot, not locked" % (sc.BUBBLE_UNLOCKED.pop(),)))
             for _ in range(FPS // DPS):
                 surf.write_to_png(os.path.join(d, "f%04d.png" % k)); k += 1
             if (k // 2) % 4 == 1 or i == 0:                       # about 4 fps for the sheet, and every shot's first drawing
@@ -660,19 +776,21 @@ def render_scene(n):
     return k, dur, probs, m540, m1080
 
 
-def _at_wall(r):
+def _at_wall(r, g2=None):
     """v1 (23 Nov, the loop): bodyguard 2 stands at the wall behind the car from frame 0 (the man who will burn the plan,
     and who pins the fresh one in the last shot), so the last frame and frame 0 are one picture."""
     st, po = r
     st = dict(st, _cast=("g1", "g2"), behind_car=("g2",))
     st["moved"] = dict(st.get("moved", {}), g2=NEW_PLAN_G2)
-    po = dict(po, g2=dict(turn=0.0))
+    po = dict(po, g2=dict(g2 or dict(turn=0.0)))                # v2 (cold test v43, 3 of 3: "a statue"): he reacts
     return st, po
 
 
-MOTION["0.8"] = lambda t, L, f_=MOTION.get("0.8", s08_slam): _at_wall(f_(t, L))
-MOTION["0.10"] = lambda t, L, f_=MOTION.get("0.10", s010_same): _at_wall(f_(t, L))
-MOTION["0.9"] = lambda t, L, f_=MOTION.get("0.9", s09_wide): _at_wall(f_(t, L))   # v2: the same picture as 0.8
+# the man at the wall: frame 0 as it was (turn 0, the loop's last frame); at the slam his head snaps to the roof; on "Off the
+# car." it drops to the legs; when the hand comes off he looks back up, to the front
+MOTION["0.8"] = lambda t, L, f_=MOTION.get("0.8", s08_slam): _at_wall(f_(t, L), dict(turn=-0.55 * om.hold((t - 0.12) / 0.14)))
+MOTION["0.10"] = lambda t, L, f_=MOTION.get("0.10", s010_same): _at_wall(f_(t, L), dict(turn=-0.55 * (1 - om.hold((t - 0.2) / 0.16)), look_down=9 * (1 - om.hold((t - 0.2) / 0.16))))
+MOTION["0.9"] = lambda t, L, f_=MOTION.get("0.9", s09_wide): _at_wall(f_(t, L), dict(turn=-0.55, look_down=9 * ease((t - 0.3) / 0.2)))   # v2: the same picture as 0.8
 DOOR_CAM = (168, 700, 1.9)                                # v1 (23 Nov, decided): the doorway, Father in it, held
 
 

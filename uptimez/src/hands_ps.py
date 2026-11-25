@@ -31,6 +31,8 @@ DIRS = []                                                   # (d, arm) per hand 
 LW = 2.0
 
 
+PALM_VAR = [False]                                                    # opt-in: palm fingers of unequal length (One Star)
+
 def reset(left="relax", right="relax"):
     GEST[0] = (left, right); _N[0] = 0; LATE.clear(); DIRS.clear()
 
@@ -228,6 +230,10 @@ def draw(k, g, hx, hy, w, skin, d, arm):
         _cap(c, [(0.10 * w, s_ * 0.30 * w), (0.42 * w, s_ * 0.62 * w)], t, skin)     # the thumb out
         _blob(c, 0.20 * w, 0, 0.42 * w, 0.40 * w, skin)
         for fy in (-0.24, -0.08, 0.08, 0.24):
+            if PALM_VAR[0]:                                           # opt-in (One Star v17): index, middle, ring, pinky
+                ln = {0.24: 0.94, 0.08: 1.02, -0.08: 0.97, -0.24: 0.80}[round(fy * s_, 2)] * w
+                _cap(c, [(0.40 * w, fy * w), (ln, fy * w * 1.22)], t * (0.82 if fy * s_ < -0.2 else 0.9), skin)
+                continue
             _cap(c, [(0.40 * w, fy * w), (1.02 * w - abs(fy) * 0.5 * w, fy * w * 1.15)], t * 0.9, skin)
         c.restore(); return
     if g == "quiet":                                                  # v3 (One Star audit 2, 23 Nov): a hand at rest. One
@@ -246,6 +252,11 @@ def draw(k, g, hx, hy, w, skin, d, arm):
             _cap(c, [(0.50 * w, -s_ * fy * w - s_ * 0.0), (1.20 * w, -s_ * fy * w)], t, skin)
     if g == "point":
         _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.35 * w, -s_ * 0.20 * w)], t, skin)  # the index, out
+    if g == "point_t":                                                # v5 (Daddy's Home v8 review 2, 24 Nov, opt-in): the index
+        _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.35 * w, -s_ * 0.20 * w)], t, skin)  # out, no thumb
+        c.restore(); return                                           # (big, "point"'s thumb across the knuckles read as a
+                                                                      # second, bent finger; pressed along the side, too): the
+                                                                      # thumb is behind the hand, seen from its back
     if g == "point_s":                                                # v4 (Daddy's Home v8 review, 24 Nov): the index 20 %
         _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.18 * w, -s_ * 0.20 * w)], t, skin)  # shorter, the thumb standing clear
         _cap(c, [(0.12 * w, s_ * 0.30 * w), (0.40 * w, s_ * 0.58 * w)], t, skin)

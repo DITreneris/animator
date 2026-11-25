@@ -22,7 +22,7 @@ OUT = "of_voices/takes"
 LINES = [
     ("0.5", "CLIENT", "Is it wrong?", None),
     ("0.9", "CLIENT", "Off the car.", None),
-    ("1.4", "CLIENT", "Burn them. Your son loses his only customer.", None),
+    ("1.4", "CLIENT", "Burn them. Your son loses his only customer.", "Burn them.|Your son loses his only customer."),
     ("2.1", "FATHER", "My son says his machine finds anything.", None),
     ("2.2", "CLIENT", "It found nothing.", "It found, nothing."),   # v3 (23 Nov audit): heard "You found nothing"
     ("2.4", "FATHER", "How would you run his company?", "How would you run, his company."),   # flat; v3 (23 Nov audit): the comma
@@ -30,18 +30,55 @@ LINES = [
     ("2.5", "CLIENT", "Without him.", None),
     ("2.6", "FATHER", "And then?", "And, then."),         # v2 (22 Nov, Tomas): "And?" was heard as "wind"; v3 (23 Nov audit):
     # "And then." was heard "On then" (1 of 3); with the comma 3 of 3
-    ("2.8b", "CLIENT", "One month. I ask. She finds it.", None),
+    ("2.8b", "CLIENT", "One month. I ask. She finds it.", "One month.|I ask.@1.3|She finds it."),
     ("2.8c", "FATHER", "Done.", None),
     ("2.9", "FATHER", "Put it in the calendar.", None),
-    ("3.2", "ROBOT", "New meeting. Agenda: without him.", None),
+    ("3.2", "ROBOT", "New meeting. Agenda: without him.", "New meet-ing.|Agenda: without him."),   # v6: "meeting" was heard "miring"
     ("3.3", "DON", "Without who?", None),
-    ("3.4b", "ROBOT", "Calendar says... you'll see.", "Calendar says. You'll see."),     # v3 (23 Nov): nobody answers
+    ("3.4b", "ROBOT", "Calendar says... wait.", "Calendar says.||Wait."),   # v6 (24 Nov, Tomas: "you'll say"; decided "wait"): this voice says "see" as "say"
+    #     # v3 (23 Nov): nobody answers
     ("3.5b", "DON", "Pam?", None),
 ]
 LEAD, TAIL = 0.15, 0.20          # a line starts 0.15 s into its shot and leaves 0.20 s after it (v10: was 0.35)
 
 
+# v4 (24 Nov, Tomas: "after the Client's full stop there must be a small pause"; measured 0.05-0.11 s): a give with "|" is
+# voiced one sentence at a time and joined with this much silence; "||" is a longer stop (the robot's "...").
+STOP = dict(CLIENT=0.35, ROBOT=0.25, FATHER=0.30, DON=0.25)
+
+
+def _tight(a, keep=0.03):
+    """cut a part's own breath and room tail, so the joined silence is the pause we set (keep 30 ms)."""
+    w = int(0.01 * SR)
+    e = np.array([np.sqrt(np.mean(a[i:i + w] ** 2)) for i in range(0, max(1, len(a) - w), w)])
+    on = np.nonzero(e > e.max() * 0.04)[0]
+    if not len(on):
+        return a
+    k = int(keep * SR)
+    return a[max(0, on[0] * w - k):min(len(a), (on[-1] + 1) * w + k)]
+
+
+def _atempo(a, f):
+    import tempfile
+    d = tempfile.mkdtemp()
+    sf.write(d + "/i.wav", a.astype(np.float32), SR)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", d + "/i.wav", "-af", "atempo=%.3f" % f, d + "/o.wav"], check=True)
+    return sf.read(d + "/o.wav")[0].astype(np.float64)
+
+
 def take(who, txt):
+    if "|" in txt:
+        out = []
+        for part in txt.replace("||", "|~").split("|"):
+            gap = STOP.get(who, 0.3) * (2.0 if part.startswith("~") else 1.0)
+            part, _, tempo = part.partition("@")                          # "@1.3": this sentence 1.3x faster (atempo)
+            a = _tight(ob.trim(np.asarray(take(who, part.lstrip("~")), dtype=np.float64)))
+            if tempo:
+                a = _atempo(a, float(tempo))
+            if out:
+                out.append(np.zeros(int(gap * SR)))
+            out.append(a)
+        return np.concatenate(out)
     if who == "FATHER":
         return dv.father_line(txt)
     if who == "DON":

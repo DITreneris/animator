@@ -949,7 +949,108 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 
 Eight lessons about hands and two about phones (147–226) had become a diary of versions, some contradicting each other (222's "hand only" against 224's "the owner in the frame"). `docs/rules-hands-and-phones.md` keeps only what holds now, with the superseded lessons named. Read it before drawing a hand, a close-up arm or a phone screen; add to it, not only to this list, when a hand or a screen teaches something new.
 
-## 228. *Office Noir 2* v29–v42 (25 Nov): a raven at 0:00, the hands, the bar
+## 228. *The Offer* v40 (24 Nov): the repo's bubble, and a pause after a full stop
+
+- The shared `speech.py` bubble (beside the mouth, a 10-20 px tail) put the speaker beyond doubt where cold viewers had guessed ("Off the car.", "Put it in the calendar."), but at its defaults (26, 220 px) a line beside a centred face wrapped to 4-5 rows. Opt-in settings were added to `speech.py` (SIZE, MONO_SIZE, MAX_W, MONO_BOLD, SIGNS_FIRST; defaults unchanged, so other films rebuild byte-identical); The Offer uses 30 / 28 / 300 / bold robot / props first. A line that still needs more than 3 rows keeps the v39 bubble over the head (measured on a scratch surface first). The robot's bubble goes over its visor, never across the card. A prop the beat needs is `protect`ed so no bubble covers it (the calendar phone).
+- Kokoro runs a whole line's sentences together: 0.05-0.11 s at a full stop. Tomas: "after the Client's full stop, a small pause". Lines with more than one sentence are voiced one sentence at a time (`give` with "|"; "||" a longer stop; "@1.3" a faster sentence) and joined with silence: the Client 0.35 s, the robot 0.25 s, its "..." 0.5 s. Trim each part tight first, or its own breath adds 0.1-0.2 s. A sentence voiced alone comes out slower ("I ask." needed x1.3).
+- From 24 Nov, renders and mixes stay local (`.gitignore`); approved cuts are marked by a git tag (`uptimez-the-offer-v39`). Pushing a tag was refused by this environment's proxy: Tomas pushes tags.
+
+## 229. *The Offer* v41 (24 Nov): the room's light, contact shadows, and the cast alive (grill 24 Nov)
+
+- Light without redrawing: a grade over the whole frame under the bubbles (darker ceiling and corners, a warm pool where the lamp is, the floor darker toward us; weaker in the office) and a soft contact shadow under every standing figure (`of_scenes.grade`, `_contact_shadow`, switch `LIGHT`). None where the set already shadows him (under the car, on the creeper, bent in at the wing).
+- Blinks are irregular (2-6 s, one in seven a double) and come with a cut; a listener's eyes dart for 0.25-0.5 s every 1.5-3 s, a speaker's stay put (`of_cast.blink`, `dart`, switch `LIVE`).
+- A breath lifts the chest, shoulders and head, not the legs: the figure is drawn once into a group and painted in two parts about the belt. Keep the head point still for the camera and the bubble, or both swim with every breath.
+- The mouth leads the sound by 2 frames; the speaker's head dips up to 2 px on a stressed syllable (the take's loudness rising fast).
+- Secondary motion is a damped spring on the film's clock (`of_cast.follow`): Father's chain after his gesture, the coil after the guard's head, the throne's crown when Don jolts, the robot's antenna after its bob and turn, Pam's glasses chain when she lifts the phone. Each is an opt-in hook in its shared module (`dh_cast.CHAIN_DX`, `COIL_DX`, `dh_props.CROWN_ROT`, `waiter_kit.ANT_DX`, `pam_mf.GCHAIN_DX`), 0 by default: a still rendered with the hooks at 0 is md5-identical to one from the old modules.
+- "Eyes lead the head" has nothing to act on in this cast: the guards' eyes are behind sunglasses and Father, the Client, Don and Pam have no head turn of their own, only eyes.
+
+## 230. *The Offer* v42 (24 Nov, Tomas: "why does the robot say 'miting' and 'you'll say'? the engine hum is not real")
+
+- The line check passed words the ear rejects: the robot voice says "see" as "say" with or without the robot effect, and no spelling, phoneme string or neighbouring word fixed it (12 tries). `_match` is lenient to near-homophones, so G5 said 15 of 15. When a voice cannot say a word, change the word: "Calendar says... wait." Read the recognizer's own text for every line, not only the count.
+- "meeting" is voiced "meet-ing": alone the recognizer hears "meeting"; inside the whole line it still writes "Maitang", so Tomas's ear decides.
+- A synthetic idle (a filtered square wave) under a quiet gag reads as fake; the start that dies away in a second was better. Removed.
+- A line's text lives in three places: `of_scenes` (the shot), `of_voices.LINES`, and the timing json copied from the one before. Change all three.
+
+## 231. *The Offer* v43 (24 Nov): the roll-out and the sitting Client, after four audits and Tomas's frame-by-frame
+
+- **A missing in-between is a missing drawing, not a missing frame.** The film is 15 drawings a second, each computed; "he pops from lying to sitting" meant there were only two drawings of him (legs from above, sitting side on). Rotating one toward the other read as "pulled out and turned like a cut-out". Write the exposure sheet first (36 + 54 drawings, 14 key poses, which are new), then draw the keys.
+- **A 90 degree change of view is a cut.** Legs toward us to sitting side on: cut to a close on the boot and the fire (it also shows where the fire came from), then wide with him already rolling out side on, on the red creeper from the first frame.
+- **Separate the roll from the sit-up, and chain the parts:** push off, roll (ease-out), brake (the trunk slides on), elbow, palm, up, over and back; hips shift, the trunk through 45 and 60 degrees, the head two drawings late, the propping arm straightens last. A gesture starts in the shoulder a beat before the hand.
+- **A hand target closer to the shoulder than the arm is long folds the arm into a lump** ("a white bulge", "a fist stuck on"): the knee point was 12 px from the shoulder of a 64 px arm. No timing fixes geometry. Stop animating, get ONE static pose approved, then carry it through.
+- **One target path per hand for the whole shot.** Two targets switched in one drawing read as "the arm is replaced".
+- **A clip that hides him under the car must end when he is out** (the head was cut off at the sill line once he sat up). Check the frame after every state change, in the encoded test.
+- For the sitting pose only: the figure is drawn apart, the outlines inside the white shirt erased (`of_cast._no_seams`), the rig's hands not drawn and one-silhouette fists put at the rig's wrists (`fist2`), the waist knot tucked away. The rag is the red shop rag, drawn first with the fingers over its top. Other shots and episodes keep the series' hand.
+- Tomas's order of work, which got there: frame-by-frame PNG of the fault, an outside audit, the exposure sheet, key poses, one static pose approved, a motion test with sound, then the full render.
+
+## 232. *The Offer* v44 (24 Nov, Tomas at 0:08 and 0:20; cold test v43, 3 viewers)
+
+- A finger drawn AT the target while the arm stops short of it floats off the hand. A pointing finger grows from the hand the rig drew, toward the target, no longer than a finger.
+- A gesture that carries the line is `protect`ed, and that speaker's bubble goes over his head for the whole shot (`bubble_over`), so it does not change place as the hand comes up.
+- A cut away and back must not hide the move it was made for: after the close on the fire, the wide shot holds 0.2 s on the legs, THEN he rolls out in view (3 of 3 had read "he is already out").
+- A hand that reaches across its own body reads as "a forearm pasted on his belly" (3 of 3). The hand that already holds the thing acts: it draws back and tosses the rag, which flies in an arc onto the fire.
+- A walking figure stops beside the one he speaks to, not behind him.
+- G5's FAIL lines for a scene print after the scene's summary line: read the whole tail, not the last line.
+
+## 233. *The Offer* v45 (24 Nov, Tomas: "the lamp bothers me most", "that red rag makes me sick"; three outside audits)
+
+- A prop is a THING with parts, not a sign of one. The work lamp read as "a microphone on a hose": now a grey handle the fingers show on, an orange collar, a long cage with a shield along its back, a bulb that is visibly lit or dead, a hook at the tip, a cable half as thick (`of_set.lamp`, `lamp_cable`).
+- Light follows the lamp. The beam was tied to a fixed point; it now leaves the cage's open side along the lamp's angle and lands where that ray meets a surface. On a shut bonnet the pool is drawn after the car (`pool_late`).
+- A cable drops from the handle's end BEHIND the man who holds it (drawn before him), so it never crosses his arm, hand or legs; its belly lags the hand and settles after it (`cable_swing`).
+- A gag needs a different last picture than its first (three cold tests: "half landed"). Lit and pointing down; dead; turned up, looked into, below the chin so the face stays open; one wide shake; it hangs by his leg.
+- One prop, one drawing. The rag was three polygons in three reds in three places. One `client_of.shop_rag` (opt-in `NEW_RAG`, other films unchanged): a soft outline, two shaded folds, a hem stripe, the same three stains. Two of one prop in a frame is a continuity fault: the rag on the engine is gone.
+- A prop the same colour as what is behind it disappears: the creeper is dark grey now, as the set's.
+- A replace by slice (`s[:a] + new + s[b:]`) deletes everything between its anchors: it took out the one-hand-per-wrist hook, and only the frame's own check caught it. Replace exact strings, and read every check line of every still.
+- Moving a camera can cut a sign that was out of frame: test `box_state` for the new camera before posing in it.
+- A sheet of stills sent for an outside audit carries its labels IN the picture (shot, time, BEFORE / NOW). Twice an unlabelled sheet was read as one scene, and story props (the burnt plan) came back as defects.
+
+## 234. *The Offer* v46 (24 Nov, Tomas: "does the car's shadow move? Dad vanishes at 0:38? where do we save time?")
+
+- A shadow is ON THE FLOOR and under everything: the car's was a grey rectangle drawn over the wheels and the legs, in one scene only, and it stood still while the car rocked. Now one soft pool in `of_set.car`, drawn first, in every shot with the car; it slides with the tilt.
+- A character who is in one shot and gone in the next, same frame, has vanished. He stays in the cast of the shot after (2.8d) until we see him leave.
+- Trimming: the room is in silent shots and in SHORT lines' tails; the long lines were already 0.2 s from their cuts. Measure each take against its shot before promising seconds (3.2 s promised, 2.2 s found).
+- Before trimming a shot, read its motion and its sounds: actions and effects sit at fixed times inside it (a look at 0.45 s, a tick at 0.65 s, a ring 1.25 s long) and a shorter shot cuts them off. Re-key the action or leave the shot.
+- A trim can drop a line from the mix without touching it: "Pam?" stopped being heard when 3.3 lost 0.2 s. The sound is built and its lines checked BEFORE any scene renders; `tail` after a command hides its exit code, so do not chain renders on it.
+
+## 235. *The Offer* v47 (24 Nov, Tomas: "the bubble jumps in several places"; cold test, 3 viewers)
+
+- A bubble placed from the head on every drawing follows everything the head does: it flipped sides (1.4), shook with the frame's jolt (0.9), bobbed with a nodding robot and a walking man (3.2, 2.9), slid with a lean (2.4). Measure it: draw each frame with and without the bubble, and the box of what differs is the bubble (`/tmp/bub.py` in the session; 6 of 15 lines moved).
+- A bubble is placed ONCE per picture (one camera, one text), at the drawing 60 % into it, and laid over the frame after everything, so a camera jolt does not move it (`of_scenes.lock_bubble`, `of_film.lock_shot`, `shot_frame`). The gate: a bubble placed on the spot, or more than four placings in a shot, fails the render. 3 of 3 cold viewers: "no bubble moves within a held picture".
+- Not done, and said so: the tail is locked with the box (it does not follow the mouth), and a bubble still takes a new place after a cut inside a line (3 of 3 saw it at 0:18, 0:26, 0:34). Both need the box given from outside in `speech.py` and `fs_animatic.speech`.
+- A layer pasted onto a 2x surface needs the surface's device scale, or it lands twice as big and off the frame.
+- When no wall beside a mouth is free of the listener's face and the prop he holds, the line goes in two short rows over the speaker's head (`bubble_top`, `speech.TOP_FIRST`, opt-in), and the camera comes down a little to make the room.
+
+## 236. *The Offer* v48 (24 Nov, cold test v47 and four decisions)
+
+- Before blaming a trim, read what it cut: "the lamp is suddenly in his hand" (3 of 3) was put down to a 0.3 s trim, but that trim was in the cut-in after it; the handover itself had always been 0.7 s. It is 1.0 s now (out, TAKEN, carried), the cut-in 0.3 s shorter.
+- A line whose picture cuts in the middle keeps ONE place relative to its speaker and ONE wrapping: `of_scenes.BUBBLE_AT` puts the box by hand per camera, and its tail goes to the mouth drawn in that frame, so it follows him. Used where the automatic place failed (five lines); the other ten stay locked per picture.
+- Make the room for a bubble with the camera, not by shrinking the text: the medium inside two long lines pulled back (1.8 to 1.5) so the line sits over his head, the plan whole above it.
+- A prop that reads as a blob at its size is removed, not refined: the pocket rag ("a brick", 3 of 3) is gone; the rag exists only in his hand (`client_of.POCKET_RAG`, opt-out).
+- Close shots draw only their cast, so people "vanish" from them: the Client stays in Father's closes at the bay, and the second guard stands behind his boss in the wide. A man who would be a sliver at the frame's edge is left out of that shot's cast.
+- Build the sound and read ITS exit code before any scene renders (`cmd > log; echo $?`), then read each scene's whole tail.
+
+## 237. *The Offer*: "Off the car." is a decided exception (Tomas, 24 Nov: "for the hundredth time")
+
+- The Client says it from UNDER the car: no face, the bubble's tail lands on his hips in the dark under the sill. Cold viewers and audits will keep writing "unclear who speaks". It is canon and is not raised again: in a triage table it goes under "decided, stays", with no fix offered.
+- The same for the red rag (Tomas, 24 Nov: "we fixed it a hundred times, closed"): it stays as drawn in v48 (in his hand only, one shape). Viewers' notes on it go under "decided, stays".
+
+## 238. *The Offer* v49 (24 Nov, the last open points of cold test v47)
+
+- A prop that turns over in a gag reads as a shape change ("it flips through odd shapes", 3 of 3). The dead lamp is lifted and tipped, shaken once and let hang: one shape all the way.
+- A shot bound to its voice take cannot be trimmed; a static one is helped by a CUT in the take's own pause to whoever listens (found by measuring the silence in the wav). The line goes on over him in the speaker's own type, beside him, its tail pointing out of the frame toward the speaker; no name card over a story prop (the crown).
+- The reaction a later shot is built on is not spent in the cut-in before it: Don still smiles on "wait.", so the smile can go in one drawing in the next shot.
+- A turned head needs the bubble's tip given by hand too (`BUBBLE_AT[...]["tip"]`): under the car his mouth is beside the head's centre, not under it.
+- "Too fast" shots get their time back before anything else is polished: the review phone 1.7 s, the key 1.3 s, the fresh plan 2.55 s.
+
+## 239. *First Search* v38 (25 Nov): the gag comes first
+
+Audit of 0:00–0:01: the first joke (the portrait on Don's head) landed at 3.7 s, after an empty door, a walk and a dissolve; nothing was said or written before 0:05. v38 opens on the loop's own slam: it runs along the wall at frame 0, the nail pops, the portrait lands on him at 0.6 s with a BONK! card, and he smiles on with his hands up under it. Then a cut to the door and a cut back; the Client's slam knocks the portrait off his head onto its nail. The shot went from 4.25 s to 2.95 s; the film from 62.9 s to 61.6 s.
+
+- **The loop already held the cause.** The film ends on a slam; let the first frame be its effect.
+- **The gesture was chosen by silhouette** (rule 0.2): three black shapes (hands on the plaque, one hand up, both up), two cold viewers, both read the symmetric "ta-da" (C) as "proudly wearing it"; the one-hand variants read as steadying or stumbling.
+- **A moving hand needs its elbow chosen.** Two-bone IK that keeps the lower elbow folded both forearms across his belly on the way up; pick the elbow out to his side, and bypass the film's own pose tween (it re-eases every new tuple and crossed them again).
+- **Not done:** the closer framing (#4 of the audit), because v33's rule (the shredder's label above the bottom quarter) leaves no room.
+
+## 240. *Office Noir 2* v29–v42 (25 Nov): a raven at 0:00, the hands, the bar
 
 - **A hook that flies at the lens must first be seen whole.** The raven diving straight in was "a black slab", "a glitch", "crow, cat or coat?" in three tests. One drawing of the whole bird side on, wings open, black against the lamp's light, made 3 of 3 name a bird. The frames where the wing fills the lens still read as a smear; lit feather edges help, a red gap in them made it worse.
 - **A loop through the opening's actor:** the raven sits on the lamp in the last drawings and dives at 0:00; 3 of 3 tied the two together, so the seam is a continuation even though the frames differ.

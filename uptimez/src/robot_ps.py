@@ -26,9 +26,53 @@ STEEL, STEEL_D = (0.72, 0.74, 0.78), (0.50, 0.52, 0.56)
 S_OFFICE = 0.66                                            # 13's office scale (lesson 138), 95 % of Don
 
 
+PAD_THUMB = [True]                                          # opt-in off (3.4's gag): Don's own rig thumb presses the pad; a drawn-in
+                                                            # thumb as well is a second hand (one hand per wrist)
 HEART = [False]                                             # opt-in (ep 14 v4): the posted screen's heart drawn, not the missing glyph
 SUN_UP = [False]                                            # opt-in (ep 14 scenes, 24 Nov): the sun with an up-arrow beside it,
                                                             # "more light": two cold viewers read the plain sun as a gear
+
+
+def oil_can(k, x, y, s=1.0, ang=0.0, drop=True, label=True):
+    """The treat (ep 14, 5.3; Tomas, 25 Nov): a classic brass pump oiler, its base centred at (x, y): a squat drum, a dome,
+    a long thin spout curving away to screen-left with a black drop at its tip, a thumb lever and a loop handle on the
+    right. Office Noir 3's chrome can read as "a bucket, a mug, a bag" (0 of 2 cold viewers) at this size."""
+    c = k.c
+    BR, BR_D = (0.86, 0.62, 0.20), (0.62, 0.42, 0.12)
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    c.set_line_join(1); c.set_line_cap(1)
+    c.new_path(); c.arc(24, -16, 11, -1.4, 1.4)                                  # the loop handle
+    c.set_source_rgb(*INK); c.set_line_width(7.5); c.stroke_preserve(); c.set_source_rgb(*BR_D); c.set_line_width(3.6); c.stroke()
+    c.new_path(); c.move_to(-4, -40); c.curve_to(-22, -70, -52, -72, -70, -52)   # the spout
+    c.set_source_rgb(*INK); c.set_line_width(7.0); c.stroke_preserve(); c.set_source_rgb(*BR); c.set_line_width(3.4); c.stroke()
+    c.new_path(); c.move_to(-20, 0); c.line_to(20, 0); c.line_to(20, -24); c.curve_to(18, -40, -18, -40, -20, -24); c.close_path()
+    c.set_source_rgb(*BR); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()
+    if label:                                                # v2: two cold rounds read the bare can as "a bucket", "a handbag":
+        c.set_source_rgb(0.97, 0.95, 0.88); c.rectangle(-17, -24, 34, 19); c.fill_preserve()   # a paper label, OIL
+        c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+        c.select_font_face("Lilita One"); c.set_font_size(15)
+        e = c.text_extents("OIL"); c.move_to(-e.x_advance / 2, -9.5); c.show_text("OIL")
+    else:
+        c.set_source_rgb(*BR_D); c.set_line_width(2.0)
+        c.move_to(-19, -8); c.line_to(19, -8); c.stroke(); c.move_to(-19, -22); c.line_to(19, -22); c.stroke()
+    c.new_path(); c.move_to(2, -38); c.line_to(22, -50)                          # the thumb lever
+    c.set_source_rgb(*INK); c.set_line_width(6.0); c.stroke_preserve(); c.set_source_rgb(*BR_D); c.set_line_width(2.6); c.stroke()
+    if drop:                                                 # v2: a big drop
+        c.new_path(); c.move_to(-71, -52); c.curve_to(-60, -36, -62, -22, -72, -22); c.curve_to(-82, -22, -84, -36, -71, -52)
+        c.set_source_rgb(0.07, 0.06, 0.06); c.fill()
+    c.set_line_join(0); c.set_line_cap(0)
+    c.restore()
+    return (x + s * (-71 * math.cos(ang) + 40 * math.sin(ang)), y + s * (-71 * math.sin(ang) - 40 * math.cos(ang)))
+
+
+def hand_again(k, hx, hy, s):
+    """The robot's own hand once more, over what it holds (one hand, two passes: robot_mf does the same for the cuffs).
+    The rules page: draw the object, then the fingers over it."""
+    w = dq.rm.w
+    ellipse(k, hx, hy, 8 * s, 8 * s, w.ARM if hasattr(w, "ARM") else (0.6, 0.62, 0.66), 905, shadow=False, lw=1.6 * s)
+
+
+CAN_HANDLE = (24, -16)                                       # oil_can's loop handle, in its own units from its base
 
 
 def visor_icon(k, sx, sy, r, kind):
@@ -52,6 +96,11 @@ def visor_icon(k, sx, sy, r, kind):
             c.set_line_width(0.08 * r)
             c.move_to(ax, sy + 0.30 * r); c.line_to(ax, sy - 0.32 * r); c.stroke()
             c.move_to(ax - 0.14 * r, sy - 0.16 * r); c.line_to(ax, sy - 0.32 * r); c.line_to(ax + 0.14 * r, sy - 0.16 * r); c.stroke()
+    elif kind == "heart":                                    # opt-in (ep 14 gags, 25 Nov): 5.3, the oil can in its hand
+        c.new_path(); c.move_to(sx, sy + 0.42 * r)
+        c.curve_to(sx - 0.70 * r, sy - 0.05 * r, sx - 0.34 * r, sy - 0.56 * r, sx, sy - 0.18 * r)
+        c.curve_to(sx + 0.34 * r, sy - 0.56 * r, sx + 0.70 * r, sy - 0.05 * r, sx, sy + 0.42 * r)
+        c.close_path(); c.fill()
     elif kind == "barrier":
         w, h = 0.98 * r, 0.22 * r
         x0, y0 = sx - w / 2, sy - h / 2 + 0.08 * r
@@ -121,7 +170,8 @@ def phone_screen(k, x, y, s, kind="photo", seed=4700):
         else:                                                   # Don's thumb on it: green, ticked
             rect(k, -34, 58, 68, 26, (0.20, 0.68, 0.36), seed + 1, shadow=False, lw=1.6)
             c.set_source_rgb(1, 1, 1); c.set_line_width(3); c.move_to(-8, 71); c.line_to(-2, 77); c.line_to(10, 63); c.stroke()
-            cut(k, [(14, 104), (8, 74), (16, 64), (30, 66), (40, 104)], (0.93, 0.76, 0.62), lw=2)   # his thumb, from below
+            if PAD_THUMB[0]:
+                cut(k, [(14, 104), (8, 74), (16, 64), (30, 66), (40, 104)], (0.93, 0.76, 0.62), lw=2)   # his thumb, from below
             ellipse(k, 20, 70, 7, 5, (0.98, 0.90, 0.84), seed + 2, shadow=False, lw=1.2)
     else:
         c.set_source_rgb(0.15, 0.17, 0.25); c.select_font_face("Lilita One"); c.set_font_size(18)
@@ -166,7 +216,7 @@ def telescope(k, bx, by, s, u, angle=0.30, seed=4720):
     return bx + math.sin(angle) * L * s, by - math.cos(angle) * L * s
 
 
-def robot(k, x, feet, s=S_OFFICE, arms=None, tilt=0.0, visor=None, selfie=0.0, phone=None, turn=0.0, look=(0, 0)):
+def robot(k, x, feet, s=S_OFFICE, arms=None, tilt=0.0, visor=None, selfie=0.0, phone=None, turn=0.0, look=(0, 0), tele=None, phone_s=0.34):
     """arms: ((upper, fore) screen-left, (upper, fore) screen-right) in kit angles (0 down, +90 right); tilt: radians it
     leans about its wheel (balancing); visor: None (its smile) or an icon; selfie: 0..1 the telescope out of its
     screen-right hand; phone: the phone's screen at the tip ("photo", "public", "posted", or None for its back)."""
@@ -179,9 +229,9 @@ def robot(k, x, feet, s=S_OFFICE, arms=None, tilt=0.0, visor=None, selfie=0.0, p
         visor_icon(k, *o["screen"], r, visor)
     if selfie > 0:
         hx, hy = o["hands"][1]
-        tx, ty = telescope(k, hx, hy, s, selfie)
+        tx, ty = telescope(k, hx, hy, s, selfie) if tele is None else telescope(k, hx, hy, s, selfie, angle=tele)   # tele: opt-in lean
         if phone:
-            phone_screen(k, tx, ty - 30 * s, s * 0.34, phone)
+            phone_screen(k, tx, ty - 30 * s, s * phone_s, phone)   # phone_s: opt-in size (3.4's gag: it must read at feed size)
             o["phone"] = (tx, ty - 30 * s)
         else:
             o["phone"] = phone_back(k, tx, ty - 30 * s, s * 0.40)           # the lens, angled down at the group

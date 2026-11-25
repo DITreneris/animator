@@ -27,11 +27,11 @@
  "1.4": {
   "who": "CLIENT",
   "text": "Burn them. Your son loses his only customer.",
-  "len": 3.11,
+  "len": 3.26,
   "asr": [
-   "Burn them, your son loses his only customer.",
-   "Burn them, your son loses his only customer.",
-   "Burn them, your son loses his only customer."
+   "Burn them. Your son loses his only customer.",
+   "Burn them. Your son loses his only customer.",
+   "Burn them. Your son loses his only customer."
   ],
   "ok": 3
  },
@@ -93,11 +93,11 @@
  "2.8b": {
   "who": "CLIENT",
   "text": "One month. I ask. She finds it.",
-  "len": 1.99,
+  "len": 2.92,
   "asr": [
-   "One month I ask she finds it.",
-   "One month I ask she finds it.",
-   "One month I ask she finds it."
+   "One month, I ask, she finds it.",
+   "One month, I ask, she finds it.",
+   "One month, I ask, she finds it."
   ],
   "ok": 3
  },
@@ -129,11 +129,11 @@
  "3.2": {
   "who": "ROBOT",
   "text": "New meeting. Agenda: without him.",
-  "len": 1.82,
+  "len": 2.33,
   "asr": [
-   "New meeting, agenda without him.",
-   "New meeting, agenda without him.",
-   "New meeting, agenda without him."
+   "New Maitang, agenda without him.",
+   "New Maitang, agenda without him.",
+   "New Maitang, agenda without him."
   ],
   "ok": 3
  },
@@ -150,12 +150,12 @@
  },
  "3.4b": {
   "who": "ROBOT",
-  "text": "Calendar says... you'll see.",
-  "len": 1.28,
+  "text": "Calendar says... wait.",
+  "len": 1.88,
   "asr": [
-   "Calendar says you'll see.",
-   "Calendar says you'll see.",
-   "calendar says you'll see."
+   "Calendar says wait.",
+   "Calendar says wait.",
+   "calendar says wait."
   ],
   "ok": 3
  },

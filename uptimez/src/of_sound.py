@@ -175,7 +175,7 @@ def room(total):
 
 # --- the mix ----------------------------------------------------------------------------------------------------------
 def timing():
-    d = json.load(open(os.path.join(OUT, "of_timing_v17.json")))
+    d = json.load(open(os.path.join(OUT, "of_timing_v24.json")))
     return {s["shot"]: s for s in d["shots"]}, d["total"]
 
 
@@ -266,10 +266,7 @@ def mix():
     put(fxb, car_door(), E("4.1") - 0.30, 0.45)
     put(fxb, pull_away(1.6), T("4.2"), 0.45)
     # v15 (24 Nov, the music check, decided): the new gags and shots get their sounds
-    idle0 = T("2.8e") + 0.40 + 1.45                                        # the engine RUNS on, low, until the office cut
-    idl = engine(T("3.0") - idle0, 780, 780, rough=0.15)
-    k = int(0.25 * SR); idl[:k] *= np.linspace(0, 1, k); idl[-int(0.05 * SR):] *= np.linspace(1, 0, int(0.05 * SR))
-    put(fxb, idl, idle0, 0.11)
+    # v20 (24 Nov, Tomas: "the engine's hum is not real, it was better before"): no synthetic idle after the start
     for a_, b_ in ((0.35, 0.40), (0.47, 0.52)):                            # the lamp: buzz, buzz, tick, dark (of_film.s28f v5)
         put(fxb, lamp_buzz(b_ - a_), T("2.8f") + a_, 0.30)
     put(fxb, lamp_tick(), T("2.8f") + 0.60, 0.55)
@@ -337,7 +334,7 @@ def master(a, target=-14.0, tp=-2.6):          # AAC adds about 0.9 dB
     stays under tp (lessons: the AAC overshoot is checked on the final file too)."""
     from scipy.signal import resample_poly
     from scipy.ndimage import minimum_filter1d
-    path = os.path.join(OUT, "of_sound_v18.wav")
+    path = os.path.join(OUT, "of_sound_v25.wav")
     g = 1.0
     x = a / (np.abs(a).max() + 1e-9) * 0.5
     for _ in range(6):
@@ -362,7 +359,7 @@ def check(lines, path=None, out=None):
     path: another mix to check (the rough cut's decoded AAC); out: where the json goes."""
     import of_voices as ov
     import sound_fs as sfs
-    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v18.wav"))
+    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v25.wav"))
     if a.ndim > 1:
         a = a.mean(axis=1)
     r = ov.recognizer()
@@ -389,7 +386,7 @@ def check(lines, path=None, out=None):
         prev = (t0, line.split(":", 1)[1] if ":" in line else line)
         res[sid] = dict(line=line, heard=heard, ok=ok)
         print("%-5s %d/3  %-48s | %s" % (sid, ok, line[:48], heard[0]), flush=True)
-    json.dump(res, open(out or os.path.join(OUT, "of_sound_v18_check.json"), "w"), indent=1)
+    json.dump(res, open(out or os.path.join(OUT, "of_sound_v25_check.json"), "w"), indent=1)
     return res
 
 
@@ -402,7 +399,7 @@ def levels(path):
 if __name__ == "__main__":
     a, lines, total = mix()
     master(a)
-    I, P = levels(os.path.join(OUT, "of_sound_v18.wav"))
+    I, P = levels(os.path.join(OUT, "of_sound_v25.wav"))
     print("master: %.1f s, %.1f LUFS, true peak %.1f dBTP" % (total, I, P))
     res = check(lines)
     KNOWN = {"2.6": "\"And then?\" is heard \"On then\" in 2 of 3 windows in the mix (1 of 3 dry at stop 2 without context): "

@@ -61,10 +61,26 @@ def robot_palm(c, x, y, ang, s):
 
 def ai_arm(c, sh, tgt, end='fist', L=ARM):
     e, h = P.ik(sh, tgt, L, L, P.DOWN)
-    limb(c, [sh, e, h], 24 * AS, WHITE); ell(c, e[0], e[1], 13, 13); fs(c, GREY, 5)
+    limb(c, [sh, e, h], 24 * AS, WHITE)
     if end == 'fist': ell(c, h[0], h[1], 22, 22); fs(c, WHITE, 6)
     else: robot_palm(c, h[0], h[1], math.atan2(h[1] - e[1], h[0] - e[0]), AS * .9)
     return h
+
+class bent_legs:
+    """v6: MY AI's knees bend by d (rig units): a crouch on the ground (the body is lowered by the caller) or a tuck in the air."""
+    def __init__(self, d): self.d = d
+    def __enter__(self):
+        self.old = A.limb; d = self.d
+        def lb(c_, pts, *a):
+            if d > .5 and len(pts) == 2 and pts[0][1] == 205 and pts[1][1] == 280:
+                q = 1 if pts[0][0] > 0 else -1; pts = [pts[0], (pts[0][0] + q * .55 * d, 243 - d * .5), (pts[1][0], 280 - d)]
+            return self.old(c_, pts, *a)
+        A.limb = lb
+    def __exit__(self, *e): A.limb = self.old
+
+def jump(t):
+    """v6: a ballistic hop floor -> desk, t 18..28 (it floated on an eased curve for 14 frames). Returns x, gy, u."""
+    u = cl((t - 18) / 10); return lerp(520, AIX, u), lerp(FLOOR, DESK_Y, u) - 4 * 170 * u * (1 - u), u
 
 def myai_at(c, f, x, gy, left='down', eye='happy', look=(18, 0), rot=0.0, typing=True, squash=1.0, legs=True):
     right = 'down'
@@ -91,6 +107,16 @@ def speed(c, x0, y0, x1, y1, n=3, a=.45):
 def dust(c, x, f, n=3):
     for i in range(n):
         ell(c, x - i * 28 + 6 * math.sin(f + i), FLOOR - 14 - i * 7, 16 - i * 3, 9 - i * 2); c.set_source_rgba(.6, .55, .5, .75); c.fill()
+
+def floor_arms(c, sh, u=1.0):
+    """v4: his arms when he is thrown and sits on the floor (he was drawn with none). u<1 tumbling: up, flailing; 1: resting."""
+    shL, shR = sh[0], sh[1]
+    if u < 1:
+        P.hoody_arm(c, shL, (shL[0] - 110, shL[1] - 80), HS, pref=P.DOWN, hand='palm')
+        P.hoody_arm(c, shR, (shR[0] + 120, shR[1] - 60), HS, pref=P.DOWN, hand='palm')
+    else:
+        P.hoody_arm(c, shL, (shL[0] - 70, shL[1] + 205), HS, pref=P.LEFT, hand='ball')     # propped on the floor behind him
+        P.hoody_arm(c, shR, (shR[0] + 95, shR[1] + 150), HS, pref=P.DOWN, hand='ball')     # limp on his thigh
 
 def hoody_jersey(c, x, gy, k, sway=0.0, f=0):
     """Hockey move. k 0..1 is how far MY AI has pulled the front hem up: belly (0) -> chest, the white tee shows (.45)
@@ -122,7 +148,7 @@ def hoody_jersey(c, x, gy, k, sway=0.0, f=0):
     for q in (-1, 1):                                                     # his arms, dragged up in the sleeves
         sh = (x + q * 92 * s, neck[1] + 5 * s)
         hd = (x + q * lerp(125, 112, k) * s, lerp(neck[1] + 250 * s, neck[1] - 230 * s, io(k)))
-        e, h = P.ik(sh, hd, 118 * s, 112 * s, P.DOWN if k < .5 else (P.LEFT if q < 0 else P.RIGHT))
+        e, h = P.ik(sh, hd, 118 * s, 112 * s, P.LEFT if q < 0 else P.RIGHT)      # v3: elbows always outward (DOWN crossed the arms into an X)
         limb(c, [sh, e, h], 44 * s, NAVY); K.hand(c, h[0] + 6 * math.sin(f * .9 + q) * k, h[1], s)
     c.restore()
     return neck, (x + 70 * s, F + 10 * s)
@@ -173,37 +199,58 @@ def frame(f, cnt=None, tick=None, cam=None, extra=None, overlay=None, bar=True):
     if g < B2:                                                             # 1 THE SHOVE
         t = g
         cx = 270 if t < 10 else lerp(270, CHX - 20, oe((t - 10) / 14))
-        tilt = -.16 * cl((t - 9) / 3) * (1 - cl((t - 22) / 8))
+        tilt = -.16 * cl((t - 9) / 3) * (1 - cl((t - 22) / 8)) - .05 * math.sin(math.pi * cl((t - 26) / 6))      # v6: he flinches back once more as it lands
         P.chair(c, cx, P.SEAT_Y, rot=tilt, spin=max(0, t - 10) * .3)
         shL, shR, head = P.hoody_seated(c, cx, P.SEAT_Y, 'smug' if t < 9 else 'shock', rot=tilt)
         if t < 9:                                                         # frame 0's pose: the hand that held the card out, the finger up
             P.hoody_arm(c, shR, (P.HAND_OFF[0] - 70, P.HAND_OFF[1] + 10), HS, pref=P.DOWN, hand='grip')
             P.hoody_arm(c, shL, (shL[0] - 95, shL[1] - 190), HS, pref=P.LEFT, hand='point', ang=-math.pi / 2 - .15)
         else:                                                             # pushed back: both arms fly forward
-            fl = 20 * math.sin(t * 1.3)
-            P.hoody_arm(c, shL, (shL[0] + 120, shL[1] - 60 + fl), HS, pref=P.UP, hand='palm')
-            P.hoody_arm(c, shR, (shR[0] + 150, shR[1] - 20 - fl), HS, pref=P.UP, hand='palm')
+            fl = 14 * math.sin(t * .7)                                    # v5: a slower flinch (it jittered, then froze)
+            P.hoody_arm(c, shL, (shL[0] + 120, shL[1] - 20 + fl), HS, pref=P.DOWN, hand='palm')      # v5: under his chin, not over his mouth
+            P.hoody_arm(c, shR, (shR[0] + 150, shR[1] - 20 - fl), HS, pref=P.DOWN, hand='palm')      # v4: elbows DOWN (UP pointed both elbows at the ceiling: anatomy)
         if 10 <= t < 24: speed(c, cx + 300, P.SEAT_Y - 170, cx + 150, P.SEAT_Y - 170)
-        if t < 18:
-            x = lerp(P.STAND_X, 520, oe(t / 8)); gy = FLOOR
+        if t < 21:                                                        # v5 (audit 3): one arm system through the push AND the take-off
+            if t < 18: x = lerp(P.STAND_X, 520, oe(t / 8)); gy = FLOOR
+            else: x, gy, u = jump(t)
             chest = ((shL[0] + shR[0]) / 2 + 60, (shL[1] + shR[1]) / 2 + 80)
+            back = io((t - 11) / 9)                                       # after the hit the arms come home: target AND length ease (they teleported at 32->33)
+            tap = 10 * math.sin(f * 2.3)
+            home = {-1: A.hand_at(x, gy, AS, -1, 'down'),
+                    1: A.hand_at(x, gy, AS, 1, P.ai_pose(1, P.ai_local(x, gy, AS, (KEY[0] + tap, KEY[1] - abs(tap))), P.DOWN))}
+            Lb = lerp(130, A.L1 * AS, back)                               # the reach of the push shrinks back to the rig's own arm (31-32 read too long)
             palms = []
             def push_arm(q, dy):
                 sh = (x + q * 72 * AS, gy - 280 * AS + 112 * AS)
                 if t < 5: tgt = (sh[0] + 50 + 30 * io(t / 5), sh[1] + 60)                     # wind-up: palms drawn back
                 elif t < 8: tgt = (lerp(sh[0] + 80, chest[0], io((t - 5) / 3)), lerp(sh[1] + 60, chest[1] + dy, io((t - 5) / 3)))
-                else: tgt = (chest[0] + (0 if t < 14 else -60), chest[1] + dy)
-                e, h = P.ik(sh, tgt, 130, 130, P.DOWN); limb(c, [sh, e, h], 24 * AS, WHITE); ell(c, *e, 13, 13); fs(c, GREY, 5)
-                robot_palm(c, h[0], h[1], math.atan2(h[1] - e[1], h[0] - e[0]), AS * .9); palms.append(h)
+                else: tgt = (lerp(chest[0], home[q][0], back), lerp(chest[1] + dy, home[q][1], back))
+                e, h = P.ik(sh, tgt, Lb, Lb, P.DOWN); limb(c, [sh, e, h], 24 * AS, WHITE)
+                if back > .05: ell(c, h[0], h[1], 21 * AS * min(1, .6 + back), 21 * AS * min(1, .6 + back)); fs(c, WHITE, 6)      # v6: the palm closes into the fist, no swap
+                if back < .9: robot_palm(c, h[0], h[1], math.atan2(h[1] - e[1], h[0] - e[0]), AS * .9 * (1 - back))
+                palms.append(h)
+            k = math.sin(math.pi * cl((t - 12) / 7) ** 1.6) if t < 18 else 0       # v6 anticipation: the knees bend and the body sinks (deepest just before take-off)...
+            dn = (30 * k if t < 18 else 20 * math.sin(math.pi * u))          # ...and the legs tuck in the air
+            sq = 1 - .06 * k if t < 18 else 1 + .05 * math.sin(math.pi * cl((t - 18) / 3))      # body squash 6 % at most (13 % made the head rubber)
+            if t >= 18:                                                   # a soft shadow that stays on the floor and thins as it rises
+                hgt = cl((FLOOR - gy) / 300); ell(c, x, FLOOR + 6, 120 * (1 - .5 * hgt), 20 * (1 - .5 * hgt)); c.set_source_rgba(0, 0, 0, .22 * (1 - .7 * hgt)); c.fill()
+            c.save(); c.translate(x, gy); c.scale(1 / math.sqrt(sq), sq); c.translate(-x, -gy)
+            if t < 18: c.translate(0, dn * AS); gy0 = gy
             push_arm(1, 40)                                                # far arm behind the body
             LAST['ai'] = c.user_to_device(x, gy - 280 * AS)
-            A.myai(c, x, gy, AS, eye='happy', look=(18, 0), rot=(.12 if t < 5 else -.22) if t < 16 else -.06, arms=(None, None))
+            with bent_legs(dn): A.myai(c, x, gy, AS, eye='happy', look=(18, 0), rot=((.12 if t < 5 else -.22) if t < 16 else -.06) if t < 18 else 0, arms=(None, None))
             push_arm(-1, -40)                                              # near arm in front
+            c.restore()
             if 8 <= t < 11:
                 for h in palms: burst(c, h[0] - 20, h[1], 80, 8)
         else:
-            u = io((t - 18) / 14); x = lerp(520, AIX, u); gy = lerp(FLOOR, DESK_Y, u) - math.sin(math.pi * u) * 200
-            myai_at(c, f, x, gy)
+            x, gy, u = jump(t)
+            hgt = cl((FLOOR - gy) / 300)
+            if u < .45: ell(c, x, FLOOR + 6, 120 * (1 - .5 * hgt), 20 * (1 - .5 * hgt)); c.set_source_rgba(0, 0, 0, .22 * (1 - .7 * hgt)); c.fill()
+            ld = math.sin(math.pi * cl((t - 28) / 5))                     # v6 landing: both feet on the desk, the knees give, it comes back up
+            c.save(); c.translate(0, 22 * ld * AS if u >= 1 else 0)
+            with bent_legs(22 * ld if u >= 1 else 20 * math.sin(math.pi * u)): myai_at(c, f, x, gy, squash=1 - .05 * ld)
+            c.restore()
 
     elif g < B3:                                                           # 2 THE WHIFF: he swings, it ducks, his fist hits the wall chart
         t = g - B2; tb = BONK - B2
@@ -245,7 +292,7 @@ def frame(f, cnt=None, tick=None, cam=None, extra=None, overlay=None, bar=True):
         a_ = t * 1.1
         for q, sh, ph in ((-1, shL, 0), (1, shR, math.pi)):               # both fists windmilling, short of the robot
             tgt = (sh[0] + 40 + 55 * math.cos(a_ + ph), sh[1] - 10 + 75 * math.sin(a_ + ph))
-            P.hoody_arm(c, sh, tgt, HS, pref=P.LEFT if q < 0 else P.DOWN, hand='grip')
+            P.hoody_arm(c, sh, tgt, HS, pref=P.DOWN, hand='grip')      # v3: both elbows down (LEFT made the far arm a fin behind his head)
         for i in range(2): c.arc(shR[0] + 40, shR[1] - 10, 90 + i * 22, -.6, 1.6); c.set_source_rgba(*INK, .35); c.set_line_width(5); c.stroke()
         myai_at(c, f, AIX, DESK_Y, left=None)
         fh = (head[0] + 85, head[1] - 10)
@@ -303,7 +350,7 @@ def frame(f, cnt=None, tick=None, cam=None, extra=None, overlay=None, bar=True):
             P.hoody_arm(c, shR, (shR[0] + 50, shR[1] - 180), HS, pref=P.RIGHT, hand='palm')
             ft = (hip[0] - 10, hip[1] + 90)
         myai_at(c, f, AIX, DESK_Y, legs=False)
-        e, h = P.ik(hip, ft, 70 * AS, 70 * AS, P.UP); limb(c, [hip, e, h], 34 * AS, WHITE); ell(c, *e, 14, 14); fs(c, GREY, 5)
+        e, h = P.ik(hip, ft, 70 * AS, 70 * AS, P.UP); limb(c, [hip, e, h], 34 * AS, WHITE)
         c.save(); c.translate(*h); c.rotate(math.atan2(h[1] - e[1], h[0] - e[0])); rr(c, -26, -28, 74, 56, 22); fs(c, WHITE, 7); c.restore()
 
     elif g < BEND:                                                         # 6 THE DROPKICK
@@ -324,8 +371,8 @@ def frame(f, cnt=None, tick=None, cam=None, extra=None, overlay=None, bar=True):
             if t < w0 + 5: burst(c, 110, P.SEAT_Y - 230, 140, 12, WHITE, 12)
             px = lerp(170, 215, oe(u)); py = lerp(P.SEAT_Y, FLOOR - 10, u * u) - 70 * math.sin(math.pi * min(1, u * 1.4))
             c.save(); c.translate(px, py); c.rotate(-.45 * (1 - u) + .08 * math.sin(math.pi * u))
-            if u < 1: P.hoody_seated(c, 0, 0, 'shock', legs=((150, -90 * (1 - u) - 10), (280, -60 * (1 - u))))
-            else: P.hoody_seated(c, 0, 0, 'dizzy', legs=((170, -10), (300, 0)))
+            if u < 1: floor_arms(c, P.hoody_seated(c, 0, 0, 'shock', legs=((150, -90 * (1 - u) - 10), (280, -60 * (1 - u)))), u)
+            else: floor_arms(c, P.hoody_seated(c, 0, 0, 'dizzy', legs=((170, -10), (300, 0))))
             c.restore()
             if w0 + 9 <= t < w0 + 15: dust(c, 260, f, 4)
         seat = (CHX + 95, P.SEAT_Y - 10)
@@ -353,7 +400,7 @@ def frame(f, cnt=None, tick=None, cam=None, extra=None, overlay=None, bar=True):
         t = g - BEND
         P.chair(c, 360, P.SEAT_Y)
         c.save(); c.translate(215, FLOOR - 10)
-        P.hoody_seated(c, 0, 0, 'shock' if 6 <= t < 14 else 'dizzy', legs=((170, -10), (300, 0)))
+        floor_arms(c, P.hoody_seated(c, 0, 0, 'shock' if 6 <= t < 14 else 'dizzy', legs=((170, -10), (300, 0))))
         c.restore()
         for i in range(3):
             a = f * .3 + i * 2.1; ell(c, 230 + 75 * math.cos(a), FLOOR - 540 + 18 * math.sin(a), 14, 14); c.set_source_rgb(*YEL); c.fill()

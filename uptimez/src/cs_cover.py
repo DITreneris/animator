@@ -61,6 +61,49 @@ def build(shot, d, out):
     s.write_to_png(out)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and sys.argv[1:2] != ["v2"]:
     a = sys.argv[1:]
     build(a[0] if a else "4.4", int(a[1]) if len(a) > 1 else 30, a[2] if len(a) > 2 else "../customer-success/one_star_cover_v1.png")
+
+
+# ---- v2 (One Star v17, Tomas 25 Nov /grill-me: "a new cover with the big ★ 1/5") -------------------------------------------
+# The opening's frame: Don's shock, the robot's visor showing the post's ★ 1/5. Below a dark band with the title and the
+# film's own story mark (one big gold star and 1/5, as on the visor and the flying phone), the frame moved down so his
+# face and the visor stay clear of the title.
+
+def _star(c, cx, cy, r, fill):
+    import math
+    c.new_path()
+    for j in range(10):
+        a = -math.pi / 2 + j * math.pi / 5; rr = r if j % 2 == 0 else r * 0.45
+        c.line_to(cx + rr * math.cos(a), cy + rr * math.sin(a))
+    c.close_path()
+    c.set_source_rgb(*fill); c.fill_preserve()
+    c.set_source_rgb(0.12, 0.10, 0.08); c.set_line_width(6); c.stroke()
+
+
+def build_v2(shot="1.1", d=10, out="../customer-success/one_star_cover_v2.png", band=470):
+    import cs_film_v15 as v15
+    v15.setup(); s1.HI[0] = 2
+    fr = frame(shot, d)
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 1080, 1920); c = cairo.Context(s)
+    c.save(); c.scale(2, 2); c.set_source_surface(fr, 0, 0); c.paint(); c.restore()       # (its device scale is 2: lesson 162)
+    g = cairo.LinearGradient(0, band - 60, 0, band + 70)                         # the band over the empty wall, fading out
+    g.add_color_stop_rgba(0, 0.08, 0.09, 0.11, 1.0); g.add_color_stop_rgba(1, 0.08, 0.09, 0.11, 0.0)
+    c.set_source_rgb(0.08, 0.09, 0.11); c.rectangle(0, 0, 1080, band - 60); c.fill()
+    c.set_source(g); c.rectangle(0, band - 60, 1080, 130); c.fill()
+    c.select_font_face("Inter", 0, 1)
+    c.set_font_size(150); e = c.text_extents("ONE STAR")
+    x = (1080 - e.x_advance) / 2; y = 200
+    c.set_source_rgba(0, 0, 0, 0.55); c.move_to(x + 6, y + 6); c.show_text("ONE STAR")
+    c.set_source_rgb(1, 1, 1); c.move_to(x, y); c.show_text("ONE STAR")
+    c.set_font_size(120); e = c.text_extents("1/5")                              # the film's mark: one big gold star, 1/5
+    r = 70; gap = 26; wtot = 2 * r + gap + e.x_advance; x0 = (1080 - wtot) / 2
+    _star(c, x0 + r, 318, r, (1.0, 0.72, 0.10))
+    c.set_source_rgb(1, 1, 1); c.move_to(x0 + 2 * r + gap, 318 + 44); c.show_text("1/5")
+    c.set_font_size(36); t = "UptimeZ Inc. · episode 11"; e = c.text_extents(t)
+    c.set_source_rgb(0.80, 0.83, 0.88); c.move_to((1080 - e.x_advance) / 2, 440); c.show_text(t)
+    s.write_to_png(out)
+
+if __name__ == "__main__" and sys.argv[1:2] == ["v2"]:
+    build_v2()

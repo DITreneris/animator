@@ -63,7 +63,7 @@ def hoody(c, x, expr, side=-1, bow=0.0, gaze=0, bob=0.0, rot=0.0, sh=True):
     return [tr(p) for p in r]
 def crate0(c, x0=CX, **k): return B.crate(c, x0, FLOOR, slot=True, slot_x=50, **{'lid': 1, **k})
 def mug_arm(c, shL):                                                     # coffee in his screen-left hand, in every shot he holds it
-    P.hoody_arm(c, shL, (shL[0] - 40, shL[1] + 180), HS, pref=P.LEFT, hand='grip'); P.mug(c, shL[0] - 46, shL[1] + 250, 1.1)
+    P.hoody_arm(c, shL, (shL[0] + 25, shL[1] + 125), HS, pref=P.DOWN, hand='grip'); P.mug(c, shL[0] + 19, shL[1] + 195, 1.1)      # v4: at his chest (at his hip it covered MY AI's face in frame 0)
 
 # ---------------- the list: a sheet the copies tape to the wall (B); its last box is ticked in E; the sprint blows it away
 LIST = (66, 700, 330, 380)
@@ -115,7 +115,7 @@ def shot_A(c, t):
         back = io((t - P0 - 7) / 20)                                         # "Huh?!": he turns and backs off to the right
         hop = 8 * io((t - P0) / 3) * (1 - io((t - P0 - 5) / 6)) + (7 * abs(math.sin((t - P0 - 9) * .8)) if P0 + 9 <= t < P0 + 27 else 0)
         shL, shR, head = hoody(c, lerp(H0X, 860, back), 'shock', side=-1, gaze=-12, bob=hop)
-        u = io((t - P0) / 5); P.hoody_arm(c, shR, (lerp(shR[0] + 150, shR[0] + 90, u), lerp(shR[1] - 260, shR[1] + 130, u)), HS, pref=P.RIGHT, hand='palm')
+        u = io((t - P0) / 5); P.hoody_arm(c, shR, (lerp(shR[0] + 150, shR[0] + 60, u), lerp(shR[1] - 260, shR[1] + 180, u)), HS, pref=P.RIGHT, hand='palm' if u < .5 else 'grip')      # v3: the arm drops to his hip (it hung with a limp open palm: a claw)
         mug_arm(c, shL)
     if P0 <= t < P0 + 25: word(c, 'POP!', 215, 960 - 6 * math.sin(t), 90 + 10 * (1 - cl((t - P0) / 4)), -.12)
     if t < P0 + 6: bubble(c, ['REMOVE THE', 'BOTTLENECK.'], (min(head[0] - 30, 480), head[1] - 205), 330, 482)
@@ -137,7 +137,9 @@ def shot_B(c, t):
     shL, shR, head = hoody(c, 860, 'smug' if t < 41 else 'calm', side=-1, gaze=-10 if t < 41 else 10, bob=5 * abs(math.sin(t * .45)) * turn)   # "mm-hmm": rocking on his heels
     P.hoody_arm(c, shR, (shR[0] + 60, shR[1] + 180), HS, pref=P.RIGHT, hand='grip')
     mh = (lerp(shL[0] - 40, head[0] - 70, sip), lerp(shL[1] + 180, head[1] + 110, sip))
-    P.hoody_arm(c, shL, mh, HS, pref=P.LEFT, hand='grip'); P.mug(c, mh[0] - 6, mh[1] + 70, 1.1)
+    eL, hh = P.ik(shL, mh, 118 * HS, 112 * HS, P.LEFT); eD, _ = P.ik(shL, mh, 118 * HS, 112 * HS, P.DOWN); ub = io(sip * 2)
+    eb = (lerp(eL[0], eD[0], ub), lerp(eL[1], eD[1], ub))             # v3: akimbo at rest, elbow DOWN for the sip (LEFT put it over his shoulder: a fin)
+    limb(c, [shL, eb, hh], 44 * HS, NAVY); P.grip(c, hh[0], hh[1], math.atan2(hh[1] - eb[1], hh[0] - eb[0]), HS); P.mug(c, mh[0] - 6, mh[1] + 70, 1.1)
 
 # ---------------- C and D: the tailors, the yank, the crate ----------------
 HX0 = 520
@@ -148,7 +150,7 @@ def tailors(c, t, d=-1):
     crate0(c, lerp(CX, CL, oe(t / 12)) if d < 0 else CL)
     yank = io(d / 5) if d >= 0 else 0.0
     xd, gd = 935, FLOOR + 10                                             # the spec sheet (a crate to his size), glasses on
-    bot(c, xd, gd, eye='happy', look=(-8, 10), arms=('hold', 'hold2'))
+    bot(c, xd, gd, eye='happy', look=(-8, 10), arms=('hold', 'hold'))      # v4: both hands on the notebook ('hold2' stuck an arm out to the frame edge)
     T.glasses(c, xd, gd, s); T.tape_neck(c, xd, gd, s); T.notebook(c, xd - 8, gd - 228 + 4 * math.sin(t * 1.3), 1.0)
     x1, g1 = 150, FLOOR; x2, g2 = 150, FLOOR - 375 * s                   # one stands on the other's head, to hold the ruler up
     ankle = (HX0 - 40, FLOOR - 40); crotch = (HX0 - 8, FLOOR - 360)
@@ -158,9 +160,12 @@ def tailors(c, t, d=-1):
     pb = P.ai_pose(1, P.ai_local(x2, g2, s, (rx - 6, g2 - 330 * KC)), P.UP)
     bot(c, x2, g2, sh=False, eye='happy', look=(16, -14), rot=.04 + .03 * math.sin(t * .4), arms=('down', pb)); T.tape_neck(c, x2, g2, s)
     mh = A.hand_at(x2, g2, s, -1, 'down'); P.mug(c, max(mh[0], 44), mh[1] + 62, 1.1)                       # "let me hold that for you"
-    rot = -1.0 * oe((d - 4) / 10) if d >= 0 else 0.0                     # over backwards
+    rot = -.6 * oe((d - 4) / 10) if d >= 0 else 0.0                      # over backwards; v4: -.6, his face stays in frame (at -1.0 only a dark torso was left)
+    if d >= 0:                                                            # v4: as he goes over, the ruler stays where it stood, BEHIND him (it crossed his face)
+        _c = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)); _h = hoody(_c, HX0, 'smug', side=1, bob=4 * math.sin(t * .3))[2]
+        T.ruler(c, rx, _h[1] - 250, FLOOR - 10)
     shL, shR, head = hoody(c, HX0, 'smug' if d < 4 else 'shock', side=1, bob=4 * math.sin(t * .3), rot=rot)
-    T.ruler(c, rx, max(head[1] - 250, rtop) if d < 0 else head[1] - 250, FLOOR - 10)
+    if d < 0: T.ruler(c, rx, max(head[1] - 250, rtop), FLOOR - 10)
     hb = A.hand_at(x2, g2, s, 1, pb); ell(c, hb[0], hb[1], 22 * KC, 22 * KC); fs(c, WHITE, 6)
     leg = cl((t - 15) / 10) if d < 0 else 1
     ha = A.hand_at(x1, g1, s, 1, pa)
@@ -168,8 +173,8 @@ def tailors(c, t, d=-1):
         T.tape_line(c, [crotch, (lerp(crotch[0], ankle[0], leg), lerp(crotch[1], ankle[1], leg))], 14)
         if leg >= 1: c.move_to(*ankle); c.line_to(ha[0] + 10, ha[1]); c.set_source_rgb(*T.TAPE); c.set_line_width(14); c.stroke()
     ell(c, ha[0], ha[1], 22 * KC, 22 * KC); fs(c, WHITE, 6)
-    P.hoody_arm(c, shL, (shL[0] - 280, shL[1] + 10 + (60 * yank)), HS, pref=P.UP, hand='palm', ang=math.pi)
-    P.hoody_arm(c, shR, (shR[0] + 200, shR[1] - 230 + 200 * yank), HS, pref=P.DOWN, hand='palm', ang=-.8)
+    P.hoody_arm(c, shL, (shL[0] - 215, shL[1] + 25 + (60 * yank)), HS, pref=P.DOWN, hand='palm', ang=math.pi)      # v4: in reach, a real elbow (out of reach = a pole)
+    P.hoody_arm(c, shR, (shR[0] + 150, shR[1] - 195 + 200 * yank), HS, pref=P.DOWN, hand='palm', ang=-.8)
     x3, g3 = 745 + 40 * yank, FLOOR; wy = FLOOR - 300 * HS - 40          # the waist: it cannot reach, so it hauls the tape down to itself
     lean = .06 + .04 * math.sin(t * .5) + .35 * yank
     pc = P.ai_pose(-1, P.ai_local(x3, g3, s, (HX0 + 175 + 120 * yank, wy + 30)), P.UP)
@@ -203,7 +208,7 @@ def legs_in(c, d):
     kn = (x0 + 330, top - 230 + 420 * sink)
     xr, gr = x0 + 170, top + 8
     pa = P.ai_pose(1, P.ai_local(xr, gr, s, (kn[0] - 30, max(kn[1] + 20, top - 200))), P.DOWN)
-    bot(c, 150, FLOOR, eye='happy', look=(16, -10), arms=('hold2', 'up'), bob=8 * abs(math.sin(d * .45)))
+    bot(c, 150, FLOOR, eye='happy', look=(16, -10), arms=('down', 'up'), bob=8 * abs(math.sin(d * .45)))      # v3: its other arm rests (it stuck out to the frame edge)
     if d < 64: bot(c, xr, gr, sh=False, eye='happy', look=(18, 4), rot=.2 + .07 * math.sin(d * .8), bob=6 * abs(math.sin(d * .8)), arms=(P.ai_pose(-1, P.ai_local(xr, gr, s, (xr - 40, gr - 300 * KC)), P.UP), pa))
     else: bot(c, xr - 40, gr - 22, sh=False, eye='happy', look=(10, 0), arms=('up', 'up'), bob=6 * math.sin(d))   # standing on the shut lid
     hand = A.hand_at(150, FLOOR, s, 1, 'up'); mu = cl((d - 46) / 10)      # his mug: held up for him, then lobbed in after him
@@ -280,6 +285,8 @@ def shot_F(c, t):
             for i in range(5): ell(c, x0 - 20 - i * 46 + 10 * math.sin(t + i), FLOOR - 14 - i * 5, 30 - i * 4, 14 - i * 2); c.set_source_rgba(.92, .88, .8, .7); c.fill()
         # the crate; the hit throws its lid open and its sticker off
         hit = t >= T_HIT
+        if hit and t < T_HIT + 5:                                         # v2: the landing dust is BEHIND the crate (it was drawn over its bottom edge)
+            for i in range(7): ell(c, CX + 20 + i * 100, FLOOR - 8, 44, 16); c.set_source_rgba(.92, .88, .8, .8 * (1 - (t - T_HIT) / 5)); c.fill()
         sl = B.crate(c, x0, y, lid=oe((t - T_HIT) / 4) if hit else 0, stamp=0 if hit else 1.0, rts=1.0 if t >= T_BACK else 0, slot=True, slot_x=50,
                      rot=(.02 if t < T_GO else (-.05 if t < T_OUT else lerp(-.05, .04, oe((t - T_BACK) / 14)))) * (1 - fall) if not hit else 0)
         thumb_up(c, sl, io((t - 22) / 5) * (1 - io((t - T_DROP + 3) / 3)))
@@ -311,8 +318,6 @@ def shot_F(c, t):
                     for i in range(4): ell(c, H0X - 90 + i * 60, FLOOR - 10, 30, 12); c.set_source_rgba(.92, .88, .8, .7 * (1 - (t - T_LAND) / 4)); c.fill()
             u = (t - T_HIT) / 10                                          # the sticker, blown off, out of the top right
             if u < 1.3: B.sticker(c, CX + 350 + 520 * u, FLOOR - 185 - 900 * u + 300 * u * u, 1.0, rot=-.06 + 5 * u, rts=1.0)
-            if t < T_HIT + 5:
-                for i in range(7): ell(c, CX + 20 + i * 100, FLOOR - 8, 44, 16); c.set_source_rgba(.92, .88, .8, .8 * (1 - (t - T_HIT) / 5)); c.fill()
     # HARV, the leader, at the series' full size: walks in, signs for it, leaves before the sprint
     hv = lerp(-200, 205, io(t / 10)) if t < 40 else lerp(205, -220, io((t - 40) / 14))      # 205, not 165: at 165 the frame edge cut his ear (cover audit)
     if hv > -190 and t < 56:

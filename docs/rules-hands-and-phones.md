@@ -1,8 +1,26 @@
 # Rules: hands, arms and phones
 
-The rules that hold now, gathered from lessons 147, 149, 163, 178, 179, 200, 201, 206–208, 221–226 (episode 13 *The Offer* v26–v39, One Star v7–v9). Read this before drawing any hand, close-up arm or phone screen. When a lesson below disagrees with this page, this page wins; the superseded ones are listed at the end.
+The rules that hold now, gathered from lessons 147, 149, 163, 178, 179, 200, 201, 206–208, 221–226, 231 (episode 13 *The Offer* v26–v39, One Star v7–v9). Read this before drawing any hand, close-up arm or phone screen. When a lesson below disagrees with this page, this page wins; the superseded ones are listed at the end.
+
+## 0. Before changing any hand, arm, gesture or pose (Daddy's Home v8, 24 Nov)
+
+A review or a cold test that names a hand is not a request to patch that hand. In this order, before code:
+
+1. **List the rules that apply.** Read this page and grep `docs/lessons.md` (finger, thumb, point, gesture, silhouette, ear, phone, grip). Write the applicable ones, with their numbers, in the reply to Tomas, before any drawing. (v8 round 7 skipped this: lessons 263 and 417 were not read, and the fix made a new misread.)
+2. **A gesture that carries meaning gets its own test first** (417): three variants as solid black silhouettes side by side, at feed size (270 px wide), shown to two cold viewers. Keep the one both read as meant (264: a pose must read as a black shape).
+3. **Measure, don't eyeball** (263): a gap (finger to screen, finger to hair) is measured in pixels on the frame, and checked again on the 270 px tile. A 15 px gap at 540 is about 7 px in the feed: it doesn't exist there.
+4. **Hand sheet in the film's poses** (`of_hands.py`) for any new or changed shape, and `of_scenes.py hand-validate` and `hand_gate.py` passing.
+5. **A 10 fps strip of the encoded file** for every shot whose hand code changed, looked at before the cold test.
+6. **The same misread three times: change the gesture, not its position** (178, extended from grips to every gesture). "The hand holds the sign" and "a handshake" came back 3 and 4 tests running while the hand was moved a few pixels each time.
 
 ## 1. Hands and arms
+
+### Gestures
+
+- **A hand raised to the ear or cheek reads as a phone call,** with or without a phone (it is the phone grip's place). Pam's "one" finger beside her ear was read as "taking a call" by both cold viewers. A counting or warning finger goes in front of the chest or toward the thing counted.
+- **A pointing finger that stops near a sign reads as holding it.** When the arm drops, the sign "floats". Point from clearly apart (measured at feed size), or don't point at a wall sign at all.
+- **Two people's hands near each other read as a handshake,** whatever the props. Keep a clear gap between their hands, or give the moment another gesture.
+- **Big or turned hands:** `point`'s thumb across the knuckles reads as a second, bent finger in an insert or pointing down; use `point_t` (index out, no thumb: the back of the hand) there. Pointing level reads; pointing down reads as "at the floor" and the hand as deformed.
 
 ### The hand itself
 
@@ -29,6 +47,14 @@ Read by cold viewers, in this order of what failed: one stroke from the edge = "
 - **After pulling back, find the biggest flat light area** and cut it down; here a white back became shoulders only over navy overalls (225).
 - **What he wears goes on his wrist,** along the forearm's direction (a watch floated when the arm was taken away) (223).
 
+### Poses before motion
+
+- **Check the hand target against the arm's length.** A target much closer to the shoulder than the arm is long folds the whole arm into a lump (a "bulge", a "stuck-on fist"). Move the target until shoulder, elbow, forearm and hand read as one line (231).
+- **One static pose approved before any motion.** More frames of a broken pose multiply the fault (231).
+- **One target path per hand per shot.** Blend between places; never switch targets in one drawing (231).
+- **In-betweens are drawings.** If a move pops, list the key poses that do not exist yet (an exposure sheet) and draw them; a change of view of 90 degrees is a cut (231).
+- **Chain the parts:** hips, trunk, head; shoulder, elbow, wrist. Each a drawing or two after the one before (231).
+
 ### Holding and moving things
 
 - **Draw the object, then the fingers over it.** A tool's handle comes out past the fist (224).
@@ -53,6 +79,20 @@ Read by cold viewers, in this order of what failed: one stroke from the edge = "
 - **Stills to Tomas as PNG before any render.**
 - **A 10 fps strip of the encoded file** for every shot whose hand or arm code changed. Stills at three times missed a jump (223).
 - **After two audit rounds on the same stills, render and test the motion.**
+
+### A rule is a gate (One Star v15–v16, 25 Nov)
+
+- **Every held prop goes through the series' grips** (`of_cast.phone_grip`, `clutch`, `handle_grip`, `ps_hand`), never an
+  episode's own ovals: One Star kept `s1.fist` / `grip_rect` / `sb.thumb` for months because nothing checked them, and every
+  close-up hand read as "capsules". `cs_grips.py` routes them all through one switch.
+- **The hand gate runs in the build, not only in The Offer:** a rig hand under a grip, a thumb on the outer side, an old
+  grip drawer: the render stops (`cs_grips.gate`, self-test with planted faults first).
+- **The elbow gate:** every rig arm is logged as drawn; an arm bent under 20° that does not hang fails (the "pole"), and a
+  fold over ~140° is a lump (231). Measured faults were few; the "breaks" people see are mostly drawing: square shoulder
+  patches (the Client: one round cap), a wrist over a counter's edge (keep the target on the prop), crossed forearms at
+  the chest (elbows out, hands meet at the prop).
+- **A shared rig is patched from its source in the episode** (as `client_of` does), never edited in place: another film's
+  build reads that source as text.
 
 ## 2. Phone screens
 

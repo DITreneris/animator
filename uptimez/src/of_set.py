@@ -298,6 +298,13 @@ def car(k, bonnet=0.0, tilt=0.0):
     1 up (scene 3)."""
     c = k.c
     x0, x1 = CAR_X
+    # v5 (24 Nov, Tomas: "does the car's shadow move?"): ONE shadow, in every shot with the car: a soft pool ON THE FLOOR,
+    # drawn before the stands, the wheels and anyone's legs; no edges. It slides and thins a little as the car rocks.
+    c.save(); c.translate((x0 + x1) / 2 - 260 * tilt, SILL + 54); c.scale((x1 - x0) / 2 + 4 - 120 * abs(tilt), 17)
+    g_ = cairo.RadialGradient(0, 0, 0.15, 0, 0, 1)
+    g_.add_color_stop_rgba(0, 0.03, 0.03, 0.05, 0.50); g_.add_color_stop_rgba(0.7, 0.03, 0.03, 0.05, 0.34)
+    g_.add_color_stop_rgba(1, 0.03, 0.03, 0.05, 0.0)
+    c.set_source(g_); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
     if tilt:                                     # v4: rocked on its stands (0.8), about the far stand's foot
         c.save(); c.translate(STANDS[1], SILL + 50); c.rotate(tilt); c.translate(-STANDS[1], -(SILL + 50))
     for sx in STANDS:                                                                        # the axle stands
@@ -393,6 +400,8 @@ def stand(k, x, top):
     rect(k, x - 6, top - 4, 12, 16, STEEL, 3070 + x, shadow=False, lw=1.4)
 
 
+LEGS_ROT = [0.0]                                           # v4 (24 Nov, audit: "no in-betweens"): the creeper swivels as it rolls out, rad
+LEGS_TORSO = [0.0]                                         # 0..1: his shirt, then his head, come out from under the sill after his hips
 LEGS_WORK = [0.0]                                          # stage 7: the bent leg's small tap while he works (-1..1)
 
 
@@ -406,6 +415,16 @@ def legs(k, out=0.0):
     hip_y = ly - 46                                                                           # under the car's body
     w = LEGS_WORK[0]
     c.set_line_cap(1); c.set_line_join(1)
+    c.save(); c.translate(lx, hip_y); c.rotate(LEGS_ROT[0]); c.translate(-lx, -hip_y)
+    if LEGS_TORSO[0] > 0:                                                                     # on his back on the board: shirt, shoulders, head
+        L_ = 96 * LEGS_TORSO[0]
+        rect(k, lx - 30, hip_y - L_ - 30, 60, L_ + 34, (0.24, 0.24, 0.26), 3090, lw=2)           # the board under him
+        cut(k, [(lx - 26, hip_y), (lx - 30, hip_y - L_ * 0.8), (lx - 22, hip_y - L_), (lx + 22, hip_y - L_), (lx + 30, hip_y - L_ * 0.8), (lx + 26, hip_y)],
+            (0.97, 0.97, 0.95), shadow=False, lw=2.2)
+        if LEGS_TORSO[0] > 0.6:
+            ellipse(k, lx, hip_y - L_ - 20, 22, 24, (0.80, 0.62, 0.50), 3091, shadow=False, lw=2.2)
+            c.save(); c.rectangle(lx - 30, hip_y - L_ - 50, 60, 18); c.clip()
+            ellipse(k, lx, hip_y - L_ - 22, 23, 24, (0.16, 0.13, 0.11), 3092, shadow=False, lw=2.0); c.restore()
     c.set_source_rgba(0, 0, 0, 0.28)                                                          # contact shadows first
     for (sx, sy, rx, ry) in ((lx - 30, ly + 58, 26, 7), (lx + 40, ly + 48, 22, 6), (lx - 18, ly + 22, 14, 30)):
         c.save(); c.translate(sx, sy); c.scale(rx, ry); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
@@ -430,6 +449,7 @@ def legs(k, out=0.0):
     c.restore()
     rect(k, lx - 26, hip_y - 8, 52, 18, NAVY_T, 3083, lw=2)                                     # v3: the seat of the trousers,
     c.set_source_rgb(0.25, 0.17, 0.10); c.rectangle(lx - 26, hip_y - 10, 52, 6); c.fill()      # the belt: one body, two legs
+    c.restore()
     c.save(); c.rectangle(CAR_X[0], SILL - 4, CAR_X[1] - CAR_X[0], 120); c.clip()             # only in the gap under the body
     c.save(); c.translate(lx + 6, SILL + 4); c.scale(1.0, 0.55)                               # the hips go into the dark under
     g = cairo.RadialGradient(0, 0, 10, 0, 0, 110)                                              # the car: a soft pool, between the
@@ -438,43 +458,67 @@ def legs(k, out=0.0):
     c.set_source(g); c.arc(0, 0, 110, 0, 2 * math.pi); c.fill()
     c.restore()
     c.restore()
-    c.set_source_rgba(0, 0, 0, 0.18); c.rectangle(CAR_X[0] + 20, SILL + 4, CAR_X[1] - CAR_X[0] - 40, 46); c.fill()   # under the car
+    # v5 (24 Nov, Tomas at 0:00): the grey rectangle that lay OVER the wheels and his legs is gone; the car's shadow is car()'s
 
 
-def lamp(k, x=None, y=None, ang=-0.5, lit=True, hang=None, glow=True):
-    """the caged work lamp on its cable (lying on the floor in frame 0). v3 (22 Nov: Tomas read v2 as "a rat": a dark
-    body, a round head, a thin curved tail): an ORANGE handle with a hanging hook, a bright bulb inside a wire cage, and a
-    thick orange cable running straight out of the frame, never curling like a tail."""
+def lamp_cable(k, hx_, hy_, ang, hang=None, swing=0.0):
+    """the work lamp's cable from the handle's end (hx_, hy_). v5 (24 Nov, audit: "a hose"): HALF as thick, still
+    orange and still straight on the floor (v3: a thin curling one read as a rat's tail). Held (hang: the floor's y),
+    it drops STRAIGHT down from the handle and runs off along the floor; swing: its belly lags the hand (px)."""
+    c = k.c
+    ca, sa = math.cos(ang), math.sin(ang)
+    ORANGE = (0.96, 0.52, 0.10)
+    for col, lw in ((INK, 5.0), (ORANGE, 2.8)):
+        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.set_line_join(1)
+        c.move_to(hx_, hy_)
+        if hang is not None:
+            h_ = hang - hy_
+            c.curve_to(hx_ + 10 * ca, hy_ + 10 * sa + 6, hx_ + 4 + swing, hy_ + 0.55 * h_, hx_ + 6 + 0.4 * swing, hang - 14)
+            c.curve_to(hx_ + 7, hang - 4, hx_ + 12, hang, hx_ + 26, hang); c.line_to(hx_ + 700, hang)
+        else:
+            c.line_to(hx_ + 60 * ca + 14, hy_ + 60 * sa + 10); c.line_to(hx_ + 900 * ca + 200, hy_ + 900 * sa + 120)
+        c.stroke()
+
+
+def lamp(k, x=None, y=None, ang=-0.5, lit=True, hang=None, glow=True, cable=True, swing=0.0):
+    """the caged work lamp on its cable (lying on the floor in frame 0). v5 (24 Nov, Tomas: "the lamp bothers me most";
+    audit: "a microphone on a hose"): a THING with parts: a dark grey handle (fingers show on it), an orange collar, a
+    LONG narrow cage with an orange shield along its back, a bulb you can see lit or dead inside it, a hook at the tip,
+    and a thin cable. A third smaller than v3. (x, y): the collar's cage side; the handle runs along ang from it."""
     c = k.c
     x = LAMP_AT[0] if x is None else x
     y = LAMP_AT[1] if y is None else y
     ORANGE, ORANGE_D = (0.96, 0.52, 0.10), (0.70, 0.34, 0.05)
+    GRIP, GRIP_D = (0.33, 0.34, 0.38), (0.20, 0.21, 0.24)
     ca, sa = math.cos(ang), math.sin(ang)
-    hx_, hy_ = x + 42 * ca, y + 42 * sa                                                       # the handle's end
-    for col, lw in ((INK, 9), (ORANGE, 6)):                                                  # the cable: thick, straight out
-        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
-        c.move_to(hx_, hy_)
-        if hang is not None:                                                                 # v4 (23 Nov): held, it hangs to the floor and runs off behind him
-            c.curve_to(hx_ + 10, hy_ + 40, hx_ + 30, hang, hx_ + 70, hang); c.line_to(hx_ + 700, hang)
-        else:
-            c.line_to(hx_ + 60 * ca + 14, hy_ + 60 * sa + 10); c.line_to(hx_ + 900 * ca + 200, hy_ + 900 * sa + 120)
-        c.stroke()
+    if cable:
+        lamp_cable(k, x + 42 * ca, y + 42 * sa, ang, hang, swing)
     if lit and glow:
-        g = cairo.RadialGradient(x, y, 4, x, y, 90)
+        gx_, gy_ = x - 16 * ca, y - 16 * sa
+        g = cairo.RadialGradient(gx_, gy_, 4, gx_, gy_, 70)
         g.add_color_stop_rgba(0, 1.0, 0.95, 0.70, 0.55); g.add_color_stop_rgba(1, 1.0, 0.95, 0.70, 0.0)
-        c.set_source(g); c.arc(x, y, 90, 0, 2 * math.pi); c.fill()
+        c.set_source(g); c.arc(gx_, gy_, 70, 0, 2 * math.pi); c.fill()
     c.save(); c.translate(x, y); c.rotate(ang)
-    rect(k, 8, -8, 36, 16, ORANGE, 3090, lw=2)                                                 # the handle, orange rubber
-    c.set_source_rgb(*ORANGE_D); c.set_line_width(1.6)
-    for gx in (16, 24, 32):
-        c.move_to(gx, -6); c.line_to(gx, 6); c.stroke()                                         # its grip
-    c.set_source_rgb(*INK); c.set_line_width(2.6); c.new_path(); c.arc(40, -14, 6, math.pi, 2 * math.pi + 1.2); c.stroke()   # the hook
-    ellipse(k, -8, 0, 18, 16, (1.0, 0.98, 0.80) if lit else (0.88, 0.88, 0.84), 3091, lw=2)   # the bulb, bright
-    c.set_source_rgb(*INK); c.set_line_width(2.2)                                              # the wire cage, open, over it
-    for dy in (-12, 0, 12):
-        c.move_to(8, dy * 0.7); c.curve_to(-6, dy * 1.2, -20, dy * 1.2, -28, dy * 0.4); c.stroke()
-    c.new_path(); c.arc(-8, 0, 19, 0, 2 * math.pi); c.stroke()
-    rect(k, 4, -10, 6, 20, (0.55, 0.55, 0.58), 3092, shadow=False, lw=1.6)                     # the collar between the cage and the handle
+    rect(k, 8, -6, 36, 12, GRIP, 3090, lw=2)                                                   # the handle: dark grey rubber
+    c.set_source_rgb(*GRIP_D); c.set_line_width(1.4)
+    for gx in (16, 23, 30, 37):
+        c.move_to(gx, -4.5); c.line_to(gx, 4.5); c.stroke()                                     # its ribs
+    c.set_source_rgb(*INK); c.set_line_width(2.2); c.new_path(); c.arc(-39, 0, 4.5, -2.2, 2.2); c.stroke()   # the hook, at the tip
+    c.new_path(); c.move_to(4, -10); c.curve_to(-8, -13, -26, -12, -34, -4); c.line_to(-34, 0); c.line_to(4, 0); c.close_path()
+    c.set_source_rgb(*ORANGE); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()   # the shield, along its back
+    c.new_path(); c.move_to(4, 0); c.line_to(-34, 0); c.line_to(-34, 4); c.curve_to(-26, 12, -8, 13, 4, 10); c.close_path()
+    c.set_source_rgba(0.93, 0.93, 0.90, 0.55); c.fill()                                        # the open side, glass
+    c.save(); c.translate(-14, 2); c.scale(11, 6.5); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.set_source_rgb(*((1.0, 0.97, 0.62) if lit else (0.60, 0.61, 0.62))); c.fill_preserve()   # the bulb: lit or DEAD
+    c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+    if lit:
+        c.set_source_rgb(1, 1, 1); c.arc(-16, 1, 3.2, 0, 2 * math.pi); c.fill()
+    c.set_source_rgb(*INK); c.set_line_width(1.8)                                              # the cage: its outline and four hoops
+    c.new_path(); c.move_to(4, -10); c.curve_to(-8, -13, -26, -12, -34, -4); c.line_to(-34, 4); c.curve_to(-26, 12, -8, 13, 4, 10); c.stroke()
+    for wx, wh in ((-4, 11.5), (-13, 11.8), (-22, 10.6), (-30, 7.4)):
+        c.move_to(wx, 0); c.line_to(wx, wh); c.stroke()
+    c.move_to(4, 5); c.line_to(-34, 2.5); c.stroke()
+    rect(k, 2, -9, 7, 18, ORANGE, 3092, shadow=False, lw=1.8)                                  # the orange collar
     c.restore()
 
 

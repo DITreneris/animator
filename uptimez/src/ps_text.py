@@ -20,7 +20,6 @@ ORDER = ['1.1',
  '2.9b',
  '2.10',
  '2.11',
- '2.12',
  '3.1',
  '3.2',
  '3.3',
@@ -39,6 +38,7 @@ ORDER = ['1.1',
  '5.6',
  '5.7',
  '6.1',
+ '6.1b',
  '6.2']
 
 SHOTS = {'1.1': {'scene': 'Scene 1 · The Blind',
@@ -176,10 +176,9 @@ SHOTS = {'1.1': {'scene': 'Scene 1 · The Blind',
  '2.11': {'scene': 'Scene 2 · The Line',
           'script': 3.6,
           'size': 'MEDIUM · S6',
-          'picture': 'Don pushes it off onto his side; it rolls back onto the tape (1.4 s). Again, quicker (1.0 s). '
-                     'Third push: it comes back at once and **bumps Don**, who has stepped into its path (0.6 s + '
-                     'the stagger)',
-          'action': 'push, return ×3 → Don staggers',
+          'picture': 'Review round 1 (Tomas, 24 Nov): one push, not three. Don shoves it off onto his side; it rolls '
+                     'straight back, arms still out across the tape, and **bumps Don**, who staggers (1.6 s)',
+          'action': 'push, return → Don staggers',
           'line': '',
           'fx': 'squeak, squeak, BONK'},
  '2.12': {'scene': 'Scene 2 · The Line',
@@ -338,6 +337,14 @@ SHOTS = {'1.1': {'scene': 'Scene 1 · The Blind',
          'action': 'his smile → nobody looks at him',
          'line': 'DON: "Everyone\'s with me."',
          'fx': '—'},
+ '6.1b': {'scene': 'Scene 6 · Everyone',
+          'script': 0.6,
+          'size': 'MEDIUM · as 6.1',
+          'picture': "Review round 1 (Tomas, 24 Nov, from Office Noir 1's startle): the phone behind him buzzes. Don's "
+                     'eyes go round, **his one hair springs straight up**, his eyes snap back over his shoulder to it',
+          'action': 'the buzz → the startle, the look to the phone',
+          'line': '',
+          'fx': 'BZZT, a spring boing'},
  '6.2': {'scene': 'Scene 6 · Everyone',
          'script': 1.0,
          'size': "MEDIUM · S2 (1.1's framing, knees up: the tape out of frame)",
@@ -487,3 +494,25 @@ SECTIONS = {'G0: the series check': '| Check | Verdict |\n'
                                      'must still read as the Client at booth scale.\n'
                                      '- **The oily fingerprint** on the phone glass (4.2) and **the handprint** on '
                                      'the velvet (4.3): both on screen as they happen (lesson 100).'}
+
+
+# Board v4 (ps_scenes.GAGS_V5; Tomas's picks of 25 Nov): the rows that change. Everywhere else COO? reads HR?.
+TEXT_V5 = {
+    '3.4': {'picture': 'Don holds his hero pose, both thumbs up, eyes on his own reflection. The robot holds the phone out '
+                       'low on its telescopic arm. **His raised arm tires and sinks; the robot slides the phone in under '
+                       'his thumb**: the pad goes green. He never looks. Thumb back up, smug',
+            'action': 'the arm sinks → the phone meets the thumb'},
+    '4.3': {'picture': '**The Client** in the velvet booth in his garage coveralls from 13, **filthy with oil**. '
+                       "**Father's two bodyguards stand behind the bench, either side of him.** He leans in and points "
+                       'at the phone: "That one." **Both bodyguards turn away, mirrored, and pinch their noses; green '
+                       'stink lines rise off him.** **Father** looks at the phone, then **nods once**: "Invite her."; '
+                       "he doesn't react to the smell. The Client sits back: **a black handprint on the velvet**",
+            'action': 'the lean in → both noses pinched; the finger → the nod (one frame, lesson 132)'},
+    '5.2': {'picture': 'Her CV (the circled number, the lipstick phone); **a gold pen writes H-R-?** across the top, '
+                       "stroke by stroke (lesson 100): **the robot's own badge. Father's side offers her its job**"},
+    '5.3': {'picture': 'A knock. The robot opens the door: "Welcome." Pam, on a step stool, is re-hanging the blind '
+                       'beside it; Sofía has the CV. **5.3b, close: bodyguard 2, one step inside, hands the robot a '
+                       'brass oil can (OIL). It holds it up, a heart on its visor.** It has not seen what is written '
+                       'on her CV. Don, at the line, his back to all of it',
+            'action': 'the door opens → the CV to Sofía; the oil can → the heart'},
+}

@@ -260,7 +260,28 @@ def s4_2(k, d):
 N42b = 14
 CAM42b = (246, 690, 2.6)
 PX42b, LEAN42b = 188, 4.0
-POCKET = (296.0, 691.0)                                     # the blue edge above his pocket (scene)
+POCKET = (296.0, 691.0)
+REACH42b = [40.0]                                            # the hand stops this far out along the line to the pocket
+POINT_W = [19.0]                                     # the blue edge above his pocket (scene)
+
+
+ELBOW42b = [None]                                    # v17: her upper arm's angle (degrees off down) for a low point
+
+
+def _point_low(r):
+    """Her arm for "Check your pocket.": the upper arm down at her side (ELBOW42b off straight down, toward him), the
+    forearm out along the line to his pocket; blended from her rest angles by r (two cold viewers: the straight
+    reach across to the pocket read as a pole)."""
+    rest = (PX42b + 24, PAM_FEET - 64)
+    r0 = pam_reach(PX42b, 0.0, rest)
+    a = math.radians(-LEAN42b * r)
+    vx, vy = POCKET[0] - PX42b, POCKET[1] - PAM_FEET
+    px, py = (vx * math.cos(a) - vy * math.sin(a)) / PAM_S, (vx * math.sin(a) + vy * math.cos(a)) / PAM_S
+    a1 = ELBOW42b[0]
+    ex, ey = PAM_SH_R[0] + math.sin(math.radians(a1)) * LN, PAM_SH_R[1] + math.cos(math.radians(a1)) * LN
+    af = math.degrees(math.atan2(px - ex, py - ey))
+    goal = (a1, ((af - a1 + 180) % 360) - 180)
+    return tuple(x + (((y - x + 180) % 360) - 180) * r for x, y in zip(r0, goal))
 
 
 def s4_2b(k, d):
@@ -273,9 +294,11 @@ def s4_2b(k, d):
     rest = (PX42b + 24, PAM_FEET - 64)
     sh = (PX42b + PAM_SH_R[0] * PAM_S, PAM_FEET + PAM_SH_R[1] * PAM_S)             # her hand 40 units out along the line to
     L_ = math.hypot(POCKET[0] - sh[0], POCKET[1] - sh[1])                          # the pocket, the finger pointing on at it
-    aim = (sh[0] + (POCKET[0] - sh[0]) * 40 / L_, sh[1] + (POCKET[1] - sh[1]) * 40 / L_)
+    aim = (sh[0] + (POCKET[0] - sh[0]) * REACH42b[0] / L_, sh[1] + (POCKET[1] - sh[1]) * REACH42b[0] / L_)
     tgt = lerp(rest, aim, r)
     a1, a2 = pam_reach(PX42b, LEAN42b * r, tgt)
+    if ELBOW42b[0] is not None:                                                    # v17 (One Star): the elbow at her side,
+        a1, a2 = _point_low(r)                                                     # the forearm and finger at the pocket
     look_c = (1, 0) if d < 5 else (0.3, 1)
     got = {}
 
@@ -299,7 +322,7 @@ def s4_2b(k, d):
                 import hands_ps as hp
                 s1.PH_DEV.append(c.user_to_device(wx, wy))                         # (the rig's own hand stays out: two-pass)
                 an = math.atan2(wy - ey_, wx - ex_)
-                hp.draw(k_, "point", wx, wy, 19.0, SKIN_PAM, (math.cos(an), math.sin(an)), 1)
+                hp.draw(k_, "point", wx, wy, POINT_W[0], SKIN_PAM, (math.cos(an), math.sin(an)), 1)
                 c.restore()
                 return
             ellipse(k_, wx, wy, 10, 9, SKIN_PAM, 999, shadow=False, lw=2)

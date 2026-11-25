@@ -83,7 +83,7 @@ def sofia(k, x, feet, s=1.0, pose="hold", face_kind="smile", look=(0, 0), lag=(0
         so._face = lambda o, sp: sdh._tight(orig_face(o, sp))
         face_kind = "smile"
     c = k.c
-    c.save(); c.translate(x, feet); c.scale(s, s)             # the bun, behind everything
+    c.save(); c.translate(x, feet); c.rotate(math.radians(lean)); c.scale(s, s)   # the bun, behind everything (v2: leans with her)
     bun(k, sofia_fs.HY, seed + 1)
     c.restore()
     try:
@@ -136,14 +136,19 @@ def don(k, x, feet, s):
         sb.DON_STATE[0] = None
 
 
+CV_WORD = ["COO?"]                                          # opt-in (Tomas, 25 Nov: "COO not works for our audience"): "HR?",
+                                                            # the robot's own badge: Father's side offers her its job
+
+
 def cv_coo(k, x, y, s=1.0, ang=-0.06):
-    """Her CV from 12 with COO? in gold across the top (5.2, 6.1)."""
+    """Her CV from 12 with COO? in gold across the top (5.2, 6.1); CV_WORD changes the word (a short one is drawn bigger)."""
     sdh.cv(k, x, y, s, ang)
     c = k.c
+    w_ = CV_WORD[0]
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
-    c.select_font_face("Lilita One"); c.set_font_size(17)
-    e = c.text_extents("COO?")
-    c.set_source_rgb(*INK); c.set_line_width(3.2); c.move_to(-e.x_advance / 2, -40); c.text_path("COO?"); c.stroke_preserve()
+    c.select_font_face("Lilita One"); c.set_font_size(17 if len(w_) > 3 else 22)
+    e = c.text_extents(w_)
+    c.set_source_rgb(*INK); c.set_line_width(3.2); c.move_to(-e.x_advance / 2, -40 if len(w_) > 3 else -37); c.text_path(w_); c.stroke_preserve()
     c.set_source_rgb(*HEEL_GOLD); c.fill()
     c.restore()
 

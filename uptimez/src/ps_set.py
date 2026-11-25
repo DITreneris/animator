@@ -40,10 +40,13 @@ THRONE = dp.CHAIR
 PHONE_AT = (640, 640)
 
 
+DOOR_OPEN = [0.0]                                           # opt-in (ep 14 gags, 25 Nov): 5.3, the robot opens the door (0..1)
+
+
 def _shut_stage(k):
     """fs_set4.draw_set with the glass door shut (it draws it 85 % open); restored after."""
     old = st.stage
-    st.stage = lambda k_, open_=0.0, **kw: old(k_, 0.0, **kw)
+    st.stage = lambda k_, open_=0.0, **kw: old(k_, DOOR_OPEN[0], **kw)
     return old
 
 
@@ -247,8 +250,13 @@ def robot_card(k, x, y, s=1.0, ang=-0.04):
     c.restore()
 
 
-def price_tag(k, x, y, s=1.0, back=False, swing=0.18):
+TAG_OFF = [False]                                           # opt-in (ep 14 v4, Tomas 24 Nov): its blank back read as an empty
+
+
+def price_tag(k, x, y, s=1.0, back=False, swing=0.18):     # speech bubble 3 of 3; once spun, the tag is off the throne
     """A white card tag on a string from the crown's right point: $49,999 in red; back = its blank side."""
+    if back and TAG_OFF[0]:
+        return
     c = k.c
     c.save(); c.translate(x, y); c.rotate(swing); c.scale(s, s)
     c.set_source_rgb(*INK); c.set_line_width(1.4); c.move_to(0, 0); c.line_to(6, 26); c.stroke()

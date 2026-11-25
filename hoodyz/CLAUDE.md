@@ -44,3 +44,8 @@ These rules apply to the episodes in this folder only, not to the rest of the re
 - **Where a line is long, the gag waits for its end.** A new take longer than the old one moves the first pop; check the opening still pays off in the first second, and tell Tomas what it cost.
 - **Small cast members reach less:** scale copies down (0.75) and check every reach and carry; redesign the staging (a list on the wall, a hop onto a chair), never stretch an arm. Same size as the series for HARV in every episode.
 - **Ear-fix a bad take before asking for a new one:** crop, tempo and compress, then ASR-test each candidate; a clear "-neck" mattered more than the exact tempo.
+
+## Continuity gate (Perfect Date v2.4)
+- "QA passes" was claimed while the finale jumped: no gate measured camera scale, character position or arm pose between neighbouring frames, and the cold-viewer test at 4 fps cannot see a 1-frame snap.
+- Run `perfect-date/v2/continuity.py video.mp4 --cuts <shot starts>`: per-frame change vs the median. Every spike must be a declared cut or impact; anything else (zoom snap, x snap, arm pose snap, overlay drawn over a character) fails.
+- Reused v1 shots (`R.sNN`) draw at their own zoom/pose: when a new shot follows one, ease zoom, position and pose across the join, never snap. Draw dust/FX BEFORE the character, never after.

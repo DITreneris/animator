@@ -1,0 +1,138 @@
+{
+ "0.9": {
+  "line": "CLIENT: \"Off the car.\"",
+  "heard": [
+   "Off the car",
+   "Off the car",
+   "off"
+  ],
+  "ok": 2
+ },
+ "0.5": {
+  "line": "CLIENT: \"Is it wrong?\"",
+  "heard": [
+   "Is it wrong?",
+   "Is it wrong?",
+   "Is it wrong?"
+  ],
+  "ok": 3
+ },
+ "1.4": {
+  "line": "CLIENT: \"Burn them. Your son loses his only customer.\"",
+  "heard": [
+   "Burn them. Your son loses his only customer.",
+   "Burn them. Your son loses his only customer.",
+   "Burn them. Your son loses his only customer."
+  ],
+  "ok": 3
+ },
+ "2.1": {
+  "line": "FATHER: \"My son says his machine finds anything.\"",
+  "heard": [
+   "My son says his machine finds anything.",
+   "My son says his machine finds anything.",
+   "My son says his machine finds anything."
+  ],
+  "ok": 3
+ },
+ "2.2": {
+  "line": "CLIENT: \"It found nothing.\"",
+  "heard": [
+   "It found nothing.",
+   "It found nothing.",
+   "It found nothing."
+  ],
+  "ok": 3
+ },
+ "2.4": {
+  "line": "FATHER: \"How would you run his company?\"",
+  "heard": [
+   "How would you run his company?",
+   "How would you run his company?",
+   "How would you run his company?"
+  ],
+  "ok": 3
+ },
+ "2.5": {
+  "line": "CLIENT: \"Without him.\"",
+  "heard": [
+   "without him.",
+   "without him.",
+   "without him."
+  ],
+  "ok": 3
+ },
+ "2.6": {
+  "line": "FATHER: \"And then?\"",
+  "heard": [
+   "And then...",
+   "And then...",
+   "And then..."
+  ],
+  "ok": 3
+ },
+ "2.8b": {
+  "line": "CLIENT: \"One month. I ask. She finds it.\"",
+  "heard": [
+   "One month, I ask. She finds it.",
+   "One month, I ask, she finds it.",
+   "One month, I ask, she finds it."
+  ],
+  "ok": 3
+ },
+ "2.8c": {
+  "line": "FATHER: \"Done.\"",
+  "heard": [
+   "Done",
+   "IT D",
+   "Done!"
+  ],
+  "ok": 2
+ },
+ "2.9": {
+  "line": "FATHER: \"Put it in the calendar.\"",
+  "heard": [
+   "Put it in the calendar.",
+   "Put it in the calendar",
+   "Put it in the calendar"
+  ],
+  "ok": 3
+ },
+ "3.2": {
+  "line": "ROBOT: \"New meeting. Agenda: without him.\"",
+  "heard": [
+   "new maitre, agenda without him.",
+   "New Maiten, agenda without him.",
+   "New Maiten, agenda without him.",
+   "[with the line before] Put it in the calendar. New Maiten. Agenda without him."
+  ],
+  "ok": 2
+ },
+ "3.3": {
+  "line": "DON: \"Without who?\"",
+  "heard": [
+   "Without whom?",
+   "Without whom?",
+   "Without whom?"
+  ],
+  "ok": 3
+ },
+ "3.4b": {
+  "line": "ROBOT: \"Calendar says... wait.\"",
+  "heard": [
+   "The calendar says, \"Wait.\"",
+   "Calendar says, \"Wait.\"",
+   "The calendar says, \"Wait.\""
+  ],
+  "ok": 3
+ },
+ "3.5b": {
+  "line": "DON: \"Pam?\"",
+  "heard": [
+   "pam",
+   "pam",
+   "pam"
+  ],
+  "ok": 3
+ }
+}

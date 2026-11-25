@@ -18,7 +18,8 @@ Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) us
 1. **Collect the lessons first.** Grep `../docs/lessons.md` for the topic (bubbles, tails, signs, mouths, scale...), write every rule that applies into the episode folder as `<episode>-<topic>-lessons-vN.md` with line numbers, and send it to Tomas before building.
 2. **Reuse what was approved.** Search `src/` and `git log origin/main` for a film where the same problem was solved and reviewed (bubbles: `bc_sb.bubble` / `measure`, checks: `qa_bc.py`). Name the file being reused. Write new code only if nothing exists, and say so to Tomas first.
 3. **Look before sending.** Open at least six frames at full size, with crops of the details the change touches (where a tail meets its box, the tip on the cheek). A checker that passes is not a reason to send; the frames are.
-4. **Stop when it isn't converging.** After one hour or two full check runs without the faults going down, stop and report to Tomas instead of patching on.
+4. **Hands, arms, gestures, poses:** before any change, follow section 0 of `../docs/rules-hands-and-phones.md` (list the applicable lessons with numbers in the reply, silhouettes for a meaningful gesture, measured gaps at feed size, hand sheet, 10 fps strip, change the gesture after three misreads). This holds for every fix from a review or a cold test, not only for new shots (Daddy's Home v8 round 7 skipped it and made a new misread).
+5. **Stop when it isn't converging.** After one hour or two full check runs without the faults going down, stop and report to Tomas instead of patching on.
 
 ## Working with Tomas
 
@@ -63,7 +64,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | Frame 0 | Complete (no flash, nothing scaling in), held at least 0.4 s before the camera moves, and the last frame leads back into it. The sound runs through the seam: no dead stop before frame 0 (a fade of 0.3 s at most) |
 | Size | **From 24 Nov on, new `.mp4` renders and intermediate contact-sheet PNGs (`board`, `layout`, `storyboard`, `cold_test*`) are not committed** (`.gitignore` stops `.git` binary bloat; `./build.sh` and `<ep>_scenes.py` rebuild them locally). Code, scripts, timing JSON, kept dry voice takes and final covers stay tracked. Files committed before 24 Nov stay tracked |
 
-New bubbles call `speech.draw` (`src/speech.py`). The check is `speech_gate.check` (`src/speech_gate.py`); both use the safe rect and the 10–20 px tail in `speech_gate`. Do not add another `TextRec`, another tail length, or another `TAIL_K` table. `kit.bubble` and `fs_animatic.speech` remain for films already shipped. A lesson in `docs/lessons.md` becomes a rule here only after `speech_gate.selftest` fails on that fault.
+New bubbles call `speech.draw` (`src/speech.py`). The check is `speech_gate.check` (`src/speech_gate.py`); both use the safe rect and the 10–20 px tail in `speech_gate`. The check also fails a box in the button rail (`speech_gate.RAIL`) and, given `avoid=` (the frame's signs, story props and hands, the same rects passed to `speech.draw`), a box over one of them (24 Nov; `speech.draw`'s second pass may cross a sign, so pass `RAIL` in its `avoid` too). Do not add another `TextRec`, another tail length, or another `TAIL_K` table. `kit.bubble` and `fs_animatic.speech` remain for films already shipped. A lesson in `docs/lessons.md` becomes a rule here only after `speech_gate.selftest` fails on that fault.
 
 Validate every new check on a known failure first; a check that always passes is worse than none.
 
@@ -72,6 +73,7 @@ Validate every new check on a known failure first; a check that always passes is
 - **The front desk v4** (`src/fs_set4.py`, [`series/front-desk-set.md`](series/front-desk-set.md)) is the room from episode 10 on: zones A/B/C, home positions, the way out from behind the counter, camera setups S1–S6. Start an episode's staging from it; change it only with a reason written into that doc.
 - **Plan in three sheets:** the clean set, a top-down shot plan (setups + table), a blocking sheet for the hardest beat. Before redrawing a board on a set, test the hardest shot as real camera frames with two cold viewers.
 - **Reactions face their target; the same cast on both sides of a cut; entrances caught mid-step.**
+- **The set is a gate, not a reference** (24 Nov, after Daddy's Home v8 scene 3 moved the throne 404 → 540 between shots and stood Sofía "behind" Mom on her own floor line). `src/set_gate.py` logs every rig and set prop as drawn and fails: a prop off its mark (`PROPS`, from `series/front-desk-set.md`), two overlapping people on one floor line (whoever is behind stands further back: feet higher), a person somewhere else after a cut. An episode lists its exceptions by shot (`SET_MOVES`, `SET_AIR`, `SET_WALKS`) with the reason beside each. A scene's `gate` runs it with the bubble and dead-zone checks; a fix for a bubble or a cold-test note never moves a prop or a person off the set without passing it. Changing the set itself: the doc first, then `PROPS`.
 
 ## Look and voices
 

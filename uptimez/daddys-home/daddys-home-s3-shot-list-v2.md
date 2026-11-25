@@ -77,3 +77,45 @@ Drawn by `src/dh_s3_v8.py` (with `src/dh_back.py`, Don from behind, and the new 
 - **Now:** dh_say (the `bc_sb` port) for every line; no pinned boxes. `dh_tailcheck` gained qa_bc's rules: at most 20 px of tail over open wall (more over hair beside the cheek, lessons 360), no card for a speaker in frame, no squeezed box; the tip on the cheek's outline at mouth height (0.7 r instead of 0.4 r: Mom's and Pam's frontal faces put the outline 0.55–0.63 r from the mouth; Tomas, 24 Nov). Validated: round 3's bubbles (`dh_tailcheck_plant_r3.py`) fail on every line; the five old planted faults are still caught.
 - **Staging:** 3E and 3F back to round 2 (Tomas). The camera moves for the boxes: 3E steps back and left (Mom's boxes on her left, the throne only jolts 10 so the tag stays whole); 3F steps back and right (Mom's box on her right). 3A: no push; Don's crown at x 404, his finger at the screen left of his box. 3D: the fist up from the first drawing, the head held still. Mom's thump bob removed.
 - **Result:** 8 of 8 lines, 108 of 108 drawings. Frames: `dh_s3_v8_bubbles_r2.png`. Open: Sofía's jump passes in front of the tag; 3E is now WS (Mom r about 53) with a lot of floor. The film is rendered after Tomas's look.
+
+## Round 5 (24 Nov): the series' shared bubble (`speech.draw`, `speech_gate.check`)
+
+- main now says: new bubbles call `speech.draw`, checked by `speech_gate.check`; no other tail length or checker. v8 moves onto them (`dh_anim3_v8.say`): the face, the mouth and the cheek edges are measured on each drawing (dh_say.measure, the logged rigs); the box and the tail are `speech.draw`'s; every bubble drawing is checked (`python3 dh_anim3_v8.py gate`).
+- What speech.draw is given: the robot and Don's bare crown as `above`; everyone else the cheek outline at mouth height (`aim`) on the side with more wall; to avoid: the logged signs (tag, screen), the app's right rail, other heads whole, Don's raised arm in 3A. A rig logged twice (the iso redraw) is not "another face".
+- 3A: Don's crown at x 370 (his box over it, clear of the rail); his arm drops as the robot answers, so the robot's box goes over its antenna.
+- `dh_tailcheck.py` is back to what v7 was checked with (my qa additions removed: one tail length, in speech_gate). `speech_gate.selftest` passes.
+- Result: 108 bubble drawings, 0 faults. The frame sheet went to Tomas directly (sheets are not committed from 24 Nov).
+
+## Round 6 (24 Nov): dead zones and three cold-test fixes (Tomas: "a)")
+
+- **Dead zones** checked on every drawing against the repo's (CLAUDE.md G3/"Text": title bar y < 96, caption quarter y > 720, the button rail `speech_gate.RAIL`, the edges); the stricter 3-platform ad spec (Shorts/Reels: 15 % top, 35 % bottom, 18 % right) was looked at and not adopted. `python3 dh_anim3_v8.py gate` now also fails a face or sign in a dead zone (validated: Don's back at its old height fails 32 drawings); an entrance caught mid-step at the edge is allowed for its first 2 drawings.
+- Fixed: Don's back up out of the caption quarter (crown y 650), his finger at the screen's lower edge at nearly full reach ("1/5" uncovered); Sofía 3F off the left edge (x 410); the 3F camera down 17 so the tag clears the title bar.
+- Cold-test fixes: Mom's cloth on the throne's side above the arm (the "handshake", three tests running); the ketchup over the cuff stub in the APPROVE insert (whose hand); 3F the throne at Mom's right so she stands beside it ("Mom sits in the throne").
+- Result: speech_gate 108/0, dead zones 0, −16.5 LUFS, peak −1.9 dBFS, Whisper 3/3 except "Make it green." 2/3 (the window with leading silence hallucinates "Make Make…"; the two others are exact), v7 same in all 8 scenes.
+- Cold test (G, H): about 2.5–3 of 5 (v7 about 2). Left: the finger at the screen read as holding the sign, the ketchup as nail polish, Pam's doubt and the cause of the jump only in the words.
+
+## Round 7 (24 Nov): cold-test leftovers and three outside reviews
+
+- 3A: the fingertip stops ~15 px short of the screen; Don's arm gets a shirt cuff seam and gold cufflink (`dh_back.don_arm(cuff=True)`, opt-in), the same as the insert's.
+- APPROVE insert: the ketchup is gone; a white shirt cuff with two seams and a gold cufflink, the stub longer (190). The hand is `hands_ps` "point_t" (new, opt-in): index out, no thumb (seen from the back of the hand); "point"'s thumb across the knuckles read as "a second, bent finger" at insert size.
+- 3C: Pam raises ONE finger ("point_t") from 0.25 s, face "incredulous". Her trousers (canonical colour) get a shaded inner half and heavier outline, in this scene only (`pam_legs()`): 204 vs the booth's 220 before, 151–176 now. The near counter moved from y 690 to 818: at 690 it covered her shins and shoes ("no shoes, amputated" — the same in v7).
+- 3E: on "fired" Mom's free hand points out to screen left (the door), level ("point_t"; pointed down, the hand read as deformed and at the floor). Her hand is kept clear of the bubble.
+- Result: speech_gate 108/0, dead zones 0, −16.5 LUFS, peak −1.9 dBFS, Whisper as round 6.
+- `dh_baseline.py check` run over all 8 scenes in one process says scene 7 differs at 9.3 s; run alone, scene 7 is the same. It does so without this round's changes too: an order-dependent leak between scenes, not a v7 change. Open.
+- Cold test (I, J): about 1.5–2 of 5. Read: the approval and the green star still 1/5 (both; the hand "Don's, white cuff" for one, "probably Don" for the other). Misread: Pam's raised finger at her ear = "on a phone call" (both; a regression from the finger); the sign still "floats" when the arm drops (both: at 4 fps tile size the gap doesn't show); the handshake between Mom and Sofía (both); the jump "jumped or yanked" (both). Known, not fixed here.
+
+## Round 8 (24 Nov): the order in rules §0 (lessons listed, silhouettes, measured gaps, cold viewers)
+
+- Hands audit of the whole film first: `daddys-home-hands-audit-v1.md` (11 fail, 6 partial; v8 fixes as each scene is restaged).
+- 3C Pam "one": silhouette tests (lessons 417, 264), two rounds of two viewers. Beside the ear read as a phone; the arm out to the side with the finger above her head (`(-8, 0, 75, 95)`, "point_t") read as "one" 2 of 2, no phone. Gap to her hair 50 px (25 at feed size). Her raised hand inflated the measured head radius (63 -> 109) and pushed the box onto her face: `say()` now keeps each line's first radius (`R_HELD`).
+- 3E: Sofía's hands on her clipboard in her lap (`SOF_LAP`), Mom holds the cloth in both hands at her waist once Sofía sits (`MOM_DOWN`). Viewers: nobody touches anyone (the handshake read 4 tests running before).
+- 3A: the rating screen bolted to the wall (`wall_mount`: plate and four bolts); the fingertip 25 px under the plate. Viewers: the screen no longer floats or is held. Don's arm from his shirt's shoulder, drawn under his back (`don_arm(sh_at=)`, `SHOULDER`): still read as "an arm from behind the robot, no body". Third fix of the same shot; Tomas: an exception, left as it is.
+- 4.2 jump (lesson 21): the anticipation (pressed into the seat, one drawing), up with a stretch, an arc to x 352 (peak 70, under the title bar), down onto the floor with a squash (0.94; 0.86 read as "shorter, another girl"), settle. Viewers 2 of 2: "she jumps out of the chair in fright when the older woman shouts".
+- Result: speech_gate 108/0, dead zones 0, −16.5 LUFS, peak −1.9 dBFS. Cold test (M, N): beats 2, 3, 5 read; 4 reads without the handshake (the cleaning not seen); 1 as above.
+
+## Rounds 9–11 (24 Nov): on the set (set_gate)
+
+- Tomas: "if Mom stands at the wall, how can Sofía be behind her? Do we work without a set?" We did: the throne was at 404 in 3E and 540 in 3F (the set: 452), Mom 300 then 446, Sofía "behind" Mom on her own floor line. `src/set_gate.py` now fails all three (planted in its selftest) and runs in `gate`.
+- 3E/3F rebuilt on the set: the throne at 452 in both, under OUR FIRST CLIENT (Tomas: wide, with the portrait); Mom at 366 in both; Sofía comes in from the counter's side (right), sits, leaps left behind Mom and out of the frame; in 3F she is back, further back at the wall (feet F−40), behind Mom. The listed exceptions: the throne's jolt (`SET_MOVES`), the leap (`SET_AIR`), her way back between 4.2 and 4.3 (`SET_WALKS`).
+- Round 11: the wide lost the cause of the leap (faces small: "she laughs?"), so 4.1' and 4.2 cut in to Mom and Sofía (`SHIFT`, the camera only, lesson 358); the portrait is out of that frame, whole in the wide.
+- Result: speech_gate 108/0, dead zones 0, set 0. Cold test (Q, R): the throne stays put and the depth reads (2 of 2); the leap reads as a fright at her open mouth (2 of 2, "shout or laugh"); where Sofía lands is filled in by the viewer ("she leapt away and is hiding behind the client"). Open: the grey door edge with the screen at the left of the wide reads as a pole; the paper hangs ~0.5 s.
