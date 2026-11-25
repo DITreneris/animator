@@ -56,6 +56,7 @@ FX += [("3.4", int(round(i * 15 / 12.0)), fx.key(), 0.22) for i in range(12)]
 FX += [("5.3", d, fx.key(), 0.20) for d in range(3, 12)]
 FX += [("6.2", d, fx.key(), 0.20) for d in range(4, 13)]
 FX5 = [("4.2", 2, fx.whoosh(0.3), 0.18), ("4.2", 7, fx.rustle(0.4), 0.30), ("4.3w", 0, fx.tape(0.35), 0.18)]   # v5: the plan slides in and lands; the 7 taped
+MUSIC_BACK = [0.05]                                         # v14: the music comes back this long after "Approved." starts
 BUZZ_V12 = [("1.1", 0.05, 0.23, 0.7), ("1.1", 0.28, 0.92, 0.2)]   # v12: the buzz drops under his first word ("Paid" was lost)
 BUZZ = [("1.1", 0.05, 1.15, 0.7), ("6.3", 0.0, 0.35, 0.35), ("6.3", 0.75, 0.25, 0.25), ("6.6a", 0.0, 0.45, 0.5)]
 
@@ -131,7 +132,7 @@ def main(out_dir, tag):
     la = int(0.25 * SR)
     duck = si.lp(np.minimum(duck, np.concatenate([duck[la:], np.ones(la)])), int(0.05 * SR))
     gate = np.ones(L)
-    CUTS = [(0.05, line["1.4d"] + 0.05), (line["3.5"] - 0.04, at("4.3b", 16)), (at("6.5", 0), line["6.5"] + 0.875 + 0.25)]
+    CUTS = [(0.05, line["1.4d"] + MUSIC_BACK[0]), (line["3.5"] - 0.04, at("4.3b", 16)), (at("6.5", 0), line["6.5"] + 0.875 + 0.25)]
     for t0, t1 in CUTS:
         i0, i1 = int(t0 * SR), int(t1 * SR)
         gate[i0:i1] = 0.0

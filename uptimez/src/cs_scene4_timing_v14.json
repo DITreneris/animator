@@ -1,0 +1,24 @@
+{
+ "shots": [
+  {
+   "shot": "4.2p",
+   "line": {
+    "key": "4.2p",
+    "who": "PAM",
+    "text": "Check your pocket.",
+    "t0": 4.787,
+    "t1": 5.867
+   }
+  },
+  {
+   "shot": "4.4",
+   "line": {
+    "key": "4.4",
+    "who": "ROBOT",
+    "text": "The result was obtained by a h-human.",
+    "t0": 9.917,
+    "t1": 12.097
+   }
+  }
+ ]
+}

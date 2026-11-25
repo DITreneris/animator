@@ -1,0 +1,44 @@
+{
+ "shots": [
+  {
+   "shot": "1.2",
+   "line": {
+    "key": "1.2",
+    "who": "CLIENT",
+    "text": "Paid $999. They lost my blueprint. My lawyer will call.",
+    "t0": 1.42,
+    "t1": 6.236
+   }
+  },
+  {
+   "shot": "1.4r",
+   "line": {
+    "key": "1.4r",
+    "who": "ROBOT",
+    "text": "Reply drafted. Human approval required.",
+    "t0": 6.25,
+    "t1": 8.618
+   }
+  },
+  {
+   "shot": "1.4d",
+   "line": {
+    "key": "1.4d",
+    "who": "DON",
+    "text": "Approved.",
+    "t0": 8.818,
+    "t1": 9.536
+   }
+  },
+  {
+   "shot": "1.4b",
+   "line": {
+    "key": "1.4b",
+    "who": "DON",
+    "text": "Stupid human.",
+    "t0": 11.0,
+    "t1": 12.169
+   }
+  }
+ ]
+}
