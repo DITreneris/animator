@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v32"
+V = "v33"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -84,6 +84,7 @@ if V30[0]:
     PLAN28["7.2b"] = ("7.2b", 16 / 12.0, "c1b", -0.55)       # the pop lands on "-print" (7.3 starts 1.37 s into the take; the pop is 2 drawings in)
 V31 = [True]                                              # v31 (25 Nov, cold test v30, Tomas's picks): the raven whole in the lamp's light at 0:00 and no red gap; no tube in her hand before the office; the compact open with her in its mirror, her shadow over it; her back; faces for the bar's guests; a glove over her mouth; the seam two drawings early. False draws v30
 V32 = [True]                                              # v32 (25 Nov, the review of v31's stills; Tomas: "tobulinam"; polish, no rebuild): the glove's fingers, the compact drawn at its own size (hinge, sheen, powder, her own figure in the mirror), wet stones (on4_weather.glints, Office Noir 4) and contact shadows, the wrap and her hair from behind, three different guests in the dark with the smoke over them, the raven's rim as light. False draws v31
+V33 = [True]                                              # v33 (25 Nov, the hands audit; Tomas: "tobulinam"): the series' one hand (hands_ps) on her rig, a shape per pose; her inserts a forearm from the frame's edge with that hand (on2_hands). False draws v32
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
@@ -947,7 +948,13 @@ def m4_1a(k, tl):
         g = 1 - ease((d12 - 1) / 3.0)                                        # in, from the left
     else:
         g = ease((d12 - 9) / 3.0)                                            # and gone again: she has not slowed
-    if g is not None:
+    if g is not None and V33[0]:                                            # v33: a forearm from the edge, the coin in her fingers, then let go
+        import on2_hands as oh
+        ox, oy = -230 * g, -150 * g
+        opened = d12 >= 6
+        oh.insert(k, (-80 + ox, 250 + oy), (96 + ox, 388 + oy), "palm" if opened else "grab", 96,
+                  under=None if opened else (lambda: b.coin(k, 190 + ox, 470 + oy, 34)))
+    elif g is not None:
         ox, oy = -230 * g, -150 * g
         n._seg(k, -60 + ox, 300 + oy, 110 + ox, 420 + oy, 96, 84, n.KEY, 3.2)
         ellipse(k, 118 + ox, 428 + oy, 48, 44, n.KEY, 336, shadow=False, lw=3.2)
@@ -1138,6 +1145,7 @@ CLOCK = {"1": 55, "2": 55, "3": 56, "4": 57, "5": 58, "6": 59, "7": 59, "8": 60}
 def frame(row, tl, t):
     n.NO_BAG[0] = n.HIDE2[0] = n.BACK2[0] = V31[0]
     n.HIDE3[0] = n.BACK3[0] = rv.RIM2[0] = V31[0] and V32[0]
+    n.HAND3[0] = V31[0] and V32[0] and V33[0]
     if rv.RAVEN[0] and not END.get("on") and row["shot"] == "1.1" and int(round(tl * 12)) >= 5:    # v29: 1.2's start is rounded up past
         row, tl = [r for r in timing.rows if r["shot"] == "1.2"][0], 0.0                # its drawing; the wipe is on 1.2 already
     fn, tilt, post = SHOTS[row["shot"]]

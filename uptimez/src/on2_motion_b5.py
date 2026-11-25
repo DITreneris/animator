@@ -249,6 +249,10 @@ def m5_5(k, tl, dur):
         ox, oy = -112 + 28 * i + (14 if d % 2 else 0), (-14 if d % 2 else 0)
     else:
         ox, oy = 0, (-12 if d in (11, 14) else 0)                         # it stops there, and taps
+    if getattr(m, "V33", [False])[0]:                                     # v33: a forearm from the edge, the index on the plan
+        import on2_hands as oh
+        oh.insert(k, (640, 1010), (452 + ox, 868 + oy), "point", 104)
+        return
     n._seg(k, 600, 1000, 420 + ox, 850 + oy, 92, 80, n.KEY, 3.2)
     n.hand(k, 420 + ox, 850 + oy, 5.0, -1.02, 0.0)
 
@@ -302,6 +306,17 @@ def m5_6(k, tl, dur):
         else:
             pen = (470 + (d - 24) * 14, 640 + (d - 24) * 18)
     ox, oy = pen[0] - 366, pen[1] - 640                                   # the lipstick's tip is at (366, 640) on the board
+    if getattr(m, "V33", [False])[0]:                                     # v33: the lipstick first, then her fist round it, its tip out past the fingers
+        import on2_hands as oh
+
+        def stick():
+            if d >= 5:
+                cc.save(); cc.translate(366 + ox, 640 + oy); cc.rotate(-0.80); cc.scale(5.2, 5.2); cc.translate(0, 12)
+                rect(k, -3.4, -2, 6.8, 22, (0.12, 0.12, 0.14), 331, shadow=False, lw=1.0)
+                cut(k, [(-2.6, -2), (-2.6, -9), (2.6, -12), (2.6, -2)], n.KEY, shadow=False, lw=0.9)
+                cc.restore()
+        oh.insert(k, (650, 960), (470 + ox, 742 + oy), "fist", 100, under=stick)
+        return
     n._seg(k, 620, 980, 440 + ox, 720 + oy, 96, 84, n.KEY, 3.2)
     ellipse(k, 436 + ox, 716 + oy, 50, 46, n.KEY, 336, shadow=False, lw=3.2)
     if d >= 5:                                                            # her lipstick

@@ -175,6 +175,10 @@ def m6_2(k, tl, dur):
     g = m.ease((d + 1) / 4.0)                                             # her glove
     ox = -220 * (1 - g) + (0 if d < 10 else min(150, (d - 10) * 22))      # in; then her finger goes along the bays to the corner
     tap = -10 if d in (18, 21) else 0
+    if getattr(m, "V33", [False])[0]:                                     # v33: a forearm from the edge, the index on the plan
+        import on2_hands as oh
+        oh.insert(k, (-90 + ox * 0.4, 800), (84 + ox, 622 + tap), "point", 104, arm=-1)
+        return
     n._seg(k, -60 + ox * 0.4, 760, 110 + ox, 600 + tap, 96, 84, n.KEY, 3.2)
     n.hand(k, 110 + ox, 600 + tap, 5.0, 1.2, 0.0, flip=-1)
 

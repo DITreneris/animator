@@ -496,8 +496,29 @@ def _glove_arm(k, sx, sy, a1, a2, seed, ln=48, w=17):
     _seg(k, gx, gy, ex, ey, w + 3, w + 1, KEY)                                                  # the glove's top
     _seg(k, ex, ey, hx, hy, w, w * 0.86, KEY)
     ellipse(k, ex, ey, w * 0.52, w * 0.52, KEY, seed + 2, shadow=False, outline=False)          # the elbow, closed
+    if HAND3[0]:                                           # v33: the series' one hand (hands_ps), in her glove's red
+        import hands_ps as hp
+        g = GEST3[0][GEST3[1] % 2]; arm = -1 if GEST3[1] % 2 == 0 else 1; GEST3[1] += 1
+        if g != "tuck":
+            hp.draw(k, g, hx, hy, w * 1.42, KEY, dd(a1 + a2), arm)
+        return hx, hy
     ellipse(k, hx, hy, w * 0.6, w * 0.6, KEY, seed, shadow=False, lw=2)
     return hx, hy
+
+
+HAND3 = [False]                                            # (25 Nov, Noir 2 v33; Tomas: "we have big problems with fingers and hands in this film") hands_ps.draw instead of a ball at each wrist; a shape per pose
+GEST3 = [("quiet", "quiet"), 0]
+POSE_HANDS = {"g_mirror": ("quiet", "tuck"), "g_fan": ("quiet", "tuck"), "g_hide": ("tuck", "tuck"), "g_offer": ("quiet", "palm"),
+              "g_count": ("quiet", "tuck"), "g_beckon": ("quiet", "tuck"), "g_beckon3": ("quiet", "tuck"), "g_run3": ("fist", "fist"), "_g_run_s": ("fist", "fist")}
+
+
+def held(k, x, y, s, shape="fist", d=(0.0, -1.0), arm=1):
+    """v33: the hand round a thing already drawn (the thing first, then the fingers over it); the old ball without HAND3"""
+    if HAND3[0]:
+        import hands_ps as hp
+        hp.draw(k, shape, x, y, 24 * s, KEY, d, arm)
+        return True
+    return False
 
 
 SPARKLE2 = [False]                                         # v14, opt-in: the diamonds sparkle only when told to, and never from behind
@@ -919,6 +940,12 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
     if lift:
         orig = ss.sofia
         items.append((ss, "sofia", lambda *a, **kw: orig(*(a[:11] + (0.23,) + a[12:]), **kw)))   # a stride
+    gl, gr = POSE_HANDS.get(pose, ("quiet", "quiet"))
+    if roll:
+        gl = "tuck"
+    if mirror or fan or lipstick:
+        gr = "tuck"
+    GEST3[0] = (gl, gr); GEST3[1] = 0
     with _swap(*items):
         o = so.sofia(k, x, feet, s, pose, face, look=look, lag=lag, badge=False, tablet_kind=None, lean=lean, mouth=mouth,
                      sparkle=sparkle, seed=seed)
@@ -938,10 +965,12 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
         ellipse(k, lx, ly, 10.2 * s, 10.2 * s, KEY, seed + 361, shadow=False, lw=2 * s)
     if mirror or pose == "g_mirror":
         compact2(k, rx + 2 * s, ry - 22 * s, s * 0.9, 0.12, hat=mirror == "hat", seed=seed + 362)
-        ellipse(k, rx, ry, 10.2 * s, 10.2 * s, KEY, seed + 363, shadow=False, lw=2 * s)
+        if not held(k, rx, ry + 2 * s, s):
+            ellipse(k, rx, ry, 10.2 * s, 10.2 * s, KEY, seed + 363, shadow=False, lw=2 * s)
     if fan or pose == "g_fan":
         money(k, rx, ry - 2 * s, s * 1.15, 0.0, 5, seed + 364)
-        ellipse(k, rx, ry, 10.2 * s, 10.2 * s, KEY, seed + 365, shadow=False, lw=2 * s)
+        if not held(k, rx, ry + 2 * s, s):
+            ellipse(k, rx, ry, 10.2 * s, 10.2 * s, KEY, seed + 365, shadow=False, lw=2 * s)
     if lipstick:
         c.save(); c.translate(rx - 4 * s, ry - 6 * s); c.rotate(-0.5); c.scale(s, s)
         rect(k, -3.4, -2, 6.8, 15, (0.12, 0.12, 0.14), seed + 331, shadow=False, lw=1.3)
@@ -956,7 +985,8 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
         ellipse(k, rx, ry, 11.5 * s, 11.5 * s, KEY, seed + 335, shadow=False, lw=2 * s)
     if roll or pose == "g_hide":
         ac.roll(k, lx + 10 * s, ly - 2 * s, s * 0.62, 0.55, ln=150)
-        ellipse(k, lx, ly, 10.2 * s, 10.2 * s, KEY, seed + 333, shadow=False, lw=2 * s)
+        if not held(k, lx, ly, s, d=(0.5, -0.85), arm=-1):
+            ellipse(k, lx, ly, 10.2 * s, 10.2 * s, KEY, seed + 333, shadow=False, lw=2 * s)
     if pose == "g_hide":                                   # her gloved hand over her mouth
         hx, hy = o["head"]
         c.save(); c.translate(hx + 2 * s, hy + 33 * s); c.rotate(-0.16); c.scale(s, s)
@@ -1031,6 +1061,7 @@ def star_back(k, x, feet, s=1.0, step=None, wrap=True, lag=(0, 0), seed=7):
         cut(k, [(-50, bt + 2), (-36, bt - 8), (36, bt - 8), (50, bt + 2), (46, bt + 22), (-46, bt + 22)], so.SKIN, shadow=False, lw=2)
         arms = [(-46, -16 + swing, 10), (46, 16 + swing, -10)]
     elbows = []
+    GEST3[0] = ("quiet", "quiet"); GEST3[1] = 0
     for sx, a1, a2 in arms:
         _glove_arm(k, sx, bt + 14, a1, a2, seed + 9 + sx, w=15)
         elbows.append((sx + math.sin(math.radians(a1)) * 48, bt + 14 + math.cos(math.radians(a1)) * 48))
