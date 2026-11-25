@@ -322,3 +322,19 @@ The barge-hauler (Tomas's pick after the third misread) was tried as silhouettes
 - the board's bump.
 
 The why is carried by 2.10 and the whole board. The camera is the board's −100 (at −85 the HR badge is cut at the left). Checks pass. Not yet re-tested on viewers: the contact, the smug pause and the fall each read 3 of 3 in v2 and v3.
+
+H v4 cold test (25 Nov), three new viewers (BF, BG at 216 px, BH at 270 px):
+
+| | BF | BG | BH | Verdict |
+|---|---|---|---|---|
+| Don smug, unaware | yes | yes | yes | 3 of 3 |
+| The robot charges into him | yes ("a ram") | yes ("on purpose") | yes ("ran into him") | 3 of 3 |
+| Contact (frame 13) | yes | yes | yes | 3 of 3 |
+| He's knocked over, the robot's fault | yes | yes | yes | 3 of 3 |
+
+**Pass; H is closed** (v4, one over the budget of 3, with the reason logged above).
+
+Shared notes for the film (stage 7), not fixed in the test:
+- **The hit is rushed** (3 of 3): the charge and the hit take two drawings. In the film, hold the contact one drawing longer and let the charge start a little earlier.
+- **"Frozen mid-fall, never lands"** (3 of 3): that's the test's padding on the board's end pose. In the film he lands or the cut comes on the tilt (2.11 is 1.6 s, then 3.1).
+- **The 2.10b arm hold drags** (0.6 s, 3 of 3), and the robot is half out of frame at the cut (2 of 3).

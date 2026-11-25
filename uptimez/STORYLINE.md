@@ -194,5 +194,5 @@ People who are exceptionally good at one thing, disastrously bad at another, and
 ## Next
 
 1. Release in order: 11 One Star, 12 Daddy's Home (fix plan, then under 90 s), 13 The Offer.
-2. Episode 14 *Pick a Side*: script v8, voices, layouts v3, board v3 (38 shots, 41 key frames, all checks 0 faults, cold-viewer pass) and motion tests A–G are done; next the animation (stage 7), after 12's fix plan.
+2. Episode 14 *Pick a Side*: script v8, voices, layouts v3, board v3 (38 shots, 42 key frames, 66.3 s, all checks 0 faults, cold-viewer pass), outside review round 1 built, motion tests A–K and a 540 animatic are done; next the animation (stage 7, `pick-a-side-animation-plan-v1.md`), after 12's fix plan.
 3. Before 17: plant why the Client survives.
