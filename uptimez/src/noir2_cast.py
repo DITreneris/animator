@@ -218,6 +218,17 @@ def shadow(k, x, feet, s=1.0, pose="open", hat_tilt=-0.10, lit_hand=1, look_down
         c.save(); c.translate(-44, bt + 20); c.rotate(a * math.pi / 4); c.set_line_width(1.6)
         c.move_to(-6, 0); c.line_to(6, 0); c.stroke(); c.restore()
     c.restore()
+    if lit_hand is not None and ARMS2[0] and SLEEVE[0]:    # v35 (off from v36, cold test v35: "a wire with a glove", 3/3): the sleeve to it, black, its edge caught by the light, the cuff white
+        wx, wy = o["hands"][lit_hand]
+        sx_, sy_ = x + (1 if lit_hand else -1) * 52 * s, feet + (bt + 20) * s
+        mx_, my_ = (sx_ + wx) / 2 + (8 if lit_hand else -8) * s, (sy_ + wy) / 2 + 14 * s
+        _seg(k, sx_, sy_, mx_, my_, 30 * s, 26 * s, BLACK, 2.0 * s)
+        _seg(k, mx_, my_, wx, wy, 26 * s, 22 * s, BLACK, 2.0 * s)
+        c.set_source_rgb(0.62, 0.62, 0.66); c.set_line_width(2.2 * s); c.set_line_cap(1)
+        c.move_to(sx_, sy_ - 12 * s); c.line_to(mx_, my_ - 12 * s); c.line_to(wx, wy - 11 * s); c.stroke()
+        a_ = math.atan2(wy - my_, wx - mx_)
+        c.save(); c.translate(wx - math.cos(a_) * 8 * s, wy - math.sin(a_) * 8 * s); c.rotate(a_)
+        rect(k, -5 * s, -12 * s, 10 * s, 24 * s, (0.95, 0.95, 0.93), seed + 6, shadow=False, lw=1.6 * s); c.restore()   # the cuff
     if lit_hand is not None:
         wx, wy = o["hands"][lit_hand]
         ellipse(k, wx, wy, co.HAND * s, co.HAND * s, co.SKIN, seed + 3, shadow=False, lw=2 * s)
@@ -286,7 +297,15 @@ def bartender(k, x, feet, s=1.0, brow=False, look=(-0.6, 0.0), seed=700, act=Non
         bottle(k, rx, ry, s, -2.0, popped=False, seed=seed + 50)
         cut(k, [(lx - 15 * s, ly - 10 * s), (lx + 13 * s, ly - 14 * s), (lx + 17 * s, ly + 26 * s), (lx - 3 * s, ly + 34 * s),
                 (lx - 19 * s, ly + 18 * s)], (0.94, 0.94, 0.92), shadow=False, lw=1.8 * s)
-        ellipse(k, rx, ry, 13 * s, 12 * s, cb.M_SKIN, seed + 51, shadow=False, lw=2.0 * s)
+        if ARMS2[0]:                                       # v35: his fist round the bottle's neck (hands_ps), not a ball on a joint
+            import hands_ps as hp
+            keep = hp.GLOVE[0]; hp.GLOVE[0] = None
+            try:
+                hp.draw(k, "fist", rx + 6 * s, ry - 4 * s, 22 * s, cb.M_SKIN, (math.cos(-2.0 + math.pi), math.sin(-2.0 + math.pi)), 1)
+            finally:
+                hp.GLOVE[0] = keep
+        else:
+            ellipse(k, rx, ry, 13 * s, 12 * s, cb.M_SKIN, seed + 51, shadow=False, lw=2.0 * s)
         o["mouth"] = (rx - 0.909 * 62 * s, ry + 0.416 * 62 * s)
         return o
     c.save(); c.translate(rx + 2 * s, ry - 16 * s); c.scale(s, s)                              # the glass
@@ -496,8 +515,29 @@ def _glove_arm(k, sx, sy, a1, a2, seed, ln=48, w=17):
     _seg(k, gx, gy, ex, ey, w + 3, w + 1, KEY)                                                  # the glove's top
     _seg(k, ex, ey, hx, hy, w, w * 0.86, KEY)
     ellipse(k, ex, ey, w * 0.52, w * 0.52, KEY, seed + 2, shadow=False, outline=False)          # the elbow, closed
+    if HAND3[0]:                                           # v33: the series' one hand (hands_ps), in her glove's red
+        import hands_ps as hp
+        g = GEST3[0][GEST3[1] % 2]; arm = -1 if GEST3[1] % 2 == 0 else 1; GEST3[1] += 1
+        if g != "tuck":
+            hp.draw(k, g, hx, hy, w * 1.42, KEY, dd(a1 + a2), arm)
+        return hx, hy
     ellipse(k, hx, hy, w * 0.6, w * 0.6, KEY, seed, shadow=False, lw=2)
     return hx, hy
+
+
+HAND3 = [False]                                            # (25 Nov, Noir 2 v33; Tomas: "we have big problems with fingers and hands in this film") hands_ps.draw instead of a ball at each wrist; a shape per pose
+GEST3 = [("quiet", "quiet"), 0]
+POSE_HANDS = {"g_mirror": ("quiet", "tuck"), "g_fan": ("quiet", "tuck"), "g_hide": ("tuck", "tuck"), "g_offer": ("palm", "quiet"),
+              "g_count": ("quiet", "tuck"), "g_beckon": ("quiet", "tuck"), "g_beckon3": ("quiet", "tuck"), "g_run3": ("fist", "fist"), "_g_run_s": ("fist", "fist")}
+
+
+def held(k, x, y, s, shape="fist", d=(0.0, -1.0), arm=1):
+    """v33: the hand round a thing already drawn (the thing first, then the fingers over it); the old ball without HAND3"""
+    if HAND3[0]:
+        import hands_ps as hp
+        hp.draw(k, shape, x, y, 24 * s, KEY, d, arm)
+        return True
+    return False
 
 
 SPARKLE2 = [False]                                         # v14, opt-in: the diamonds sparkle only when told to, and never from behind
@@ -561,8 +601,64 @@ def _cloth(c, d_, fill=None, lw=2.0):
         else:
             c.curve_to(*cmd[1:])
     c.close_path()
+    if FUR[0] and (fill is None or fill == WRAP):
+        return _fur_path(c, c.copy_path_flat(), lw)
     c.set_source_rgb(*(fill or WRAP)); c.fill_preserve()
     c.set_source_rgb(*INK); c.set_line_width(lw); c.set_line_join(1); c.stroke()
+
+
+def _fur_path(c, path, lw=2.0, tuft=2.4, step=7.0):
+    """v35: the same shape with a fur edge: the outline walked every few units, every other point pushed out"""
+    pts = [p[1] for p in path if p[0] in (cairo.PATH_MOVE_TO, cairo.PATH_LINE_TO)]
+    if len(pts) < 3:
+        return
+    area = sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * pts[i][1] for i in range(len(pts)))
+    out = -1 if area > 0 else 1
+    res = []
+    for i in range(len(pts)):
+        (x0, y0), (x1, y1) = pts[i], pts[(i + 1) % len(pts)]
+        L = math.hypot(x1 - x0, y1 - y0)
+        if L < 1e-6:
+            continue
+        nx, ny = out * (y1 - y0) / L, -out * (x1 - x0) / L
+        k_ = max(1, int(L / step))
+        for j in range(k_):
+            u = j / float(k_)
+            push = tuft * (0.6 + 0.4 * ((len(res) * 7) % 5) / 4.0) if (len(res) % 2) else 0.0    # uneven, soft
+            res.append((x0 + (x1 - x0) * u + nx * push, y0 + (y1 - y0) * u + ny * push))
+    c.new_path(); c.move_to(*res[0])
+    for p in res[1:]:
+        c.line_to(*p)
+    c.close_path()
+    c.set_source_rgb(*WRAP); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(lw * 0.8); c.set_line_join(1); c.stroke_preserve()
+    c.set_source_rgba(*WRAP_PALE, 0.45); c.set_line_width(max(0.8, lw * 0.45)); c.stroke()                 # the light in the fur's edge
+
+
+def fur_poly(k, pts, lw=1.8):
+    """v35: a polygon (a cut() shape) with the fur edge"""
+    c = k.c
+    c.new_path(); c.move_to(*pts[0])
+    for p in pts[1:]:
+        c.line_to(*p)
+    c.close_path()
+    _fur_path(c, c.copy_path_flat(), lw)
+
+
+def stole(k, x, feet, s, seed=0):
+    """v35: the fur stole worn on her shoulders: across the back of her neck and down over each shoulder, its ends
+    to the top of her arms (not looped at her elbows)"""
+    c = k.c
+    c.save(); c.translate(x, feet); c.scale(s, s)
+    for side in (-1, 1):
+        sx, sy = side * 39, -214.0
+        _cloth(c, [("M", sx - side * 18, sy - 10), ("C", sx + side * 8, sy - 18, sx + side * 24, sy - 4, sx + side * 26, sy + 22),
+                   ("C", sx + side * 28, sy + 52, sx + side * 22, sy + 74, sx + side * 14, sy + 82), ("C", sx + side * 6, sy + 70, sx + side * 2, sy + 40, sx - side * 6, sy + 14),
+                   ("C", sx - side * 12, sy + 4, sx - side * 18, sy - 2, sx - side * 18, sy - 10)])
+        c.set_source_rgb(*tuple(0.5 * a_ + 0.5 * b_ for a_, b_ in zip(WRAP_PALE, WRAP))); c.set_line_width(1.1); c.set_line_cap(1)
+        for i in range(5):                                                                       # its pile, a few short strokes
+            yy = sy + 6 + i * 13
+            c.move_to(sx + side * (8 + (i % 2) * 6), yy); c.line_to(sx + side * (14 + (i % 2) * 6), yy + 6); c.stroke()
+    c.restore()
 
 
 def _curve(c, pts, col, lw):
@@ -890,6 +986,11 @@ def money(k, x, y, s=1.0, ang=0.0, n=5, seed=690):
     c.restore()
 
 
+FUR = [False]                                              # (25 Nov, Noir 2 v35, cold test v34: the wrap read as "black tubes", "a second pair of arms", "an umbrella") a fur stole: a tufted edge, worn on the shoulders
+ARM3_HIGH = [False]                                        # v40 (the arm's second review): the elbow up, near his body; the hand kept inside his reach
+ARM3 = [False]                                             # (25 Nov, Noir 2 v39, the arm's review) the detective's lens arm: two bones of fixed length, tapering, a round elbow with one fold, his hand (hands_ps fist) on the handle, the glass drawn in his hand's frame
+SLEEVE = [False]                                           # v35's sleeve on the Shadow's lit hand; off (Tomas, 25 Nov: undo it)
+ARMS2 = [False]                                            # (25 Nov, v35) the Shadow's lit hand on a sleeve from his shoulder; the detective's lens arm bent at the elbow; the bartender's bottle hand; her back's hands steady
 HIDE3 = [False]                                            # (25 Nov, v32: "v31's glove is a card") four fingers bent round her face, the thumb apart, folds at the wrist
 BACK3 = [False]                                            # (25 Nov, v32) from behind: the wrap hangs as cloth, uneven strands, bigger heels
 NO_BAG = [False]                                           # (25 Nov, Noir 2 v31) no silver tube in her hand: 2/3 cold viewers took it for the blueprint she only finds later
@@ -919,12 +1020,20 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
     if lift:
         orig = ss.sofia
         items.append((ss, "sofia", lambda *a, **kw: orig(*(a[:11] + (0.23,) + a[12:]), **kw)))   # a stride
+    gl, gr = POSE_HANDS.get(pose, ("quiet", "quiet"))
+    if roll:
+        gl = "tuck"
+    if mirror or fan or lipstick:
+        gr = "tuck"
+    GEST3[0] = (gl, gr); GEST3[1] = 0
     with _swap(*items):
         o = so.sofia(k, x, feet, s, pose, face, look=look, lag=lag, badge=False, tablet_kind=None, lean=lean, mouth=mouth,
                      sparkle=sparkle, seed=seed)
     (lx, ly), (rx, ry) = o["hands"]
     c = k.c
-    if wrap and v3 and not running and not lean:
+    if wrap and FUR[0] and not running:
+        stole(k, x, feet, s, seed)
+    elif wrap and v3 and not running and not lean:
         for i, (ex, ey) in enumerate(_elbows(pose, x, feet, s)):
             if ey > feet + (so.SH[i][1] + 26) * s:           # only on an arm that hangs
                 _drape3(k, ex, ey, s, seed + 350 + i, side=-1 if i == 0 else 1)
@@ -938,10 +1047,12 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
         ellipse(k, lx, ly, 10.2 * s, 10.2 * s, KEY, seed + 361, shadow=False, lw=2 * s)
     if mirror or pose == "g_mirror":
         compact2(k, rx + 2 * s, ry - 22 * s, s * 0.9, 0.12, hat=mirror == "hat", seed=seed + 362)
-        ellipse(k, rx, ry, 10.2 * s, 10.2 * s, KEY, seed + 363, shadow=False, lw=2 * s)
+        if not held(k, rx, ry + 2 * s, s):
+            ellipse(k, rx, ry, 10.2 * s, 10.2 * s, KEY, seed + 363, shadow=False, lw=2 * s)
     if fan or pose == "g_fan":
         money(k, rx, ry - 2 * s, s * 1.15, 0.0, 5, seed + 364)
-        ellipse(k, rx, ry, 10.2 * s, 10.2 * s, KEY, seed + 365, shadow=False, lw=2 * s)
+        if not held(k, rx, ry + 2 * s, s):
+            ellipse(k, rx, ry, 10.2 * s, 10.2 * s, KEY, seed + 365, shadow=False, lw=2 * s)
     if lipstick:
         c.save(); c.translate(rx - 4 * s, ry - 6 * s); c.rotate(-0.5); c.scale(s, s)
         rect(k, -3.4, -2, 6.8, 15, (0.12, 0.12, 0.14), seed + 331, shadow=False, lw=1.3)
@@ -949,14 +1060,18 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
         c.restore()
     if pose in ("g_count", "g_beckon"):
         _glove_finger(k, rx - 1 * s, ry - 5 * s, s, -0.5 if pose == "g_count" else 0.15, seed + 332)
-    if pose == "g_beckon3" and LOOK[0] >= 4:               # v4: a hand: palm, thumb, and one finger curling toward her
+    if pose == "g_beckon3" and HAND3[0]:                  # v35: the series' glove, the index curling back (hands_ps "beckon")
+        import hands_ps as hp
+        hp.draw(k, "beckon", rx, ry + 2 * s, 30 * s, KEY, (0.15, -1.0), 1)
+    elif pose == "g_beckon3" and LOOK[0] >= 4:             # v4: a hand: palm, thumb, and one finger curling toward her
         hand(k, rx, ry + 6 * s, s * 1.5, 0.12, curl, 1, seed + 336)
     elif pose == "g_beckon3":                              # the finger, large, curling toward her
         _glove_finger(k, rx - 2 * s, ry - 6 * s, s * 1.45, -0.42, seed + 332)
         ellipse(k, rx, ry, 11.5 * s, 11.5 * s, KEY, seed + 335, shadow=False, lw=2 * s)
     if roll or pose == "g_hide":
         ac.roll(k, lx + 10 * s, ly - 2 * s, s * 0.62, 0.55, ln=150)
-        ellipse(k, lx, ly, 10.2 * s, 10.2 * s, KEY, seed + 333, shadow=False, lw=2 * s)
+        if not held(k, lx, ly, s, d=(0.5, -0.85), arm=-1):
+            ellipse(k, lx, ly, 10.2 * s, 10.2 * s, KEY, seed + 333, shadow=False, lw=2 * s)
     if pose == "g_hide":                                   # her gloved hand over her mouth
         hx, hy = o["head"]
         c.save(); c.translate(hx + 2 * s, hy + 33 * s); c.rotate(-0.16); c.scale(s, s)
@@ -968,12 +1083,14 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
                     for q in pts[1:]:
                         c.line_to(*q)
                     c.stroke()
+            c.set_source_rgba(0, 0, 0, 0.22); c.save(); c.translate(-2, 9); c.scale(26, 15); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()   # its shadow on her face
             cap([(40, 6), (24, 2)], 15)                                                           # the wrist
             c.new_path(); c.arc(16, 0, 13.5, 0, 2 * math.pi); c.set_source_rgb(*KEY); c.fill_preserve()   # the palm, on her cheek
             c.set_source_rgb(*INK); c.set_line_width(1.8); c.stroke()
             cap([(12, 10), (4, 17), (-3, 15)], 6.0)                                               # the thumb, apart, under her chin
+            sp = 1.35 if ARMS2[0] else 1.0                         # v35: the fingers apart, a dark line of her face between each
             for (y0, y1, y2, ln, w) in ((-10, -12.5, -11, 30, 5.6), (-4, -5.5, -3.5, 34, 6.0), (2.5, 2, 4.5, 32, 5.8), (8.5, 9, 12, 26, 5.2)):
-                cap([(8, y0), (8 - ln * 0.55, y1), (8 - ln, y2)], w)                                # four fingers, bent round her face
+                cap([(8, y0 * sp), (8 - ln * 0.55, y1 * sp), (8 - ln, y2 * sp)], w * (0.92 if ARMS2[0] else 1.0))   # four fingers, bent round her face
             c.set_source_rgb(*GOWN_SHADE); c.set_line_width(1.3); c.set_line_cap(1)
             for wx in (26, 31):                                                                  # the glove's folds at the wrist
                 c.move_to(wx, -5); c.curve_to(wx + 2, -1, wx + 2, 5, wx + 1, 10); c.stroke()
@@ -1029,8 +1146,10 @@ def star_back(k, x, feet, s=1.0, step=None, wrap=True, lag=(0, 0), seed=7):
     arms = [(-39, -12 + swing, 8), (39, 12 + swing, -8)]
     if BACK2[0]:                                           # her shoulders, and the arms out from them
         cut(k, [(-50, bt + 2), (-36, bt - 8), (36, bt - 8), (50, bt + 2), (46, bt + 22), (-46, bt + 22)], so.SKIN, shadow=False, lw=2)
-        arms = [(-46, -16 + swing, 10), (46, 16 + swing, -10)]
+        sw2 = swing * (0.3 if ARMS2[0] else 1.0)           # v35: a small swing, so a hand never pops round her hip
+        arms = [(-46, -16 + sw2, 10), (46, 16 + sw2, -10)] if not ARMS2[0] else [(-46, -22 + sw2, 6), (46, 22 + sw2, -6)]
     elbows = []
+    GEST3[0] = ("quiet", "quiet"); GEST3[1] = 0
     for sx, a1, a2 in arms:
         _glove_arm(k, sx, bt + 14, a1, a2, seed + 9 + sx, w=15)
         elbows.append((sx + math.sin(math.radians(a1)) * 48, bt + 14 + math.cos(math.radians(a1)) * 48))
@@ -1038,10 +1157,12 @@ def star_back(k, x, feet, s=1.0, step=None, wrap=True, lag=(0, 0), seed=7):
         (ax, ay), (bx, by) = elbows
         _cloth(c, [("M", ax - 14, ay - 12), ("C", ax + 14, bt + 118, bx - 34, bt + 150, bx + 14, by - 12), ("L", bx + 17, by + 16),
                    ("C", bx - 26, bt + 196, ax + 24, bt + 166, ax - 17, ay + 16)])
-        _curve(c, (ax - 10, ay - 2, ax + 16, bt + 132, bx - 30, bt + 164, bx + 12, by - 2), WRAP_PALE, 1.5)
-        _curve(c, (ax - 12, ay + 9, ax + 18, bt + 150, bx - 28, bt + 182, bx + 13, by + 9), WRAP_PALE, 1.2)
+        soft = tuple(0.5 * a_ + 0.5 * b_ for a_, b_ in zip(WRAP_PALE, WRAP))           # v34: the folds' light half as strong
+        _curve(c, (ax - 10, ay - 2, ax + 16, bt + 132, bx - 30, bt + 164, bx + 12, by - 2), soft, 1.3)
+        _curve(c, (ax - 12, ay + 9, ax + 18, bt + 150, bx - 28, bt + 182, bx + 13, by + 9), soft, 1.0)
+        wind = 0.10 * math.sin(math.pi * 2 * ph * 0.5 + 0.6)                          # its ends move in the wind as she walks
         for i, (ex, ey) in enumerate(elbows):
-            c.save(); c.translate(ex + (-10 if i == 0 else 10), ey + 2); c.rotate(0.10 if i == 0 else -0.22)
+            c.save(); c.translate(ex + (-10 if i == 0 else 10), ey + 2); c.rotate((0.10 if i == 0 else -0.22) + wind * (1.0 if i else 0.6))
             _tail4(k, 1.0, -1 if i == 0 else 1, ln=1.0 if i == 0 else 1.35)
             c.restore()
     elif wrap and LOOK[0] >= 4:                            # v4: the swag hangs below her hair, the ends outside her arms
@@ -1300,6 +1421,16 @@ def glass_handle(k, x, y, r, ang=0.75, seed=715):
     """v3: the handle of the glass and the fist that holds it, so the eye in it has an owner. Draw before glass_view."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang)
+    if HAND3[0]:                                           # v34: the detective's cuff out of the frame, the handle, his fist round it (hands_ps)
+        import hands_ps as hp
+        cut(k, [(-r * 0.30, r * 1.78), (r * 0.30, r * 1.78), (r * 0.42, r * 3.4), (-r * 0.42, r * 3.4)], TRENCH, shadow=False, lw=2.6)
+        rect(k, -r * 0.10, r * 0.96, r * 0.20, r * 1.0, (0.16, 0.15, 0.17), seed, shadow=False, lw=2.2)
+        keep = hp.GLOVE[0]; hp.GLOVE[0] = None
+        try:
+            hp.draw(k, "fist", 0, r * 1.84, r * 0.62, d.SKIN, (0.0, -1.0), 1)
+        finally:
+            hp.GLOVE[0] = keep
+        c.restore(); return
     rect(k, -r * 0.10, r * 0.96, r * 0.20, r * 1.0, (0.16, 0.15, 0.17), seed, shadow=False, lw=2.2)
     ellipse(k, 0, r * 1.62, r * 0.36, r * 0.30, d.SKIN, seed + 1, shadow=False, lw=2.4)
     for i in range(4):
@@ -1461,7 +1592,63 @@ def detective_back(k, x, feet, s=1.0, steps=None, arm=None, wrap=False, seed=560
             seg_to = c.device_to_user(*arm_dev)
         else:
             seg_to = (side * 64, bt + 132)
-        _seg(k, sx_, sy_, seg_to[0], seg_to[1], 30, 26, T, 2.2)
+        if ARM3[0] and side == 1 and arm is not None:      # v39: the arm of the review: one sleeve, tapered, bent at a round elbow; the glass bound to the hand
+            import hands_ps as hp
+            sx_, sy_ = side * 50, bt + 16
+            U, F_ = 82.0, 76.0
+            tx, ty = seg_to
+            L = math.hypot(tx - sx_, ty - sy_)
+            reach = 0.86 if ARM3_HIGH[0] else 0.97                                          # v40: never straight, so the elbow stays up
+            if L > (U + F_) * reach:
+                f_ = (U + F_) * reach / L; tx, ty = sx_ + (tx - sx_) * f_, sy_ + (ty - sy_) * f_; L = (U + F_) * reach
+            a0 = math.atan2(ty - sy_, tx - sx_)
+            cosb = max(-1.0, min(1.0, (U * U + L * L - F_ * F_) / (2 * U * L)))
+            b_ = math.acos(cosb)
+            cands = [(sx_ + U * math.cos(a0 + b_), sy_ + U * math.sin(a0 + b_)), (sx_ + U * math.cos(a0 - b_), sy_ + U * math.sin(a0 - b_))]
+            if ARM3_HIGH[0]:                                                                # v40: the higher of the two, near his body
+                ex_, ey_ = min(cands, key=lambda e_: e_[1] + 0.4 * abs(e_[0] - sx_))
+            else:
+                ex_, ey_ = max(cands, key=lambda e_: e_[0] * side + 0.3 * e_[1])              # the elbow out, away from his body, and down
+            c.set_line_cap(1); c.set_line_join(1)
+            for col, wu, wf in ((INK, 33, 24), (T, 28.5, 19.5)):                            # one sleeve: the upper arm, then the forearm, narrower
+                c.set_source_rgb(*col)
+                c.set_line_width(wu); c.new_path(); c.move_to(sx_, sy_); c.line_to(ex_, ey_); c.stroke()
+                c.set_line_width(wf); c.new_path(); c.move_to(ex_, ey_); c.line_to(tx, ty); c.stroke()
+            c.set_source_rgb(*T); c.new_path(); c.arc(ex_, ey_, 13.0, 0, 2 * math.pi); c.fill()     # the elbow, round
+            c.set_source_rgb(*TS); c.set_line_width(2.0)                                     # one fold inside the elbow
+            mx_, my_ = (ex_ * 0.7 + tx * 0.3), (ey_ * 0.7 + ty * 0.3)
+            c.new_path(); c.move_to(ex_ + (mx_ - ex_) * 0.2, ey_ + (my_ - ey_) * 0.2 - 6); c.curve_to(ex_ - 2, ey_ - 4, ex_ - 6, ey_ + 2, ex_ - 10, ey_ + 8); c.stroke()
+            af = math.atan2(ty - ey_, tx - ex_)
+            c.set_source_rgb(*TS); c.set_line_width(2.2)                                     # the cuff
+            c.new_path(); c.move_to(tx - math.cos(af) * 8 - math.sin(af) * 10, ty - math.sin(af) * 8 + math.cos(af) * 10)
+            c.line_to(tx - math.cos(af) * 8 + math.sin(af) * 10, ty - math.sin(af) * 8 - math.cos(af) * 10); c.stroke()
+            hx_, hy_ = tx + math.cos(af) * 10, ty + math.sin(af) * 10
+            lang = 0.55 + 0.25 * (af + math.pi / 2)                                          # the glass: up and toward her, turning a little with the wrist
+            magnifier(k, hx_, hy_ + 6, 1.25, lang, seed=700)
+            keep = hp.GLOVE[0]; hp.GLOVE[0] = None
+            try:
+                hp.draw(k, "fist", tx, ty, 26, d.SKIN, (math.cos(af), math.sin(af)), 1)      # his fingers over the handle, the thumb across them
+            finally:
+                hp.GLOVE[0] = keep
+            r_ = 19.0 * 1.25
+            lcx, lcy = hx_ + math.sin(lang) * (22 + 19) * 1.25, hy_ + 6 - math.cos(lang) * (22 + 19) * 1.25
+            ARM3.append((c.user_to_device(lcx, lcy), c.user_to_device_distance(r_, 0)[0]))
+            hands.append(c.user_to_device(tx, ty))
+            continue
+        if ARMS2[0] and side == 1 and arm is not None:     # v35: two bones; the hand pulled in to reach, the elbow down
+            L = math.hypot(seg_to[0] - sx_, seg_to[1] - sy_); R = 150.0
+            if L > R * 0.95:
+                f_ = R * 0.95 / L; seg_to = (sx_ + (seg_to[0] - sx_) * f_, sy_ + (seg_to[1] - sy_) * f_)
+            L = math.hypot(seg_to[0] - sx_, seg_to[1] - sy_); h_ = math.sqrt(max(0.0, (R / 2) ** 2 - (L / 2) ** 2))
+            mx_, my_ = (sx_ + seg_to[0]) / 2, (sy_ + seg_to[1]) / 2
+            ex_, ey_ = mx_ + (seg_to[1] - sy_) / max(L, 1) * h_, my_ - (seg_to[0] - sx_) / max(L, 1) * h_
+            if ey_ < my_:
+                ex_, ey_ = mx_ - (seg_to[1] - sy_) / max(L, 1) * h_, my_ + (seg_to[0] - sx_) / max(L, 1) * h_
+            _seg(k, sx_, sy_, ex_, ey_, 32, 28, T, 2.2); ellipse(k, ex_, ey_, 14, 14, T, seed + 31, shadow=False, outline=False)
+            _seg(k, ex_, ey_, seg_to[0], seg_to[1], 28, 22, T, 2.2)
+            ARMS2.append(c.user_to_device(*seg_to))       # where the hand is now (the glass goes there)
+        else:
+            _seg(k, sx_, sy_, seg_to[0], seg_to[1], 30, 26, T, 2.2)
         hands.append(c.user_to_device(*seg_to))
         hx_, hy_ = seg_to if (side == 1 and arm is not None) else (side * 64, bt + 140)
         ellipse(k, hx_, hy_, 11, 12, d.SKIN, seed + 10 + side, shadow=False, lw=1.8)
@@ -1469,7 +1656,10 @@ def detective_back(k, x, feet, s=1.0, steps=None, arm=None, wrap=False, seed=560
         c.save(); c.translate(64 * wrap_side, bt + 146)    # v18, opt-in: wrap_side=1 is his right hand
         if wrap_big:                                       # v17, opt-in: wider, swinging out, so it reads at a distance
             c.rotate(0.25 if wrap_side < 0 else -0.25 + wrap_swing)
-            cut(k, [(-12, 0), (12, 0), (26, 70), (14, 150), (-6, 170), (-24, 120), (-22, 50)], (0.05, 0.05, 0.06), shadow=False, lw=1.8)
+            if FUR[0]:
+                fur_poly(k, [(-12, 0), (12, 0), (24, 40), (26, 70), (20, 110), (14, 150), (-6, 170), (-20, 140), (-24, 120), (-24, 80), (-22, 50)])
+            else:
+                cut(k, [(-12, 0), (12, 0), (26, 70), (14, 150), (-6, 170), (-24, 120), (-22, 50)], (0.05, 0.05, 0.06), shadow=False, lw=1.8)
         else:
             cut(k, [(-8, 0), (8, 0), (12, 60), (2, 110), (-10, 96), (-12, 50)], (0.05, 0.05, 0.06), shadow=False, lw=1.6)
         c.restore()

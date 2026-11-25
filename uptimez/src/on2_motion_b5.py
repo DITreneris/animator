@@ -19,6 +19,7 @@ she turns it over and writes in lipstick; nobody takes it; she looks back from t
 CASE CLOSED."""
 import math
 import cairo
+import client_ob as co
 from kit import INK, ellipse, rect, cut
 
 m = None                                                    # on2_motion, once it has called use()
@@ -90,12 +91,51 @@ def m5_1(k, tl, dur):
             g = cairo.RadialGradient(sx, 760, 40, sx, 760, 380)
             g.add_color_stop_rgba(0, 0.78, 0.78, 0.76, 0.85); g.add_color_stop_rgba(1, 0.78, 0.78, 0.76, 0.0)
             cc.set_source(g); cc.rectangle(-20, 300, m.W + 40, 700); cc.fill()
-        for i, (px, py, pr) in enumerate(((40, 900, 46), (120, 940, 40), (430, 930, 44), (512, 890, 48))):   # the people at the tables
-            cc.set_source_rgb(*n.BLACK); cc.new_path(); cc.arc(px, py - pr * 1.6, pr * 0.62, 0, 2 * math.pi); cc.fill()
-            cc.rectangle(px - pr, py - pr, 2 * pr, 200); cc.fill()
+        if getattr(m, "V37", [False])[0]:                                 # v37: tables, not boxes: a hat over each, a lamp's glow, a glass
+            for i, (px, py, pr) in enumerate(((40, 900, 46), (120, 940, 40), (430, 930, 44), (512, 890, 48))):
+                g = cairo.RadialGradient(px, py - 12, 2, px, py - 12, 60)
+                g.add_color_stop_rgba(0, 1, 0.97, 0.88, 0.55); g.add_color_stop_rgba(1, 1, 0.97, 0.88, 0.0)
+                cc.set_source(g); cc.new_path(); cc.arc(px, py - 12, 60, 0, 2 * math.pi); cc.fill()
+                cc.set_source_rgb(*n.BLACK)
+                cc.new_path(); cc.arc(px - pr * 0.6, py - pr * 1.45, pr * 0.5, 0, 2 * math.pi); cc.fill()            # a guest's head, behind his table
+                cc.rectangle(px - pr * 1.3, py - pr * 1.0, pr * 1.4, 200); cc.fill()                                 # his shoulders
+                cc.save(); cc.translate(px - pr * 0.6, py - pr * 1.85); cc.scale(pr * 0.9, pr * 0.16); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.restore(); cc.fill()   # the brim
+                cc.rectangle(px - pr * 1.0, py - pr * 2.35, pr * 0.8, pr * 0.5); cc.fill()                         # the crown
+                cc.set_source_rgb(0.60, 0.60, 0.64); cc.set_line_width(2); cc.new_path()
+                cc.save(); cc.translate(px - pr * 0.6, py - pr * 1.85); cc.scale(pr * 0.9, pr * 0.16); cc.arc(0, 0, 1, math.pi, 2 * math.pi); cc.restore(); cc.stroke()
+                cc.set_source_rgb(*n.BLACK); cc.save(); cc.translate(px, py); cc.scale(pr * 1.15, pr * 0.22); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.restore(); cc.fill()   # the table top
+                cc.rectangle(px - 5, py, 10, 120); cc.fill()                                                             # its stem
+                cc.set_source_rgb(0.95, 0.93, 0.86); cc.new_path(); cc.move_to(px + 8, py - 30); cc.line_to(px + 30, py - 30); cc.line_to(px + 19, py - 14); cc.close_path(); cc.fill()   # a coupe in the light
+                cc.rectangle(px + 18, py - 14, 2, 10); cc.fill()
+        else:
+            for i, (px, py, pr) in enumerate(((40, 900, 46), (120, 940, 40), (430, 930, 44), (512, 890, 48))):   # the people at the tables
+                cc.set_source_rgb(*n.BLACK); cc.new_path(); cc.arc(px, py - pr * 1.6, pr * 0.62, 0, 2 * math.pi); cc.fill()
+                cc.rectangle(px - pr, py - pr, 2 * pr, 200); cc.fill()
+    v38 = getattr(m, "V38", [False])[0]
+    if getattr(m, "V37", [False])[0]:                                     # v37: the guests behind her, each cut out of the room's light
+        cc_ = k.c
+        for x, y, ang, what, flip, d_in in HANDS:
+            e = d - d_in
+            if e < 0 and not v38:
+                continue
+            e = max(0, e)                                                 # v38: they stand there from the start; only the hand comes
+            gx = 20 if flip > 0 else m.W - 20
+            sc_ = 1.05 if y < 600 else 1.25
+            feet_ = y + 3.2 * e + 250 * sc_
+            gy_ = feet_ + co.HY * sc_ + 20
+            g = cairo.RadialGradient(gx + flip * 30, gy_, 20, gx + flip * 30, gy_, 190 * sc_)
+            g.add_color_stop_rgba(0, 0.86, 0.86, 0.84, 0.95); g.add_color_stop_rgba(1, 0.86, 0.86, 0.84, 0.0)
+            cc_.set_source(g); cc_.new_path(); cc_.arc(gx + flip * 30, gy_, 190 * sc_, 0, 2 * math.pi); cc_.fill()
+            if v38 and y < 600:                                           # v38: the far pair paler, in the room's haze
+                cc_.push_group()
+                n.shadow(k, gx, feet_, sc_, "open", hat_tilt=-0.10 * flip, lit_hand=None, look_down=0.3, seed=880 + d_in)
+                cc_.pop_group_to_source(); cc_.paint_with_alpha(0.55)
+            else:
+                n.shadow(k, gx, feet_, sc_, "open", hat_tilt=-0.10 * flip, lit_hand=None, look_down=0.3, seed=880 + d_in)
     ph = d % 6
-    swayed(k, 270, 1080, (1.0, 0.4, -0.4, -1.0, -0.4, 0.4)[ph],
-           lambda: n.star(k, 270, 1080 + (0, -5, -2, 0, -5, -2)[ph], 2.4, "g_stand", "interested", (0.0, -0.2), wrap=False,
+    swayed(k, 270, 1080, (1.0, 0.4, -0.4, -1.0, -0.4, 0.4)[ph] + (2.5 if v38 and d >= 5 else 0.0),
+           lambda: n.star(k, 270, 1080 + (0, -5, -2, 0, -5, -2)[ph], 2.4, "g_stand", ("interested" if d < 5 else "knowing") if v38 else "interested",
+                          ((0.0, -0.45) if d < 5 else (0.25, -0.35)) if v38 else (0.0, -0.2), wrap=False,
                           sparkle=1.0 if d % 8 < 3 else 0.2))
     for x, y, ang, what, flip, d_in in HANDS:                             # out of the dark, one after another; she passes them
         e = d - d_in
@@ -105,7 +145,17 @@ def m5_1(k, tl, dur):
         if m.LOOK3[0]:                                                    # v13: the arm, from the dark at the edge of the frame
             hx_, hy_ = x - flip * out, y + 3.2 * e
             n._seg(k, -60 if flip > 0 else m.W + 60, hy_ + 120, hx_ - flip * 40, hy_ + 10, 46, 40, n.BLACK, 2.4)
-        if getattr(m, "V31", [False])[0]:                                 # v31: a guest with a face at the frame's edge, the arm from his shoulder
+        if getattr(m, "V37", [False])[0]:                                 # v37 (Tomas: "the people at the sides, pathetic"): the film's own hat shadows, no faces; only the hand in the light
+            cc_ = k.c
+            gx = 20 if flip > 0 else m.W - 20
+            hy_ = y + 3.2 * e
+            sc_ = 1.05 if y < 600 else 1.25                                  # the far pair smaller
+            feet_ = hy_ + 250 * sc_
+            shx, shy = gx + flip * 52 * sc_, feet_ + (co.BT + 20) * sc_
+            n._seg(k, shx, shy, x - flip * out - flip * 40, hy_ + 10, 40 * sc_, 34 * sc_, n.BLACK, 2.4)
+            cc_.set_source_rgb(0.60, 0.60, 0.64); cc_.set_line_width(2.4); cc_.set_line_cap(1)      # the bar's light along the top of his arm
+            cc_.move_to(shx, shy - 18 * sc_); cc_.line_to(x - flip * out - flip * 40, hy_ - 8); cc_.stroke()
+        elif getattr(m, "V31", [False])[0]:                               # v31: a guest with a face at the frame's edge, the arm from his shoulder
             cc_ = k.c
             gx = 46 if flip > 0 else m.W - 46
             gy = y + 3.2 * e - 150
@@ -118,6 +168,11 @@ def m5_1(k, tl, dur):
             v32 = getattr(m, "V32", [False])[0]
             kind = {2: 0, 6: 1, 11: 2, 15: 1}[d_in] if v32 else -1          # v32: slicked hair; bald with a moustache; a hat; and nearer ones bigger
             skin = ((0.50, 0.50, 0.53), (0.44, 0.44, 0.47), (0.38, 0.38, 0.41))[kind] if v32 else (0.72, 0.72, 0.74)
+            v34 = getattr(m, "V34", [False])[0]
+            if v34:                                                         # v34: the far pair (upper) darker; each head at its own angle
+                far = y < 600
+                skin = tuple(a_ * (0.72 if far else 1.0) for a_ in skin)
+                cc_.save(); cc_.translate(gx, gy + 40); cc_.rotate({2: 0.10, 6: -0.16, 11: -0.07, 15: 0.14}[d_in]); cc_.translate(-gx, -gy - 40)
             hw = (46, 50, 44)[kind] if v32 else 46
             ellipse(k, gx, gy, hw, 52, skin, 880 + d_in, shadow=False, lw=2.4)          # his head, to her
             cc_.set_source_rgb(*n.BLACK)
@@ -136,7 +191,9 @@ def m5_1(k, tl, dur):
             cc_.set_source_rgb(*INK); cc_.new_path(); cc_.arc(ex_ + flip * 3, gy - 2, 4, 0, 2 * math.pi); cc_.fill()
             cc_.set_line_width(3); cc_.set_line_cap(1); cc_.move_to(ex_ - 10, gy - 16); cc_.line_to(ex_ + 10, gy - 19); cc_.stroke()
             cc_.move_to(gx + flip * 8, gy + 26); cc_.curve_to(gx + flip * 18, gy + 34, gx + flip * 30, gy + 30, gx + flip * 34, gy + 22); cc_.stroke()   # he smiles
-            cut(k, [(gx + flip * 44, gy + 4), (gx + flip * 58, gy + 12), (gx + flip * 44, gy + 16)], (0.72, 0.72, 0.74), shadow=False, lw=2)   # his nose, in profile
+            cut(k, [(gx + flip * 44, gy + 4), (gx + flip * 58, gy + 12), (gx + flip * 44, gy + 16)], skin if getattr(m, "V34", [False])[0] else (0.72, 0.72, 0.74), shadow=False, lw=2)   # his nose, in profile
+            if getattr(m, "V34", [False])[0]:
+                cc_.restore()
         elif getattr(m, "V30", [False])[0]:                               # v30: whose arm: a guest at the frame's edge, shoulder and head
             ox = 14 if flip > 0 else m.W - 14
             oy = y + 3.2 * e + 150
@@ -145,7 +202,7 @@ def m5_1(k, tl, dur):
             cc_.new_path(); cc_.move_to(ox - 80, oy + 140); cc_.line_to(ox - 70, oy - 30); cc_.line_to(ox + 70, oy - 30); cc_.line_to(ox + 80, oy + 140); cc_.close_path(); cc_.fill()
             cc_.set_source_rgb(0.55, 0.56, 0.60); cc_.set_line_width(3); cc_.new_path(); cc_.arc(ox, oy - 92, 40, -2.4 if flip > 0 else -1.6, -1.5 if flip > 0 else -0.7); cc_.stroke()
         n.rich_hand(k, x - flip * out, y + 3.2 * e, 1.9, ang, what, flip=flip)
-    if getattr(m, "V31", [False])[0] and getattr(m, "V32", [False])[0]:   # v32: the smoke over the guests, drifting; her alone in the light
+    if getattr(m, "V31", [False])[0] and getattr(m, "V32", [False])[0] and not getattr(m, "V37", [False])[0]:   # v32: the smoke over the guests, drifting; her alone in the light
         cc = k.c
         cc.save(); cc.new_path(); cc.rectangle(0, 0, 116, m.H); cc.rectangle(442, 0, m.W - 442, m.H); cc.clip()   # never over her: a tint on her red and the noir pass takes it for grey
         for i, (sx, sy, r) in enumerate(((20, 430, 150), (520, 400, 160), (30, 760, 170), (515, 740, 160))):
@@ -158,6 +215,10 @@ def m5_1(k, tl, dur):
             g.add_color_stop_rgba(0, 0, 0, 0, 0.42); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
             cc.set_source(g); cc.rectangle(0 if sx == 0 else m.W - 130, 300, 130, 660); cc.fill()
         cc.restore()
+        if getattr(m, "V34", [False])[0]:                                 # v34: the room's light along the top of her hair (her hair only: no red under it)
+            g = cairo.RadialGradient(290, 270, 8, 290, 285, 105)             # soft, no edge; it ends well above her gown
+            g.add_color_stop_rgba(0, 1, 1, 0.97, 0.40); g.add_color_stop_rgba(1, 1, 1, 0.97, 0.0)
+            cc.set_source(g); cc.new_path(); cc.arc(290, 285, 105, 0, 2 * math.pi); cc.fill()
 
 
 # ---------------------------------------------------------------- 5.2: she hides; he searches the wrong way
@@ -169,10 +230,12 @@ def m5_2(k, tl, dur):
     room(k)
     hid = 4 <= d < 28
     duck = 12 if 15 <= d < 19 else 0                                     # his glass comes her way: lower
+    v38 = getattr(m, "V38", [False])[0]
+    wink = v38 and 22 <= d < 28                                           # v38: the glass has gone past; she looks over the money at us and winks
     if hid:
-        o = n.star(k, 330, 1180 + duck, 2.3, "g_fan", "caught", (-1.0, -0.3), wrap=False, bag=False)
+        o = n.star(k, 330, 1180 + duck, 2.3, "g_fan", "wink" if wink else "caught", (0.0, 0.0) if wink else (-1.0, -0.3), wrap=False, bag=False)
         hx, hy = o["head"]
-        up = 60 if d in (4, 27) else 0
+        up = 60 if d in (4, 27) else (150 if wink else 0)
         n.money(k, hx - 60, hy + 128 + up - duck * 0.4, 3.75, -0.35, 5, 711)
         n.rich_hand(k, hx - 82, hy + 145 + up - duck * 0.4, 1.8, 0.5, "money")
     else:
@@ -181,12 +244,56 @@ def m5_2(k, tl, dur):
         n.rich_hand(k, hx - 130, hy + 280, 1.8, 0.3, "money")
     n.rich_hand(k, 520 - 3 * math.sin(d * 0.9), 900, 1.7, -0.2, "coupe", flip=-1)
     # him, from behind, in front of us: the coat's shoulders, the bald head, the headset, the glass held out
-    f = d / 30.0
+    v40 = getattr(m, "V40", [False])[0]
+    if v40 and 22 <= d < 28:                                              # v40: he freezes while she winks (his head and his glass stop where they were)
+        f = 21 / 30.0
+    else:
+        f = d / 30.0
     sweep = 470 - 300 * math.sin(math.pi * min(1.0, f * 1.15))           # the glass goes across the room and back
     hx0 = 120 + 10 * math.sin(f * 6)
     lx, ly = sweep, 640 + 40 * math.cos(f * 4)
+    if getattr(m, "V37", [False])[0]:                                     # v37 (3/3: "a plank across her"): the glass at his own eye, beside his head
+        lx, ly = hx0 + 150 + 30 * math.sin(math.pi * min(1.0, f * 1.15)), 700 + 12 * math.cos(f * 4)
+        if wink:                                                          # v38: the glass has gone past her, to the left, down the room
+            rp = min(1.0, (d - 21) / 2.0) * min(1.0, (28 - d) / 2.0) if getattr(m, "V39", [False])[0] else 1.0   # v39: eased out and back, no jump
+            if v40:                                                       # v40: a short, nearly level arc, in his reach, above the money
+                lx, ly = lx - 70 * rp, ly - 14 * math.sin(math.pi * rp)
+            else:
+                lx, ly = lx - (110 + 14 * (d - 22)) * rp, ly + 40 * rp
+    v39 = getattr(m, "V39", [False])[0]
+    n.ARM3[0] = v39
+    n.ARM3_HIGH[0] = v40
+    del n.ARM3[1:]
     n.detective_back(k, hx0, 760 - n.d.HY * 2.4, 2.4, arm=(lx - 6, ly + 30))     # v9: his back, big and close
+    if v39 and len(n.ARM3) > 1:                                           # v39: the glass is in his hand already; what it shows, at its own place
+        (gx_, gy_), R = n.ARM3.pop()
+        gx_, gy_ = cc.device_to_user(gx_, gy_); R = abs(cc.device_to_user_distance(R, 0)[0])
+        n.ARM3[0] = False
+        cc.save(); cc.new_path(); cc.arc(gx_, gy_, R - 8, 0, 2 * math.pi); cc.clip()
+        cc.set_source_rgb(0.78, 0.80, 0.76); cc.paint()
+        n.money(k, gx_ - 2, gy_ + 46 * R / 57.0, 4.6 * R / 57.0, -0.20 + 0.10 * math.sin(f * 5), 2, 712)
+        g = cairo.RadialGradient(gx_ - 18, gy_ - 18, 4, gx_, gy_, R)
+        g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0.0)
+        cc.set_source(g); cc.paint(); cc.restore()
+        cc.set_source_rgb(*INK); cc.set_line_width(5); cc.new_path(); cc.arc(gx_, gy_, R - 8, 0, 2 * math.pi); cc.stroke()
+        cc.set_source_rgb(*n.SILVER); cc.set_line_width(2.2); cc.new_path(); cc.arc(gx_, gy_, R - 3, 0, 2 * math.pi); cc.stroke()
+        return
+    n.ARM3[0] = False
+    if len(n.ARMS2) > 1:                                                  # v35: his hand stopped where his arm reaches; the glass with it
+        lx, ly = cc.device_to_user(*n.ARMS2.pop())
+        lx, ly = lx + 6, ly - 30
     n.magnifier(k, lx, ly, 3.0, 0.6)
+    if getattr(m, "V38", [False])[0]:                                     # v38: through the glass, the banknotes magnified, not a grey disc
+        a_ = 0.6; R = 19.0 * 3.0
+        gx_, gy_ = lx + math.sin(a_) * (22 + 19) * 3.0, ly - math.cos(a_) * (22 + 19) * 3.0
+        cc.save(); cc.new_path(); cc.arc(gx_, gy_, R - 9, 0, 2 * math.pi); cc.clip()
+        cc.set_source_rgb(0.78, 0.80, 0.76); cc.paint()
+        n.money(k, gx_ - 2, gy_ + 46, 4.6, -0.20 + 0.10 * math.sin(f * 5), 2, 712)
+        g = cairo.RadialGradient(gx_ - 18, gy_ - 18, 4, gx_, gy_, R)
+        g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0.0)
+        cc.set_source(g); cc.paint()
+        cc.restore()
+        cc.set_source_rgb(*INK); cc.set_line_width(6); cc.new_path(); cc.arc(gx_, gy_, R - 9, 0, 2 * math.pi); cc.stroke()
 
 
 # ---------------------------------------------------------------- 5.3: "The usual."
@@ -249,6 +356,13 @@ def m5_5(k, tl, dur):
         ox, oy = -112 + 28 * i + (14 if d % 2 else 0), (-14 if d % 2 else 0)
     else:
         ox, oy = 0, (-12 if d in (11, 14) else 0)                         # it stops there, and taps
+    if getattr(m, "V33", [False])[0]:                                     # v33: a forearm from the edge, the index on the plan
+        import on2_hands as oh
+        if getattr(m, "V35", [False])[0]:
+            oh.over_shoulder(k, (420 + ox, 860 + oy), "point", 96)
+        else:
+            oh.insert(k, (640, 1010), (452 + ox, 868 + oy), "point", 104)
+        return
     n._seg(k, 600, 1000, 420 + ox, 850 + oy, 92, 80, n.KEY, 3.2)
     n.hand(k, 420 + ox, 850 + oy, 5.0, -1.02, 0.0)
 
@@ -302,6 +416,20 @@ def m5_6(k, tl, dur):
         else:
             pen = (470 + (d - 24) * 14, 640 + (d - 24) * 18)
     ox, oy = pen[0] - 366, pen[1] - 640                                   # the lipstick's tip is at (366, 640) on the board
+    if getattr(m, "V33", [False])[0]:                                     # v33: the lipstick first, then her fist round it, its tip out past the fingers
+        import on2_hands as oh
+
+        def stick():
+            if d >= 5:
+                cc.save(); cc.translate(366 + ox, 640 + oy); cc.rotate(-0.80); cc.scale(5.2, 5.2); cc.translate(0, 12)
+                rect(k, -3.4, -2, 6.8, 22, (0.12, 0.12, 0.14), 331, shadow=False, lw=1.0)
+                cut(k, [(-2.6, -2), (-2.6, -9), (2.6, -12), (2.6, -2)], n.KEY, shadow=False, lw=0.9)
+                cc.restore()
+        if getattr(m, "V35", [False])[0]:
+            oh.over_shoulder(k, (470 + ox, 742 + oy), "fist", 96, under=stick)
+        else:
+            oh.insert(k, (650, 960), (470 + ox, 742 + oy), "fist", 100, under=stick)
+        return
     n._seg(k, 620, 980, 440 + ox, 720 + oy, 96, 84, n.KEY, 3.2)
     ellipse(k, 436 + ox, 716 + oy, 50, 46, n.KEY, 336, shadow=False, lw=3.2)
     if d >= 5:                                                            # her lipstick

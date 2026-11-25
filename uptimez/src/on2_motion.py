@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v32"
+V = "v40"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -84,6 +84,14 @@ if V30[0]:
     PLAN28["7.2b"] = ("7.2b", 16 / 12.0, "c1b", -0.55)       # the pop lands on "-print" (7.3 starts 1.37 s into the take; the pop is 2 drawings in)
 V31 = [True]                                              # v31 (25 Nov, cold test v30, Tomas's picks): the raven whole in the lamp's light at 0:00 and no red gap; no tube in her hand before the office; the compact open with her in its mirror, her shadow over it; her back; faces for the bar's guests; a glove over her mouth; the seam two drawings early. False draws v30
 V32 = [True]                                              # v32 (25 Nov, the review of v31's stills; Tomas: "tobulinam"; polish, no rebuild): the glove's fingers, the compact drawn at its own size (hinge, sheen, powder, her own figure in the mirror), wet stones (on4_weather.glints, Office Noir 4) and contact shadows, the wrap and her hair from behind, three different guests in the dark with the smoke over them, the raven's rim as light. False draws v31
+V33 = [True]                                              # v33 (25 Nov, the hands audit; Tomas: "tobulinam"): the series' one hand (hands_ps) on her rig, a shape per pose; her inserts a forearm from the frame's edge with that hand (on2_hands). False draws v32
+V34 = [True]                                              # v34 (25 Nov, the hand sheet's review; Tomas: "tvarkom"): hands_ps's glove mode for her hands (one silhouette, slimmer tapered fingers). False draws v33
+V35 = [True]                                              # v35 (25 Nov, cold test v34, Tomas's picks; the last round for the hands): the note and the number over her shoulder; the wrap as fur on her shoulders; the Shadow's sleeve; the detective's elbow; her beckon, her hand over her mouth, her back's hands; the bartender's fist. False draws v34
+# v36 (25 Nov, Tomas: "undo it"): v35 without the Shadow's sleeve and rim (on2_board.arm_in at 42-45 s and 55 s, noir2_cast.shadow) (noir2_cast.SLEEVE off); nothing else changes
+V37 = [True]                                              # v37 (25 Nov, Tomas at 0:27: "the people at the sides, pathetic"): the bar's guests as the film's hat shadows, tables with hats, lamps and glasses at the bottom, the detective's glass at his own eye. False draws v36
+V38 = [True]                                              # v38 (25 Nov, the bar's review; Tomas: "tvarkom"; the hiding gag kept): her chin up and a knowing look as the hands come; the guests stand there from the start, the far pair paler; the glass shows the money magnified; she winks over the money as the glass goes past; the blinds 20 % lighter in the bar. False draws v37
+V39 = [True]                                              # v39 (25 Nov, the detective's arm's review; Tomas: "tobulinam"): his lens arm in 5.2 drawn again (noir2_cast.ARM3). False draws v38
+V40 = [True]                                              # v40 (25 Nov, the arm's second review; Tomas: "tvarkom"; the last round on this arm): his elbow up and near his body, the glass on a short level arc while she winks, and he freezes for it. False draws v39
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
@@ -236,10 +244,35 @@ def contact(cc, x, y, rx, ry=None, a=0.55):
     cc.set_source(g); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.fill(); cc.restore()
 
 
+def stands(cc, x, y, s=1.0):
+    """v34: she stands on it: a narrow dark line under her heels, and the gown's red broken up in the wet below her
+    (solid red dashes: a tint would be taken for grey by the noir pass)"""
+    contact(cc, x, y + 2, 46 * s, 7 * s, 0.9)
+    cc.set_source_rgb(*n.KEY); cc.set_line_cap(1)
+    for i in range(6):
+        yy = y + (16 + i * 13 + i * i * 1.5) * s
+        w = (40 - i * 5.5) * s
+        cc.set_line_width(max(1.2, (3.4 - i * 0.4) * s))
+        cc.move_to(x - w + (i % 2) * 8 * s, yy); cc.line_to(x + w - ((i + 1) % 2) * 10 * s, yy); cc.stroke()
+
+
+def glints(c, x0, x1, y0, y1, n_, t, seed=1, a=0.55):
+    """on4_weather.glints, copied: importing on4_weather imports a second on2_motion, which takes b5 and b68 over
+    (use()) from the film being rendered"""
+    import random
+    d = int(t * 6)
+    c.set_line_cap(1)
+    for i in range(n_):
+        r = random.Random(seed * 131 + i * 17 + (d + i) // 5)
+        x = r.uniform(x0, x1); y = r.uniform(y0, y1); g = 0.5 + (y - y0) / max(1.0, y1 - y0)
+        c.set_source_rgba(1, 1, 0.97, a * r.uniform(0.4, 1.0)); c.set_line_width(2.0 * g)
+        w = r.uniform(5, 14) * g; c.move_to(x - w, y); c.line_to(x + w, y); c.stroke()
+    c.set_line_cap(0)
+
+
 def wet(k, floor, lamp, t):
     """v32: the road wet. Office Noir 4's glints (on4_weather.glints), the lamp's light smeared down the stones, and
     splashes where the rain lands."""
-    import on4_weather as wx
     cc = k.c
     if lamp:
         lx = lamp[0] - 30
@@ -253,7 +286,7 @@ def wet(k, floor, lamp, t):
                 w = 22 + i * 7 + 6 * math.sin(t * 5 + i)
                 cc.set_source_rgba(1, 1, 0.96, 0.34 - i * 0.035); cc.set_line_width(2.4 + i * 0.5); cc.set_line_cap(1)
                 cc.move_to(lx - w, yy); cc.line_to(lx + w, yy); cc.stroke()
-    wx.glints(cc, 0, 540, floor + 44, 940, 26, t, 11, 0.42)
+    glints(cc, 0, 540, floor + 44, 940, 26, t, 11, 0.42)
     d = int(round(t * 12))
     for i in range(6):                                                    # a splash: two short strokes up from where a drop lands
         r = (i * 97 + (d // 2) * 61) % 500 + 20, floor + 50 + (i * 53 + (d // 2) * 89) % max(1, int(880 - floor))
@@ -521,6 +554,8 @@ def _m1_2(k, tl):
     look = (0.1, -0.2) if tl < 2.0 else (0.3, -0.3)                         # v13: she never looks round
     if V31[0] and V32[0]:
         contact(k.c, 350, 802, 120, 16, 0.6)
+        if V34[0]:
+            stands(k.c, 350, 802, 1.0)
     n.star(k, 350, 800 + rise, 1.9, "g_pose", "interested", look, sparkle=1.0 if int(tl * 12) % 6 < 3 else 0.2)
     rain(k, tl + 2)
 
@@ -539,6 +574,8 @@ def m2_1(k, tl, dur=2.75):
     cc.restore()
     if V31[0] and V32[0]:
         contact(k.c, 340, lerp(808, 774, p), 96, 13, 0.65)
+        if V34[0]:
+            stands(k.c, 340, lerp(808, 774, p), 0.95)
     n.star_back(k, 340, lerp(806, 772, p), lerp(1.92, 1.76, p), step=tl * 1.6)
     rain(k, tl + 4)
 
@@ -548,6 +585,10 @@ def m2_2(k, tl):
     cc.set_source_rgb(0.11, 0.11, 0.13); cc.paint()
     b.pool(cc, 300, 200, 420, 0.22)
     ang = 0.16 if tl < 1 / 12.0 else 0.10 if tl < 2 / 12.0 else 0.06
+    if V34[0]:                                                          # v34: her forearm from the edge, the compact, her fingers round its base
+        import on2_hands as oh
+        oh.insert(k, (370, 1030), (300, 830), "grab", 150, arm=1, under=lambda: n.compact2(k, 270, 470, 9.0, ang, hat=tl >= 4 / 12.0))
+        return
     n._seg(k, 330, 1000, 290, 760, 110, 96, n.KEY, 3.4)
     n.compact2(k, 270, 470, 9.0, ang, hat=tl >= 4 / 12.0)
     ellipse(k, 286, 760, 58, 52, n.KEY, 363, shadow=False, lw=3.4)
@@ -610,13 +651,23 @@ def compact3(k, x, y, d, u):
         cc.set_source_rgba(0.55, 0.48, 0.44, 0.5); cc.new_path(); cc.arc(x + math.cos(a_) * rr * 70, y + 116 + math.sin(a_) * rr * 26, 1.3, 0, 2 * math.pi); cc.fill()
     cc.set_source_rgba(0.60, 0.53, 0.49, 0.8); cc.set_line_width(2); cc.set_line_cap(1)
     cc.save(); cc.translate(x - 14, y + 114); cc.scale(34, 12); cc.new_path(); cc.arc(0, 0, 1, 0.3, 2.6); cc.restore(); cc.stroke()
-    cc.set_source_rgb(*SIL_D); cc.rectangle(x - 30, y + 72, 60, 14); cc.fill_preserve(); cc.set_source_rgb(*INK); cc.set_line_width(2.4); cc.stroke()   # the hinge
+    cc.set_source_rgb(*SIL_D); cc.rectangle(x - 36, y + 70, 72, 16); cc.fill_preserve(); cc.set_source_rgb(*INK); cc.set_line_width(2.4); cc.stroke()   # the hinge
+    if V34[0]:                                                             # a barrel hinge: three knuckles and its pin
+        for hx0 in (-36, -12, 12):
+            cc.set_source_rgb(*(SIL if hx0 != -12 else SIL_D)); cc.rectangle(x + hx0, y + 70, 24, 16); cc.fill_preserve(); cc.set_source_rgb(*INK); cc.set_line_width(1.8); cc.stroke()
+        cc.set_source_rgba(1, 1, 1, 0.8); cc.set_line_width(1.6); cc.move_to(x - 32, y + 74); cc.line_to(x + 32, y + 74); cc.stroke()
     for hx in (-18, 0, 18):
         cc.set_source_rgb(*SIL); cc.new_path(); cc.arc(x + hx, y + 79, 3.2, 0, 2 * math.pi); cc.fill()
     disc(x, y, 100, 88, SIL, SIL_D)                                        # the lid, toward us
-    disc(x, y, 82, 71, (0.62, 0.68, 0.76), (0.86, 0.90, 0.94), 2.0)        # its mirror
+    if V34[0]:
+        disc(x, y, 82, 71, (0.30, 0.33, 0.38), (0.58, 0.62, 0.68), 2.0)    # v34: the glass darker (the night in it), so she is IN it
+    else:
+        disc(x, y, 82, 71, (0.62, 0.68, 0.76), (0.86, 0.90, 0.94), 2.0)    # its mirror
     cc.save(); cc.save(); cc.translate(x, y); cc.scale(80, 69); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.restore(); cc.clip()
     sc_ = 0.62 - 0.36 * u                                                  # her, from behind, in it: the gown, the wrap, her hair
+    if V34[0]:                                                             # seen at the mirror's angle: leaning with the lid, cut by its lower edge
+        cc.translate(x, y); cc.transform(cairo.Matrix(1, 0, -0.18, 0.92, 0, 0)); cc.translate(-x, -y)
+        cc.set_source_rgba(1, 1, 1, 0.10); cc.new_path(); cc.move_to(x - 90, y + 50 - 30 * u); cc.line_to(x + 90, y + 40 - 30 * u); cc.line_to(x + 90, y + 90); cc.line_to(x - 90, y + 90); cc.close_path(); cc.fill()   # the wet street she runs on
     n.star_back(k, x - 10 + 34 * u, y + 66 - 26 * u, sc_, step=d / 6.0)
     cc.set_source_rgba(1, 1, 1, 0.55); cc.set_line_width(7); cc.set_line_cap(1)                 # the glass: two bars of light across it
     cc.move_to(x - 62, y - 14); cc.line_to(x - 30, y - 52); cc.stroke()
@@ -632,8 +683,8 @@ def compact32(k, tl):
     if d < 2:                                                             # it falls, turning
         cc.save(); cc.translate(250, 250 + 180 * d); cc.rotate(0.5 - 0.3 * d); cc.scale(0.8, 0.8); compact3(k, 0, 0, d, 0.0); cc.restore()
         return
-    if d < 6:                                                             # powder, off the stones
-        g = ease((d - 2) / 3.0)
+    if d < (4 if V34[0] else 6):                                          # powder, off the stones (v34: gone in two drawings)
+        g = ease((d - 2) / (2.0 if V34[0] else 3.0))
         cc.save(); cc.translate(250, 700); cc.scale(0.5 + 0.6 * g, 0.5 + 0.6 * g); cc.translate(-250, -700)
         cc.push_group(); n.powder_puff(k, 250, 700, 4.0); cc.pop_group_to_source(); cc.paint_with_alpha(0.8 * (1.0 - g))
         cc.restore()
@@ -947,7 +998,13 @@ def m4_1a(k, tl):
         g = 1 - ease((d12 - 1) / 3.0)                                        # in, from the left
     else:
         g = ease((d12 - 9) / 3.0)                                            # and gone again: she has not slowed
-    if g is not None:
+    if g is not None and V33[0]:                                            # v33: a forearm from the edge, the coin in her fingers, then let go
+        import on2_hands as oh
+        ox, oy = -230 * g, -150 * g
+        opened = d12 >= 6
+        oh.insert(k, (-80 + ox, 250 + oy), (96 + ox, 388 + oy), "palm" if opened else "grab", 96,
+                  under=None if opened else (lambda: b.coin(k, 190 + ox, 470 + oy, 34)))
+    elif g is not None:
         ox, oy = -230 * g, -150 * g
         n._seg(k, -60 + ox, 300 + oy, 110 + ox, 420 + oy, 96, 84, n.KEY, 3.2)
         ellipse(k, 118 + ox, 428 + oy, 48, 44, n.KEY, 336, shadow=False, lw=3.2)
@@ -1020,7 +1077,10 @@ def m4_2(k, tl):
         sw = 0.10 * math.cos(d12 * 1.5) * math.exp(-d12 / 4.0) + (0.5 if taken else 0.0)
         cc.set_source_rgb(*INK); cc.set_line_width(4.5); cc.move_to(250 + ox, 424 + oy); cc.line_to(256 + ox - sw * 40, 462 + oy); cc.stroke()
         tag(k, 256 + ox - sw * 40, 462 + oy, 3.2, 0.05 + sw)
-    if show:
+    if show and V34[0]:                                                  # v34: a forearm from the edge, her fingers closing on the coin
+        import on2_hands as oh
+        oh.insert(k, (660 + gx, 120 + gy), (452 + gx, 236 + gy), "grab", 120, arm=1)
+    elif show:
         n._seg(k, 600 + gx, 150 + gy, 420 + gx, 250 + gy, 100, 88, n.KEY, 3.4)
         ellipse(k, 410 + gx, 256 + gy, 50, 46, n.KEY, 336, shadow=False, lw=3.2)
         for (fx, fy) in ((346, 262), (352, 312)):
@@ -1084,9 +1144,9 @@ KEY = {"5.2": (170, 640, 300, 0.22), "5.3": (410, 470, 260, 0.20), "6.1": (404, 
 NO_BLINDS = {"6.1", "6.2", "6.2r", "6.4", "6.5", "6.6", "6.7", "6.7a"}    # v26: the office has its own bars of light                                # shot -> (light from the left?, how dark the far side): her face on the lit side
 
 
-def _blinds(k):
+def _blinds(k, a=0.34):
     import on_set as ons
-    ons.blinds(k.c, -40, -40, W + 80, H + 80, -0.32, 30, 12, 0.34)
+    ons.blinds(k.c, -40, -40, W + 80, H + 80, -0.32, 30, 12, a)
 
 
 def caption_card(cc, text):
@@ -1138,6 +1198,12 @@ CLOCK = {"1": 55, "2": 55, "3": 56, "4": 57, "5": 58, "6": 59, "7": 59, "8": 60}
 def frame(row, tl, t):
     n.NO_BAG[0] = n.HIDE2[0] = n.BACK2[0] = V31[0]
     n.HIDE3[0] = n.BACK3[0] = rv.RIM2[0] = V31[0] and V32[0]
+    n.HAND3[0] = V31[0] and V32[0] and V33[0]
+    import hands_ps as _hp
+    import on2_hands as _oh
+    _hp.GLOVE[0] = _oh.GLOVE_CFG if (n.HAND3[0] and V34[0]) else None
+    n.FUR[0] = n.ARMS2[0] = n.HAND3[0] and V34[0] and V35[0]
+    del n.ARMS2[1:]
     if rv.RAVEN[0] and not END.get("on") and row["shot"] == "1.1" and int(round(tl * 12)) >= 5:    # v29: 1.2's start is rounded up past
         row, tl = [r for r in timing.rows if r["shot"] == "1.2"][0], 0.0                # its drawing; the wipe is on 1.2 already
     fn, tilt, post = SHOTS[row["shot"]]
@@ -1158,7 +1224,7 @@ def frame(row, tl, t):
     if LOOK3[0] and row["shot"] not in b68.COLOUR:          # v25: the blinds' shadow on the rooms' walls, under the people
         saved = (b5.room, b.office, b.lit_wall)
         r0, o0, w0 = saved
-        b5.room = lambda k_, *a, **kw: (r0(k_, *a, **kw), _blinds(k_))[0]
+        b5.room = lambda k_, *a, **kw: (r0(k_, *a, **kw), _blinds(k_, 0.27 if (V38[0] and row["shot"] in ("5.1", "5.2")) else 0.34))[0]
         b.office = lambda k_, *a, **kw: (o0(k_, *a, **kw), None if row["shot"] in NO_BLINDS else _blinds(k_))[0]
         b.lit_wall = lambda k_, *a, **kw: (w0(k_, *a, **kw), _blinds(k_))[0]
         eng.TONE = "v3"

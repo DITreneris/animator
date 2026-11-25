@@ -79,8 +79,101 @@ def hand(k, hx, hy, w, skin, seed, d, side):
         LATE.append((k.c.get_matrix(), (g, hx, hy, w * 1.25, skin, d, arm)))
 
 
+GLOVE = [None]                                              # v5 (25 Nov, Office Noir 2 v34, the hand sheet's review: "rubber robot gloves"), opt-in:
+#   {"shade": (r, g, b), "shine": bool}. The same anchor, shapes and thumb side, drawn as a lady's glove: one silhouette (no
+#   line across the wrist), fingers about 12 % longer and thinner, tapered, of four lengths, creases where it bends.
+#   Unset, every shape draws exactly as before.
+GLOVE_SHAPES = ("quiet", "point", "point_s", "grab", "fist", "palm", "relax", "beckon")
+
+
+def _glove(k, g, hx, hy, w, skin, d, arm):
+    c = k.c
+    cfg = GLOVE[0]
+    a = math.atan2(d[1], d[0])
+    s_ = -1 if (arm < 0) == (math.cos(a) >= 0) else 1                 # the thumb's side, as in draw()
+    T0, T1 = 0.235 * w, 0.165 * w                                     # a finger at its root and at its tip
+    parts = [("cap", [(-0.60, 0.0), (0.18, 0.0)], 0.60 * w, 0.60 * w),            # the wrist, as wide as the forearm it ends
+             ("blob", (0.30, 0.0), 0.40, 0.37)]                                   # the palm
+    lines = []                                                        # creases, in the shade colour
+    Y = (-0.27, -0.09, 0.09, 0.27)                                    # index (thumb side) .. little finger, across the hand
+    fy = lambda i: s_ * (-Y[i])                                       # index nearest the thumb
+
+    def finger(i, pts, k0=1.0, k1=1.0):
+        parts.append(("cap", pts, T0 * k0, T1 * k1))
+    if g == "palm":
+        for i, ln in enumerate((0.66, 0.76, 0.70, 0.52)):
+            y = fy(i); fan = y * 0.22
+            finger(i, [(0.52, y), (0.52 + ln * 0.55, y + fan * 0.6), (0.52 + ln, y + fan)], 1.0 if i < 3 else 0.9, 1.0 if i < 3 else 0.9)
+        parts.insert(0, ("cap", [(0.16, s_ * 0.28), (0.44, s_ * 0.58), (0.62, s_ * 0.70)], T0 * 1.05, T1 * 1.1))
+        lines += [[(0.40, s_ * 0.16), (0.52, s_ * 0.02), (0.50, -s_ * 0.20)]]
+    elif g == "grab":                                                 # an open hand closing: fingers curved in, the thumb apart
+        for i, ln in enumerate((0.58, 0.66, 0.60, 0.46)):
+            y = fy(i)
+            finger(i, [(0.52, y), (0.52 + ln * 0.62, y + s_ * 0.03), (0.52 + ln * 0.95, y + s_ * 0.24)], 1.0 if i < 3 else 0.9, 1.0 if i < 3 else 0.9)
+        parts.insert(0, ("cap", [(0.16, s_ * 0.28), (0.50, s_ * 0.60), (0.86, s_ * 0.58)], T0 * 1.05, T1 * 1.1))
+    elif g in ("quiet", "relax"):                                     # at rest: the fingers together, gently curved, the thumb lying along them
+        for i, ln in enumerate((0.50, 0.58, 0.54, 0.42)):
+            y = fy(i) * 0.80
+            finger(i, [(0.50, y), (0.50 + ln * 0.6, y + s_ * 0.02), (0.50 + ln, y + s_ * 0.12)], 1.0, 1.0)
+        parts.insert(0, ("cap", [(0.14, s_ * 0.26), (0.46, s_ * 0.40), (0.72, s_ * 0.38)], T0, T1 * 1.05))
+    else:                                                             # fist, point: the fingers folded into the palm
+        parts.append(("blob", (0.62, -s_ * 0.02), 0.20, 0.36))
+        for i in ((1, 2, 3) if (g.startswith("point") or g == "beckon") else (0, 1, 2, 3)):
+            parts.append(("blob", (0.76, fy(i) * 0.92), 0.105, 0.10))               # a knuckle each, small
+        if g == "beckon":                                   # v6 (glove mode only): the index up and curling back toward the palm
+            finger(0, [(0.56, fy(0)), (0.98, fy(0) - s_ * 0.04), (1.18, fy(0) + s_ * 0.16), (1.10, fy(0) + s_ * 0.34)], 1.0, 0.9)
+            parts.append(("cap", [(0.20, s_ * 0.30), (0.52, s_ * 0.36), (0.70, s_ * 0.20)], T0 * 0.95, T1))
+        elif g.startswith("point"):
+            ln = 0.84 if g == "point" else 0.70                        # the index: out, a little bent at its middle joint
+            finger(0, [(0.56, fy(0)), (0.56 + ln * 0.5, fy(0) - s_ * 0.045), (0.56 + ln, fy(0) + s_ * 0.02)], 1.0, 0.95)
+            parts.append(("cap", [(0.20, s_ * 0.30), (0.52, s_ * 0.36), (0.70, s_ * 0.20)], T0 * 0.95, T1))   # the thumb folded over the others
+        else:
+            parts.append(("cap", [(0.22, s_ * 0.34), (0.56, s_ * 0.34), (0.78, s_ * 0.14)], T0, T1 * 1.05))   # the thumb across them
+        lines += [[(0.60, -s_ * 0.30), (0.66, -s_ * 0.02), (0.60, s_ * 0.22)]]
+    lines += [[(-0.16, -0.22), (-0.10, 0.0), (-0.16, 0.22)], [(-0.02, -0.20), (0.03, 0.0), (-0.02, 0.20)]]   # the glove's folds at the wrist
+
+    def lay(grow, col):
+        c.set_source_rgb(*col); c.set_line_cap(1); c.set_line_join(1)
+        for p in parts:
+            if p[0] == "blob":
+                (bx, by), rx, ry = p[1], p[2], p[3]
+                c.save(); c.translate(bx * w, by * w); c.scale(rx * w + grow, ry * w + grow); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+            else:
+                pts, t0, t1 = p[1], p[2], p[3]
+                n_ = len(pts) - 1
+                for j in range(n_):                                   # tapered: each piece a little thinner than the one before
+                    tt = t0 + (t1 - t0) * (j + 0.5) / n_
+                    c.set_line_width(tt + 2 * grow); c.new_path(); c.move_to(pts[j][0] * w, pts[j][1] * w); c.line_to(pts[j + 1][0] * w, pts[j + 1][1] * w); c.stroke()
+    c.save(); c.translate(hx, hy); c.rotate(a)
+    lay(LW, INK)                                                      # one outline round all of it,
+    c.set_source_rgb(*skin); c.set_line_cap(0); c.set_line_width(0.60 * w); c.new_path(); c.move_to(-0.95 * w, 0); c.line_to(-0.3 * w, 0); c.stroke()   # open toward the forearm
+    lay(0.0, skin)                                                    # then the glove itself: no lines inside it but the ones below
+    c.set_line_cap(1)
+    if g in ("palm", "grab", "quiet", "relax"):                       # where one finger lies against the next
+        for p in parts:
+            if p[0] == "cap" and len(p[1]) == 3 and p[1][0][0] >= 0.5:
+                pts = p[1]; off = p[2] * 0.5
+                c.set_source_rgb(*INK); c.set_line_width(1.1)
+                c.new_path(); c.move_to(pts[0][0] * w + 0.06 * w, pts[0][1] * w + s_ * off * 0.0 + off * (1 if pts[0][1] * 1 > -9 else 1)); c.line_to(pts[1][0] * w, pts[1][1] * w + off)
+                c.stroke()
+    shade = cfg.get("shade") if cfg else None
+    if shade:
+        c.set_source_rgb(*shade); c.set_line_width(max(1.2, 0.035 * w))
+        for ln_ in lines:
+            c.new_path(); c.move_to(ln_[0][0] * w, ln_[0][1] * w); c.curve_to(ln_[1][0] * w, ln_[1][1] * w, ln_[1][0] * w, ln_[1][1] * w, ln_[2][0] * w, ln_[2][1] * w); c.stroke()
+        c.set_line_width(max(2.0, 0.07 * w))                          # the palm's shaded side, away from the thumb
+        c.new_path(); c.move_to(0.02 * w, -s_ * 0.27 * w); c.curve_to(0.20 * w, -s_ * 0.33 * w, 0.40 * w, -s_ * 0.33 * w, 0.52 * w, -s_ * 0.29 * w); c.stroke()
+    if cfg and cfg.get("shine"):                                      # satin: one thin white line along the back of the hand
+        c.set_source_rgb(1, 1, 1); c.set_line_width(max(1.0, 0.028 * w))
+        c.new_path(); c.move_to(0.16 * w, s_ * 0.10 * w); c.curve_to(0.26 * w, s_ * 0.14 * w, 0.38 * w, s_ * 0.13 * w, 0.46 * w, s_ * 0.08 * w); c.stroke()
+    c.set_line_cap(0); c.set_line_join(0)
+    c.restore()
+
+
 def draw(k, g, hx, hy, w, skin, d, arm):
     """arm: -1 his left arm as we see it (screen-left), 1 screen-right. w: the hand's width."""
+    if GLOVE[0] is not None and g in GLOVE_SHAPES:
+        return _glove(k, g, hx, hy, w, skin, d, arm)
     c = k.c
     a = math.atan2(d[1], d[0])
     t = 0.30 * w                                                      # one finger thickness for every shape
