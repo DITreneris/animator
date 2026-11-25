@@ -9,6 +9,8 @@ import cs_film_v14 as f14
 
 def setup():
     f14.setup()
+    import cs_v15b
+    cs_v15b.install()
     import cs_say
     cs_say.install()
     for i in range(1, 7):

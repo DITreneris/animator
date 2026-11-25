@@ -348,15 +348,7 @@ def s3_5(k, d):
         r = r * 1.35
         if t < THROW:
             if crumple < 1:                                                       # the sheet balling up in his hand
-                c.save(); c.translate(hx - 1, hy - 5); c.rotate(0.3 * crumple)
-                w = r * (1 + 2.2 * (1 - crumple)); h = r * (1 + 1.4 * (1 - crumple))
-                c.new_path()
-                for i in range(12):
-                    a = i * math.pi / 6
-                    q = 1 + 0.18 * math.sin(i * 2.7 + crumple * 5)
-                    c.line_to(math.cos(a) * w * q, math.sin(a) * h * q)
-                c.close_path(); c.set_source_rgb(*g.BLUE); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.3); c.stroke()
-                c.restore()
+                g._ball(k_, hx - 1, hy - 5, r * (1 + 1.6 * (1 - crumple)), seed=int(crumple * 5))
             else:
                 g._ball(k_, hx - 1, hy - 5, r)
             c.restore()
