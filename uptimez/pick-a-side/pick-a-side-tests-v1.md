@@ -614,3 +614,4 @@ The blue mug at her face reads as a phone (the episode's other prop), the sip fa
 ### Scene 3 v4 (Tomas: "1", the longer sip)
 
 3.7 +0.40 s; the sip held 0.36 s at her mouth (two 4 fps drawings), eyes up into the cup, two slurps. 2 fresh viewers: 0/2, "she raises a phone, photographs / checks the post". Third round the cup reads as a phone → the rule changes the gesture or the prop (Tomas's call: Pam's mug is part of her look).
+Tomas 25 Nov: the silence without the sip (`SIP_ON = False`, the board's cup at her chin); scene 3 v5 = v3 without the sip. 4.3: Father's take 0.4 s later (plan v2 §7).
