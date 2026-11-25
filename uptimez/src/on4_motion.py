@@ -236,7 +236,27 @@ def cat_over(s, frames):
     """the cat, drawn after the grade so its eyes keep their colour (as on_film does): frames = [(x, y, scale, flip)] or "full" """
     import cat_on as ct
     c = cairo.Context(s); kk = sc.Ctx(c, 0)
-    if CAT_SOFT[0] and frames in ("in", "full", "full2", "out"):
+    def two_eyes(x_, y_, s_):                                # (Tomas: "why has the cat one eye?") its face to us
+        c.save(); c.translate(x_, y_); c.scale(s_, s_)
+        c.new_path(); c.arc(60, -48, 9.5, 0, 2 * math.pi); c.set_source_rgb(*ct.FUR); c.fill()
+        for ex in (50.5, 63.5):
+            ct._eye(c, ex, -48, 4.4, "open")
+        c.restore()
+    if CAT_LENS[0] and frames in ("in", "full", "full2", "out", "gone"):
+        if frames in ("full", "full2"):                      # straight into the lens, as before: the frame is fur and two eyes; no fangs (the cold viewers' "monster")
+            big = frames == "full2"
+            ct.black_cat(kk, 300, 1040, 9.5, "fall", flip=False)
+            c.set_source_rgba(0.02, 0.02, 0.03, 0.97 if big else 0.9); c.paint()
+            dx = 14 if big else 0
+            for ex in (176 + dx, 368 + dx):
+                ct._eye(c, ex, 400, 50 if big else 42, "open")
+            c.set_source_rgb(*ct.MOUTH); c.new_path(); c.move_to(272 + dx - 9, 560); c.line_to(272 + dx + 9, 560); c.line_to(272 + dx, 572); c.close_path(); c.fill()    # its nose
+            c.set_source_rgb(0.30, 0.30, 0.32); c.set_line_width(3); c.set_line_cap(1)                                                                                 # the mouth, shut: a small w under it
+            c.new_path(); c.move_to(272 + dx - 30, 590); c.curve_to(272 + dx - 22, 606, 272 + dx - 6, 604, 272 + dx, 576); c.curve_to(272 + dx + 6, 604, 272 + dx + 22, 606, 272 + dx + 30, 590); c.stroke(); c.set_line_cap(0)
+        else:
+            x_, y_, s_ = {"in": (10, 880, 4.0) if LOOP2[0] else (70, 1010, 4.2), "out": (470, 330, 3.4), "gone": (560, 150, 1.6)}[frames]
+            ct.black_cat(kk, x_, y_, s_, "fall", flip=False); two_eyes(x_, y_, s_)
+    elif CAT_SOFT[0] and frames in ("in", "full", "full2", "out"):
         x_, y_, s_ = {"in": (40, 1000, 4.0), "full": (190, 800, 4.6), "full2": (330, 560, 4.2), "out": (450, 340, 3.4)}[frames]
         if LOOP2[0] and frames == "in":
             x_, y_, s_ = 10, 880, 4.0                        # its eyes where the two eyes were in the dark (EYES2)
@@ -633,6 +653,7 @@ CAR_S = 1.45                                                 # v11 (proportion a
 
 TUCK = [False]
 RING_GOLD = [False]                                          # (24 Nov, Tomas's pick) Dad's ring a plain gold band here: no red stone (the film's red is the envelope's heart, the neon and the fire)
+CAT_LENS = [False]                                           # (25 Nov, Tomas: "I liked it before, when the cat leapt straight at the camera") the lens of fur again, two eyes on every drawing of it, no fangs
 CAT_SOFT = [False]                                           # (24 Nov, cold test: "a monster") 0:00 the cat leaps across the frame, whole, in four drawings: no lens full of fur, no fangs
 WALK12 = [False]                                             # (24 Nov, Tomas's pick) her cat's walk over the crossing: two strides in twelve drawings (was one in six)
 GIVE = [False]                                               # (24 Nov, Tomas: "who hands what to whom?") 2.2-2.3: Dad's ringed hand comes out of the dark holding the envelope out; the Client takes it, looks, puts it under his lapel
