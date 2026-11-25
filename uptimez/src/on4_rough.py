@@ -190,7 +190,7 @@ def sound(tm, d, total):
         thud = st_("3.1") + span31 * m_.T3_MARKS["thud"] if "thud" in m_.T3_MARKS else None
     C0 = 0.67                                                                                       # v5: the cat first (8 drawings)
     import on4_motion as _m
-    HK = (-1 / 12.0 if _m.HIT[0] else 0.0) + (-3 / 12.0 if _m.LOOP2[0] else 0.0)             # film v20: the opening three keys shorter                                                            # film v15: the blow lands one drawing earlier (its hit-stop is longer)
+    HK = (-1 / 12.0 if _m.HIT[0] else 0.0) + (-3 / 12.0 if _m.LOOP2[0] else 0.0) + (1 / 12.0 if _m.CAT3[0] else 0.0) + (1 / 12.0 if _m.CAT4[0] else 0.0)             # film v20: the opening three keys shorter                                                            # film v15: the blow lands one drawing earlier (its hit-stop is longer)
     put(fx, rs(so.hiss(0.5), so.SR), 0.25, 0.45)                                                     # the cat across the lens: hiss and yowl
     ty = np.arange(int(0.42 * SR)) / SR; fq = 620 + 900 * np.sin(np.pi * ty / 0.42) ** 0.7 + 40 * np.sin(2 * np.pi * 31 * ty)
     yowl = np.sin(2 * np.pi * np.cumsum(fq) / SR); yowl = np.tanh((yowl + 0.5 * np.sin(4 * np.pi * np.cumsum(fq) / SR)) * 2.0)
