@@ -118,6 +118,11 @@ def m5_1(k, tl, dur):
             v32 = getattr(m, "V32", [False])[0]
             kind = {2: 0, 6: 1, 11: 2, 15: 1}[d_in] if v32 else -1          # v32: slicked hair; bald with a moustache; a hat; and nearer ones bigger
             skin = ((0.50, 0.50, 0.53), (0.44, 0.44, 0.47), (0.38, 0.38, 0.41))[kind] if v32 else (0.72, 0.72, 0.74)
+            v34 = getattr(m, "V34", [False])[0]
+            if v34:                                                         # v34: the far pair (upper) darker; each head at its own angle
+                far = y < 600
+                skin = tuple(a_ * (0.72 if far else 1.0) for a_ in skin)
+                cc_.save(); cc_.translate(gx, gy + 40); cc_.rotate({2: 0.10, 6: -0.16, 11: -0.07, 15: 0.14}[d_in]); cc_.translate(-gx, -gy - 40)
             hw = (46, 50, 44)[kind] if v32 else 46
             ellipse(k, gx, gy, hw, 52, skin, 880 + d_in, shadow=False, lw=2.4)          # his head, to her
             cc_.set_source_rgb(*n.BLACK)
@@ -136,7 +141,9 @@ def m5_1(k, tl, dur):
             cc_.set_source_rgb(*INK); cc_.new_path(); cc_.arc(ex_ + flip * 3, gy - 2, 4, 0, 2 * math.pi); cc_.fill()
             cc_.set_line_width(3); cc_.set_line_cap(1); cc_.move_to(ex_ - 10, gy - 16); cc_.line_to(ex_ + 10, gy - 19); cc_.stroke()
             cc_.move_to(gx + flip * 8, gy + 26); cc_.curve_to(gx + flip * 18, gy + 34, gx + flip * 30, gy + 30, gx + flip * 34, gy + 22); cc_.stroke()   # he smiles
-            cut(k, [(gx + flip * 44, gy + 4), (gx + flip * 58, gy + 12), (gx + flip * 44, gy + 16)], (0.72, 0.72, 0.74), shadow=False, lw=2)   # his nose, in profile
+            cut(k, [(gx + flip * 44, gy + 4), (gx + flip * 58, gy + 12), (gx + flip * 44, gy + 16)], skin if getattr(m, "V34", [False])[0] else (0.72, 0.72, 0.74), shadow=False, lw=2)   # his nose, in profile
+            if getattr(m, "V34", [False])[0]:
+                cc_.restore()
         elif getattr(m, "V30", [False])[0]:                               # v30: whose arm: a guest at the frame's edge, shoulder and head
             ox = 14 if flip > 0 else m.W - 14
             oy = y + 3.2 * e + 150
@@ -158,6 +165,10 @@ def m5_1(k, tl, dur):
             g.add_color_stop_rgba(0, 0, 0, 0, 0.42); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
             cc.set_source(g); cc.rectangle(0 if sx == 0 else m.W - 130, 300, 130, 660); cc.fill()
         cc.restore()
+        if getattr(m, "V34", [False])[0]:                                 # v34: the room's light along the top of her hair (her hair only: no red under it)
+            g = cairo.RadialGradient(290, 270, 8, 290, 285, 105)             # soft, no edge; it ends well above her gown
+            g.add_color_stop_rgba(0, 1, 1, 0.97, 0.40); g.add_color_stop_rgba(1, 1, 1, 0.97, 0.0)
+            cc.set_source(g); cc.new_path(); cc.arc(290, 285, 105, 0, 2 * math.pi); cc.fill()
 
 
 # ---------------------------------------------------------------- 5.2: she hides; he searches the wrong way

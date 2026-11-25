@@ -238,6 +238,18 @@ def contact(cc, x, y, rx, ry=None, a=0.55):
     cc.set_source(g); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.fill(); cc.restore()
 
 
+def stands(cc, x, y, s=1.0):
+    """v34: she stands on it: a narrow dark line under her heels, and the gown's red broken up in the wet below her
+    (solid red dashes: a tint would be taken for grey by the noir pass)"""
+    contact(cc, x, y + 2, 46 * s, 7 * s, 0.9)
+    cc.set_source_rgb(*n.KEY); cc.set_line_cap(1)
+    for i in range(6):
+        yy = y + (16 + i * 13 + i * i * 1.5) * s
+        w = (40 - i * 5.5) * s
+        cc.set_line_width(max(1.2, (3.4 - i * 0.4) * s))
+        cc.move_to(x - w + (i % 2) * 8 * s, yy); cc.line_to(x + w - ((i + 1) % 2) * 10 * s, yy); cc.stroke()
+
+
 def wet(k, floor, lamp, t):
     """v32: the road wet. Office Noir 4's glints (on4_weather.glints), the lamp's light smeared down the stones, and
     splashes where the rain lands."""
@@ -523,6 +535,8 @@ def _m1_2(k, tl):
     look = (0.1, -0.2) if tl < 2.0 else (0.3, -0.3)                         # v13: she never looks round
     if V31[0] and V32[0]:
         contact(k.c, 350, 802, 120, 16, 0.6)
+        if V34[0]:
+            stands(k.c, 350, 802, 1.0)
     n.star(k, 350, 800 + rise, 1.9, "g_pose", "interested", look, sparkle=1.0 if int(tl * 12) % 6 < 3 else 0.2)
     rain(k, tl + 2)
 
@@ -541,6 +555,8 @@ def m2_1(k, tl, dur=2.75):
     cc.restore()
     if V31[0] and V32[0]:
         contact(k.c, 340, lerp(808, 774, p), 96, 13, 0.65)
+        if V34[0]:
+            stands(k.c, 340, lerp(808, 774, p), 0.95)
     n.star_back(k, 340, lerp(806, 772, p), lerp(1.92, 1.76, p), step=tl * 1.6)
     rain(k, tl + 4)
 
@@ -550,6 +566,10 @@ def m2_2(k, tl):
     cc.set_source_rgb(0.11, 0.11, 0.13); cc.paint()
     b.pool(cc, 300, 200, 420, 0.22)
     ang = 0.16 if tl < 1 / 12.0 else 0.10 if tl < 2 / 12.0 else 0.06
+    if V34[0]:                                                          # v34: her forearm from the edge, the compact, her fingers round its base
+        import on2_hands as oh
+        oh.insert(k, (370, 1030), (300, 830), "grab", 150, arm=1, under=lambda: n.compact2(k, 270, 470, 9.0, ang, hat=tl >= 4 / 12.0))
+        return
     n._seg(k, 330, 1000, 290, 760, 110, 96, n.KEY, 3.4)
     n.compact2(k, 270, 470, 9.0, ang, hat=tl >= 4 / 12.0)
     ellipse(k, 286, 760, 58, 52, n.KEY, 363, shadow=False, lw=3.4)
@@ -612,13 +632,23 @@ def compact3(k, x, y, d, u):
         cc.set_source_rgba(0.55, 0.48, 0.44, 0.5); cc.new_path(); cc.arc(x + math.cos(a_) * rr * 70, y + 116 + math.sin(a_) * rr * 26, 1.3, 0, 2 * math.pi); cc.fill()
     cc.set_source_rgba(0.60, 0.53, 0.49, 0.8); cc.set_line_width(2); cc.set_line_cap(1)
     cc.save(); cc.translate(x - 14, y + 114); cc.scale(34, 12); cc.new_path(); cc.arc(0, 0, 1, 0.3, 2.6); cc.restore(); cc.stroke()
-    cc.set_source_rgb(*SIL_D); cc.rectangle(x - 30, y + 72, 60, 14); cc.fill_preserve(); cc.set_source_rgb(*INK); cc.set_line_width(2.4); cc.stroke()   # the hinge
+    cc.set_source_rgb(*SIL_D); cc.rectangle(x - 36, y + 70, 72, 16); cc.fill_preserve(); cc.set_source_rgb(*INK); cc.set_line_width(2.4); cc.stroke()   # the hinge
+    if V34[0]:                                                             # a barrel hinge: three knuckles and its pin
+        for hx0 in (-36, -12, 12):
+            cc.set_source_rgb(*(SIL if hx0 != -12 else SIL_D)); cc.rectangle(x + hx0, y + 70, 24, 16); cc.fill_preserve(); cc.set_source_rgb(*INK); cc.set_line_width(1.8); cc.stroke()
+        cc.set_source_rgba(1, 1, 1, 0.8); cc.set_line_width(1.6); cc.move_to(x - 32, y + 74); cc.line_to(x + 32, y + 74); cc.stroke()
     for hx in (-18, 0, 18):
         cc.set_source_rgb(*SIL); cc.new_path(); cc.arc(x + hx, y + 79, 3.2, 0, 2 * math.pi); cc.fill()
     disc(x, y, 100, 88, SIL, SIL_D)                                        # the lid, toward us
-    disc(x, y, 82, 71, (0.62, 0.68, 0.76), (0.86, 0.90, 0.94), 2.0)        # its mirror
+    if V34[0]:
+        disc(x, y, 82, 71, (0.30, 0.33, 0.38), (0.58, 0.62, 0.68), 2.0)    # v34: the glass darker (the night in it), so she is IN it
+    else:
+        disc(x, y, 82, 71, (0.62, 0.68, 0.76), (0.86, 0.90, 0.94), 2.0)    # its mirror
     cc.save(); cc.save(); cc.translate(x, y); cc.scale(80, 69); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.restore(); cc.clip()
     sc_ = 0.62 - 0.36 * u                                                  # her, from behind, in it: the gown, the wrap, her hair
+    if V34[0]:                                                             # seen at the mirror's angle: leaning with the lid, cut by its lower edge
+        cc.translate(x, y); cc.transform(cairo.Matrix(1, 0, -0.18, 0.92, 0, 0)); cc.translate(-x, -y)
+        cc.set_source_rgba(1, 1, 1, 0.10); cc.new_path(); cc.move_to(x - 90, y + 50 - 30 * u); cc.line_to(x + 90, y + 40 - 30 * u); cc.line_to(x + 90, y + 90); cc.line_to(x - 90, y + 90); cc.close_path(); cc.fill()   # the wet street she runs on
     n.star_back(k, x - 10 + 34 * u, y + 66 - 26 * u, sc_, step=d / 6.0)
     cc.set_source_rgba(1, 1, 1, 0.55); cc.set_line_width(7); cc.set_line_cap(1)                 # the glass: two bars of light across it
     cc.move_to(x - 62, y - 14); cc.line_to(x - 30, y - 52); cc.stroke()
@@ -634,8 +664,8 @@ def compact32(k, tl):
     if d < 2:                                                             # it falls, turning
         cc.save(); cc.translate(250, 250 + 180 * d); cc.rotate(0.5 - 0.3 * d); cc.scale(0.8, 0.8); compact3(k, 0, 0, d, 0.0); cc.restore()
         return
-    if d < 6:                                                             # powder, off the stones
-        g = ease((d - 2) / 3.0)
+    if d < (4 if V34[0] else 6):                                          # powder, off the stones (v34: gone in two drawings)
+        g = ease((d - 2) / (2.0 if V34[0] else 3.0))
         cc.save(); cc.translate(250, 700); cc.scale(0.5 + 0.6 * g, 0.5 + 0.6 * g); cc.translate(-250, -700)
         cc.push_group(); n.powder_puff(k, 250, 700, 4.0); cc.pop_group_to_source(); cc.paint_with_alpha(0.8 * (1.0 - g))
         cc.restore()
@@ -1028,7 +1058,10 @@ def m4_2(k, tl):
         sw = 0.10 * math.cos(d12 * 1.5) * math.exp(-d12 / 4.0) + (0.5 if taken else 0.0)
         cc.set_source_rgb(*INK); cc.set_line_width(4.5); cc.move_to(250 + ox, 424 + oy); cc.line_to(256 + ox - sw * 40, 462 + oy); cc.stroke()
         tag(k, 256 + ox - sw * 40, 462 + oy, 3.2, 0.05 + sw)
-    if show:
+    if show and V34[0]:                                                  # v34: a forearm from the edge, her fingers closing on the coin
+        import on2_hands as oh
+        oh.insert(k, (660 + gx, 120 + gy), (452 + gx, 236 + gy), "grab", 120, arm=1)
+    elif show:
         n._seg(k, 600 + gx, 150 + gy, 420 + gx, 250 + gy, 100, 88, n.KEY, 3.4)
         ellipse(k, 410 + gx, 256 + gy, 50, 46, n.KEY, 336, shadow=False, lw=3.2)
         for (fx, fy) in ((346, 262), (352, 312)):

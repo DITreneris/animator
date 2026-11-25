@@ -157,6 +157,10 @@ def m6_2(k, tl, dur):
         ellipse(k, hx, hy, 28, 12, n.SILVER, 27, shadow=False, lw=2.4)
         r_ = m.ease(d / 3.0)                                              # her glove, on the handle
         gx, gy = m.lerp(-120, hx - 6, r_), m.lerp(1010, hy + 8, r_)
+        if getattr(m, "V34", [False])[0]:                                 # v34: a forearm from the edge, her fist on the handle
+            import on2_hands as oh
+            oh.insert(k, (gx - 200, gy + 250), (gx - 44, gy + 56), "fist", 104, arm=-1)
+            return
         n._seg(k, gx - 170, gy + 210, gx - 10, gy + 18, 96, 84, n.KEY, 3.2)
         ellipse(k, gx, gy, 46, 40, n.KEY, 336, shadow=False, lw=3.2)
         return
@@ -243,7 +247,8 @@ def m6_6(k, tl, dur):
     cc.set_source_rgb(0.48, 0.44, 0.40); cc.rectangle(150, 730, 420, 12); cc.fill()
     ac.roll(k, 230, 716, 1.15, math.pi / 2, ln=170)
     lx, ly = o["hands"][0]
-    n.hand(k, lx + 4, ly + 10, 3.0, -1.35, 0.0, 1)                         # her hand stays in the air
+    if not getattr(m, "V34", [False])[0]:                                 # v34: the rig's own open hand is there (hands_ps palm)
+        n.hand(k, lx + 4, ly + 10, 3.0, -1.35, 0.0, 1)                     # her hand stays in the air
     if d >= 6:                                                            # his hand, the same watch: past hers, to the roll
         g = m.ease((d - 6) / 6.0)
         b.arm_in(k, -40 - 60 * (1 - g), 640 - 60 * (1 - g), m.lerp(-30, 118, g), m.lerp(590, 706, g), 54)

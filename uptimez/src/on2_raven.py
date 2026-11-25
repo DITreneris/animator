@@ -250,7 +250,7 @@ def _eye3(c, x, y, r, side=1):
     """a hooded eye: pale, the upper lid down over a third of it, sloping toward the beak; a small cold glint"""
     c.save()
     c.new_path(); c.save(); c.translate(x, y); c.scale(1.0, 0.8); c.arc(0, 0, r, 0, 2 * math.pi); c.restore()
-    c.set_source_rgb(0.70, 0.71, 0.72); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(max(1.2, r * 0.18)); c.stroke()
+    c.set_source_rgb(*((0.93, 0.94, 0.96) if RIM2[0] else (0.70, 0.71, 0.72))); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(max(1.2, r * 0.18)); c.stroke()
     c.new_path(); c.arc(x - side * r * 0.12, y + r * 0.05, r * 0.5, 0, 2 * math.pi); c.set_source_rgb(*INK); c.fill()
     c.new_path(); c.rectangle(x - side * r * 0.42, y - r * 0.2, r * 0.22, r * 0.16); c.set_source_rgb(0.92, 0.95, 1.0); c.fill()   # the glint
     c.new_path(); c.move_to(x - r * 1.25, y - r * (0.15 if side > 0 else 0.55)); c.line_to(x + r * 1.25, y - r * (0.55 if side > 0 else 0.15))
@@ -417,6 +417,10 @@ def draw3(s, key, behind=None):
     elif key == "coil":
         perched(c, *PERCH, coil=1.0)
     elif key == "fly":
+        if RIM2[0]:                                              # v34: its shadow on the cab's roof and side
+            c.save(); c.translate(250, 452); c.rotate(-0.08); c.scale(150, 30)
+            g = cairo.RadialGradient(0, 0, 0.1, 0, 0, 1); g.add_color_stop_rgba(0, 0, 0, 0, 0.55); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+            c.set_source(g); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
         flight(c, 352, 236, 92, up=True)
     elif key == "fly2":
         flight(c, 320, 330, 150, up=False, glow=0.3)

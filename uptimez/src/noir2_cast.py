@@ -508,7 +508,7 @@ def _glove_arm(k, sx, sy, a1, a2, seed, ln=48, w=17):
 
 HAND3 = [False]                                            # (25 Nov, Noir 2 v33; Tomas: "we have big problems with fingers and hands in this film") hands_ps.draw instead of a ball at each wrist; a shape per pose
 GEST3 = [("quiet", "quiet"), 0]
-POSE_HANDS = {"g_mirror": ("quiet", "tuck"), "g_fan": ("quiet", "tuck"), "g_hide": ("tuck", "tuck"), "g_offer": ("quiet", "palm"),
+POSE_HANDS = {"g_mirror": ("quiet", "tuck"), "g_fan": ("quiet", "tuck"), "g_hide": ("tuck", "tuck"), "g_offer": ("palm", "quiet"),
               "g_count": ("quiet", "tuck"), "g_beckon": ("quiet", "tuck"), "g_beckon3": ("quiet", "tuck"), "g_run3": ("fist", "fist"), "_g_run_s": ("fist", "fist")}
 
 
@@ -998,6 +998,7 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
                     for q in pts[1:]:
                         c.line_to(*q)
                     c.stroke()
+            c.set_source_rgba(0, 0, 0, 0.22); c.save(); c.translate(-2, 9); c.scale(26, 15); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()   # its shadow on her face
             cap([(40, 6), (24, 2)], 15)                                                           # the wrist
             c.new_path(); c.arc(16, 0, 13.5, 0, 2 * math.pi); c.set_source_rgb(*KEY); c.fill_preserve()   # the palm, on her cheek
             c.set_source_rgb(*INK); c.set_line_width(1.8); c.stroke()
@@ -1069,10 +1070,12 @@ def star_back(k, x, feet, s=1.0, step=None, wrap=True, lag=(0, 0), seed=7):
         (ax, ay), (bx, by) = elbows
         _cloth(c, [("M", ax - 14, ay - 12), ("C", ax + 14, bt + 118, bx - 34, bt + 150, bx + 14, by - 12), ("L", bx + 17, by + 16),
                    ("C", bx - 26, bt + 196, ax + 24, bt + 166, ax - 17, ay + 16)])
-        _curve(c, (ax - 10, ay - 2, ax + 16, bt + 132, bx - 30, bt + 164, bx + 12, by - 2), WRAP_PALE, 1.5)
-        _curve(c, (ax - 12, ay + 9, ax + 18, bt + 150, bx - 28, bt + 182, bx + 13, by + 9), WRAP_PALE, 1.2)
+        soft = tuple(0.5 * a_ + 0.5 * b_ for a_, b_ in zip(WRAP_PALE, WRAP))           # v34: the folds' light half as strong
+        _curve(c, (ax - 10, ay - 2, ax + 16, bt + 132, bx - 30, bt + 164, bx + 12, by - 2), soft, 1.3)
+        _curve(c, (ax - 12, ay + 9, ax + 18, bt + 150, bx - 28, bt + 182, bx + 13, by + 9), soft, 1.0)
+        wind = 0.10 * math.sin(math.pi * 2 * ph * 0.5 + 0.6)                          # its ends move in the wind as she walks
         for i, (ex, ey) in enumerate(elbows):
-            c.save(); c.translate(ex + (-10 if i == 0 else 10), ey + 2); c.rotate(0.10 if i == 0 else -0.22)
+            c.save(); c.translate(ex + (-10 if i == 0 else 10), ey + 2); c.rotate((0.10 if i == 0 else -0.22) + wind * (1.0 if i else 0.6))
             _tail4(k, 1.0, -1 if i == 0 else 1, ln=1.0 if i == 0 else 1.35)
             c.restore()
     elif wrap and LOOK[0] >= 4:                            # v4: the swag hangs below her hair, the ends outside her arms
@@ -1331,6 +1334,16 @@ def glass_handle(k, x, y, r, ang=0.75, seed=715):
     """v3: the handle of the glass and the fist that holds it, so the eye in it has an owner. Draw before glass_view."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang)
+    if HAND3[0]:                                           # v34: the detective's cuff out of the frame, the handle, his fist round it (hands_ps)
+        import hands_ps as hp
+        cut(k, [(-r * 0.30, r * 1.78), (r * 0.30, r * 1.78), (r * 0.42, r * 3.4), (-r * 0.42, r * 3.4)], TRENCH, shadow=False, lw=2.6)
+        rect(k, -r * 0.10, r * 0.96, r * 0.20, r * 1.0, (0.16, 0.15, 0.17), seed, shadow=False, lw=2.2)
+        keep = hp.GLOVE[0]; hp.GLOVE[0] = None
+        try:
+            hp.draw(k, "fist", 0, r * 1.84, r * 0.62, d.SKIN, (0.0, -1.0), 1)
+        finally:
+            hp.GLOVE[0] = keep
+        c.restore(); return
     rect(k, -r * 0.10, r * 0.96, r * 0.20, r * 1.0, (0.16, 0.15, 0.17), seed, shadow=False, lw=2.2)
     ellipse(k, 0, r * 1.62, r * 0.36, r * 0.30, d.SKIN, seed + 1, shadow=False, lw=2.4)
     for i in range(4):
