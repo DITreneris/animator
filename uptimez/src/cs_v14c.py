@@ -175,7 +175,7 @@ def _toss(k, d):
             g.again(k_, 0, "grab")
 
     with s1.A.Don(s1.A.UP, 0.0), s1.Breath(sb, "don", s1.br(d)), s1.Breath(sb, "robot", s1.br(d, 0.5, 0.006)):
-        rb_arm = "paddle" if not held else "none"
+        rb_arm = ("paddle" if not held else "none") if V.ARM14[0] == "paddle" else "none"
         S(k, s1.TWO14_IN, auto=False, portrait="hang", extra=ex,
           **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=rb_arm),
                  dn=at("don", x=X["don"] - V.STEP, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
