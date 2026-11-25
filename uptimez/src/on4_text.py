@@ -31,6 +31,8 @@ SPEAKER = {"PAM": "pam", "DON": "don", "CLIENT": "client", "SOFIA": "sofia"}
 _done = [False]
 _FR = {}                                                     # a motion test's drawings, made once
 LINGER = 0.20
+SHOW_TO = {}                                                 # key -> film time its bubble goes (before the voice ends: "Excuse me?" comes off as she tips)
+NO_FOLLOW = set()                                            # bubbles that stay where they were put while the speaker falls away
 CARD_HALO = [True]                                                # a bubble stays this long after its last word (never over a cut)
 
 
@@ -370,6 +372,8 @@ def film_frames(tmp):
     install(); WX.install()
     ls, tm = lines()
     WX.HITS[:] = list(r.HITS)
+    if getattr(F, "V23", False) and "e1" in r.NEW:
+        SHOW_TO["e1"] = tm["3.2"]["start"] + 1.42; NO_FOLLOW.add("e1")      # off as she tips; it stays where it was said
     d = sc._timing()[1]
     total = sum(v["dur"] for v in tm.values())
     ids = [x["id"] for _, ss in sc.SCENES for x in ss]
@@ -391,11 +395,14 @@ def film_frames(tmp):
         for ln in ls:
             key, t0, t1, kind = ln[0], ln[1], ln[2], ln[3]
             end = t1 if kind != "bubble" else min(t1 + LINGER, shot_end(t0, tm) - 1.0 / F.DPS)
+            if key in SHOW_TO:
+                end = min(end, SHOW_TO[key])
             if not (int(round(t0 * F.DPS)) <= n <= int(round(end * F.DPS))):
                 continue
             pin, ph = state.get(key, (None, None))
             me = heads.get(SPEAKER.get(ln[4]))
-            pin, ph = follow(pin, ph, me)
+            if key not in NO_FOLLOW:
+                pin, ph = follow(pin, ph, me)
             s, fl, box = put(s, ln, heads, pin)
             if kind == "bubble" and box is not None:
                 if pin is None or max(abs(a_ - b_) for a_, b_ in zip(pin, box)) > 0.5:

@@ -28,6 +28,8 @@ P = sc.P
 B_BILL0 = [0.0]                                              # the drawing of 3.4 the first bill starts on (the sound reads it)
 FWD = [False]                                                # (24 Nov, Tomas: "after the crash the car leaves backwards") it drives on, forward: out onto the far side of the road, round her, and off to the left
 FAR = [False]                                                # (24 Nov, cold test of film v14: "the limo drives over her and she does not react") 3.4: the car passes in the far lane, road between its tyres and her; her raised palm goes with its wind; the bills are in the air as its tail leaves
+MONEY2 = [False]                                             # (25 Nov, cold test of v22; Tomas: "the money falls too long") the bills down in 1 s, the shot 2 s (was 3)
+DEPTH_R = [False]                                            # (25 Nov, Tomas's pick) 3.3b: Don walks along the limo to its boot and stays at its depth: his size as at the crossing
 S_CAR = 1.65
 PAM_K, GUARD_K = 1.203, 0.903
 NOSE = 345.0                                                 # the bumper, where it stopped (T3: STOPX + 5 - 170 S)
@@ -176,15 +178,18 @@ def tw():
 
 # ---- R: the rear window --------------------------------------------------------------------------------------------------
 CAM_R = (772, 640, 1.45)
-D_R = (866.0, 772.0)                                         # on our side, by the boot, right of the window
+D_R = D_R1 = (866.0, 772.0)                                         # on our side, by the boot, right of the window
 WX, WY = CX + 74 * S_CAR, 724 - 86 * S_CAR                   # the rear window's middle
 
 
-WALK_R = [(948, 640), (930, 720), D_R]
+WALK_R = WALK_R1 = [(948, 640), (930, 720), D_R]
+D_R2 = (884.0, 730.0)                                        # DEPTH_R: at the boot, at the limo's depth
+WALK_R2 = [(948, 640), (930, 690), D_R2]
 NR = 12
 
 
 def tr():
+    D_R, WALK_R = (D_R2, WALK_R2) if DEPTH_R[0] else (D_R1, WALK_R1)
     def f(i):
         j = i - NR + 10                                      # the old count, from where he stands
         cx = CX + (0 if j < 31 else ((j - 31) / 5.0) ** 2 * 260)                      # at the end it starts to back away
@@ -282,14 +287,15 @@ def tb():
                 shadow(k, cx, 728, 160 * S_CAR, 8, 0.5); car.side(k, cx, 724, S_CAR)
             sc.draw_cast(k, [pm_])
             for j, (bx, by) in enumerate(LAND):              # down out of the dark, swinging, onto her
-                t = min(1.0, max(0.0, (i - B0 - j * 1.6) / 9.0))
-                if i < B0 + j * 1.6:
+                fl_, st_ = (5.0, 0.8) if MONEY2[0] else (9.0, 1.6)   # MONEY2: each bill falls in 5 drawings, one every 0.8 (was 9 and 1.6)
+                t = min(1.0, max(0.0, (i - B0 - j * st_) / fl_))
+                if i < B0 + j * st_:
                     continue
                 x = bx + 150 * (1 - t) + math.sin(t * 7 + j) * 16 * (1 - t); y = 330 + (by - 330) * (t ** 1.4)
                 bill(k, x, y, 0.4 + j + (1 - t) * 3, 1.3)
         return m.draw(m.shot("3.1", loc="C_side", cam=CAM_B, cast=[], protect=(), after=after))
     f = m.lazy(f)
-    return [f(i) for i in range(36 if FWD[0] else 22)]
+    return [f(i) for i in range(24 if MONEY2[0] else (36 if FWD[0] else 22))]
 
 
 # ---- G: the bodyguards ---------------------------------------------------------------------------------------------------

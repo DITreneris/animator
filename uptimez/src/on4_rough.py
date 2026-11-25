@@ -13,6 +13,7 @@ import soundfile as sf
 import on4_scenes as sc
 import on4_voices as vo
 HITS = []                                                    # the film's blows, for the camera's shake (on4_weather.SHAKE): the punch, the bump, her landing, the lid, the boards
+FAST = {"e1": 1.3}                                          # e1 is said on the bumper, before she tips: quicker than her other lines
 LENS = {}                                                    # line -> its take's length in seconds, as mixed (on4_text reads it)
 END2 = [False]                                               # film v16: the office's sounds on the shorter ending
 
@@ -78,7 +79,7 @@ def new_takes():
             v = dv.FATHER[dv.FATHER_VOICE][0]       # Father voice B, but 0.8 speed and -1.5 semitones: at -3 a three-word line is not recognized
             a = so.pitch(so.dry(txt.rstrip(".") + "...", so.blend(*v), 0.8), -1.5)
         else:
-            a = so.dry(txt, vo.PAM_AWAKE[0], vo.PAM_AWAKE[2], vo.PAM_AWAKE[1])
+            a = so.dry(txt, vo.PAM_AWAKE[0], vo.PAM_AWAKE[2] * FAST.get(key, 1.0), vo.PAM_AWAKE[1])
         a = np.asarray(a, dtype=np.float64); a = a / (np.sqrt(np.mean(a ** 2)) + 1e-9) * 0.11
         h = vo.heard3(a); want = " ".join(sfs._words(txt))
         log[key] = dict(shot=shot, who=who, text=txt, asr=h, ok=sum(1 for x in h if sfs._match(x, want)), len=round(len(a) / vo.SR, 2))
