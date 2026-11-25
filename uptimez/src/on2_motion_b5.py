@@ -147,6 +147,7 @@ def m5_1(k, tl, dur):
         n.rich_hand(k, x - flip * out, y + 3.2 * e, 1.9, ang, what, flip=flip)
     if getattr(m, "V31", [False])[0] and getattr(m, "V32", [False])[0]:   # v32: the smoke over the guests, drifting; her alone in the light
         cc = k.c
+        cc.save(); cc.new_path(); cc.rectangle(0, 0, 116, m.H); cc.rectangle(442, 0, m.W - 442, m.H); cc.clip()   # never over her: a tint on her red and the noir pass takes it for grey
         for i, (sx, sy, r) in enumerate(((20, 430, 150), (520, 400, 160), (30, 760, 170), (515, 740, 160))):
             ox = 14 * math.sin(tl * 1.3 + i)
             g = cairo.RadialGradient(sx + ox, sy, 10, sx + ox, sy, r)
@@ -156,9 +157,7 @@ def m5_1(k, tl, dur):
             g = cairo.LinearGradient(sx, 0, sx + (130 if sx == 0 else -130), 0)
             g.add_color_stop_rgba(0, 0, 0, 0, 0.42); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
             cc.set_source(g); cc.rectangle(0 if sx == 0 else m.W - 130, 300, 130, 660); cc.fill()
-        g = cairo.RadialGradient(270, 330, 30, 270, 420, 260)             # a spot from above on her hair and shoulders
-        g.add_color_stop_rgba(0, 1, 1, 0.96, 0.20); g.add_color_stop_rgba(1, 1, 1, 0.96, 0.0)
-        cc.set_source(g); cc.new_path(); cc.arc(270, 420, 260, 0, 2 * math.pi); cc.fill()
+        cc.restore()
 
 
 # ---------------------------------------------------------------- 5.2: she hides; he searches the wrong way
