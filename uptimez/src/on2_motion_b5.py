@@ -231,7 +231,9 @@ def m5_2(k, tl, dur):
     hid = 4 <= d < 28
     duck = 12 if 15 <= d < 19 else 0                                     # his glass comes her way: lower
     v38 = getattr(m, "V38", [False])[0]
-    wink = v38 and 22 <= d < 28                                           # v38: the glass has gone past; she looks over the money at us and winks
+    v41 = getattr(m, "V41", [False])[0]
+    w0 = 18 if v41 else 22                                                # v41: the wink starts 0.33 s sooner (10 drawings, 0.83 s)
+    wink = v38 and w0 <= d < 28                                           # v38: the glass has gone past; she looks over the money at us and winks
     if hid:
         o = n.star(k, 330, 1180 + duck, 2.3, "g_fan", "wink" if wink else "caught", (0.0, 0.0) if wink else (-1.0, -0.3), wrap=False, bag=False)
         hx, hy = o["head"]
@@ -245,8 +247,8 @@ def m5_2(k, tl, dur):
     n.rich_hand(k, 520 - 3 * math.sin(d * 0.9), 900, 1.7, -0.2, "coupe", flip=-1)
     # him, from behind, in front of us: the coat's shoulders, the bald head, the headset, the glass held out
     v40 = getattr(m, "V40", [False])[0]
-    if v40 and 22 <= d < 28:                                              # v40: he freezes while she winks (his head and his glass stop where they were)
-        f = 21 / 30.0
+    if v40 and (18 if getattr(m, "V41", [False])[0] else 22) <= d < 28:   # v40: he freezes while she winks (his head and his glass stop where they were)
+        f = (17 if getattr(m, "V41", [False])[0] else 21) / 30.0
     else:
         f = d / 30.0
     sweep = 470 - 300 * math.sin(math.pi * min(1.0, f * 1.15))           # the glass goes across the room and back
@@ -256,10 +258,46 @@ def m5_2(k, tl, dur):
         lx, ly = hx0 + 150 + 30 * math.sin(math.pi * min(1.0, f * 1.15)), 700 + 12 * math.cos(f * 4)
         if wink:                                                          # v38: the glass has gone past her, to the left, down the room
             rp = min(1.0, (d - 21) / 2.0) * min(1.0, (28 - d) / 2.0) if getattr(m, "V39", [False])[0] else 1.0   # v39: eased out and back, no jump
+            if v41:                                                       # v41: over four drawings each way, so no step reads as a jump
+                rp = m.ease(min(1.0, (d - w0 + 1) / 4.0)) * m.ease(min(1.0, (28 - d) / 4.0))
             if v40:                                                       # v40: a short, nearly level arc, in his reach, above the money
-                lx, ly = lx - 70 * rp, ly - 14 * math.sin(math.pi * rp)
+                lx, ly = lx - (140 if v41 else 70) * rp, ly - 14 * math.sin(math.pi * rp)
             else:
                 lx, ly = lx - (110 + 14 * (d - 22)) * rp, ly + 40 * rp
+    if v41:                                                               # v41 (3/3 "a plank" after two rounds): no arm in the frame. His hand comes up at
+        import hands_ps as hp                                             # the frame's bottom edge, a cuff stub out of it, the long-handled glass up from his fist
+        n.detective_back(k, hx0, 760 - n.d.HY * 2.4, 2.4, arm=None)
+        gx_, gy_ = lx + 30, ly - 120
+        bx_, by_ = gx_ + 34, 975
+        R = 57.0
+        a_ = math.atan2(gy_ - by_, gx_ - bx_)
+        hx_, hy_ = bx_ + math.cos(a_) * 70, by_ + math.sin(a_) * 70
+        cc.set_source_rgb(*n.d.TRENCH); cc.set_line_cap(0)                # the cuff of his coat, out of the frame's edge
+        cc.set_line_width(46); cc.new_path(); cc.move_to(bx_ - math.cos(a_) * 30, by_ - math.sin(a_) * 30); cc.line_to(hx_ - math.cos(a_) * 22, hy_ - math.sin(a_) * 22); cc.stroke()
+        cc.set_source_rgb(*INK); cc.set_line_width(3); cc.set_line_cap(1)
+        for sd in (-1, 1):
+            px_, py_ = -math.sin(a_) * 23 * sd, math.cos(a_) * 23 * sd
+            cc.new_path(); cc.move_to(bx_ + px_, by_ + py_); cc.line_to(hx_ - math.cos(a_) * 22 + px_, hy_ - math.sin(a_) * 22 + py_); cc.stroke()
+        cc.set_source_rgb(*n.d.TRENCH_SHADE); cc.set_line_width(2.4)
+        cc.new_path(); cc.move_to(hx_ - math.cos(a_) * 24 - math.sin(a_) * 22, hy_ - math.sin(a_) * 24 + math.cos(a_) * 22); cc.line_to(hx_ - math.cos(a_) * 24 + math.sin(a_) * 22, hy_ - math.sin(a_) * 24 - math.cos(a_) * 22); cc.stroke()
+        ex_, ey_ = gx_ - math.cos(a_) * R, gy_ - math.sin(a_) * R                 # the handle, from his fist to the rim
+        cc.set_source_rgb(*INK); cc.set_line_width(17); cc.new_path(); cc.move_to(hx_, hy_); cc.line_to(ex_, ey_); cc.stroke()
+        cc.set_source_rgb(0.16, 0.15, 0.17); cc.set_line_width(12); cc.new_path(); cc.move_to(hx_, hy_); cc.line_to(ex_, ey_); cc.stroke()
+        keep = hp.GLOVE[0]; hp.GLOVE[0] = None
+        try:
+            hp.draw(k, "fist", hx_ - math.cos(a_) * 12, hy_ - math.sin(a_) * 12, 60, n.d.SKIN, (math.cos(a_), math.sin(a_)), 1)
+        finally:
+            hp.GLOVE[0] = keep
+        cc.save(); cc.new_path(); cc.arc(gx_, gy_, R - 8, 0, 2 * math.pi); cc.clip()
+        cc.set_source_rgb(0.78, 0.80, 0.76); cc.paint()
+        n.money(k, gx_ - 2, gy_ + 46, 4.6, -0.20 + 0.10 * math.sin(f * 5), 2, 712)
+        g = cairo.RadialGradient(gx_ - 18, gy_ - 18, 4, gx_, gy_, R)
+        g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0.0)
+        cc.set_source(g); cc.paint(); cc.restore()
+        cc.set_source_rgb(*INK); cc.set_line_width(7); cc.new_path(); cc.arc(gx_, gy_, R - 4, 0, 2 * math.pi); cc.stroke()
+        cc.set_source_rgb(*n.SILVER); cc.set_line_width(3); cc.new_path(); cc.arc(gx_, gy_, R - 4, 0, 2 * math.pi); cc.stroke()
+        cc.set_source_rgba(1, 1, 1, 0.9); cc.set_line_width(2.6); cc.new_path(); cc.arc(gx_, gy_, R - 12, math.pi * 1.10, math.pi * 1.42); cc.stroke()
+        return
     v39 = getattr(m, "V39", [False])[0]
     n.ARM3[0] = v39
     n.ARM3_HIGH[0] = v40
@@ -421,8 +459,12 @@ def m5_6(k, tl, dur):
 
         def stick():
             if d >= 5:
-                cc.save(); cc.translate(366 + ox, 640 + oy); cc.rotate(-0.80); cc.scale(5.2, 5.2); cc.translate(0, 12)
-                rect(k, -3.4, -2, 6.8, 22, (0.12, 0.12, 0.14), 331, shadow=False, lw=1.0)
+                v42 = getattr(m, "V42", [False])[0]                       # v42 (3/3: "glove and pen merge"): a silver case, bigger, the red only at its tip
+                cc.save(); cc.translate(366 + ox, 640 + oy); cc.rotate(-0.80); cc.scale(6.4 if v42 else 5.2, 6.4 if v42 else 5.2); cc.translate(0, 12)
+                rect(k, -3.4, -2, 6.8, 22, (0.88, 0.88, 0.92) if v42 else (0.12, 0.12, 0.14), 331, shadow=False, lw=1.0)
+                if v42:
+                    cc.set_source_rgb(0.55, 0.55, 0.60); cc.rectangle(-3.4, 6, 6.8, 1.6); cc.fill()
+                    cc.set_source_rgba(1, 1, 1, 0.9); cc.rectangle(-2.2, 0, 1.2, 18); cc.fill()
                 cut(k, [(-2.6, -2), (-2.6, -9), (2.6, -12), (2.6, -2)], n.KEY, shadow=False, lw=0.9)
                 cc.restore()
         if getattr(m, "V35", [False])[0]:
