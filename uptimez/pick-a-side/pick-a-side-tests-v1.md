@@ -469,3 +469,11 @@ Shared notes (not beats):
 - **Who the Dad invitation is for** is unclear: 2 of 3. One viewer thought it was Pam's.
 - Funniest: "BOTH." 3 of 3, the one heel 3 of 3, "SMILE. RECORDING." 2 of 3, the oil 2 of 3.
 - Slow: Don's standing shots in frames 8–10 and his walk along the line (36–37): 3 of 3.
+
+## The booth's close and the #TeamDon bridge (25 Nov, Tomas: "tvarkom")
+
+- **4.3b:** a new close on both bodyguards, noses pinched, between the Client's "That one." (4.3a) and Father's "Invite her." (now 4.3c). No line. The shot keeps its length and its timing for now (`CLOSE_43`). Board v4 now has 44 key frames.
+- **4.1:** the #TeamDon post just seen in the office (3.5), on the phone the silhouette lifted at the door (3.6), now in bodyguard 1's black-sleeved hand under the neon. Episode 13's approved phone hand (`of_cast.phone_grip`), declared to the hand gate with its thumb toward his body. The office and the booth now share one visible prop.
+- `check v5`: 0 faults, hand gate included. Board v3 md5-identical. Sheet: `ps_booth_bridge_v1.png`. Not cold-tested.
+
+**Not built: the invitation in Sofía's hand.** Picked from my option, but the script and concept v3.2 say the invitation is **Pam's**: her phone lies on the counter from 1.2, lights up INVITATION · DAD in 5.7, and in 6.1 Pam's hand reaches across the line for it (the Client's condition for Father is Pam). The viewer who read "it's Pam's" was right. My option assumed Sofía; it would undo canon. Put back to Tomas.

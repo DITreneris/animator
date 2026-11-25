@@ -587,6 +587,24 @@ def ins_booth_wide(k):
         c.set_source_rgba(*dhp.NEON, 0.16); c.rectangle(120, yy - 40, 300, 54); c.fill()
         kit.text(k, txt, 270, yy, sz + 2, dhp.NEON)
         kit.text(k, txt, 270, yy, sz, (1.0, 0.86, 0.88))
+    if GAGS_V5[0]:                                           # Tomas, 25 Nov (the red room read as "another film" 3 of 3): the
+        _post_bridge(k)                                      # #TeamDon post we just saw posted, on bodyguard 1's phone, in his hand
+
+
+def _post_bridge(k):
+    """4.1 bridge: the same #TeamDon screen as 3.5, on the phone the silhouette lifted in 3.6, now in a black-sleeved hand
+    under the neon: the office and the booth share one prop (the cold-viewer skill: two places need one visible link)."""
+    c = k.c
+    import of_cast as ocs
+    px, py, ps_ = 270, 560, 1.25
+    palm, body_x = (300, 690), 520                           # his right hand from the bottom right (his body off frame, right)
+    c.set_source_rgb(0.06, 0.06, 0.08); c.new_path()             # his sleeve
+    c.move_to(540, 960); c.line_to(540, 800); c.line_to(330, 700); c.line_to(300, 760); c.line_to(420, 960); c.close_path(); c.fill()
+    ocs.phone_grip(k, palm[0], palm[1], 1.4, body_x=body_x, part="back", skin=(0.91, 0.67, 0.55))   # 13's approved phone hand,
+    rp.phone_screen(k, px, py, ps_, "posted")                                                         # the big screen between
+    ocs.phone_grip(k, palm[0], palm[1], 1.4, body_x=body_x, part="front", skin=(0.91, 0.67, 0.55))
+    want = ocs.inner_thumb(palm[0], body_x, False)
+    grip("phone", palm, want, want)
 
 
 HEEL_42 = (330, 470)
@@ -643,7 +661,8 @@ def _prints_v4(k):
     c.new_path(); c.arc(tx_, ty_, 5, 0, 6.3); c.fill()
 
 
-BOOTH_PART_V4 = {0: (1.25, -230, -220), 1: (1.25, 100, -220)}   # round 5: 4.3a on the Client, 4.3b on Father (x' = s x + tx)
+CLOSE_43 = [1.45, -345, -302]                                  # GAGS_V5: 4.3b, the bodyguards close (x' = s x + tx)
+BOOTH_PART_V4 = {0: (1.25, -230, -220), 1: (1.25, 100, -220), 2: (CLOSE_43[0], CLOSE_43[1], CLOSE_43[2])}   # round 5: 4.3a on the Client, 4.3b on Father (x' = s x + tx)
 
 
 def ins_booth_43(k):
@@ -921,8 +940,11 @@ def board_keys(sh, line):
     """-> [(label, surface, faults)]: one key frame, or one per line for a split shot."""
     if FIX_V4[0] and sh["id"] in SPLIT_V4:
         out = []
-        for i in range(len(says(line))):
-            PART[0] = i
+        parts = list(range(len(says(line))))
+        if GAGS_V5[0] and sh["id"] == "4.3":                  # Tomas, 25 Nov (the noses read 1 of 3 at board size): a close on the
+            parts = [0, 2, 1]                                 # two bodyguards between the Client's line and Father's, no line
+        for i, part in enumerate(parts):
+            PART[0] = part
             try:
                 surf, msgs = board_frame(sh, line)
                 out.append((sh["id"] + "abcd"[i], surf, msgs + (_CHK[0]() if _CHK[0] else [])))
@@ -1259,7 +1281,7 @@ def board_frame(sh, line):
     if FIX_V4[0]:                                             # the people's bubbles first (beside the face); the robot's
         lines_ = sorted(lines_, key=lambda w: w[0] == "robot")   # comes down onto its antenna wherever is left
         if PART[0] is not None:                               # a split shot's key frame: one of its lines
-            lines_ = [says(line)[PART[0]]]
+            lines_ = [says(line)[PART[0]]] if PART[0] < len(says(line)) else []
         if GAGS_V5[0] and CAMKEY[0] == TREAT_53:              # "Welcome." is said on 5.3a; 5.3b has no line
             lines_ = []
     for who, txt in lines_:
