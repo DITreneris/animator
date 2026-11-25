@@ -45,3 +45,14 @@ Lessons applied: rules §0 and Gestures ("two people's hands near = a handshake"
 - The guard's reaching arm, in one drawing (0.6 s), reads "a floating fist over her head" (1/2) or "stiff, a pole" (1/2), and the handoff "for a moment a handshake" (1/2).
 - Don's lowering hand near Father reads "a wave, almost a handshake" (1/2).
 - The freeze cutaways (Mom, Pam, the visitor) confuse cold viewers who see this scene alone. They are callbacks to scenes 4–6.
+
+## v8d (24 Nov): the freeze's cutaways (11.3 Mom, 11.4 Pam, 11.5 the inspector)
+
+- **Fault:** "why are they there?" 2/2 in the whole-film test. Mom looked down and Pam up, at nobody.
+- **Round 1:** their eyes on Don (screen left). Still "they look at nobody, cameos" 2/2: the eyes are too small to carry it.
+- **Round 2:** over his shoulder. Don's back and the back of his head are in the foreground at the left edge of each cutaway (`FG8`, `dh_back.don_back`), so each is seen glaring at him.
+  - Same shots, marks and lengths.
+  - `FOREGROUND` exempts the back of his head from the face zones.
+- **Test** (2 viewers, scene 8's end): "over his shoulder, so they are all looking at him" 2/2; "people with a claim on him, judging him now he is caught" 2/2.
+  - "Who they are" stays open for a viewer who sees scene 8 alone. In the film they come from scenes 4–6.
+- **Checks:** gate speech 113/0, zones 0, set 0.
