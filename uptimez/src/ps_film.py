@@ -19,6 +19,7 @@ from kit import Ctx, INK
 DPS, FPS = 15, 30
 OUT = ps.OUT
 SCENES = {1: ["1.1", "1.2a", "1.3", "1.4"],
+          3: ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7"],
           2: ["2.1", "2.1b", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.9b", "2.10", "2.11"]}                 # v3 (Tomas 25 Nov): 1.2b cut (misread 3 times), its 0.5 s to 1.3
 import json as _json
 TIMING = {r["shot"]: r for r in _json.load(open(os.path.join(ps.OUT, "ps_timing_v3.json")))["shots"]}
@@ -359,9 +360,96 @@ def s211(t):
     return dict(pm_.shot_H2(t), own_cam=True)
 
 
+# --- scene 3 ------------------------------------------------------------------------------------------------------------
+def s31(t):
+    """the arm telescopes up, Don swings into his pose: motion test E's first 0.8 s (approved), then held on its lines."""
+    return dict(pm_.shot_E(min(t, 0.79)), own_cam=True)
+
+
+def s32(t):
+    """the FLASH (one white drawing), the photo fills the screen, held: motion test E from 0.8 s."""
+    return pm_.shot_E(0.80 + t)
+
+
+TURN_33 = 0.35
+
+
+def s33(t):
+    """the robot asks, its "?" on the visor; it bobs with its words (the phone at its arm's tip, PUBLIC POST?)."""
+    base = BOARD["3.3"]
+    lo = loud("3.3", t)
+    def cast(k):
+        heads = {}
+        _, heads["robot"] = ps.robot(k, (ps.at("rob_tape")[0], ps.at("rob_tape")[1] - 6 * lo), selfie=0.6, phone="public",
+                                     visor="ask", arms=((-95, 0), (120, 40)))
+        return heads
+    return ps.S("3.3", base["cam"], base["room"], cast)
+
+
+SINK_34, MEET_34, BACK_34 = (0.05, 0.45), 0.52, (0.80, 1.05)
+
+
+def s34(t):
+    """his raised arm tires and sinks; the robot slides the phone in under his thumb (the pad goes green); thumb back up,
+    smug. He never looks. The board's payoff pose is the meeting; the raised arm is that pose's arm lifted."""
+    base = BOARD["3.4"]
+    th = ps.dp.POSES["thumbs"]
+    hi = (th[0], th[1], th[2] + 38, th[3] + 20)              # his arm (frame right, the phone side) up, before it tires
+    sink = ease((t - SINK_34[0]) / (SINK_34[1] - SINK_34[0])) - ease((t - BACK_34[0]) / (BACK_34[1] - BACK_34[0]))
+    pose = tuple(a + (b - a) * sink for a, b in zip(hi, th))
+    slide = ease((t - 0.20) / (MEET_34 - 0.20))
+    p_ = ps.PHONE_34
+    def cast(k):
+        heads = {}
+        ps.robot(k, "rob_tape", selfie=p_["sel"], phone="approved" if t >= MEET_34 else "public", arms=p_["arms"],
+                 tele=lerp(-1.05, p_["tele"], slide), phone_s=p_["s"])
+        _, heads["don"] = ps.don(k, (ps.tape_x(140) - 190, ps.F + 140), pose, "grin", (0, -0.3), chin=1)
+        return heads
+    return ps.S("3.4", base["cam"], base["room"], cast)
+
+
+def s35(t):
+    """PUBLIC POST? slides up and away; the posted card comes in under it."""
+    u = ease((t - 0.15) / 0.40)
+    def draw(k):
+        c = k.c                                              # (ins_screen paints the whole frame: the background once,
+        c.set_source_rgb(0.20, 0.20, 0.24); c.paint()        # then the two phones, so the first isn't painted over)
+        c.save(); c.translate(0, -ps.H * u); ps.rp.phone_screen(k, 270, 500, 2.3, "approved"); c.restore()
+        c.save(); c.translate(0, ps.H * (1 - u)); ps.rp.phone_screen(k, 270, 430, 2.95, "posted"); c.restore()
+    return ps.S("3.5", "screen", draw=draw)
+
+
+DING_36 = 0.30
+
+
+def s36(t):
+    """DING behind the glass: the silhouette lifts a glowing phone to its face; Don, in front, smiles on."""
+    base = BOARD["3.6"]
+    room = base["room"] if t >= DING_36 else dict(base["room"], silhouette=True)
+    return ps.S("3.6", base["cam"], room, base["cast"])
+
+
+def s37(t):
+    """Pam sees the glow (eyes out), her mouth opens to warn him, she looks at Don posing; her cup comes up to her chin
+    and she says it into the cup."""
+    import pm_ps
+    q = ease((t - 0.45) / 0.45)
+    a, b = pm_ps.P_POSES["cup_mid"], pm_ps.P_POSES["cup_chin"]
+    pm_ps.P_POSES["cup_t"] = tuple(x + (y - x) * q for x, y in zip(a, b)); pm_ps.P_HANDS["cup_t"] = ("relax_s", "cup")
+    base = BOARD["3.7"]
+    def cast(k):
+        heads = {}
+        face = "shock" if 0.15 <= t < 0.40 else "doubt"
+        look = (1, -0.4) if t < 0.35 else (-1, 0)
+        _, heads["pam"] = ps.pam(k, "pam_don", "cup_t", face, look)
+        return heads
+    return ps.S("3.7", base["cam"], base["room"], cast)
+
+
 SHOT_FN = {"1.1": s11, "1.2a": s12a, "1.2b": s12b, "1.3": s13, "1.4": s14,
            "2.1": s21, "2.1b": s21b, "2.2": s22, "2.3": s23, "2.4": s24, "2.5": s25, "2.6": s26, "2.7": s27,
-           "2.9": s29, "2.10": s210, "2.11": s211}
+           "2.9": s29, "2.10": s210, "2.11": s211,
+           "3.1": s31, "3.2": s32, "3.3": s33, "3.4": s34, "3.5": s35, "3.6": s36, "3.7": s37}
 HOLDS = {"2.8": "the heel insert, held by the script (0.6 s at least)", "2.9b": "Sofía flat, only her mouth moves"}
 
 
@@ -419,7 +507,11 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1}
+STILLS_VER = {1: 4, 2: 1, 3: 1}
+STILLS3 = [("3.1", 0.3, "the arm telescopes"), ("3.1", 1.8, "Chin up"), ("3.2", 0.02, "FLASH"), ("3.2", 1.5, "the photo"),
+           ("3.3", 0.8, "Public post?"), ("3.4", 0.10, "the arm up"), ("3.4", 0.40, "it sinks, the phone slides"),
+           ("3.4", 0.60, "APPROVED"), ("3.4", 1.15, "thumb back up"), ("3.5", 0.35, "the slide"), ("3.6", 0.1, "before"),
+           ("3.6", 0.8, "DING"), ("3.7", 0.25, "she sees it"), ("3.7", 1.5, "into the cup")]
 STILLS2 = [("2.1", 0.5, "the tape rips"), ("2.1", 1.2, "the feet hop"), ("2.1b", 0.40, "SLAP: the card"),
            ("2.1b", 0.75, "it rolls off"), ("2.2", 0.50, "he sees the tag"), ("2.2", 0.72, "the spin"),
            ("2.2", 1.20, "the card to the room"), ("2.3", 0.10, "the stamp"), ("2.3", 0.9, "the roll points"),
@@ -427,7 +519,7 @@ STILLS2 = [("2.1", 0.5, "the tape rips"), ("2.1", 1.2, "the feet hop"), ("2.1b",
            ("2.5", 1.3, "her half salute"), ("2.5", 1.75, "the smile in the cup"), ("2.6", 0.08, "Mom plants"),
            ("2.7", 0.6, "Sofía stops mid-step"), ("2.9", 0.8, "Border breach"), ("2.10", 0.5, "And you?"),
            ("2.10", 1.6, "Both."), ("2.10", 2.4, "Don's face"), ("2.11", 0.4, "the haul"), ("2.11", 1.3, "the bump")]
-STILLS = {2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
+STILLS = {3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
               ("1.2a", 0.45, "the blind lands"), ("1.3", 0.3, "the blind still sways"),
               ("1.4", 0.2, "1.4a opens wide"), ("1.4", 1.2, "pushed in: Don speaks"), ("1.4", 1.9, "the roll up"), ("1.4", 2.5, "the three look")]}
 
@@ -575,6 +667,16 @@ def sound(n, path):
     def tone(f0, f1, d, k_=8.0):
         tt = osd.t_(d); ph = 2 * np.pi * np.cumsum(np.linspace(f0, f1, len(tt))) / SR
         return np.sin(ph) * np.minimum(1.0, tt / 0.005) * np.exp(-tt * k_)
+    if n == 3:                                               # the sound map (plan v2 §2)
+        S_ = starts
+        wh = tone(300, 900, 0.5, 2.5) * (1 + 0.4 * np.sin(2 * np.pi * 60 * osd.t_(0.5)))
+        osd.put(buf, wh, S_["3.1"] + 0.02, 0.10)                                    # 3.1 the servo whir
+        tt = osd.t_(0.06); sh_ = osd.hp(osd.noise(0.06), 2) * np.exp(-tt * 70)
+        osd.put(buf, sh_, S_["3.2"] + 0.0, 0.6); osd.put(buf, sh_, S_["3.2"] + 0.05, 0.4)   # 3.2 the shutter
+        osd.put(buf, tone(1320, 1320, 0.35, 6) + 0.6 * tone(1760, 1760, 0.35, 6), S_["3.4"] + MEET_34, 0.18)   # 3.4 chime
+        osd.put(buf, osd.hp(osd.noise(0.35), 3) * np.sin(np.pi * osd.t_(0.35) / 0.35), S_["3.5"] + 0.15, 0.25)  # whoosh
+        ding = tone(1046, 1046, 0.9, 3.5) + 0.5 * tone(1568, 1568, 0.9, 4.5)
+        osd.put(buf, osd.lp(ding, 6), S_["3.6"] + DING_36, 0.16)                   # 3.6 DING, outside, muffled
     if n == 2:                                               # the sound map (plan v2 §2)
         S_ = starts
         sc_ = osd.hp(osd.noise(0.55), 3) * np.exp(-osd.t_(0.55) * 2.5)            # 2.1 the tape's long screech
@@ -591,9 +693,11 @@ def sound(n, path):
         osd.put(buf, tone(880, 880, 0.12, 12), S_["2.9"] + 0.02, 0.15); osd.put(buf, tone(660, 660, 0.14, 12), S_["2.9"] + 0.15, 0.15)
         sq = lambda: tone(1800, 2500, 0.12, 6) * (1 + 0.3 * np.sin(2 * np.pi * 40 * osd.t_(0.12)))
         osd.put(buf, sq(), S_["2.10"] + TAKE_AT["2.10"][1] - 0.15, 0.10)          # 2.10 the wheels squeak
-        osd.put(buf, sq(), S_["2.11"] + pm_.H2["sail"], 0.10); osd.put(buf, sq(), S_["2.11"] + pm_.H2["back"], 0.10)
+        H_ = dict(roll=0.40, hit=0.65) if pm_.VER["H"] >= 4 else dict(roll=pm_.H2["back"], hit=pm_.H2["hit"])   # test H v4: no
+        osd.put(buf, sq(), S_["2.11"] + H_["roll"], 0.10); osd.put(buf, sq(), S_["2.11"] + H_["roll"] + 0.12, 0.10)  # haul; it
+                                                             # rolls back from 0.40 and meets him at 0.65 (h2_state)
         bonk = osd.slam() * 0.6; bonk[:int(0.4 * SR)] += tone(140, 70, 0.4, 7)       # BONK on the hit
-        osd.put(buf, bonk, S_["2.11"] + pm_.H2["hit"], 0.6)
+        osd.put(buf, bonk, S_["2.11"] + H_["hit"], 0.6)
     if n == 1:
         def rattle_run(d, pitch):                            # the slats running down or up: a burst of clicks
             out = np.zeros(int(d * SR))
@@ -683,7 +787,7 @@ def film(n, ver=1):
     return not real
 
 
-STRIP8 = {1: (0.0, 2.8), 2: (1.6, 4.4)}                      # 2: 2.1b's slap and 2.2's spin
+STRIP8 = {1: (0.0, 2.8), 2: (1.6, 4.4), 3: (7.6, 10.4)}                      # 2: 2.1b's slap and 2.2's spin
 
 
 def sheets(n, frames):

@@ -581,3 +581,21 @@ Found in the frames: inserts were redrawn as the room (the camera lock); the car
 | "And you?" / "Both."; the bump, Don worse | asker 1/3; "a blank wall" 3/3 (2.10b's robot at the frame's edge) | asker 3/3; Don worse 3/3 |
 
 5 of 5 (G4). Shared, still open: the haul and the bump read as "the robot zaps him" 6 of 6 across both rounds (the impact strokes read as a spark; the 4 fps sheet misses the haul) — one more round and the rule changes the gesture.
+
+### Scene 2 v3: the ending at 8 fps (2 fresh viewers, the strip 19.0–20.7 s only)
+
+Both: "the robot rolls in and shoves him; the yellow burst is a comic impact flash; Don worse". At 8 fps the "zap" is gone (the 4 fps sheet caught only the burst). Test H v4 has no haul (Tomas, after three misread hauls), so "it rolls into him" is the intended reading. The squeaks and the BONK now follow H v4's timing (roll 0.40 s, hit 0.65 s): `ps_film_s2_v3_540.mp4`.
+
+## Scene 3 (`ps_film.py film 3`, 207 drawings, 13.8 s, −15.7 LUFS)
+
+Built: 3.1–3.2 test E (the arm, FLASH, the photo), 3.1 held on its two lines; 3.3 the robot bobs with "Public post?"; 3.4 his phone-side arm up, sinks onto the phone as it slides in, the pad goes green, back up; 3.5 the approved screen slides up, the post comes in; 3.6 the silhouette's phone lights at DING; 3.7 Pam's eyes to the glow, her mouth opens, the cup up to her chin. Sound: servo, shutter, chime, whoosh, DING (muffled).
+
+| Beat | v1 (3 viewers) |
+|---|---|
+| The robot takes the photo | 3/3 |
+| "Public post?" — Don approves without looking | 3/3 ("rubber-stamp") |
+| It's posted, #TeamDon | 3/3 |
+| The figure behind the glass sees it | 3/3 a watcher; its glow 2/3 |
+| Pam notices, says it into her cup | notices 3/3; the cup as her answer weak ("she doesn't act") |
+
+Shared: "Chin up, Donnie." 3/3 can't tell who says it (Mom, small, behind); 3.5 opened on two dark drawings 2/3 (the second insert painted over the first: fixed, v2).
