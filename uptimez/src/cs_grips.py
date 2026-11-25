@@ -131,6 +131,7 @@ def _behind_then_thumb(k, hx, hy, w, skin, d, obj, thumb_from, thumb_to):
 
 
 PAM_CUFF = (0.36, 0.22, 0.50)
+SHIFT52 = [0.0]                                                                   # v17: the 5.2 insert moved up (cs_v17)
 
 
 def s5_2_pen(k, px, py):
@@ -144,7 +145,8 @@ def s5_2_pen(k, px, py):
         c.set_source_rgb(*INK); c.set_line_width(15); c.set_line_cap(1)
         c.move_to(px, py); c.line_to(px + 104, py - 132); c.stroke()            # v17: shorter, its end over her hand, not her sleeve
         c.set_source_rgb(*s5.PEN); c.set_line_width(10); c.move_to(px + 8, py - 10); c.line_to(px + 104, py - 132); c.stroke()
-    stub = max(40.0, (hy - 22 + 40) / d[1] - 14)                                  # v17: her purple sleeve out of the top edge
+    top = k.c.device_to_user(0, 0)[1]                                             # the frame's top edge, here
+    stub = max(40.0, (hy - 22 - top + 40) / d[1] - 14)                            # v17: her purple sleeve out of the top edge
     osc.insert_cuff(c, (hx + 18, hy - 22), (hx + 18 - d[0] * 300, hy - 22 - d[1] * 300), 54, s4.SKIN_PAM, s4.PURPLE,
                     cuff=PAM_CUFF, stub=stub)                                    # (a bare stub read as nobody's hand)
     _behind_then_thumb(k, hx, hy, 58, s4.SKIN_PAM, d, pen, (hx + 24, hy - 4), (px + 40, py - 44))
@@ -210,7 +212,10 @@ def s5_2(k, d):
     phone slides in, held in the series' phone hand from the bottom, his sleeve's cuff."""
     c = k.c
     sb.bg(c, (0.30, 0.26, 0.22))
+    c.save(); c.translate(0, -SHIFT52[0])                                          # v17: the tape higher, her sleeve shorter
     c.set_source_surface(s4._plan_surface("number"), 0, 0); c.paint()
+    if SHIFT52[0]:                                                                 # the plan's own floor on down past its edge
+        c.set_source_surface(s4._plan_surface("number"), 0, SHIFT52[0]); c.rectangle(0, 960, 540, SHIFT52[0] + 4); c.fill()
     n_, bx, by, bw, bh = [b for b in s5.ac._bays() if b[0] == 7][0]
     W = (bw + 8) * 11.0
     c.save(); c.translate(*s5.TAPE); c.rotate(-0.06)
@@ -232,6 +237,7 @@ def s5_2(k, d):
     c.restore()
     if tip:                                                                       # v17: back through the context, not / HI:
         s5_2_pen(k, *c.device_to_user(*tx_))                                       # a scratch surface without the device scale
+    c.restore()
     if d >= 20:
         u = s1.ease((d - 20) / 6.0)
         x, y = 372, 640 + (1 - u) * 420
@@ -303,7 +309,8 @@ def gate(shot, d, surf):
         msgs.append("HAND an old grip drawer: %s" % ", ".join(sorted(set(LEGACY))))
     rig = [(x, y) for (i, kind, x, y, w) in ch.LOG if kind not in ("held", "robot")]
     import hand_gate
-    msgs += hand_gate.check([g for g in oc.GRIP_LOG], rig, 13.0 * hi)            # under cs_hands._held's 14: a hand it kept out is not counted twice
+    tol = 13.0 * hi if ch.TOL[0] is None else 13.0                                  # v17: frame units (cs_hands.TOL)
+    msgs += hand_gate.check([g for g in oc.GRIP_LOG], rig, tol)            # under cs_hands._held's 14: a hand it kept out is not counted twice
     for m in msgs:
         FAULTS.append((shot, d, m))
 
