@@ -284,19 +284,34 @@ def m6_7(k, tl, dur):
     cc.set_source_rgb(0.46, 0.45, 0.43); cc.rectangle(-20, 120, 250, 520); cc.fill()
     n.shadow(k, 130 + (4 if d == 3 else 0), 900, 1.7, co.POSES["open"][:2] + co._ik(1, 104, co.BT + 80), lit_hand=1, look_down=0.6)
     under = d >= 4
-    cc.set_source_rgb(0.09, 0.09, 0.10); cc.rectangle(236, 610, 250, 330); cc.fill()
+    side = getattr(m, "V30", [False])[0]                                  # v30 (3/3: "her in a little box"): the desk from the side, open under its top
+    if side:
+        g = cairo.LinearGradient(0, 610, 0, 960)                          # its shadow on the floor, no box
+        g.add_color_stop_rgba(0, 0, 0, 0, 0.55); g.add_color_stop_rgba(1, 0, 0, 0, 0.15)
+        cc.set_source(g); cc.rectangle(212, 610, 300, 350); cc.fill()
+        cc.set_source_rgb(0.20, 0.19, 0.18); cc.rectangle(258, 586, 12, 220); cc.fill()             # the far leg, behind her
+    else:
+        cc.set_source_rgb(0.09, 0.09, 0.10); cc.rectangle(236, 610, 250, 330); cc.fill()
     if d < 2:                                                             # v8: behind the desk, her hand still out
         n.star(k, 404, 940, 2.0, "g_offer", "sideeye", (-1.0, 0.6), wrap=False)
     elif d < 4:                                                           # she has the roll, and goes down with it
         swayed(k, 396 - 14 * (d - 2), 990 + 70 * (d - 2), 7, lambda: n.star(k, 396 - 14 * (d - 2), 990 + 70 * (d - 2), 2.0, "g_hide", "caught",
                                                                                (-1.0, 0.2), wrap=False))
     else:                                                                 # and she is under it
-        cc.save(); cc.rectangle(236, 610, 250, 330); cc.clip()
-        n.star(k, 360 + (1.5 if d % 2 else -1.5), 1130 - (26 if d == 4 else 0), 2.0, "g_hide", "caught", (1.0, -0.4), wrap=False)
+        cc.save(); cc.rectangle(0, 612, 540, 400) if side else cc.rectangle(236, 610, 250, 330); cc.clip()
+        if side:                                                          # v30: small enough to be under it, her eyes below its top
+            n.star(k, 372 + (1.5 if d % 2 else -1.5), 1020 - (20 if d == 4 else 0), 1.45, "g_hide", "caught", (-1.0, -0.4), wrap=False)
+        else:
+            n.star(k, 360 + (1.5 if d % 2 else -1.5), 1130 - (26 if d == 4 else 0), 2.0, "g_hide", "caught", (1.0, -0.4), wrap=False)
         cc.restore()
-    cc.set_source_rgb(0.11, 0.10, 0.10); cc.rectangle(212, 570, 300, 40); cc.fill()
-    cc.set_source_rgb(0.46, 0.42, 0.38); cc.rectangle(212, 570, 300, 10); cc.fill()
-    cc.set_source_rgb(0.11, 0.10, 0.10); cc.rectangle(212, 610, 24, 330); cc.fill(); cc.rectangle(486, 610, 24, 330); cc.fill()
+    if side:                                                              # the top in depth, one leg at each end, seen past the side
+        cc.set_source_rgb(0.11, 0.10, 0.10); cc.new_path(); cc.move_to(212, 600); cc.line_to(250, 560); cc.line_to(540, 560); cc.line_to(512, 600); cc.close_path(); cc.fill()
+        cc.set_source_rgb(0.46, 0.42, 0.38); cc.rectangle(212, 600, 300, 12); cc.fill()
+        cc.set_source_rgb(0.11, 0.10, 0.10); cc.rectangle(222, 612, 18, 330); cc.fill(); cc.rectangle(492, 612, 18, 330); cc.fill()
+    else:
+        cc.set_source_rgb(0.11, 0.10, 0.10); cc.rectangle(212, 570, 300, 40); cc.fill()
+        cc.set_source_rgb(0.46, 0.42, 0.38); cc.rectangle(212, 570, 300, 10); cc.fill()
+        cc.set_source_rgb(0.11, 0.10, 0.10); cc.rectangle(212, 610, 24, 330); cc.fill(); cc.rectangle(486, 610, 24, 330); cc.fill()
     if d < 2:                                                             # the roll, under his fingers; then she has it
         ac.roll(k, 300, 556, 1.1, math.pi / 2, ln=150)
 
@@ -585,16 +600,23 @@ def m8_7(k, tl, dur):
     d = d12_(tl)
     last = int(round(dur * 12)) - 1
     g = m.ease(max(0.0, (d - 3) / float(last - 3)))                      # held, then in
+    v31 = getattr(m, "V31", [False])[0]
+    if v31:                                                               # v31: the window is the frame two drawings early, the taxi in its place by then
+        g = m.ease(min(1.0, max(0.0, (d - 3) / float(last - 5))))
     wx, wy, ww, wh = WIN
     x1, y1, w1 = m.lerp(wx, 0, g), m.lerp(wy, 0, g), m.lerp(ww, m.W, g)
     z = w1 / ww
     row = [r for r in m.timing.rows if r["shot"] == "1.1"][0]
-    m.TAXI_DX[0] = -440 * (1 - m.ease(min(1.0, d / float(last)))) ** 2   # it comes in from the left and stops in its place
+    m.TAXI_DX[0] = -440 * (1 - m.ease(min(1.0, d / float(last - 2 if v31 else last)))) ** 2   # it comes in from the left and stops in its place
+    raven = getattr(m, "rv", None) is not None and m.rv.RAVEN[0]
+    if raven:                                                             # v29: the raven on the lamp in the window; on the last drawing, crouched to spring
+        m.END.update(on=True, last=(d == last))
     try:
         street = m.frame(row, (d - last) / 12.0, 0.0)
     finally:
         m.TAXI_DX[0] = 0.0
-    if d == last:
+        m.END.clear()
+    if d == last or (v31 and d >= last - 2):
         cc.set_source_surface(street, 0, 0); cc.paint(); return
     cc.save(); cc.translate(x1, y1); cc.scale(z, z); cc.translate(-wx, -wy)
     b.party(k, 760)

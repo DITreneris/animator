@@ -105,7 +105,59 @@ def m5_1(k, tl, dur):
         if m.LOOK3[0]:                                                    # v13: the arm, from the dark at the edge of the frame
             hx_, hy_ = x - flip * out, y + 3.2 * e
             n._seg(k, -60 if flip > 0 else m.W + 60, hy_ + 120, hx_ - flip * 40, hy_ + 10, 46, 40, n.BLACK, 2.4)
+        if getattr(m, "V31", [False])[0]:                                 # v31: a guest with a face at the frame's edge, the arm from his shoulder
+            cc_ = k.c
+            gx = 46 if flip > 0 else m.W - 46
+            gy = y + 3.2 * e - 150
+            cc_.set_source_rgb(*n.BLACK)                                    # his jacket, shoulder to the frame's edge
+            cc_.new_path(); cc_.move_to(gx - flip * 110, gy + 330); cc_.line_to(gx - flip * 100, gy + 78); cc_.line_to(gx + flip * 30, gy + 62)
+            cc_.line_to(gx + flip * 74, gy + 100); cc_.line_to(gx + flip * 70, gy + 330); cc_.close_path(); cc_.fill()
+            n._seg(k, gx + flip * 50, gy + 104, x - flip * out - flip * 40, y + 3.2 * e + 10, 44, 38, n.BLACK, 2.4)
+            cc_.set_source_rgb(0.95, 0.95, 0.93); cc_.new_path(); cc_.move_to(gx - flip * 14, gy + 62); cc_.line_to(gx + flip * 22, gy + 60); cc_.line_to(gx + flip * 2, gy + 112); cc_.close_path(); cc_.fill()
+            cut(k, [(gx - flip * 8, gy + 68), (gx + flip * 10, gy + 62), (gx + flip * 10, gy + 76)], n.BLACK, shadow=False, lw=1.5)   # a bow tie
+            v32 = getattr(m, "V32", [False])[0]
+            kind = {2: 0, 6: 1, 11: 2, 15: 1}[d_in] if v32 else -1          # v32: slicked hair; bald with a moustache; a hat; and nearer ones bigger
+            skin = ((0.50, 0.50, 0.53), (0.44, 0.44, 0.47), (0.38, 0.38, 0.41))[kind] if v32 else (0.72, 0.72, 0.74)
+            hw = (46, 50, 44)[kind] if v32 else 46
+            ellipse(k, gx, gy, hw, 52, skin, 880 + d_in, shadow=False, lw=2.4)          # his head, to her
+            cc_.set_source_rgb(*n.BLACK)
+            if kind in (-1, 0):
+                cc_.new_path(); cc_.arc(gx, gy - 6, 48, math.pi * 1.05, math.pi * 1.95); cc_.close_path(); cc_.fill()   # hair, slicked
+            elif kind == 2:                                                 # a hat, its brim over his eye
+                cc_.new_path(); cc_.rectangle(gx - 40, gy - 78, 80, 46); cc_.fill()
+                cc_.save(); cc_.translate(gx + flip * 6, gy - 30); cc_.scale(72, 10); cc_.new_path(); cc_.arc(0, 0, 1, 0, 2 * math.pi); cc_.restore(); cc_.fill()
+            if kind == 1:                                                   # a moustache
+                cut(k, [(gx + flip * 6, gy + 14), (gx + flip * 40, gy + 12), (gx + flip * 36, gy + 22), (gx + flip * 10, gy + 22)], n.BLACK, shadow=False, lw=1.5)
+            if v32:                                                         # the bar's light on the side of his head toward her
+                cc_.set_source_rgba(0.85, 0.85, 0.88, 0.8); cc_.set_line_width(3); cc_.set_line_cap(1)
+                cc_.new_path(); cc_.arc(gx, gy, hw - 4, (-0.9 if flip > 0 else math.pi - 0.2), (0.2 if flip > 0 else math.pi + 0.9)); cc_.stroke()
+            ex_ = gx + flip * 20
+            ellipse(k, ex_, gy - 2, 8, 9, (0.97, 0.97, 0.95), 884 + d_in, shadow=False, lw=1.8)
+            cc_.set_source_rgb(*INK); cc_.new_path(); cc_.arc(ex_ + flip * 3, gy - 2, 4, 0, 2 * math.pi); cc_.fill()
+            cc_.set_line_width(3); cc_.set_line_cap(1); cc_.move_to(ex_ - 10, gy - 16); cc_.line_to(ex_ + 10, gy - 19); cc_.stroke()
+            cc_.move_to(gx + flip * 8, gy + 26); cc_.curve_to(gx + flip * 18, gy + 34, gx + flip * 30, gy + 30, gx + flip * 34, gy + 22); cc_.stroke()   # he smiles
+            cut(k, [(gx + flip * 44, gy + 4), (gx + flip * 58, gy + 12), (gx + flip * 44, gy + 16)], (0.72, 0.72, 0.74), shadow=False, lw=2)   # his nose, in profile
+        elif getattr(m, "V30", [False])[0]:                               # v30: whose arm: a guest at the frame's edge, shoulder and head
+            ox = 14 if flip > 0 else m.W - 14
+            oy = y + 3.2 * e + 150
+            cc_ = k.c; cc_.set_source_rgb(*n.BLACK)
+            cc_.new_path(); cc_.arc(ox, oy - 92, 40, 0, 2 * math.pi); cc_.fill()
+            cc_.new_path(); cc_.move_to(ox - 80, oy + 140); cc_.line_to(ox - 70, oy - 30); cc_.line_to(ox + 70, oy - 30); cc_.line_to(ox + 80, oy + 140); cc_.close_path(); cc_.fill()
+            cc_.set_source_rgb(0.55, 0.56, 0.60); cc_.set_line_width(3); cc_.new_path(); cc_.arc(ox, oy - 92, 40, -2.4 if flip > 0 else -1.6, -1.5 if flip > 0 else -0.7); cc_.stroke()
         n.rich_hand(k, x - flip * out, y + 3.2 * e, 1.9, ang, what, flip=flip)
+    if getattr(m, "V31", [False])[0] and getattr(m, "V32", [False])[0]:   # v32: the smoke over the guests, drifting; her alone in the light
+        cc = k.c
+        cc.save(); cc.new_path(); cc.rectangle(0, 0, 116, m.H); cc.rectangle(442, 0, m.W - 442, m.H); cc.clip()   # never over her: a tint on her red and the noir pass takes it for grey
+        for i, (sx, sy, r) in enumerate(((20, 430, 150), (520, 400, 160), (30, 760, 170), (515, 740, 160))):
+            ox = 14 * math.sin(tl * 1.3 + i)
+            g = cairo.RadialGradient(sx + ox, sy, 10, sx + ox, sy, r)
+            g.add_color_stop_rgba(0, 0.80, 0.80, 0.78, 0.34); g.add_color_stop_rgba(1, 0.80, 0.80, 0.78, 0.0)
+            cc.set_source(g); cc.new_path(); cc.arc(sx + ox, sy, r, 0, 2 * math.pi); cc.fill()
+        for sx in (0, m.W):                                               # and the room's edges sink
+            g = cairo.LinearGradient(sx, 0, sx + (130 if sx == 0 else -130), 0)
+            g.add_color_stop_rgba(0, 0, 0, 0, 0.42); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+            cc.set_source(g); cc.rectangle(0 if sx == 0 else m.W - 130, 300, 130, 660); cc.fill()
+        cc.restore()
 
 
 # ---------------------------------------------------------------- 5.2: she hides; he searches the wrong way
@@ -161,6 +213,8 @@ def m5_3(k, tl, dur):
                mouth=m.said("5.3", tl, "EUUCOEEM", lead=m.LEAD - 1 / 12.0))                         # v8: "The usual."
     hx, hy = o["head"]
     TIP["5.3"] = ((hx + 124, hy + 62), (hx + 150, hy + 28))               # beside her mouth; the bubble to the right of her face
+    if getattr(m, "V30", [False])[0]:                                     # v30 (2/3: "hers or his?"): the box low, under her mouth's level and off his body
+        TIP["5.3"] = ((hx + 124, hy + 66), (hx + 136, hy + 96))
 
 
 # ---------------------------------------------------------------- 5.4: his note

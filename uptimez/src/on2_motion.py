@@ -1,4 +1,11 @@
-"""v28 (20 Nov): a joke by 0:01 (the outside review: "no joke at 0:01-0:02, the first is the gang war at about 0:03"; Tomas
+"""v29 (25 Nov): the raven at 0:00 (Tomas: "the opening is bad, the leg is drawn badly; like 4, where the cat leaps, but a
+raven"; two outside reviews, his picks): on2_raven.RAVEN. The leg is out and the taxi's door stays shut; 1.1 is five
+drawings of the raven diving at us from the lamp; one wing wipes the lens and 1.2 is under it at 0.42 s, holding its first
+drawing for four drawings so the first shot is still fired at 1.0 s. The last two drawings of the film (in the window,
+8.7) have it back on the lamp, then crouched to spring: the seam. Sound: one caw, its wings, a low thump on the lens,
+then nothing but her voice until the first shot (on2_sound.motion_mix16(raven=True)). RAVEN[0] = False draws v28
+(pinned by commit 8c25517).
+v28 (20 Nov): a joke by 0:01 (the outside review: "no joke at 0:01-0:02, the first is the gang war at about 0:03"; Tomas
 chose): OPEN28. 1.1 is 0.75 s (the taxi, the door, her heel); the cab pulls away at once and the gang war starts 0.25 s
 into 1.2, so the first shot is fired at 1.0 s and she doesn't blink. "New Year's Eve." runs on over the war and "The
 whole city was celebrating." waits for it. Frame 0 and the loop are unchanged. OPEN28[0] = False draws v27.
@@ -53,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v28"
+V = "v32"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -66,6 +73,18 @@ PLAN28 = {"1.1": ("1.1", 0.75, "n1", -1.03), "1.2": ("1.2", 2.75, "n6", 0.05)}  
 LEADS28 = {"1.2": 0.75}                                   # the city line waits for New Year's Eve. to end
 SHOTS_12_28 = ((3, 0), (5, 2), (7, 1), (8, 3), (10, 0), (12, 2), (13, 1))
 FALL_28 = 14
+import on2_raven as rv
+rv.RAVEN[0] = True                                        # v29: the raven at 0:00; False draws v28
+RAVEN_HOLD = 4 / 12.0                                     # 1.2 starts this much earlier and holds its first drawing
+if rv.RAVEN[0]:
+    PLAN28 = {"1.1": ("1.1", 5 / 12.0, "n1", 5 / 12.0 - 0.25 - 1.112), "1.2": ("1.2", 2.75 + RAVEN_HOLD, "n6", 0.05)}
+    LEADS28 = {"1.2": 0.75 + RAVEN_HOLD}
+V30 = [True]                                              # v30 (25 Nov, cold test v29, Tomas's picks): "I only want my blueprint", the wing's gap, no leg at 0:11, the push to her face, "The usual." hers, the desk from the side, owners for the bar's hands; False draws v29
+if V30[0]:
+    PLAN28["7.2b"] = ("7.2b", 16 / 12.0, "c1b", -0.55)       # the pop lands on "-print" (7.3 starts 1.37 s into the take; the pop is 2 drawings in)
+V31 = [True]                                              # v31 (25 Nov, cold test v30, Tomas's picks): the raven whole in the lamp's light at 0:00 and no red gap; no tube in her hand before the office; the compact open with her in its mirror, her shadow over it; her back; faces for the bar's guests; a glove over her mouth; the seam two drawings early. False draws v30
+V32 = [True]                                              # v32 (25 Nov, the review of v31's stills; Tomas: "tobulinam"; polish, no rebuild): the glove's fingers, the compact drawn at its own size (hinge, sheen, powder, her own figure in the mirror), wet stones (on4_weather.glints, Office Noir 4) and contact shadows, the wrap and her hair from behind, three different guests in the dark with the smoke over them, the raven's rim as light. False draws v31
+END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
 
@@ -208,8 +227,46 @@ def banner(k, t, x=12, y=240, w=236, h=50, fs=25):
     bulbs(k, x + 4, y + h - 4, x + w - 4, y + h - 4, 0, 10, t, 0.9, 11)
 
 
+def contact(cc, x, y, rx, ry=None, a=0.55):
+    """v32: a soft dark pool where something stands on the wet stones"""
+    ry = ry or rx * 0.16
+    cc.save(); cc.translate(x, y); cc.scale(rx, ry)
+    g = cairo.RadialGradient(0, 0, 0.2, 0, 0, 1.0)
+    g.add_color_stop_rgba(0, 0, 0, 0, a); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+    cc.set_source(g); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.fill(); cc.restore()
+
+
+def wet(k, floor, lamp, t):
+    """v32: the road wet. Office Noir 4's glints (on4_weather.glints), the lamp's light smeared down the stones, and
+    splashes where the rain lands."""
+    import on4_weather as wx
+    cc = k.c
+    if lamp:
+        lx = lamp[0] - 30
+        g = cairo.LinearGradient(0, floor + 34, 0, 950)
+        g.add_color_stop_rgba(0, 1, 1, 0.96, 0.30); g.add_color_stop_rgba(1, 1, 1, 0.96, 0.0)
+        cc.new_path(); cc.move_to(lx - 26, floor + 34); cc.line_to(lx + 26, floor + 34); cc.line_to(lx + 70, 950); cc.line_to(lx - 70, 950); cc.close_path()
+        cc.set_source(g); cc.fill()
+        for i in range(7):                                                # broken by the ripples
+            yy = floor + 60 + i * i * 6.5
+            if yy < 950:
+                w = 22 + i * 7 + 6 * math.sin(t * 5 + i)
+                cc.set_source_rgba(1, 1, 0.96, 0.34 - i * 0.035); cc.set_line_width(2.4 + i * 0.5); cc.set_line_cap(1)
+                cc.move_to(lx - w, yy); cc.line_to(lx + w, yy); cc.stroke()
+    wx.glints(cc, 0, 540, floor + 44, 940, 26, t, 11, 0.42)
+    d = int(round(t * 12))
+    for i in range(6):                                                    # a splash: two short strokes up from where a drop lands
+        r = (i * 97 + (d // 2) * 61) % 500 + 20, floor + 50 + (i * 53 + (d // 2) * 89) % max(1, int(880 - floor))
+        if (d + i) % 2 == 0 and r[1] < 940:
+            cc.set_source_rgba(1, 1, 1, 0.5); cc.set_line_width(1.4); cc.set_line_cap(1)
+            for dx in (-5, 5):
+                cc.move_to(r[0], r[1]); cc.line_to(r[0] + dx, r[1] - 8); cc.stroke()
+
+
 def street(k, floor, lamp, t):
     b.street(k, floor, lamp, rain=False)
+    if V31[0] and V32[0]:
+        wet(k, floor, lamp, t)
     wx, wy = 156, 110                                                     # v20: lights in one window only, the lit one
     bulbs(k, wx + 2, wy + 92, wx + 76, wy + 92, 12, 5, t, 1.8, 3)
     if floor > 330 and NOW.get("shot") == "1.2":                         # v23: not over the taxi; over the alley, above the war
@@ -349,6 +406,8 @@ TAXI_DX = [0.0]                                             # v22: where the tax
 
 
 def m1_1(k, tl):
+    if rv.RAVEN[0]:                                                  # v29: no leg; the door stays shut (the raven is the action)
+        return _m1_1(k, tl, 99.0, 0.25, 999)
     if OPEN28[0]:                                                    # v28: the same drawings, faster: door, foot, splash
         return _m1_1(k, tl, 0.08, 0.25, 5)
     return _m1_1(k, tl, 0.25, 0.34, 8)
@@ -357,6 +416,12 @@ def m1_1(k, tl):
 def _m1_1(k, tl, d0, dd, f0):
     street(k, 668, (440, 150), tl)
     door = ease((tl - d0) / dd)
+    if V31[0] and V32[0]:
+        contact(k.c, 150 + TAXI_DX[0], 722, 330, 26, 0.6)
+        cc_ = k.c                                                        # TAXI, upside down and broken, in the wet under it
+        cc_.save(); cc_.translate(150 + TAXI_DX[0] - 104, 770); cc_.scale(1, -0.55)
+        cc_.select_font_face("Inter", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); cc_.set_font_size(40)
+        cc_.set_source_rgba(1, 1, 1, 0.16); cc_.move_to(0, 0); cc_.show_text("TAXI"); cc_.restore()
     n.taxi(k, 150 + TAXI_DX[0], 716, 2.5, door=door)
     d12 = int(round(tl * 12))
     if d12 >= f0:                                                               # her foot comes out of the dark and down, in four drawings
@@ -434,10 +499,15 @@ def m1_2b(k, tl):
 
 
 def m1_2(k, tl):
+    if rv.RAVEN[0]:                                                  # v29: it starts under the wing and holds, so the war is where it was
+        tl = max(0.0, tl - RAVEN_HOLD)
     cc = k.c
     cc.save()
-    z0 = 0.5 if OPEN28[0] else 0.9                                         # v28: the war starts sooner, so does the push
-    zoom(cc, 118, 560, 1.0 + 0.45 * ease((tl - z0) / 1.4))              # v17: over her shoulder, into the alley
+    if V30[0]:                                                           # v30: after the war, in to her face, ending on 1.2b's framing (no jump)
+        zoom(cc, 406, 166, 1.0 + 1.42 * ease((tl - 1.25) / 1.55))
+    else:
+        z0 = 0.5 if OPEN28[0] else 0.9                                     # v28: the war starts sooner, so does the push
+        zoom(cc, 118, 560, 1.0 + 0.45 * ease((tl - z0) / 1.4))          # v17: over her shoulder, into the alley
     _m1_2(k, tl)
     cc.restore()
 
@@ -449,6 +519,8 @@ def _m1_2(k, tl):
     n.taxi(k, x, 730, 1.5, door=0.0)
     rise = 12 if tl < 1 / 12.0 else 5 if tl < 2 / 12.0 else 0
     look = (0.1, -0.2) if tl < 2.0 else (0.3, -0.3)                         # v13: she never looks round
+    if V31[0] and V32[0]:
+        contact(k.c, 350, 802, 120, 16, 0.6)
     n.star(k, 350, 800 + rise, 1.9, "g_pose", "interested", look, sparkle=1.0 if int(tl * 12) % 6 < 3 else 0.2)
     rain(k, tl + 2)
 
@@ -465,6 +537,8 @@ def m2_1(k, tl, dur=2.75):
     cc.new_path(); cc.move_to(118, 752); cc.line_to(128, 700); cc.line_to(152, 712); cc.line_to(170, 696); cc.line_to(196, 708); cc.line_to(204, 752)
     cc.close_path(); cc.fill()
     cc.restore()
+    if V31[0] and V32[0]:
+        contact(k.c, 340, lerp(808, 774, p), 96, 13, 0.65)
     n.star_back(k, 340, lerp(806, 772, p), lerp(1.92, 1.76, p), step=tl * 1.6)
     rain(k, tl + 4)
 
@@ -514,6 +588,69 @@ def m2_4(k, tl):
         b.arm_in(k, ex - 320, ey - 110, ex, ey)
 
 
+def compact3(k, x, y, d, u):
+    """v32: her compact, drawn at its own size (not a small drawing enlarged): the lid up with its mirror, a hinge, the
+    base lying away from us with its powder. In the mirror, her, from behind (n.star_back), going. u 0..1 how far."""
+    cc = k.c
+    SIL, SIL_D = (0.86, 0.87, 0.90), (0.42, 0.44, 0.50)
+
+    def disc(cx, cy, rx, ry, g0, g1, lw=3.0):
+        cc.save(); cc.translate(cx, cy); cc.scale(rx, ry); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.restore()
+        g = cairo.LinearGradient(cx - rx, cy - ry, cx + rx, cy + ry)
+        g.add_color_stop_rgb(0, *g0); g.add_color_stop_rgb(1, *g1)
+        cc.set_source(g); cc.fill_preserve(); cc.set_source_rgb(*INK); cc.set_line_width(lw); cc.stroke()
+    contact(cc, x + 6, y + 150, 150, 34, 0.55)
+    disc(x, y + 128, 96, 40, SIL_D, (0.30, 0.31, 0.36))                    # the base: its side, then its top, lying away from us
+    disc(x, y + 116, 96, 40, SIL, SIL_D)
+    disc(x, y + 116, 76, 30, (0.93, 0.88, 0.84), (0.78, 0.72, 0.68), 2.0)  # the powder
+    import random
+    r = random.Random(4)
+    for i in range(70):                                                   # pressed powder: its grain, and where she has rubbed it
+        a_, rr = r.uniform(0, 2 * math.pi), r.uniform(0, 1) ** 0.5
+        cc.set_source_rgba(0.55, 0.48, 0.44, 0.5); cc.new_path(); cc.arc(x + math.cos(a_) * rr * 70, y + 116 + math.sin(a_) * rr * 26, 1.3, 0, 2 * math.pi); cc.fill()
+    cc.set_source_rgba(0.60, 0.53, 0.49, 0.8); cc.set_line_width(2); cc.set_line_cap(1)
+    cc.save(); cc.translate(x - 14, y + 114); cc.scale(34, 12); cc.new_path(); cc.arc(0, 0, 1, 0.3, 2.6); cc.restore(); cc.stroke()
+    cc.set_source_rgb(*SIL_D); cc.rectangle(x - 30, y + 72, 60, 14); cc.fill_preserve(); cc.set_source_rgb(*INK); cc.set_line_width(2.4); cc.stroke()   # the hinge
+    for hx in (-18, 0, 18):
+        cc.set_source_rgb(*SIL); cc.new_path(); cc.arc(x + hx, y + 79, 3.2, 0, 2 * math.pi); cc.fill()
+    disc(x, y, 100, 88, SIL, SIL_D)                                        # the lid, toward us
+    disc(x, y, 82, 71, (0.62, 0.68, 0.76), (0.86, 0.90, 0.94), 2.0)        # its mirror
+    cc.save(); cc.save(); cc.translate(x, y); cc.scale(80, 69); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.restore(); cc.clip()
+    sc_ = 0.62 - 0.36 * u                                                  # her, from behind, in it: the gown, the wrap, her hair
+    n.star_back(k, x - 10 + 34 * u, y + 66 - 26 * u, sc_, step=d / 6.0)
+    cc.set_source_rgba(1, 1, 1, 0.55); cc.set_line_width(7); cc.set_line_cap(1)                 # the glass: two bars of light across it
+    cc.move_to(x - 62, y - 14); cc.line_to(x - 30, y - 52); cc.stroke()
+    cc.set_line_width(3); cc.move_to(x - 46, y + 2); cc.line_to(x - 12, y - 40); cc.stroke()
+    cc.restore()
+    cc.set_source_rgba(1, 1, 1, 0.9); cc.set_line_width(3); cc.set_line_cap(1)                   # the rim, lit
+    cc.save(); cc.translate(x, y); cc.scale(94, 82); cc.new_path(); cc.arc(0, 0, 1, math.pi * 1.1, math.pi * 1.45); cc.restore(); cc.stroke()
+
+
+def compact32(k, tl):
+    cc = k.c
+    d = int(round(tl * 12))
+    if d < 2:                                                             # it falls, turning
+        cc.save(); cc.translate(250, 250 + 180 * d); cc.rotate(0.5 - 0.3 * d); cc.scale(0.8, 0.8); compact3(k, 0, 0, d, 0.0); cc.restore()
+        return
+    if d < 6:                                                             # powder, off the stones
+        g = ease((d - 2) / 3.0)
+        cc.save(); cc.translate(250, 700); cc.scale(0.5 + 0.6 * g, 0.5 + 0.6 * g); cc.translate(-250, -700)
+        cc.push_group(); n.powder_puff(k, 250, 700, 4.0); cc.pop_group_to_source(); cc.paint_with_alpha(0.8 * (1.0 - g))
+        cc.restore()
+    cc.save(); cc.translate(262, 560); cc.scale(1.35, 1.35); cc.translate(-250, -560)
+    compact3(k, 250, 500 - (10 if d == 2 else 0), d, min(1.0, (d - 2) / 6.0))
+    cc.restore()
+    if 3 <= d < 7:                                                        # her shadow, running, across the stones
+        sx_ = -160 + 190 * (d - 3)
+        cc.set_source_rgba(0.02, 0.02, 0.03, 0.55)
+        cc.new_path(); cc.move_to(sx_, 960); cc.line_to(sx_ + 110, 760); cc.line_to(sx_ + 190, 760); cc.line_to(sx_ + 250, 960); cc.close_path(); cc.fill()
+        cc.new_path(); cc.arc(sx_ + 150, 716, 58, 0, 2 * math.pi); cc.fill()
+    if d >= 5:
+        n.footprints(k, 360, 800, 4.2, n=1, step=30)
+    if d >= 7:
+        n.footprints(k, 450, 700, 3.6, n=1, step=30)
+
+
 def m2_5(k, tl):
     cc = k.c
     cc.set_source_rgb(*b.GROUND); cc.paint()
@@ -522,6 +659,43 @@ def m2_5(k, tl):
         cc.move_to(-20, 140 + i * 140); cc.line_to(560, 110 + i * 140); cc.stroke()
     cc.set_source_rgba(1, 1, 1, 0.16); cc.save(); cc.translate(250, 600); cc.scale(260, 200); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi)
     cc.restore(); cc.fill()
+    if V31[0] and V32[0]:
+        return compact32(k, tl)
+    if V31[0]:                                                          # v31: the compact open on the stones, her in its mirror, going; her shadow over it
+        d = int(round(tl * 12))
+        if d < 2:
+            n.compact2(k, 250, 250 + 190 * d, 4.6, 0.5 - 0.35 * d)
+        else:
+            if d < 6:
+                g = ease((d - 2) / 3.0)
+                cc.save(); cc.translate(250, 690); cc.scale(0.3 + 0.5 * g, 0.3 + 0.5 * g); cc.translate(-250, -690)
+                cc.push_group(); n.powder_puff(k, 250, 690, 4.0); cc.pop_group_to_source(); cc.paint_with_alpha(1.0 - 0.6 * g)
+                cc.restore()
+            n.compact2(k, 250, 560 - (10 if d == 2 else 0), 5.4, -0.10)
+            mx, my, mr = 250 + 5.4 * 17 * math.sin(-0.10) * -1, 560 - 5.4 * 17, 5.4 * 14     # its mirror
+            mx, my = 250 - 9, 560 - 92
+            cc.save(); cc.new_path(); cc.arc(mx, my, mr, 0, 2 * math.pi); cc.clip()
+            u = min(1.0, (d - 2) / 6.0); sc_ = 1.55 - 0.95 * u                               # her, from behind, in it: smaller and smaller
+            fx_, fy_ = mx - 14 + 30 * u, my + 70 - 40 * u
+            cc.set_source_rgb(*n.KEY); cc.new_path(); cc.move_to(fx_ - 34 * sc_, fy_); cc.line_to(fx_ - 12 * sc_, fy_ - 52 * sc_); cc.line_to(fx_ - 16 * sc_, fy_ - 74 * sc_)
+            cc.line_to(fx_ + 16 * sc_, fy_ - 74 * sc_); cc.line_to(fx_ + 12 * sc_, fy_ - 52 * sc_); cc.line_to(fx_ + 34 * sc_, fy_); cc.close_path(); cc.fill()
+            for sx__ in (-1, 1):                                              # her arms, pumping
+                cc.set_line_width(7 * sc_); cc.set_line_cap(1); cc.move_to(fx_ + sx__ * 16 * sc_, fy_ - 70 * sc_)
+                cc.line_to(fx_ + sx__ * 30 * sc_, fy_ - (48 if (d + (sx__ > 0)) % 2 else 62) * sc_); cc.stroke()
+            cc.set_source_rgb(0.86, 0.86, 0.88); cc.new_path(); cc.rectangle(fx_ - 22 * sc_, fy_ - 112 * sc_, 44 * sc_, 44 * sc_); cc.fill()   # her hair
+            cc.set_source_rgb(*INK); cc.set_line_width(2); cc.rectangle(fx_ - 22 * sc_, fy_ - 112 * sc_, 44 * sc_, 44 * sc_); cc.stroke()
+            cc.move_to(fx_, fy_ - 112 * sc_); cc.line_to(fx_, fy_ - 76 * sc_); cc.stroke()
+            cc.restore()
+            if 3 <= d < 7:                                                # her shadow, running, across the stones
+                sx_ = -160 + 190 * (d - 3)
+                cc.set_source_rgba(0.02, 0.02, 0.03, 0.62)
+                cc.new_path(); cc.move_to(sx_, 960); cc.line_to(sx_ + 110, 720); cc.line_to(sx_ + 190, 720); cc.line_to(sx_ + 250, 960); cc.close_path(); cc.fill()
+                cc.new_path(); cc.arc(sx_ + 150, 676, 58, 0, 2 * math.pi); cc.fill()
+            if d >= 5:
+                n.footprints(k, 330, 760, 4.2, n=1, step=30)
+            if d >= 7:
+                n.footprints(k, 440, 640, 3.6, n=1, step=30)
+        return
     if tl < 2 / 12.0:                                                   # the compact, falling
         n.compact2(k, 230, 330 + 1500 * tl, 3.6, 0.9 + tl * 6)
     else:
@@ -530,9 +704,11 @@ def m2_5(k, tl):
         n.powder_puff(k, 220, 640, 5.0)
         cc.restore()
     if 4 / 12.0 <= tl < 6 / 12.0:
-        b.red_shoe(k, 330, 610, 3.6)
+        if not V30[0]:                                                  # v30: the leg is out (cold test v29, 3/3 "a leg with no body")
+            b.red_shoe(k, 330, 610, 3.6)
     elif 6 / 12.0 <= tl < 8 / 12.0:
-        b.red_shoe(k, 460, 470, 3.2)
+        if not V30[0]:
+            b.red_shoe(k, 460, 470, 3.2)
         n.footprints(k, 300, 700, 4.2, n=1, step=30)
     elif tl >= 8 / 12.0:
         n.footprints(k, 300, 700, 4.2, n=1, step=30)
@@ -960,6 +1136,10 @@ CLOCK = {"1": 55, "2": 55, "3": 56, "4": 57, "5": 58, "6": 59, "7": 59, "8": 60}
 
 
 def frame(row, tl, t):
+    n.NO_BAG[0] = n.HIDE2[0] = n.BACK2[0] = V31[0]
+    n.HIDE3[0] = n.BACK3[0] = rv.RIM2[0] = V31[0] and V32[0]
+    if rv.RAVEN[0] and not END.get("on") and row["shot"] == "1.1" and int(round(tl * 12)) >= 5:    # v29: 1.2's start is rounded up past
+        row, tl = [r for r in timing.rows if r["shot"] == "1.2"][0], 0.0                # its drawing; the wipe is on 1.2 already
     fn, tilt, post = SHOTS[row["shot"]]
     NOW["min"], NOW["sec"] = CLOCK[row["shot"][0]], None                  # v12: the clocks
     NOW["shot"] = row["shot"]                                             # v20: which shot is being drawn
@@ -1007,6 +1187,25 @@ def frame(row, tl, t):
             g = cairo.RadialGradient(W / 2, H * 0.42, H * 0.30, W / 2, H * 0.42, H * 0.80)
             g.add_color_stop_rgba(0, 0, 0, 0, 0.0); g.add_color_stop_rgba(1, 0, 0, 0, 0.40); cc.set_source(g); cc.paint()
         eng.TONE = "v2"
+    if rv.RAVEN[0] and not END.get("plain"):                              # v29: the raven, after the grade (on2_raven.draw3)
+        dd = int(round(tl * 12))
+        key = None
+        if END.get("on"):
+            key = "coil" if END.get("last") else "perch"
+        elif row["shot"] == "1.1" and dd < 5:
+            key = (rv.KEYS4 if V31[0] else rv.KEYS3)[dd]
+        elif row["shot"] == "1.2" and dd < 2:
+            key = rv.KEYS3[5 + dd]
+        if key:
+            behind = None
+            if V30[0] and not V31[0] and key in ("strike", "wipe"):                     # v30: her red through the wing's gap
+                END["plain"] = True
+                try:
+                    behind = frame([r for r in timing.rows if r["shot"] == "1.2"][0], 0.0, 0.0)
+                finally:
+                    END.pop("plain", None)
+            sf_ = rv.draw3(sf_, key, behind)
+            cc = cairo.Context(sf_)
     ln = row.get("line")
     if not (ln and ln["t0"] - 0.05 <= t <= ln["t1"] + 0.30):             # v15: her line may run on from the set-up before
         for r_ in timing.rows:
@@ -1019,7 +1218,7 @@ def frame(row, tl, t):
         else:                                                            # spoken: a bubble, its tail beside the mouth
             if row["shot"] in b68.SHOTS:
                 tip, box = b68.TIP[row["shot"]]
-                b68.say(cc, ln["text"] + ("\u2014" if ln["key"] == "c1" else ""), box, tip)
+                b68.say(cc, ln["text"] + ("\u2014" if ln["key"] in ("c1", "c1b") else ""), box, tip)
             else:
                 tip, box = b5.TIP[row["shot"]]
                 b5.bubble(cc, ln["text"], box, tip)
@@ -1066,7 +1265,11 @@ def main(kind="A2", folder="../office-noir-2", hi=False):
     os.replace(tmp + "/video.part.mp4", tmp + "/video.mp4")
     rr = [(r["shot"], r["start"], r["len"]) for r in rows]
     if OPEN28[0]:                                                        # v28: the opening's sound follows its new timing
-        wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=8 / 12.0, shots12=SHOTS_12_28)
+        if rv.RAVEN[0]:
+            sh = tuple((dr + int(round(RAVEN_HOLD * 12)), who) for dr, who in SHOTS_12_28)
+            wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=None, shots12=sh, raven=True, swap={"7.2b": "c1b"} if V30[0] else None)
+        else:
+            wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=8 / 12.0, shots12=SHOTS_12_28)
     else:
         wav, spans = snd.motion_mix15(rr, total, kind, tmp + "/mix.wav")
     out = ("%s/on2_film_%s_1080.mp4" if hi else "%s/on2_motion_test_%s.mp4") % (folder, V)
