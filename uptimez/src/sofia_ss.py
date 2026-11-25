@@ -27,6 +27,8 @@ PULLED = [False]                                           # v3, opt-in (Daddy's
 PENCIL = [False]                                           # v4, opt-in (Daddy's Home): a longer, narrower skirt. sofia_ss_v3.py is pinned
 STILETTO = [None]                                          # v5, opt-in (Pick a Side): a heel colour -> black patent stilettos with that heel; sofia_ss_v4.py is pinned
 SLEEK = [False]                                            # v5, opt-in (Pick a Side): pulled-back hair with one long shine, not three strokes
+LEGS = [None]                                              # v6, opt-in (Pick a Side, motion test K): ((dx, lift), (dx, lift)) per leg,
+                                                           # screen-left leg first, set by the caller (a planted-foot gait); None as before
 SWEPT = [False]                                            # v2, opt-in: all her hair swept over her right shoulder (screen-left)
                                                            # in Hollywood waves; her left ear (screen-right) shows
 NOTE_COVER = sm.NOTE_COVER
@@ -113,7 +115,12 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="neutral", look=(0, 0), lag
         sw = math.sin(math.pi * 2 * ph + (0 if i == 0 else math.pi)) if step is not None else 0.0
         dx_ = 11 * sw
         lift = 9 * max(0.0, sw) if step is not None else 0.0
-        c.save(); c.translate(dx_, -lift)
+        if LEGS[0] is not None:                            # v6: the hip stays, the foot moves (dx) and rises (lift): a shear
+            ldx, llift = LEGS[0][i]                        # and a shortening about the hip line y=-100, never past the skirt
+            dx_, lift = 0.0, 0.0
+            c.save(); c.transform(cairo.Matrix(1, 0, ldx / 100.0, 1 - llift / 100.0, ldx, -llift))
+        else:
+            c.save(); c.translate(dx_, -lift)
         cut(k, [(sx_ - 8.5, -100 + lift), (sx_ + 8.5, -100 + lift), (sx_ + 6, -60), (sx_ + 7.5, -42), (sx_ + 4.5, -10),
                 (sx_ - 4.5, -10), (sx_ - 7.5, -42), (sx_ - 6, -60)], TIGHTS, shadow=False, lw=1.8)
         if STILETTO[0]:                                    # v5: a thin heel in its colour, a patent shine on the toe

@@ -2,18 +2,18 @@
 
 UptimeZ Inc. · episode 14 · *Civil War* 2 of 5 · 23 Nov · for Tomas's decision. Nothing is built past the floor plan. Starts from concept v3.2 and [`ps_plan_v2.png`](ps_plan_v2.png), and follows [`series/production-process.md`](../series/production-process.md) (stages 0–12, five stops, version budgets) and `docs/lessons.md` (148 lessons).
 
-## Status (updated 24 Nov, after the board's third and fourth cold tests)
+## Status (updated 25 Nov, after review round 1 and motion tests H–K)
 
 | Stage | State |
 |---|---|
 | 0 Before starting | Concept v3.2 approved; branch `uptimez-pick-a-side`; STORYLINE v3.4 written; release-order condition (12's fix plan before animation) **still open** |
-| 1 Script | Done: v8, generated from the scene file (38 shots, 68.8 s; the plan said ≤ 14 lines, the board has 19 takes) |
+| 1 Script | Done: v8, generated from the scene file (regenerated in place after review round 1: 38 shots, 66.3 s; the plan said ≤ 14 lines, the board has 19 takes) |
 | 2 Voices | Done: `ps_voices_v2.mp4`, `ps_timing_v3.json` |
 | 3 Look and set | Done, opt-in: tape, blinds, DON · CEO plate, guard cues, phones, CV; earlier episodes rebuild md5-identical |
 | 4 Scene file and layouts | Done: `ps_scenes.py` is the one source; layouts v3 approved; **all the series' checks wired and each proved on a planted fault** (`ps_checks.py`; 38 shots, 0 faults) |
 | 5 Board | Board v3 done. Cold tests: round 1–2 (fixes), **round 3 passed** (3 viewers, 4 of 5 beats each, loop read), round 4 (the door pair): wants and light 3 of 3. Left: the robot's grip at 270 px half-reads (kept); the phone in 6.1 not seen, ownership carried by 5.7's mug; the Mom, Father and Client names not read by mute viewers. **Outside review round 1 of 2 not yet asked** |
-| 6 Motion tests | A–C approved (v3); D tape rip, E selfie, F, G Pam's reach done (G's thread moved to 5.7 by the three-fix rule) |
-| 7–12 | Not started: animation, rough cut, polish, reviews, master, close |
+| 6 Motion tests | A–C approved (v3, on the staging before board v3: to be redrawn in the film); D tape rip, E selfie, F, G Pam's reach done (G's thread moved to 5.7 by the three-fix rule). Review round 1 (24–25 Nov): **H** 2.11 the bump (v4: the haul dropped after three misreads; 3 of 3), **K** 5.5 Sofía's walk (v3, 2 of 3, accepted), **I** 6.1b startle and **J** 4.2 finger on the heel (accepted, checked in the film). **Not tested:** the throne spin (2.2) named in §3. Animatic `ps_animatic_v1.mp4` (board v3 + 19 takes, 66.3 s, 540) |
+| 7–12 | Not started: animation, rough cut, polish, reviews, master, close. The animation plan: [`pick-a-side-animation-plan-v1.md`](pick-a-side-animation-plan-v1.md). **Held by the release-order rule (§2, 0.5) until Tomas lifts it** |
 
 Not in the plan above and added during the work: the checks module, the bubble adapter (`bc_sb.bubble`) with key frames per spoken line (`SPLIT_V4`, `KEYS_V4`), and the cold-viewer staging pair. Lessons 213–220 in `docs/lessons.md`.
 

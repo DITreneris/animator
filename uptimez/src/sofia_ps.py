@@ -83,7 +83,7 @@ def sofia(k, x, feet, s=1.0, pose="hold", face_kind="smile", look=(0, 0), lag=(0
         so._face = lambda o, sp: sdh._tight(orig_face(o, sp))
         face_kind = "smile"
     c = k.c
-    c.save(); c.translate(x, feet); c.scale(s, s)             # the bun, behind everything
+    c.save(); c.translate(x, feet); c.rotate(math.radians(lean)); c.scale(s, s)   # the bun, behind everything (v2: leans with her)
     bun(k, sofia_fs.HY, seed + 1)
     c.restore()
     try:

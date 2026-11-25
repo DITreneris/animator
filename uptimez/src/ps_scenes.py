@@ -87,9 +87,9 @@ def robot(k, where, **kw):
     return o, (sx, sy, R["robot"] * SC["robot"])
 
 
-def sofia(k, where, pose="stand", face="smile", look=(0, 0)):
+def sofia(k, where, pose="stand", face="smile", look=(0, 0), lean=0.0):
     x, f = at(where) if isinstance(where, str) else where
-    o = sp.sofia(k, x, f, SC["sofia"], pose, face, look=look)
+    o = sp.sofia(k, x, f, SC["sofia"], pose, face, look=look, lean=lean)
     return o, (o["head"][0], o["head"][1], R["sofia"] * SC["sofia"])
 
 
@@ -486,6 +486,7 @@ DON_X_61 = [110]
 
 
 FACE_61B = ["shock"]
+SPRING_61B = [1.0]                                           # motion test I: the spring's height (overshoot), 1.0 = the board
 
 
 def fg_61b(k):
@@ -500,11 +501,12 @@ def fg_61b(k):
     c.save(); c.translate(hx, hy); c.scale(s_, s_)             # the sprung hair, from the curl's root
     c.set_source_rgb(*kit.INK); c.set_line_width(4.6 if fsb.SET4[0] else 2.4); c.set_line_cap(1); c.set_line_join(1)
     c.move_to(2, -50)
+    sp_ = SPRING_61B[0]
     for i in range(5):                                     # a spring, straight up
-        c.line_to(2 + (6 if i % 2 == 0 else -6) * hs, -50 - (7 + 7 * i) * hs)
-    c.line_to(2, -50 - 42 * hs); c.stroke()
+        c.line_to(2 + (6 if i % 2 == 0 else -6) * hs, -50 - (7 + 7 * i) * hs * sp_)
+    c.line_to(2, -50 - 42 * hs * sp_); c.stroke()
     for sd in (-1, 1):                                     # the jump: strokes either side of it
-        c.move_to(sd * 16 * hs, -50 - 30 * hs); c.line_to(sd * 26 * hs, -50 - 38 * hs); c.stroke()
+        c.move_to(sd * 16 * hs, -50 - 30 * hs * sp_); c.line_to(sd * 26 * hs, -50 - 38 * hs * sp_); c.stroke()
     c.set_line_cap(0); c.set_line_join(0)
     c.restore()
     return {"don": (hx, hy, R["don"] * s_)}
@@ -551,7 +553,8 @@ def ins_booth_wide(k):
         kit.text(k, txt, 270, yy, sz, (1.0, 0.86, 0.88))
 
 
-HEEL_42 = (330, 470)                                        # where Sofía's heel lands in the pushed-in photo (frame px)
+HEEL_42 = (330, 470)
+FINGER_42 = [1.0]                                            # motion test J: 0 = off the frame's edge, 1 = on her heel                                        # where Sofía's heel lands in the pushed-in photo (frame px)
 
 
 def ins_prints(k):
@@ -587,11 +590,13 @@ def _prints_v4(k):
         pc.NO_DECLARE[0] = False
     hx, hy = HEEL_42
     pc.protect(c, "the heel under his finger", hx - 70, hy - 110, hx + 90, hy + 120)                                         # his oily print, then the finger on it
-    c.save(); c.translate(hx + 4, hy + 6); c.rotate(0.3); c.scale(16, 21)
-    c.set_source_rgba(0.08, 0.05, 0.03, 0.45); c.arc(0, 0, 1, 0, 6.3); c.fill(); c.restore()
+    if FINGER_42[0] >= 1.0:                                  # the print only once the finger has landed
+        c.save(); c.translate(hx + 4, hy + 6); c.rotate(0.3); c.scale(16, 21)
+        c.set_source_rgba(0.08, 0.05, 0.03, 0.45); c.arc(0, 0, 1, 0, 6.3); c.fill(); c.restore()
     w = 84
     d = (-0.55, -0.83)                                       # up-left from below the photo: the finger, not his hand, over her
-    wx, wy = hx - d[0] * 1.35 * w, hy - d[1] * 1.35 * w
+    back = (1.0 - FINGER_42[0]) * 320                        # motion: it comes in along its own line from the edge
+    wx, wy = hx - d[0] * (1.35 * w + back), hy - d[1] * (1.35 * w + back)
     ofs.insert_cuff(c, (wx, wy), (wx - d[0] * 60, wy - d[1] * 60), w, cob.SKIN, (0.95, 0.94, 0.90), cuff=(0.95, 0.94, 0.90))
     hp.draw(k, "point", wx, wy, w, cob.SKIN, d, 1)
     c.set_source_rgba(0.12, 0.07, 0.03, 0.75)               # grease on the knuckles and under the nail (his hands, canon)
@@ -654,11 +659,16 @@ def ins_cv(hand=False):
     return f
 
 
+STEP_55 = [1.0, "chest", 0.0, 0.0, 0.0]                      # motion test K: progress onto the tape, her pose, extra x and y, lean
+                                                             # (a planted-foot gait; the legs via sofia_ss.LEGS, set by ps_motion)
+
+
 def cast_55(k):
     """5.5 (v3): at the door, Sofía takes the CV, COO? up beside her face."""
     heads = {}
     if FIX_V4[0]:                                            # review round 1 (R1's top 2): her choice is a step: astride the
-        o, heads["sofia"] = sofia(k, (tape_x(60) + 4, F + 60), "chest", "smile", (-1, -0.2))  # tape, the CV at her chest
+        o, heads["sofia"] = sofia(k, (tape_x(60) + 4 - (1.0 - STEP_55[0]) * 60 + STEP_55[2], F + 60 + STEP_55[3]),
+                                  STEP_55[1], "smile", (-1, -0.2), lean=STEP_55[4])   # astride the tape, the CV at her chest
         hx, hy = o["hands"][0]                              # in the hand the pose returns (lesson 655), as in 6.1
         sp.cv_coo(k, hx + 4, hy + 6, 0.9)
         return heads
@@ -861,7 +871,7 @@ def render(sh):
     shift = SHIFT_V4 if FIX_V4[0] and sh["id"] in SHIFT_V4 else SHIFT
     if FIX_V4[0] and (sh["id"], PART[0]) in PART_SHIFT_V4:   # round 5: one split key frame's own framing (lesson 358)
         shift = {sh["id"]: PART_SHIFT_V4[(sh["id"], PART[0])]}
-    if sh["id"] in shift:                                     # the content moved (frame px) / zoomed, off the signs
+    if sh["id"] in shift and not NO_SHIFT[0]:                 # the content moved (frame px) / zoomed, off the signs
         dx, dy, zm = shift[sh["id"]]
         z = cam[2] * zm
         cam = (cam[0] - dx / z, cam[1] - dy / z, z)
@@ -1160,6 +1170,7 @@ def bubble_v4(k, who, text, fc, taken):
 
 BUBBLES_V4 = []
 CUR_SHOT = [None]
+NO_SHIFT = [False]                                           # a motion test passes a camera already shifted (ps_motion)
 DON_OVER = ("6.1",)
 DON_OVER_ONLY = ()                                  # 1.4: the box over his scalp, not over the trio (read as a held sign)
 ROBOT_WALL = {"3.1": 1}                                     # round 5: the robot's line on this side of its visor only (+1 right)
