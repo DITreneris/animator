@@ -19,6 +19,7 @@ import on3_animatic as a3
 import speech
 import speech_gate as gate
 import on4_weather as WX
+import on4_club as cl_
 
 HEADS = {}                                                   # who -> (x, y, r) on the screen, in the drawing being made
 BY = {}                                                      # id(surface) -> its heads
@@ -368,6 +369,7 @@ def film_frames(tmp):
     """on4_film.frames with the clock set for every drawing and the words put on it; returns what it returns, and the faults"""
     install(); WX.install()
     ls, tm = lines()
+    WX.HITS[:] = list(r.HITS)
     d = sc._timing()[1]
     total = sum(v["dur"] for v in tm.values())
     ids = [x["id"] for _, ss in sc.SCENES for x in ss]
@@ -375,7 +377,7 @@ def film_frames(tmp):
     def one(make, shot_id):
         T = n / float(F.DPS)
         clock(T, total, ls); HEADS.clear()
-        WX.T[0] = T; WX.RAMP[0] = min(1.0, T / 0.6); WX.TOTAL[0] = total
+        WX.T[0] = T; WX.RAMP[0] = min(1.0, T / 0.6); WX.TOTAL[0] = total; cl_.CLOCK_T[0] = T
         m.LOOP_RAIN[0] = 0.0; m.LOOP_MIX[0] = 0.0
         s = make()
         if WX.SEAM[0]:
