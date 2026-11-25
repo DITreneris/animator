@@ -77,12 +77,14 @@ def at(name):
 def don(k, where, pose="stand", face="neutral", look=(0, 0), **kw):
     x, f = at(where) if isinstance(where, str) else where
     o = dp.don(k, x, f, SC["don"], pose, face, look, **kw)
+    HANDS_LOG.extend(o["hands"])
     return o, (o["head"][0], o["head"][1], R["don"] * SC["don"])
 
 
 def robot(k, where, **kw):
     x, f = at(where) if isinstance(where, str) else where
     o = rp.robot(k, x, f, SC["robot"], **kw)
+    HANDS_LOG.extend(o["hands"])
     sx, sy = o["screen"]
     return o, (sx, sy, R["robot"] * SC["robot"])
 
@@ -402,7 +404,34 @@ def cast_37(k):
     return heads
 
 
+LARM_53, CAN_53 = [(-130, -80)], [0.0]
+TREAT_53 = (286, 752, 2.05)                                  # GAGS_V5: 5.3b's camera, close on bodyguard 2 and the robot (Pam and the
+GUARD_S = 0.56 / 0.52 * 0.60                                 # signs out of frame); the guard at Daddy's Home's scale against Don
+
+
+def cast_53_treat(k):
+    """5.3b (Tomas's picks, 25 Nov): bodyguard 2, one step inside the door, has handed the robot an oil can; it holds it
+    up beside its head, a drop on the spout, a heart on its visor. Sofía has gone on to the tape (5.5).
+    The robot has rolled 30 px to him from its 5.3a mark. Cold test round 4: the can, the treat and the delight read 2 of 2."""
+    import dh_cast as dc
+    heads = {}; c = k.c
+    og = dc.guard(k, 196, F + 46, GUARD_S, pose=(dc.GUARD_POSE[0], dc.GUARD_POSE[1], 10, 20))   # his giving hand still out
+    heads["guard"] = (og["head"][0], og["head"][1], 40 * GUARD_S)
+    rxy, arms = (312, F + 50), (LARM_53[0], (20, 10))        # the can in its near hand, raised, over his dark suit: its face clear
+    c.push_group(); orb, _ = robot(k, rxy, arms=arms); c.pop_group()
+    rh = orb["hands"][0]
+    _, heads["robot"] = robot(k, rxy, arms=arms, visor="heart", look=(-1, -0.4))
+    cs, ca = 1.15, CAN_53[0]                                    # the can held BY ITS HANDLE: its base placed so the loop handle sits
+    hx_, hy_ = rp.CAN_HANDLE[0] * cs, rp.CAN_HANDLE[1] * cs  # on the hand the rig returns, then the same hand again on top (224)
+    rp.oil_can(k, rh[0] - (hx_ * math.cos(ca) - hy_ * math.sin(ca)), rh[1] - (hx_ * math.sin(ca) + hy_ * math.cos(ca)), cs, ca)
+    rp.hand_again(k, rh[0], rh[1], SC["robot"])
+    HANDS_LOG.extend(orb["hands"]); HANDS_LOG.extend(og["hands"])
+    return heads
+
+
 def cast_53(k):
+    if GAGS_V5[0] and CAMKEY[0] == TREAT_53:
+        return cast_53_treat(k)
     heads = {}
     pm.stool(k, P["pam_stool"][0], F + P["pam_stool"][1], SC["pam"])
     pf = (P["pam_stool"][0], F + P["pam_stool"][1] - 98 * SC["pam"])
@@ -470,7 +499,10 @@ def cast_61(k):
     _, heads["mom"] = mom(k, "mom_tape", "folded", "stern", (1, -0.6))                      # v3: eyes away, up
     o, heads["sofia"] = sofia(k, (SOF_61[0] if FIX_V4[0] else 640, F + 40), "chest", "smile", (0.2, 0.6))   # v3: eyes on CV
     hx, hy = o["hands"][0]
-    sp.cv_coo(k, hx + 4, hy + (40 if FIX_V4[0] else 4), CV_61[0] if FIX_V4[0] else 0.8)   # at her chest, COO? up; v4 lower
+    if GAGS_V5[0]:                                           # outside review, 25 Nov: the CV 18 % smaller and lower, her face clear
+        sp.cv_coo(k, hx + 4, hy + 40, CV_61[0] * 0.82)      # on her hand, as board v3 (the hand sheet: lowered, it left the hand)
+    else:
+        sp.cv_coo(k, hx + 4, hy + (40 if FIX_V4[0] else 4), CV_61[0] if FIX_V4[0] else 0.8)   # at her chest, COO? up; v4 lower
     if FIX_V4[0]:                                            # review round 1 (Tomas: the loop's trigger): Pam's phone on the
         x_, y_ = pss.PHONE_AT                                # counter buzzes behind Don, 5.7's own phone small and upright
         k.c.save(); k.c.translate(x_, y_ - 26); k.c.rotate(-0.08)   # (bare arcs read as "a blue spiral", cold test)
@@ -599,6 +631,7 @@ def _prints_v4(k):
     wx, wy = hx - d[0] * (1.35 * w + back), hy - d[1] * (1.35 * w + back)
     ofs.insert_cuff(c, (wx, wy), (wx - d[0] * 60, wy - d[1] * 60), w, cob.SKIN, (0.95, 0.94, 0.90), cuff=(0.95, 0.94, 0.90))
     hp.draw(k, "point", wx, wy, w, cob.SKIN, d, 1)
+    grip("point", (wx, wy))
     c.set_source_rgba(0.12, 0.07, 0.03, 0.75)               # grease on the knuckles and under the nail (his hands, canon)
     for (ox, oy, r) in ((-6, 8, 9), (10, -4, 7)):
         c.new_path(); c.arc(wx + ox, wy + oy, r, 0, 6.3); c.fill()
@@ -622,11 +655,48 @@ def ins_booth_43(k):
     return {n: (x * s_ + tx, y * s_ + ty, r * s_) for n, (x, y, r) in h.items() if -40 < x * s_ + tx < W + 40}
 
 
+def _booth_guards(k, seat, tbl):
+    """4.3 (Tomas's picks, 25 Nov): Father's two bodyguards stand behind the bench either side of the oily Client; as he
+    leans in they turn away, mirrored, and pinch their noses; three green stink lines rise off him (ep 9: he smells of gas
+    and oil). Upright they read as "holding a hostage" (2 of 2); pinching, with the lines, as the smell (2 of 2)."""
+    import dh_cast as dc
+    import hands_ps as hp
+    c = k.c
+    heads = {}
+    gs = 0.95
+    for i, gx in enumerate((300, 548)):
+        sgn, flip = (-1, False) if i == 0 else (1, True)
+        c.save(); c.rectangle(-200, -200, 1400, tbl + 200); c.clip()          # behind the bench: nothing of them under the table
+        c.translate(gx, tbl); c.rotate(sgn * 0.13); c.translate(-gx, -tbl)
+        dc.ARM_FRONT[0] = 1                                  # the pinching arm is HIS OWN, drawn after his head (dh_cast, opt-in):
+        try:                                                 # one hand per wrist (179, 208). A second hand drawn on top of the
+            o = dc.guard(k, gx, seat + 10, gs, pose=(dc.GUARD_POSE[0], dc.GUARD_POSE[1], -100, -60), flip=flip)
+        finally:                                             # rig's hidden one failed hand_gate ("two at one wrist", 4.5 px apart)
+            dc.ARM_FRONT[0] = None
+        HANDS_LOG.extend(o["hands"])
+        if PLANT_HAND[0]:                                    # the gate's planted fault: a foreign hand on the rig's hand
+            nose = min(o["hands"], key=lambda h: h[1])
+            hp.draw(k, "fist", nose[0] + 3, nose[1] + 3, 30 * gs, (0.91, 0.67, 0.55), (0.7, -0.7), 1)
+            grip("pinch", (nose[0] + 3, nose[1] + 3))
+        c.restore()
+        a = sgn * 0.13                                       # his head where the lean put it (for the bubbles to keep off)
+        dx, dy = o["head"][0] - gx, o["head"][1] - tbl
+        heads["guard%d" % (i + 1)] = (gx + dx * math.cos(a) - dy * math.sin(a), tbl + dx * math.sin(a) + dy * math.cos(a), 44 * gs)
+    for j, x in enumerate((352, 424, 496)):
+        y = seat - 400 - 18 * (j % 2)
+        for col, lw in (((0.10, 0.16, 0.05), 11), ((0.56, 0.78, 0.22), 6)):
+            c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.new_path(); c.move_to(x, y + 110)
+            c.curve_to(x - 30, y + 80, x + 30, y + 60, x, y + 36); c.curve_to(x - 26, y + 18, x + 20, y + 8, x, y - 10); c.stroke()
+    c.set_line_cap(0)
+    return heads
+
+
 def _booth_43(k):
     import dh_cast as dc
     c = k.c
     seat, tbl = 760, 700
     cps.booth_room(k, W, H, seat, tbl)
+    guards = _booth_guards(k, seat, tbl) if GAGS_V5[0] else {}
     cps.handprint(k, 430, seat - 150, 1.6, 0.2)
     cps.phone_on_table(k, 230, tbl - 90, 1.2, prints=True)
     fs_ = 0.62 / 0.52 * 1.15
@@ -640,7 +710,7 @@ def _booth_43(k):
         oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=[(265, tbl - 128), (cx + 40, tbl - 6)],
                               clip_hip=True, hands={-1: "point"}, aim=(230, tbl - 122))
     cps.table(k, W, tbl)
-    return {"father": of["head"] + (50 * fs_,), "client": oc_["head"] + (56 * s,)}
+    return dict({"father": of["head"] + (50 * fs_,), "client": oc_["head"] + (56 * s,)}, **guards)
 
 
 def ins_cv(hand=False):
@@ -654,8 +724,15 @@ def ins_cv(hand=False):
         c.move_to(560, 330); c.line_to(560, 470); c.line_to(420, 440); c.line_to(410, 380); c.close_path(); c.fill()
         c.set_source_rgb(0.97, 0.97, 0.95); c.rectangle(398, 372, 22, 74); c.fill()   # the cuff
         c.save(); c.translate(372, 420); c.rotate(-0.9)
-        c.set_source_rgb(*sp.HEEL_GOLD); c.rectangle(-4, -70, 8, 76); c.fill(); c.restore()   # the gold pen
+        if GAGS_V5[0]:                                       # outside review: "is the hand holding the paper?" a real pen: long,
+            c.set_source_rgb(*INK); c.rectangle(-8, -128, 16, 140); c.fill()               # outlined, a dark nib on the ?
+            c.set_source_rgb(*sp.HEEL_GOLD); c.rectangle(-5.5, -125.5, 11, 135); c.fill()
+            c.set_source_rgb(*INK); c.move_to(-8, -128); c.line_to(0, -150); c.line_to(8, -128); c.close_path(); c.fill()
+        else:
+            c.set_source_rgb(*sp.HEEL_GOLD); c.rectangle(-4, -70, 8, 76); c.fill()
+        c.restore()                                          # the gold pen
         hp.draw(k, "fist", 392, 410, 70, (0.80, 0.62, 0.50), (-1.0, 0.1), -1)
+        grip("pen", (392, 410))
     return f
 
 
@@ -670,7 +747,10 @@ def cast_55(k):
         o, heads["sofia"] = sofia(k, (tape_x(60) + 4 - (1.0 - STEP_55[0]) * 60 + STEP_55[2], F + 60 + STEP_55[3]),
                                   STEP_55[1], "smile", (-1, -0.2), lean=STEP_55[4])   # astride the tape, the CV at her chest
         hx, hy = o["hands"][0]                              # in the hand the pose returns (lesson 655), as in 6.1
-        sp.cv_coo(k, hx + 4, hy + 6, 0.9)
+        if GAGS_V5[0]:                                       # outside review, 25 Nov: smaller and lower, her face clear
+            sp.cv_coo(k, hx + 4, hy + 10, 0.75)             # on her hand (the hand sheet: 28 px lower, it hung beside the hand)
+        else:
+            sp.cv_coo(k, hx + 4, hy + 6, 0.9)
         return heads
     o, heads["sofia"] = sofia(k, (290, F + 60), "press", "smile", (-0.6, -0.3))
     hx, hy = o["hands"][0]
@@ -758,6 +838,48 @@ SHIFT = {"1.2b": (120, 0, 1.1), "1.4": (-40, 0, 0.9), "2.1": (0, 0, 1.0), "2.2":
 
 # --- render and check ---------------------------------------------------------------------------------------------------
 # v4 (opt-in, FIX_V4: the board v3 and `check`; the layout sheets v3 stay as approved): the faults the series' checks found
+GAGS_V5 = [False]                                            # opt-in (25 Nov, Tomas's picks + the outside review of the stills):
+                                                             # HR? in place of COO? (sofia_ps.CV_WORD), the CV smaller and lower
+GRIPS_LOG, HANDS_LOG, PLANT_HAND = [], [], [False]         # the hand gate (25 Nov): hands drawn outside a rig (a grip, an insert's
+                                                             # hand) and the rig hands of the frame, in the drawing's own units
+
+
+def grip(kind, at_, thumb=None, want=None):
+    """Declare a hand drawn outside a rig. hand_gate fails it when a rig's hand lies under it (two hands at one wrist)."""
+    GRIPS_LOG.append(dict(kind=kind, at=tuple(at_), thumb=thumb, want=want))
+
+
+def hand_checks():
+    import hand_gate
+    return hand_gate.check(GRIPS_LOG, HANDS_LOG, 16.0)
+
+
+def hands_validate():
+    """The gate on a known failure first: 4.3 with a foreign hand planted on the guard's own must fail; 4.3 as drawn must pass."""
+    import cairo as _c
+    was = (FIX_V4[0], GAGS_V5[0], sp.CV_WORD[0])
+    gags_v5()
+    res = []
+    for plant in (True, False):
+        PLANT_HAND[0] = plant; del GRIPS_LOG[:]; del HANDS_LOG[:]
+        try:
+            PART[0] = 0
+            _booth_43(Ctx(_c.Context(_c.ImageSurface(_c.FORMAT_RGB24, W, H)), 0))
+        finally:
+            PART[0] = None; PLANT_HAND[0] = False
+        res.append(hand_checks())
+    FIX_V4[0], GAGS_V5[0], sp.CV_WORD[0] = was
+    del GRIPS_LOG[:]; del HANDS_LOG[:]
+    ok = bool(res[0]) and not res[1]
+    print("hands   %s | planted: %s | real: %s" % ("OK " if ok else "BAD", (res[0][:1] or ["(nothing caught)"])[0][:80], res[1][:1] or "pass"))
+    return ok
+
+
+def gags_v5(on=True):
+    """Board v4: FIX_V4 plus Tomas's picks of 25 Nov (HR? on the CV, the treat, the bodyguards, the CV smaller)."""
+    FIX_V4[0] = on or FIX_V4[0]; GAGS_V5[0] = on; sp.CV_WORD[0] = "HR?" if on else "COO?"
+
+
 FIX_V4 = [False]
 SHIFT_V4 = {"2.5": (40, 0, 0.72), "2.10": (80, 0, 0.8), "6.1": (-216, -210, 1.33), "6.1b": (-216, -210, 1.33), "5.6": (480, -40, 1.0), "2.6": (-45, -90, 1.0), "5.5": (0, -40, 1.15), "5.3": (60, 0, 1.1)}   # round 1: grid-searched, no cut sign   # 2.6: her feet on the tape in frame   # 6.1: review round 1 (Sofía and COO? big, the phone buzzing; grid-searched)   # 5.6: round 5, Sofía out of Pam's key frame (Tomas: the frame Pam's only)   # wall beside the speaker for bc_sb's bubble (lesson 358)
 SPLIT_V4 = ("3.1", "4.3", "2.10")   # 2.10: review round 1, "BOTH." on its own frame, the robot big, arms across the tape       # two lines said in turn (3.1 the robot, then Mom; 4.3 the Client, then Father) whose bubbles
@@ -778,9 +900,9 @@ def board_keys(sh, line):
             finally:
                 PART[0] = None
         return out
-    if FIX_V4[0] and sh["id"] in KEYS_V4:
+    if FIX_V4[0] and (sh["id"] in KEYS_V4 or (GAGS_V5[0] and sh["id"] in KEYS_V5)):
         out = []
-        for i, cam_ in enumerate(KEYS_V4[sh["id"]]):
+        for i, cam_ in enumerate(KEYS_V5[sh["id"]] if GAGS_V5[0] and sh["id"] in KEYS_V5 else KEYS_V4[sh["id"]]):
             CAMKEY[0] = cam_
             try:
                 surf, msgs = board_frame(sh, line)
@@ -799,6 +921,7 @@ ROOM_V4 = {"1.1": dict(blind="down", u=0.45 * 0.92, dim=False, cords=False)}
 ROOM_V4["6.2"] = ROOM_V4["1.1"]                              # review round 1: the loop's last frame IS frame 0 (lessons 257, 659)   # 1.1: the tug's key frame (cords to hands)
 CAM_V4 = {}
 KEYS_V4 = {"5.4": [(700, 700, 0.8), None]}                  # Tomas 24 Nov: 5.4a wide (his door, DON · CEO, across the tape),
+KEYS_V5 = {"5.3": [None, TREAT_53]}                         # GAGS_V5: 5.3a the door as it was, 5.3b the treat
 CAMKEY = [None]                                             # 5.4b the medium (the foot over the line); the camera pushes in
 KNOWN_V4 = {}                                               # 1.4's exception lifted: the roll moved to his other hand
 DARK_V4 = ("5.4", "5.5", "5.6")                             # Pam's phone dark until 5.7 (the continuity row; ROOM5 had it lit)
@@ -864,6 +987,8 @@ def render(sh):
         LAST[0] = {n: tuple(v) for n, v in h.items()}
         return surf, []
     cam = sh["cam"]
+    if GAGS_V5[0] and CAMKEY[0] is not None:                 # a key frame with its own cast (5.3b): no faces to frame by
+        cam = CAMKEY[0]
     if isinstance(cam, list):
         tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
         h0 = _pass(Ctx(cairo.Context(tmp), 0), sh, None)
@@ -942,7 +1067,14 @@ def script_rows():
     for sid in tx.ORDER:
         if tx.SHOTS[sid]["scene"] not in scenes:
             scenes.append(tx.SHOTS[sid]["scene"])
-    return {sid: dict(tx.SHOTS[sid]) for sid in tx.ORDER}, scenes
+    rows = {sid: dict(tx.SHOTS[sid]) for sid in tx.ORDER}
+    if GAGS_V5[0]:                                           # board v4: the changed rows, and COO? reads HR? everywhere
+        for sid, r in rows.items():
+            r.update(tx.TEXT_V5.get(sid, {}))
+            for f_, v in r.items():
+                if isinstance(v, str):
+                    r[f_] = v.replace("COO?", "HR?")
+    return rows, scenes
 
 
 def timing():
@@ -974,14 +1106,17 @@ def write_timing(out=os.path.join(OUT, "ps_timing_v3.json")):
     return shots
 
 
-def write_script(out=os.path.join(OUT, "pick-a-side-script-v8.md")):
-    """The script, generated from the scene file and ps_text (never edited by hand)."""
+def write_script(out=None):
+    """The script, generated from the scene file and ps_text (never edited by hand). v9 with GAGS_V5 (board v4)."""
     import ps_text as tx
+    ver = 9 if GAGS_V5[0] else 8
+    out = out or os.path.join(OUT, "pick-a-side-script-v%d.md" % ver)
     rows, scenes = script_rows()
     shots = {r["shot"]: r for r in write_timing()}
     total = sum(r["len"] for r in shots.values())
-    L = ["# Pick a Side: the script, v8 (GENERATED)", "",
-         "UptimeZ Inc. · episode 14 · **generated by `src/ps_scenes.py script` on 24 Nov: do not edit.** The words live in "
+    L = ["# Pick a Side: the script, v%d (GENERATED)" % ver, "",
+         "UptimeZ Inc. · episode 14 · **generated by `src/ps_scenes.py script%s` on %s: do not edit.** The words live in "
+         % ((" v5", "25 Nov") if GAGS_V5[0] else ("", "24 Nov")) +
          "`src/ps_text.py`, the staging and timing in `src/ps_scenes.py`; the takes in `src/ps_voices/takes/` (19 lines). "
          "v1–v7 were written by hand and are kept. **%d shots, %.1f s.**" % (len(rows), total), ""]
     for name in ("G0: the series check", "G1: protect list", "Line budget"):
@@ -999,7 +1134,10 @@ def write_script(out=os.path.join(OUT, "pick-a-side-script-v8.md")):
     for name in tx.SECTIONS:
         if name not in ("G0: the series check", "G1: protect list", "Line budget"):
             L += ["## " + name, "", tx.SECTIONS[name], ""]
-    open(out, "w").write("\n".join(L))
+    text = "\n".join(L)
+    if GAGS_V5[0]:                                           # the sections (protect list, props) say HR? too
+        text = text.replace("COO?", "HR?")
+    open(out, "w").write(text)
     print("wrote", out)
 
 
@@ -1093,6 +1231,8 @@ def board_frame(sh, line):
         lines_ = sorted(lines_, key=lambda w: w[0] == "robot")   # comes down onto its antenna wherever is left
         if PART[0] is not None:                               # a split shot's key frame: one of its lines
             lines_ = [says(line)[PART[0]]]
+        if GAGS_V5[0] and CAMKEY[0] == TREAT_53:              # "Welcome." is said on 5.3a; 5.3b has no line
+            lines_ = []
     for who, txt in lines_:
         if who not in fc:
             msgs.append("BUBBLE %s: %s speaks but is not in the frame" % (sh["id"], who)); continue
@@ -1194,7 +1334,7 @@ def app_overlay(c):
     c.restore()
 
 
-def board(out=OUT, frames_dir="/tmp/ps_board_v3"):
+def board(out=OUT, frames_dir="/tmp/ps_board_v3", tag="v3"):
     """every shot's key frame at 540 in frames_dir (bubbles, no overlay: for the cold viewers) and two sheets at 270 with
     the apps' overlay, time, shot and line."""
     rows, _ = script_rows()
@@ -1233,7 +1373,7 @@ def board(out=OUT, frames_dir="/tmp/ps_board_v3"):
                 c.select_font_face("Inter", 0, 0); c.set_font_size(11); c.set_source_rgb(0.75, 0.82, 1.0)
                 for li, ln in enumerate(textwrap.wrap(line.replace("**", ""), 46)[:2]):   # review round 1: not cut mid-word
                     c.move_to(x, y + th + 38 + li * 14); c.show_text(ln)
-        o = os.path.join(out, "ps_board_v3_%d.png" % (j + 1)); s.write_to_png(o); print("wrote", o)
+        o = os.path.join(out, "ps_board_%s_%d.png" % (tag, j + 1)); s.write_to_png(o); print("wrote", o)
     for sid, m in fails:
         print("FAIL", sid, m)
     return fails
@@ -1245,14 +1385,16 @@ def check_all(frames_dir=None):
     import ps_checks as pc
     if not pc.validate():
         print("a check missed its planted fault"); return ["validate"]
+    if not hands_validate():
+        print("the hand gate missed its planted fault"); return ["validate"]
     pc.install_scene(sys.modules[__name__])
     FIX_V4[0] = True
     rows, _ = script_rows()
     fails = [("map", m) for m in pc.check_map(SHOTS, EXPECT)]
-    _CHK[0] = lambda: pc.frame_checks(sys.modules[__name__], LAST[0])
+    _CHK[0] = lambda: pc.frame_checks(sys.modules[__name__], LAST[0]) + hand_checks()
     orig = globals()["board_frame"]
     def bf(sh, line):
-        pc.begin(); return orig(sh, line)
+        pc.begin(); del GRIPS_LOG[:]; del HANDS_LOG[:]; return orig(sh, line)
     globals()["board_frame"] = bf
     try:
         for sh in SHOTS:
@@ -1269,11 +1411,18 @@ def check_all(frames_dir=None):
 
 
 if __name__ == "__main__":
+    V5 = "v5" in sys.argv[2:]                                  # `check v5`, `board v5`: with GAGS_V5 (board v4)
     if len(sys.argv) > 1 and sys.argv[1] == "check":
-        sys.exit(1 if check_all("/tmp/ps_check") else 0)
+        if V5:
+            gags_v5()
+        sys.exit(1 if check_all("/tmp/ps_check_v5" if V5 else "/tmp/ps_check") else 0)
     if len(sys.argv) > 1 and sys.argv[1] == "script":
+        if V5:
+            gags_v5()
         write_script(); sys.exit(0)
     if len(sys.argv) > 1 and sys.argv[1] == "board":
         FIX_V4[0] = True                                      # board v3: with the fixes the checks found
+        if V5:
+            gags_v5(); sys.exit(1 if board(frames_dir="/tmp/ps_board_v4", tag="v4") else 0)
         sys.exit(1 if board() else 0)
     main(sys.argv[1] if len(sys.argv) > 1 else OUT)

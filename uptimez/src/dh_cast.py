@@ -248,6 +248,10 @@ def pass_card(k, x, y, s=1.0, seed=1780):
     c.restore()
 
 
+ARM_FRONT = [None]                                         # opt-in (Pick a Side, 25 Nov): -1 / 1, that side's arm is drawn AFTER
+                                                           # the head: the rig's own hand at his face (one hand per wrist, 179, 208)
+
+
 def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
     c = k.c
     BT, HIP, HY, SH, LN1, LN2 = co.BT, co.HIP, co.HY, co.SH, co.LN1, co.LN2
@@ -289,8 +293,9 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
         for yy in (bt + 84, bt + 90):
             c.move_to(-20, yy); c.line_to(-4, yy); c.stroke()
         ellipse(k, -12, bt + 77, 4, 4, co.SKIN, seed + 49, shadow=False, lw=1.2)
-    hands = []
-    for side, (u, f_) in ((-1, (a[0], a[1])), (1, (a[2], a[3]))):
+    hands = {}
+
+    def arm_(side, u, f_):
         sy_ = bt + 26; sx_ = side * SH[0]
         hx, hy_ = limb(k, sx_, sy_, u, f_, LN1, LN2, 47, 39, J, J, co.SKIN, co.HAND, seed + 10 + side)
         ellipse(k, side * (SH[0] - 1), sy_ - 1, 23, 20, J, seed + 14 + side, shadow=False, lw=2)
@@ -305,9 +310,15 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
             c.set_source_rgb(*INK); c.set_line_width(1.8); c.set_line_cap(1)
             for i in (-1, 0, 1):
                 c.move_to(hx - 16, hy_ + i * 8 + 1); c.line_to(hx + 2, hy_ + i * 8 + 3); c.stroke()
-        hands.append((hx, hy_))
+        hands[side] = (hx, hy_)
+    front = ARM_FRONT[0]                                     # opt-in: that arm is drawn after the head (a hand to the face)
+    for side, (u, f_) in ((-1, (a[0], a[1])), (1, (a[2], a[3]))):
+        if side != front:
+            arm_(side, u, f_)
+        else:
+            hands[side] = None
     if case:
-        tool_case(k, hands[0][0], hands[0][1] + 4, 1.0, seed + 60)
+        tool_case(k, hands[-1][0], hands[-1][1] + 4, 1.0, seed + 60)
     hy = HY
     c.save(); c.translate(0, hy + 55); c.scale(co.HEAD, co.HEAD); c.translate(0, -(hy + 55))
     pts = co._head_pts(k, hy, seed + 20)
@@ -340,6 +351,9 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
         cut(k, [(-24, hy + 22), (-12, hy + 17), (0, hy + 20), (12, hy + 17), (24, hy + 22), (22, hy + 30), (8, hy + 26),
                 (0, hy + 28), (-8, hy + 26), (-22, hy + 30)], hair, shadow=False, lw=1.6)   # a moustache
     c.restore()
+    if front in (-1, 1):
+        arm_(front, *((a[0], a[1]) if front == -1 else (a[2], a[3])))
+    hands = [hands[-1], hands[1]]
     c.restore()
     m = -1 if flip else 1
     return {"head": (x, feet + hy * s), "hands": [(x + m * hx * s, feet + hy_ * s) for hx, hy_ in hands],
