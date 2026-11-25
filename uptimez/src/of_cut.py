@@ -24,7 +24,7 @@ import soundfile as sf
 from PIL import Image
 import of_scenes as sc
 
-VERSION = 53
+VERSION = 54
 TMP = "/tmp/of_cut"
 FRAMES = "/tmp/of_film/s%d"                                 # each scene's drawings, as of_film left them (or a copy in TMP)
 FPS = 30
@@ -104,7 +104,7 @@ def slap_ok(fl):
     street on top, the black roof in a band below the middle, his velvet sleeve in the upper right, no garage wall)."""
     h, w = fl.shape[:2]
     top = fl[: int(0.15 * h), : int(0.5 * w)].mean()
-    roof = fl[int(0.70 * h): int(0.78 * h), : int(0.10 * w)].mean()
+    roof = fl[int(0.80 * h): int(0.95 * h), int(0.02 * w): int(0.20 * w)].mean()   # v54: the car's black door, lower left
     r, g, b = [fl[int(0.02 * h): int(0.60 * h), int(0.5 * w):, i] for i in range(3)]
     velvet = float(((r > 80) & (r < 160) & (g < 50) & (b < 70)).mean())
     return top > 215 and roof < 45 and velvet > 0.02
@@ -199,7 +199,7 @@ def validate():
         "untagged colour": ["-c", "copy", "-bsf:v", "h264_metadata=colour_primaries=2:transfer_characteristics=2:matrix_coefficients=2"],
         "540 wide": ["-vf", "scale=540:960", "-c:a", "copy"],
         "flash at frame 0": ["-vf", "drawbox=x=0:y=0:w=iw:h=ih:color=white:t=fill:enable='eq(n,0)'", "-c:a", "copy"],
-        "loop broken (the last frame: the set changed)": ["-vf", "drawbox=x=0:y=1300:w=400:h=240:color=0x2e5f8a:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
+        "loop broken (the last frame: the set changed)": ["-vf", "drawbox=x=0:y=1560:w=400:h=240:color=0x2e5f8a:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
         "loop broken (the last frame: the plan burnt)": ["-vf", "drawbox=x=0:y=0:w=540:h=300:color=0x3a2410:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
     }
     ok = True

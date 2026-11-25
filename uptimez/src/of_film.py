@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 52, 2: 52, 3: 52, 4: 52, 5: 53}
+VER = {1: 52, 2: 52, 3: 52, 4: 52, 5: 54}
 SOUND = "of_sound_v27.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -555,7 +555,7 @@ MOTION["0.9"] = s09_wide
 MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
 MOTION["0.10"] = s010_same
 PIN_T = 1.60                                               # v5 (24 Nov, decided): the burnt plan 0.25 s, the fresh one slides
-MOTION["4.2"] = lambda t, L: (dict(_cam="insert", insert="slap", slap_u=min(0.97, 0.10 + 0.9 * t / L)), {})   # v53: the phone comes down on his roof; frame 0 lands it
+MOTION["4.2"] = lambda t, L: (dict(_cam="insert", insert="slap", slap_u=0.10 + 0.9 * t / (L - 0.14)), {})   # v53: the phone comes down on his roof; frame 0 lands it
 _pin_v52 = lambda t, L: (dict(_cam="insert", insert="pin", pin_slide=ease((t - 0.25) / 0.28),   # up over it, the finger pins
                                    pin_u=ease((t - 0.72) / 0.2)), {}) if t < PIN_T else s42_service(t - PIN_T + 0.55, L)
 # v6 (timing v12): the pin held 0.3 s longer, the rest as it was

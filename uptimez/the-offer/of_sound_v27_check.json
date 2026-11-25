@@ -92,9 +92,9 @@
  "2.9": {
   "line": "FATHER: \"Put it in the calendar.\"",
   "heard": [
-   "put it in the calendar",
+   "put it in the calendar.",
    "Put Put Put Put Put Put Put Put Put Put Put Put Put Put",
-   "put it put it in the",
+   "put it in the",
    "[with the line before] Done. Put it in the calendar."
   ],
   "ok": 2
@@ -121,7 +121,7 @@
   "line": "ROBOT: \"Calendar says... wait.\"",
   "heard": [
    "The calendar says, \"Wait.\"",
-   "Calendar says, \"Wait.\"",
+   "\"Calendar says, \"Wait.\"",
    "The calendar says, \"Wait.\""
   ],
   "ok": 3
@@ -130,7 +130,7 @@
   "line": "DON: \"Pam?\"",
   "heard": [
    "pam",
-   "PAM",
+   "pam",
    "pam"
   ],
   "ok": 3

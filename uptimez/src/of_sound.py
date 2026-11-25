@@ -273,7 +273,7 @@ def mix():
     put(fxb, cloth_thud(), T("2.8f") + 1.05, 0.14)                         # the sag
     put(fxb, pin_tap(), T("0.9") + 0.2, 0.45)                              # v17: the knee knocks the car from below, on "Off"
     pass  # v53: no plan, no paper                           # of_film.PIN_T: the fresh plan slides up
-    pass  # v53: no pin                             # and the pin goes in
+    put(fxb, cloth_thud(), T("4.2") + 0.46, 0.55); put(fxb, pin_tap(), T("4.2") + 0.46, 0.35)   # v54: the phone lands on his roof                             # and the pin goes in
     # music: in after the doors (0.3), cut dead on the click (1.2), back after "Done." (2.8c), out at the office cut
     bed = fm.bed("B", total + 1.0)
     # v15: it stops when the lamp dies (the gag gets the silence) and is back on Father's walk; and the garage theme
