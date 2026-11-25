@@ -375,8 +375,11 @@ def film_frames(tmp):
     def one(make, shot_id):
         T = n / float(F.DPS)
         clock(T, total, ls); HEADS.clear()
-        WX.T[0] = T; WX.RAMP[0] = min(1.0, T / 0.6)
+        WX.T[0] = T; WX.RAMP[0] = min(1.0, T / 0.6); WX.TOTAL[0] = total
+        m.LOOP_RAIN[0] = 0.0; m.LOOP_MIX[0] = 0.0
         s = make()
+        if WX.SEAM[0]:
+            WX.RAMP[0] = m.LOOP_MIX[0] if T > total / 2 else 1.0; WX.RAINK[0] = m.LOOP_RAIN[0]
         heads = dict(HEADS)
         CLOCK["live"] = False
         if WX.ON[0] or WX.LIGHT[0]:

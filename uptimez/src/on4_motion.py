@@ -238,6 +238,8 @@ def cat_over(s, frames):
     c = cairo.Context(s); kk = sc.Ctx(c, 0)
     if CAT_SOFT[0] and frames in ("in", "full", "full2", "out"):
         x_, y_, s_ = {"in": (40, 1000, 4.0), "full": (190, 800, 4.6), "full2": (330, 560, 4.2), "out": (450, 340, 3.4)}[frames]
+        if LOOP2[0] and frames == "in":
+            x_, y_, s_ = 10, 880, 4.0                        # its eyes where the two eyes were in the dark (EYES2)
         ct.black_cat(kk, x_, y_, s_, "fall", flip=False)
         c.save(); c.translate(x_, y_); c.scale(s_, s_)       # (Tomas: "why has the cat one eye?") its face to us: two eyes
         c.new_path(); c.arc(60, -48, 9.5, 0, 2 * math.pi); c.set_source_rgb(*ct.FUR); c.fill()
@@ -304,9 +306,9 @@ def t1():
             fr.append(cat_over(f(i, lerp(HERO, FL2, t), 0, "doubt", (0.9, -0.8), dict(), hop=hop), step)); i += 1       # the cat fills the lens
         fr.append(cat_over(f(i, FL2, 0.20, "doubt", (0.9, -0.9), dict(), hop=46), "out")); i += 1                       # v7: the flinch after it, where we can see it:
         fr.append(cat_over(f(i, FL2, 0.24, "doubt", (0.9, -0.9), dict(), hop=58), "gone")); i += 1                      # off the ground, bent back, arms up
-        for hop, lean in ((58, 0.24), (40, 0.20), (14, 0.12)):
+        for hop, lean in (((58, 0.24), (14, 0.12)) if LOOP2[0] else ((58, 0.24), (40, 0.20), (14, 0.12))):
             fr.append(f(i, FL2, lean, "doubt", (0.9, -0.9), dict(), hop=hop)); i += 1
-        for t in (0.5, 0.0):                                 # collects herself; her eyes back on the shadow
+        for t in ((0.0,) if LOOP2[0] else (0.5, 0.0)):       # collects herself; her eyes back on the shadow
             fr.append(f(i, lerp(HERO, FL2, t), 0, "peer", (-1.0, -0.5), dict())); i += 1
         fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
     else:
@@ -337,7 +339,7 @@ def _t1_hit(fr, f, i, N):
     WIND2 = oc.pm.ik(-1, -58, -262) + oc.pm.ik(1, 58, -150)  # the fist cocked by her ear on his side (clear of her face), the other hand a guard
     MID = oc.pm.ik(-1, -112, oc.BT - 8) + oc.pm.ik(1, 46, -130)
     PUNCH2 = oc.pm.ik(-1, -152, oc.BT + 6) + oc.pm.ik(1, 40, -120)
-    for t, d in ((0.5, 6), (1.0, 14), (1.0, 18), (1.0, 18)):  # the wind-up: the weight back and away from him, held
+    for t, d in (((0.5, 6), (1.0, 14), (1.0, 18)) if LOOP2[0] else ((0.5, 6), (1.0, 14), (1.0, 18), (1.0, 18))):  # the wind-up: the weight back and away from him, held
         fr.append(f(i, lerp(HERO, WIND2, t), 0.16 * t, "peer", (-1.0, -0.4), dict(), dx=d)); i += 1
     fr.append(f(i, MID, -0.04, "peer", (-1.0, -0.3), dict(), dx=-14, fx="swing")); i += 1                           # the step in
     hit = dict(w=1.1, h=0.96, lean=-0.16, state="down", hat=(-34, -64, -0.5), jolt=22)
@@ -931,6 +933,9 @@ def blend(a, b, t):
 
 
 SIGN_OUT = [False]
+LOOP2 = [False]                                              # (25 Nov, Tomas's picks on the loop) the dark held 1 s (was 2.5), the lane comes up through it over 1.2 s (was 0.4); the eyes open where the cat will leap from; one rain through the seam (on4_weather draws it: LOOP_RAIN, LOOP_MIX); the opening 6 drawings shorter
+LOOP_RAIN = [0.0]; LOOP_MIX = [0.0]
+EYES2 = (212, 264, 688, 14)                                  # the eyes in the dark: where the cat's are on its first drawing (cat_over "in" under LOOP2)
 END_HOLD = [14]                                              # the drawings she lies for before the room goes dark (film v16: 6)
 
 
@@ -988,15 +993,30 @@ def t5():
         if rain and CAT[0]:                                  # v6: two eyes open in the dark; the loop, and the cat leaps
             import cat_on as ct
             c = cairo.Context(s)
-            for ex in (118, 150):
-                ct._eye(c, ex, 640 + (2 if bl == 2 else 0), 9, "closed" if (rain < 0.5 or bl == 1) else "open", slit=rain >= 1.0)
-        if rain:
+            for ex in ((EYES2[0], EYES2[1]) if LOOP2[0] else (118, 150)):
+                ct._eye(c, ex, (EYES2[2] if LOOP2[0] else 640) + (2 if bl == 2 else 0), EYES2[3] if LOOP2[0] else 9, "closed" if (rain < 0.5 or bl == 1) else "open", slit=rain >= 1.0)
+        LOOP_RAIN[0] = max(float(rain), min(1.0, max(0.0, (d - 0.55) / 0.45)))
+        if rain and not LOOP2[0]:
             c = cairo.Context(s); c.set_source_rgba(1, 1, 1, 0.5 * rain); c.set_line_width(2)
             for _ in range(80 if DENSE[0] else 26):
                 x = ax + (r.uniform(-ax, 540 - ax) if DENSE[0] else r.uniform(-90, 90)); y = ay + (r.uniform(-ay, 800 - ay) if DENSE[0] else r.uniform(20, 260))   # DENSE: over the whole frame: rain, not a fault under the desk
                 c.move_to(x, y); c.line_to(x - 5, y + 22); c.stroke()
         return s
     close = lazy(close); blend_ = lazy(blend)
+    if DENSE[0] and LOOP2[0]:
+        def blend2(a, b, t):
+            LOOP_MIX[0] = t
+            return blend(a, b, t)
+        blend2 = lazy(blend2)
+        for j in range(12):                                  # the room goes dark: 1 s
+            fr.append(close(0.25 + 0.75 * ease((j + 1) / 12.0), 0, 0, 0.0))
+        last = None
+        for j in range(10):                                  # the eyes open, one blink: 0.83 s
+            last = close(1.0, 0.3 + 0.7 * min(1.0, j / 5.0), 1 if j in (7, 8) else 0, 0.0); fr.append(last)
+        street = t1()[0]                                     # frame 0 itself, the drawing the film opens on (the board's 1.1 has cast shadows and another shadow man: the last drawing was never quite the first)
+        for j in range(14):                                  # the lane comes up through the dark: 1.17 s; the lamp is the streetlamp
+            fr.append(blend2(last, street, ease((j + 1) / 14.0)))
+        return fr
     if DENSE[0]:                                             # 58 keys for 8.1 + 8.2 (4.8 s): the dark comes evenly; the rain is drawn afresh on every key; the eyes open
         beat = lambda j: max(0.0, math.sin(2 * math.pi * j / 10.0)) ** 2
         for j in range(20):
