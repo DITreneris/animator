@@ -55,7 +55,7 @@ def s4_1(k, d):
         arm = lerp(H.GLASS41, s4.STOP41, ease((d - 13) / 2.0))
         s4.HAND41[0] = "relax"
     else:                                                                         # down in two drawings, folded: an angle blend
-        arm = (10, 40) if d == 16 else REST                                        # from STOP swung the forearm level at him
+        arm = (22, -28) if d == 16 else REST                                        # from STOP swung the forearm level at him
         s4.HAND41[0] = "quiet"
     lean = -3.0 * ease((d - 5) / 3.0) * (1 - ease((d - 10) / 4.0))
 
@@ -260,7 +260,7 @@ def _shapes14():
 
 # ---- 6.6a / 6.6: the clutch --------------------------------------------------------------------------------------------
 
-CLUTCH = (25, 100, -25, -100)                                # both hands in front of his chest (3.3's hold)
+CLUTCH = (-20, 120, 20, -120)                                # v16: elbows out, the hands meet at the phone, not crossed
 
 
 def _phone_between(k, o, d, buzz):
@@ -272,11 +272,10 @@ def _phone_between(k, o, d, buzz):
     j = (1.5 if d % 2 else -1.5) if buzz else 0.0
     sk = kit.PEOPLE["DON"]["skin"]
     c = k.c
-    for hx, hy in ((lx, ly), (rx, ry)):
-        s1.PH_DEV.append(c.user_to_device(hx, hy))
+    gx, gy = (rx, ry) if rx > lx else (lx, ly)                                    # the phone in his screen-right hand;
+    s1.PH_DEV.append(c.user_to_device(gx, gy))                                    # the other hand is the rig's own, beside it
     hx_ = o["don"]["head"][0]
-    _oc.phone_grip(k, mx + j, my + 10, 0.42, screen=None, ang=0.0, skin=sk, body_x=hx_, back=True)
-    _oc.ps_hand(k, "palm", mx - 22, my + 18, 17, sk, d=(0.7, -0.7), arm=-1)        # v15g: flat beside it, not over it
+    _oc.phone_grip(k, gx + j, gy, 0.55, screen=None, ang=-0.12, skin=sk, body_x=hx_, back=True)
     if buzz:
         v14._buzz(k.c, mx, my - 6, 15, 16, 1.8)
 

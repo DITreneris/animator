@@ -153,6 +153,7 @@ def install():
     ON[0] = True
     import client_ob
     client_ob.limb = client_limb
+    client_ob.client = _round_shoulder_client(client_ob)
     s1.phone_held = phone_held
     s1.fist = _fist
     for m in (s5, s6, s4, s3):                                                   # the scenes imported them by name
@@ -172,6 +173,7 @@ def install():
     _set(s6.SHOTS, "6.1", ("6.1", s6.N61, s6_1))
     _set(s6.SHOTS, "6.5", ("6.5", s6.N65, s6_5))
     ch._BYFN.clear()
+    install_arms()
     wrap_draw()
 
 
@@ -307,9 +309,12 @@ def wrap_draw():
     def draw(fn, d):
         del LEGACY[:]
         del oc.GRIP_LOG[:]
+        del ARM_LOG[:]
         surf = od(fn, d)
         shot = ch._BYFN.get(fn)
         gate(shot, d, surf)
+        for m in arm_faults(shot, d):
+            FAULTS.append((shot, d, m))
         return surf
     s1.draw = draw
 
@@ -337,21 +342,24 @@ def s6_5(k, d):
 _S65 = [s6.s6_5]
 
 
+class _Surf:
+    def get_width(self):
+        return 540 * s1.HI[0]
+
+
 def selftest():
     """Planted faults must fail the gate: an old grip drawer called, and a rig hand left under a phone grip."""
     import importlib
     s6_ = importlib.import_module("cs_scene6")
-    fn = [x for x in s6_.SHOTS if x[0] == "6.1"][0][2]
+    fn = [x for x in s6_.SHOTS if x[0] == "6.6a"][0][2]                         # the grip sits on his wrist exactly
     bad = []
-    FAULTS.clear(); s1.draw(fn, 6)
+    FAULTS.clear(); s1.draw(fn, 10)
     if FAULTS:
-        bad.append("a clean 6.1 failed: %s" % FAULTS[:2])
-    old = ch._held; ch._held = lambda *a: False                                   # the rig draws its hand under the grip
-    FAULTS.clear()
-    try:
-        s1.draw(fn, 6)
-    finally:
-        ch._held = old
+        bad.append("a clean 6.6a failed: %s" % FAULTS[:2])
+    rig = [(x, y) for (i, kind, x, y, w) in ch.LOG if kind not in ("held", "robot")]   # plant a grip on a rig hand
+    oc.GRIP_LOG.append(dict(kind="phone", at=rig[0], thumb=1, want=1))
+    FAULTS.clear(); gate("6.6a", 10, s1.draw.__closure__ and fn and _Surf())
+    del oc.GRIP_LOG[-1]
     if not any("two at one wrist" in m for _, _, m in FAULTS):
         bad.append("a rig hand under a grip passed")
     og = s1.grip_rect; s1.grip_rect = _flag("grip_rect")                          # an old drawer called
@@ -379,7 +387,127 @@ def install_free():
     V.LUNGE = 10.0
     s3.POINT_AT = (406.0, 700.0)                                                  # the point stops short of the visor
     s4.POCKET = (300.0, 660.0)
-    s4.REACH42b[0] = 30.0
+    s4.STOP41 = (40, 115)                                                          # v16: the STOP palm out at him, not folded to her shoulder
+    s4.REACH42b[0] = 33.0                                                         # v16: 30 folded the arm (bend 140, lesson 231)
     s4.POINT_W[0] = 25.0
     s5.CAM52a = (s5.CAM52a[0], s5.CAM52a[1] - 22, s5.CAM52a[2])
     s5.EYE_Y = s5.EYE_Y + 110
+
+
+# ---- v16: the elbow gate (Tomas, 25 Nov, /grill-me: stops the build, exceptions with a reason) ---------------------------
+# Every rig arm is logged as it is drawn (kit.arm: Don, Pam, Mom; sofia _arm / arm_long; client_ob.limb: the Client).
+# Fails: an arm straight (bent less than BEND_MIN) unless it hangs (its forearm within HANG degrees of straight down).
+
+ARM_LOG = []                                                # (who, a1, a2, hand device xy)
+BEND_MIN = 20.0                                             # an elbow bent less than this reads as a pole (172, 179)
+HANG = 30.0
+ARM_OK = {}                                                 # (shot, d) or shot -> reason: an exception the gate allows
+
+
+def _norm(a):
+    return (a + 180.0) % 360.0 - 180.0
+
+
+def _log_arm(who, f):
+    def g(k, sx, sy, a1, a2, *a, **kw):
+        out = f(k, sx, sy, a1, a2, *a, **kw)
+        try:
+            c = k.c
+            skin = a[1] if who == "rig" and len(a) > 1 else None
+            if skin is not None and max(skin) - min(skin) < 0.08:
+                return out                                                         # the robot's arm: its own style, not checked
+            if oc._real(c):
+                hx, hy = out if isinstance(out, tuple) else (sx, sy)
+                ARM_LOG.append((who, float(a1), float(a2), c.user_to_device(hx, hy)))
+        except Exception:
+            pass
+        return out
+    g._arms = True
+    return g
+
+
+def install_arms():
+    import sofia_v4, sofia_fs, client_ob
+    if not getattr(kit.arm, "_arms", False):
+        kit.arm = _log_arm("rig", kit.arm)
+        import pam_mf
+        pam_mf.kit.arm = kit.arm
+    if not getattr(sofia_v4._arm, "_arms", False):
+        sofia_v4._arm = _log_arm("sofia", sofia_v4._arm)
+    if not getattr(sofia_fs.arm_long, "_arms", False):
+        sofia_fs.arm_long = _log_arm("sofia", sofia_fs.arm_long)
+    if not getattr(client_ob.limb, "_arms", False):
+        client_ob.limb = _log_arm("client", client_ob.limb)
+    if not getattr(s4.pam_reach, "_arms", False):                                 # Pam's arms drawn by hand over the scene (4.2b,
+        pr = s4.pam_reach                                                          # 6.3): their angles come from here
+
+        def pam_reach(x, lean, target, side=-1):
+            a1, a2 = pr(x, lean, target, side)
+            ARM_LOG.append(("pam", float(a1), float(a2), (x, target[1])))
+            return a1, a2
+        pam_reach._arms = True
+        s4.pam_reach = pam_reach
+
+
+def arm_faults(shot, d):
+    out = []
+    if shot in ARM_OK or (shot, d) in ARM_OK:
+        return out
+    for who, a1, a2, (hx, hy) in ARM_LOG:
+        bend = abs(_norm(a2))
+        fore = abs(_norm(a1 + a2))                                                 # 0: the forearm points straight down
+        if bend < BEND_MIN and fore > HANG:
+            out.append("ARM %s straight (bent %.0f deg, forearm at %.0f deg) at (%d, %d)" % (who, bend, fore, hx, hy))
+    return out
+
+
+def selftest_arms():
+    """A straight raised arm must fail; a hanging straight arm and a bent raised arm must pass."""
+    ARM_LOG[:] = [("rig", -160.0, -5.0, (0, 0))]
+    bad = [] if arm_faults("x", 0) else ["a straight raised arm passed"]
+    ARM_LOG[:] = [("rig", 8.0, 0.0, (0, 0))]
+    if arm_faults("x", 0):
+        bad.append("a hanging arm failed")
+    ARM_LOG[:] = [("client", -150.0, -60.0, (0, 0))]
+    if arm_faults("x", 0):
+        bad.append("a bent raised arm failed")
+    ARM_LOG[:] = []
+    print("elbow gate selftest", "ok" if not bad else "FAIL %s" % bad)
+    return not bad
+
+
+def _round_shoulder_client(co):
+    """v16 (group B): client_ob.client with one round shoulder cap over the arm's top and the jacket's corner (its own
+    23x20 ellipse plus a square patch read as an angular break when the arm goes up). Built from its source, as
+    client_of does, so client_ob itself is untouched."""
+    import inspect
+    if getattr(co.client, "_round", False):
+        return co.client
+    base = getattr(co.client, "_orig", co.client)                                 # under cs_say's logger
+    src = inspect.getsource(base)
+    a = ("        ellipse(k, side * (SH[0] - 1), sy_ - 1, 23, 20, J, seed + 14 + side, shadow=False, lw=2)   # the shoulder\n"
+         "        c.set_source_rgb(*J); c.rectangle(min(side * 60, side * 86), sy_ - 12, 26, 32); c.fill()\n")
+    if a not in src:
+        raise SystemExit("cs_grips: client_ob.client changed; cannot find its shoulder")
+    src = src.replace(a, "        _cap(k, side * (SH[0] - 2), sy_ + 2, sx_, sy_, u, J)\n")
+    g = dict(vars(co)); g["_cap"] = _cap
+    exec(compile(src, "cs_grips<client_ob.client>", "exec"), g)
+    new = g["client"]
+    if base is not co.client:                                                     # log it again (cs_say)
+        import cs_say
+        co.client = new
+        cs_say._log("client", co, "client")
+        new = co.client
+    new._round = True
+    return new
+
+
+def _cap(k, x, y, sx, sy, u, col):
+    """A round shoulder: an inked disc, then the upper arm's top filled into it so the seam does not show."""
+    c = k.c
+    r = 0.62 * 47
+    c.new_path(); c.arc(x, y, r + 1.2, 0, 2 * math.pi); c.set_source_rgb(*INK); c.fill()
+    c.new_path(); c.arc(x, y, r - 1.0, 0, 2 * math.pi); c.set_source_rgb(*col); c.fill()
+    ux, uy = math.sin(math.radians(u)), math.cos(math.radians(u))
+    c.set_source_rgb(*col); c.set_line_width(47 - 4.5); c.set_line_cap(0)
+    c.move_to(sx + ux * 2, sy + uy * 2); c.line_to(sx + ux * 34, sy + uy * 34); c.stroke()

@@ -110,7 +110,7 @@ def s4_1(k, d):
     else:
         u = ease((d - 15) / 3.0)
         a1 = GLASS41[0] + (REST[0] - GLASS41[0]) * u
-        a2 = GLASS41[1] + (REST[1] - GLASS41[1]) * u + 110 * math.sin(math.pi * u)  # folded on the way down: no level arm at him (a pole, a point)
+        a2 = GLASS41[1] + (REST[1] - GLASS41[1]) * u + 60 * math.sin(math.pi * u)  # v16: bent on the way down, not folded (231): no level arm at him (a pole, a point)
         arm = (a1, a2)
         s4.HAND41[0] = "relax" if u > 0.3 else "point"
     lean = -3.0 * ease((d - 5) / 3.0) * (1 - ease((d - 10) / 4.0))
@@ -160,7 +160,7 @@ def _arm_over(k, px, a1, a2):
     c.rectangle(-3, -8, 6, 16); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke(); c.restore()
     fl = math.hypot(wx - ex_, wy - ey_) or 1.0
     ux, uy = (wx - ex_) / fl, (wy - ey_) / fl
-    hp.draw(k, HAND63[0], wx - ux * 8, wy - uy * 8, 19.0, s4.SKIN_PAM, (ux, uy), 1)   # the series' hand on the phone, thumb showing
+    hp.draw(k, HAND63[0], wx - ux * 10, wy - uy * 10, 17.0, s4.SKIN_PAM, (ux, uy), 1)   # the series' hand on the phone, thumb showing
     c.restore()
 
 
@@ -195,7 +195,8 @@ def install():
     def s6_3(k, d):
         HAND63[0] = "grab" if 3 <= d < 20 else "quiet"                            # round the phone while she turns and lifts it
         pr = s4.pam_reach
-        s4.pam_reach = lambda x, lean, target, side=-1: pr(x, lean, target, 1)       # the elbow out, not across her chest
+        top = s6._fr2sc((0, 596))[1]                                               # v16: the hand never below the phone's middle:
+        s4.pam_reach = lambda x, lean, target, side=-1: pr(x, lean, (target[0], min(target[1], top)), 1)   # no wrist over the edge
         try:
             orig(k, d)
         finally:

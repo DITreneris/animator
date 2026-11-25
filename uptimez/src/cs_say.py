@@ -72,6 +72,7 @@ def _log(name, mod, fn):
             pass
         return o
     g._say = True
+    g._orig = f
     setattr(mod, fn, g)
 
 

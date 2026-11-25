@@ -325,8 +325,8 @@ def s3_5(k, d):
     code = s3.talk_code(t, *s3.LINE35)
     stand = sb.co.POSES["stand"] if hasattr(sb.co, "POSES") else (-10, 5, 8, 0)
     up = (-10, 5, 150, 40)
-    wind = (-10, 5, 150, 15)
-    out = (-10, 5, 95, 30)
+    wind = (-10, 5, 160, 45)                                                    # v16: wound back, the elbow bent
+    out = (-10, 5, 108, 32)                                                     # v16: the follow-through bent (elbow gate)
     if t < WIND[0]:                                                               # caught with the arm already up (rule: no raise past the shoulder)
         pose = up
     elif t < THROW:
@@ -348,9 +348,11 @@ def s3_5(k, d):
         hx, hy = hx + hd[0] / nd * 0.40 * hw, hy + hd[1] / nd * 0.40 * hw     # the ball in the palm, the fingers over it
         r = r * 1.35
         if t < THROW:
-            g._ball(k_, hx + hd[0] / nd * 0.35 * hw, hy + hd[1] / nd * 0.35 * hw, r * (1.5 - 0.2 * crumple), seed=int(crumple * 5))
             c.restore()
-            g.again(k_, len(g.REC) - 1, "fist")                                    # v15h: the ball IN the fist, fingers and thumb over it
+            g.again(k_, len(g.REC) - 1, "grab")                                    # v16: the hand round it (fist: a big thumb)
+            c.save(); c.set_matrix(m_)
+            g._ball(k_, hx + hd[0] / nd * 0.55 * hw, hy + hd[1] / nd * 0.55 * hw, r * (1.3 - 0.15 * crumple), seed=int(crumple * 5))
+            c.restore()
             return
         if t < THROW + 0.34:                                                      # leaving, toward the frame's right edge
             q = (t - THROW) / 0.34
