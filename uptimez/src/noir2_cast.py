@@ -987,6 +987,7 @@ def money(k, x, y, s=1.0, ang=0.0, n=5, seed=690):
 
 
 FUR = [False]                                              # (25 Nov, Noir 2 v35, cold test v34: the wrap read as "black tubes", "a second pair of arms", "an umbrella") a fur stole: a tufted edge, worn on the shoulders
+ARM3_HIGH = [False]                                        # v40 (the arm's second review): the elbow up, near his body; the hand kept inside his reach
 ARM3 = [False]                                             # (25 Nov, Noir 2 v39, the arm's review) the detective's lens arm: two bones of fixed length, tapering, a round elbow with one fold, his hand (hands_ps fist) on the handle, the glass drawn in his hand's frame
 SLEEVE = [False]                                           # v35's sleeve on the Shadow's lit hand; off (Tomas, 25 Nov: undo it)
 ARMS2 = [False]                                            # (25 Nov, v35) the Shadow's lit hand on a sleeve from his shoulder; the detective's lens arm bent at the elbow; the bartender's bottle hand; her back's hands steady
@@ -1597,13 +1598,17 @@ def detective_back(k, x, feet, s=1.0, steps=None, arm=None, wrap=False, seed=560
             U, F_ = 82.0, 76.0
             tx, ty = seg_to
             L = math.hypot(tx - sx_, ty - sy_)
-            if L > (U + F_) * 0.97:
-                f_ = (U + F_) * 0.97 / L; tx, ty = sx_ + (tx - sx_) * f_, sy_ + (ty - sy_) * f_; L = (U + F_) * 0.97
+            reach = 0.86 if ARM3_HIGH[0] else 0.97                                          # v40: never straight, so the elbow stays up
+            if L > (U + F_) * reach:
+                f_ = (U + F_) * reach / L; tx, ty = sx_ + (tx - sx_) * f_, sy_ + (ty - sy_) * f_; L = (U + F_) * reach
             a0 = math.atan2(ty - sy_, tx - sx_)
             cosb = max(-1.0, min(1.0, (U * U + L * L - F_ * F_) / (2 * U * L)))
             b_ = math.acos(cosb)
             cands = [(sx_ + U * math.cos(a0 + b_), sy_ + U * math.sin(a0 + b_)), (sx_ + U * math.cos(a0 - b_), sy_ + U * math.sin(a0 - b_))]
-            ex_, ey_ = max(cands, key=lambda e_: e_[0] * side + 0.3 * e_[1])              # the elbow out, away from his body, and down
+            if ARM3_HIGH[0]:                                                                # v40: the higher of the two, near his body
+                ex_, ey_ = min(cands, key=lambda e_: e_[1] + 0.4 * abs(e_[0] - sx_))
+            else:
+                ex_, ey_ = max(cands, key=lambda e_: e_[0] * side + 0.3 * e_[1])              # the elbow out, away from his body, and down
             c.set_line_cap(1); c.set_line_join(1)
             for col, wu, wf in ((INK, 33, 24), (T, 28.5, 19.5)):                            # one sleeve: the upper arm, then the forearm, narrower
                 c.set_source_rgb(*col)

@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v39"
+V = "v40"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -91,6 +91,7 @@ V35 = [True]                                              # v35 (25 Nov, cold te
 V37 = [True]                                              # v37 (25 Nov, Tomas at 0:27: "the people at the sides, pathetic"): the bar's guests as the film's hat shadows, tables with hats, lamps and glasses at the bottom, the detective's glass at his own eye. False draws v36
 V38 = [True]                                              # v38 (25 Nov, the bar's review; Tomas: "tvarkom"; the hiding gag kept): her chin up and a knowing look as the hands come; the guests stand there from the start, the far pair paler; the glass shows the money magnified; she winks over the money as the glass goes past; the blinds 20 % lighter in the bar. False draws v37
 V39 = [True]                                              # v39 (25 Nov, the detective's arm's review; Tomas: "tobulinam"): his lens arm in 5.2 drawn again (noir2_cast.ARM3). False draws v38
+V40 = [True]                                              # v40 (25 Nov, the arm's second review; Tomas: "tvarkom"; the last round on this arm): his elbow up and near his body, the glass on a short level arc while she winks, and he freezes for it. False draws v39
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 

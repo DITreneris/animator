@@ -244,7 +244,11 @@ def m5_2(k, tl, dur):
         n.rich_hand(k, hx - 130, hy + 280, 1.8, 0.3, "money")
     n.rich_hand(k, 520 - 3 * math.sin(d * 0.9), 900, 1.7, -0.2, "coupe", flip=-1)
     # him, from behind, in front of us: the coat's shoulders, the bald head, the headset, the glass held out
-    f = d / 30.0
+    v40 = getattr(m, "V40", [False])[0]
+    if v40 and 22 <= d < 28:                                              # v40: he freezes while she winks (his head and his glass stop where they were)
+        f = 21 / 30.0
+    else:
+        f = d / 30.0
     sweep = 470 - 300 * math.sin(math.pi * min(1.0, f * 1.15))           # the glass goes across the room and back
     hx0 = 120 + 10 * math.sin(f * 6)
     lx, ly = sweep, 640 + 40 * math.cos(f * 4)
@@ -252,9 +256,13 @@ def m5_2(k, tl, dur):
         lx, ly = hx0 + 150 + 30 * math.sin(math.pi * min(1.0, f * 1.15)), 700 + 12 * math.cos(f * 4)
         if wink:                                                          # v38: the glass has gone past her, to the left, down the room
             rp = min(1.0, (d - 21) / 2.0) * min(1.0, (28 - d) / 2.0) if getattr(m, "V39", [False])[0] else 1.0   # v39: eased out and back, no jump
-            lx, ly = lx - (110 + 14 * (d - 22)) * rp, ly + 40 * rp
+            if v40:                                                       # v40: a short, nearly level arc, in his reach, above the money
+                lx, ly = lx - 70 * rp, ly - 14 * math.sin(math.pi * rp)
+            else:
+                lx, ly = lx - (110 + 14 * (d - 22)) * rp, ly + 40 * rp
     v39 = getattr(m, "V39", [False])[0]
     n.ARM3[0] = v39
+    n.ARM3_HIGH[0] = v40
     del n.ARM3[1:]
     n.detective_back(k, hx0, 760 - n.d.HY * 2.4, 2.4, arm=(lx - 6, ly + 30))     # v9: his back, big and close
     if v39 and len(n.ARM3) > 1:                                           # v39: the glass is in his hand already; what it shows, at its own place
