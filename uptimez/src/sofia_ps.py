@@ -140,15 +140,20 @@ CV_WORD = ["COO?"]                                          # opt-in (Tomas, 25 
                                                             # the robot's own badge: Father's side offers her its job
 
 
+CV_FONT, CV_AT = [None], ["top"]                            # opt-in (25 Nov, 5.5: HR? over her mouth): a size, "top" / "bottom"
+
+
 def cv_coo(k, x, y, s=1.0, ang=-0.06):
     """Her CV from 12 with COO? in gold across the top (5.2, 6.1); CV_WORD changes the word (a short one is drawn bigger)."""
     sdh.cv(k, x, y, s, ang)
     c = k.c
     w_ = CV_WORD[0]
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
-    c.select_font_face("Lilita One"); c.set_font_size(17 if len(w_) > 3 else 22)
+    fs_ = CV_FONT[0] or (17 if len(w_) > 3 else 22)
+    c.select_font_face("Lilita One"); c.set_font_size(fs_)
     e = c.text_extents(w_)
-    c.set_source_rgb(*INK); c.set_line_width(3.2); c.move_to(-e.x_advance / 2, -40 if len(w_) > 3 else -37); c.text_path(w_); c.stroke_preserve()
+    ty = (-40 if len(w_) > 3 else -37) if CV_AT[0] == "top" else 27      # "bottom": across the sheet's foot, clear of its edge (opt-in, 25 Nov)
+    c.set_source_rgb(*INK); c.set_line_width(3.2); c.move_to(-e.x_advance / 2, ty); c.text_path(w_); c.stroke_preserve()
     c.set_source_rgb(*HEEL_GOLD); c.fill()
     c.restore()
 

@@ -418,3 +418,35 @@ Fixed:
 Now: `check v5` 0 faults with the hand gate on; `check` (board v3) 0 faults; board v3 and Daddy's Home's cast sheet md5-identical. `ps_gag_pose_v3.mp4` and its strip replace v2.
 
 Still open in section 0: the three-silhouette test with two cold viewers (step 2) and the gaps re-measured on the 270 px tile (step 3) are not done; nothing was shown to viewers this round. In 5.5 the word HR? sits just under her mouth, over her chin.
+
+## 5.5: HR? off her mouth, variant C (25 Nov)
+
+The CV word covered Sofía's mouth in 5.5. Tomas had three variants drawn (`ps_55_abc.png`):
+- **A:** the word smaller in 5.5. Still over her mouth.
+- **B:** her CV hand lower (pose `chest_low`). Her mouth is clear, but the word sits on her chin.
+- **C:** HR? at the sheet's foot in every shot. Her face is clear in all three shots.
+
+An outside review rated C 9/10, B 7.5, A 5.5 (fail). Tomas: proceed with C plus the review's three fixes:
+- **P0:** 5.2's nib now sits just under the ?, not over it (`PEN_C`).
+- **P1:** HR? 12 % bigger in 6.1.
+- **P2:** a gap between the word and the sheet's edge.
+
+C is the default with `GAGS_V5`. `check v5`: 0 faults. Board v3 is md5-identical. Script v9 regenerated. Frames: `ps_55_c_final.png`.
+
+## Section 0, step 2: the silhouette test (25 Nov)
+
+Three black variants per gesture at 270 px, two cold viewers (BO, BP), neutral prompt:
+- **Booth** (`ps_sil_booth_v1.png`, 1 is the board's): 1 the nose pinch, 2 a flat hand over the face with the other fanning, 3 leaning away with palms out.
+- **Oil can** (`ps_sil_can_v1.png`, 1 is the board's): 1 held up by its handle, 2 still in the guard's hand, 3 hugged in both arms.
+- **Don's arm** (`ps_sil_pose_v1.png`, 1 is the gag's): 1 the arm dropped halfway, 2 hanging at his knee, 3 the other hand propping the elbow.
+
+| Gesture | Variant | BO | BP | Verdict |
+|---|---|---|---|---|
+| Booth | 1 (board) | "no gesture, a blob" | "nothing happening" | **0 of 2** |
+| Booth | 2 | "a raised fist" | "a fist, a punch or a cheer" | The clearest shape, but the wrong meaning |
+| Booth | 3 | "phone or covering the mouth, muddy" | "hand to chin, a phone or a face-cover" | Muddy |
+| Oil can | 1 (board) | "reaches to its shoulder" | "hands it something" | The can is lost in the merge |
+| Oil can | 3 | "the robot spreads its arms" | "pushing it; the robot recoils" | Clearest, but read as a push |
+| Don | 1 (the gag) | "two thumbs up" | "hands up, wait" | The pose reads; the drop does not show |
+
+**All three gestures fail the silhouette test.** Each one happens in front of a body (a hand at the face, a can against a torso, an arm across a chest), so in black it merges into the figure. In colour, the nose pinch with the stink lines and the oil can each read 2 of 2 (round 4). The rules page asks for negative space around a gesture that must read in silhouette.

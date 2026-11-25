@@ -500,7 +500,11 @@ def cast_61(k):
     o, heads["sofia"] = sofia(k, (SOF_61[0] if FIX_V4[0] else 640, F + 40), "chest", "smile", (0.2, 0.6))   # v3: eyes on CV
     hx, hy = o["hands"][0]
     if GAGS_V5[0]:                                           # outside review, 25 Nov: the CV 18 % smaller and lower, her face clear
-        sp.cv_coo(k, hx + 4, hy + 40, CV_61[0] * 0.82)      # on her hand, as board v3 (the hand sheet: lowered, it left the hand)
+        was = sp.CV_FONT[0]
+        if V55[0] == "C":                                    # outside review of A/B/C (P1): the word 12 % bigger here, to read on a phone
+            sp.CV_FONT[0] = 25
+        sp.cv_coo(k, hx + 4, hy + 40, CV_61[0] * 0.82)
+        sp.CV_FONT[0] = was      # on her hand, as board v3 (the hand sheet: lowered, it left the hand)
     else:
         sp.cv_coo(k, hx + 4, hy + (40 if FIX_V4[0] else 4), CV_61[0] if FIX_V4[0] else 0.8)   # at her chest, COO? up; v4 lower
     if FIX_V4[0]:                                            # review round 1 (Tomas: the loop's trigger): Pam's phone on the
@@ -720,6 +724,10 @@ def ins_cv(hand=False):
         c = k.c
         c.set_source_rgb(0.80, 0.86, 0.90); c.paint()
         sp.cv_coo(k, 250, 540, 3.0)
+        low = GAGS_V5[0] and sp.CV_AT[0] == "bottom"           # "C": he writes at the sheet's foot: hand, pen and sleeve 270 px down
+        c.save()
+        if low:
+            c.translate(*PEN_C[0])
         c.set_source_rgb(0.08, 0.08, 0.10); c.new_path()                      # his sleeve, from the right
         c.move_to(560, 330); c.line_to(560, 470); c.line_to(420, 440); c.line_to(410, 380); c.close_path(); c.fill()
         c.set_source_rgb(0.97, 0.97, 0.95); c.rectangle(398, 372, 22, 74); c.fill()   # the cuff
@@ -732,10 +740,13 @@ def ins_cv(hand=False):
             c.set_source_rgb(*sp.HEEL_GOLD); c.rectangle(-4, -70, 8, 76); c.fill()
         c.restore()                                          # the gold pen
         hp.draw(k, "fist", 392, 410, 70, (0.80, 0.62, 0.50), (-1.0, 0.1), -1)
-        grip("pen", (392, 410))
+        c.restore()
+        grip("pen", (392 + (PEN_C[0][0] if low else 0), 410 + (PEN_C[0][1] if low else 0)))
     return f
 
 
+V55 = [None]                                                 # 25 Nov, HR? over her mouth in 5.5: "A" the word smaller in 5.5,
+                                                             # "B" her CV hand lower (pose chest_low), "C" the word at the sheet's foot
 STEP_55 = [1.0, "chest", 0.0, 0.0, 0.0]                      # motion test K: progress onto the tape, her pose, extra x and y, lean
                                                              # (a planted-foot gait; the legs via sofia_ss.LEGS, set by ps_motion)
 
@@ -744,11 +755,16 @@ def cast_55(k):
     """5.5 (v3): at the door, Sofía takes the CV, COO? up beside her face."""
     heads = {}
     if FIX_V4[0]:                                            # review round 1 (R1's top 2): her choice is a step: astride the
+        pose_ = "chest_low" if GAGS_V5[0] and V55[0] == "B" and STEP_55[1] == "chest" else STEP_55[1]
         o, heads["sofia"] = sofia(k, (tape_x(60) + 4 - (1.0 - STEP_55[0]) * 60 + STEP_55[2], F + 60 + STEP_55[3]),
-                                  STEP_55[1], "smile", (-1, -0.2), lean=STEP_55[4])   # astride the tape, the CV at her chest
+                                  pose_, "smile", (-1, -0.2), lean=STEP_55[4])   # astride the tape, the CV at her chest
         hx, hy = o["hands"][0]                              # in the hand the pose returns (lesson 655), as in 6.1
         if GAGS_V5[0]:                                       # outside review, 25 Nov: smaller and lower, her face clear
+            was = sp.CV_FONT[0]
+            if V55[0] == "A":                                # 5.5 only: the word at COO?'s old size, her mouth clear
+                sp.CV_FONT[0] = 15
             sp.cv_coo(k, hx + 4, hy + 10, 0.75)             # on her hand (the hand sheet: 28 px lower, it hung beside the hand)
+            sp.CV_FONT[0] = was
         else:
             sp.cv_coo(k, hx + 4, hy + 6, 0.9)
         return heads
@@ -875,9 +891,22 @@ def hands_validate():
     return ok
 
 
+PEN_C = [(30, 300)]                                          # "C": the hand, pen and sleeve at the sheet's foot; the nib just
+                                                             # under the ? (outside review P0: not over it)
+
+
+def v55(v):
+    """Pick the 5.5 fix: A, B or C (see V55)."""
+    V55[0] = v
+    sp.CV_AT[0] = "bottom" if v == "C" else "top"
+    p_ = sp.sbc.POSES["chest"]
+    sp.sbc.POSES["chest_low"] = (p_[0], 100, p_[2], p_[3])   # her CV hand's forearm lowered (the stills: mouth clear at 100)
+
+
 def gags_v5(on=True):
     """Board v4: FIX_V4 plus Tomas's picks of 25 Nov (HR? on the CV, the treat, the bodyguards, the CV smaller)."""
     FIX_V4[0] = on or FIX_V4[0]; GAGS_V5[0] = on; sp.CV_WORD[0] = "HR?" if on else "COO?"
+    v55("C" if on else None)                                 # Tomas, 25 Nov (after an outside review of A/B/C): C, HR? at the foot
 
 
 FIX_V4 = [False]
