@@ -37,6 +37,59 @@ def insert(k, edge, wrist, shape, w, arm=1, under=None):
     return d
 
 
+GLOVE_CFG = {"shade": n.GOWN_SHADE, "shine": False}
+
+
+def sheet2(out):
+    """v2: hands_ps's glove mode (hands_ps.GLOVE), v1 over v2: the shapes, her poses close, the four inserts"""
+    import kit
+    import on2_motion as m
+    W, H = 2400, 3050
+    sf = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(sf); k = kit.Ctx(c, 0)
+    c.set_source_rgb(0.62, 0.62, 0.64); c.paint()
+
+    def lab(t, x, y, sz=24, bold=1):
+        c.select_font_face("Inter", 0, bold); c.set_font_size(sz); c.set_source_rgb(*INK); c.move_to(x, y); c.show_text(t)
+    lab("OFFICE NOIR 2 v34 - the glove: hands_ps in glove mode. v1 over v2.", 40, 46, 30)
+    for r, on in enumerate((False, True)):
+        hp.GLOVE[0] = GLOVE_CFG if on else None
+        y0 = 190 + r * 330
+        lab("v1" if not on else "v2: one silhouette, longer thinner tapered fingers of four lengths, folds at the wrist", 900 if on else 40, y0 - 122, 22)
+        for i, g in enumerate(("quiet", "point", "grab", "fist", "palm")):
+            x = 240 + i * 460
+            for j, arm in enumerate((-1, 1)):
+                dd = {"point": (1.0, 0.0), "palm": (0.0, -1.0), "grab": (1.0, 0.0)}.get(g, (0.0, 1.0))
+                hx_, hy_ = (x - 40, y0 - 50 + j * 130) if dd[0] else (x - 90 + j * 180, y0 + 20)
+                forearm(k, hx_ - dd[0] * 150, hy_ - dd[1] * 150, hx_, hy_, 70, 48)
+                hp.draw(k, g, hx_ + dd[0] * 24, hy_ + dd[1] * 24, 80, n.KEY, dd, arm)
+            lab(g, x - 40, y0 + 170, 22)
+    poses = (("g_stand", "standing (5.1)"), ("g_pose", "the pose (1.2)"), ("g_mirror", "the compact (2.3)"), ("g_fan", "the money (5.2)"),
+             ("g_offer", "her hand out (6.7)"), ("g_hide", "under the desk (7.1)"))
+    n.HAND3[0] = n.NO_BAG[0] = n.HIDE3[0] = n.BACK2[0] = n.BACK3[0] = True
+    for r, on in enumerate((False, True)):
+        hp.GLOVE[0] = GLOVE_CFG if on else None
+        y = 1360 + r * 640
+        lab("her poses, v1" if not on else "her poses, v2", 40, y - 560, 22)
+        for i, (p, name) in enumerate(poses):
+            c.save(); c.rectangle(40 + i * 390, y - 540, 380, 560); c.clip()
+            n.star(k, 230 + i * 390, y + 330, 2.6, p, "interested", (0.2, 0.0), wrap=False)
+            c.restore()
+            lab(name, 60 + i * 390, y + 46, 18, 0)
+    n.HAND3[0] = n.NO_BAG[0] = n.HIDE3[0] = n.BACK2[0] = n.BACK3[0] = False
+    rows, total = m.timing("A2")
+    shots = (("5.5", 1.0, "5.5 the note"), ("5.6", 1.5, "5.6 her number"), ("4.1a", 0.55, "4.1a the coin"), ("6.2c", 1.2, "6.2c the plan"))
+    for r, on in enumerate((False, True)):
+        m.V34[0] = on
+        lab("inserts, v1 (v33)" if not on else "inserts, v2 (v34)", 40 + r * 1200, 2500, 22)
+        for i, (sh, tl, name) in enumerate(shots):
+            row = [x for x in rows if x["shot"] == sh][0]
+            f = m.frame(row, tl, row["start"] + tl)
+            c.save(); c.translate(40 + r * 1200 + i * 290, 2520); c.scale(0.5, 0.5); c.set_source_surface(f, 0, 0); c.paint(); c.restore()
+            lab(name, 40 + r * 1200 + i * 290, 3030, 15, 0)
+    hp.GLOVE[0] = None
+    sf.write_to_png(out); print("wrote", out)
+
+
 def sheet(out):
     import kit
     import on2_motion as m
@@ -83,4 +136,4 @@ def sheet(out):
 
 if __name__ == "__main__":
     import sys
-    sheet(sys.argv[1] if len(sys.argv) > 1 else "/tmp/on2_hands_v1.png")
+    (sheet2 if "v2" in sys.argv else sheet)(sys.argv[1] if len(sys.argv) > 1 else "/tmp/on2_hands_v1.png")
