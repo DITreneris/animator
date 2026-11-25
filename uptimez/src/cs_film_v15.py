@@ -21,6 +21,7 @@ def setup():
     cs_v15e.install()
     import cs_grips
     cs_grips.install()
+    cs_grips.install_free()
     for i in range(1, 7):
         importlib.import_module("cs_scene%d" % i).V = "v15"
 

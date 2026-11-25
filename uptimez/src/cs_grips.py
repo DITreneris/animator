@@ -367,3 +367,19 @@ def selftest():
     FAULTS.clear()
     print("cs_grips selftest", "ok" if not bad else "FAIL: %s" % bad)
     return not bad
+
+
+# ---- v15h: the hands that hold nothing ----------------------------------------------------------------------------------
+
+def install_free():
+    """3.1 his fist shuts on air in front of the robot, not inside it; 4.2b Pam's finger bigger and stopping clear of
+    his hand, above the pocket; 5.2a her hands out of the close-up (the frame up a little, her eyes with it)."""
+    import cs_v14 as V
+    V.GRAB_AT[0] = (404.0, 724.0)                                                 # low, at the slot's height, clear of the visor
+    V.LUNGE = 10.0
+    s3.POINT_AT = (406.0, 700.0)                                                  # the point stops short of the visor
+    s4.POCKET = (300.0, 660.0)
+    s4.REACH42b[0] = 30.0
+    s4.POINT_W[0] = 25.0
+    s5.CAM52a = (s5.CAM52a[0], s5.CAM52a[1] - 22, s5.CAM52a[2])
+    s5.EYE_Y = s5.EYE_Y + 110
