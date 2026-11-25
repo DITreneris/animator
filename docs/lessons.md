@@ -1040,3 +1040,12 @@ Eight lessons about hands and two about phones (147–226) had become a diary of
 - The reaction a later shot is built on is not spent in the cut-in before it: Don still smiles on "wait.", so the smile can go in one drawing in the next shot.
 - A turned head needs the bubble's tip given by hand too (`BUBBLE_AT[...]["tip"]`): under the car his mouth is beside the head's centre, not under it.
 - "Too fast" shots get their time back before anything else is polished: the review phone 1.7 s, the key 1.3 s, the fresh plan 2.55 s.
+
+## 239. *First Search* v38 (25 Nov): the gag comes first
+
+Audit of 0:00–0:01: the first joke (the portrait on Don's head) landed at 3.7 s, after an empty door, a walk and a dissolve; nothing was said or written before 0:05. v38 opens on the loop's own slam: it runs along the wall at frame 0, the nail pops, the portrait lands on him at 0.6 s with a BONK! card, and he smiles on with his hands up under it. Then a cut to the door and a cut back; the Client's slam knocks the portrait off his head onto its nail. The shot went from 4.25 s to 2.95 s; the film from 62.9 s to 61.6 s.
+
+- **The loop already held the cause.** The film ends on a slam; let the first frame be its effect.
+- **The gesture was chosen by silhouette** (rule 0.2): three black shapes (hands on the plaque, one hand up, both up), two cold viewers, both read the symmetric "ta-da" (C) as "proudly wearing it"; the one-hand variants read as steadying or stumbling.
+- **A moving hand needs its elbow chosen.** Two-bone IK that keeps the lower elbow folded both forearms across his belly on the way up; pick the elbow out to his side, and bypass the film's own pose tween (it re-eases every new tuple and crossed them again).
+- **Not done:** the closer framing (#4 of the audit), because v33's rule (the shredder's label above the bottom quarter) leaves no room.
