@@ -1,4 +1,11 @@
-"""v28 (20 Nov): a joke by 0:01 (the outside review: "no joke at 0:01-0:02, the first is the gang war at about 0:03"; Tomas
+"""v29 (25 Nov): the raven at 0:00 (Tomas: "the opening is bad, the leg is drawn badly; like 4, where the cat leaps, but a
+raven"; two outside reviews, his picks): on2_raven.RAVEN. The leg is out and the taxi's door stays shut; 1.1 is five
+drawings of the raven diving at us from the lamp; one wing wipes the lens and 1.2 is under it at 0.42 s, holding its first
+drawing for four drawings so the first shot is still fired at 1.0 s. The last two drawings of the film (in the window,
+8.7) have it back on the lamp, then crouched to spring: the seam. Sound: one caw, its wings, a low thump on the lens,
+then nothing but her voice until the first shot (on2_sound.motion_mix16(raven=True)). RAVEN[0] = False draws v28
+(pinned by commit 8c25517).
+v28 (20 Nov): a joke by 0:01 (the outside review: "no joke at 0:01-0:02, the first is the gang war at about 0:03"; Tomas
 chose): OPEN28. 1.1 is 0.75 s (the taxi, the door, her heel); the cab pulls away at once and the gang war starts 0.25 s
 into 1.2, so the first shot is fired at 1.0 s and she doesn't blink. "New Year's Eve." runs on over the war and "The
 whole city was celebrating." waits for it. Frame 0 and the loop are unchanged. OPEN28[0] = False draws v27.
@@ -53,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v28"
+V = "v29"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -66,6 +73,13 @@ PLAN28 = {"1.1": ("1.1", 0.75, "n1", -1.03), "1.2": ("1.2", 2.75, "n6", 0.05)}  
 LEADS28 = {"1.2": 0.75}                                   # the city line waits for New Year's Eve. to end
 SHOTS_12_28 = ((3, 0), (5, 2), (7, 1), (8, 3), (10, 0), (12, 2), (13, 1))
 FALL_28 = 14
+import on2_raven as rv
+rv.RAVEN[0] = True                                        # v29: the raven at 0:00; False draws v28
+RAVEN_HOLD = 4 / 12.0                                     # 1.2 starts this much earlier and holds its first drawing
+if rv.RAVEN[0]:
+    PLAN28 = {"1.1": ("1.1", 5 / 12.0, "n1", 5 / 12.0 - 0.25 - 1.112), "1.2": ("1.2", 2.75 + RAVEN_HOLD, "n6", 0.05)}
+    LEADS28 = {"1.2": 0.75 + RAVEN_HOLD}
+END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
 
@@ -349,6 +363,8 @@ TAXI_DX = [0.0]                                             # v22: where the tax
 
 
 def m1_1(k, tl):
+    if rv.RAVEN[0]:                                                  # v29: no leg; the door stays shut (the raven is the action)
+        return _m1_1(k, tl, 99.0, 0.25, 999)
     if OPEN28[0]:                                                    # v28: the same drawings, faster: door, foot, splash
         return _m1_1(k, tl, 0.08, 0.25, 5)
     return _m1_1(k, tl, 0.25, 0.34, 8)
@@ -434,6 +450,8 @@ def m1_2b(k, tl):
 
 
 def m1_2(k, tl):
+    if rv.RAVEN[0]:                                                  # v29: it starts under the wing and holds, so the war is where it was
+        tl = max(0.0, tl - RAVEN_HOLD)
     cc = k.c
     cc.save()
     z0 = 0.5 if OPEN28[0] else 0.9                                         # v28: the war starts sooner, so does the push
@@ -960,6 +978,8 @@ CLOCK = {"1": 55, "2": 55, "3": 56, "4": 57, "5": 58, "6": 59, "7": 59, "8": 60}
 
 
 def frame(row, tl, t):
+    if rv.RAVEN[0] and not END and row["shot"] == "1.1" and int(round(tl * 12)) >= 5:    # v29: 1.2's start is rounded up past
+        row, tl = [r for r in timing.rows if r["shot"] == "1.2"][0], 0.0                # its drawing; the wipe is on 1.2 already
     fn, tilt, post = SHOTS[row["shot"]]
     NOW["min"], NOW["sec"] = CLOCK[row["shot"][0]], None                  # v12: the clocks
     NOW["shot"] = row["shot"]                                             # v20: which shot is being drawn
@@ -1007,6 +1027,18 @@ def frame(row, tl, t):
             g = cairo.RadialGradient(W / 2, H * 0.42, H * 0.30, W / 2, H * 0.42, H * 0.80)
             g.add_color_stop_rgba(0, 0, 0, 0, 0.0); g.add_color_stop_rgba(1, 0, 0, 0, 0.40); cc.set_source(g); cc.paint()
         eng.TONE = "v2"
+    if rv.RAVEN[0]:                                                       # v29: the raven, after the grade (on2_raven.draw3)
+        dd = int(round(tl * 12))
+        key = None
+        if END:
+            key = "coil" if END.get("last") else "perch"
+        elif row["shot"] == "1.1" and dd < 5:
+            key = rv.KEYS3[dd]
+        elif row["shot"] == "1.2" and dd < 2:
+            key = rv.KEYS3[5 + dd]
+        if key:
+            sf_ = rv.draw3(sf_, key)
+            cc = cairo.Context(sf_)
     ln = row.get("line")
     if not (ln and ln["t0"] - 0.05 <= t <= ln["t1"] + 0.30):             # v15: her line may run on from the set-up before
         for r_ in timing.rows:
@@ -1066,7 +1098,11 @@ def main(kind="A2", folder="../office-noir-2", hi=False):
     os.replace(tmp + "/video.part.mp4", tmp + "/video.mp4")
     rr = [(r["shot"], r["start"], r["len"]) for r in rows]
     if OPEN28[0]:                                                        # v28: the opening's sound follows its new timing
-        wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=8 / 12.0, shots12=SHOTS_12_28)
+        if rv.RAVEN[0]:
+            sh = tuple((dr + int(round(RAVEN_HOLD * 12)), who) for dr, who in SHOTS_12_28)
+            wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=None, shots12=sh, raven=True)
+        else:
+            wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=8 / 12.0, shots12=SHOTS_12_28)
     else:
         wav, spans = snd.motion_mix15(rr, total, kind, tmp + "/mix.wav")
     out = ("%s/on2_film_%s_1080.mp4" if hi else "%s/on2_motion_test_%s.mp4") % (folder, V)
