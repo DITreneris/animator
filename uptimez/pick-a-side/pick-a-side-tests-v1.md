@@ -450,3 +450,22 @@ Three black variants per gesture at 270 px, two cold viewers (BO, BP), neutral p
 | Don | 1 (the gag) | "two thumbs up" | "hands up, wait" | The pose reads; the drop does not show |
 
 **All three gestures fail the silhouette test.** Each one happens in front of a body (a hand at the face, a can against a torso, an arm across a chest), so in black it merges into the figure. In colour, the nose pinch with the stink lines and the oil can each read 2 of 2 (round 4). The rules page asks for negative space around a gesture that must read in silhouette.
+
+## Board v4: whole-board cold test (25 Nov)
+
+All 43 key frames with bubbles, numbered with time stamps: two sheets at 200 px and one at phone size (135 px). Three new viewers (BQ, BR, BS), the whole-board prompt with the loop question, plus direct questions on HR?, the booth and the oil can.
+
+| Beat / question | BQ | BR | BS | Verdict |
+|---|---|---|---|---|
+| Don's situation: shut out of Dad's meeting, sure everyone is with him, played | yes | yes | yes | 3 of 3 |
+| Sides: Pam his, Mom neutral, Sofía switching, the robot "both" | yes | yes | yes | 3 of 3 |
+| The loop leads back into the start | yes | yes | yes | 3 of 3 |
+| **HR? on the CV: the robot's job, a threat to it** | yes | yes | yes ("it doesn't notice, it just got oil") | **3 of 3** |
+| **The oil can: a bribe, the robot delighted** | yes | yes | yes | **3 of 3** |
+| **The booth: the bodyguards pinch their noses at the smell** | "just stand guard"; the green lines "smell or tension" | "a stink or smoke gag, a hand near his face" | "a hand to his ear or chest"; the lines "smell, smoke or tension" | **1 of 3** (the stills test was 2 of 2). At board size the pinch is too small; the lines alone carry it |
+
+Shared notes (not beats):
+- **The red room is rushed and reads as a new subplot**, "a different movie": 3 of 3. This was already the case on board v3.
+- **Who the Dad invitation is for** is unclear: 2 of 3. One viewer thought it was Pam's.
+- Funniest: "BOTH." 3 of 3, the one heel 3 of 3, "SMILE. RECORDING." 2 of 3, the oil 2 of 3.
+- Slow: Don's standing shots in frames 8–10 and his walk along the line (36–37): 3 of 3.
