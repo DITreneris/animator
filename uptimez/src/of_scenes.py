@@ -552,7 +552,7 @@ def _cast_draw0(k, n, scene, sh, heads):
                 c.set_source_rgb(*INK); c.new_path(); c.arc(bolt[0], bolt[1], 5, 0, 2 * math.pi); c.set_line_width(1.6); c.stroke()                # v8: his head over the bay, his hands below it
             if ps.get("hand_back") and ps.get("client_lamp", True):
                 hx_, hy_ = ps.get("hand_back_at", (bx + 60, 724))
-                gs.lamp(k, hx_ - 6, hy_ + 2, ang=-1.3, lit=ps.get("lamp_lit", True), hang=884)
+                gs.lamp(k, hx_ - 6, hy_ + 2, ang=-1.3, lit=ps.get("lamp_lit", True), hang=884, swing=ps.get("cable_swing", 0.0))
         elif kind == "watch":
             wu = ps.get("watch_u", 1.0)                                       # stage 7: the wrist comes up to the eyes
             wx, wy = oc.watch_pose(x, f, CS)[0]
@@ -1921,8 +1921,11 @@ def _board_frame_raw(sh, scene, bubble=True):
         bh = 28 * 1.15 * len(ov["rows"]) + 18
         x0, y0 = ov["at"]
         hy_ = y0 + bh * 0.5
-        robot_peek(c, 22, hy_, 32)                                     # its head first, the card over its rim
-        speech._paint(Ctx(c, 0), (x0, y0, x0 + bw, y0 + bh), (x0 - 10, hy_), ov["rows"], 28, kit.MONO, True)
+        pk = ov.get("peek", 1.0)                                       # v52 (audit: "a glued-on icon"): it LEANS IN from the edge,
+        if pk > 0.02:                                                  # bigger, tipped, and leans out after the line
+            c.save(); c.translate(-62 + 92 * pk, y0 + 2); c.rotate(0.30 * (1 - pk) - 0.12 * pk); robot_peek(c, 0, 0, 46); c.restore()
+        if pk > 0.35:                                                  # its card comes and goes with it, under its chin
+            speech._paint(Ctx(c, 0), (x0, y0 + 26, x0 + bw, y0 + 26 + bh), (x0 - 6, y0 + 34), ov["rows"], 28, kit.MONO, True)
                                            # v51 (cold test v50, 3 of 3: "Don says it"): WHO says it
         surf.flush()
         return surf, msgs

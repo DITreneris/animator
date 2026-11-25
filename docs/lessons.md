@@ -1073,3 +1073,10 @@ Four fixes, all read 3 of 3 by the v50 cold viewers, plus pacing:
 - **Pacing (timing v25):** 0.4 +0.3 s, 4.1 +0.3 s (DECLINED held), 1.4 −0.16 s, 2.1 −0.12 s, 2.8 −0.2 s. The drags at 0:12 and 0:17 are mostly the voice itself; the takes were not touched.
 - **Cover:** A3 without the fire's smoke on his wrist and without the rag in the corner (`of_set.SMOKE`, a cover-only hook).
 
+
+## 242. *The Offer* v52 (25 Nov, an outside audit of v51, Tomas's /grill-me)
+
+- **A handover has both hands on the thing.** The guard takes the handle's end above the Client's fist; both hold it 0.15 s (0.58–0.73), then the Client lets go and his hand goes back empty. The lamp keeps its angle at the switch (−1.3) and turns level while carried, so nothing jumps.
+- **A cable lags the hand.** Its belly swings against the hand's speed (−2.2 × px per 0.08 s, ±26 px), in the Client's hand and the guard's.
+- **A weight sways when the arm stops** (the lamp, 0.14 rad, damped), and the body turns back only after the drop (1.45 s).
+- **An off-screen speaker leans in.** The robot's head, bigger (r 46), leans in from the edge in 0.2 s at the cut, the card under its chin, and leans out after the line; the card goes with it.
