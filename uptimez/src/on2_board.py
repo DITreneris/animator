@@ -195,6 +195,22 @@ def arm_in(k, x0, y0, x1, y1, w=58):
     """The Shadow's arm from off screen to his lit hand at (x1, y1): a black sleeve, a white cuff, the watch, fingers."""
     n._seg(k, x0, y0, x1, y1, w, w * 0.78, n.BLACK)
     g = math.atan2(y1 - y0, x1 - x0)
+    if n.ARMS2[0]:                                         # v35 (Noir 2): his sleeve's edge in the light, so the hand has an arm; the hand is hands_ps's
+        import hands_ps as hp
+        px_, py_ = -math.sin(g), math.cos(g)
+        k.c.set_source_rgb(0.62, 0.62, 0.66); k.c.set_line_width(3.0); k.c.set_line_cap(1)
+        k.c.move_to(x0 - px_ * w * 0.5, y0 - py_ * w * 0.5); k.c.line_to(x1 - px_ * w * 0.39 - math.cos(g) * 44, y1 - py_ * w * 0.39 - math.sin(g) * 44); k.c.stroke()
+        cx, cy = x1 - math.cos(g) * 44, y1 - math.sin(g) * 44
+        n._seg(k, cx, cy, x1 - math.cos(g) * 20, y1 - math.sin(g) * 20, w * 0.84, w * 0.80, (0.97, 0.97, 0.95), 2.6)
+        keep = hp.GLOVE[0]; hp.GLOVE[0] = None
+        try:
+            hp.draw(k, "grab", x1 - math.cos(g) * 14, y1 - math.sin(g) * 14, 64, co.SKIN, (math.cos(g), math.sin(g)), 1)
+        finally:
+            hp.GLOVE[0] = keep
+        wx, wy = x1 - math.cos(g) * 30, y1 - math.sin(g) * 30
+        ellipse(k, wx - px_ * 22, wy - py_ * 22, 15, 15, (0.20, 0.20, 0.22), 404, shadow=False, lw=2.6)
+        ellipse(k, wx - px_ * 22, wy - py_ * 22, 8, 8, (0.92, 0.92, 0.88), 405, shadow=False, lw=1.4)
+        return
     wx, wy = x1 - math.cos(g) * 30, y1 - math.sin(g) * 30
     cx, cy = x1 - math.cos(g) * 44, y1 - math.sin(g) * 44
     n._seg(k, cx, cy, x1 - math.cos(g) * 20, y1 - math.sin(g) * 20, w * 0.84, w * 0.80, (0.97, 0.97, 0.95), 2.6)

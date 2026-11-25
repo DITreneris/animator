@@ -83,7 +83,7 @@ GLOVE = [None]                                              # v5 (25 Nov, Office
 #   {"shade": (r, g, b), "shine": bool}. The same anchor, shapes and thumb side, drawn as a lady's glove: one silhouette (no
 #   line across the wrist), fingers about 12 % longer and thinner, tapered, of four lengths, creases where it bends.
 #   Unset, every shape draws exactly as before.
-GLOVE_SHAPES = ("quiet", "point", "point_s", "grab", "fist", "palm", "relax")
+GLOVE_SHAPES = ("quiet", "point", "point_s", "grab", "fist", "palm", "relax", "beckon")
 
 
 def _glove(k, g, hx, hy, w, skin, d, arm):
@@ -118,9 +118,12 @@ def _glove(k, g, hx, hy, w, skin, d, arm):
         parts.insert(0, ("cap", [(0.14, s_ * 0.26), (0.46, s_ * 0.40), (0.72, s_ * 0.38)], T0, T1 * 1.05))
     else:                                                             # fist, point: the fingers folded into the palm
         parts.append(("blob", (0.62, -s_ * 0.02), 0.20, 0.36))
-        for i in ((1, 2, 3) if g.startswith("point") else (0, 1, 2, 3)):
+        for i in ((1, 2, 3) if (g.startswith("point") or g == "beckon") else (0, 1, 2, 3)):
             parts.append(("blob", (0.76, fy(i) * 0.92), 0.105, 0.10))               # a knuckle each, small
-        if g.startswith("point"):
+        if g == "beckon":                                   # v6 (glove mode only): the index up and curling back toward the palm
+            finger(0, [(0.56, fy(0)), (0.98, fy(0) - s_ * 0.04), (1.18, fy(0) + s_ * 0.16), (1.10, fy(0) + s_ * 0.34)], 1.0, 0.9)
+            parts.append(("cap", [(0.20, s_ * 0.30), (0.52, s_ * 0.36), (0.70, s_ * 0.20)], T0 * 0.95, T1))
+        elif g.startswith("point"):
             ln = 0.84 if g == "point" else 0.70                        # the index: out, a little bent at its middle joint
             finger(0, [(0.56, fy(0)), (0.56 + ln * 0.5, fy(0) - s_ * 0.045), (0.56 + ln, fy(0) + s_ * 0.02)], 1.0, 0.95)
             parts.append(("cap", [(0.20, s_ * 0.30), (0.52, s_ * 0.36), (0.70, s_ * 0.20)], T0 * 0.95, T1))   # the thumb folded over the others

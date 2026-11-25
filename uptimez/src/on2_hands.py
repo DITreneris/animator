@@ -28,6 +28,42 @@ def forearm(k, x0, y0, x1, y1, w0, w1, hem=True):
     return (math.cos(a), math.sin(a))
 
 
+def over_shoulder(k, wrist, shape, w, arm=1, under=None, side=1):
+    """v35 (cold test v34: "a red hose from the corner", 3/3): the camera over her shoulder. Her hair and her bare
+    shoulder big in the near corner, the upper arm (skin, then the glove's top) to an elbow inside the frame, the
+    forearm to the wrist, the hand on it (hands_ps glove)"""
+    import sofia_ss as ss
+    import sofia_ob as so
+    c = k.c
+    W, H = 540, 960
+    shx, shy = (W - 120, H - 70) if side > 0 else (120, H - 70)
+    ex, ey = (wrist[0] + shx) / 2 + side * 40, max(wrist[1], shy - 220) + 70
+    ex = min(W - 40, max(40, ex)); ey = min(H - 40, ey)
+    c.set_source_rgb(*so.SKIN); c.new_path()                                                  # her bare shoulder and back, near
+    c.save(); c.translate(shx + side * 70, shy + 90); c.scale(170, 130); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3.0); c.stroke()
+    a = math.atan2(ey - shy, ex - shx)
+    gx, gy = shx + (ex - shx) * 0.45, shy + (ey - shy) * 0.45
+    for (x0, y0, x1, y1, w0, w1, col) in ((shx, shy, gx, gy, w * 1.3, w * 1.2, so.SKIN), (gx, gy, ex, ey, w * 1.2, w * 1.05, n.KEY)):
+        an = math.atan2(y1 - y0, x1 - x0); nx, ny = -math.sin(an), math.cos(an)
+        c.new_path(); c.move_to(x0 + nx * w0 / 2, y0 + ny * w0 / 2); c.line_to(x1 + nx * w1 / 2, y1 + ny * w1 / 2); c.line_to(x1 - nx * w1 / 2, y1 - ny * w1 / 2); c.line_to(x0 - nx * w0 / 2, y0 - ny * w0 / 2); c.close_path()
+        c.set_source_rgb(*col); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3.0); c.stroke()
+    c.set_source_rgb(*n.KEY); c.new_path(); c.arc(ex, ey, w * 0.52, 0, 2 * math.pi); c.fill()             # the elbow, round
+    d = forearm(k, ex, ey, wrist[0], wrist[1], w * 0.95, w * 0.62)
+    c.set_source_rgb(*n.KEY); c.new_path(); c.arc(ex, ey, w * 0.46, 0, 2 * math.pi); c.fill()
+    c.set_source_rgb(*ss.HAIR); c.new_path()                                                  # her hair over the shoulder, nearest of all
+    c.move_to(shx + side * 120, shy - 320); c.curve_to(shx - side * 30, shy - 300, shx - side * 60, shy - 160, shx - side * 40, shy - 40)
+    c.curve_to(shx - side * 20, shy + 10, shx + side * 40, shy + 40, shx + side * 140, shy + 40); c.close_path()
+    c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3.0); c.stroke()
+    c.set_source_rgb(*ss.HAIR_SHADE); c.set_line_width(2.4); c.set_line_cap(1)
+    for i in range(4):
+        c.move_to(shx + side * (100 - i * 30), shy - 300 + i * 20); c.curve_to(shx - side * (10 + i * 8), shy - 220 + i * 30, shx - side * (30 - i * 10), shy - 120, shx - side * (10 - i * 12), shy - 20); c.stroke()
+    if under:
+        under()
+    hp.draw(k, shape, wrist[0] + d[0] * w * 0.30, wrist[1] + d[1] * w * 0.30, w, n.KEY, d, arm)
+    return d
+
+
 def insert(k, edge, wrist, shape, w, arm=1, under=None):
     """her arm into an insert: forearm from the frame's edge, then what she holds (under()), then the hand over it"""
     d = forearm(k, edge[0], edge[1], wrist[0], wrist[1], w * 0.95, w * 0.62)

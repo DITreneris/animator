@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v34"
+V = "v35"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -86,6 +86,7 @@ V31 = [True]                                              # v31 (25 Nov, cold te
 V32 = [True]                                              # v32 (25 Nov, the review of v31's stills; Tomas: "tobulinam"; polish, no rebuild): the glove's fingers, the compact drawn at its own size (hinge, sheen, powder, her own figure in the mirror), wet stones (on4_weather.glints, Office Noir 4) and contact shadows, the wrap and her hair from behind, three different guests in the dark with the smoke over them, the raven's rim as light. False draws v31
 V33 = [True]                                              # v33 (25 Nov, the hands audit; Tomas: "tobulinam"): the series' one hand (hands_ps) on her rig, a shape per pose; her inserts a forearm from the frame's edge with that hand (on2_hands). False draws v32
 V34 = [True]                                              # v34 (25 Nov, the hand sheet's review; Tomas: "tvarkom"): hands_ps's glove mode for her hands (one silhouette, slimmer tapered fingers). False draws v33
+V35 = [True]                                              # v35 (25 Nov, cold test v34, Tomas's picks; the last round for the hands): the note and the number over her shoulder; the wrap as fur on her shoulders; the Shadow's sleeve; the detective's elbow; her beckon, her hand over her mouth, her back's hands; the bartender's fist. False draws v34
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
@@ -1196,6 +1197,8 @@ def frame(row, tl, t):
     import hands_ps as _hp
     import on2_hands as _oh
     _hp.GLOVE[0] = _oh.GLOVE_CFG if (n.HAND3[0] and V34[0]) else None
+    n.FUR[0] = n.ARMS2[0] = n.HAND3[0] and V34[0] and V35[0]
+    del n.ARMS2[1:]
     if rv.RAVEN[0] and not END.get("on") and row["shot"] == "1.1" and int(round(tl * 12)) >= 5:    # v29: 1.2's start is rounded up past
         row, tl = [r for r in timing.rows if r["shot"] == "1.2"][0], 0.0                # its drawing; the wipe is on 1.2 already
     fn, tilt, post = SHOTS[row["shot"]]

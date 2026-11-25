@@ -197,6 +197,9 @@ def m5_2(k, tl, dur):
     hx0 = 120 + 10 * math.sin(f * 6)
     lx, ly = sweep, 640 + 40 * math.cos(f * 4)
     n.detective_back(k, hx0, 760 - n.d.HY * 2.4, 2.4, arm=(lx - 6, ly + 30))     # v9: his back, big and close
+    if len(n.ARMS2) > 1:                                                  # v35: his hand stopped where his arm reaches; the glass with it
+        lx, ly = cc.device_to_user(*n.ARMS2.pop())
+        lx, ly = lx + 6, ly - 30
     n.magnifier(k, lx, ly, 3.0, 0.6)
 
 
@@ -262,7 +265,10 @@ def m5_5(k, tl, dur):
         ox, oy = 0, (-12 if d in (11, 14) else 0)                         # it stops there, and taps
     if getattr(m, "V33", [False])[0]:                                     # v33: a forearm from the edge, the index on the plan
         import on2_hands as oh
-        oh.insert(k, (640, 1010), (452 + ox, 868 + oy), "point", 104)
+        if getattr(m, "V35", [False])[0]:
+            oh.over_shoulder(k, (420 + ox, 860 + oy), "point", 96)
+        else:
+            oh.insert(k, (640, 1010), (452 + ox, 868 + oy), "point", 104)
         return
     n._seg(k, 600, 1000, 420 + ox, 850 + oy, 92, 80, n.KEY, 3.2)
     n.hand(k, 420 + ox, 850 + oy, 5.0, -1.02, 0.0)
@@ -326,7 +332,10 @@ def m5_6(k, tl, dur):
                 rect(k, -3.4, -2, 6.8, 22, (0.12, 0.12, 0.14), 331, shadow=False, lw=1.0)
                 cut(k, [(-2.6, -2), (-2.6, -9), (2.6, -12), (2.6, -2)], n.KEY, shadow=False, lw=0.9)
                 cc.restore()
-        oh.insert(k, (650, 960), (470 + ox, 742 + oy), "fist", 100, under=stick)
+        if getattr(m, "V35", [False])[0]:
+            oh.over_shoulder(k, (470 + ox, 742 + oy), "fist", 96, under=stick)
+        else:
+            oh.insert(k, (650, 960), (470 + ox, 742 + oy), "fist", 100, under=stick)
         return
     n._seg(k, 620, 980, 440 + ox, 720 + oy, 96, 84, n.KEY, 3.2)
     ellipse(k, 436 + ox, 716 + oy, 50, 46, n.KEY, 336, shadow=False, lw=3.2)
