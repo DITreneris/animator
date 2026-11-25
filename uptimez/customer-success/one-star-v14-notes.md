@@ -50,3 +50,13 @@ Speech 15/16: "Still one star." 3/3; Don's 1.4 "Approved." still "Approve." (Tom
 average 35.0 dB; after the 5.2 fix the dips are text and line hinting only (phone posts ~29 dB, checked by difference images).
 The 540 build reports 8 hand-gate faults on 6.6 d2/d8 ("a rig hand under the phone"), also in v15 at 540, none at 1080;
 the two pictures are the same (the gate's scale, not the drawing): open.
+
+## G4 cold mute test on rough_v16 (two fresh viewers, 4 fps sheets with the bubbles)
+
+Both told back all five beats (the review and the robot's ★ 1/5; "Approved." unread → "Stupid human."; the AI plan →
+"Is this a joke?" and the throw; Pam finds piece 7, "Your number."; still one star). PASS. Both would screenshot the
+"99% CONFIDENT" plan. Both flagged, for the next episode (Tomas merged as is):
+- 4.4 the green arrow from Pam to HUMAN✓ reads as a rope tying her to the sign;
+- 1.4 Don's arm straight to the visor and 4.2b Pam's pointing arm across to his pocket read as poles;
+- 3.1b the roll bumps "a post": the glass door does not read as a door;
+- 5.2 the sleeve from the corner: A "pole-like", B "acceptable for an insert".
