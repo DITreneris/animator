@@ -259,7 +259,18 @@ def _eye3(c, x, y, r, side=1):
     c.restore()
 
 
+RIM2 = [False]                                             # (25 Nov, v32) the rim as light, not an outline: strongest at its lamp end, thinning and fading along the edge
+
+
 def _rim(c, pts, lw=3.0):
+    if RIM2[0]:
+        n_ = len(pts) - 1
+        for i in range(n_):
+            u = 1.0 - i / float(max(1, n_))                 # the lists run away from the light or toward it; the brighter end is the later one
+            u = (i + 1) / float(n_)
+            c.new_path(); c.move_to(*pts[i]); c.line_to(*pts[i + 1])
+            c.set_source_rgba(SILVER[0], SILVER[1], SILVER[2], 0.25 + 0.6 * u); c.set_line_width(lw * (0.3 + 0.6 * u)); c.set_line_cap(1); c.stroke()
+        return
     c.new_path(); c.move_to(*pts[0])
     for p_ in pts[1:]:
         c.line_to(*p_)
@@ -418,6 +429,15 @@ def draw3(s, key, behind=None):
     elif key == "head":
         head3(c, 300, 410, 175)
         lens(c, 0.45)
+    if RIM2[0] and key in ("fly2", "head", "strike"):              # v32: the air it tears through, toward the lens
+        cx_, cy_ = {"fly2": (300, 340), "head": (300, 410), "strike": (300, 440)}[key]
+        for i in range(14):
+            a_ = i * 2 * math.pi / 14 + 0.2
+            r0, r1 = (330, 470) if key != "fly2" else (260, 360)
+            c.new_path(); c.move_to(cx_ + math.cos(a_) * r0, cy_ + math.sin(a_) * r0 * 1.5); c.line_to(cx_ + math.cos(a_) * r1, cy_ + math.sin(a_) * r1 * 1.5)
+            c.set_source_rgba(0.9, 0.9, 0.92, 0.30); c.set_line_width(3 if i % 2 else 1.6); c.set_line_cap(1); c.stroke()
+    if key == "_":
+        pass
     elif key == "strike":                                       # the beak at the glass; the wing comes in from the left
         c.save(); c.rectangle(0, 0, 540, 960); c.clip()
         head3(c, 300, 420, 300)
