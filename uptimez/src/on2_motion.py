@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v42"
+V = "v43"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -76,8 +76,9 @@ FALL_28 = 14
 import on2_raven as rv
 rv.RAVEN[0] = True                                        # v29: the raven at 0:00; False draws v28
 RAVEN_HOLD = 4 / 12.0                                     # 1.2 starts this much earlier and holds its first drawing
+RAVEN_N = 11                                              # v43 (Tomas: "the bird is too short; lengthen its micro-scene"): 1.1 is 11 drawings (0.92 s), was 5; the first shot at 1.5 s
 if rv.RAVEN[0]:
-    PLAN28 = {"1.1": ("1.1", 5 / 12.0, "n1", 5 / 12.0 - 0.25 - 1.112), "1.2": ("1.2", 2.75 + RAVEN_HOLD, "n6", 0.05)}
+    PLAN28 = {"1.1": ("1.1", RAVEN_N / 12.0, "n1", RAVEN_N / 12.0 - 0.25 - 1.112), "1.2": ("1.2", 2.75 + RAVEN_HOLD, "n6", 0.05)}
     LEADS28 = {"1.2": 0.75 + RAVEN_HOLD}
 V30 = [True]                                              # v30 (25 Nov, cold test v29, Tomas's picks): "I only want my blueprint", the wing's gap, no leg at 0:11, the push to her face, "The usual." hers, the desk from the side, owners for the bar's hands; False draws v29
 if V30[0]:
@@ -94,6 +95,7 @@ V39 = [True]                                              # v39 (25 Nov, the det
 V40 = [True]                                              # v40 (25 Nov, the arm's second review; Tomas: "tvarkom"; the last round on this arm): his elbow up and near his body, the glass on a short level arc while she winks, and he freezes for it. False draws v39
 V41 = [True]                                              # v41 (25 Nov, Tomas: "back to the bar and finalize"): the detective's arm out of the frame (his fist and cuff at the bottom edge, a long-handled glass), the wink 0.33 s sooner (0.83 s), the glass eased over four drawings. False draws v40
 V42 = [True]                                              # v42 (25 Nov, Tomas's last polish): the wing's feathers lit, less black; the wrap a heap on the stones; the lipstick a silver case; the glaze on her cheek; her beckon bigger. False draws v41
+# v43: the raven's scene 0.5 s longer (RAVEN_N, on2_raven.KEYS5), its sounds moved with it, the loop on the perched raven
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
@@ -1210,7 +1212,7 @@ def frame(row, tl, t):
     _hp.GLOVE[0] = _oh.GLOVE_CFG if (n.HAND3[0] and V34[0]) else None
     n.FUR[0] = n.ARMS2[0] = n.HAND3[0] and V34[0] and V35[0]
     del n.ARMS2[1:]
-    if rv.RAVEN[0] and not END.get("on") and row["shot"] == "1.1" and int(round(tl * 12)) >= 5:    # v29: 1.2's start is rounded up past
+    if rv.RAVEN[0] and not END.get("on") and row["shot"] == "1.1" and int(round(tl * 12)) >= RAVEN_N:    # v29: 1.2's start is rounded up past
         row, tl = [r for r in timing.rows if r["shot"] == "1.2"][0], 0.0                # its drawing; the wipe is on 1.2 already
     fn, tilt, post = SHOTS[row["shot"]]
     NOW["min"], NOW["sec"] = CLOCK[row["shot"][0]], None                  # v12: the clocks
@@ -1263,9 +1265,9 @@ def frame(row, tl, t):
         dd = int(round(tl * 12))
         key = None
         if END.get("on"):
-            key = "coil" if END.get("last") else "perch"
-        elif row["shot"] == "1.1" and dd < 5:
-            key = (rv.KEYS4 if V31[0] else rv.KEYS3)[dd]
+            key = "perch"                                         # v43: frame 0 is the raven on the lamp, so the last drawings are too
+        elif row["shot"] == "1.1" and dd < RAVEN_N:
+            key = rv.KEYS5[dd]
         elif row["shot"] == "1.2" and dd < 2:
             key = rv.KEYS3[5 + dd]
         if key:
@@ -1339,7 +1341,7 @@ def main(kind="A2", folder="../office-noir-2", hi=False):
     if OPEN28[0]:                                                        # v28: the opening's sound follows its new timing
         if rv.RAVEN[0]:
             sh = tuple((dr + int(round(RAVEN_HOLD * 12)), who) for dr, who in SHOTS_12_28)
-            wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=None, shots12=sh, raven=True, swap={"7.2b": "c1b"} if V30[0] else None)
+            wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=None, shots12=sh, raven=True, swap={"7.2b": "c1b"} if V30[0] else None, raven_at=(RAVEN_N - 5) / 12.0)
         else:
             wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=8 / 12.0, shots12=SHOTS_12_28)
     else:

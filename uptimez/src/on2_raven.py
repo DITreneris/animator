@@ -388,7 +388,8 @@ def flight(c, x, y, S, up=True, glow=0.4):
     c.restore()
 
 
-KEYS4 = ("fly", "fly2", "head", "strike", "wipe", "wipe2", "gone")     # v31: 0.00 and 0.08 s are the raven whole, in the lamp's light
+KEYS4 = ("fly", "fly2", "head", "strike", "wipe", "wipe2", "gone")
+KEYS5 = ("perch", "perch", "coil", "fly_a", "fly", "fly_b", "fly2", "head", "head_b", "strike", "wipe")   # v43 (Tomas: "the bird is too short"): 0.92 s     # v31: 0.00 and 0.08 s are the raven whole, in the lamp's light
 KEYS3 = ("dive", "turn", "head", "strike", "wipe", "wipe2", "gone")    # 0.00 .. 0.50; 1.2 is under "wipe2" and after it
 BG3 = (11, 11, 11, 11, 11, 12, 12)                                  # which shot is under each: 1.1 (no leg, door shut), 1.2's first drawing
 
@@ -420,6 +421,13 @@ def draw3(s, key, behind=None):
         perched(c, *PERCH)
     elif key == "coil":
         perched(c, *PERCH, coil=1.0)
+    elif key == "fly_a":                                     # v43: off the lamp, wings up, still small
+        flight(c, 400, 176, 62, up=True, glow=0.45)
+    elif key == "fly_b":                                     # v43: between fly and fly2, wings down
+        flight(c, 338, 280, 120, up=False, glow=0.35)
+    elif key == "head_b":                                    # v43: the head nearer still, the beak at the glass
+        head3(c, 300, 420, 240)
+        lens(c, 0.5)
     elif key == "fly":
         if RIM2[0]:                                              # v34: its shadow on the cab's roof and side
             c.save(); c.translate(250, 452); c.rotate(-0.08); c.scale(150, 30)
