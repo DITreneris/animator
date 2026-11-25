@@ -413,7 +413,7 @@ Fixed:
 - **4.3, the noses:** the guard's OWN arm, drawn after his head (`dh_cast.ARM_FRONT`, opt-in). No second hand.
 - **5.3b, the oil can:** held by its loop handle on the hand the rig returns, the robot's hand drawn again over it (`robot_ps.hand_again`, as `robot_mf` does for the cuffs). It is in the robot's near hand, over the guard's dark suit, so its visor and the heart are clear.
 - **3.4, the thumb:** a thumb, not a fingertip (Tomas, 25 Nov: the series' "Approved"). The phone's own drawn-in thumb is off (`robot_ps.PAD_THUMB`), so there is one thumb; the pad is brought to where his arm puts the hand (0.1 px).
-- **The hand sheet** `ps_hands_v1.png` (`src/ps_hands.py`): eight hands cut from the film's own frames at 1:1. It found two faults the checks had passed: Sofía's CV hanging beside her hand (my lowering of it; back on her hand now, smaller) and the two thumbs on the pad.
+- **The hand sheet** `ps_hands_board_v4.png` (`src/ps_hands.py`; not `ps_hands_v1.png`, the cast sheet approved 23 Nov): eight hands cut from the film's own frames at 1:1. It found two faults the checks had passed: Sofía's CV hanging beside her hand (my lowering of it; back on her hand now, smaller) and the two thumbs on the pad.
 
 Now: `check v5` 0 faults with the hand gate on; `check` (board v3) 0 faults; board v3 and Daddy's Home's cast sheet md5-identical. `ps_gag_pose_v3.mp4` and its strip replace v2.
 

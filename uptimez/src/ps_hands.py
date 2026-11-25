@@ -1,7 +1,7 @@
 """Pick a Side: the hand sheet (rules page, section 0, step 4): every hand that board v4 and the 3.4 gag added or changed, cut
 from the film's own frames at ONE scale (540 px frames, 1:1), not from random poses (lesson 149).
 
-  python3 ps_hands.py        -> ../pick-a-side/ps_hands_v1.png
+  python3 ps_hands.py        -> ../pick-a-side/ps_hands_board_v4.png (ps_hands_v1.png is the approved cast sheet, 23 Nov)
 Needs board v4's frames (`python3 ps_scenes.py board v5`) and the 3.4 gag's drawings (`python3 ps_gags/L6.py`)."""
 import os
 import cairo
@@ -22,7 +22,7 @@ CROPS = [  # label, file, (x, y) of a 230 x 230 crop, the hands_ps shape or the 
 ]
 
 
-def main(out="../pick-a-side/ps_hands_v1.png"):
+def main(out="../pick-a-side/ps_hands_board_v4.png"):
     fs = sorted(os.listdir(B)); assert len(fs) == len(LAB), (len(fs), len(LAB))
     m = dict(zip(LAB, fs))
     T, cols = 230, 4
