@@ -124,6 +124,7 @@ def sign(k, burn=False):
     T(c, "GARAGE 7", (x0 + x1) / 2, y1 - 16, 50, col=(0.97, 0.97, 0.93))
 
 
+SMOKE = [1.0]                      # v51: the fire's smoke (a cover sets 0; the film keeps 1)
 FIRE = [0.0, 0.0]                  # v9 (23 Nov, decided: it really burns): the flame's size on the plan (0..1) and the clock
 SHEET = [None, None]               # the burning 7 torn off: (flight 0..1) over the car, then (on the floor 0..1) burning out
 TORN_AT = 0.75                     # burn >= this: the 7 is torn off the plan (a charred hole stays)
@@ -136,7 +137,7 @@ def flames(c, x, y, size, t, seed=0):
     rnd = random.Random(seed)
     for i in range(3):                                                                      # smoke, rising, behind
         a_ = (t * 0.9 + i / 3.0) % 1.0
-        c.set_source_rgba(0.30, 0.30, 0.32, 0.45 * (1 - a_))
+        c.set_source_rgba(0.30, 0.30, 0.32, 0.45 * (1 - a_) * SMOKE[0])
         c.arc(x + 8 * math.sin(t * 2 + i), y - size * (1.0 + 1.6 * a_), size * (0.25 + 0.45 * a_), 0, 2 * math.pi); c.fill()
     for col, k_ in (((0.86, 0.20, 0.08), 1.0), ((0.98, 0.55, 0.10), 0.75), ((1.0, 0.90, 0.40), 0.45)):
         for j in range(5):

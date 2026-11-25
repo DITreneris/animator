@@ -94,7 +94,21 @@ Read by cold viewers, in this order of what failed: one stroke from the edge = "
 - **A shared rig is patched from its source in the episode** (as `client_of` does), never edited in place: another film's
   build reads that source as text.
 
-## 2. Phone screens
+### Lamps, rags and held props in a gag (The Offer v45–v51, 24–25 Nov)
+
+- **A lamp has its parts:** grey ribbed handle, orange shield, cage, bulb lit or dead, hook, and a cable that hangs from the handle to the floor. Its beam goes along its own angle; a dead lamp darkens the frame a shade (`of_set.lamp`, `lamp_cable`).
+- **A handover is shown close, both hands in frame:** out, taken, carried, at least 1.0 s. In a wide shot the same move read as "suddenly in the suit's hand" (3 of 3 twice). The camera comes close, not the move slower (v51, `HANDOVER_CAM`).
+- **A held prop drops over 0.4 s or more,** and the body turns back AFTER the drop, not with it. A drop and a turn in the same 0.1 s read as a jump (2.8f, v51).
+- **One prop, one shape, one place.** The red rag is in his hand only, drawn the same everywhere (`client_of.shop_rag`); no pocket rag, no second rag in an insert (v48, decided).
+
+## 2. Speech bubbles (The Offer v47–v51)
+
+- **A line's box stands still for the whole line.** It is placed once and pasted as a layer after the frame; only the tail follows the mouth drawn in each frame (`lock_bubble`, `BUBBLE_AT`).
+- **No cut inside a line when the box can't keep its place across the cut.** Cuts at 0:19 and 0:28 made the box jump between two places (3 of 3). Use one picture and a slow push-in that holds the speaker's head on screen (`push_in`, `BUBBLE_AT` key `"*"`). Where two pictures share a free area, give both the same box.
+- **An off-screen speaker shows who it is:** the card's tail points to that speaker's own small head, peeking in at the frame's edge on its side. A card alone beside the listener reads as the listener's line (3 of 3; `robot_peek`).
+- **A long line goes over the head, two rows, when the tail would cross the chin** (`bubble_top`, `speech.TOP_FIRST`).
+
+## 3. Phone screens
 
 - **One UI kit per film** (`of_ui.py` in ep. 13): status bar, app bar, cards with a soft shadow, pill buttons, avatars. Draw every screen at 100 units wide through `ui.hand` (in a grip) or `ui.full` (a full-frame insert). A rectangle with two words reads as a slide (226).
 - **The look serves the read.** Each screen has one word that carries the story (DELETE, PAM, DAD, DONNIE) and it is the biggest thing on it. A real-app detail that makes that word smaller is removed (226).

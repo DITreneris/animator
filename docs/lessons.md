@@ -1061,3 +1061,22 @@ Audit of 0:00–0:01: the first joke (the portrait on Don's head) landed at 3.7 
 - **A two-drawing ease is one step at 8 fps.** A move eased over two drawings read as a jump on every cold sheet; four drawings each way read as a move.
 - **Importing another film's module can import a second copy of this one.** `on4_weather` imports `on2_motion`, whose import called `use()` and took `b5`/`b68` over from the running film; the render failed in 8.7. Copy a small helper rather than import across films.
 
+
+## 241. *The Offer* v51 (25 Nov, Tomas's /grill-me on what was left after cold test v50)
+
+Four fixes, all read 3 of 3 by the v50 cold viewers, plus pacing:
+
+- **Robot over Don (0:48, 0:53):** the off-screen card now has the robot's own small head at the frame's left edge, the tail into it. The name "ROBOT:" had covered the crown; a face says who without words.
+- **Bubbles across mid-line cuts (0:19, 0:28):** 2.1 and 2.4 had a cut inside Father's line, and the two pictures had no free area in common, so the box jumped. Now: one picture each; 2.1 pushes in slowly (zoom 2.0 to 2.3) holding his head on screen, 2.4 stays still (a push put the lamp under the app buttons, the zone gate). The box stays, the tail follows. 2.8b and 2.9 kept their cuts, with one box for both pictures.
+- **Lamp handover (0:23):** the same move in a closer frame (`HANDOVER_CAM`): out, taken, carried, big.
+- **Lamp gag (0:42):** the drop over 0.45 s and the turn over 0.38 s; the body turns back after it.
+- **Pacing (timing v25):** 0.4 +0.3 s, 4.1 +0.3 s (DECLINED held), 1.4 −0.16 s, 2.1 −0.12 s, 2.8 −0.2 s. The drags at 0:12 and 0:17 are mostly the voice itself; the takes were not touched.
+- **Cover:** A3 without the fire's smoke on his wrist and without the rag in the corner (`of_set.SMOKE`, a cover-only hook).
+
+
+## 242. *The Offer* v52 (25 Nov, an outside audit of v51, Tomas's /grill-me)
+
+- **A handover has both hands on the thing.** The guard takes the handle's end above the Client's fist; both hold it 0.15 s (0.58–0.73), then the Client lets go and his hand goes back empty. The lamp keeps its angle at the switch (−1.3) and turns level while carried, so nothing jumps.
+- **A cable lags the hand.** Its belly swings against the hand's speed (−2.2 × px per 0.08 s, ±26 px), in the Client's hand and the guard's.
+- **A weight sways when the arm stops** (the lamp, 0.14 rad, damped), and the body turns back only after the drop (1.45 s).
+- **An off-screen speaker leans in.** The robot's head, bigger (r 46), leans in from the edge in 0.2 s at the cut, the card under its chin, and leans out after the line; the card goes with it.
