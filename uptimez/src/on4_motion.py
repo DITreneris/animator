@@ -232,6 +232,7 @@ def shadow2(k, w=1.0, h=1.0, drip=0.0, state="aim", lean=0.0, hat=None, jolt=0.0
 CAT = [True]                                                 # v6 (Tomas): Office Noir 1's black cat leaps across the lens at 0:00.25
 
 
+CAT5 = [False]                                               # (25 Nov, the leap's second audit; Tomas: "tobulinam") the body drawn out along its flight, one forepaw further than the other; the belly a body and not an oval; one more drawing over the camera, sizes falling evenly (450, 380, 208, 124 px); the camera shakes on the lens drawing and the two after it; the ball-shaped "whole cat" drawing is out (seven drawings, as CAT4)
 CAT4 = [False]                                               # (25 Nov, the hook's audit, Tomas: "sutvarkom") one cat on every drawing: it comes up facing us, goes over the camera (its belly and hind pads, one more key), and away seen from behind; narrower pupils, a throat and a tongue
 CAT3 = [False]                                               # (25 Nov, Tomas's picks) the leap at the camera in three sizes (the whole cat in the air, its head half the frame, eyes and mouth the whole frame), one face on every drawing of it: ears and cheeks rim-lit, whiskers, brows, v14's red mouth and four fangs
 
@@ -341,25 +342,69 @@ def cat_away(c, cx, cy, R):
         _pad(c, cx + sg * 0.72 * R, cy + 1.05 * R, 0.30 * R, ct.FUR)
 
 
-def cat_air(c, cx, cy, R):
-    """the whole cat in the air, coming at us: the body behind the head, both forepaws out in front, the tail up"""
+def cat_air(c, cx, cy, R, stretch=0.0, asym=0.0):
+    """the whole cat in the air, coming at us: the body behind the head, both forepaws out in front, the tail up.
+    stretch: the body drawn out along its flight (up and behind the head); asym: its left forepaw this much further out
+    and bigger (CAT5: two paws on one template read as a machine)."""
     import cat_on as ct
     c.set_source_rgb(*ct.FUR)
-    c.new_path(); c.save(); c.translate(cx + 0.2 * R, cy - 0.9 * R); c.scale(1.5 * R, 1.25 * R); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()     # the body, foreshortened
-    c.set_line_cap(1); c.set_line_width(0.34 * R); c.new_path(); c.move_to(cx + 1.3 * R, cy - 1.5 * R); c.curve_to(cx + 2.4 * R, cy - 2.2 * R, cx + 2.0 * R, cy - 3.4 * R, cx + 1.3 * R, cy - 3.6 * R); c.stroke()   # the tail
-    for sg in (-1, 1):                                       # hind legs trailing, forepaws reaching
-        c.set_line_width(0.36 * R); c.new_path(); c.move_to(cx + sg * 1.1 * R, cy - 0.5 * R); c.line_to(cx + sg * 1.7 * R, cy + 0.5 * R); c.stroke()
-        px, py = cx + sg * 1.25 * R, cy + 1.25 * R
-        c.set_line_width(0.44 * R); c.new_path(); c.move_to(cx + sg * 0.7 * R, cy + 0.5 * R); c.line_to(px, py); c.stroke()
-        c.new_path(); c.arc(px, py + 0.1 * R, 0.36 * R, 0, 2 * math.pi); c.set_source_rgb(*ct.FUR); c.fill()
-        c.set_source_rgb(0.80, 0.80, 0.78); c.set_line_width(max(1.4, 0.022 * R)); c.new_path(); c.arc(px, py + 0.1 * R, 0.36 * R, 0.2, math.pi - 0.2); c.stroke()
-        c.set_source_rgb(0.34, 0.30, 0.31)                  # the pads
-        for j in (-1, 0, 1):
-            c.new_path(); c.arc(px + j * 0.16 * R, py + 0.02 * R, 0.07 * R, 0, 2 * math.pi); c.fill()
-        c.new_path(); c.arc(px, py + 0.24 * R, 0.12 * R, 0, 2 * math.pi); c.fill()
+    by = 1.25 * (1 + stretch)
+    c.new_path(); c.save(); c.translate(cx + 0.2 * R, cy - (0.9 + 0.7 * stretch) * R); c.scale((1.5 - 0.5 * stretch) * R, by * R); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()     # the body, foreshortened
+    if stretch > 0:                                          # haunches behind it, and the lamp's light down its back
+        for sg in (-1, 1):
+            c.new_path(); c.arc(cx + 0.2 * R + sg * 0.9 * R, cy - (1.9 + 1.2 * stretch) * R, 0.62 * R, 0, 2 * math.pi); c.fill()
+        c.set_source_rgb(*RIMC); c.set_line_width(max(1.4, 0.020 * R)); c.new_path(); c.save(); c.translate(cx + 0.2 * R, cy - (0.9 + 0.7 * stretch) * R); c.scale((1.5 - 0.5 * stretch) * R, by * R); c.arc(0, 0, 1, -1.9, -0.5); c.restore(); c.stroke()
         c.set_source_rgb(*ct.FUR)
+    c.set_line_cap(1); c.set_line_width(0.34 * R); c.new_path(); c.move_to(cx + 1.1 * R, cy - (1.8 + stretch) * R); c.curve_to(cx + 2.4 * R, cy - 2.4 * R, cx + 2.0 * R, cy - 3.6 * R, cx + 1.3 * R, cy - (3.8 + stretch) * R); c.stroke()   # the tail
+    for sg in (-1, 1):                                       # hind legs trailing, forepaws reaching
+        k_ = 1.0 + (asym if sg < 0 else -asym * 0.4)
+        c.set_source_rgb(*ct.FUR)
+        c.set_line_width(0.36 * R); c.new_path(); c.move_to(cx + sg * 1.1 * R, cy - 0.5 * R); c.line_to(cx + sg * 1.7 * R, cy + (0.5 - (0.5 if sg > 0 else 0) * asym * 3) * R); c.stroke()
+        px, py = cx + sg * 1.25 * R * (1 + (asym * 0.3 if sg < 0 else 0)), cy + 1.25 * R * k_
+        c.set_line_width(0.44 * R * k_); c.new_path(); c.move_to(cx + sg * 0.7 * R, cy + 0.5 * R); c.line_to(px, py); c.stroke()
+        _pad(c, px, py + 0.1 * R, 0.36 * R * k_, ct.FUR)
     c.set_line_cap(0)
-    cat_face(c, cx, cy, R, 0.6)
+    cat_face(c, cx, cy, R, 0.6 + 0.3 * stretch)
+
+
+def cat_belly2(c, cx, cy, R):
+    """over the camera (CAT5): its underside drawn out along the flight: chest, ribs, haunches; the belly's fur only a
+    shade lighter, soft at its edge; one hind leg trails further than the other; the tail last"""
+    import cat_on as ct
+    F, H = ct.FUR, ct.FUR_HI
+    c.set_source_rgb(*F); c.set_line_cap(1)
+    c.set_line_width(0.22 * R); c.new_path(); c.move_to(cx + 0.1 * R, cy + 2.0 * R); c.curve_to(cx + 0.9 * R, cy + 2.9 * R, cx - 0.5 * R, cy + 3.3 * R, cx + 0.15 * R, cy + 4.0 * R); c.stroke()   # the tail
+    for sg, far in ((-1, 0.0), (1, 0.35)):                   # hind legs: the right one trails further
+        c.set_source_rgb(*F); c.set_line_width(0.42 * R)
+        hx_, hy_ = cx + sg * 1.22 * R, cy + (1.95 + far) * R
+        c.new_path(); c.move_to(cx + sg * 0.7 * R, cy + 1.2 * R); c.line_to(hx_, hy_ - 0.2 * R); c.stroke()
+        c.new_path(); c.move_to(cx + sg * 0.75 * R, cy - 1.5 * R); c.line_to(cx + sg * (1.25 + far * 0.4) * R, cy - 2.4 * R); c.stroke()      # forelegs, already past us
+        _pad(c, hx_, hy_, 0.33 * R, F)
+    c.set_line_cap(0); c.set_source_rgb(*F)
+    c.new_path(); c.move_to(cx - 0.85 * R, cy - 2.2 * R)                                             # chest, waist, haunches: one body
+    c.curve_to(cx - 1.25 * R, cy - 1.2 * R, cx - 0.80 * R, cy - 0.1 * R, cx - 0.95 * R, cy + 0.6 * R)
+    c.curve_to(cx - 1.35 * R, cy + 1.3 * R, cx - 0.9 * R, cy + 2.1 * R, cx, cy + 2.15 * R)
+    c.curve_to(cx + 0.9 * R, cy + 2.1 * R, cx + 1.35 * R, cy + 1.3 * R, cx + 0.95 * R, cy + 0.6 * R)
+    c.curve_to(cx + 0.80 * R, cy - 0.1 * R, cx + 1.25 * R, cy - 1.2 * R, cx + 0.85 * R, cy - 2.2 * R); c.close_path(); c.fill_preserve()
+    c.save(); c.clip()
+    g = cairo.RadialGradient(cx, cy + 0.2 * R, 0.1 * R, cx, cy + 0.2 * R, 1.0 * R)                    # the belly: half v5's contrast, no edge
+    m_ = [(F[i] + H[i]) / 2.0 for i in range(3)]
+    g.add_color_stop_rgba(0, m_[0], m_[1], m_[2], 1.0); g.add_color_stop_rgba(1, F[0], F[1], F[2], 0.0)
+    c.save(); c.translate(cx, cy + 0.2 * R); c.scale(0.62, 1.7); c.translate(-cx, -(cy + 0.2 * R)); c.set_source(g); c.paint(); c.restore()
+    c.set_source_rgba(0, 0, 0, 0.35); c.set_line_width(0.05 * R)                                     # the folds where the hind legs meet it
+    for sg in (-1, 1):
+        c.new_path(); c.move_to(cx + sg * 0.95 * R, cy + 0.6 * R); c.curve_to(cx + sg * 0.5 * R, cy + 1.0 * R, cx + sg * 0.35 * R, cy + 1.5 * R, cx + sg * 0.45 * R, cy + 2.0 * R); c.stroke()
+    c.restore()
+    c.set_source_rgb(*RIMC); c.set_line_width(max(1.6, 0.014 * R)); c.new_path(); c.move_to(cx + 0.95 * R, cy + 0.6 * R)
+    c.curve_to(cx + 1.35 * R, cy + 1.3 * R, cx + 0.9 * R, cy + 2.1 * R, cx, cy + 2.15 * R); c.stroke()                # the lamp on its right flank
+
+
+def _shake(s, u, amp=7.0):
+    """film_on3._shake29's shake, without its 4 % punch-in (the words are put on afterwards and must not move)"""
+    a = amp * (1 - u) ** 2
+    o = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c = cairo.Context(o); c.set_source_rgb(0.02, 0.02, 0.03); c.paint()
+    c.translate(-a * abs(math.sin(u * 29 + 1)), a * 0.6 * math.sin(u * 21 + 1)); c.set_source_surface(s, 0, 0); c.paint()
+    return o
 
 
 def cat_over(s, frames):
@@ -372,6 +417,25 @@ def cat_over(s, frames):
         for ex in (50.5, 63.5):
             ct._eye(c, ex, -48, 4.4, "open")
         c.restore()
+    if CAT5[0] and frames in ("in", "full", "full2", "belly", "over", "out", "gone"):
+        if frames == "in":
+            cat_crouch(c, 250, 688, 60)
+        elif frames == "full":
+            cat_air(c, 270, 470, 168, stretch=0.22, asym=0.18)
+        elif frames == "full2":
+            cat_face(c, 284, 400, 290, 1.0, lens=True)
+            return _shake(s, 0.0)
+        elif frames == "belly":
+            cat_belly2(c, 285, 150, 172)
+            return _shake(s, 0.34)
+        elif frames == "over":                               # still over us: its haunches, pads and tail fill the frame's top
+            cat_belly2(c, 330, -150, 150)
+            return _shake(s, 0.67)
+        elif frames == "out":
+            cat_away(c, 410, 120, 104)
+        else:
+            cat_away(c, 480, 40, 62)
+        return s
     if CAT3[0] and frames in ("in", "air", "full", "full2", "belly", "out", "gone"):
         if frames == "air":
             cat_air(c, 262, 610, 62)
@@ -473,7 +537,7 @@ def t1():
         for _ in range(3):                                   # 0.25 s: frame 0, held
             fr.append(f(i, HERO, 0, "peer", (-1.0, -0.5), dict())); i += 1
         FL2 = oc.pm.ik(-1, -84, -306) + oc.pm.ik(1, 84, -306)                 # v13: hands flung up over her head (ik's y is from her feet: -176 was at her waist)
-        for step, hop, t in ((("in", 0, 0.2), ("air", 0, 0.35), ("full", 0, 0.6), ("full2", 0, 0.85)) + ((("belly", 20, 1.0),) if CAT4[0] else ()) if CAT3[0] else (("in", 0, 0.2), ("full", 0, 0.5), ("full2", 0, 0.8))):
+        for step, hop, t in ((("in", 0, 0.2), ("full", 0, 0.5), ("full2", 0, 0.85), ("belly", 20, 1.0), ("over", 34, 1.0)) if CAT5[0] else (("in", 0, 0.2), ("air", 0, 0.35), ("full", 0, 0.6), ("full2", 0, 0.85)) + ((("belly", 20, 1.0),) if CAT4[0] else ()) if CAT3[0] else (("in", 0, 0.2), ("full", 0, 0.5), ("full2", 0, 0.8))):
             fr.append(cat_over(f(i, lerp(HERO, FL2, t), 0, "doubt", (0.9, -0.8), dict(), hop=hop), step)); i += 1       # the cat fills the lens
         fr.append(cat_over(f(i, FL2, 0.20, "doubt", (0.9, -0.9), dict(), hop=46), "out")); i += 1                       # v7: the flinch after it, where we can see it:
         fr.append(cat_over(f(i, FL2, 0.24, "doubt", (0.9, -0.9), dict(), hop=58), "gone")); i += 1                      # off the ground, bent back, arms up
