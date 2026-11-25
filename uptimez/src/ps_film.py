@@ -18,7 +18,8 @@ from kit import Ctx, INK
 
 DPS, FPS = 15, 30
 OUT = ps.OUT
-SCENES = {1: ["1.1", "1.2a", "1.3", "1.4"]}                  # v3 (Tomas 25 Nov): 1.2b cut (misread 3 times), its 0.5 s to 1.3
+SCENES = {1: ["1.1", "1.2a", "1.3", "1.4"],
+          2: ["2.1", "2.1b", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.9b", "2.10", "2.11"]}                 # v3 (Tomas 25 Nov): 1.2b cut (misread 3 times), its 0.5 s to 1.3
 import json as _json
 TIMING = {r["shot"]: r for r in _json.load(open(os.path.join(ps.OUT, "ps_timing_v3.json")))["shots"]}
 DUR = {k: v["len"] for k, v in TIMING.items()}               # the takes' timing (v3): 1.3 2.61, 1.4 2.65
@@ -150,7 +151,218 @@ def s14(t):
 FACES_LOOK = ("doubt", "stern", "eyebrow")                   # Pam worried, Mom narrowed, Sofía one brow up
 
 
-SHOT_FN = {"1.1": s11, "1.2a": s12a, "1.2b": s12b, "1.3": s13, "1.4": s14}
+# --- scene 2 ------------------------------------------------------------------------------------------------------------
+def s21(t):
+    """the tape rips toward the camera through the group: motion test D (v2, approved), its own camera."""
+    return dict(pm_.shot_D(t), own_cam=True)
+
+
+def s21b(t):
+    """the robot rolls in to the throne, the card in its claw; SLAP on the throne's side; it rolls off, pleased."""
+    base = BOARD["2.1b"]
+    rx0, rf = ps.at("rob_throne")
+    if t < 0.30:
+        dx, ph = 45 * (1 - ease(t / 0.30)), "in"            # in from the right, its face clear of the rail
+    elif t < 0.55:
+        dx, ph = 0.0, "slap"
+    else:
+        dx, ph = 70 * ease((t - 0.55) / 0.25), "off"
+    reach = ease((t - 0.22) / 0.14) if ph != "off" else 1 - ease((t - 0.55) / 0.12)
+    def cast(k):
+        heads = {}
+        arm = (lerp(-60, -150, reach), lerp(-40, -10, reach))
+        o, heads["robot"] = ps.robot(k, (rx0 + dx, rf), arms=(arm, (-8, 0)), tilt=(0.06 if ph != "slap" else 0.0) * (1 if ph == "in" else -1),
+                                     visor=None)
+        hx, hy = o["hands"][0]
+        if ph == "in" or (ph == "slap" and t < 0.36):        # the card in its claw
+            ps.pss.robot_card(k, hx + 14, hy - 44, ps.SC["robot"] * 1.3, ang=-0.12)
+        else:                                                # pressed on: it stays on the throne's side
+            ps.pss.robot_card(k, CARD_21B[0], CARD_21B[1], ps.SC["robot"] * 1.3, ang=-0.12)
+        if ph == "slap" and 0.36 <= t < 0.48:                # SLAP
+            c = k.c; c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
+            cx_, cy_ = CARD_21B
+            for ang in (-2.6, -2.1, -1.6, 0.5, 1.0):
+                r0, r1 = 66 * ps.SC["robot"] * 1.3, 84 * ps.SC["robot"] * 1.3
+                c.move_to(cx_ + math.cos(ang) * r0, cy_ + math.sin(ang) * r0 * 0.7); c.line_to(cx_ + math.cos(ang) * r1, cy_ + math.sin(ang) * r1 * 0.7); c.stroke()
+            c.set_line_cap(0)
+        return heads
+    return ps.S("2.1b", base["cam"], base["room"], cast)
+
+
+def _card_21b():
+    """where the board's 2.1b presses the card (its claw at the slap, arms (-150, -10))."""
+    import cairo as _c
+    k = Ctx(_c.Context(_c.ImageSurface(_c.FORMAT_RGB24, 4, 4)), 0)
+    o, _ = ps.robot(k, "rob_throne", arms=((-150, -10), (-8, 0)), visor=None)
+    return (o["hands"][0][0] + 14, o["hands"][0][1] - 44)
+
+
+CARD_21B = _card_21b()
+SPIN_22 = (0.55, 0.95)                                       # 2.2: the spin, after he sees the tag
+
+
+def s22(t):
+    """Don walks in past the throne, sees the price tag swinging, spins the throne (the tag to the wall, the card to the
+    room), and walks on without looking back. The spin is drawn by ps_set's opt-in SPIN (a cut-out turn)."""
+    base = BOARD["2.2"]
+    x1, f1 = ps.at("don_throne")
+    walk = ease(t / 0.40)
+    u = ease((t - SPIN_22[0]) / (SPIN_22[1] - SPIN_22[0]))
+    ps.pss.SPIN[0] = u if SPIN_22[0] <= t <= SPIN_22[1] else None
+    room = dict(base["room"], spun=t > SPIN_22[1])
+    def cast(k):
+        heads = {}
+        bob = -5 * abs(math.sin(math.pi * t / 0.20)) if t < 0.40 else 0.0
+        if t < SPIN_22[0]:
+            pose, face, look = "stand", ("neutral" if t < 0.42 else "confused"), ((1, 0) if t < 0.42 else (0.6, -0.8))
+        elif t <= SPIN_22[1]:
+            pose, face, look = "push", "confused", (-1, -0.3)
+        else:
+            pose, face, look = "vest", "smug", (-1, 0.3)
+        if t < SPIN_22[0] + 0.05:                            # continuity (cold sheet 25 Nov): the card the robot slapped on
+            ps.pss.robot_card(k, CARD_21B[0], CARD_21B[1], ps.SC["robot"] * 1.3, ang=-0.12)   # in 2.1b, until the spin
+        o, heads["don"] = ps.don(k, (x1 - 120 * (1 - walk), f1 + bob), pose, face, look)
+        return heads
+    return ps.S("2.2", base["cam"], room, cast)
+
+
+def s23(t):
+    """he stamps on his half (a short knee-drop and the floor lines), then the roll points at each of them in turn."""
+    base = BOARD["2.3"]
+    beats = ((0.35, 0.75, 100), (0.75, 1.15, 120), (1.15, 1.55, 140))   # (the roll kept off the rail)
+    a = 120
+    for t0, t1, ang in beats:
+        if t >= t0:
+            a = ang
+    pose = (-30, 60, a, a - 60)
+    stamp = 1 - ease(t / 0.18) if t < 0.30 else 0.0
+    def extra(k, o):
+        ps.roll_up(k, o)
+        if t < 0.30:
+            c = k.c; c.set_source_rgb(*INK); c.set_line_width(2.4); c.set_line_cap(1)
+            fx, fy = ps.at("don_mid")
+            for sd in (-1, 1):
+                c.move_to(fx + sd * 40, fy + 4); c.line_to(fx + sd * 64, fy - 4); c.stroke()
+            c.set_line_cap(0)
+    ps.P.setdefault("pam_pre", (ps.tape_x(55) + 70, 55))      # v2 (2 of 3: "Pam holds the roll"): the board's 2.3 had Pam beside
+    cast = ps.cast_scene2(don_pose=pose, extra=extra, pam_at="pam_pre")   # him already; she crosses only in 2.4
+    def c2(k):
+        k.c.translate(0, -10 * stamp)
+        h = cast(k)
+        k.c.translate(0, 10 * stamp)
+        return h
+    return ps.S("2.3", base["cam"], base["room"], c2, story=["don"])
+
+
+def s24(t):
+    """Pam hops over the line to Don first, her cup level; lands (the board's landing marks); her phone stays put."""
+    base = BOARD["2.4"]
+    x1, f1 = ps.at("pam_don")
+    x0 = ps.tape_x(55) + 70
+    u = ease((t - 0.15) / 0.40)
+    hop = 34 * math.sin(math.pi * u) if 0 < u < 1 else 0.0
+    def cast(k):
+        heads = {}
+        P_ = dict(ps.P); ps.P["pam_don"] = (lerp(x0, x1, u), P_["pam_don"][1])
+        try:
+            if u >= 1.0:
+                return ps.cast_24(k)
+            k.c.translate(0, -hop)
+            h = ps._cast_scene2_24(k)
+            k.c.translate(0, hop)
+            return h
+        finally:
+            ps.P.update(P_)
+    return ps.S("2.4", base["cam"], base["room"], cast)
+
+
+def s25(t):
+    """he salutes (solemn) on his line; she half returns it with her cup hand; then hides a small smile in the cup."""
+    base = BOARD["2.5"]
+    up = ease((t - 0.05) / 0.20)
+    def cast(k):
+        heads = {}
+        dpose = tuple(a_ + (b_ - a_) * up for a_, b_ in zip(ps.dp.POSES["stand"], ps.dp.POSES["salute"]))
+        _, heads["don"] = ps.don(k, (372, ps.F + 62), dpose, "pleased", (0.6, 0), chin=1)
+        if t < 1.05:
+            pp, pf = "cup_mid", "neutral"
+        elif t < 1.55:
+            pp, pf = "half_salute", "quiet"
+        else:
+            pp, pf = "cup_chin", "quiet"
+        _, heads["pam"] = ps.pam(k, (530, ps.F + 56), pp, pf, (-0.6, 0))
+        return heads
+    return ps.S("2.5", base["cam"], base["room"], cast)
+
+
+def s26(t):
+    """Mom plants both feet on the tape: a small stamp-stamp, then nothing moves but her mouth."""
+    base = BOARD["2.6"]
+    st = 0.0
+    for t0 in (0.0, 0.16):
+        if t0 <= t < t0 + 0.12:
+            st = math.sin(math.pi * (t - t0) / 0.12)
+    def cast(k):
+        k.c.translate(0, -6 * st)
+        h = ps.cast_26(k)
+        k.c.translate(0, 6 * st)
+        return h
+    return ps.S("2.6", base["cam"], base["room"], cast)
+
+
+def s27(t):
+    """Sofía steps toward Don and stops mid-step (the heel stays back); her eyes go to the door."""
+    base = BOARD["2.7"]
+    u = ease(t / 0.35)
+    def cast(k):
+        heads = {}
+        x, f = ps.at("sof_heel")
+        _, heads["sofia"] = ps.sofia(k, (x - 8 * u, f), "stand", "smile", (-1, 0) if t < 0.55 else (1, -0.4), lean=-5 * u)
+        return heads
+    return ps.S("2.7", base["cam"], base["room"], cast)
+
+
+def s29(t):
+    """the robot reports, its barrier on the visor; it bobs on its wheel with its words."""
+    base = BOARD["2.9"]
+    lo = loud("2.9", t)
+    def cast(k):
+        heads = {}
+        _, heads["robot"] = ps.robot(k, (300, ps.F + 60 - 6 * lo), visor="barrier")
+        return heads
+    return ps.S("2.9", base["cam"], base["room"], cast)
+
+
+ROBOT_210B = (90, 1.6)                                       # 2.10b: closer, the robot on the line in the middle (searched: no sign cut)
+REACT_210 = 2.2                                              # 2.10: after "Both.", 0.4 s on Don's face
+
+
+def s210(t):
+    """2.10a Don, admiring his line: "And you?"; 2.10b the robot on the tape, its arms open across it (test H's first
+    0.8 s): "Both."; then back on Don's face, 0.4 s (the script)."""
+    if t < TAKE_AT["2.10"][1] - 0.10:                        # v2 (cold test 2 of 3: "who asks 'And you?'"): Don close, as 2.10c
+        return ps.S("2.10c", ["don"], BOARD["2.10"]["room"], ps.cast_210)
+    if t < REACT_210:                                        # v2 (3 of 3: "a blank wall"): the robot in the middle of its frame
+        sh = pm_.shot_H(min(0.79, t - (TAKE_AT["2.10"][1] - 0.10)))
+        fx, fy, z = sh["cam"]
+        return dict(sh, cam=(fx - ROBOT_210B[0] / z, fy, z * ROBOT_210B[1]), own_cam=True)
+    def cast(k):
+        heads = {}
+        _, heads["don"] = ps.don(k, (ps.tape_x(140) - 190, ps.F + 140), "vest", "confused", (1, 0), chin=1)
+        _, heads["robot"] = ps.robot(k, "rob_tape", arms=((-95, 0), (95, 0)), tilt=0.10)
+        return heads
+    return ps.S("2.10c", ["don"], BOARD["2.10"]["room"], cast)  # his face, close (its own locked camera)
+
+
+def s211(t):
+    """one push: he hauls it onto his side, it rolls straight back into him, he staggers: motion test H (v4, 3 of 3)."""
+    return dict(pm_.shot_H2(t), own_cam=True)
+
+
+SHOT_FN = {"1.1": s11, "1.2a": s12a, "1.2b": s12b, "1.3": s13, "1.4": s14,
+           "2.1": s21, "2.1b": s21b, "2.2": s22, "2.3": s23, "2.4": s24, "2.5": s25, "2.6": s26, "2.7": s27,
+           "2.9": s29, "2.10": s210, "2.11": s211}
+HOLDS = {"2.8": "the heel insert, held by the script (0.6 s at least)", "2.9b": "Sofía flat, only her mouth moves"}
 
 
 def print_map():
@@ -166,6 +378,12 @@ def shot_at(sid, t):
     """the shot to draw at its time t, its camera locked to the board key frame's."""
     ps.ROOM_OWN[0] = False
     sh = SHOT_FN[sid](t) if sid in SHOT_FN else BOARD[sid]
+    if sh["cam"] == "screen":                                # an insert drawn in frame units: no camera to lock
+        ps.NO_SHIFT[0] = True; ps.ROOM_OWN[0] = False
+        return dict(sh, id=sid)
+    if sh.get("own_cam"):                                    # a motion test's own (already the board's) camera
+        ps.NO_SHIFT[0] = True; ps.ROOM_OWN[0] = True
+        return dict(sh, id=sid)
     key = sh["id"]                                           # a cut inside a shot ("1.4b") has its own locked camera
     if key not in CAMS:
         ps.NO_SHIFT[0] = key != sid
@@ -189,7 +407,7 @@ PUSH = {"1.4a": ("1.4", 0.20, 0.50)}                         # v3 (cold test 2/2
                                                              # the three, one room), then pushes in to Don
 
 
-NUDGE = {"1.4b": (10, 10, 1.3), "1.4a": (0, 40, 1.0)}                                   # 1.4b: $49,999, SHRED off the right, OUR FIRST CLIENT off the top
+NUDGE = {"1.4b": (10, 10, 1.3), "1.4a": (0, 40, 1.0), "2.2": (26, 0, 1.0), "2.10c": (112, 0, 1.0)}   # 2.2: the front tag (before the spin) whole                                   # 1.4b: $49,999, SHRED off the right, OUR FIRST CLIENT off the top
 
 
 def draw(sid, t):
@@ -201,22 +419,31 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS = {1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
+STILLS_VER = {1: 4, 2: 1}
+STILLS2 = [("2.1", 0.5, "the tape rips"), ("2.1", 1.2, "the feet hop"), ("2.1b", 0.40, "SLAP: the card"),
+           ("2.1b", 0.75, "it rolls off"), ("2.2", 0.50, "he sees the tag"), ("2.2", 0.72, "the spin"),
+           ("2.2", 1.20, "the card to the room"), ("2.3", 0.10, "the stamp"), ("2.3", 0.9, "the roll points"),
+           ("2.4", 0.35, "Pam hops over"), ("2.4", 1.0, "lands"), ("2.5", 0.6, "the salute"),
+           ("2.5", 1.3, "her half salute"), ("2.5", 1.75, "the smile in the cup"), ("2.6", 0.08, "Mom plants"),
+           ("2.7", 0.6, "Sofía stops mid-step"), ("2.9", 0.8, "Border breach"), ("2.10", 0.5, "And you?"),
+           ("2.10", 1.6, "Both."), ("2.10", 2.4, "Don's face"), ("2.11", 0.4, "the haul"), ("2.11", 1.3, "the bump")]
+STILLS = {2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
               ("1.2a", 0.45, "the blind lands"), ("1.3", 0.3, "the blind still sways"),
               ("1.4", 0.2, "1.4a opens wide"), ("1.4", 1.2, "pushed in: Don speaks"), ("1.4", 1.9, "the roll up"), ("1.4", 2.5, "the three look")]}
 
 
 def stills(n):
     ps.gags_v5()
+    dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
     ps.LIGHT_V5[0] = True; import pm_ps; pm_ps.MUG_RING[0] = True   # the film's look (review 25 Nov)
     print_map()
     tiles, faults = [], []
     for sid, t, label in STILLS[n]:
-        surf, msgs = draw(sid, t)
+        surf, msgs = drawing(sid, t)
         faults += ["%s @%.2f: %s" % (sid, t, m) for m in msgs]
         tiles.append((surf, "%s  %.2f s  %s" % (sid, t, label)))
-    tw, th, cols = 270, 480, 4
+    tw, th, cols = 270, 480, (4 if len(tiles) <= 12 else 6)
     rows = (len(tiles) + cols - 1) // cols
     o = cairo.ImageSurface(cairo.FORMAT_RGB24, 20 + cols * (tw + 14), 20 + rows * (th + 34))
     c = cairo.Context(o); c.set_source_rgb(0.55, 0.55, 0.55); c.paint()
@@ -224,7 +451,7 @@ def stills(n):
         x, y = 20 + (j % cols) * (tw + 14), 20 + (j // cols) * (th + 34)
         c.save(); c.translate(x, y); c.scale(0.5, 0.5); c.set_source_surface(im, 0, 0); c.paint(); c.restore()
         c.set_source_rgb(0, 0, 0); c.set_font_size(13); c.move_to(x, y + th + 18); c.show_text(lab)
-    p = os.path.join(OUT, "ps_film_s%d_stills_v4.png" % n)
+    p = os.path.join(OUT, "ps_film_s%d_stills_v%d.png" % (n, STILLS_VER[n]))
     o.write_to_png(p)
     print("wrote", p)
     for f in faults:
@@ -246,12 +473,26 @@ def _take(sid):
     return _TAKE[sid]
 
 
+def part_at(sid, t, bubble=False):
+    """-> the index of the take speaking at t in shot sid (a split shot has two), or None. bubble: its box's window
+    (on from the take's start, or after a push; off one drawing after the take ends)."""
+    for i, (tk, at) in enumerate(zip(TIMING[sid]["takes"], TAKE_AT[sid])):
+        a, sr = _take(tk)
+        t0 = at - 0.02 if bubble else at - LIP_AHEAD
+        if bubble and i == 0:
+            t0 = max(t0, max((p_[2] for k_, p_ in PUSH.items() if k_.startswith(sid)), default=0.0))   # v3: not on a push
+        if t0 <= t <= at + len(a) / sr + (1.0 / DPS if bubble else 0.0):
+            return i
+    return None
+
+
 def loud(sid, t):
     """0..1: the take's loudness at the drawing (the of_film fallback rule: no viseme track for these takes)."""
-    if not TIMING[sid]["takes"]:
+    i = part_at(sid, t)
+    if i is None:
         return 0.0
-    a, sr = _take(sid)
-    tt = t - lead(sid) + LIP_AHEAD
+    a, sr = _take(TIMING[sid]["takes"][i])
+    tt = t - TAKE_AT[sid][i] + LIP_AHEAD
     if tt < 0 or tt > len(a) / sr:
         return 0.0
     i0, i1 = int(tt * sr), int((tt + 1.0 / DPS) * sr)
@@ -261,11 +502,7 @@ def loud(sid, t):
 
 
 def bubble_on(sid, t):
-    if not TIMING[sid]["takes"]:
-        return False
-    a, sr = _take(sid)
-    t_on = max(lead(sid) - 0.02, max((p_[2] for k_, p_ in PUSH.items() if k_.startswith(sid)), default=0.0))
-    return t_on <= t <= lead(sid) + len(a) / sr + 1.0 / DPS    # v3: a box doesn't ride a camera move (it hopped 3 times)
+    return part_at(sid, t, bubble=True) is not None
 
 
 def mouth(k, head, o):
@@ -279,19 +516,34 @@ def mouth(k, head, o):
     c.set_source_rgb(0.33, 0.10, 0.10); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
 
 
+ALLOW = {"2.11": ("SIGN partly covered: 'DON'",),             # test H's own allowance: the floor's DON under his shoes
+         "*": ("SIGN partly covered: 'SHRED'",)}              # SHRED_OK: someone passing in front of it (render_test)
+
+
 def drawing(sid, t):
     sh = shot_at(sid, t)
     line = TIMING[sid]["line"]
-    if line and bubble_on(sid, t) and not (sid == "1.4" and t >= LOOK_14 - 0.05):
-        surf, msgs = ps.board_frame(sh, line)
+    bp = part_at(sid, t, bubble=True) if line else None
+    split = line and len(ps.says(line)) > 1
+    if bp is not None and not (sid == "1.4" and t >= LOOK_14 - 0.05):
+        ps.PART[0] = bp if split else None                   # a split shot's box: the line being said
+        try:
+            surf, msgs = ps.board_frame(sh, line)
+        finally:
+            ps.PART[0] = None
     else:
         import ps_checks as pc
         pc.install_scene(ps); pc.begin()
         surf, msgs = ps.render(sh)
     msgs = msgs + __import__("ps_checks").frame_checks(ps, ps.LAST[0])
-    who = (ps.says(line)[0][0] if line else None)
+    msgs = [m for m in msgs if not any(m.startswith(a) for a in ALLOW.get(sid, ()) + ALLOW["*"])]
+    lp = part_at(sid, t)
+    who = ps.says(line)[lp][0] if (line and lp is not None) else None
     if who and who in ps.LAST[0]:
-        mouth(Ctx(cairo.Context(surf), 0), ps.LAST[0][who], loud(sid, t))
+        if who == "robot":                                   # no mouth: the robot bobs on its wheel with its words (of_film s32)
+            pass
+        else:
+            mouth(Ctx(cairo.Context(surf), 0), ps.LAST[0][who], loud(sid, t))
     return surf, msgs
 
 
@@ -313,6 +565,35 @@ def sound(n, path):
                 from scipy.signal import resample_poly
                 a = resample_poly(a, SR, sr)
             osd.put(buf, a, st + at, 1.0)
+    def rattle_run(d, pitch):                                # the slats running down or up: a burst of clicks
+        out = np.zeros(int(d * SR))
+        for j in range(int(d * 40)):
+            c_ = osd.rattle() * (0.5 + 0.5 * osd.rng.random())
+            i = int((j / 40.0 + 0.004 * osd.rng.random()) * SR)
+            out[i:i + len(c_)] += c_[:max(0, len(out) - i)]
+        return osd.hp(out, max(1, int(6 / pitch)))
+    def tone(f0, f1, d, k_=8.0):
+        tt = osd.t_(d); ph = 2 * np.pi * np.cumsum(np.linspace(f0, f1, len(tt))) / SR
+        return np.sin(ph) * np.minimum(1.0, tt / 0.005) * np.exp(-tt * k_)
+    if n == 2:                                               # the sound map (plan v2 §2)
+        S_ = starts
+        sc_ = osd.hp(osd.noise(0.55), 3) * np.exp(-osd.t_(0.55) * 2.5)            # 2.1 the tape's long screech
+        sc_ = sc_ * (0.6 + 0.4 * np.sin(2 * np.pi * 34 * osd.t_(0.55)))
+        osd.put(buf, sc_ + 0.4 * tone(2400, 1600, 0.55, 3.0), S_["2.1"] + 0.25, 0.35)
+        osd.put(buf, tone(1500, 1500, 0.09, 30), S_["2.1b"] + 0.10, 0.20)          # 2.1b its beep, the clip, the SLAP
+        osd.put(buf, osd.slam() * 0.5, S_["2.1b"] + 0.36, 0.35)
+        osd.put(buf, rattle_run(0.40, 0.8), S_["2.2"] + SPIN_22[0], 0.30)          # 2.2 the casters spin
+        osd.put(buf, osd.slam() * 0.4, S_["2.3"] + 0.02, 0.45)                     # 2.3 the stamp
+        osd.put(buf, osd.slam() * 0.25, S_["2.4"] + 0.55, 0.30)                    # 2.4 she lands
+        osd.put(buf, osd.slam() * 0.2, S_["2.6"] + 0.0, 0.25); osd.put(buf, osd.slam() * 0.2, S_["2.6"] + 0.16, 0.25)
+        tt = osd.t_(0.04); clk = osd.hp(osd.noise(0.04), 2) * np.exp(-tt * 120)
+        osd.put(buf, clk, S_["2.7"] + 0.34, 0.5)                                    # 2.7 the heel click
+        osd.put(buf, tone(880, 880, 0.12, 12), S_["2.9"] + 0.02, 0.15); osd.put(buf, tone(660, 660, 0.14, 12), S_["2.9"] + 0.15, 0.15)
+        sq = lambda: tone(1800, 2500, 0.12, 6) * (1 + 0.3 * np.sin(2 * np.pi * 40 * osd.t_(0.12)))
+        osd.put(buf, sq(), S_["2.10"] + TAKE_AT["2.10"][1] - 0.15, 0.10)          # 2.10 the wheels squeak
+        osd.put(buf, sq(), S_["2.11"] + pm_.H2["sail"], 0.10); osd.put(buf, sq(), S_["2.11"] + pm_.H2["back"], 0.10)
+        bonk = osd.slam() * 0.6; bonk[:int(0.4 * SR)] += tone(140, 70, 0.4, 7)       # BONK on the hit
+        osd.put(buf, bonk, S_["2.11"] + pm_.H2["hit"], 0.6)
     if n == 1:
         def rattle_run(d, pitch):                            # the slats running down or up: a burst of clicks
             out = np.zeros(int(d * SR))
@@ -329,7 +610,7 @@ def sound(n, path):
         crash = osd.slam() * 1.0
         osd.put(buf, crash, st + 0.20, 0.9)                  # the blind lands
         osd.put(buf, rattle_run(0.45, 1.6), st + 0.18, 0.6)  # the slats
-    buf += osd.room(len(buf) / SR)[:len(buf)] * 0.012
+    rt = osd.room(len(buf) / SR + 0.01)[:len(buf)]; buf[:len(rt)] += rt * 0.012
     tmp = path + ".raw.wav"
     x = buf / (np.abs(buf).max() + 1e-9) * 0.5
     sf.write(tmp, x.astype(np.float32), SR)
@@ -356,6 +637,7 @@ HOLD_D = 5                                                   # drawings (0.33 s)
 def film(n, ver=1):
     import subprocess, shutil
     ps.gags_v5()
+    dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
     ps.LIGHT_V5[0] = True; import pm_ps; pm_ps.MUG_RING[0] = True
     print_map()
@@ -370,6 +652,14 @@ def film(n, ver=1):
             for x in msgs:
                 faults.setdefault("%s: %s" % (sid, x.split(" at ")[0]), []).append(round(t, 2))
             p = os.path.join(d, "%04d.png" % len(frames)); surf.write_to_png(p); frames.append(p)
+    import hashlib                                           # lesson 200 (plan §3.1): a shot whose drawings never change fails,
+    k0 = 0                                                   # unless the script holds it (HOLDS, with the reason)
+    for sid in SCENES[n]:
+        m = int(round(DUR[sid] * DPS))
+        hs = {hashlib.md5(open(p, "rb").read()).hexdigest() for p in frames[k0:k0 + m]}
+        k0 += m
+        if len(hs) == 1 and sid not in HOLDS:
+            faults.setdefault("%s: STILL: no drawing changes (lesson 200)" % sid, []).append(0.0)
     lst = os.path.join(d, "list.txt")
     with open(lst, "w") as f:
         for p in frames:
@@ -393,11 +683,15 @@ def film(n, ver=1):
     return not real
 
 
+STRIP8 = {1: (0.0, 2.8), 2: (1.6, 4.4)}                      # 2: 2.1b's slap and 2.2's spin
+
+
 def sheets(n, frames):
     """the cold viewers' 4 fps sheet of the scene and an 8 fps strip of its first 2.8 s (1.1-1.2b), time stamps."""
-    for fps, until, name in ((4, None, "sheet4"), (8, 2.8, "strip8")):
-        dur = len(frames) / DPS if until is None else until
-        picks = [(j / fps, frames[min(len(frames) - 1, int(round(j / fps * DPS)))]) for j in range(int(dur * fps) + 1)]
+    a_, b_ = STRIP8.get(n, (0.0, 2.8))                        # the 8 fps strip: the scene's fastest stretch
+    for fps, span, name in ((4, (0.0, len(frames) / DPS), "sheet4"), (8, (a_, b_), "strip8")):
+        picks = [(span[0] + j / fps, frames[min(len(frames) - 1, int(round((span[0] + j / fps) * DPS)))])
+                 for j in range(int((span[1] - span[0]) * fps) + 1)]
         tw, th, cols = 180, 320, 8
         rows = (len(picks) + cols - 1) // cols
         o = cairo.ImageSurface(cairo.FORMAT_RGB24, 20 + cols * (tw + 10), 20 + rows * (th + 26))

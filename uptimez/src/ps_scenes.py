@@ -74,16 +74,28 @@ def at(name):
 
 
 # --- the cast, each drawn by its approved rig; returns its head (x, y, r) in world units -----------------------------
+HANDS_DRAWN = [False]                                         # stage 7 (plan v2 §3.5, opt-in): the rigs return their hands
+                                                             # unleaned (don lean, robot tilt, sofia lean: checked 25 Nov);
+                                                             # on, the wrappers return and log the hands where they are drawn
+
+
+def _drawn(o, x, f, a):
+    if HANDS_DRAWN[0] and a:
+        ca, sa = math.cos(a), math.sin(a)
+        o["hands"] = [(x + (hx - x) * ca - (hy - f) * sa, f + (hx - x) * sa + (hy - f) * ca) for hx, hy in o["hands"]]
+    return o
+
+
 def don(k, where, pose="stand", face="neutral", look=(0, 0), **kw):
     x, f = at(where) if isinstance(where, str) else where
-    o = dp.don(k, x, f, SC["don"], pose, face, look, **kw)
+    o = _drawn(dp.don(k, x, f, SC["don"], pose, face, look, **kw), x, f, kw.get("lean", 0.0))
     HANDS_LOG.extend(o["hands"])
     return o, (o["head"][0], o["head"][1], R["don"] * SC["don"])
 
 
 def robot(k, where, **kw):
     x, f = at(where) if isinstance(where, str) else where
-    o = rp.robot(k, x, f, SC["robot"], **kw)
+    o = _drawn(rp.robot(k, x, f, SC["robot"], **kw), x, f, kw.get("tilt", 0.0))
     HANDS_LOG.extend(o["hands"])
     sx, sy = o["screen"]
     return o, (sx, sy, R["robot"] * SC["robot"])
@@ -91,7 +103,7 @@ def robot(k, where, **kw):
 
 def sofia(k, where, pose="stand", face="smile", look=(0, 0), lean=0.0):
     x, f = at(where) if isinstance(where, str) else where
-    o = sp.sofia(k, x, f, SC["sofia"], pose, face, look=look, lean=lean)
+    o = _drawn(sp.sofia(k, x, f, SC["sofia"], pose, face, look=look, lean=lean), x, f, math.radians(lean))
     return o, (o["head"][0], o["head"][1], R["sofia"] * SC["sofia"])
 
 
@@ -980,6 +992,27 @@ def hands_validate():
     return ok
 
 
+def hands_drawn_validate():
+    """§3.5 on a known failure first: Don leaned 0.25 rad, a foreign hand planted ON his drawn left hand. With
+    HANDS_DRAWN the gate must catch it (two hands at one wrist); without it the logged point is ~20+ px off and it
+    slips through (the fault this fixes). Returns (caught with, caught without, the offset in px)."""
+    import cairo as _c
+    res = []
+    for on in (True, False):
+        HANDS_DRAWN[0] = on; del GRIPS_LOG[:]; del HANDS_LOG[:]
+        k = Ctx(_c.Context(_c.ImageSurface(_c.FORMAT_RGB24, W, H)), 0)
+        o, _ = don(k, (300, F + 100), "stand", "neutral", (0, 0), lean=0.25)
+        HANDS_DRAWN[0] = True
+        x, f = 300, F + 100
+        true_ = _drawn(dict(hands=[dp.don(Ctx(_c.Context(_c.ImageSurface(_c.FORMAT_RGB24, 4, 4)), 0), x, f, SC["don"],
+                                            "stand", "neutral", (0, 0))["hands"][0]]), x, f, 0.25)["hands"][0]
+        HANDS_DRAWN[0] = on
+        grip("palm", true_)                                   # the planted foreign hand, on the drawn wrist
+        res.append(bool(hand_checks()))
+    HANDS_DRAWN[0] = False; del GRIPS_LOG[:]; del HANDS_LOG[:]
+    return res[0], res[1]
+
+
 PEN_C = [(30, 300)]                                          # "C": the hand, pen and sleeve at the sheet's foot; the nib just
                                                              # under the ? (outside review P0: not over it)
 
@@ -1511,6 +1544,10 @@ def check_all(frames_dir=None):
         print("a check missed its planted fault"); return ["validate"]
     if not hands_validate():
         print("the hand gate missed its planted fault"); return ["validate"]
+    w_, wo_ = hands_drawn_validate()                          # §3.5: the leaned hand, caught only with the drawn points
+    print("handsD  %s | planted on a leaned wrist: caught with HANDS_DRAWN %s, without %s" % ("OK " if w_ and not wo_ else "BAD", w_, wo_))
+    if not w_:
+        return ["validate"]
     pc.install_scene(sys.modules[__name__])
     FIX_V4[0] = True
     rows, _ = script_rows()

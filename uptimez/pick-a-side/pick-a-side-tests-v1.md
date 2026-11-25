@@ -559,3 +559,25 @@ Built: 1.2b out, its 0.5 s at the head of 1.3 (the take keeps its time); 1.4 ope
 | Don's line, the three react to it | 2/2 |
 
 5 of 5. Shared, not beats: the roll 0/2 named ("a megaphone? a ring?"; v2 2/2 "tape, probably"); the bent slat across his eye read as "an eyepatch" 2/2 (and in v1).
+
+## Scene 1 v4 and §3.5 (25 Nov, long session, Tomas's /grill-me picks)
+
+- 1.3 "eyepatch" (6 viewers): not a slat. `blind_over` had no new sub-path before the face gap's arc, so it joined the rectangle's corner: a stroke across his eye. `don_ps.BLIND_GAP_FIX` (opt-in). 1.4: the roll's tongue longer, flat, a torn end (`ROLL_TAIL`), kept out of the bottom quarter. `ps_film_s1_v4_540.mp4`.
+- §3.5: the rigs return hands unleaned (Don lean, robot tilt, Sofía lean: measured). `ps_scenes.HANDS_DRAWN` (opt-in) returns and logs them where drawn; `hands_drawn_validate()` plants a foreign hand on a leaned wrist: caught with the flag, missed without; wired into `check` ("handsD OK").
+- Board v3 md5 checked against a worktree of 5e8bdd9 (the board PNGs are git-ignored, so `git status` can't show them): identical.
+
+## Scene 2 (`ps_film.py film 2`, 310 drawings, 20.7 s, −15.6 LUFS)
+
+Built: 2.1 test D; 2.1b the robot rolls in, SLAP, the card stays; 2.2 a cut-out spin (`ps_set.SPIN`, opt-in), the card on until the spin; 2.3 stamp + the roll pointing in turn; 2.4 Pam's hop over the line; 2.5 salute / half salute / the cup; 2.6 Mom's two stamps; 2.7 the stop mid-step; 2.8 held (HOLDS); 2.9 the robot bobs with its words; 2.10 split (Don, the robot on the line, Don's face close); 2.11 test H. Sound map: screech, beep, SLAP, casters, stamp, landing, heel click, two-tone beep, squeaks, BONK on H's hit. New checks: a shot whose drawings never change fails unless in HOLDS (validated: 2.8 without its entry is caught); signs crossing the edge in a camera move pass (< 5 drawings).
+
+Found in the frames: inserts were redrawn as the room (the camera lock); the card vanished between 2.1b and 2.2.
+
+| Beat | v1 (3 viewers) | v2 (3 fresh viewers) |
+|---|---|---|
+| Don lays the line, his roll | 2/3; "Pam holds the roll" 2/3 (the board's 2.3 had her beside him before she crosses: continuity fault) | 3/3, roll Don's 3/3 |
+| The robot's card, Don spins the tag away | 3/3 spin; the card's author 2/3 | 3/3 |
+| Pam sides with Don | 3/3 | 3/3 |
+| Mom refuses; Sofía's heel, "border breach" | 3/3 | 3/3 |
+| "And you?" / "Both."; the bump, Don worse | asker 1/3; "a blank wall" 3/3 (2.10b's robot at the frame's edge) | asker 3/3; Don worse 3/3 |
+
+5 of 5 (G4). Shared, still open: the haul and the bump read as "the robot zaps him" 6 of 6 across both rounds (the impact strokes read as a spark; the 4 fps sheet misses the haul) — one more round and the rule changes the gesture.

@@ -216,9 +216,28 @@ def tape_line(k, mark=True):
     c.set_line_cap(0); c.restore()
 
 
+SPIN = [None]                                                # opt-in (the film, 2.2): 0..1 the spin; None = as the board
+
+
 def throne(k, spun=False, card=False):
     """spun: seen from behind (2.2 on), the price tag's blank back, the robot's card on the back (card: from 2.1b)."""
     x, feet, s = THRONE
+    if SPIN[0] is not None:                                  # a cut-out spin: the chair narrows to its edge and widens again,
+        u = SPIN[0]                                          # its front before the middle, its back after; the casters' lines
+        c = k.c
+        sx = max(0.06, abs(math.cos(math.pi * u)))
+        c.save(); c.translate(x, 0); c.scale(sx, 1); c.translate(-x, 0)
+        o = dp.ceo_chair(k, x, feet, s)
+        if u >= 0.5:
+            throne_back(k, x, feet, s)
+        c.restore()
+        if 0.05 < u < 0.95:
+            c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
+            for i, yy in enumerate((feet - 300 * s, feet - 200 * s, feet - 100 * s)):
+                c.new_path(); c.arc(x, yy, 120 * s, math.pi * (0.15 + 0.1 * i), math.pi * (0.55 + 0.1 * i)); c.stroke()
+            c.set_line_cap(0)
+        price_tag(k, x + 56 * s * sx, feet - 432 * s, s * 2.4, back=u >= 0.5, swing=0.18 + 0.45 * math.sin(math.pi * u))
+        return o
     o = dp.ceo_chair(k, x, feet, s)
     if spun:
         throne_back(k, x, feet, s)
