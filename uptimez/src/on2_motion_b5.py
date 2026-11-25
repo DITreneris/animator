@@ -19,6 +19,7 @@ she turns it over and writes in lipstick; nobody takes it; she looks back from t
 CASE CLOSED."""
 import math
 import cairo
+import client_ob as co
 from kit import INK, ellipse, rect, cut
 
 m = None                                                    # on2_motion, once it has called use()
@@ -90,9 +91,40 @@ def m5_1(k, tl, dur):
             g = cairo.RadialGradient(sx, 760, 40, sx, 760, 380)
             g.add_color_stop_rgba(0, 0.78, 0.78, 0.76, 0.85); g.add_color_stop_rgba(1, 0.78, 0.78, 0.76, 0.0)
             cc.set_source(g); cc.rectangle(-20, 300, m.W + 40, 700); cc.fill()
-        for i, (px, py, pr) in enumerate(((40, 900, 46), (120, 940, 40), (430, 930, 44), (512, 890, 48))):   # the people at the tables
-            cc.set_source_rgb(*n.BLACK); cc.new_path(); cc.arc(px, py - pr * 1.6, pr * 0.62, 0, 2 * math.pi); cc.fill()
-            cc.rectangle(px - pr, py - pr, 2 * pr, 200); cc.fill()
+        if getattr(m, "V37", [False])[0]:                                 # v37: tables, not boxes: a hat over each, a lamp's glow, a glass
+            for i, (px, py, pr) in enumerate(((40, 900, 46), (120, 940, 40), (430, 930, 44), (512, 890, 48))):
+                g = cairo.RadialGradient(px, py - 12, 2, px, py - 12, 60)
+                g.add_color_stop_rgba(0, 1, 0.97, 0.88, 0.55); g.add_color_stop_rgba(1, 1, 0.97, 0.88, 0.0)
+                cc.set_source(g); cc.new_path(); cc.arc(px, py - 12, 60, 0, 2 * math.pi); cc.fill()
+                cc.set_source_rgb(*n.BLACK)
+                cc.new_path(); cc.arc(px - pr * 0.6, py - pr * 1.45, pr * 0.5, 0, 2 * math.pi); cc.fill()            # a guest's head, behind his table
+                cc.rectangle(px - pr * 1.3, py - pr * 1.0, pr * 1.4, 200); cc.fill()                                 # his shoulders
+                cc.save(); cc.translate(px - pr * 0.6, py - pr * 1.85); cc.scale(pr * 0.9, pr * 0.16); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.restore(); cc.fill()   # the brim
+                cc.rectangle(px - pr * 1.0, py - pr * 2.35, pr * 0.8, pr * 0.5); cc.fill()                         # the crown
+                cc.set_source_rgb(0.60, 0.60, 0.64); cc.set_line_width(2); cc.new_path()
+                cc.save(); cc.translate(px - pr * 0.6, py - pr * 1.85); cc.scale(pr * 0.9, pr * 0.16); cc.arc(0, 0, 1, math.pi, 2 * math.pi); cc.restore(); cc.stroke()
+                cc.set_source_rgb(*n.BLACK); cc.save(); cc.translate(px, py); cc.scale(pr * 1.15, pr * 0.22); cc.new_path(); cc.arc(0, 0, 1, 0, 2 * math.pi); cc.restore(); cc.fill()   # the table top
+                cc.rectangle(px - 5, py, 10, 120); cc.fill()                                                             # its stem
+                cc.set_source_rgb(0.95, 0.93, 0.86); cc.new_path(); cc.move_to(px + 8, py - 30); cc.line_to(px + 30, py - 30); cc.line_to(px + 19, py - 14); cc.close_path(); cc.fill()   # a coupe in the light
+                cc.rectangle(px + 18, py - 14, 2, 10); cc.fill()
+        else:
+            for i, (px, py, pr) in enumerate(((40, 900, 46), (120, 940, 40), (430, 930, 44), (512, 890, 48))):   # the people at the tables
+                cc.set_source_rgb(*n.BLACK); cc.new_path(); cc.arc(px, py - pr * 1.6, pr * 0.62, 0, 2 * math.pi); cc.fill()
+                cc.rectangle(px - pr, py - pr, 2 * pr, 200); cc.fill()
+    if getattr(m, "V37", [False])[0]:                                     # v37: the guests behind her, each cut out of the room's light
+        cc_ = k.c
+        for x, y, ang, what, flip, d_in in HANDS:
+            e = d - d_in
+            if e < 0:
+                continue
+            gx = 20 if flip > 0 else m.W - 20
+            sc_ = 1.05 if y < 600 else 1.25
+            feet_ = y + 3.2 * e + 250 * sc_
+            gy_ = feet_ + co.HY * sc_ + 20
+            g = cairo.RadialGradient(gx + flip * 30, gy_, 20, gx + flip * 30, gy_, 190 * sc_)
+            g.add_color_stop_rgba(0, 0.86, 0.86, 0.84, 0.95); g.add_color_stop_rgba(1, 0.86, 0.86, 0.84, 0.0)
+            cc_.set_source(g); cc_.new_path(); cc_.arc(gx + flip * 30, gy_, 190 * sc_, 0, 2 * math.pi); cc_.fill()
+            n.shadow(k, gx, feet_, sc_, "open", hat_tilt=-0.10 * flip, lit_hand=None, look_down=0.3, seed=880 + d_in)
     ph = d % 6
     swayed(k, 270, 1080, (1.0, 0.4, -0.4, -1.0, -0.4, 0.4)[ph],
            lambda: n.star(k, 270, 1080 + (0, -5, -2, 0, -5, -2)[ph], 2.4, "g_stand", "interested", (0.0, -0.2), wrap=False,
@@ -105,7 +137,17 @@ def m5_1(k, tl, dur):
         if m.LOOK3[0]:                                                    # v13: the arm, from the dark at the edge of the frame
             hx_, hy_ = x - flip * out, y + 3.2 * e
             n._seg(k, -60 if flip > 0 else m.W + 60, hy_ + 120, hx_ - flip * 40, hy_ + 10, 46, 40, n.BLACK, 2.4)
-        if getattr(m, "V31", [False])[0]:                                 # v31: a guest with a face at the frame's edge, the arm from his shoulder
+        if getattr(m, "V37", [False])[0]:                                 # v37 (Tomas: "the people at the sides, pathetic"): the film's own hat shadows, no faces; only the hand in the light
+            cc_ = k.c
+            gx = 20 if flip > 0 else m.W - 20
+            hy_ = y + 3.2 * e
+            sc_ = 1.05 if y < 600 else 1.25                                  # the far pair smaller
+            feet_ = hy_ + 250 * sc_
+            shx, shy = gx + flip * 52 * sc_, feet_ + (co.BT + 20) * sc_
+            n._seg(k, shx, shy, x - flip * out - flip * 40, hy_ + 10, 40 * sc_, 34 * sc_, n.BLACK, 2.4)
+            cc_.set_source_rgb(0.60, 0.60, 0.64); cc_.set_line_width(2.4); cc_.set_line_cap(1)      # the bar's light along the top of his arm
+            cc_.move_to(shx, shy - 18 * sc_); cc_.line_to(x - flip * out - flip * 40, hy_ - 8); cc_.stroke()
+        elif getattr(m, "V31", [False])[0]:                               # v31: a guest with a face at the frame's edge, the arm from his shoulder
             cc_ = k.c
             gx = 46 if flip > 0 else m.W - 46
             gy = y + 3.2 * e - 150
@@ -152,7 +194,7 @@ def m5_1(k, tl, dur):
             cc_.new_path(); cc_.move_to(ox - 80, oy + 140); cc_.line_to(ox - 70, oy - 30); cc_.line_to(ox + 70, oy - 30); cc_.line_to(ox + 80, oy + 140); cc_.close_path(); cc_.fill()
             cc_.set_source_rgb(0.55, 0.56, 0.60); cc_.set_line_width(3); cc_.new_path(); cc_.arc(ox, oy - 92, 40, -2.4 if flip > 0 else -1.6, -1.5 if flip > 0 else -0.7); cc_.stroke()
         n.rich_hand(k, x - flip * out, y + 3.2 * e, 1.9, ang, what, flip=flip)
-    if getattr(m, "V31", [False])[0] and getattr(m, "V32", [False])[0]:   # v32: the smoke over the guests, drifting; her alone in the light
+    if getattr(m, "V31", [False])[0] and getattr(m, "V32", [False])[0] and not getattr(m, "V37", [False])[0]:   # v32: the smoke over the guests, drifting; her alone in the light
         cc = k.c
         cc.save(); cc.new_path(); cc.rectangle(0, 0, 116, m.H); cc.rectangle(442, 0, m.W - 442, m.H); cc.clip()   # never over her: a tint on her red and the noir pass takes it for grey
         for i, (sx, sy, r) in enumerate(((20, 430, 150), (520, 400, 160), (30, 760, 170), (515, 740, 160))):
@@ -196,6 +238,8 @@ def m5_2(k, tl, dur):
     sweep = 470 - 300 * math.sin(math.pi * min(1.0, f * 1.15))           # the glass goes across the room and back
     hx0 = 120 + 10 * math.sin(f * 6)
     lx, ly = sweep, 640 + 40 * math.cos(f * 4)
+    if getattr(m, "V37", [False])[0]:                                     # v37 (3/3: "a plank across her"): the glass at his own eye, beside his head
+        lx, ly = hx0 + 150 + 30 * math.sin(math.pi * min(1.0, f * 1.15)), 700 + 12 * math.cos(f * 4)
     n.detective_back(k, hx0, 760 - n.d.HY * 2.4, 2.4, arm=(lx - 6, ly + 30))     # v9: his back, big and close
     if len(n.ARMS2) > 1:                                                  # v35: his hand stopped where his arm reaches; the glass with it
         lx, ly = cc.device_to_user(*n.ARMS2.pop())
