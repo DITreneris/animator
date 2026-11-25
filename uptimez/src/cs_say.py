@@ -35,7 +35,7 @@ PLAN = {
     "3.1r": dict(form="T", w=200, dx=-62),
     "3.1d": dict(form="T", w=220, dx=-30),
     "3.3": dict(form="T", w=220),
-    "3.5": dict(form="L", w=130),
+    "3.5": dict(form="L", w=120, dx=-4),
     "4.2p": dict(form="L", w=120),
     "4.4": dict(form="T", w=160, size=22, left=1, dy=-4),
     "5.1": dict(form="L", w=160),
@@ -154,7 +154,8 @@ def _place(k, key, text, who):
         tip = (hx + side * 0.84 * r, my)
         y0 = my - bh * 0.5 + p.get("dy", 0)
         if side < 0:
-            box = (tip[0] - G - bw, y0, tip[0] - G, y0 + bh)
+            box = (tip[0] - G - bw + p.get("dx", 0), y0, tip[0] - G + p.get("dx", 0), y0 + bh)
+            tip = (tip[0] + min(0, p.get("dx", 0)) * 0, tip[1])
         else:
             box = (tip[0] + G, y0, tip[0] + G + bw, y0 + bh)
     return box, tip, rows, size, font, faces, above, mono

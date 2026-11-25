@@ -30,6 +30,9 @@ def lerp(a, b, u):
     return tuple(x + (y - x) * u for x, y in zip(a, b))
 
 
+HOLD33 = (48, 60, -48, -60)                                  # v15c: the fists at the sheet's corners, apart (crossed at 25/100)
+
+
 # ---- 3.3 -------------------------------------------------------------------------------------------------------------
 
 def s3_3(k, d):
@@ -44,7 +47,7 @@ def s3_3(k, d):
 
     def ex(k_, o):
         (lx, ly), (rx, ry) = o["don"]["hands"]
-        top = min(ly, ry) - 4
+        top = min(ly, ry) + 5                                                       # hangs from under his fists
         w = abs(rx - lx) + 30
         h = 20 + 100 * U
         cx = (lx + rx) / 2
@@ -53,14 +56,14 @@ def s3_3(k, d):
             ellipse(k_, cx, top + h, w / 2 + 2, 5, (0.16, 0.38, 0.78), 993, shadow=False, lw=1.4)
         sk = kit.PEOPLE["DON"]["skin"]
         mine = [i for i, r in enumerate(g.REC) if tuple(round(v, 2) for v in r[3]) == tuple(round(v, 2) for v in sk)]
-        for i in mine[-2:]:                                                         # his own hands over the corners
-            g.again(k_, i, "grab")
+        for i in mine[-2:]:                                                         # his fists over the corners, apart
+            g.again(k_, i, "fist")
 
     with s1.A.Don(s1.A.MOUTH, talk), s1.Breath(sb, "don", s1.br(d, 0.0, 0.010)), s3.Client(), s1.Breath(sb, "client", s1.br(d, 0.4)):
         S(k, s3.CAM33, auto=False, portrait="hang", extra=ex,
           **base(rb=False, sf=False, pm=False, mm=False, door=0.0,
                  cl=at("client", x=340, face="plain", look=(1, 0.5)),
-                 dn=at("don", x=450, pose=s3.HOLD, face="smug" if talk == 0 else "happy", look=(-1, -0.2))))
+                 dn=at("don", x=450, pose=HOLD33, face="smug" if talk == 0 else "happy", look=(-1, -0.2))))
 
 
 # ---- 3.4 -------------------------------------------------------------------------------------------------------------
@@ -68,7 +71,7 @@ def s3_3(k, d):
 N34 = 26
 COURT_A = (206.0, 676.0)                                    # the plan's two courts (frame, at zoom 1): the tip lands on the
 COURT_B = (334.0, 676.0)                                    # circle, above its label
-HAND_W = 84.0
+HAND_W = 66.0
 
 
 def _hand_at(k, tip, press=0.0, lean=0.0):
@@ -117,36 +120,86 @@ def s3_4(k, d):
 
 # ---- 3.4b -------------------------------------------------------------------------------------------------------------
 
-N34b = 10
-CAM34b = (268, 640, 3.2)
-HOLD_CL = (25, 100, -25, -100)
+N34b = 15
+CAM34b = (272, 612, 2.85)                                 # v15d: room above him for the raised fist
+HOLD_CL = (-30, 60, 30, -60)                                   # the fists at the sheet's top corners, apart
+
+
+POSE_A = (-30, 100, 150, 40)                                 # one hand low at his belt holding the sheet, the other up crushing it
+POSE_C = (-10, 5, 150, 40)                                   # the ball in the raised fist, the other hand down (3.5's first pose)
+
+
+def _band(c, fx, fy, hx, hy, w=9.0):
+    """The sheet twisted into a band from the raised fist down to the low hand."""
+    c.new_path(); c.move_to(fx - w, fy + 4); c.line_to(fx + w, fy + 6)
+    c.curve_to(fx + 4, fy + 60, hx + 30, hy - 40, hx + 20, hy + 8)
+    c.line_to(hx - 16, hy + 30); c.line_to(hx - 20, hy + 2)
+    c.curve_to(hx + 4, hy - 50, fx - 20, fy + 50, fx - w, fy + 4); c.close_path()
+    c.set_source_rgb(0.22, 0.47, 0.86); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
+    c.set_source_rgb(0.08, 0.20, 0.45); c.set_line_width(1.0)                     # its twist
+    for i in range(1, 4):
+        u = i / 4.0
+        x = fx + (hx - fx) * u; y = fy + (hy - fy) * u
+        c.move_to(x - 7, y - 3); c.line_to(x + 7, y + 3)
+    c.stroke()
 
 
 def s3_4b(k, d):
-    """10 drawings (0.83 s). The Client close, the sheet open in both hands, its back to us (the plan showing through).
-    d0-3 he looks down at it, blank; d4-6 it dawns on him; d7-9 his eyes come up to Don (off right)."""
+    """15 drawings (1.25 s). The Client close, the sheet open in both hands, the plan's grid showing through its back.
+    d0-3 he looks down at it, blank; d4-6 it dawns on him; d7-9 his eyes come up to Don and hold (silence).
+    v15d (Tomas's pick after the silhouette test: A then C): d10 one hand goes up with the sheet's top, the other
+    keeps its bottom: the sheet twists into a band between them; d11-12 the raised fist crushes it down into itself;
+    d13-14 the last of it is gone into the fist, the other hand drops: 3.5's pose, the ball up in his fist."""
     g.REC.clear()
-    face = "plain" if d < 4 else "dawning"
+    face = "plain" if d < 4 else ("dawning" if d < 10 else "suspicious")
     look = (0.1, 1.0) if d < 7 else (1, -0.1)
+    if d < 10:
+        pose = HOLD_CL
+    elif d <= 12:                                                                 # straight to A: an angle blend swung the arm level (a pole)
+        pose = POSE_A
+    else:
+        pose = lerp(POSE_A, POSE_C, 0.55 if d == 13 else 1.0)
 
     def ex(k_, o):
         (lx, ly), (rx, ry) = o["client"]["hands"]
         c = k_.c
-        x0, x1 = min(lx, rx) - 16, max(lx, rx) + 16
-        y0, y1 = min(ly, ry) - 10, min(ly, ry) + 120
-        c.save()
-        kit.rect(k_, x0, y0, x1 - x0, y1 - y0, (0.22, 0.47, 0.86), 987, shadow=True, lw=2.2)
-        c.set_source_rgba(1, 1, 1, 0.22); c.set_line_width(1.2)                       # the plan's lines through the paper
-        cx = (x0 + x1) / 2
-        c.new_path(); c.arc(cx, y0 + 26, 13, 0, 6.3); c.stroke()
-        c.rectangle(cx - 6, y0 + 40, 12, 46); c.stroke()
-        for sx in (-1, 1):
-            c.new_path(); c.arc(cx + sx * 12, y0 + 96, 14, 0, 6.3); c.stroke()
-        c.restore()
-        sk = s3.SKIN_CL
-        mine = [i for i, r in enumerate(g.REC) if tuple(round(v, 2) for v in r[3]) == tuple(round(v, 2) for v in sk)]
-        for i in mine[-2:]:
-            g.again(k_, i, "grab")
+        n = len(g.REC)
+        lo, up = n - 2, n - 1                                                      # his two hands, as drawn: low, raised
+        if d < 10:
+            x0, x1 = min(lx, rx) - 16, max(lx, rx) + 16
+            y0, y1 = min(ly, ry) - 10, min(ly, ry) + 120
+            cx = (x0 + x1) / 2
+            kit.rect(k_, x0, y0, x1 - x0, y1 - y0, (0.22, 0.47, 0.86), 987, shadow=True, lw=2.2)
+            c.save(); c.rectangle(x0, y0, x1 - x0, y1 - y0); c.clip()
+            c.set_source_rgba(1, 1, 1, 0.16); c.set_line_width(0.8)                 # its grid, as on the front
+            for xx in range(int(x0), int(x1), 8):
+                c.move_to(xx, y0); c.line_to(xx, y1)
+            for yy in range(int(y0), int(y1), 8):
+                c.move_to(x0, yy); c.line_to(x1, yy)
+            c.stroke()
+            c.set_source_rgba(1, 1, 1, 0.30); c.set_line_width(1.3)
+            c.new_path(); c.arc(cx, y0 + 26, 13, 0, 6.3); c.stroke()
+            c.rectangle(cx - 6, y0 + 40, 12, 46); c.stroke()
+            for sx in (-1, 1):
+                c.new_path(); c.arc(cx + sx * 12, y0 + 96, 14, 0, 6.3); c.stroke()
+            c.restore()
+            for i in (lo, up):
+                g.again(k_, i, "grab")
+            return
+        fx, fy = rx, ry                                                            # the raised fist (his screen-right hand)
+        if d <= 12:
+            w = 15 if d == 10 else (10 if d == 11 else 7)
+            _band(c, fx, fy, lx, ly, w)
+            ball(k_, fx, fy - 2, (9, 13, 16)[d - 10], seed=d)
+            g.again(k_, lo, "grab")                                                # the low hand round the band, thumb in front
+            g.again(k_, up, "fist")
+            ball(k_, fx, fy - 10, (7, 11, 14)[d - 10], seed=d + 3)                  # crushed paper squeezing out of the top
+        else:
+            if d == 13:
+                c.save(); c.set_source_rgb(0.22, 0.47, 0.86); c.set_line_width(5)   # a last tail of it, going in
+                c.move_to(fx + 2, fy + 8); c.curve_to(fx + 6, fy + 24, fx - 4, fy + 30, fx + 2, fy + 40); c.stroke(); c.restore()
+            g.again(k_, up, "fist")
+            ball(k_, fx, fy - 10, 17 if d == 13 else 15, seed=d)                    # the last squeeze: a little smaller
 
     old = sb.pocket_strip
     sb.pocket_strip = lambda *a_, **kw: None
@@ -154,7 +207,7 @@ def s3_4b(k, d):
         with s3.Client(edge=False), s1.Breath(sb, "client", s1.br(d, 0.4, 0.012)):
             S(k, CAM34b, auto=False, portrait=False, extra=ex,
               **base(rb=False, sf=False, dn=False, pm=False, mm=False, door=0.0,
-                     cl=at("client", pose=HOLD_CL, face=face, look=look)))
+                     cl=at("client", pose=pose, face=face, look=look)))
     finally:
         sb.pocket_strip = old
 

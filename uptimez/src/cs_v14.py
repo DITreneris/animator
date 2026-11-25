@@ -344,13 +344,13 @@ def s3_5(k, d):
         hx, hy, hw, _, hd, _, m_ = g.REC[-1]                                        # his right hand, in its own (leaning) space
         c.save(); c.set_matrix(m_)
         nd = math.hypot(*hd) or 1.0
-        hx, hy = hx + hd[0] / nd * 0.75 * hw, hy + hd[1] / nd * 0.75 * hw     # the ball on top of the fist, gripped: whole and seen
+        hx, hy = hx + hd[0] / nd * 0.40 * hw, hy + hd[1] / nd * 0.40 * hw     # the ball in the palm, the fingers over it
         r = r * 1.35
         if t < THROW:
-            if crumple < 1:                                                       # the sheet balling up in his hand
-                g._ball(k_, hx - 1, hy - 5, r * (1 + 1.6 * (1 - crumple)), seed=int(crumple * 5))
-            else:
-                g._ball(k_, hx - 1, hy - 5, r)
+            c.restore()
+            g.again(k_, len(g.REC) - 1, "fist")                                    # his fist, then the ball squeezed out of its top
+            c.save(); c.set_matrix(m_)
+            g._ball(k_, hx + hd[0] / nd * 0.25 * hw, hy + hd[1] / nd * 0.25 * hw, r * (1.5 - 0.2 * crumple), seed=int(crumple * 5))
             c.restore()
             return
         if t < THROW + 0.34:                                                      # leaving, toward the frame's right edge
