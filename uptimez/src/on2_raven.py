@@ -354,7 +354,27 @@ KEYS3 = ("dive", "turn", "head", "strike", "wipe", "wipe2", "gone")    # 0.00 ..
 BG3 = (11, 11, 11, 11, 11, 12, 12)                                  # which shot is under each: 1.1 (no leg, door shut), 1.2's first drawing
 
 
-def draw3(s, key):
+def gap(c, behind, pts):
+    """v30 (cold test v29: the wing read as "a black slab", "a glitch"): a gap between its feathers, and what is behind
+    the wing (1.2's first drawing: her red dress) seen through it, its feather edges lit"""
+    c.save(); c.new_path(); c.move_to(*pts[0])
+    for p_ in pts[1:]:
+        c.line_to(*p_)
+    c.close_path(); c.clip_preserve()
+    c.translate(350, 650); c.scale(2.6, 2.6); c.translate(-350, -620)                 # close on her dress: red cloth, not a little woman
+    c.set_source_surface(behind, 0, 0); c.paint(); c.restore()
+    c.new_path(); c.move_to(*pts[0])
+    for p_ in pts[1:]:
+        c.line_to(*p_)
+    c.close_path(); c.set_source_rgb(*INK); c.set_line_width(6); c.set_line_join(1); c.stroke_preserve()
+    c.set_source_rgb(*SILVER); c.set_line_width(2.6); c.stroke()
+
+
+GAP_STRIKE = [(300, 640), (360, 560), (430, 520), (470, 600), (440, 640), (480, 700), (430, 760), (470, 830), (380, 880), (320, 800)]
+GAP_WIPE = [(180, 700), (300, 520), (380, 430), (420, 470), (360, 560), (400, 590), (330, 700), (360, 740), (270, 860), (220, 820)]
+
+
+def draw3(s, key, behind=None):
     import on4_motion as m4
     c = cairo.Context(s)
     if key == "perch":
@@ -375,9 +395,13 @@ def draw3(s, key):
         head3(c, 300, 420, 300)
         wing3(c, -300, 640, 210, rot=-0.55, side=1)
         c.restore(); lens(c, 0.7)
+        if behind is not None:
+            gap(c, behind, GAP_STRIKE)
         return m4._shake(s, 0.0, amp=6.0)
     elif key == "wipe":                                         # the wing over the whole lens
         c.save(); c.rectangle(0, 0, 540, 960); c.clip(); wing3(c, -140, 720, 300, rot=-0.62, side=1); c.restore(); lens(c, 0.6)
+        if behind is not None:
+            gap(c, behind, GAP_WIPE)
         return m4._shake(s, 0.33, amp=6.0)
     elif key == "wipe2":                                        # its trailing edge going off to the right: she is there
         c.save(); c.rectangle(0, 0, 540, 960); c.clip(); wing3(c, 260, 760, 300, rot=-0.62, side=1); c.restore()

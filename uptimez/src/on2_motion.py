@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v29"
+V = "v30"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -79,6 +79,9 @@ RAVEN_HOLD = 4 / 12.0                                     # 1.2 starts this much
 if rv.RAVEN[0]:
     PLAN28 = {"1.1": ("1.1", 5 / 12.0, "n1", 5 / 12.0 - 0.25 - 1.112), "1.2": ("1.2", 2.75 + RAVEN_HOLD, "n6", 0.05)}
     LEADS28 = {"1.2": 0.75 + RAVEN_HOLD}
+V30 = [True]                                              # v30 (25 Nov, cold test v29, Tomas's picks): "I only want my blueprint", the wing's gap, no leg at 0:11, the push to her face, "The usual." hers, the desk from the side, owners for the bar's hands; False draws v29
+if V30[0]:
+    PLAN28["7.2b"] = ("7.2b", 16 / 12.0, "c1b", -0.55)       # the pop lands on "-print" (7.3 starts 1.37 s into the take; the pop is 2 drawings in)
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
@@ -454,8 +457,11 @@ def m1_2(k, tl):
         tl = max(0.0, tl - RAVEN_HOLD)
     cc = k.c
     cc.save()
-    z0 = 0.5 if OPEN28[0] else 0.9                                         # v28: the war starts sooner, so does the push
-    zoom(cc, 118, 560, 1.0 + 0.45 * ease((tl - z0) / 1.4))              # v17: over her shoulder, into the alley
+    if V30[0]:                                                           # v30: after the war, in to her face, ending on 1.2b's framing (no jump)
+        zoom(cc, 406, 166, 1.0 + 1.42 * ease((tl - 1.25) / 1.55))
+    else:
+        z0 = 0.5 if OPEN28[0] else 0.9                                     # v28: the war starts sooner, so does the push
+        zoom(cc, 118, 560, 1.0 + 0.45 * ease((tl - z0) / 1.4))          # v17: over her shoulder, into the alley
     _m1_2(k, tl)
     cc.restore()
 
@@ -548,9 +554,11 @@ def m2_5(k, tl):
         n.powder_puff(k, 220, 640, 5.0)
         cc.restore()
     if 4 / 12.0 <= tl < 6 / 12.0:
-        b.red_shoe(k, 330, 610, 3.6)
+        if not V30[0]:                                                  # v30: the leg is out (cold test v29, 3/3 "a leg with no body")
+            b.red_shoe(k, 330, 610, 3.6)
     elif 6 / 12.0 <= tl < 8 / 12.0:
-        b.red_shoe(k, 460, 470, 3.2)
+        if not V30[0]:
+            b.red_shoe(k, 460, 470, 3.2)
         n.footprints(k, 300, 700, 4.2, n=1, step=30)
     elif tl >= 8 / 12.0:
         n.footprints(k, 300, 700, 4.2, n=1, step=30)
@@ -978,7 +986,7 @@ CLOCK = {"1": 55, "2": 55, "3": 56, "4": 57, "5": 58, "6": 59, "7": 59, "8": 60}
 
 
 def frame(row, tl, t):
-    if rv.RAVEN[0] and not END and row["shot"] == "1.1" and int(round(tl * 12)) >= 5:    # v29: 1.2's start is rounded up past
+    if rv.RAVEN[0] and not END.get("on") and row["shot"] == "1.1" and int(round(tl * 12)) >= 5:    # v29: 1.2's start is rounded up past
         row, tl = [r for r in timing.rows if r["shot"] == "1.2"][0], 0.0                # its drawing; the wipe is on 1.2 already
     fn, tilt, post = SHOTS[row["shot"]]
     NOW["min"], NOW["sec"] = CLOCK[row["shot"][0]], None                  # v12: the clocks
@@ -1027,17 +1035,24 @@ def frame(row, tl, t):
             g = cairo.RadialGradient(W / 2, H * 0.42, H * 0.30, W / 2, H * 0.42, H * 0.80)
             g.add_color_stop_rgba(0, 0, 0, 0, 0.0); g.add_color_stop_rgba(1, 0, 0, 0, 0.40); cc.set_source(g); cc.paint()
         eng.TONE = "v2"
-    if rv.RAVEN[0]:                                                       # v29: the raven, after the grade (on2_raven.draw3)
+    if rv.RAVEN[0] and not END.get("plain"):                              # v29: the raven, after the grade (on2_raven.draw3)
         dd = int(round(tl * 12))
         key = None
-        if END:
+        if END.get("on"):
             key = "coil" if END.get("last") else "perch"
         elif row["shot"] == "1.1" and dd < 5:
             key = rv.KEYS3[dd]
         elif row["shot"] == "1.2" and dd < 2:
             key = rv.KEYS3[5 + dd]
         if key:
-            sf_ = rv.draw3(sf_, key)
+            behind = None
+            if V30[0] and key in ("strike", "wipe"):                     # v30: her red through the wing's gap
+                END["plain"] = True
+                try:
+                    behind = frame([r for r in timing.rows if r["shot"] == "1.2"][0], 0.0, 0.0)
+                finally:
+                    END.pop("plain", None)
+            sf_ = rv.draw3(sf_, key, behind)
             cc = cairo.Context(sf_)
     ln = row.get("line")
     if not (ln and ln["t0"] - 0.05 <= t <= ln["t1"] + 0.30):             # v15: her line may run on from the set-up before
@@ -1051,7 +1066,7 @@ def frame(row, tl, t):
         else:                                                            # spoken: a bubble, its tail beside the mouth
             if row["shot"] in b68.SHOTS:
                 tip, box = b68.TIP[row["shot"]]
-                b68.say(cc, ln["text"] + ("\u2014" if ln["key"] == "c1" else ""), box, tip)
+                b68.say(cc, ln["text"] + ("\u2014" if ln["key"] in ("c1", "c1b") else ""), box, tip)
             else:
                 tip, box = b5.TIP[row["shot"]]
                 b5.bubble(cc, ln["text"], box, tip)
@@ -1100,7 +1115,7 @@ def main(kind="A2", folder="../office-noir-2", hi=False):
     if OPEN28[0]:                                                        # v28: the opening's sound follows its new timing
         if rv.RAVEN[0]:
             sh = tuple((dr + int(round(RAVEN_HOLD * 12)), who) for dr, who in SHOTS_12_28)
-            wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=None, shots12=sh, raven=True)
+            wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=None, shots12=sh, raven=True, swap={"7.2b": "c1b"} if V30[0] else None)
         else:
             wav, spans = snd.motion_mix16(rr, total, kind, tmp + "/mix.wav", leads=LEADS28, heel_at=8 / 12.0, shots12=SHOTS_12_28)
     else:

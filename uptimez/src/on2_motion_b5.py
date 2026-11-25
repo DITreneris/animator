@@ -105,6 +105,13 @@ def m5_1(k, tl, dur):
         if m.LOOK3[0]:                                                    # v13: the arm, from the dark at the edge of the frame
             hx_, hy_ = x - flip * out, y + 3.2 * e
             n._seg(k, -60 if flip > 0 else m.W + 60, hy_ + 120, hx_ - flip * 40, hy_ + 10, 46, 40, n.BLACK, 2.4)
+        if getattr(m, "V30", [False])[0]:                                 # v30: whose arm: a guest at the frame's edge, shoulder and head
+            ox = 14 if flip > 0 else m.W - 14
+            oy = y + 3.2 * e + 150
+            cc_ = k.c; cc_.set_source_rgb(*n.BLACK)
+            cc_.new_path(); cc_.arc(ox, oy - 92, 40, 0, 2 * math.pi); cc_.fill()
+            cc_.new_path(); cc_.move_to(ox - 80, oy + 140); cc_.line_to(ox - 70, oy - 30); cc_.line_to(ox + 70, oy - 30); cc_.line_to(ox + 80, oy + 140); cc_.close_path(); cc_.fill()
+            cc_.set_source_rgb(0.55, 0.56, 0.60); cc_.set_line_width(3); cc_.new_path(); cc_.arc(ox, oy - 92, 40, -2.4 if flip > 0 else -1.6, -1.5 if flip > 0 else -0.7); cc_.stroke()
         n.rich_hand(k, x - flip * out, y + 3.2 * e, 1.9, ang, what, flip=flip)
 
 
@@ -161,6 +168,8 @@ def m5_3(k, tl, dur):
                mouth=m.said("5.3", tl, "EUUCOEEM", lead=m.LEAD - 1 / 12.0))                         # v8: "The usual."
     hx, hy = o["head"]
     TIP["5.3"] = ((hx + 124, hy + 62), (hx + 150, hy + 28))               # beside her mouth; the bubble to the right of her face
+    if getattr(m, "V30", [False])[0]:                                     # v30 (2/3: "hers or his?"): the box low, under her mouth's level and off his body
+        TIP["5.3"] = ((hx + 124, hy + 66), (hx + 136, hy + 96))
 
 
 # ---------------------------------------------------------------- 5.4: his note

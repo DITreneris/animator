@@ -2108,7 +2108,7 @@ def caw(d=0.30):
     return (saw * 0.22 + rough) * env * 0.5
 
 
-def motion_mix16(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav", leads=None, heel_at=11 / 12.0, shots12=None, raven=False):
+def motion_mix16(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav", leads=None, heel_at=11 / 12.0, shots12=None, raven=False, swap=None):
     """Motion test v28: motion_mix15 with the opening re-timed (Tomas: a joke by 0:01). leads: a line's start after its
     shot, where it isn't 0.25 (the city line waits for New Year's Eve.); heel_at: the heel in 1.1; shots12: the drawings
     of 1.2's gang war. With the defaults it is motion_mix15."""
@@ -2124,7 +2124,7 @@ def motion_mix16(rows, total, kind="A2", out="/tmp/on2/motion_mix.wav", leads=No
     at = {s: t0 for s, t0, d in rows}
     spans = []
     for shot, key in {"1.1": "n1", "2.1": "n2", "2.6": "n3", "5.3": "s1", "5.4": "n4", "6.1": "n5", "7.2a": "m1", "7.2b": "c1", "8.1": "m2", "8.5": "p1",
-                     "1.2": "n6", "3.2": "n7", "4.1a": "n8", "5.2": "n9", "5.6": "n10", "6.4": "n11"}.items():
+                     "1.2": "n6", "3.2": "n7", "4.1a": "n8", "5.2": "n9", "5.6": "n10", "6.4": "n11", **(swap or {})}.items():
         a, _ = sf.read("%s/%s_%s.wav" % (TAKES, key, kind) if key[0] == "n" else "%s/%s.wav" % (TAKES, key))
         ld = leads.get(shot, 0.25)
         p = int((at[shot] + ld) * SR); voice[p:p + len(a)] += a[:n - p]
