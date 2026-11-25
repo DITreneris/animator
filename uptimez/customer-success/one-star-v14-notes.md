@@ -25,3 +25,38 @@ as `rough_v14c`.
 ## QA
 
 -15.6 LUFS, -1.9 dBFS. Speech 14/16: "Still one star." misses as in v13; Don's 1.4 "Approved." (ep 10's take) is heard as "Approve." in all v14 mixes (v13: 2/3). Music back 0.75 s after it and the tick moved off it did not help: listen.
+
+## v16: the last polish before the render (25 Nov, /grill-me "what is left to polish")
+
+Rebuild: `python3 cs_film_v16.py ../customer-success 2` (1080 master `rough_v16`); `python3 cs_film_v16.py OUT 1` is the
+540 film the gates ran on, compared with the master frame by frame (PSNR). Cover: `python3 cs_cover.py v2` →
+`one_star_cover_v2.png` (the opening's frame, Don's shock and the visor's ★ 1/5; the title band with the film's mark).
+
+| Pick | Done |
+|---|---|
+| "Still one star." re-recorded | Not a reading fault: alone in the mix 3/3; with Pam's line before it (the checker's context window) 1/3. Six new reads, pauses included, did worse ("Still in Star 1 Star"). The same take +3 dB (film_v10): 3/3 in both, -11 dB like "Nine o'clock." Tomas chose it by ear. |
+| 0:19 Don's finger at the visor | POINT_AT (418, 706), GRAB_AT (410, 730): the point and the fist stop ~15 px clear of the visor (it touched on d2–d5) |
+| 0:49 Pam's pen hand | Her purple sleeve with a cuff from the top edge to the hand (a bare stub read as nobody's); the pen shorter, its end over her hand |
+| 0:49 at 1080 (found by the PSNR check) | The pen hand was placed at HALF its place in the master: `user_to_device / HI` on a scratch surface without the device scale. At 540 it wrote on the tape; at 1080 it hung above it (so the v15 master too). Now `device_to_user`, the same at both sizes |
+| Open palm | Fingers of unequal length (index, middle, ring, pinky; the pinky thinner), `hands_ps.PALM_VAR`, on in One Star only |
+
+Review of the stills: 8.5/10, GO; "no more hand redesign" (thumb root, sausage-like fingers, the pinch point: cosmetic at 9:16).
+
+Lesson: when a line is lost in the mix, measure it alone and in its context window before re-recording; here the level
+was the fault, not the read.
+
+QA v16 (1080 master, 1996 frames, 66.33 s): -15.6 LUFS, -2.3 dBFS; bubbles 12, 0 faults; hand and elbow gates 0 at 1080.
+Speech 15/16: "Still one star." 3/3; Don's 1.4 "Approved." still "Approve." (Tomas listens). PSNR master vs 540 film:
+average 35.0 dB; after the 5.2 fix the dips are text and line hinting only (phone posts ~29 dB, checked by difference images).
+The 540 build reports 8 hand-gate faults on 6.6 d2/d8 ("a rig hand under the phone"), also in v15 at 540, none at 1080;
+the two pictures are the same (the gate's scale, not the drawing): open.
+
+## G4 cold mute test on rough_v16 (two fresh viewers, 4 fps sheets with the bubbles)
+
+Both told back all five beats (the review and the robot's ★ 1/5; "Approved." unread → "Stupid human."; the AI plan →
+"Is this a joke?" and the throw; Pam finds piece 7, "Your number."; still one star). PASS. Both would screenshot the
+"99% CONFIDENT" plan. Both flagged, for the next episode (Tomas merged as is):
+- 4.4 the green arrow from Pam to HUMAN✓ reads as a rope tying her to the sign;
+- 1.4 Don's arm straight to the visor and 4.2b Pam's pointing arm across to his pocket read as poles;
+- 3.1b the roll bumps "a post": the glass door does not read as a door;
+- 5.2 the sleeve from the corner: A "pole-like", B "acceptable for an insert".

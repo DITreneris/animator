@@ -80,6 +80,20 @@ Read by cold viewers, in this order of what failed: one stroke from the edge = "
 - **A 10 fps strip of the encoded file** for every shot whose hand or arm code changed. Stills at three times missed a jump (223).
 - **After two audit rounds on the same stills, render and test the motion.**
 
+### A rule is a gate (One Star v15–v16, 25 Nov)
+
+- **Every held prop goes through the series' grips** (`of_cast.phone_grip`, `clutch`, `handle_grip`, `ps_hand`), never an
+  episode's own ovals: One Star kept `s1.fist` / `grip_rect` / `sb.thumb` for months because nothing checked them, and every
+  close-up hand read as "capsules". `cs_grips.py` routes them all through one switch.
+- **The hand gate runs in the build, not only in The Offer:** a rig hand under a grip, a thumb on the outer side, an old
+  grip drawer: the render stops (`cs_grips.gate`, self-test with planted faults first).
+- **The elbow gate:** every rig arm is logged as drawn; an arm bent under 20° that does not hang fails (the "pole"), and a
+  fold over ~140° is a lump (231). Measured faults were few; the "breaks" people see are mostly drawing: square shoulder
+  patches (the Client: one round cap), a wrist over a counter's edge (keep the target on the prop), crossed forearms at
+  the chest (elbows out, hands meet at the prop).
+- **A shared rig is patched from its source in the episode** (as `client_of` does), never edited in place: another film's
+  build reads that source as text.
+
 ## 2. Phone screens
 
 - **One UI kit per film** (`of_ui.py` in ep. 13): status bar, app bar, cards with a soft shadow, pill buttons, avatars. Draw every screen at 100 units wide through `ui.hand` (in a grip) or `ui.full` (a full-frame insert). A rectangle with two words reads as a slide (226).

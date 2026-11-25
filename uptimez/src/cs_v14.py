@@ -147,6 +147,7 @@ def s1_4(k, d):
 
 SHOOT = (0.20, 0.62)                                       # the sheet's tip from the slot to off the frame's left (s)
 GRAB = (0.30, 0.55)                                        # his hand goes for it ...
+GRAB_AT = [(366.0, 724.0)]
 LUNGE = 26.0                                               # he lunges a step at it
 SHUT = 0.62                                                # ... and closes on air
 LOOK = (0.95, 2.20)                                        # he looks at his empty fist
@@ -198,7 +199,7 @@ def s3_1(k, d):
     t = d / float(DPS)
     floor = sb.F + 4
     pt = s3.POINT_AT
-    grab_at = (366.0, 724.0)
+    grab_at = GRAB_AT[0]
     lunge = LUNGE * (_ease((t - GRAB[0]) / 0.2) if t < DROP else 1 - _ease((t - DROP) / 0.4))
     if t < GRAB[0]:
         tgt = _lerp((420.0, 736.6), pt, _ease(t / 0.25))
@@ -324,15 +325,15 @@ def s3_5(k, d):
     code = s3.talk_code(t, *s3.LINE35)
     stand = sb.co.POSES["stand"] if hasattr(sb.co, "POSES") else (-10, 5, 8, 0)
     up = (-10, 5, 150, 40)
-    wind = (-10, 5, 150, 15)
-    out = (-10, 5, 95, 30)
+    wind = (-10, 5, 160, 45)                                                    # v16: wound back, the elbow bent
+    out = (-10, 5, 108, 32)                                                     # v16: the follow-through bent (elbow gate)
     if t < WIND[0]:                                                               # caught with the arm already up (rule: no raise past the shoulder)
         pose = up
     elif t < THROW:
         u = _ease((t - WIND[0]) / (WIND[1] - WIND[0])); pose = tuple(a + (b - a) * u for a, b in zip(up, wind))
     else:
         u = _ease((t - THROW) / 0.17); pose = tuple(a + (b - a) * u for a, b in zip(wind, out))
-    lean = (s3.TILT[min(d, len(s3.TILT) - 1)] + 3) if t < THROW else 8
+    lean = 5 if t < THROW else 8                                                  # v15e: steady while he speaks (the locked bubble sat on his leaning face)
     cu = _ease((t - WIND[0]) / 0.4)
     cam = tuple(a + (b - a) * cu for a, b in zip(*CAM35))
     crumple = min(1.0, t / 0.33)
@@ -348,9 +349,9 @@ def s3_5(k, d):
         r = r * 1.35
         if t < THROW:
             c.restore()
-            g.again(k_, len(g.REC) - 1, "fist")                                    # his fist, then the ball squeezed out of its top
+            g.again(k_, len(g.REC) - 1, "grab")                                    # v16: the hand round it (fist: a big thumb)
             c.save(); c.set_matrix(m_)
-            g._ball(k_, hx + hd[0] / nd * 0.25 * hw, hy + hd[1] / nd * 0.25 * hw, r * (1.5 - 0.2 * crumple), seed=int(crumple * 5))
+            g._ball(k_, hx + hd[0] / nd * 0.55 * hw, hy + hd[1] / nd * 0.55 * hw, r * (1.3 - 0.15 * crumple), seed=int(crumple * 5))
             c.restore()
             return
         if t < THROW + 0.34:                                                      # leaving, toward the frame's right edge

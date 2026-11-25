@@ -55,7 +55,7 @@ def s4_1(k, d):
         arm = lerp(H.GLASS41, s4.STOP41, ease((d - 13) / 2.0))
         s4.HAND41[0] = "relax"
     else:                                                                         # down in two drawings, folded: an angle blend
-        arm = (10, 40) if d == 16 else REST                                        # from STOP swung the forearm level at him
+        arm = (22, -28) if d == 16 else REST                                        # from STOP swung the forearm level at him
         s4.HAND41[0] = "quiet"
     lean = -3.0 * ease((d - 5) / 3.0) * (1 - ease((d - 10) / 4.0))
 
@@ -68,7 +68,9 @@ def s4_1(k, d):
         c.set_source_rgba(0.98, 0.96, 0.86, 0.9); c.rectangle(-6.5, -14, 13, 6); c.fill()
         ellipse(k_, 0, -44, 6, 2.4, (0.30, 0.52, 0.92), 996, shadow=False, lw=1.2)
         c.restore()
-        ellipse(k_, hx, hy, 5.0, 5.4, s4.SKIN_PAM, 997, shadow=False, lw=1.2)
+        s1.PH_DEV.append(c.user_to_device(hx, hy))                                # her rig's own hand stays out (two-pass)
+        import of_cast as _oc                                                      # v15f: the series' fist round the roll
+        _oc.handle_grip(k_, hx - 1, hy - 6, 13.0, -0.08 + math.pi / 2, skin=s4.SKIN_PAM)
 
     with s4.Strip("edge"), s4.s3.Client(lean=lean, edge=False), s1.Breath(sb, "client", s1.br(d, 0.4)):
         S(k, s4.CAM41, auto=False, portrait=False, pre=pre,
@@ -258,19 +260,24 @@ def _shapes14():
 
 # ---- 6.6a / 6.6: the clutch --------------------------------------------------------------------------------------------
 
-CLUTCH = (25, 100, -25, -100)                                # both hands in front of his chest (3.3's hold)
+CLUTCH = (-20, 120, 20, -120)                                # v16: elbows out, the hands meet at the phone, not crossed
 
 
 def _phone_between(k, o, d, buzz):
+    """v15f: the phone in his right hand (the series' phone grip, its back to us, the thumb toward his middle), his
+    left hand flat over its foot, clamping it to his chest."""
+    import of_cast as _oc
     (lx, ly), (rx, ry) = o["don"]["hands"]
     mx, my = (lx + rx) / 2.0, (ly + ry) / 2.0 - 4
     j = (1.5 if d % 2 else -1.5) if buzz else 0.0
-    v14._phone(k, mx + j, my, 0.0, 1.35, lit=False)
     sk = kit.PEOPLE["DON"]["skin"]
-    for hx, hy, sd in ((lx, ly, 994), (rx, ry, 995)):
-        ellipse(k, hx, hy, 5.2, 5.6, sk, sd, shadow=False, lw=1.2)
+    c = k.c
+    gx, gy = (rx, ry) if rx > lx else (lx, ly)                                    # the phone in his screen-right hand;
+    s1.PH_DEV.append(c.user_to_device(gx, gy))                                    # the other hand is the rig's own, beside it
+    hx_ = o["don"]["head"][0]
+    _oc.phone_grip(k, gx + j, gy, 0.55, screen=None, ang=-0.12, skin=sk, body_x=hx_, back=True)
     if buzz:
-        v14._buzz(k.c, mx, my, 15, 16, 1.8)
+        v14._buzz(k.c, mx, my - 6, 15, 16, 1.8)
 
 
 def s6_6a(k, d):
