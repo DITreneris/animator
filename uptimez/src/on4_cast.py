@@ -173,6 +173,7 @@ def seal(c, x, y, r):
 BLINK = [False]
 TAIL = [False]                                               # (24 Nov, Tomas's pick) Pam-Cat has a tail: out from under the coat at her belt's height, an S up beside her, its tip curling; it sways (TAIL_PH, radians)
 TAIL_PH = [0.0]
+TAIL_FOLLOW = [False]
 
 
 def tail(k, x, feet, s, ph=0.0):
@@ -205,7 +206,7 @@ def pam_cat(k, x, feet, s=0.54, pose="hero", face="proud", look=(0, 0), seed=40,
 
     def draw():
         if TAIL[0]:
-            tail(k, x, feet, s, TAIL_PH[0])                  # behind her: drawn first
+            tail(k, x, feet, s, TAIL_PH[0] + (0.035 * x if TAIL_FOLLOW[0] else 0.0))   # behind her: drawn first; TAIL_FOLLOW: as she moves its sway moves on, so it trails her
         with _swap((kit.PEOPLE["PAM"], "body", COAT), (pm, "PURPLE", COAT), (pm, "PURPLE_DARK", COAT_DARK),
                    (px, "TROUSERS", SUIT_LEG), (px, "TROUSERS_DARK", SUIT_LEG_DARK), (px, "TRAINER", BOOT),
                    (kit.HAND, 0, _gloved(GLOVE_DARK)), (pm, "_costume", _coat_costume)):

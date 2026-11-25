@@ -567,6 +567,7 @@ def a71(t):                                                    # asleep on the c
     return draw(shot("7.1", cam=D_CAM, cast=[_pam_asleep(t)], protect=()))
 
 
+SOF2 = [False]
 END2 = [False]                                               # (24 Nov, Tomas: "the ending is too long and too complicated; Sofia is too small, in the dead zone") 7.2 nearer, from the waist up, 2.6 s; the rota once (7.5, one look down, 1.8 s; the insert 7.4 is cut)
 MAIL72 = [False]                                             # (24 Nov, cold test of film v14: "the mail sheet pops in and hovers")
 
@@ -584,6 +585,9 @@ def a72(t):                                                    # Sofia in mid-st
         x = 500 + 108 * ease(seg(t, 0.0, 0.6)) + 300 * ease(seg(t, 2.2, 2.6))      # she stands till her line is out (it ends at 1.98), then goes
         reach = 0.6 <= t < 1.4
         sof = P("sofia", x, 890 - (5 if int(t * 8) % 2 and (t < 0.6 or t > 2.2) else 0), 0.90, "post" if reach else "hold", "appraise", (0.2, 1.0))
+        if SOF2[0]:                                          # (25 Nov, cold test of v22: "too big, cut by the edge") a fifth smaller, in from further right, her face where it was
+            x = 540 + 76 * ease(seg(t, 0.0, 0.6)) + 300 * ease(seg(t, 2.2, 2.6))
+            sof = P("sofia", x, 842 - (5 if int(t * 8) % 2 and (t < 0.6 or t > 2.2) else 0), 0.74, "post" if reach else "hold", "appraise", (0.2, 1.0))
         cam72 = (651, 665, 2.44); T_UP = (0.85, 1.2); T_MUG = 2.2
     v = ease(seg(t, 0.8, 1.4))
     def post(k):

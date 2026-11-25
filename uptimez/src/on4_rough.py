@@ -12,6 +12,8 @@ import numpy as np
 import soundfile as sf
 import on4_scenes as sc
 import on4_voices as vo
+HITS = []                                                    # the film's blows, for the camera's shake (on4_weather.SHAKE): the punch, the bump, her landing, the lid, the boards
+FAST = {"e1": 1.3}                                          # e1 is said on the bumper, before she tips: quicker than her other lines
 LENS = {}                                                    # line -> its take's length in seconds, as mixed (on4_text reads it)
 END2 = [False]                                               # film v16: the office's sounds on the shorter ending
 
@@ -77,7 +79,7 @@ def new_takes():
             v = dv.FATHER[dv.FATHER_VOICE][0]       # Father voice B, but 0.8 speed and -1.5 semitones: at -3 a three-word line is not recognized
             a = so.pitch(so.dry(txt.rstrip(".") + "...", so.blend(*v), 0.8), -1.5)
         else:
-            a = so.dry(txt, vo.PAM_AWAKE[0], vo.PAM_AWAKE[2], vo.PAM_AWAKE[1])
+            a = so.dry(txt, vo.PAM_AWAKE[0], vo.PAM_AWAKE[2] * FAST.get(key, 1.0), vo.PAM_AWAKE[1])
         a = np.asarray(a, dtype=np.float64); a = a / (np.sqrt(np.mean(a ** 2)) + 1e-9) * 0.11
         h = vo.heard3(a); want = " ".join(sfs._words(txt))
         log[key] = dict(shot=shot, who=who, text=txt, asr=h, ok=sum(1 for x in h if sfs._match(x, want)), len=round(len(a) / vo.SR, 2))
@@ -132,6 +134,7 @@ def load(p):
 
 
 def sound(tm, d, total):
+    del HITS[:]
     import sound_on as so
     import sound_on_jazz as jz
     import sound_iwry as iw
@@ -196,13 +199,13 @@ def sound(tm, d, total):
     yowl = np.sin(2 * np.pi * np.cumsum(fq) / SR); yowl = np.tanh((yowl + 0.5 * np.sin(4 * np.pi * np.cumsum(fq) / SR)) * 2.0)
     put(fx, yowl * np.minimum(ty / 0.02, 1) * np.minimum((0.42 - ty) / 0.08, 1) * 0.10, 0.27)
     put(fx, rs(so.thump(), so.SR), 0.33, 0.8)
-    put(fx, rs(so.swish(0.3), so.SR), 0.72 + C0 + HK, 0.9); put(fx, rs(so.thump(), so.SR), 0.85 + C0 + HK, 1.6)       # the punch
+    put(fx, rs(so.swish(0.3), so.SR), 0.72 + C0 + HK, 0.9); put(fx, rs(so.thump(), so.SR), 0.85 + C0 + HK, 1.6); HITS.append(0.85 + C0 + HK)       # the punch
     put(fx, rs(so.swish(0.9), so.SR), 1.0 + C0, 0.5)                                                     # the shadow runs down the wall
     t_ = np.arange(int(0.5 * SR)) / SR                                                             # the whistle's toot
     if not (SCENE3[0] and thud is not None):                 # with the tap he blows on the tap; the flip's toot sat on "Traffic flows."
         put(fx, np.sin(2 * np.pi * (2300 + 60 * np.sin(2 * np.pi * 38 * t_)) * t_) * np.minimum(t_ / 0.02, 1) * np.exp(-np.maximum(t_ - 0.35, 0) / 0.05) * 0.12, toot)
     put(fx, rs(so.hiss(0.5), so.SR), bump - 0.45, 0.5)                                              # the tyres
-    put(fx, rs(so.thump(), so.SR), bump, 2.0 if thud is None else 0.9)
+    put(fx, rs(so.thump(), so.SR), bump, 2.0 if thud is None else 0.9); HITS.append(bump)
     if SCENE3[0]:
         def whistle(t0, dur_, g=0.12):
             tw = np.arange(int(dur_ * SR)) / SR
@@ -211,6 +214,7 @@ def sound(tm, d, total):
         if thud is not None:
             whistle(bump, 0.22)                                                                      # his whistle on the tap
             put(fx, rs(so.thump(), so.SR), thud, 2.2); put(fx, rs(so.swish(0.12), so.SR), thud + 0.01, 0.5)   # she lands
+            HITS.append(thud)
         if SCENE3[0] == "cross":                             # (24 Nov) the crossing in four shots (on4_cross): the sounds on its drawings
             import on4_cross as xc
             T3N = float(len(m_.TESTS["T3"]())) if False else 48.0
@@ -287,6 +291,7 @@ def sound(tm, d, total):
     clang = sum(np.sin(2 * np.pi * f_ * tc) * np.exp(-tc / d_) for f_, d_ in ((212, 0.22), (317, 0.16), (540, 0.10), (873, 0.07))) * 0.10
     put(fx, clang + np.random.default_rng(3).standard_normal(len(tc)) * np.exp(-tc / 0.03) * 0.12, crash)
     put(fx, rs(so.thump(), so.SR), crash, 1.4)
+    HITS.append(crash)
     if __import__("on4_motion").DENSE[0]:
         put(fx, rs(so.thump(), so.SR), crash + 0.17, 0.9)                                           # (the review) and she lands inside it: a duller one after the clang
     put(fx, rs(so.metal_click(900, 0.12), so.SR), crash + 0.55, 0.5)                                # the lid lifts
@@ -316,6 +321,7 @@ def sound(tm, d, total):
     j0 = int(st_("6.05") * SR); fx[j0:int(st_("6.07") * SR) + int(1.4 * SR)] = 0.0                  # the booth, and her hanging there: nothing at all
     f0 = st_("6.07")
     put(fx, rs(so.thump(), so.SR), f0 + 18 / 12.0, 1.5)                                             # the boards
+    HITS.append(f0 + 18 / 12.0)
     put(fx, rs(so.thump(), so.SR), f0 + 23 / 12.0, 1.1)                                             # and sat down
     for j in (32, 33, 34):
         put(fx, rs(so.swish(0.14), so.SR), f0 + j / 12.0, 0.3)                                      # the coat brushed off

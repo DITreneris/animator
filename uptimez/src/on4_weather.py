@@ -35,6 +35,13 @@ def glints(c, x0, x1, y0, y1, n, t, seed=1, a=0.55):
 def wet(k, name):
     """under the cast, in the location's own units"""
     c = k.c; t = T[0]
+    if STEAM[0]:
+        if name in ("A", "A_tail"):
+            steam(c, 395, 870, t, 1.2, 0.1)                  # a grate on the lane's right, in front of the lit wall
+        elif name.startswith("C"):
+            steam(c, 470, 690, t, 0.9, 0.5)                  # a manhole by the far kerb, right of the crossing
+        elif name == "front":
+            steam(c, 330, 720, t, 1.0, 0.3)                  # a vent in the pavement between the car and her
     if name in ("A", "A_tail"):                              # the lit wall at the lane's end, down the wet cobbles
         g = cairo.LinearGradient(0, 548, 0, 900)
         g.add_color_stop_rgba(0, 1, 1, 0.96, 0.36); g.add_color_stop_rgba(1, 1, 1, 0.96, 0.0)
@@ -85,6 +92,35 @@ KEYS = {"1": ("right", 0.12), "2": ("right", 0.11), "3": ("left", 0.11), "4": ("
 RAIN_A = [0.55]                                              # one layer of Office Noir 2's streaks, this much of their own 0.20
 
 
+SHAKE = [False]                                              # (25 Nov, Tomas's pick "kamera") the camera jolts on each blow (on4_rough.HITS): 0.25 s, 6 px at most, as the cat's lens drawing
+HITS = []
+STEAM = [False]                                              # steam off a grate in the lane, a manhole at the crossing, a vent by the theatre's kerb
+
+
+def steam(c, x, y, t, s=1.0, seed=0.0):
+    """soft puffs that rise, widen and thin out; each lives 1.6 s; drawn under the cast, in the location's units"""
+    for j in range(6):
+        u = ((t / 1.6) + j / 6.0 + seed) % 1.0
+        px = x + s * (18 * math.sin(2 * math.pi * (u * 0.8 + j * 0.37 + seed)) + 26 * u * (1 if j % 2 else -1))
+        py = y - s * 150 * u
+        r_ = s * (10 + 30 * u)
+        g = cairo.RadialGradient(px, py, 0, px, py, r_)
+        g.add_color_stop_rgba(0, 1, 1, 1, 0.34 * math.sin(math.pi * u)); g.add_color_stop_rgba(1, 1, 1, 1, 0)
+        c.set_source(g); c.new_path(); c.arc(px, py, r_, 0, 2 * math.pi); c.fill()
+
+
+def jolt(s, t):
+    """the frame moved, as on4_motion._shake (film_on3._shake29 without its punch-in)"""
+    for h in HITS:
+        u = (t - h) / 0.25
+        if 0.0 <= u < 1.0 and t > 0.5:
+            a = 6.0 * (1 - u) ** 2
+            o = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c = cairo.Context(o); c.set_source_rgb(0.02, 0.02, 0.03); c.paint()
+            c.translate(-a * abs(math.sin(u * 29 + 1)), a * 0.6 * math.sin(u * 21 + 1)); c.set_source_surface(s, 0, 0); c.paint()
+            return o
+    return s
+
+
 RAINK = [0.0]                                                # 8.1, 8.2: how much of the street's rain is in the office's dark (on4_motion.LOOP_RAIN)
 SEAM = [False]                                               # one rain, one light through the loop's seam: frame 0 is rained on and lit as the last drawing is
 TOTAL = [85.8]
@@ -133,6 +169,8 @@ def post(s, shot, t, heads=(), figs=()):
         finally:
             RAMP[0] = keep
         c.push_group(); o2.rain(sc.Ctx(c, 0), tr); c.pop_group_to_source(); c.paint_with_alpha(rk * RAIN_A[0])
+    if SHAKE[0]:
+        s = jolt(s, t)
     return s
 
 

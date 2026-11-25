@@ -54,6 +54,29 @@ PLAN_CARD = ["v6"]               # v7: one title, every number seen, the card la
 ROW0 = [1.0]                      # (24 Nov, Tomas's pick) THE HOUSE lit (1) or out (0): it stutters and dies as she lifts the envelope; ALWAYS COLLECTS stays
 TUBE = [False]                    # see motto()
 MOTTO = [False]                  # v9 (24 Nov): Daddy's Home's neon motto, THE HOUSE ALWAYS COLLECTS, on the wall over the booth
+CHASE = [False]                  # (25 Nov, Tomas's pick "gyva aplinka") the theatre's bulbs run: a dark gap travels round the arch and along the marquee; the dealers' gloves move
+CLOCK_T = [None]                 # the film's time for the drawing being made (on4_text sets it)
+
+
+def _bulb(c, x, y, r, i):
+    """st.bulb, or under CHASE one bulb in four dark, the dark ones moving on four times a second"""
+    if CHASE[0] and CLOCK_T[0] is not None and (i + int(CLOCK_T[0] * 8)) % 4 == 0:
+        c.set_source_rgb(0.32, 0.30, 0.27); c.new_path(); c.arc(x, y, r * 0.9, 0, 2 * math.pi); c.fill()
+        return
+    st.bulb(c, x, y, r)
+
+
+def _deal(i, hx):
+    """a dealer's hand dealing: the card hand flicks out and back every 0.6 s, the other taps; off: (0, 0)"""
+    if not CHASE[0] or CLOCK_T[0] is None:
+        return 0.0, 0.0
+    ph = (CLOCK_T[0] / 0.6 + (hx % 97) / 97.0) % 1.0
+    if i:
+        u = math.sin(math.pi * min(1.0, ph / 0.5)) if ph < 0.5 else 0.0
+        return 14.0 * u, -6.0 * u
+    return 0.0, -4.0 * abs(math.sin(math.pi * ph * 2))
+
+
 ARCH_WARM = [False]              # v9: the arch's bulbs give warm light (laid after the grade, so it keeps its colour)
 PASSAGE_DARK = [False]           # v9: the passage's walls charcoal, its far end lit (the POV, 4.4)
 LIMO = [(150, 0.74)]              # v8 (proportion audit): (x, scale) of the limousine at the kerb; on4_scenes sets (30, 1.15)
@@ -124,7 +147,7 @@ def front(k, limo=False):
     st.poly(k, [(40, 262), (500, 262), (500, 430), (40, 430)], (0.06, 0.06, 0.07), 2.6)
     for i in range(32):
         u = i / 31
-        st.bulb(c, 48 + u * 444, 270, 2.4); st.bulb(c, 48 + u * 444, 422, 2.4)
+        _bulb(c, 48 + u * 444, 270, 2.4, i); _bulb(c, 48 + u * 444, 422, 2.4, 31 - i)
     neon_text(k, "PAM-CAT", 270, 336, 70)
     bulb_strip(k, 70, 470, 368, "ONE EVENING · ONCE IN A LIFETIME", 17)
     neon_text(k, "ONLY FOR YOU", 270, 416, 42)
@@ -170,10 +193,10 @@ def front(k, limo=False):
         n = 30
         for i in range(n + 1):
             a = math.pi + math.pi * i / n
-            st.bulb(c, cx + math.cos(a) * (rr + ring) + r.uniform(-2, 2), at + rr + math.sin(a) * (rr + ring) + r.uniform(-2, 2), 2.8)
+            _bulb(c, cx + math.cos(a) * (rr + ring) + r.uniform(-2, 2), at + rr + math.sin(a) * (rr + ring) + r.uniform(-2, 2), 2.8, i + 9)
         for j in range(9):
             for sx in (-1, 1):
-                st.bulb(c, cx + sx * (rr + ring) + r.uniform(-2, 2), at + rr + 8 + j * 9 + r.uniform(-3, 3), 2.8)
+                _bulb(c, cx + sx * (rr + ring) + r.uniform(-2, 2), at + rr + 8 + j * 9 + r.uniform(-3, 3), 2.8, 8 - j if sx < 0 else n + 9 + j)
     # the pavement, the kerb, the cobbles; the sedan parked at the kerb, empty: how she found the place
     st.poly(k, [(-10, 660), (550, 660), (550, 694), (-10, 694)], st.PAVE, 1.8)
     def road():
@@ -293,7 +316,8 @@ def inside(k):
         st.poly(k, [(-6, -9), (6, -9), (6, 9), (-6, 9)], (0.97, 0.96, 0.92), 1.0); c.restore()
     for o in dealers:                                                         # their pale gloves on the felt, dealing
         for i, (m, hx, hy, w, d, side) in enumerate(o["rec"]):
-            c.save(); c.set_matrix(m); hp.draw(k, "palm" if i else "relax", hx, hy - 30, w * 1.25, st.GLOVE, d, -1 if i == 0 else 1); c.restore()
+            ddx, ddy = _deal(i, hx)
+            c.save(); c.set_matrix(m); hp.draw(k, "palm" if i else "relax", hx + ddx, hy - 30 + ddy, w * 1.25, st.GLOVE, d, -1 if i == 0 else 1); c.restore()
     st.poly(k, [(0, 700), (540, 700), (540, 960), (0, 960)], (0.10, 0.05, 0.06), 1.8)                   # the floor
 
 
@@ -442,7 +466,8 @@ def hall(k):
         st.poly(k, [(-6, -9), (6, -9), (6, 9), (-6, 9)], (0.97, 0.96, 0.92), 1.0); c.restore()
     for o in dealers:
         for i, (m, hx_, hy_, w, d, side) in enumerate(o["rec"]):
-            c.save(); c.set_matrix(m); hp.draw(k, "palm" if i else "relax", hx_, hy_ - 28, w * 1.25, st.GLOVE, d, -1 if i == 0 else 1); c.restore()
+            ddx, ddy = _deal(i, hx_)
+            c.save(); c.set_matrix(m); hp.draw(k, "palm" if i else "relax", hx_ + ddx, hy_ - 28 + ddy, w * 1.25, st.GLOVE, d, -1 if i == 0 else 1); c.restore()
     # the empty chair in front, its black back to us, the bentwood arms and runners (a foreground layer)
     fx, fy = 452, 720
     st.poly(k, [(fx - 36, fy - 76), (fx + 36, fy - 76), (fx + 40, fy + 6), (fx - 40, fy + 6)], (0.05, 0.05, 0.06), 2.4)

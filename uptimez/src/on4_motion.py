@@ -1169,6 +1169,8 @@ def blend(a, b, t):
 
 
 SIGN_OUT = [False]
+CARRY2 = [False]                                             # (25 Nov, cold test of v22: "she floats into the shot") 3.6: carried at their hands' height, then dropped: she falls the drop in three drawings
+PEEL2 = [False]                                              # (25 Nov, cold test of v22: "the peel pops into the corner") it falls from the flick to the ground in three drawings, her eyes after it
 LOOP2 = [False]                                              # (25 Nov, Tomas's picks on the loop) the dark held 1 s (was 2.5), the lane comes up through it over 1.2 s (was 0.4); the eyes open where the cat will leap from; one rain through the seam (on4_weather draws it: LOOP_RAIN, LOOP_MIX); the opening 6 drawings shorter
 LOOP_RAIN = [0.0]; LOOP_MIX = [0.0]
 EYES2 = (230, 270, 688, 10)                                  # the eyes in the dark: where the cat's are on its first drawing (cat_over "in" under LOOP2)
@@ -1430,8 +1432,12 @@ def t7():
     fr.append(up(112, 1.0, "peer", (0.8, -1.0), arms=FLICK))                                        # a flick
     fr.append(up(112, 1.0, "peer", (0.6, -0.4), arms=FLICK, pl=(420, HEADY(112) - 70, 0.9, 1.9)))
     fr.append(up(112, 1.0, "proud", (0.3, 0), pl=(470, HEADY(112) + 10, 0.9, 3.2)))
+    if PEEL2[0]:                                             # down the bin's side to the ground, turning; her eyes go down with it
+        y0_ = HEADY(112) + 10
+        for j, u in enumerate((0.35, 0.7, 1.0)):
+            fr.append(up(114, 1.0, "proud", (0.4, 0.2 + 0.4 * u), pl=(470 - 50 * u, y0_ + (GY - 6 - y0_) * u * u, 0.9, 3.2 + 1.2 * u)))
     while len(fr) < 55:                                      # hero pose, in a bin: nothing happened
-        fr.append(up(116, 1.0, "proud", (0.5, -0.2), peel_on=False, pl=(452, GY - 6, 0.9, 1.5)))
+        fr.append(up(116, 1.0, "proud", (0.5, -0.2), peel_on=False, pl=(420, GY - 6, 0.9, 1.5) if PEEL2[0] else (452, GY - 6, 0.9, 1.5)))   # PEEL2: it lies where it fell, whole in the frame
     return fr
 
 
@@ -1453,6 +1459,8 @@ def t8():
         carry = i < 15
         cx = X0 - 70 + (1 - i / 14.0) * 250 if carry else X0 - 70         # her middle while carried (she lies head to the left)
         lift = -30 + (3 if i % 2 else 0) if carry else min(0, -30 + (i - 14) * 16)
+        if CARRY2[0]:
+            lift = (-120 + (3 if i % 2 else 0)) if carry else -120 * (1 - ease(min(1.0, (i - 14) / 3.0)) ** 2)
         cast = []
         if i >= 30:                                          # up off the pavement, stiff as a plank, about her heels
             t = ease(min(1.0, (i - 30) / 11.0))
