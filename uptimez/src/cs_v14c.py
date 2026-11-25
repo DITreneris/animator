@@ -222,6 +222,9 @@ def _toss(k, d):
     else:
         hand_t = lerp(catch, V.REST14, ease((t - TOSS[1] - 0.1) / 0.25))
     a1, a2 = ik(V.SH14[0], V.SH14[1], hand_t[0], hand_t[1], g.LN, g.LN, 1)
+    lean = 0.0
+    if t < TOSS[0]:                                                                # v17: the same arm as 1.4 coming home
+        (a1, a2), lean = V.angles14(t)
     held = t >= TOSS[1]
 
     def ex(k_, o):
@@ -248,7 +251,7 @@ def _toss(k, d):
         rb_arm = ("paddle" if not held else "none") if V.ARM14[0] == "paddle" else "none"
         S(k, s1.TWO14_IN, auto=False, portrait="hang", extra=ex,
           **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=rb_arm),
-                 dn=at("don", x=X["don"] - V.STEP, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
+                 dn=at("don", x=X["don"] - V.STEP - lean, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
 
 
 def _shapes14():

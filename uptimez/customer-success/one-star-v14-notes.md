@@ -60,3 +60,21 @@ Both told back all five beats (the review and the robot's ★ 1/5; "Approved." u
 - 1.4 Don's arm straight to the visor and 4.2b Pam's pointing arm across to his pocket read as poles;
 - 3.1b the roll bumps "a post": the glass door does not read as a door;
 - 5.2 the sleeve from the corner: A "pole-like", B "acceptable for an insert".
+
+## v17: the cold test's notes (25 Nov, /grill-me)
+
+Rebuild: `python3 cs_film_v17.py ../customer-success 2` (master `rough_v17`), `python3 cs_film_v17.py OUT 1` for the PSNR check.
+All behind `cs_v17.install()`; v16 rebuilds as before.
+
+| Pick | Done |
+|---|---|
+| 4.4 the green arrow | Gone; the HUMAN✓ paddle leans to Pam after it turns (`cs_v15e.NO_ARROW44`) |
+| 1.4 Don's arm a pole | He leans in 8 and presses with the elbow up, out of his body's outline (the upper arm had been hidden on his white shirt, so only a level forearm showed). The swings from and back to rest blend the joint angles: an IK flip there jumped (`cs_v14.angles14`, ELBOW14, LEAN14) |
+| 4.2b Pam's arm a pole | The elbow at her side, the forearm and finger up at his pocket (`cs_scene4.ELBOW42b` = 20°) |
+| 3.1b "a post" | The glass door has a pull handle, a kick rail, glints and a PUSH sticker (`cs_v14.DOOR31b`) |
+| 5.2 sleeve | The insert 120 higher, so her sleeve from the top edge is short (`cs_grips.SHIFT52`; the plan's floor carried on below) |
+| 6.6 gate at 540 | The hand logs and the gate in frame units (540 wide) whatever surface draws: at 1080 half the passes draw on a 540 scratch surface, so 14 x HI was 28 units there and 14 at 540. Now 16 kept out, 13 the gate; 0 faults at both sizes |
+| "Approved." | Not re-recorded: alone 3/3 for every take; after the robot's "...approval required." Whisper writes "Approve." for the old take, four new reads at 0 and +3 dB, and with the music back at 0.05, 0.9 or 1.6 s. Its language model, not the take: Tomas listens |
+
+QA v17 master: 1996 frames, -15.6 LUFS, -2.3 dBFS, bubbles 12/0, hand and elbow gates 0 at 1080 and 540; PSNR vs the 540
+film 35.0 average, no shot dips below v16; speech 15/16 ("Approved." as above).

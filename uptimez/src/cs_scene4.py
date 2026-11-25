@@ -265,6 +265,25 @@ REACH42b = [40.0]                                            # the hand stops th
 POINT_W = [19.0]                                     # the blue edge above his pocket (scene)
 
 
+ELBOW42b = [None]                                    # v17: her upper arm's angle (degrees off down) for a low point
+
+
+def _point_low(r):
+    """Her arm for "Check your pocket.": the upper arm down at her side (ELBOW42b off straight down, toward him), the
+    forearm out along the line to his pocket; blended from her rest angles by r (two cold viewers: the straight
+    reach across to the pocket read as a pole)."""
+    rest = (PX42b + 24, PAM_FEET - 64)
+    r0 = pam_reach(PX42b, 0.0, rest)
+    a = math.radians(-LEAN42b * r)
+    vx, vy = POCKET[0] - PX42b, POCKET[1] - PAM_FEET
+    px, py = (vx * math.cos(a) - vy * math.sin(a)) / PAM_S, (vx * math.sin(a) + vy * math.cos(a)) / PAM_S
+    a1 = ELBOW42b[0]
+    ex, ey = PAM_SH_R[0] + math.sin(math.radians(a1)) * LN, PAM_SH_R[1] + math.cos(math.radians(a1)) * LN
+    af = math.degrees(math.atan2(px - ex, py - ey))
+    goal = (a1, ((af - a1 + 180) % 360) - 180)
+    return tuple(x + (((y - x + 180) % 360) - 180) * r for x, y in zip(r0, goal))
+
+
 def s4_2b(k, d):
     """14 drawings (1.2 s). Pam's eyes drop to his pocket; her arm comes up, elbow bent, her finger stopping just
     short of the blue edge sticking out of it; he looks down at it."""
@@ -278,6 +297,8 @@ def s4_2b(k, d):
     aim = (sh[0] + (POCKET[0] - sh[0]) * REACH42b[0] / L_, sh[1] + (POCKET[1] - sh[1]) * REACH42b[0] / L_)
     tgt = lerp(rest, aim, r)
     a1, a2 = pam_reach(PX42b, LEAN42b * r, tgt)
+    if ELBOW42b[0] is not None:                                                    # v17 (One Star): the elbow at her side,
+        a1, a2 = _point_low(r)                                                     # the forearm and finger at the pocket
     look_c = (1, 0) if d < 5 else (0.3, 1)
     got = {}
 

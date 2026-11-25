@@ -62,6 +62,9 @@ def _desk(k):
 
 # ---- 4.4 ----------------------------------------------------------------------------------------------------------------
 
+NO_ARROW44 = [False]                                      # v17 (cs_v17): no arrow, the paddle leans to her
+
+
 def s4_4(k, d):
     t = d / float(DPS)
     f = ease((d - s4.FLIP44[0]) / float(s4.FLIP44[1] - s4.FLIP44[0]))
@@ -83,11 +86,13 @@ def s4_4(k, d):
         if dim > 0:
             c.set_source_rgba(0.02, 0.03, 0.06, dim); c.new_path(); c.arc(sx, sy, 0.78 * r, 0, 6.3); c.fill()
         hx, hy = min(o["robot"]["hands"])
+        turn = math.cos(math.pi * f)
+        lean = -0.24 * ease((d - s4.FLIP44[1]) / 4.0) if turn < 0 and NO_ARROW44[0] else 0.0   # v17: no arrow; it leans to Pam
+        c.save(); c.translate(hx, hy); c.rotate(lean); c.translate(-hx, -hy)      # (the arrow read as a rope tying her to it)
         c.set_source_rgb(*INK); c.set_line_width(4.2); c.set_line_cap(1)
         c.move_to(hx, hy + 3); c.line_to(hx - 6, hy - 26); c.stroke()
         c.set_source_rgb(0.70, 0.55, 0.35); c.set_line_width(2.4); c.move_to(hx, hy + 3); c.line_to(hx - 6, hy - 26); c.stroke()
         ellipse(k_, hx, hy, 4.2, 4.2, (0.62, 0.64, 0.68), 983, shadow=False, lw=1.2)
-        turn = math.cos(math.pi * f)
         px, py = hx - 7, hy - 44
         c.save(); c.translate(px, py); c.rotate(-0.04); c.scale(max(0.06, abs(turn)), 1.0)
         rect(k_, -33, -20, 66, 40, (1, 1, 1) if turn < 0 else (0.80, 0.82, 0.86), 982, lw=2)
@@ -96,7 +101,8 @@ def s4_4(k, d):
             c.set_source_rgb(*cp.GRN); c.set_line_width(3.0); c.set_line_cap(1); c.set_line_join(1)
             c.move_to(18, 1); c.line_to(22, 7); c.line_to(29, -7); c.stroke()
         c.restore()
-        if turn < 0 and "pam" in got:                                              # the arrow, from the paddle down to her badge
+        c.restore()
+        if turn < 0 and "pam" in got and not NO_ARROW44[0]:                                              # the arrow, from the paddle down to her badge
             bx, by = got["pam"]["head"][0] + 8, got["pam"]["head"][1] + 52 * s4.PAM_S / 0.54 * 0.54 * 1.9
             ax, ay = px - 30, py + 18
             c.set_source_rgb(*cp.GRN); c.set_line_width(4.0); c.set_line_cap(1); c.set_line_join(1)
@@ -105,6 +111,7 @@ def s4_4(k, d):
             an = math.atan2(ey_ - (ey_ - 14), ex_ - (ex_ + 12))
             for s_ in (-0.5, 0.5):
                 c.move_to(ex_, ey_); c.line_to(ex_ - 9 * math.cos(an + s_), ey_ - 9 * math.sin(an + s_)); c.stroke()
+
 
     with s1.Breath(sb, "robot", s1.br(d, 0.5, 0.006)):
         S(k, s4.CAM44, auto=False, portrait=False, pre=pre, extra=ex,

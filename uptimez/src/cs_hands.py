@@ -15,10 +15,23 @@ def _robot(skin):
     return max(skin) - min(skin) < 0.08                                     # grey or steel: the robot's arm
 
 
+TOL = [None]                                                                 # v17: None = v16 (14 x HI device px)
+
+
+def _ds(k):
+    return k.c.get_target().get_device_scale()[0]
+
+
 def _held(k, hx, hy):
     import cs_scene1 as s1
     x, y = k.c.user_to_device(hx, hy)
-    return any((x - a) ** 2 + (y - b) ** 2 < (14 * s1.HI[0]) ** 2 for a, b in s1.PH_PREV)
+    if TOL[0] is None:
+        return any((x - a) ** 2 + (y - b) ** 2 < (14 * s1.HI[0]) ** 2 for a, b in s1.PH_PREV)
+    # v17: in frame units (540 wide) whatever surface draws: at 1080 half the passes draw on a 540 scratch surface, so
+    # 14 x HI was 28 units there and 14 at 540 (a hand 13 units off a phone: kept out at 1080, drawn under it at 540)
+    x, y = x / _ds(k), y / _ds(k)
+    return any(min((x - a) ** 2 + (y - b) ** 2, (x - a / s1.HI[0]) ** 2 + (y - b / s1.HI[0]) ** 2) < TOL[0] ** 2
+               for a, b in s1.PH_PREV)
 
 
 LOG = []
@@ -27,6 +40,8 @@ _PER = {}                                                                    # t
 
 def hook(k, hx, hy, w, skin, seed, d, side):
     x_, y_ = k.c.user_to_device(hx, hy)
+    if TOL[0] is not None:                                                  # v17: logged in frame units
+        x_, y_ = x_ / _ds(k), y_ / _ds(k)
     if _held(k, hx, hy):                                                    # a phone is held here: its grip draws the hand
         LOG.append((hp._N[0], "held", x_, y_, w)); hp._N[0] += 1
         return
