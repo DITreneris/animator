@@ -21,7 +21,7 @@ import cs_scene1 as s1
 import fs_storyboard as sb
 
 REG = []
-K = {"don": 50.0, "robot": 52.0, "client": 48.0, "pam": 44.0, "sofia": 44.0, "mom": 44.0}   # head radius, rig units
+K = {"don": 50.0, "robot": 52.0, "client": 54.0, "pam": 44.0, "sofia": 44.0, "mom": 44.0}   # head radius, rig units
 ON = [False]
 LOCK = {}                                  # (key, shot) -> (patch surface, box, tip)
 FAULTS = []

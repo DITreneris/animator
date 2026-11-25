@@ -332,7 +332,7 @@ def s3_5(k, d):
         u = _ease((t - WIND[0]) / (WIND[1] - WIND[0])); pose = tuple(a + (b - a) * u for a, b in zip(up, wind))
     else:
         u = _ease((t - THROW) / 0.17); pose = tuple(a + (b - a) * u for a, b in zip(wind, out))
-    lean = (s3.TILT[min(d, len(s3.TILT) - 1)] + 3) if t < THROW else 8
+    lean = 5 if t < THROW else 8                                                  # v15e: steady while he speaks (the locked bubble sat on his leaning face)
     cu = _ease((t - WIND[0]) / 0.4)
     cam = tuple(a + (b - a) * cu for a, b in zip(*CAM35))
     crumple = min(1.0, t / 0.33)

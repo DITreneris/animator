@@ -56,8 +56,15 @@ def s3_3(k, d):
             ellipse(k_, cx, top + h, w / 2 + 2, 5, (0.16, 0.38, 0.78), 993, shadow=False, lw=1.4)
         sk = kit.PEOPLE["DON"]["skin"]
         mine = [i for i, r in enumerate(g.REC) if tuple(round(v, 2) for v in r[3]) == tuple(round(v, 2) for v in sk)]
-        for i in mine[-2:]:                                                         # his fists over the corners, apart
-            g.again(k_, i, "fist")
+        import of_cast as _oc                                                      # v15f: the series' clutch on the edge
+        c_ = k_.c
+        for i in mine[-2:]:
+            hx, hy, hw, _sk, _d, _arm, m_ = g.REC[i]
+            c_.save(); c_.set_matrix(m_); ux, uy = c_.user_to_device(hx, hy); sc_ = c_.user_to_device_distance(hw, 0)[0]
+            c_.restore()
+            s1.PH_DEV.append((ux, uy))                                              # the rig's own hand stays out (two-pass)
+            ux, uy = c_.device_to_user(ux, uy); sc_ = c_.device_to_user_distance(sc_, 0)[0]
+            _oc.clutch(k_, ux, top + 1, sc_ * 0.95, skin=sk)
 
     with s1.A.Don(s1.A.MOUTH, talk), s1.Breath(sb, "don", s1.br(d, 0.0, 0.010)), s3.Client(), s1.Breath(sb, "client", s1.br(d, 0.4)):
         S(k, s3.CAM33, auto=False, portrait="hang", extra=ex,
@@ -183,8 +190,14 @@ def s3_4b(k, d):
             for sx in (-1, 1):
                 c.new_path(); c.arc(cx + sx * 12, y0 + 96, 14, 0, 6.3); c.stroke()
             c.restore()
+            import of_cast as _oc                                                  # v15f: the series' clutch on the top edge
             for i in (lo, up):
-                g.again(k_, i, "grab")
+                hx, hy, hw, sk_, _d, _arm, m_ = g.REC[i]
+                c.save(); c.set_matrix(m_); ux, uy = c.user_to_device(hx, hy); sc_ = c.user_to_device_distance(hw, 0)[0]
+                c.restore()
+                s1.PH_DEV.append((ux, uy))
+                ux, uy = c.device_to_user(ux, uy); sc_ = c.device_to_user_distance(sc_, 0)[0]
+                _oc.clutch(k_, ux, y0 + 1, sc_ * 0.95, skin=sk_)
             return
         fx, fy = rx, ry                                                            # the raised fist (his screen-right hand)
         if d <= 12:
