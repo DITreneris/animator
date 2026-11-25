@@ -78,8 +78,9 @@ def s4_1(k, d):
 # ---- 2.1 ---------------------------------------------------------------------------------------------------------------
 
 def s2_1(k, d):
-    """26 drawings. The phone held in front of him, the mic already at his mouth (sales mode); he talks, smiling; his
-    other hand quiet at his side."""
+    """26 drawings. The phone held in front of him, the mic already at his mouth (sales mode). v15b (Tomas: "0:14 has no
+    emotion; Don must be nervous here"): he has just been sued in public, so he talks wide-eyed, brows up, sweat
+    running off his scalp, the phone shaking in his hand; his other hand quiet at his side."""
     from cand_bc import ik
     t = d / float(DPS)
     a1, a2 = ik(s2.SH_R[0], s2.SH_R[1], s2.REST_R[0], s2.REST_R[1], s2.LN, s2.LN, -1)
@@ -93,15 +94,32 @@ def s2_1(k, d):
     def ex(k_, o):
         (lx, ly), (rx, ry) = o["don"]["hands"]
         hx, hy = (lx, ly) if lx < rx else (rx, ry)
-        s1.phone_held(k_, hx, hy, sb.SC["don"], ang=0.22, buzz=False, d=d, seed=941)
-        s1.fist(k_, hx, hy, sb.SC["don"], kit.PEOPLE["DON"]["skin"], 945)
+        j = (1.2, -0.8, 0.9, -1.3)[d % 4]                                          # the phone shakes in his hand
+        s1.phone_held(k_, hx + j, hy + 0.5 * j, sb.SC["don"], ang=0.22 + 0.03 * j, buzz=False, d=d, seed=941)
+        s1.fist(k_, hx + j, hy + 0.5 * j, sb.SC["don"], kit.PEOPLE["DON"]["skin"], 945)
+        _sweat(k_, o["don"]["head"], sb.SC["don"], d)
 
     with s1.A.Don(s1.A.MOUTH, talk), s1.Breath(sb, "don", s1.br(d, 0.0, 0.010)):
         u = ease((d - s2.PAN21[0]) / float(s2.PAN21[1] - s2.PAN21[0]))
         cam = tuple(a_ + (b_ - a_) * u for a_, b_ in zip(s2.CAL21, s2.CAM21))
         S(k, cam, auto=False, mic="down", portrait="hang", back=back, extra=ex,
           **base(cl=False, sf=False, pm=False, mm=False, rb=False, door=0.0,
-                 dn=at("don", pose=H.PHONE_L + (a1, a2), face="happy", look=(-0.3, 0.6) if d < 6 else (1, 0))))
+                 dn=at("don", pose=H.PHONE_L + (a1, a2), face="shock", look=(-0.3, 0.6) if d < 3 else
+                       ((1, 0) if (d // 5) % 2 else (0.6, -0.2)))))                # eyes darting, not resting
+
+
+def _sweat(k, head, s, d):
+    """Two drops off his bald scalp, one after the other, running down to the ear and gone; a third flicks off."""
+    hx, hy = head
+    for i, (ox, oy, ph) in enumerate(((-40, -38, 0), (42, -32, 7), (-46, -14, 13))):
+        u = ((d + ph) % 18) / 18.0
+        x = hx + ox * s
+        y = hy + (oy + 34 * u) * s
+        r = 4.2 * s * (1 - 0.3 * u)
+        c = k.c
+        c.new_path(); c.move_to(x, y - 2.4 * r); c.curve_to(x + 1.1 * r, y - 0.6 * r, x + r, y + r, x, y + r)
+        c.curve_to(x - r, y + r, x - 1.1 * r, y - 0.6 * r, x, y - 2.4 * r); c.close_path()
+        c.set_source_rgb(0.62, 0.84, 0.98); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.set_line_width(1.0); c.stroke()
 
 
 # ---- the rating: one big star -------------------------------------------------------------------------------------------
