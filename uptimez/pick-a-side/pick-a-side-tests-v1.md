@@ -338,3 +338,83 @@ Shared notes for the film (stage 7), not fixed in the test:
 - **The hit is rushed** (3 of 3): the charge and the hit take two drawings. In the film, hold the contact one drawing longer and let the charge start a little earlier.
 - **"Frozen mid-fall, never lands"** (3 of 3): that's the test's padding on the board's end pose. In the film he lands or the cut comes on the tilt (2.11 is 1.6 s, then 3.1).
 - **The 2.10b arm hold drags** (0.6 s, 3 of 3), and the robot is half out of frame at the cut (2 of 3).
+
+## Gag stills v2 (25 Nov): Tomas's picks and the outside review of draft v1
+
+Tomas's picks (two /grill-me rounds):
+- **HR?** on the CV in place of COO? ("COO not works for our audience").
+- An **oil can** handed to the robot at the door; the stool wobble dropped.
+- The robot doesn't notice that HR? is its own job (pays off in 15).
+- Don's **pose strains** in 3.4.
+- The **bodyguards lean away** in the booth.
+
+Stills only, no video: `ps_gags_stills_v2.png`. All opt-in (`GAGS_V5`, `sofia_ps.CV_WORD`, the robot's `tele`, `phone_s` and `visor="heart"`, `ps_set.DOOR_OPEN`). With them off the board is md5-identical and `check` finds 0 faults. The oil can is Office Noir 3's (`robot_on3.oil_can`). The door, pose and booth stills are drawn by scripts outside the scene file; they are not ported into `ps_scenes.py` yet.
+
+Two cold viewers on the three strips (BI, BJ; neutral folders, no names):
+
+| Strip | Read | Not read | Verdict |
+|---|---|---|---|
+| The pose strains (5 stills) | hold, sweat, frown, the press, the green tick, the relief: 2 of 2 | **The joke:** both read "he is pressured into approving and panics", not "his arm tires holding the pose". The robot sliding the phone under his thumb: 0 of 2. The misses: 0 of 2. The phone is "a tablet" | **Partial.** Sweat and a frown read as fear of the post, not strain |
+| The oil can (2 stills) | a gift from the stern guard, the robot delighted (the heart): 2 of 2 | **The object:** "a bucket, a mug, a bag", 0 of 2 | **Partial.** The gag reads, the can doesn't |
+| The bodyguards lean away (2 stills) | — | The lean: 0 of 2 ("almost nothing changes"). Both read the guards as **holding the Client down: a hostage video** | **Fail, and it says the wrong thing:** the Client is Father's ally |
+
+## Gag stills v3 (25 Nov, Tomas: "tobulinam", third /grill-me)
+
+Picks:
+- **Booth:** the guards pinch their noses (the Client smells of gas and oil, ep 9 canon).
+- **Pose:** no misses; the tired arm sinks and the phone meets the thumb; no sweat, no worried face.
+- **Oil can:** a classic brass oiler with a long spout and a drop (new drawing, `robot_ps.oil_can`).
+- **The guard** stands one step inside the door.
+
+`ps_gags_stills_v3.png`. Two new cold viewers (BK, BL):
+
+| Strip | v2 | v3 | Verdict |
+|---|---|---|---|
+| The pose (3.4) | "pressured, he panics" 2 of 2 | **"He cheerfully, thoughtlessly approves a public post"** 2 of 2; smug at the end 2 of 2. The tired arm: 0 of 2 (read as a reach). The robot's part: 0 of 2. The phone is "a tablet standing on the floor" | The story beat now reads right (protect list 3). The strain gag itself doesn't read in stills |
+| The oil can (5.3b) | a gift, the robot delighted 2 of 2; the object 0 of 2 | a gift, delighted 2 of 2; the object **"a golden basket, a handbag"** 0 of 2; still 2 read as "it tosses the bag up", not oiling | The gag reads; **the object failed twice.** The spout reads as a handle |
+| The bodyguards (4.3) | "a hostage video" 2 of 2 | hostage 0 of 2; **a smell gag 1 of 2**; the other: "hands to their earpieces" | Partial. The wrong meaning is gone |
+
+## Gags, round 4 (25 Nov, Tomas: "stiprinam")
+
+Changes:
+- **Oil can:** a paper label OIL on the can and big black drops; the robot holds it level, its spout over its own raised joint.
+- **Booth:** big green stink lines; the pinching hand comes from the side away from the earpiece cord.
+- **Pose:** a motion test in place of stills (`ps_gag_pose_v1.mp4`, 2.7 s, 15 drawings/s; checks pass; 10 fps strip `ps_gag_pose_strip_v1.png`): hold 0.45 s, the raised arm shakes and sinks (slow, then it gives way), the phone slides in under the thumb, the green tick, smug, the thumb back up.
+
+Stills: `ps_gags_stills_v4.png`. The drawing scripts are kept in `src/ps_gags/` (not yet ported into the scene file). Two new cold viewers (BM, BN):
+
+| Gag | Result | Verdict |
+|---|---|---|
+| The oil can | "a can labelled OIL" 2 of 2; a treat or bribe for the robot 2 of 2; the robot delighted 2 of 2. Unclear who holds the can in the second still 2 of 2 | **Pass** (the object was 0 of 2 twice before) |
+| The bodyguards | stink lines 2 of 2; both pinch their noses 2 of 2; "he smells, they suffer, he doesn't react" 2 of 2 | **Pass** (v2 hostage 2 of 2, v3 1 of 2) |
+| The pose (motion) | he approves the public post and ends smug 2 of 2; **the tablet moves to meet his hand 2 of 2** (was 0 of 2 in stills). The shaking arm: "nervous, hesitant" 2 of 2, not tired | **Partial.** The robot's part and the story beat read; the shake still says nerves |
+
+Shared notes: the phone is "a tablet"; the #TeamDon photo on the booth's phone is cut by the frame ("#Teams"); the Client's oil reads as "scratches, bruises or dirt".
+
+## Board v4 and the pose's new gesture (25 Nov, Tomas: "tvarkom, kas liko")
+
+**Ported into the scene file** (all behind `GAGS_V5`; `python3 ps_scenes.py check v5`, `board v5`, `script v5`):
+- **HR?** on the CV (5.2 with a real pen, 5.3a, 5.5, 5.6, 6.1); the CV 18 % smaller and lower, her face clear.
+- **4.3:** the two bodyguards behind the bench, noses pinched, the stink lines; their heads are passed to the bubbles.
+- **5.3:** a second key frame, 5.3b, close on bodyguard 2 and the robot with the oil can and the heart. "Welcome." stays on 5.3a. The robot rolls 30 px toward him from its 5.3a mark so the can stays left of the button rail.
+
+Board v4: 38 shots, **43 key frames**, 66.3 s; `check v5`: 0 faults. With the switch off, board v3 is md5-identical and `check` finds 0 faults. Script v9 is generated (`script v5`); v8 and the timing file are byte-identical. Changed frames: `ps_board_v4_changed.png`.
+
+**Not cold-tested:** board v4 as a whole board, and its 5.3b key frame as drawn in the scene file (the round-4 still had the can held level, dripping; the board frame holds it up beside the robot's head so nothing crosses its visor).
+
+**The pose (3.4), a new gesture** (lesson 178: the shaking arm read as nerves three rounds running): the raised arm drops, he heaves it back up (two arcs under the elbow), it drops for good, the phone slides in under the thumb, the green tick, smug. No shake marks; he grins throughout. `ps_gag_pose_v2.mp4` (2.6 s), strip `ps_gag_pose_strip_v2.png`; checks pass. Not cold-tested (Tomas, 25 Nov: stills first, test when asked). It is still drawn by `src/ps_gags/L6.py`, not by the scene file: it goes in with the animation (stage 7).
+
+## The hand gate and the hand sheet (25 Nov, Tomas: "ar mes praeinam gate?")
+
+Before: `check` ran no hand gate for episode 14 (only "no more than two arms"). `hand_gate.check` run by hand on the new frames failed 4.3: "two at one wrist", a second hand drawn 4.5 px from the guard rig's own.
+
+Fixed:
+- **The gate is wired in.** `ps_scenes.grip()` declares a hand drawn outside a rig (5.2's pen hand, 4.2's finger); the rig wrappers log their hands; `check` runs `hand_gate.check` on every key frame. `hands_validate()` plants a foreign hand on the guard's own in 4.3 and must see it fail before any frame is checked (it does).
+- **4.3, the noses:** the guard's OWN arm, drawn after his head (`dh_cast.ARM_FRONT`, opt-in). No second hand.
+- **5.3b, the oil can:** held by its loop handle on the hand the rig returns, the robot's hand drawn again over it (`robot_ps.hand_again`, as `robot_mf` does for the cuffs). It is in the robot's near hand, over the guard's dark suit, so its visor and the heart are clear.
+- **3.4, the thumb:** a thumb, not a fingertip (Tomas, 25 Nov: the series' "Approved"). The phone's own drawn-in thumb is off (`robot_ps.PAD_THUMB`), so there is one thumb; the pad is brought to where his arm puts the hand (0.1 px).
+- **The hand sheet** `ps_hands_v1.png` (`src/ps_hands.py`): eight hands cut from the film's own frames at 1:1. It found two faults the checks had passed: Sofía's CV hanging beside her hand (my lowering of it; back on her hand now, smaller) and the two thumbs on the pad.
+
+Now: `check v5` 0 faults with the hand gate on; `check` (board v3) 0 faults; board v3 and Daddy's Home's cast sheet md5-identical. `ps_gag_pose_v3.mp4` and its strip replace v2.
+
+Still open in section 0: the three-silhouette test with two cold viewers (step 2) and the gaps re-measured on the 270 px tile (step 3) are not done; nothing was shown to viewers this round. In 5.5 the word HR? sits just under her mouth, over her chin.

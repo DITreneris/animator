@@ -40,10 +40,13 @@ THRONE = dp.CHAIR
 PHONE_AT = (640, 640)
 
 
+DOOR_OPEN = [0.0]                                           # opt-in (ep 14 gags, 25 Nov): 5.3, the robot opens the door (0..1)
+
+
 def _shut_stage(k):
     """fs_set4.draw_set with the glass door shut (it draws it 85 % open); restored after."""
     old = st.stage
-    st.stage = lambda k_, open_=0.0, **kw: old(k_, 0.0, **kw)
+    st.stage = lambda k_, open_=0.0, **kw: old(k_, DOOR_OPEN[0], **kw)
     return old
 
 
