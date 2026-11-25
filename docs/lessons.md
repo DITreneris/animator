@@ -1050,7 +1050,19 @@ Audit of 0:00–0:01: the first joke (the portrait on Don's head) landed at 3.7 
 - **A moving hand needs its elbow chosen.** Two-bone IK that keeps the lower elbow folded both forearms across his belly on the way up; pick the elbow out to his side, and bypass the film's own pose tween (it re-eases every new tuple and crossed them again).
 - **Not done:** the closer framing (#4 of the audit), because v33's rule (the shredder's label above the bottom quarter) leaves no room.
 
-## 240. *The Offer* v51 (25 Nov, Tomas's /grill-me on what was left after cold test v50)
+## 240. *Office Noir 2* v29–v42 (25 Nov): a raven at 0:00, the hands, the bar
+
+- **A hook that flies at the lens must first be seen whole.** The raven diving straight in was "a black slab", "a glitch", "crow, cat or coat?" in three tests. One drawing of the whole bird side on, wings open, black against the lamp's light, made 3 of 3 name a bird. The frames where the wing fills the lens still read as a smear; lit feather edges help, a red gap in them made it worse.
+- **A loop through the opening's actor:** the raven sits on the lamp in the last drawings and dives at 0:00; 3 of 3 tied the two together, so the seam is a continuation even though the frames differ.
+- **An old film never got the series' hand.** Noir 2 (17–20 Nov) predates `hands_ps` (23 Nov): balls at the wrists, a red tube for an arm, the pen and the glove one red shape. `hands_ps` got an opt-in glove mode (one silhouette, slimmer tapered fingers, folds at the wrist); its own sheet is byte-identical with it off.
+- **An insert needs its owner, or no arm at all.** "Over her shoulder" (her hair and shoulder in the near corner, an elbow inside the frame) fixed the "red hose" 3 of 3. The detective's lens arm failed as a plank through two drawn versions (a two-bone arm included); taking the arm out of the frame (his fist and cuff at the bottom edge, a long-handled glass) made it 0 of 3.
+- **Never invent a cast for a crowd.** Guests drawn from nothing (round heads, dot eyes, black boxes) were "pathetic" (Tomas). The film's own hat shadows, cut out of the room's light, read 3 of 3 as men in hats offering money and drinks.
+- **An outside review can try to fix the joke.** "Her face must stay uncovered" would have removed the gag (the card says "I never hide", the picture shows her hiding). Keep the gag and sharpen it instead: she winks over the money as the glass goes past (1 of 3 at 0.5 s, 3 of 3 at 0.83 s with the glass well clear of her face).
+- **A two-drawing ease is one step at 8 fps.** A move eased over two drawings read as a jump on every cold sheet; four drawings each way read as a move.
+- **Importing another film's module can import a second copy of this one.** `on4_weather` imports `on2_motion`, whose import called `use()` and took `b5`/`b68` over from the running film; the render failed in 8.7. Copy a small helper rather than import across films.
+
+
+## 241. *The Offer* v51 (25 Nov, Tomas's /grill-me on what was left after cold test v50)
 
 Four fixes, all read 3 of 3 by the v50 cold viewers, plus pacing:
 

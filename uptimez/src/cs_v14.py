@@ -43,6 +43,18 @@ GO_V = (2.40, 2.80)                                        # over onto the visor
 BACK = s1.LINE_D[1] + 0.15                                 # then the arm goes home (0.4 s)
 GEO14 = {}
 ARM14 = ["paddle"]                                         # v15 (bubbles): "none", the phone held low
+ELBOW14 = [1]                                              # v17: -1 lifts the elbow out of his body's outline at the visor
+DOOR31b = [False]                                          # v17: the handle, rail, glints and PUSH sticker (cs_v17)
+LEAN14 = [0.0]                                             # v17: how far he leans in for the visor (0: v14; cs_v17 sets it)
+
+
+def _lean14(t):
+    """0..1: in with the reach to the visor, out with the arm going home."""
+    if t < GO_V[0]:
+        return 0.0
+    if t < BACK:
+        return _ease((t - GO_V[0]) / (GO_V[1] - GO_V[0]))
+    return 1 - _ease((t - BACK) / 0.4)
 
 
 def _geo14():
@@ -80,6 +92,30 @@ def _arm14(t):
     return _lerp(G["V"], REST14, u), ("reach" if u < 1 else "rest")
 
 
+def _alerp(A, B, u):
+    return tuple(a + (((b - a + 180) % 360) - 180) * u for a, b in zip(A, B))
+
+
+def angles14(t):
+    """v17 ((a1, a2), lean): with ELBOW14 -1 the elbow is up and out of his body's outline from the antenna to the
+    visor; the swings from and back to rest blend the joint angles (an IK flip there jumped)."""
+    from cand_bc import ik
+    ln_ = LEAN14[0] * _lean14(t)
+    sx, sy = SH14[0] - ln_, SH14[1]
+    tgt, _ = _arm14(t)
+    up = ELBOW14[0]
+    if up == 1 or t < GO_A[0] or t >= BACK + 0.4:
+        return ik(sx, sy, tgt[0], tgt[1], g.LN, g.LN, 1), ln_
+    G = _geo14()
+    if t < GO_A[1]:
+        u = _ease((t - GO_A[0]) / (GO_A[1] - GO_A[0]))
+        return _alerp(ik(sx, sy, REST14[0], REST14[1], g.LN, g.LN, 1), ik(sx, sy, G["A"][0], G["A"][1], g.LN, g.LN, up), u), ln_
+    if t < BACK:
+        return ik(sx, sy, tgt[0], tgt[1], g.LN, g.LN, up), ln_
+    u = _ease((t - BACK) / 0.4)
+    return _alerp(ik(sx, sy, G["V"][0], G["V"][1], g.LN, g.LN, up), ik(sx, sy, REST14[0], REST14[1], g.LN, g.LN, 1), u), ln_
+
+
 def _shapes14():
     _, st = _arm14(_t())
     return [{"rest": "quiet", "reach": "grab", "antenna": "grab", "visor": "point"}[st], "quiet"]
@@ -93,7 +129,7 @@ def s1_4(k, d):
     t = d / float(DPS)
     g.REC.clear()
     tgt, st = _arm14(t)
-    a1, a2 = ik(SH14[0], SH14[1], tgt[0], tgt[1], g.LN, g.LN, 1)
+    (a1, a2), ln_ = angles14(t)
     talk = 0.0
     if s1.LINE_D[0] <= t <= s1.LINE_D[1]:
         talk = (1.0, 0.5, 1.0, 0.0)[int((t - s1.LINE_D[0]) * DPS / 2) % 4]
@@ -138,7 +174,7 @@ def s1_4(k, d):
         if True:
             S(k, cam, auto=False, portrait="hang", extra=ex,
               **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=ARM14[0]),
-                     dn=at("don", x=X["don"] - STEP, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
+                     dn=at("don", x=X["don"] - STEP - ln_, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
 
 
 
@@ -282,6 +318,18 @@ def s3_1b(k, d):
     c.set_source_rgba(1, 1, 1, 0.5)
     for x0 in (30, 70):
         c.move_to(x0, 0); c.line_to(x0 + 22, 0); c.line_to(x0 - 60, fy + 46); c.line_to(x0 - 82, fy + 46); c.close_path(); c.fill()
+    if DOOR31b[0]:                                                                # v17: read as a glass DOOR, not a post
+        c.set_source_rgba(1, 1, 1, 0.55)                                          # glints inside the view
+        for x0, w_ in ((132, 10), (112, 5)):
+            c.move_to(x0, 380); c.line_to(x0 + w_, 380); c.line_to(x0 + w_ - 60, fy + 20); c.line_to(x0 - 60, fy + 20); c.close_path(); c.fill()
+        g.rect(k, -10, fy + 14, 162, 32, (0.62, 0.65, 0.70), 985, shadow=False, lw=2.5)   # the metal kick rail
+        for yy in (470.0, 590.0):                                                 # the pull handle on its two mounts
+            g.rect(k, 120, yy - 4, 18, 8, (0.62, 0.65, 0.70), 985, shadow=False, lw=2)
+        g.rect(k, 112, 462, 10, 136, (0.74, 0.77, 0.81), 985, shadow=False, lw=2.5)
+        c.save(); c.translate(76, 470); c.rotate(-0.04)
+        g.rect(k, -26, -12, 52, 24, (0.98, 0.97, 0.93), 985, shadow=False, lw=2)
+        cp.T(c, "PUSH", 0, 6, 15, col=INK)
+        c.restore()
     g.rect(k, 150, -10, 22, fy + 60, (0.36, 0.40, 0.47), 986, shadow=False, lw=3)
     pts = []
     for i in range(61):
