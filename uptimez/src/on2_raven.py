@@ -259,6 +259,7 @@ def _eye3(c, x, y, r, side=1):
     c.restore()
 
 
+RIM3 = [False]                                             # (25 Nov, v42; the wing read as "a black smear", 3/3) the feathers' edges lit silver, the lens's dark halved
 RIM2 = [False]                                             # (25 Nov, v32) the rim as light, not an outline: strongest at its lamp end, thinning and fading along the edge
 
 
@@ -291,7 +292,10 @@ def wing3(c, x, y, S, rot=0.0, side=1, haze=0.0):
     for i in range(7):                                                                  # the feathers' edges, overlapping, lit
         u = (i + 0.5) / 7
         bx, by = 40 + 360 * u, 60 - 70 * u
-        _line(c, (bx - 30, by - 40), (bx + 4, by + 30 - 30 * u), EDGE, 3.0)
+        _line(c, (bx - 30, by - 40), (bx + 4, by + 30 - 30 * u), (0.62, 0.64, 0.70) if RIM3[0] else EDGE, 4.0 if RIM3[0] else 3.0)
+    if RIM3[0]:                                                                         # the trailing edge: each feather's tip caught by the lamp
+        for (x0, y0), (x1, y1) in zip(trail[1::2], trail[2::2]):
+            _line(c, (x0, y0), (x1, y1), (0.78, 0.80, 0.86), 3.2)
     _rim(c, lead, 5.0)                                                                   # the lamp's light along the leading edge
     if haze:
         c.new_path(); c.move_to(*lead[0])
@@ -446,12 +450,12 @@ def draw3(s, key, behind=None):
         c.save(); c.rectangle(0, 0, 540, 960); c.clip()
         head3(c, 300, 420, 300)
         wing3(c, -300, 640, 210, rot=-0.55, side=1)
-        c.restore(); lens(c, 0.7)
+        c.restore(); lens(c, 0.35 if RIM3[0] else 0.7)
         if behind is not None:
             gap(c, behind, GAP_STRIKE)
         return m4._shake(s, 0.0, amp=6.0)
     elif key == "wipe":                                         # the wing over the whole lens
-        c.save(); c.rectangle(0, 0, 540, 960); c.clip(); wing3(c, -140, 720, 300, rot=-0.62, side=1); c.restore(); lens(c, 0.6)
+        c.save(); c.rectangle(0, 0, 540, 960); c.clip(); wing3(c, -140, 720, 300, rot=-0.62, side=1); c.restore(); lens(c, 0.3 if RIM3[0] else 0.6)
         if behind is not None:
             gap(c, behind, GAP_WIPE)
         return m4._shake(s, 0.33, amp=6.0)

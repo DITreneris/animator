@@ -459,8 +459,12 @@ def m5_6(k, tl, dur):
 
         def stick():
             if d >= 5:
-                cc.save(); cc.translate(366 + ox, 640 + oy); cc.rotate(-0.80); cc.scale(5.2, 5.2); cc.translate(0, 12)
-                rect(k, -3.4, -2, 6.8, 22, (0.12, 0.12, 0.14), 331, shadow=False, lw=1.0)
+                v42 = getattr(m, "V42", [False])[0]                       # v42 (3/3: "glove and pen merge"): a silver case, bigger, the red only at its tip
+                cc.save(); cc.translate(366 + ox, 640 + oy); cc.rotate(-0.80); cc.scale(6.4 if v42 else 5.2, 6.4 if v42 else 5.2); cc.translate(0, 12)
+                rect(k, -3.4, -2, 6.8, 22, (0.88, 0.88, 0.92) if v42 else (0.12, 0.12, 0.14), 331, shadow=False, lw=1.0)
+                if v42:
+                    cc.set_source_rgb(0.55, 0.55, 0.60); cc.rectangle(-3.4, 6, 6.8, 1.6); cc.fill()
+                    cc.set_source_rgba(1, 1, 1, 0.9); cc.rectangle(-2.2, 0, 1.2, 18); cc.fill()
                 cut(k, [(-2.6, -2), (-2.6, -9), (2.6, -12), (2.6, -2)], n.KEY, shadow=False, lw=0.9)
                 cc.restore()
         if getattr(m, "V35", [False])[0]:

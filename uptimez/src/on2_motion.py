@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v41"
+V = "v42"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -93,6 +93,7 @@ V38 = [True]                                              # v38 (25 Nov, the bar
 V39 = [True]                                              # v39 (25 Nov, the detective's arm's review; Tomas: "tobulinam"): his lens arm in 5.2 drawn again (noir2_cast.ARM3). False draws v38
 V40 = [True]                                              # v40 (25 Nov, the arm's second review; Tomas: "tvarkom"; the last round on this arm): his elbow up and near his body, the glass on a short level arc while she winks, and he freezes for it. False draws v39
 V41 = [True]                                              # v41 (25 Nov, Tomas: "back to the bar and finalize"): the detective's arm out of the frame (his fist and cuff at the bottom edge, a long-handled glass), the wink 0.33 s sooner (0.83 s), the glass eased over four drawings. False draws v40
+V42 = [True]                                              # v42 (25 Nov, Tomas's last polish): the wing's feathers lit, less black; the wrap a heap on the stones; the lipstick a silver case; the glaze on her cheek; her beckon bigger. False draws v41
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
@@ -799,6 +800,8 @@ def m2_6(k, tl, dur=3.5):
     if tl < 0.75:                                                       # all of this stays above the narration's line
         f = tl / 0.75
         n.wrap_flying(k, lerp(250, 124, f), lerp(470, 716, f * f), 1.5, lerp(0.5, 0.05, f))
+    elif V42[0] and tl >= 0.83:                                         # v42: it settles into a heap
+        n.stole_heap(k, 124, 724, 1.3)
     else:
         n.wrap_flying(k, 124, 722, 1.5, 0.05)
     rain(k, tl + 7)
@@ -1200,6 +1203,8 @@ def frame(row, tl, t):
     n.NO_BAG[0] = n.HIDE2[0] = n.BACK2[0] = V31[0]
     n.HIDE3[0] = n.BACK3[0] = rv.RIM2[0] = V31[0] and V32[0]
     n.HAND3[0] = V31[0] and V32[0] and V33[0]
+    n.V42[0] = V42[0]
+    rv.RIM3[0] = V42[0]
     import hands_ps as _hp
     import on2_hands as _oh
     _hp.GLOVE[0] = _oh.GLOVE_CFG if (n.HAND3[0] and V34[0]) else None
