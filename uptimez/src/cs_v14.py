@@ -42,6 +42,7 @@ HOLD_A = (2.10, 2.40)                                      # he has it: it bends
 GO_V = (2.40, 2.80)                                        # over onto the visor: lands on "Approved." (2.818)
 BACK = s1.LINE_D[1] + 0.15                                 # then the arm goes home (0.4 s)
 GEO14 = {}
+ARM14 = ["paddle"]                                         # v15 (bubbles): "none", the phone held low
 
 
 def _geo14():
@@ -49,7 +50,7 @@ def _geo14():
         def probe(k_, o):
             GEO14["s"] = o["robot"]["screen"]
         s1.draw(lambda k_, d: S(k_, s1.TWO14_IN, auto=False, extra=probe,
-                                **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm="paddle"))), 0)
+                                **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=ARM14[0]))), 0)
         sx, sy = GEO14["s"]
         rr = 50 * sb.SC["robot"]
         GEO14["A"] = (sx + 0.34 * rr, sy - 1.40 * rr)
@@ -105,7 +106,8 @@ def s1_4(k, d):
         sx, sy = o["robot"]["screen"]
         rr = 50 * sb.SC["robot"]
         hx, hy = o["robot"]["hands"][1]
-        v14._phone(k_, hx, hy - 10, -0.2, 1.25)                                     # his phone, still in its claw
+        v14._phone(k_, hx, hy - 10, -0.2, 1.25)                                     # his phone, held low in its claw (v15: the wall
+                                                                                    # on its left is the bubble's)
         lit = 0.6 if (speaking and (d // 2) % 3 == 0) else 1.0
         ellipse(k_, sx, sy, 0.80 * rr, 0.62 * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
         if tick:
@@ -135,7 +137,7 @@ def s1_4(k, d):
         cam = tuple(a_ + (b_ - a_) * u for a_, b_ in zip(s1.TWO14, s1.TWO14_IN))
         if True:
             S(k, cam, auto=False, portrait="hang", extra=ex,
-              **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm="paddle"),
+              **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=ARM14[0]),
                      dn=at("don", x=X["don"] - STEP, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
 
 
@@ -342,21 +344,13 @@ def s3_5(k, d):
         hx, hy, hw, _, hd, _, m_ = g.REC[-1]                                        # his right hand, in its own (leaning) space
         c.save(); c.set_matrix(m_)
         nd = math.hypot(*hd) or 1.0
-        hx, hy = hx + hd[0] / nd * 0.75 * hw, hy + hd[1] / nd * 0.75 * hw     # the ball on top of the fist, gripped: whole and seen
+        hx, hy = hx + hd[0] / nd * 0.40 * hw, hy + hd[1] / nd * 0.40 * hw     # the ball in the palm, the fingers over it
         r = r * 1.35
         if t < THROW:
-            if crumple < 1:                                                       # the sheet balling up in his hand
-                c.save(); c.translate(hx - 1, hy - 5); c.rotate(0.3 * crumple)
-                w = r * (1 + 2.2 * (1 - crumple)); h = r * (1 + 1.4 * (1 - crumple))
-                c.new_path()
-                for i in range(12):
-                    a = i * math.pi / 6
-                    q = 1 + 0.18 * math.sin(i * 2.7 + crumple * 5)
-                    c.line_to(math.cos(a) * w * q, math.sin(a) * h * q)
-                c.close_path(); c.set_source_rgb(*g.BLUE); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.3); c.stroke()
-                c.restore()
-            else:
-                g._ball(k_, hx - 1, hy - 5, r)
+            c.restore()
+            g.again(k_, len(g.REC) - 1, "fist")                                    # his fist, then the ball squeezed out of its top
+            c.save(); c.set_matrix(m_)
+            g._ball(k_, hx + hd[0] / nd * 0.25 * hw, hy + hd[1] / nd * 0.25 * hw, r * (1.5 - 0.2 * crumple), seed=int(crumple * 5))
             c.restore()
             return
         if t < THROW + 0.34:                                                      # leaving, toward the frame's right edge
