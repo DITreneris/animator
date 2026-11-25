@@ -60,7 +60,7 @@ n.SPARKLE2[0] = True                                     # v11
 import client_ob as co
 from kit import Ctx, INK, ellipse, rect, cut
 
-V = "v37"
+V = "v38"
 W, H, FPS = 540, 960, 30
 SAFE = (18, 96, 522, 820)
 LEAD, TAIL = 0.25, 0.42
@@ -89,6 +89,7 @@ V34 = [True]                                              # v34 (25 Nov, the han
 V35 = [True]                                              # v35 (25 Nov, cold test v34, Tomas's picks; the last round for the hands): the note and the number over her shoulder; the wrap as fur on her shoulders; the Shadow's sleeve; the detective's elbow; her beckon, her hand over her mouth, her back's hands; the bartender's fist. False draws v34
 # v36 (25 Nov, Tomas: "undo it"): v35 without the Shadow's sleeve and rim (on2_board.arm_in at 42-45 s and 55 s, noir2_cast.shadow) (noir2_cast.SLEEVE off); nothing else changes
 V37 = [True]                                              # v37 (25 Nov, Tomas at 0:27: "the people at the sides, pathetic"): the bar's guests as the film's hat shadows, tables with hats, lamps and glasses at the bottom, the detective's glass at his own eye. False draws v36
+V38 = [True]                                              # v38 (25 Nov, the bar's review; Tomas: "tvarkom"; the hiding gag kept): her chin up and a knowing look as the hands come; the guests stand there from the start, the far pair paler; the glass shows the money magnified; she winks over the money as the glass goes past; the blinds 20 % lighter in the bar. False draws v37
 END = {}                                                  # v29: set while 8.7 draws the street in its window
 TEXT = dict(snd.NARR)
 
@@ -1141,9 +1142,9 @@ KEY = {"5.2": (170, 640, 300, 0.22), "5.3": (410, 470, 260, 0.20), "6.1": (404, 
 NO_BLINDS = {"6.1", "6.2", "6.2r", "6.4", "6.5", "6.6", "6.7", "6.7a"}    # v26: the office has its own bars of light                                # shot -> (light from the left?, how dark the far side): her face on the lit side
 
 
-def _blinds(k):
+def _blinds(k, a=0.34):
     import on_set as ons
-    ons.blinds(k.c, -40, -40, W + 80, H + 80, -0.32, 30, 12, 0.34)
+    ons.blinds(k.c, -40, -40, W + 80, H + 80, -0.32, 30, 12, a)
 
 
 def caption_card(cc, text):
@@ -1221,7 +1222,7 @@ def frame(row, tl, t):
     if LOOK3[0] and row["shot"] not in b68.COLOUR:          # v25: the blinds' shadow on the rooms' walls, under the people
         saved = (b5.room, b.office, b.lit_wall)
         r0, o0, w0 = saved
-        b5.room = lambda k_, *a, **kw: (r0(k_, *a, **kw), _blinds(k_))[0]
+        b5.room = lambda k_, *a, **kw: (r0(k_, *a, **kw), _blinds(k_, 0.27 if (V38[0] and row["shot"] in ("5.1", "5.2")) else 0.34))[0]
         b.office = lambda k_, *a, **kw: (o0(k_, *a, **kw), None if row["shot"] in NO_BLINDS else _blinds(k_))[0]
         b.lit_wall = lambda k_, *a, **kw: (w0(k_, *a, **kw), _blinds(k_))[0]
         eng.TONE = "v3"

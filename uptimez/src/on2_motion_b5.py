@@ -111,12 +111,14 @@ def m5_1(k, tl, dur):
             for i, (px, py, pr) in enumerate(((40, 900, 46), (120, 940, 40), (430, 930, 44), (512, 890, 48))):   # the people at the tables
                 cc.set_source_rgb(*n.BLACK); cc.new_path(); cc.arc(px, py - pr * 1.6, pr * 0.62, 0, 2 * math.pi); cc.fill()
                 cc.rectangle(px - pr, py - pr, 2 * pr, 200); cc.fill()
+    v38 = getattr(m, "V38", [False])[0]
     if getattr(m, "V37", [False])[0]:                                     # v37: the guests behind her, each cut out of the room's light
         cc_ = k.c
         for x, y, ang, what, flip, d_in in HANDS:
             e = d - d_in
-            if e < 0:
+            if e < 0 and not v38:
                 continue
+            e = max(0, e)                                                 # v38: they stand there from the start; only the hand comes
             gx = 20 if flip > 0 else m.W - 20
             sc_ = 1.05 if y < 600 else 1.25
             feet_ = y + 3.2 * e + 250 * sc_
@@ -124,10 +126,16 @@ def m5_1(k, tl, dur):
             g = cairo.RadialGradient(gx + flip * 30, gy_, 20, gx + flip * 30, gy_, 190 * sc_)
             g.add_color_stop_rgba(0, 0.86, 0.86, 0.84, 0.95); g.add_color_stop_rgba(1, 0.86, 0.86, 0.84, 0.0)
             cc_.set_source(g); cc_.new_path(); cc_.arc(gx + flip * 30, gy_, 190 * sc_, 0, 2 * math.pi); cc_.fill()
-            n.shadow(k, gx, feet_, sc_, "open", hat_tilt=-0.10 * flip, lit_hand=None, look_down=0.3, seed=880 + d_in)
+            if v38 and y < 600:                                           # v38: the far pair paler, in the room's haze
+                cc_.push_group()
+                n.shadow(k, gx, feet_, sc_, "open", hat_tilt=-0.10 * flip, lit_hand=None, look_down=0.3, seed=880 + d_in)
+                cc_.pop_group_to_source(); cc_.paint_with_alpha(0.55)
+            else:
+                n.shadow(k, gx, feet_, sc_, "open", hat_tilt=-0.10 * flip, lit_hand=None, look_down=0.3, seed=880 + d_in)
     ph = d % 6
-    swayed(k, 270, 1080, (1.0, 0.4, -0.4, -1.0, -0.4, 0.4)[ph],
-           lambda: n.star(k, 270, 1080 + (0, -5, -2, 0, -5, -2)[ph], 2.4, "g_stand", "interested", (0.0, -0.2), wrap=False,
+    swayed(k, 270, 1080, (1.0, 0.4, -0.4, -1.0, -0.4, 0.4)[ph] + (2.5 if v38 and d >= 5 else 0.0),
+           lambda: n.star(k, 270, 1080 + (0, -5, -2, 0, -5, -2)[ph], 2.4, "g_stand", ("interested" if d < 5 else "knowing") if v38 else "interested",
+                          ((0.0, -0.45) if d < 5 else (0.25, -0.35)) if v38 else (0.0, -0.2), wrap=False,
                           sparkle=1.0 if d % 8 < 3 else 0.2))
     for x, y, ang, what, flip, d_in in HANDS:                             # out of the dark, one after another; she passes them
         e = d - d_in
@@ -222,10 +230,12 @@ def m5_2(k, tl, dur):
     room(k)
     hid = 4 <= d < 28
     duck = 12 if 15 <= d < 19 else 0                                     # his glass comes her way: lower
+    v38 = getattr(m, "V38", [False])[0]
+    wink = v38 and 22 <= d < 28                                           # v38: the glass has gone past; she looks over the money at us and winks
     if hid:
-        o = n.star(k, 330, 1180 + duck, 2.3, "g_fan", "caught", (-1.0, -0.3), wrap=False, bag=False)
+        o = n.star(k, 330, 1180 + duck, 2.3, "g_fan", "wink" if wink else "caught", (0.0, 0.0) if wink else (-1.0, -0.3), wrap=False, bag=False)
         hx, hy = o["head"]
-        up = 60 if d in (4, 27) else 0
+        up = 60 if d in (4, 27) else (150 if wink else 0)
         n.money(k, hx - 60, hy + 128 + up - duck * 0.4, 3.75, -0.35, 5, 711)
         n.rich_hand(k, hx - 82, hy + 145 + up - duck * 0.4, 1.8, 0.5, "money")
     else:
@@ -240,11 +250,24 @@ def m5_2(k, tl, dur):
     lx, ly = sweep, 640 + 40 * math.cos(f * 4)
     if getattr(m, "V37", [False])[0]:                                     # v37 (3/3: "a plank across her"): the glass at his own eye, beside his head
         lx, ly = hx0 + 150 + 30 * math.sin(math.pi * min(1.0, f * 1.15)), 700 + 12 * math.cos(f * 4)
+        if wink:                                                          # v38: the glass has gone past her, to the left, down the room
+            lx, ly = lx - 110 - 14 * (d - 22), ly + 40
     n.detective_back(k, hx0, 760 - n.d.HY * 2.4, 2.4, arm=(lx - 6, ly + 30))     # v9: his back, big and close
     if len(n.ARMS2) > 1:                                                  # v35: his hand stopped where his arm reaches; the glass with it
         lx, ly = cc.device_to_user(*n.ARMS2.pop())
         lx, ly = lx + 6, ly - 30
     n.magnifier(k, lx, ly, 3.0, 0.6)
+    if getattr(m, "V38", [False])[0]:                                     # v38: through the glass, the banknotes magnified, not a grey disc
+        a_ = 0.6; R = 19.0 * 3.0
+        gx_, gy_ = lx + math.sin(a_) * (22 + 19) * 3.0, ly - math.cos(a_) * (22 + 19) * 3.0
+        cc.save(); cc.new_path(); cc.arc(gx_, gy_, R - 9, 0, 2 * math.pi); cc.clip()
+        cc.set_source_rgb(0.78, 0.80, 0.76); cc.paint()
+        n.money(k, gx_ - 2, gy_ + 46, 4.6, -0.20 + 0.10 * math.sin(f * 5), 2, 712)
+        g = cairo.RadialGradient(gx_ - 18, gy_ - 18, 4, gx_, gy_, R)
+        g.add_color_stop_rgba(0, 1, 1, 1, 0.35); g.add_color_stop_rgba(1, 1, 1, 1, 0.0)
+        cc.set_source(g); cc.paint()
+        cc.restore()
+        cc.set_source_rgb(*INK); cc.set_line_width(6); cc.new_path(); cc.arc(gx_, gy_, R - 9, 0, 2 * math.pi); cc.stroke()
 
 
 # ---------------------------------------------------------------- 5.3: "The usual."
