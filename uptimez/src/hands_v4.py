@@ -134,6 +134,31 @@ def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=oc.SKIN_LIGHT, thumb=None,
         c.save(); c.translate(cx, cy); c.scale(rx, ry); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
         c.set_source_rgb(*col); c.fill()
 
+    if PHONE_ROW[0] == "v4c":                                # the canon's row since 26 Nov (DITreneris/uptimez f94fbf1):
+        fingers = []                                         # fingertips stop on the far bezel, the thumb up the near edge
+        for fy, out, tip_in in ((-20.0, 6.0, -0.5), (-11.0, 7.5, 0.0), (-2.0, 5.0, -1.0)):
+            fingers.append([(x + far * (edge + out * s), y + fy * s - 1.5 * s), (x + far * (edge - tip_in * s), y + fy * s + 1.0 * s)])
+        thumb_pts = [(x + thumb_ * (edge - 3.0 * s), y + 22.0 * s), (x + thumb_ * (edge + 3.0 * s), y + 11.0 * s),
+                     (x + thumb_ * (edge + 1.5 * s), y + 1.0 * s), (x + thumb_ * (edge - 1.0 * s), y - 6.0 * s)]
+        heel_pts = [(x, y + 0.44 * w), thumb_pts[0]]
+        arm_pts = [(x, y + 1.55 * w), (x, y + 0.40 * w)]
+        side_pts = [(x + far * 0.40 * w, y + 0.66 * w), (x + far * (edge + 3.0 * s), y + 0.22 * w),
+                    (x + far * (edge + 4.5 * s), y - 3.5 * s)]
+        tf, tt = 0.27 * w, 0.30 * w
+        for inked in (True, False):
+            col = INK if inked else skin
+            grow = 2 * lw * ink if inked else 0.0
+            c.save(); outside_phone()
+            stroke(arm_pts, 0.60 * w + grow, col)
+            oval(x, y + 0.44 * w, 0.62 * w + grow / 2, 0.42 * w + grow / 2, col)
+            stroke(side_pts, 8.0 * s + grow, col)
+            stroke(heel_pts, tt + grow, col)
+            c.restore()
+            for pts in fingers:
+                stroke(pts, tf + grow, col)
+            stroke(thumb_pts, tt + grow, col)
+        c.set_line_cap(cairo.LINE_CAP_BUTT); c.set_line_join(cairo.LINE_JOIN_MITER)
+        return
     fingers = []
     for fy, ln in ((-34.0, 9.0), (-23.0, 10.5), (-12.0, 8.0)):
         root = (x + far * (edge + 4.0 * s), y + fy * s - 1.5 * s)
@@ -188,6 +213,7 @@ def tap_insert(k, x, y, edge, w, skin, cuff=(0.20, 0.22, 0.30)):
     _ORIG.get("draw", hp.draw)(k, "point_t", hx, hy, w, skin, d, 1)
 
 
+PHONE_ROW = ["v4c"]          # which sheet phone enable(phone=True) draws: "v4c" (canon since 26 Nov) or "v4b"
 PHONE_V4B = [False]          # Tomas 26 Nov: films keep the old phone grip (v3). v4b's thumb and fingers cover the screen's
                              # edge words (One Star v27, 1:04: "1/5" and "Pam"); the rule is "the thumb off the words"
 
@@ -197,7 +223,9 @@ def enable(phone=None):
         return
     _ORIG["draw"], _ORIG["phone_grip"] = hp.draw, oc.phone_grip
     hp.draw = draw
-    if PHONE_V4B[0] if phone is None else phone:
+    if PHONE_V4B[0] if phone is None else bool(phone):
+        if isinstance(phone, str):
+            PHONE_ROW[0] = phone
         oc.phone_grip = phone_grip
 
 

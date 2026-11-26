@@ -1,5 +1,5 @@
 """ONE STAR rough cut v27 (26 Nov, series hands/phones audit, Tomas: "taisom One Star"): v26 with the hand class
-sheet v4 (hands_v4.enable(): grab, pinch, fist v2; the phone keeps the old grip, Tomas 26 Nov). Nothing else changes.
+sheet v4 (hands_v4.enable(): grab, pinch, fist v2; phone_grip v4c, the canon's row since 26 Nov). Nothing else changes.
   python3 cs_film_v27.py [out_dir] [hi] [scene numbers ...]"""
 import sys
 import importlib
@@ -11,7 +11,7 @@ def setup():
     f26.setup()
     for i in range(1, 7):
         importlib.import_module("cs_scene%d" % i).V = "v27"
-    hands_v4.enable()
+    hands_v4.enable(phone="v4c")                            # the canon's phone row v4c (thumb off the words)
 
 
 if __name__ == "__main__":
