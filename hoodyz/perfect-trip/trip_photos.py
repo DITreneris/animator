@@ -50,6 +50,7 @@ def backpack_cat(c, x, y, s=.9, mood='suspicious'):
 
 def camel(c, x, gy, s, f=0, pull=0):
     """A camel facing left; pull leans its neck away (it won't budge)."""
+    ell(c, x, gy + 3, 190 * s, 14 * s); c.set_source_rgba(.45, .3, .1, .22); c.fill()
     c.save(); c.translate(x, gy); c.scale(s, s)
     for k, lx in enumerate((-90, -60, 70, 100)): limb(c, [(lx, -230), (lx + 4, -120), (lx + (14 if k < 2 else -6), 0)], 26, CAMEL_D if k % 2 else CAMEL)
     ell(c, 0, -260, 150, 70); fs(c, CAMEL, 7)
@@ -65,7 +66,7 @@ def suitcase(c, x, y, w, h, col):
     rr(c, x - w * .2, y - h - 22, w * .4, 26, 10); c.set_source_rgb(*INK); c.set_line_width(6); c.stroke()
     c.move_to(x - w / 2 + 10, y - h * .5); c.line_to(x + w / 2 - 10, y - h * .5); c.set_line_width(4); c.stroke()
 
-def tele_arm(c, rx, gy, rs, q, target, tip='finger'):
+def tele_arm(c, rx, gy, rs, q, target, tip='finger', grip=1.0):
     """MY AI's telescopic arm: nested white sections from its shoulder to a target. tip: 'finger' or 'palm' (up)."""
     sh = (rx + q * A.SHOULDER[0] * rs, gy - 280 * rs + A.SHOULDER[1] * rs)
     dx, dy = target[0] - sh[0], target[1] - sh[1]; L = math.hypot(dx, dy); ang = math.atan2(dy, dx)
@@ -75,7 +76,20 @@ def tele_arm(c, rx, gy, rs, q, target, tip='finger'):
         rr(c, a, -w * rs / 1.2, b - a, w * rs / .6, w * rs / 1.2); fs(c, WHITE, max(4, 6 * rs / 1.4))
         if k: ell(c, a + 4, 0, 6 * rs, w * rs / 1.1); fs(c, A.CHEST, 3)
     c.restore()
-    if tip == 'finger':
+    if tip == 'claw':                                                      # a two-jaw gripper on a wrist joint, 1.4x; the jaws open wide, then close on the spire's tip (v2)
+        cs = rs * 1.4; g = lerp(27, 4.5, grip)
+        c.save(); c.translate(*target); c.rotate(ang)
+        rr(c, -90 * cs, -16 * cs, 14 * cs, 32 * cs, 5 * cs); fs(c, A.CHEST, 5)                       # the wrist joint
+        rr(c, -78 * cs, -28 * cs, 50 * cs, 56 * cs, 14 * cs); fs(c, WHITE, 6)                        # the hub (a palm)
+        for sg in (-1, 1):                                                                           # two round-ended fingers of one thickness
+            ct = 12 + (g - 4.5); limb(c, [(-28 * cs, sg * (ct + 7) * cs), (12 * cs, sg * ct * cs)], 21 * cs, WHITE)
+        c.restore()
+    elif tip == 'pinch':                                                     # a hand from the right: thumb and finger pinching the spire's tip from both sides
+        tx, ty = target[0], target[1] - 22 * rs
+        for dy in (-13, 13):
+            limb(c, [(tx + 40 * rs, ty + dy * 1.3 * rs), (tx + 3 * rs, ty + dy * .35 * rs)], 17 * rs, WHITE)
+        ell(c, tx + 46 * rs, ty, 30 * rs, 30 * rs); fs(c, WHITE, 6)
+    elif tip == 'finger':
         ell(c, target[0], target[1] + 20 * rs, 21 * rs, 19 * rs); fs(c, WHITE, 6)
         rr(c, target[0] - 7 * rs, target[1] - 4 * rs, 14 * rs, 26 * rs, 7 * rs); fs(c, WHITE, 5)
     else:
@@ -112,19 +126,23 @@ def paris(c, f=0):
     R.hoody(c, 200, hz + 40, .5, expr='bored', arms=('rest', 'rest'), gaze=24, f=f)   # an extra in his own trip, glaring at the robot
     E.eva(c, 400, 1900, .9, 'impressed', sip=.2, gaze=18)
     A.myai(c, rx, rgy, rs, eye='focus', arms=(None, 'down'), tilt=-4)
-    tele_arm(c, rx, rgy, rs, -1, (tipxy[0], tipxy[1] + 26), tip='finger')
+    tele_arm(c, rx, rgy, rs, -1, (tipxy[0], tipxy[1] + 16), tip='claw')
     backpack_cat(c, 210, 1720, .9, 'shocked')
     frame(c, 'paris')
 
 def giza(c, f=0):
     """ASSISTANT. MY AI and Eva pose together, delighted. Behind them Hoody drags the luggage and the camel won't budge."""
     P.egypt(c, f, s=.72, cx0=600, horizon=1460)
-    rope_to = camel(c, 150, 1500, .42, f, pull=20)
+    rope_to = camel(c, 150, 1500, .42, f, pull=38)
     for (x, y, w, h, col, a) in ((250, 1530, 110, 80, '3f7fd6', 0), (262, 1450, 84, 62, 'e8b23a', .25), (330, 1530, 70, 110, '5aa84f', 0)):
         c.save(); c.translate(x, y); c.rotate(a); suitcase(c, 0, 0, w, h, col); c.restore()      # the luggage, stacked, the top one sliding
-    hands, _ = R.hoody(c, 400, 1530, .52, expr='wince', arms=('out', 'down'), rot=.3, f=f)     # leaning far back: the camel won't come
+    ell(c, 400, 1534, 58, 11); c.set_source_rgba(.45, .3, .1, .28); c.fill()                   # his shadow: feet on the sand
+    hands, _ = R.hoody(c, 400, 1530, .52, expr='wince', arms=('out', 'down'), rot=-.44, legs='drag2', f=f)     # towed by the rope: leaning into it, heels trailing
     Sh.sweat(c, 450, 1260, .7)
-    c.move_to(*hands[0]); c.line_to(*rope_to); c.set_source_rgb(*hx('8a5a2e')); c.set_line_width(5); c.stroke()
+    c.move_to(*hands[0]); c.line_to(*rope_to); c.set_source_rgb(*hx('8a5a2e')); c.set_line_width(6); c.stroke()
+    ell(c, hands[0][0], hands[0][1], 17, 14); c.set_source_rgb(*hx('8a5a2e')); c.set_line_width(6); c.stroke(); ell(c, rope_to[0], rope_to[1] + 14, 22, 16); c.stroke()
+    limb(c, [(hands[0][0] - 2, hands[0][1] - 8), (hands[0][0] - 17, hands[0][1] - 3)], 9, K.SKIN)          # his thumb over the rope
+    for k in range(3): ell(c, 400 + 58 + k * 22, 1526 - (k % 2) * 8, 10 - k, 6); c.set_source_rgba(.92, .82, .62, .7); c.fill()
     A.myai(c, 700, 1860, 1.3, eye='happy', arms=('wave', 'hold'), tilt=10)
     hp = A.hand_at(700, 1860, 1.3, 1, 'hold')
     E.eva(c, 900, 1880, 1.0, 'laugh', sip=.1, tilt=-.2, pose='holdlow', hand_to=hp)

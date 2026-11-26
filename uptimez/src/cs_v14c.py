@@ -23,6 +23,7 @@ import cs_hands as ch
 import kit
 from cs_scene1 import S, at, base, sb, ellipse
 from cs_board import X
+from kit import INK
 
 DPS = 12
 
@@ -54,7 +55,7 @@ def s4_1(k, d):
         arm = lerp(H.GLASS41, s4.STOP41, ease((d - 13) / 2.0))
         s4.HAND41[0] = "relax"
     else:                                                                         # down in two drawings, folded: an angle blend
-        arm = (10, 40) if d == 16 else REST                                        # from STOP swung the forearm level at him
+        arm = (22, -28) if d == 16 else REST                                        # from STOP swung the forearm level at him
         s4.HAND41[0] = "quiet"
     lean = -3.0 * ease((d - 5) / 3.0) * (1 - ease((d - 10) / 4.0))
 
@@ -67,7 +68,9 @@ def s4_1(k, d):
         c.set_source_rgba(0.98, 0.96, 0.86, 0.9); c.rectangle(-6.5, -14, 13, 6); c.fill()
         ellipse(k_, 0, -44, 6, 2.4, (0.30, 0.52, 0.92), 996, shadow=False, lw=1.2)
         c.restore()
-        ellipse(k_, hx, hy, 5.0, 5.4, s4.SKIN_PAM, 997, shadow=False, lw=1.2)
+        s1.PH_DEV.append(c.user_to_device(hx, hy))                                # her rig's own hand stays out (two-pass)
+        import of_cast as _oc                                                      # v15f: the series' fist round the roll
+        _oc.handle_grip(k_, hx - 1, hy - 6, 13.0, -0.08 + math.pi / 2, skin=s4.SKIN_PAM)
 
     with s4.Strip("edge"), s4.s3.Client(lean=lean, edge=False), s1.Breath(sb, "client", s1.br(d, 0.4)):
         S(k, s4.CAM41, auto=False, portrait=False, pre=pre,
@@ -78,14 +81,21 @@ def s4_1(k, d):
 # ---- 2.1 ---------------------------------------------------------------------------------------------------------------
 
 def s2_1(k, d):
-    """26 drawings. The phone held in front of him, the mic already at his mouth (sales mode); he talks, smiling; his
-    other hand quiet at his side."""
+    """26 drawings. The phone held in front of him, the mic at his mouth (sales mode). v15c (Tomas's review: "not just
+    panic; he must try desperately to look competent while panicking inside"): a progression, not one level.
+    d0-4 the professional: a confident grin, calm eyes. d5- the worry grows: brows up at their inner ends (the right one
+    higher), eyes wide; he says the line through a clenched, too-wide grin; his eyes go to the phone, away, back; a big
+    drop slides down off his scalp; he sinks a little into his shoulders. After the line: the forced grin, held."""
     from cand_bc import ik
     t = d / float(DPS)
     a1, a2 = ik(s2.SH_R[0], s2.SH_R[1], s2.REST_R[0], s2.REST_R[1], s2.LN, s2.LN, -1)
     talk = 0.0
     if s2.LINE21 <= t <= s2.LINE21 + 1.5:
-        talk = (1.0, 0.5, 1.0, 0.0)[int((t - s2.LINE21) * DPS / 2) % 4]
+        talk = (1.0, 0.5, 1.0, 0.2)[int((t - s2.LINE21) * DPS / 2) % 4]
+    worry = ease((d - 4) / 5.0)
+    face = "neutral" if d < 5 else "shock"
+    look = ((1, 0) if d < 9 else (0.2, 0.9) if d < 12 else (-0.9, -0.3) if d < 15 else (1, 0))
+    sink = 1.0 - 0.022 * worry
 
     def back(k_):
         s2.cs_cal.wall(k_, s2.cs_cal.THU, t=d / float(DPS))
@@ -93,15 +103,75 @@ def s2_1(k, d):
     def ex(k_, o):
         (lx, ly), (rx, ry) = o["don"]["hands"]
         hx, hy = (lx, ly) if lx < rx else (rx, ry)
-        s1.phone_held(k_, hx, hy, sb.SC["don"], ang=0.22, buzz=False, d=d, seed=941)
-        s1.fist(k_, hx, hy, sb.SC["don"], kit.PEOPLE["DON"]["skin"], 945)
+        j = (1.2, -0.8, 0.9, -1.3)[d % 4] * worry                                 # the phone shakes in his hand
+        s1.phone_held(k_, hx + j, hy + 0.5 * j, sb.SC["don"], ang=0.22 + 0.03 * j, buzz=False, d=d, seed=941)
+        s1.fist(k_, hx + j, hy + 0.5 * j, sb.SC["don"], kit.PEOPLE["DON"]["skin"], 945)
+        if d >= 6:
+            _sweat(k_, o["don"]["head"], sb.SC["don"], d)
 
-    with s1.A.Don(s1.A.MOUTH, talk), s1.Breath(sb, "don", s1.br(d, 0.0, 0.010)):
+    with _Face(s1.A.MOUTH, talk, worry), s1.Breath(sb, "don", s1.br(d, 0.0, 0.010) * sink):
         u = ease((d - s2.PAN21[0]) / float(s2.PAN21[1] - s2.PAN21[0]))
         cam = tuple(a_ + (b_ - a_) * u for a_, b_ in zip(s2.CAL21, s2.CAM21))
         S(k, cam, auto=False, mic="down", portrait="hang", back=back, extra=ex,
           **base(cl=False, sf=False, pm=False, mm=False, rb=False, door=0.0,
-                 dn=at("don", pose=H.PHONE_L + (a1, a2), face="happy", look=(-0.3, 0.6) if d < 6 else (1, 0))))
+                 dn=at("don", pose=H.PHONE_L + (a1, a2), face=face, look=look)))
+
+
+class _Face(s1.A.Don):
+    """Don's signs (boom, hair) with the forced grin and the worried brows drawn first, in his head's own units."""
+    def __init__(self, pts, talk, worry):
+        s1.A.Don.__init__(self, pts, 0.0)
+        self.say, self.worry = talk, worry
+
+    def __enter__(self):
+        s1.A.Don.__enter__(self)
+        inner = sb.don_signs
+        say, worry = self.say, self.worry
+
+        def signs(k, head, s, mic, hair):
+            c = k.c
+            hx, hy = head
+            c.save(); c.translate(hx, hy); c.scale(s, s); c.set_line_cap(1); c.set_line_join(1)
+            skin = s1.A.kit_skin_don()
+            ellipse(k, 0, 31, 17, 15, skin, 714, shadow=False, outline=False)              # the face's own mouth covered
+            o = 7.0 * say
+            c.new_path()                                                                   # the grin: too wide, corners up,
+            c.move_to(-18, 22); c.curve_to(-9, 27, 9, 27, 18, 22)                          # teeth clenched; talking, the jaw
+            c.curve_to(13, 33 + o, -13, 33 + o, -18, 22); c.close_path()                   # drops a little, teeth still showing
+            c.set_source_rgb(0.98, 0.97, 0.94); c.fill_preserve()
+            c.set_source_rgb(*INK); c.set_line_width(2.6); c.stroke()
+            if o > 0.5:
+                c.new_path(); c.move_to(-12, 27.5); c.curve_to(-4, 29 + o * 0.5, 4, 29 + o * 0.5, 12, 27.5)
+                c.curve_to(8, 29.5 + o, -8, 29.5 + o, -12, 27.5); c.close_path()
+                c.set_source_rgb(0.40, 0.10, 0.10); c.fill()
+            c.set_line_width(1.3)
+            for x in (-9, -3, 3, 9):                                                       # the teeth
+                c.move_to(x, 24.5 + abs(x) * -0.1); c.line_to(x, 26.5); c.stroke()
+            if worry > 0.05:                                                               # brows up at their inner ends,
+                c.set_source_rgb(0.13, 0.11, 0.12); c.set_line_width(4.4)                  # the right one higher
+                lift = 4.0 * worry
+                c.move_to(-29, -11); c.line_to(-8, -13 - lift); c.stroke()
+                c.move_to(29, -12); c.line_to(8, -15 - 1.4 * lift); c.stroke()
+            c.restore()
+            inner(k, head, s, mic, hair)
+        sb.don_signs = signs
+        return self
+
+
+def _sweat(k, head, s, d):
+    """Two drops off his bald scalp, one after the other, running down to the ear and gone; a third flicks off."""
+    hx, hy = head
+    for i, (ox, oy, ph) in enumerate(((-40, -38, 0), (42, -32, 7), (-46, -14, 13))):
+        u = ((d + ph) % 18) / 18.0
+        if i == 0:                                                                 # the big one slides all the way, once
+            u = min(1.0, (d - 6) / 16.0)
+        x = hx + ox * s
+        y = hy + (oy + 34 * u) * s
+        r = (5.6 if i == 0 else 3.6) * s * (1 - 0.2 * u)
+        c = k.c
+        c.new_path(); c.move_to(x, y - 2.4 * r); c.curve_to(x + 1.1 * r, y - 0.6 * r, x + r, y + r, x, y + r)
+        c.curve_to(x - r, y + r, x - 1.1 * r, y - 0.6 * r, x, y - 2.4 * r); c.close_path()
+        c.set_source_rgb(0.62, 0.84, 0.98); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.set_line_width(1.0); c.stroke()
 
 
 # ---- the rating: one big star -------------------------------------------------------------------------------------------
@@ -152,6 +222,9 @@ def _toss(k, d):
     else:
         hand_t = lerp(catch, V.REST14, ease((t - TOSS[1] - 0.1) / 0.25))
     a1, a2 = ik(V.SH14[0], V.SH14[1], hand_t[0], hand_t[1], g.LN, g.LN, 1)
+    lean = 0.0
+    if t < TOSS[0]:                                                                # v17: the same arm as 1.4 coming home
+        (a1, a2), lean = V.angles14(t)
     held = t >= TOSS[1]
 
     def ex(k_, o):
@@ -175,10 +248,10 @@ def _toss(k, d):
             g.again(k_, 0, "grab")
 
     with s1.A.Don(s1.A.UP, 0.0), s1.Breath(sb, "don", s1.br(d)), s1.Breath(sb, "robot", s1.br(d, 0.5, 0.006)):
-        rb_arm = "paddle" if not held else "none"
+        rb_arm = ("paddle" if not held else "none") if V.ARM14[0] == "paddle" else "none"
         S(k, s1.TWO14_IN, auto=False, portrait="hang", extra=ex,
           **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=rb_arm),
-                 dn=at("don", x=X["don"] - V.STEP, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
+                 dn=at("don", x=X["don"] - V.STEP - lean, pose=(a1, a2, 8, 0), face=V.FACE14[0], look=V.LOOK14[0])))
 
 
 def _shapes14():
@@ -190,25 +263,33 @@ def _shapes14():
 
 # ---- 6.6a / 6.6: the clutch --------------------------------------------------------------------------------------------
 
-CLUTCH = (25, 100, -25, -100)                                # both hands in front of his chest (3.3's hold)
+CLUTCH = (-20, 120, 20, -120)                                # v16: elbows out, the hands meet at the phone, not crossed
+
+
+LOCK66 = [False]                                                                  # v18 (cs_v18)
 
 
 def _phone_between(k, o, d, buzz):
+    """v15f: the phone in his right hand (the series' phone grip, its back to us, the thumb toward his middle), his
+    left hand flat over its foot, clamping it to his chest."""
+    import of_cast as _oc
     (lx, ly), (rx, ry) = o["don"]["hands"]
     mx, my = (lx + rx) / 2.0, (ly + ry) / 2.0 - 4
-    j = (1.5 if d % 2 else -1.5) if buzz else 0.0
-    v14._phone(k, mx + j, my, 0.0, 1.35, lit=False)
+    j = (1.5 if d % 2 else -1.5) if buzz and not LOCK66[0] else 0.0                # v18: locked (the hands changed every drawing)
     sk = kit.PEOPLE["DON"]["skin"]
-    for hx, hy, sd in ((lx, ly, 994), (rx, ry, 995)):
-        ellipse(k, hx, hy, 5.2, 5.6, sk, sd, shadow=False, lw=1.2)
-    if buzz:
-        v14._buzz(k.c, mx, my, 15, 16, 1.8)
+    c = k.c
+    gx, gy = (rx, ry) if rx > lx else (lx, ly)                                    # the phone in his screen-right hand;
+    s1.PH_DEV.append(c.user_to_device(gx, gy))                                    # the other hand is the rig's own, beside it
+    hx_ = o["don"]["head"][0]
+    _oc.phone_grip(k, gx + j, gy, 0.55, screen=None, ang=-0.12, skin=sk, body_x=hx_, back=True)
+    if buzz:                                                                      # v18: the zigzags outside his hands, at
+        v14._buzz(k.c, mx, my - 6, 30 if LOCK66[0] else 15, 16, 1.8)              # the phone's edges (they read as red marks on them)
 
 
 def s6_6a(k, d):
     """14 drawings. His phone buzzes in his hand; this time he clamps it to his chest with both hands, swells, grins,
     eyes shut: nothing is getting away (the answer to 0:00)."""
-    p = ease((d - 3) / 3.0)
+    p = ease((d - 3) / 3.0) if not LOCK66[0] else (ease((d - 3) / 2.0) if d < 5 else 1.0)   # v18: clamped by d5, then still
     pose = lerp(kit.ARM_POSES["phone_r"], CLUTCH, p)
     face = "neutral" if d < 3 else ("grin" if d < 9 else "happy")
 
@@ -238,7 +319,7 @@ def s6_6(k, d):
 
     def held(k_, hx, hy, s_, *a_, seed=900, **kw):
         if seed == 941 and "o" in got:
-            return _phone_between(k_, {"don": got["o"]}, d, buzz=True)
+            return _phone_between(k_, {"don": got["o"]}, d, buzz=not s1.ONLYDON66[0])
         return ph(k_, hx, hy, s_, *a_, seed=seed, **kw)
 
     def fist(k_, hx, hy, s_, skin, seed):

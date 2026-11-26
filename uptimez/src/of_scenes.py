@@ -76,7 +76,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v24.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v28.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -373,7 +373,11 @@ def _cast_draw0(k, n, scene, sh, heads):
                 dx_, dy_ = k_.c.user_to_device(hx_, hy_)
                 return None if math.hypot(dx_ - pd_[0], dy_ - pd_[1]) < pt_ else hk(k_, hx_, hy_, *a_)
             _kit.HAND[0] = _pskip
+            dc.RING_ON[0] = not (ps.get("impact") or ps.get("slam_hold"))          # v55: the slam's palm carries the ring itself (v57: also after its lines fade)
+        if ps.get("pocket") and ps.get("phone_donnie"):                          # v56: the hand going into the pocket: no ring finger hanging below it
+            dc.RING_ON[0] = False
         dc.FATHER_STEP[0] = st.get("father_step")                                # v1 (23 Nov): his feet, when he walks
+        dc.BROW_ARCH[0] = bool(ps.get("slam_hold"))                              # v57: the slam's raised brow arches
         ln_ = ps.get("lean", 0.0)                                                # v1 (23 Nov audit, decided): a weight shift,
         if ln_:                                                                  # the whole man tilted about his feet
             c.save(); c.translate(x, f); c.rotate(ln_); c.translate(-x, -f)
@@ -386,6 +390,8 @@ def _cast_draw0(k, n, scene, sh, heads):
                 o = draw_f()
         finally:
             dc.FATHER_STEP[0] = None
+            dc.BROW_ARCH[0] = False
+            dc.RING_ON[0] = True
             _kit.HAND[0] = hk
             if ln_:
                 c.restore()
@@ -394,17 +400,33 @@ def _cast_draw0(k, n, scene, sh, heads):
             hx0_, hy0_ = (x + (hx0_ - x) * math.cos(ln_) - (hy0_ - f) * math.sin(ln_),
                           f + (hx0_ - x) * math.sin(ln_) + (hy0_ - f) * math.cos(ln_))
         heads[n] = (hx0_, hy0_, 50 * FS)
+        if ps.get("impact") and ps.get("palm") and ps.get("targets_xy"):     # v55: his flat palm SLAMS: the film's own lines (frame 0's)
+            hx, hy = ps["targets_xy"][0]
+            c.set_source_rgb(*INK); c.set_line_width(3.2); c.set_line_cap(1)
+            for a_ in (-2.15, -1.8, -1.45, -1.1, -0.75):                     # up, clear of his face and of the glass
+                r0, r1 = 24, 24 + 22 * ps["impact"]
+                c.new_path(); c.move_to(hx + 12 + r0 * math.cos(a_), hy - 4 + r0 * math.sin(a_)); c.line_to(hx + 12 + r1 * math.cos(a_), hy - 4 + r1 * math.sin(a_)); c.stroke()
         if ps.get("phone_donnie") and ps.get("targets_xy"):                  # v1 (23 Nov): DONNIE calling, in his hand, he looks at it
             want = ps["targets_xy"][0]
             hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
             def scr_d(c_):
                 import of_ui as ui
                 ui.hand(c_, ui.call, "DONNIE")
-            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, scr_d, ang=-0.15, skin=dc.SKIN_F, body_x=x)
+            pk_ = ps.get("pocket")                                               # v56: (x0, x1, y) the coat pocket's mouth: the phone
+            if pk_:                                                              # and the hand sink INTO it (nothing drawn below it)
+                c.save(); c.new_path(); c.rectangle(pk_[0] - 400, pk_[2] - 800, 800, 800); c.clip()
+            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, None if ps.get("phone_dark") else scr_d,   # v55: face down = its dark back
+                          ang=ps.get("phone_ang", -0.15), skin=dc.SKIN_F, body_x=x)
+            if pk_:
+                c.restore()
+        if ps.get("pocket"):                                                     # the pocket's mouth, a seam on the coat, over it
+            pk_ = ps["pocket"]
+            c.set_source_rgb(*INK); c.set_line_width(2.2); c.set_line_cap(1)
+            c.new_path(); c.move_to(pk_[0], pk_[2]); c.curve_to(pk_[0] + 6, pk_[2] + 3, pk_[1] - 6, pk_[2] + 3, pk_[1], pk_[2] - 1); c.stroke()
         if ps.get("palm") and ps.get("targets_xy"):                          # v6 (23 Nov, motion_on3's hand): palm and fingers in ONE
             hx, hy = ps["targets_xy"][0]                                         # shape, flat across the lid, the fingers pointing on, a thumb
             sk = dc.SKIN_F
-            c.save(); c.translate(hx + 5, hy); c.scale(0.95, 0.95)                # v7 (audit: "the guard's hand"): from HIS cuff, short of the sleeve
+            c.save(); c.translate(hx + 5, hy); c.rotate(ps.get("palm_ang", 0.0)); c.scale(0.95, 0.95)      # v57: the wrist turns with the bonnet's slope; v7 (audit: "the guard's hand"): from HIS cuff, short of the sleeve
             c.new_path(); c.move_to(-8, -7); c.curve_to(4, -10, 18, -9, 21, -3); c.curve_to(22, 3, 16, 7, 2, 7); c.line_to(-8, 7); c.close_path()
             c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
             c.set_source_rgb(*INK); c.set_line_width(1.3); c.set_line_cap(1)
@@ -552,7 +574,7 @@ def _cast_draw0(k, n, scene, sh, heads):
                 c.set_source_rgb(*INK); c.new_path(); c.arc(bolt[0], bolt[1], 5, 0, 2 * math.pi); c.set_line_width(1.6); c.stroke()                # v8: his head over the bay, his hands below it
             if ps.get("hand_back") and ps.get("client_lamp", True):
                 hx_, hy_ = ps.get("hand_back_at", (bx + 60, 724))
-                gs.lamp(k, hx_ - 6, hy_ + 2, ang=-1.3, lit=ps.get("lamp_lit", True), hang=884)
+                gs.lamp(k, hx_ - 6, hy_ + 2, ang=-1.3, lit=ps.get("lamp_lit", True), hang=884, swing=ps.get("cable_swing", 0.0))
         elif kind == "watch":
             wu = ps.get("watch_u", 1.0)                                       # stage 7: the wrist comes up to the eyes
             wx, wy = oc.watch_pose(x, f, CS)[0]
@@ -1791,12 +1813,37 @@ def _speech_too_tall(surf, sh, who, txt, fc, cam, va_):
 
 BUBBLE_AT = {                                               # v48: lines placed by hand, in the 540 x 960 frame, per camera
     "0.5": dict(at={"'under'": (30, 664)}, tip={"'under'": (186, 606)}, rows=["Is it wrong?"]),   # v49: off his working hands
-    "2.1": dict(at={"(450, 640, 2.0)": (26, 430), "(467, 772, 1.5)": (26, 214)}, rows=["My son says his", "machine finds anything."]),
-    "2.4": dict(at={"(450, 640, 2.0)": (26, 430), "(467, 772, 1.5)": (26, 214)}, rows=["How would you", "run his company?"]),
+    "2.1": dict(at={"*": (26, 430)}, rows=["My son says his", "machine finds anything."]),   # v51: one picture, pushing in
+    "2.4": dict(at={"*": (26, 430)}, rows=["How would you", "run his company?"]),
     "2.6": dict(at={"(450, 640, 2.0)": (26, 470)}, rows=["And then?"]),
-    "2.8b": dict(at={"['client']": (350, 150), "(575, 785, 2.6)": (360, 130)}, rows=["One month.", "I ask.", "She finds it."]),
+    "2.8b": dict(at={"['client']": (355, 140), "(575, 785, 2.6)": (355, 140)}, rows=["One month.", "I ask.", "She finds it."]),
     "2.8c": dict(at={"['father', 'client']": (60, 330)}, rows=["Done."]),
+    "2.9": dict(at={"(170, 795, 1.8)": (330, 140), "(172, 752, 2.6)": (330, 140)}, rows=["Put it in the", "calendar."]),   # v51: one place across the cut
 }
+
+
+def robot_peek(c, x, y, r):
+    """v51: the robot's own head, small, peeking in at the frame's left edge (it sits left of Don): navy round visor,
+    the cyan eager eyes and smile, the antenna; the off-screen card's tail points at it."""
+    cyan = (0.45, 0.92, 1.0)
+    c.save()
+    c.set_line_width(3); c.set_source_rgb(*kit.INK if hasattr(kit, "INK") else (0.1, 0.1, 0.12))
+    c.move_to(x + 0.15 * r, y - r); c.line_to(x + 0.3 * r, y - 1.55 * r); c.stroke()
+    c.arc(x + 0.3 * r, y - 1.62 * r, 0.16 * r, 0, 2 * math.pi); c.set_source_rgb(1.0, 0.82, 0.2); c.fill_preserve()
+    c.set_source_rgb(0.1, 0.1, 0.12); c.set_line_width(2); c.stroke()
+    c.arc(x, y, r * 1.08, 0, 2 * math.pi); c.set_source_rgb(0.93, 0.94, 0.95); c.fill_preserve()
+    c.set_source_rgb(0.1, 0.1, 0.12); c.set_line_width(3); c.stroke()
+    c.arc(x, y, r * 0.86, 0, 2 * math.pi); c.set_source_rgb(0.09, 0.12, 0.24); c.fill()
+    c.set_source_rgb(*cyan); c.set_line_width(3.2); c.set_line_cap(1)
+    for e in (-1, 1):
+        c.new_path(); c.arc(x + 0.12 * r + e * 0.30 * r, y - 0.08 * r, 0.13 * r, math.pi * 1.1, math.pi * 1.9); c.stroke()
+    c.new_path(); c.arc(x + 0.12 * r, y + 0.12 * r, 0.32 * r, 0.25 * math.pi, 0.75 * math.pi); c.stroke()
+    c.restore()
+
+
+def man_at(man, cam):
+    """v51: a hand-placed box for this camera; "*" = every camera of the shot (a push-in under a line)."""
+    return man["at"].get(repr(cam), man["at"].get("*"))
 BUBBLE_LOCKS = {}                                           # (shot, camera, text) -> the bubble as it was drawn ONCE for that picture
 BUBBLE_LOCK_ON = [True]
 BUBBLE_UNLOCKED = []                                        # frames whose bubble was placed on the spot (the gate fails on any)
@@ -1830,7 +1877,7 @@ def board_frame(sh, scene, bubble=True):
     after everything, so a camera jolt does not move it."""
     if not bubble or sh["id"] not in SAY or not BUBBLE_LOCK_ON[0]:
         return _board_frame_raw(sh, scene, bubble)
-    if sh["id"] in BUBBLE_AT and repr(sh["cam"]) in BUBBLE_AT[sh["id"]]["at"]:   # placed by hand: its box is fixed, its tail follows the mouth
+    if sh["id"] in BUBBLE_AT and man_at(BUBBLE_AT[sh["id"]], sh["cam"]):   # placed by hand: its box is fixed, its tail follows the mouth
         return _board_frame_raw(sh, scene, True)
     lk = BUBBLE_LOCKS.get(bubble_key(sh))
     if lk is None:
@@ -1857,7 +1904,7 @@ def _board_frame_raw(sh, scene, bubble=True):
         fc = {n: ((v[0] - cam[0]) * cam[2] + 270, (v[1] - cam[1]) * cam[2] + 480, v[2] * cam[2]) for n, v in f["heads"].items()}
         fc = {("don" if n in ("don", "seat") else n): v for n, v in fc.items()}
     man = BUBBLE_AT.get(sh["id"])
-    if man and who in fc and repr(sh["cam"]) in man["at"]:
+    if man and who in fc and man_at(man, sh["cam"]):
         # v48 (24 Nov, decided after cold test v47: the bubble jumped across cuts inside a line and sat on the lamp hand
         # and the phone): this line's box is PUT, the same place in every picture of its shot; the tail goes to the mouth
         # drawn in THIS frame, so it follows him.
@@ -1873,7 +1920,7 @@ def _board_frame_raw(sh, scene, bubble=True):
         c.select_font_face(kit.FONT, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL); c.set_font_size(size)
         bw = max(c.text_extents(r_).x_advance for r_ in rows) + 28
         bh = size * 1.15 * len(rows) + 18
-        x0, y0 = man["at"][repr(sh["cam"])]
+        x0, y0 = man_at(man, sh["cam"])
         box = (x0, y0, x0 + bw, y0 + bh)
         cx_, cy_ = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
         d_ = math.hypot(cx_ - mth[0], cy_ - mth[1]) or 1.0
@@ -1895,7 +1942,13 @@ def _board_frame_raw(sh, scene, bubble=True):
         bw = max(c.text_extents(r_).x_advance for r_ in ov["rows"]) + 28
         bh = 28 * 1.15 * len(ov["rows"]) + 18
         x0, y0 = ov["at"]
-        speech._paint(Ctx(c, 0), (x0, y0, x0 + bw, y0 + bh), (x0 - 20, y0 + bh * 0.5), ov["rows"], 28, kit.MONO, True)
+        hy_ = y0 + bh * 0.5
+        pk = ov.get("peek", 1.0)                                       # v52 (audit: "a glued-on icon"): it LEANS IN from the edge,
+        if pk > 0.02:                                                  # bigger, tipped, and leans out after the line
+            c.save(); c.translate(-62 + 92 * pk, y0 + 2); c.rotate(0.30 * (1 - pk) - 0.12 * pk); robot_peek(c, 0, 0, 46); c.restore()
+        if pk > 0.35:                                                  # its card comes and goes with it, under its chin
+            speech._paint(Ctx(c, 0), (x0, y0 + 26, x0 + bw, y0 + 26 + bh), (x0 - 6, y0 + 34), ov["rows"], 28, kit.MONO, True)
+                                           # v51 (cold test v50, 3 of 3: "Don says it"): WHO says it
         surf.flush()
         return surf, msgs
     if who not in fc:

@@ -36,6 +36,7 @@ PINCH_CLOSE = [0.0]                                                  # 0 = v10's
 PINCH_V4 = [False]                                                   # opt-in: the clamp (the nose its own, between the fingers)
 PINCH_V3 = [False]                                                   # opt-in: the C-shaped pinch (review 26 Nov)
 PINCH_V2 = [False]                                                   # opt-in: the simpler pinch (index and thumb straight)
+PALM_VAR = [False]                                                    # opt-in: palm fingers of unequal length (One Star)
 
 def reset(left="relax", right="relax"):
     GEST[0] = (left, right); _N[0] = 0; LATE.clear(); DIRS.clear(); DRAWN.clear()
@@ -249,6 +250,10 @@ def draw(k, g, hx, hy, w, skin, d, arm):
         _cap(c, [(0.10 * w, s_ * 0.30 * w), (0.42 * w, s_ * 0.62 * w)], t, skin)     # the thumb out
         _blob(c, 0.20 * w, 0, 0.42 * w, 0.40 * w, skin)
         for fy in (-0.24, -0.08, 0.08, 0.24):
+            if PALM_VAR[0]:                                           # opt-in (One Star v17): index, middle, ring, pinky
+                ln = {0.24: 0.94, 0.08: 1.02, -0.08: 0.97, -0.24: 0.80}[round(fy * s_, 2)] * w
+                _cap(c, [(0.40 * w, fy * w), (ln, fy * w * 1.22)], t * (0.82 if fy * s_ < -0.2 else 0.9), skin)
+                continue
             _cap(c, [(0.40 * w, fy * w), (1.02 * w - abs(fy) * 0.5 * w, fy * w * 1.15)], t * 0.9, skin)
         c.restore(); return
     if g == "quiet":                                                  # v3 (One Star audit 2, 23 Nov): a hand at rest. One

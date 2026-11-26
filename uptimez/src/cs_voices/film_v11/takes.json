@@ -1,0 +1,258 @@
+{
+ "1.4r": {
+  "who": "ROBOT",
+  "text": "Reply drafted. Human approval required.",
+  "len": 2.368,
+  "f0": 141,
+  "rms": 0.111,
+  "peak": 1.104,
+  "source": "film_v1 1.4r",
+  "asr": [
+   "Reply drafted, human approval required.",
+   "Reply drafted, human approval required.",
+   "Reply drafted, human approval required."
+  ],
+  "asr_ok": 3
+ },
+ "1.4d": {
+  "who": "DON",
+  "text": "Approved.",
+  "len": 0.718,
+  "f0": 93,
+  "rms": 0.112,
+  "peak": 0.584,
+  "source": "film_v1 1.4d",
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "asr_ok": 3
+ },
+ "2.1": {
+  "who": "DON",
+  "text": "Let's fix this together.",
+  "len": 1.499,
+  "f0": 94,
+  "rms": 0.112,
+  "peak": 0.776,
+  "source": "film_v1 2.1",
+  "asr": [
+   "Let's fix this together.",
+   "Let's fix this together.",
+   "Let's fix this together."
+  ],
+  "asr_ok": 3
+ },
+ "2.2": {
+  "who": "CLIENT",
+  "text": "Nine o'clock. Your office.",
+  "len": 1.696,
+  "f0": 142,
+  "rms": 0.162,
+  "peak": 0.8,
+  "source": "film_v1 2.2",
+  "asr": [
+   "9 o'clock your office.",
+   "9 o'clock your office",
+   "9 o'clock your office."
+  ],
+  "asr_ok": 3
+ },
+ "3.1r": {
+  "who": "ROBOT",
+  "text": "Blueprint generated. Human approval required.",
+  "len": 2.439,
+  "f0": 139,
+  "rms": 0.111,
+  "peak": 1.423,
+  "source": "film_v1 3.1r",
+  "asr": [
+   "Blueprint-generated human approval required.",
+   "Blueprint-generated human approval required.",
+   "Blueprint-generated human approval required."
+  ],
+  "asr_ok": 3
+ },
+ "3.1d": {
+  "who": "DON",
+  "text": "Approved.",
+  "len": 0.718,
+  "f0": 93,
+  "rms": 0.112,
+  "peak": 0.584,
+  "source": "film_v1 3.1d",
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "asr_ok": 3
+ },
+ "3.3": {
+  "who": "DON",
+  "text": "Recovered.",
+  "len": 0.835,
+  "f0": 101,
+  "rms": 0.112,
+  "peak": 0.8,
+  "source": "film_v1 3.3",
+  "asr": [
+   "recovered",
+   "recovered",
+   "recovered."
+  ],
+  "asr_ok": 3
+ },
+ "4.4": {
+  "who": "ROBOT",
+  "text": "The result was obtained by a h-human.",
+  "len": 2.18,
+  "f0": 153,
+  "rms": 0.111,
+  "peak": 1.344,
+  "source": "film_v1 4.4",
+  "asr": [
+   "The result was obtained by a H, human.",
+   "The result was obtained by a H human.",
+   "The result was obtained by a H, human."
+  ],
+  "asr_ok": 3
+ },
+ "5.1": {
+  "who": "CLIENT",
+  "text": "Your number.",
+  "len": 0.813,
+  "f0": 142,
+  "rms": 0.115,
+  "peak": 0.7,
+  "source": "film_v1 5.1",
+  "asr": [
+   "your number",
+   "Your number",
+   "Your number."
+  ],
+  "asr_ok": 3
+ },
+ "5.4s": {
+  "who": "SOFIA",
+  "text": "He's not looking at you.",
+  "len": 1.154,
+  "f0": 197,
+  "rms": 0.101,
+  "peak": 0.484,
+  "source": "film_v1 5.4s",
+  "asr": [
+   "He's not looking at you",
+   "He's not looking at you.",
+   "He's not looking at you."
+  ],
+  "asr_ok": 3
+ },
+ "5.4d": {
+  "who": "DON",
+  "text": "Customer success.",
+  "len": 1.357,
+  "f0": 101,
+  "rms": 0.112,
+  "peak": 0.725,
+  "source": "film_v1 5.4d",
+  "asr": [
+   "Customer success.",
+   "Customer success",
+   "Customer success."
+  ],
+  "asr_ok": 3
+ },
+ "3.5": {
+  "who": "CLIENT",
+  "text": "Is this a joke?",
+  "len": 1.074,
+  "f0": 129,
+  "rms": 0.114,
+  "peak": 0.743,
+  "source": "kokoro",
+  "asr": [
+   "Is this a joke?",
+   "Is this is this is this is is",
+   "Is this a joke"
+  ],
+  "asr_ok": 2
+ },
+ "6.5": {
+  "who": "SOFIA",
+  "text": "Still one star.",
+  "len": 0.875,
+  "f0": 201,
+  "rms": 0.144,
+  "peak": 0.723,
+  "source": "film_v9 6.5 +3 dB (v16: lost behind Pam's line in the mix, 1/3 -> 3/3)",
+  "asr": [
+   "Still one star.",
+   "Still one star",
+   "Still one star."
+  ],
+  "asr_ok": 3
+ },
+ "1.2": {
+  "who": "CLIENT",
+  "text": "Paid $999. They lost my blueprint. My lawyer will call.",
+  "len": 4.816,
+  "f0": 109,
+  "rms": 0.111,
+  "peak": 0.857,
+  "source": "kokoro, atempo 1.12"
+ },
+ "1.4b": {
+  "who": "DON",
+  "text": "Stupid human.",
+  "len": 1.169,
+  "give": "Stupid human.",
+  "speed": 0.96,
+  "source": "23 Nov, Don clean (Tomas: the robot's effect read as Don in a pipe)",
+  "asr": [
+   "Stupid human.",
+   "Stupid human.",
+   "Stupid human."
+  ],
+  "asr_ok": 3
+ },
+ "4.2p": {
+  "who": "PAM",
+  "text": "Check your pocket.",
+  "len": 1.08,
+  "source": "23 Nov, Pam voice A; the long released t cut at 1.08 s (it read as 'pocketer')",
+  "asr": [
+   "Check your pocket.",
+   "Check your pocket.",
+   "Check your pocket.",
+   "Check your pocket."
+  ],
+  "asr_ok": 4,
+  "give": "Check your pocket!"
+ },
+ "6.3p": {
+  "who": "PAM",
+  "text": "Some post. Others find.",
+  "len": 1.687,
+  "source": "23 Nov, Pam voice A (as Daddy's Home)",
+  "asr": [
+   "Some post others find.",
+   "Some post others find.",
+   "Some post others find."
+  ],
+  "asr_ok": 3,
+  "give": "Some post. Others find"
+ },
+ "4.1p": {
+  "who": "PAM",
+  "text": "Wait.",
+  "len": 0.578,
+  "source": "26 Nov, Pam voice A (sound_xmas.pam_line), Tomas picked take a",
+  "asr": [
+   "Wait."
+  ],
+  "asr_ok": 1,
+  "give": "Wait."
+ }
+}

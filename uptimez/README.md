@@ -229,9 +229,13 @@ New Year special. SOFÍA dreams she is a femme fatale in a black-and-white city 
 
 | File | Version | Notes |
 |---|---|---|
-| `on2_film_v28_1080.mp4` | **release v28 (current, 20 Nov)**, not committed | 1080×1920, native 1080, 79.2 s, 30 fps, BT.709, −15.0 LUFS, −2.5 dBTP, 16/16 lines heard by Whisper, the last drawing is the first. Rebuild with `./uptimez/build.sh on2`. v27 (18 Nov) was the release before |
+| `on2_film_v43_1080.mp4` | **release v43 (current, 25 Nov)**, not committed | 1080×1920, native 1080, 79.5 s, 30 fps, BT.709, −15.0 LUFS, −2.2 dB peak, 2385 frames, the last frame equals frame 0; v43: the raven's scene 0.92 s (perched, crouch, flight, head, strike, wipe), the first shot at 1.5 s; v42: the raven at 0:00 and on the lamp at the end (the loop), the series' glove hands, the bar's hat shadows and her wink, "I only want my blueprint—". v28 (20 Nov) was the release before |
+| `on2_motion_test_v29.mp4` … `_v42.mp4` | 540 previews, not committed | v29 raven; v30 blueprint, desk, push-in; v31–v32 the raven whole, compact, wet stones; v33–v36 hands; v37–v41 the bar; v42 last polish |
+| `on2_cold_test_v29.md` … `_v41_bar.md`, `on2_raven_v1..v3` stills | tests | Cold mute tests of each version (three viewers each) |
+| `on2_film_v28_1080.mp4` | release v28 (20 Nov), not committed | 1080×1920, native 1080, 79.2 s, 30 fps, BT.709, −15.0 LUFS, −2.5 dBTP, 16/16 lines heard by Whisper, the last drawing is the first. Rebuild with `./uptimez/build.sh on2`. v27 (18 Nov) was the release before |
 | `on2_motion_test_v28.mp4` | v28, 540 preview | v28: a joke by 0:01, the first gunshot at 1.0 s (1.1 is 0.75 s); v25: the first Noir's look (blinds on the walls under the people, a side light, lighter faces, typewriter narration cards at the top); v26: the money, the pour and the office lit; v27: the arms in the bar against smoke. v24 is the last before the new look |
-| `office-noir-2-script-v6.md` | script (current) | Line by line with the shot list, as of v28 (the look of v25–v27, the new opening); v1–v5 and concepts v1–v4 kept |
+| `office-noir-2-script-v7.md` | script (current) | What changed from v28 to v42; v6 below is the shot list of v28 |
+| `office-noir-2-script-v6.md` | script (v28) | Line by line with the shot list, as of v28 (the look of v25–v27, the new opening); v1–v5 and concepts v1–v4 kept |
 | `on2_shotboard_v8.png` | shot board | One frame from each of the 48 set-ups of v24 |
 | `on2_cover_v3.png` (v1, v2 kept) | cover | Her face close, her eyes on the Shadow, his lit hand on her shoulder; OFFICE NOIR 2 label, "The Shadow of Fate". Checked at feed size (120 px) |
 | `on2_anim_mute_test_v8.md`, `on2_board_mute_test_v1.md`, `_v4.md`, `on2_pacing_test_v15.md` | tests | Cold mute tests of the board and the animation; the cold pacing test |
@@ -343,15 +347,17 @@ Built from `src/` (`dh_scenes.py`, `dh_anim1.py` … `dh_anim8.py`, `dh_say.py`,
 
 ### The Offer — [`the-offer/`](the-offer/)
 
-Episode 13, *Civil War* 1 of 5, **rough cut v30 (24 Nov), 540.** Father comes to the Client's garage to make him take down the post. Everything he brings to frighten him, the Client turns into garage work, until Father asks how he would run Don's company. "Without him." The Client's terms are Pam. Back at the office, the robot reads the new meeting out loud: AGENDA: WITHOUT HIM.
+Episode 13, *Civil War* 1 of 5, **cut v57 (26 Nov), 1080 (not in git); v54 rejected.** Father comes to the Client's garage to make him take down the post. Everything he brings to frighten him, the Client turns into garage work, until Father asks how he would run Don's company. "Without him." The Client's terms are Pam. Back at the office, the robot reads the new meeting out loud: AGENDA: WITHOUT HIM. Father declines Don's call, pockets the phone and slams his palm on the Client's bonnet; the film's first frame, the guard's fist on the same car, is the next blow (the loop is an echo, v55).
 
 | File | Notes |
 |---|---|
-| `of_roughcut_v30_540.mp4` | **v30**: 64.5 s, 15 lines, sound v15 (the office bed, the lamp gag's tick, the garage theme back at the pin); G5 and the hand gate pass |
+| `of_roughcut_v57_540.mp4`, the 1080 file | **v57**: 64.9 s, 15 lines, timing v28, sound v29; G5 and the hand gate pass. Rendered by `of_film.py 1`…`5`, `of_sound.py`, `of_cut.py`; not in git (`of_roughcut_v30_540.mp4` is the last committed cut) |
+| `of_cold_test_v52.md` | Cold test v52 (3 viewers) and the two tests of the new ending (v53, v54) |
+| `of_release.md` | Title, caption, pinned comment, cover |
 | `the-offer-script-v6.md` | **Current script**, generated from `src/of_scenes.py` (do not edit by hand); v1–v5 kept |
 | `the-offer-set-v2.md`, `of_hands_v*_sheet.png` | The garage set; the hand sheets the series hand grew from |
 
-Built from `src/` (`of_scenes.py`, `of_set.py`, `of_cast.py`, `client_of.py`). **Still open:** the master and the cover.
+Built from `src/` (`of_scenes.py`, `of_film.py`, `of_set.py`, `of_cast.py`, `client_of.py`, `of_sound.py`, `of_cut.py`). **Still open** (cold test v52, waiting for a decision): the robot's off-screen lines still read as Don's, props without a hand (the lighter at 0:16, the lamp in the gag and the insert), "Burn them." and the phone at 0:04. Decided and closed: "Off the car." from under the car, the red rag.
 
 ### Pick a Side — [`pick-a-side/`](pick-a-side/)
 

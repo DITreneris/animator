@@ -121,7 +121,7 @@ def key(k, name):
         if name == "D":                                                           # in its claw; the visor is the punch line
             hx, hy = o["robot"]["hands"][1]
             _phone(k_, hx, hy - 10, -0.2, 1.25)
-            ellipse(k_, sx, sy, 0.86 * rr, 0.68 * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
+            ellipse(k_, sx, sy, VIS_W[0] * rr, VIS_W[1] * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
             _star(c_, sx - 0.36 * rr, sy - 0.02 * rr, 0.44 * rr, (1.0, 0.75, 0.1))
             cp.T(c_, "1/5", sx + 0.08 * rr, sy + 0.20 * rr, 0.52 * rr, col=(0.95, 0.96, 1.0), center=False)
 
@@ -136,11 +136,16 @@ def key(k, name):
 # ---- the motion: 16 drawings of the gag (0-1.33 s at 12 a second), then 10 of the wide -------------------------------------
 
 NG, NW = 16, 10
+IB_POSE, IB_DX = [(-100, -90, 100, 90)], [18.0]
+IB, NOBURST2 = [False], [False]                            # v18 (cs_v18): the in-between drawing; no second burst
 N11 = NG + NW
 HEAD = {5: (-0.19, -5, -0.05), 6: (0.09, 2, 0.03), 7: (-0.04, 0, 0.0)}             # the knock, the rebound, settling
 STAND = (-8, 0, 8, 0)
 UP = (-160, -20, 160, 20)
 ONHEAD = (-150, -120, 140, 100)
+RELIEF = (-40, 100, 40, -100)                               # v24: hands on his chest, a breath out
+ARC24 = [False]
+VIS_W = [0.86, 0.68]                                       # v26: the visor patch's size (0.80, 0.62 as 1.4: no bulge)
 GEO = {}
 
 
@@ -182,6 +187,12 @@ def gag(k, d):
         pose, face, look = kit.ARM_POSES["phone_r"], "caught", (0.1, 1.0)
     elif d <= 4:
         pose, face = UP, "shock"
+    elif ARC24[0] and d <= 6:                                                     # v24: the phone in the air: still shock
+        pose, face = UP, "shock"
+    elif ARC24[0] and d <= 8:                                                     # caught: relief, his hands down to his chest
+        pose, face = _mix(UP, RELIEF, (d - 6) / 1.5), "grin"
+    elif ARC24[0]:                                                                # then he sees the 1/5: horror, hands to his head
+        pose, face = _mix(RELIEF, ONHEAD, (d - 8) / 1.5), ("panic" if d < 14 else "shock")   # the 1/5 shows at d9
     elif d <= 10:
         pose, face = _mix(UP, ONHEAD, (d - 4) / 2.0), "shock"
     else:                                                                         # he freezes, hands on his head, mouth shut
@@ -202,6 +213,9 @@ def gag(k, d):
         ph = _arc(dome, claw, t, 26); spin = (0.10, -0.10)[d - 6]                 # near upright: the screen can be read
     else:
         ph = claw; spin = -0.2
+    if IB[0] and d == 2:                                                          # v18: the in-between, torn out of his hands
+        pose = IB_POSE[0]                                                          # (two viewers: it jumped from hands to air)
+        ph = (ph[0] - IB_DX[0], hand[1] + (ph[1] - hand[1]) * 0.5); spin = -0.55
     if 2 <= d <= 9:
         look = (max(-1.0, min(1.0, (ph[0] - 430) / 40.0)), max(-1.0, min(1.0, (ph[1] - 640) / 40.0)))
     elif d >= 10:
@@ -233,19 +247,21 @@ def gag(k, d):
             if d in (2, 3, 4):
                 pv = {2: hand, 3: (hand[0] - 56, hand[1] - 60), 4: ((hand[0] + dome[0]) / 2.0 - 20, sy0 - rr * 5.4)}[d]
                 _zz(c_, ph[0], ph[1], math.atan2(pv[1] - ph[1], pv[0] - ph[0]))
-            if d == 2:                                                            # torn out of his hand: a burst where it was
+            if d == 2 and (IB[0] or not NOBURST2[0]):                             # torn out of his hand: a burst where it was
                 c_.save(); c_.translate(hand[0], hand[1] - 6); c_.scale(0.34, 0.34); impact(c_, 0, 0, 40); c_.restore()
             if d in (2, 3, 4):
                 _buzz(c_, ph[0], ph[1], 17, 14, 1.8)
             if d == 5:
                 c_.save(); c_.translate(ph[0], ph[1] + 17); c_.scale(0.55, 0.55); impact(c_, 0, 0, 40); c_.restore()
             if d >= 8:
-                ellipse(k_, sx, sy, 0.86 * rr, 0.68 * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
+                ellipse(k_, sx, sy, VIS_W[0] * rr, VIS_W[1] * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
             if d >= 9:
                 z = 1.3 if d == 9 else 1.0                                       # it pops on, a drawing oversize
                 _star(c_, sx - 0.36 * rr, sy - 0.02 * rr, 0.44 * rr * z, (1.0, 0.75, 0.1))
                 cp.T(c_, "1/5", sx + 0.08 * rr, sy + 0.20 * rr, 0.52 * rr, col=(0.95, 0.96, 1.0), center=False)
             gh = {2: (8, 9, 0.35), 3: (9, 6, 0.4), 4: (-6, -7, 0.3)}.get(d)                # v3: none after the hit
+            if IB[0] and d == 2:
+                gh = (6, 10, 0.45)
             _phone(k_, ph[0], ph[1], spin, 1.35 if d <= 7 else 1.25, ghost=gh)
             PH_AT[0] = c_.user_to_device(ph[0], ph[1])
 
@@ -294,7 +310,7 @@ def wide(k, d):
             phone_held(k_, hx, hy, sb.SC["mom"], ang=-0.1, buzz=buzz, d=d + 3, seed=961)
             fist(k_, hx, hy, sb.SC["mom"], kit.PEOPLE.get("MOM", {}).get("skin", (0.95, 0.80, 0.70)), 965)
         sx, sy = o["robot"]["screen"]
-        ellipse(k_, sx, sy, 0.86 * rr, 0.68 * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
+        ellipse(k_, sx, sy, VIS_W[0] * rr, VIS_W[1] * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
         _star(k_.c, sx - 0.36 * rr, sy - 0.02 * rr, 0.44 * rr, (1.0, 0.75, 0.1))
         cp.T(k_.c, "1/5", sx + 0.08 * rr, sy + 0.20 * rr, 0.52 * rr, col=(0.95, 0.96, 1.0), center=False)
         hx, hy = o["robot"]["hands"][1]

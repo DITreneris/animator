@@ -42,6 +42,21 @@ HOLD_A = (2.10, 2.40)                                      # he has it: it bends
 GO_V = (2.40, 2.80)                                        # over onto the visor: lands on "Approved." (2.818)
 BACK = s1.LINE_D[1] + 0.15                                 # then the arm goes home (0.4 s)
 GEO14 = {}
+ARM14 = ["paddle"]                                         # v15 (bubbles): "none", the phone held low
+ELBOW14 = [1]                                              # v17: -1 lifts the elbow out of his body's outline at the visor
+FOLLOW35 = [None]                                          # v18: 3.5's follow-through pose after the release (cs_v18)
+DOOR31b = [False]                                          # v17: the handle, rail, glints and PUSH sticker (cs_v17)
+FACE14, LOOK14, VIS14 = ["smug"], [(1, -0.3)], [0.92]          # v23: his face, look; where on the visor
+LEAN14 = [0.0]                                             # v17: how far he leans in for the visor (0: v14; cs_v17 sets it)
+
+
+def _lean14(t):
+    """0..1: in with the reach to the visor, out with the arm going home."""
+    if t < GO_V[0]:
+        return 0.0
+    if t < BACK:
+        return _ease((t - GO_V[0]) / (GO_V[1] - GO_V[0]))
+    return 1 - _ease((t - BACK) / 0.4)
 
 
 def _geo14():
@@ -49,11 +64,11 @@ def _geo14():
         def probe(k_, o):
             GEO14["s"] = o["robot"]["screen"]
         s1.draw(lambda k_, d: S(k_, s1.TWO14_IN, auto=False, extra=probe,
-                                **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm="paddle"))), 0)
+                                **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=ARM14[0]))), 0)
         sx, sy = GEO14["s"]
         rr = 50 * sb.SC["robot"]
         GEO14["A"] = (sx + 0.34 * rr, sy - 1.40 * rr)
-        GEO14["V"] = (sx + 0.92 * rr, sy + 0.02 * rr)
+        GEO14["V"] = (sx + VIS14[0] * rr, sy + 0.02 * rr)
     return GEO14
 
 
@@ -79,6 +94,30 @@ def _arm14(t):
     return _lerp(G["V"], REST14, u), ("reach" if u < 1 else "rest")
 
 
+def _alerp(A, B, u):
+    return tuple(a + (((b - a + 180) % 360) - 180) * u for a, b in zip(A, B))
+
+
+def angles14(t):
+    """v17 ((a1, a2), lean): with ELBOW14 -1 the elbow is up and out of his body's outline from the antenna to the
+    visor; the swings from and back to rest blend the joint angles (an IK flip there jumped)."""
+    from cand_bc import ik
+    ln_ = LEAN14[0] * _lean14(t)
+    sx, sy = SH14[0] - ln_, SH14[1]
+    tgt, _ = _arm14(t)
+    up = ELBOW14[0]
+    if up == 1 or t < GO_A[0] or t >= BACK + 0.4:
+        return ik(sx, sy, tgt[0], tgt[1], g.LN, g.LN, 1), ln_
+    G = _geo14()
+    if t < GO_A[1]:
+        u = _ease((t - GO_A[0]) / (GO_A[1] - GO_A[0]))
+        return _alerp(ik(sx, sy, REST14[0], REST14[1], g.LN, g.LN, 1), ik(sx, sy, G["A"][0], G["A"][1], g.LN, g.LN, up), u), ln_
+    if t < BACK:
+        return ik(sx, sy, tgt[0], tgt[1], g.LN, g.LN, up), ln_
+    u = _ease((t - BACK) / 0.4)
+    return _alerp(ik(sx, sy, G["V"][0], G["V"][1], g.LN, g.LN, up), ik(sx, sy, REST14[0], REST14[1], g.LN, g.LN, 1), u), ln_
+
+
 def _shapes14():
     _, st = _arm14(_t())
     return [{"rest": "quiet", "reach": "grab", "antenna": "grab", "visor": "point"}[st], "quiet"]
@@ -92,7 +131,7 @@ def s1_4(k, d):
     t = d / float(DPS)
     g.REC.clear()
     tgt, st = _arm14(t)
-    a1, a2 = ik(SH14[0], SH14[1], tgt[0], tgt[1], g.LN, g.LN, 1)
+    (a1, a2), ln_ = angles14(t)
     talk = 0.0
     if s1.LINE_D[0] <= t <= s1.LINE_D[1]:
         talk = (1.0, 0.5, 1.0, 0.0)[int((t - s1.LINE_D[0]) * DPS / 2) % 4]
@@ -105,7 +144,8 @@ def s1_4(k, d):
         sx, sy = o["robot"]["screen"]
         rr = 50 * sb.SC["robot"]
         hx, hy = o["robot"]["hands"][1]
-        v14._phone(k_, hx, hy - 10, -0.2, 1.25)                                     # his phone, still in its claw
+        v14._phone(k_, hx, hy - 10, -0.2, 1.25)                                     # his phone, held low in its claw (v15: the wall
+                                                                                    # on its left is the bubble's)
         lit = 0.6 if (speaking and (d // 2) % 3 == 0) else 1.0
         ellipse(k_, sx, sy, 0.80 * rr, 0.62 * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
         if tick:
@@ -135,8 +175,8 @@ def s1_4(k, d):
         cam = tuple(a_ + (b_ - a_) * u for a_, b_ in zip(s1.TWO14, s1.TWO14_IN))
         if True:
             S(k, cam, auto=False, portrait="hang", extra=ex,
-              **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm="paddle"),
-                     dn=at("don", x=X["don"] - STEP, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
+              **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=ARM14[0]),
+                     dn=at("don", x=X["don"] - STEP - ln_, pose=(a1, a2, 8, 0), face=FACE14[0], look=LOOK14[0])))
 
 
 
@@ -145,6 +185,7 @@ def s1_4(k, d):
 
 SHOOT = (0.20, 0.62)                                       # the sheet's tip from the slot to off the frame's left (s)
 GRAB = (0.30, 0.55)                                        # his hand goes for it ...
+GRAB_AT = [(366.0, 724.0)]
 LUNGE = 26.0                                               # he lunges a step at it
 SHUT = 0.62                                                # ... and closes on air
 LOOK = (0.95, 2.20)                                        # he looks at his empty fist
@@ -196,7 +237,7 @@ def s3_1(k, d):
     t = d / float(DPS)
     floor = sb.F + 4
     pt = s3.POINT_AT
-    grab_at = (366.0, 724.0)
+    grab_at = GRAB_AT[0]
     lunge = LUNGE * (_ease((t - GRAB[0]) / 0.2) if t < DROP else 1 - _ease((t - DROP) / 0.4))
     if t < GRAB[0]:
         tgt = _lerp((420.0, 736.6), pt, _ease(t / 0.25))
@@ -279,6 +320,18 @@ def s3_1b(k, d):
     c.set_source_rgba(1, 1, 1, 0.5)
     for x0 in (30, 70):
         c.move_to(x0, 0); c.line_to(x0 + 22, 0); c.line_to(x0 - 60, fy + 46); c.line_to(x0 - 82, fy + 46); c.close_path(); c.fill()
+    if DOOR31b[0]:                                                                # v17: read as a glass DOOR, not a post
+        c.set_source_rgba(1, 1, 1, 0.55)                                          # glints inside the view
+        for x0, w_ in ((132, 10), (112, 5)):
+            c.move_to(x0, 380); c.line_to(x0 + w_, 380); c.line_to(x0 + w_ - 60, fy + 20); c.line_to(x0 - 60, fy + 20); c.close_path(); c.fill()
+        g.rect(k, -10, fy + 14, 162, 32, (0.62, 0.65, 0.70), 985, shadow=False, lw=2.5)   # the metal kick rail
+        for yy in (470.0, 590.0):                                                 # the pull handle on its two mounts
+            g.rect(k, 120, yy - 4, 18, 8, (0.62, 0.65, 0.70), 985, shadow=False, lw=2)
+        g.rect(k, 112, 462, 10, 136, (0.74, 0.77, 0.81), 985, shadow=False, lw=2.5)
+        c.save(); c.translate(76, 470); c.rotate(-0.04)
+        g.rect(k, -26, -12, 52, 24, (0.98, 0.97, 0.93), 985, shadow=False, lw=2)
+        cp.T(c, "PUSH", 0, 6, 15, col=INK)
+        c.restore()
     g.rect(k, 150, -10, 22, fy + 60, (0.36, 0.40, 0.47), 986, shadow=False, lw=3)
     pts = []
     for i in range(61):
@@ -322,15 +375,17 @@ def s3_5(k, d):
     code = s3.talk_code(t, *s3.LINE35)
     stand = sb.co.POSES["stand"] if hasattr(sb.co, "POSES") else (-10, 5, 8, 0)
     up = (-10, 5, 150, 40)
-    wind = (-10, 5, 150, 15)
-    out = (-10, 5, 95, 30)
+    wind = (-10, 5, 160, 45)                                                    # v16: wound back, the elbow bent
+    out = (-10, 5, 108, 32)                                                     # v16: the follow-through bent (elbow gate)
     if t < WIND[0]:                                                               # caught with the arm already up (rule: no raise past the shoulder)
         pose = up
     elif t < THROW:
         u = _ease((t - WIND[0]) / (WIND[1] - WIND[0])); pose = tuple(a + (b - a) * u for a, b in zip(up, wind))
-    else:
+    elif FOLLOW35[0] is None or t < THROW + 0.17:
         u = _ease((t - THROW) / 0.17); pose = tuple(a + (b - a) * u for a, b in zip(wind, out))
-    lean = (s3.TILT[min(d, len(s3.TILT) - 1)] + 3) if t < THROW else 8
+    else:                                                                         # v18: on through, down and bent (it held
+        u = _ease((t - THROW - 0.17) / 0.25); pose = tuple(a + (b - a) * u for a, b in zip(out, FOLLOW35[0]))   # out: a pole)
+    lean = 5 if t < THROW else 8                                                  # v15e: steady while he speaks (the locked bubble sat on his leaning face)
     cu = _ease((t - WIND[0]) / 0.4)
     cam = tuple(a + (b - a) * cu for a, b in zip(*CAM35))
     crumple = min(1.0, t / 0.33)
@@ -342,21 +397,13 @@ def s3_5(k, d):
         hx, hy, hw, _, hd, _, m_ = g.REC[-1]                                        # his right hand, in its own (leaning) space
         c.save(); c.set_matrix(m_)
         nd = math.hypot(*hd) or 1.0
-        hx, hy = hx + hd[0] / nd * 0.75 * hw, hy + hd[1] / nd * 0.75 * hw     # the ball on top of the fist, gripped: whole and seen
+        hx, hy = hx + hd[0] / nd * 0.40 * hw, hy + hd[1] / nd * 0.40 * hw     # the ball in the palm, the fingers over it
         r = r * 1.35
         if t < THROW:
-            if crumple < 1:                                                       # the sheet balling up in his hand
-                c.save(); c.translate(hx - 1, hy - 5); c.rotate(0.3 * crumple)
-                w = r * (1 + 2.2 * (1 - crumple)); h = r * (1 + 1.4 * (1 - crumple))
-                c.new_path()
-                for i in range(12):
-                    a = i * math.pi / 6
-                    q = 1 + 0.18 * math.sin(i * 2.7 + crumple * 5)
-                    c.line_to(math.cos(a) * w * q, math.sin(a) * h * q)
-                c.close_path(); c.set_source_rgb(*g.BLUE); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.3); c.stroke()
-                c.restore()
-            else:
-                g._ball(k_, hx - 1, hy - 5, r)
+            c.restore()
+            g.again(k_, len(g.REC) - 1, "grab")                                    # v16: the hand round it (fist: a big thumb)
+            c.save(); c.set_matrix(m_)
+            g._ball(k_, hx + hd[0] / nd * 0.55 * hw, hy + hd[1] / nd * 0.55 * hw, r * (1.3 - 0.15 * crumple), seed=int(crumple * 5))
             c.restore()
             return
         if t < THROW + 0.34:                                                      # leaving, toward the frame's right edge
@@ -382,6 +429,8 @@ def s3_5(k, d):
 
 N35b = 18
 LEAN35b = [0, 0, 7, 10, 7, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+BOUNCE35b = [False]
+LEAN35b_V25 = [0, 0, 13, 16, 9, 3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
 def s3_5b(k, d):
@@ -389,6 +438,8 @@ def s3_5b(k, d):
     three: his head knocked back and coming forward; it drops out of frame; then he freezes, one eye twitching."""
     cam = __import__("cs_v19").CAMS19["3.5b"]
     lean = LEAN35b[d]
+    if BOUNCE35b[0]:                                                              # v24: the head snaps back harder, overshoots
+        lean = LEAN35b_V25[d]
     w = 0.45 * math.sin((d - 2) * 1.9) * math.exp(-(d - 2) / 2.5) if d >= 2 else 0.0
     pts = s1.A.lerp(s1.A.MOUTH, s1.A.CROOKED4, w)
     face = "smug" if d < 2 else ("panic" if d < 8 else "neutral")
@@ -408,6 +459,9 @@ def s3_5b(k, d):
         elif d == 2:
             c.save(); c.translate(fx - 5, fy); c.scale(0.6, 0.6); impact(c, 0, 0, 40); c.restore()
             c.save(); c.translate(fx - 2, fy); c.rotate(-0.5); c.scale(0.55, 1.3); g._ball(k_, 0, 0, 7.5); c.restore()
+        elif d < 8 and BOUNCE35b[0]:                                              # v24: it bounces OFF, up and back, then falls
+            q = (d - 2) / 5.0
+            g._ball(k_, fx - 20 - 90 * q, fy - 40 * math.sin(math.pi * min(1, q * 1.6)) + 240 * max(0, q - 0.55) ** 2 * 4, 7.5)
         elif d < 8:                                                               # off his forehead and down out of the frame
             q = (d - 3) / 4.0
             g._ball(k_, fx - 14 - 10 * q, fy + 10 + 260 * q * q, 7.5)

@@ -110,6 +110,9 @@ STOP41 = (20, 150)                                          # her screen-right a
 HAND41 = ["quiet"]
 
 
+LINE41 = [None]
+
+
 def s4_1(k, d):
     """24 drawings (2.0 s). He is going for the door; Pam steps in from the left, the blue roll upright in her hand;
     he stops short; her other hand goes up and pushes her glasses into her hair (d12); she holds his eye."""
@@ -125,7 +128,9 @@ def s4_1(k, d):
     got = {}
 
     def pre(k_):
-        got["o"] = o = pam(k_, px, ROLL_ARM + arm, "neutral", (1, -0.2), glasses="up" if d >= 12 else "low", d=d)
+        mouth = s3.talk_code(d / float(DPS), *LINE41[0]) if LINE41[0] else None      # v22: "Wait."
+        got["o"] = o = pam(k_, px, ROLL_ARM + arm, "neutral", (1, -0.2), glasses="up" if d >= 12 else "low", d=d,
+                           mouth=mouth)
         hx, hy = min(o["hands"])                                                  # her screen-left hand: the roll in it
         c = k_.c
         c.save(); c.translate(hx - 1, hy - 4); c.rotate(-0.08)
@@ -211,6 +216,9 @@ def limb(k, x0, y0, x1, y1, w, sleeve, col, skin, cuff=None, seed=900, thumb=Non
     c.restore()
 
 
+LEAD42 = [0]                                         # v18: drawings of the slide already done at d0 (cs_v18)
+
+
 def s4_2(k, d):
     """28 drawings (2.3 s). Top shot, the AI's sheet on the desk. Her hands come in: one shoves the other's sleeve
     up, and back (d0-8); they unroll her taped plan down over the AI's (d9-17); they leave; a slow push in on the
@@ -221,7 +229,8 @@ def s4_2(k, d):
     _desk(k)
     x0, y0, w, h = PLAN_BOX
     if SILENT[0]:                                                                 # v5 (Tomas, 23 Nov): no hands. The plan
-        u = ease(d / 7.0)                                                          # slides in from the top, whole sheet, and lands
+        u = ease((d + LEAD42[0]) / (7.0 + LEAD42[0]))                              # slides in from the top, whole sheet, and lands
+                                                                                   # (v18 LEAD42: already on its way at d0)
         c.set_source_surface(_plan_surface("before"), 0, -(1 - u) * 720); c.paint()
         c.restore()
         return
@@ -260,7 +269,28 @@ def s4_2(k, d):
 N42b = 14
 CAM42b = (246, 690, 2.6)
 PX42b, LEAN42b = 188, 4.0
-POCKET = (296.0, 691.0)                                     # the blue edge above his pocket (scene)
+POCKET = (296.0, 691.0)
+REACH42b = [40.0]                                            # the hand stops this far out along the line to the pocket
+POINT_W = [19.0]                                     # the blue edge above his pocket (scene)
+
+
+ELBOW42b = [None]                                    # v17: her upper arm's angle (degrees off down) for a low point
+
+
+def _point_low(r):
+    """Her arm for "Check your pocket.": the upper arm down at her side (ELBOW42b off straight down, toward him), the
+    forearm out along the line to his pocket; blended from her rest angles by r (two cold viewers: the straight
+    reach across to the pocket read as a pole)."""
+    rest = (PX42b + 24, PAM_FEET - 64)
+    r0 = pam_reach(PX42b, 0.0, rest)
+    a = math.radians(-LEAN42b * r)
+    vx, vy = POCKET[0] - PX42b, POCKET[1] - PAM_FEET
+    px, py = (vx * math.cos(a) - vy * math.sin(a)) / PAM_S, (vx * math.sin(a) + vy * math.cos(a)) / PAM_S
+    a1 = ELBOW42b[0]
+    ex, ey = PAM_SH_R[0] + math.sin(math.radians(a1)) * LN, PAM_SH_R[1] + math.cos(math.radians(a1)) * LN
+    af = math.degrees(math.atan2(px - ex, py - ey))
+    goal = (a1, ((af - a1 + 180) % 360) - 180)
+    return tuple(x + (((y - x + 180) % 360) - 180) * r for x, y in zip(r0, goal))
 
 
 def s4_2b(k, d):
@@ -273,9 +303,11 @@ def s4_2b(k, d):
     rest = (PX42b + 24, PAM_FEET - 64)
     sh = (PX42b + PAM_SH_R[0] * PAM_S, PAM_FEET + PAM_SH_R[1] * PAM_S)             # her hand 40 units out along the line to
     L_ = math.hypot(POCKET[0] - sh[0], POCKET[1] - sh[1])                          # the pocket, the finger pointing on at it
-    aim = (sh[0] + (POCKET[0] - sh[0]) * 40 / L_, sh[1] + (POCKET[1] - sh[1]) * 40 / L_)
+    aim = (sh[0] + (POCKET[0] - sh[0]) * REACH42b[0] / L_, sh[1] + (POCKET[1] - sh[1]) * REACH42b[0] / L_)
     tgt = lerp(rest, aim, r)
     a1, a2 = pam_reach(PX42b, LEAN42b * r, tgt)
+    if ELBOW42b[0] is not None:                                                    # v17 (One Star): the elbow at her side,
+        a1, a2 = _point_low(r)                                                     # the forearm and finger at the pocket
     look_c = (1, 0) if d < 5 else (0.3, 1)
     got = {}
 
@@ -299,7 +331,7 @@ def s4_2b(k, d):
                 import hands_ps as hp
                 s1.PH_DEV.append(c.user_to_device(wx, wy))                         # (the rig's own hand stays out: two-pass)
                 an = math.atan2(wy - ey_, wx - ex_)
-                hp.draw(k_, "point", wx, wy, 19.0, SKIN_PAM, (math.cos(an), math.sin(an)), 1)
+                hp.draw(k_, "point", wx, wy, POINT_W[0], SKIN_PAM, (math.cos(an), math.sin(an)), 1)
                 c.restore()
                 return
             ellipse(k_, wx, wy, 10, 9, SKIN_PAM, 999, shadow=False, lw=2)
@@ -579,10 +611,13 @@ if V == "v5":
 def schedule():
     n = sum(nd for sh, nd, _ in SHOTS[:-1])
     out = [("4.4", n / float(DPS) + LINE44[0])]
+    if LINE41[0]:                                                                  # v22: Pam's "Wait." as she lands
+        st41 = sum(nd for sh, nd, _ in SHOTS[:SHOTS.index(next(x for x in SHOTS if x[0] == "4.1"))])
+        out.insert(0, ("4.1p", st41 / float(DPS) + LINE41[0][0]))
     if PAM_LINE[0]:
         st = sum(nd for sh, nd, _ in SHOTS[:SHOTS.index(next(x for x in SHOTS if x[0] == "4.2b"))])
         out.insert(0, ("4.2p", st / float(DPS) + LINE42b[0]))
-    return out
+    return sorted(out, key=lambda x: x[1])                                         # v22: in time order (the checks read them so)
 
 
 def draw(fn, d):

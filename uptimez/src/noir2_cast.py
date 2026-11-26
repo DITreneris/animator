@@ -924,6 +924,17 @@ def _drape3(k, ex, ey, s, seed, side=1):
     c.restore()
 
 
+def stole_heap(k, x, y, s=1.0):
+    """v42 (on the stones it read as "a caterpillar", 3/3): the fur stole fallen in a soft heap, one end out of it"""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(s, s)
+    _cloth(c, [("M", -60, 10), ("C", -64, -8, -40, -26, -14, -22), ("C", 0, -34, 26, -30, 36, -18), ("C", 52, -20, 64, -4, 58, 10),
+               ("C", 40, 18, -40, 18, -60, 10)])
+    _cloth(c, [("M", -18, -14), ("C", -6, -24, 14, -22, 20, -12), ("C", 14, -4, -6, -2, -18, -14)])           # a fold on top
+    _cloth(c, [("M", 52, 4), ("C", 70, 0, 86, 8, 92, 16), ("C", 80, 20, 64, 16, 50, 12)])                    # one end, out of it
+    c.restore()
+
+
 def wrap_flying(k, x, y, s=1.0, ang=-0.5, seed=680):
     """The wrap, off her shoulders and in the air."""
     c = k.c
@@ -987,6 +998,7 @@ def money(k, x, y, s=1.0, ang=0.0, n=5, seed=690):
 
 
 FUR = [False]                                              # (25 Nov, Noir 2 v35, cold test v34: the wrap read as "black tubes", "a second pair of arms", "an umbrella") a fur stole: a tufted edge, worn on the shoulders
+V42 = [False]                                              # (25 Nov, Noir 2 v42, Tomas's last polish) the wrap lies on the stones as a heap; the sugar on her cheek is a glaze smear with sprinkles; her beckon bigger
 ARM3_HIGH = [False]                                        # v40 (the arm's second review): the elbow up, near his body; the hand kept inside his reach
 ARM3 = [False]                                             # (25 Nov, Noir 2 v39, the arm's review) the detective's lens arm: two bones of fixed length, tapering, a round elbow with one fold, his hand (hands_ps fist) on the handle, the glass drawn in his hand's frame
 SLEEVE = [False]                                           # v35's sleeve on the Shadow's lit hand; off (Tomas, 25 Nov: undo it)
@@ -1062,7 +1074,7 @@ def star(k, x, feet, s=1.0, pose="g_stand", face="interested", look=(-0.8, 0.0),
         _glove_finger(k, rx - 1 * s, ry - 5 * s, s, -0.5 if pose == "g_count" else 0.15, seed + 332)
     if pose == "g_beckon3" and HAND3[0]:                  # v35: the series' glove, the index curling back (hands_ps "beckon")
         import hands_ps as hp
-        hp.draw(k, "beckon", rx, ry + 2 * s, 30 * s, KEY, (0.15, -1.0), 1)
+        hp.draw(k, "beckon", rx, ry + 2 * s, (40 if V42[0] else 30) * s, KEY, (0.15, -1.0), 1)
     elif pose == "g_beckon3" and LOOK[0] >= 4:             # v4: a hand: palm, thumb, and one finger curling toward her
         hand(k, rx, ry + 6 * s, s * 1.5, 0.12, curl, 1, seed + 336)
     elif pose == "g_beckon3":                              # the finger, large, curling toward her
@@ -1238,7 +1250,15 @@ def party(k, x, feet, s=1.0, pose="g_blower", face="caught", look=(0.7, 0.0), mo
     (lx, ly), (rx, ry) = o["hands"]
     hx, hy = o["head"]
     c = k.c
-    if sugar:                                              # on her screen-right cheek, where she lay on the doughnut
+    if sugar and V42[0]:                                   # v42 ("a rash", 2/3): one smear of the doughnut's glaze, two sprinkles in it
+        c.save(); c.translate(hx + 29 * s, hy + 16 * s); c.rotate(-0.35); c.scale(s, s)
+        c.new_path(); c.move_to(-14, -3); c.curve_to(-8, -10, 8, -10, 14, -4); c.curve_to(16, 2, 10, 6, 6, 5); c.curve_to(4, 10, -2, 11, -4, 6)
+        c.curve_to(-10, 7, -16, 3, -14, -3); c.close_path()
+        c.set_source_rgb(1.0, 0.86, 0.90); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.1); c.stroke()
+        for (x0, y0, a0, col) in ((-6, -2, 0.5, (0.25, 0.60, 0.95)), (5, -3, -0.4, (0.98, 0.80, 0.20))):
+            c.save(); c.translate(x0, y0); c.rotate(a0); c.rectangle(-3, -1, 6, 2); c.set_source_rgb(*col); c.fill(); c.restore()
+        c.restore()
+    elif sugar:                                            # on her screen-right cheek, where she lay on the doughnut
         for i, (dx, dy, r) in enumerate(((27, 14, 7.5), (35, 22, 5.5), (22, 25, 5.0), (31, 6, 3.6), (40, 13, 3.0), (17, 15, 2.6))):
             ellipse(k, hx + dx * s, hy + dy * s, r * s, r * 0.82 * s, (1, 1, 1), seed + 370 + i, shadow=False, lw=1.0 * s)
     if hat:
