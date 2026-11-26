@@ -826,3 +826,21 @@ Loop question: unfair in this test. "Frame 1" for them was the club (4.3c), not 
 - **6.2** (1.4 s): down 0.45 s (eyes shut, scowling, the rattle), the robot up 0.45 s (his eyes snap open), then 1.1's frame 0. The last drawing is md5-equal to 1.1's first (dc52ae94…).
 - s5 v9: 233 drawings, −16.1 LUFS, −2.7 dBTP; one passing fault. s6 v4: 88 drawings, −15.3 LUFS, −3.2 dBTP; no faults.
 - `ps_film_join_v2_540.mp4`: s1 v5 + s2 v4 + s3 v6 + s4 v11 + s5 v9 + s6 v4, 71.1 s, −15.6 LUFS, −2.1 dBFS peak (review copy).
+
+### Whole-film cold test, join v2 (3 fresh viewers, six sheets at 3 fps, 216 px tiles, bubbles on, no sound)
+
+| Beat | v1 (join v1) | v2 (join v2) |
+|---|---|---|
+| 1 The blind war | 3/3 | 3/3 |
+| 2 The tape, Pick a side, BOTH | 3/3 | 3/3 |
+| 3 The post reaches the red room; "That one." / "Invite her." | 3/3; "That one." speaker 1/3 | 3/3; "That one." = the scruffy man with bodyguards (the Client) 3/3; which one is Dad: assumed right, but unsure 3/3 |
+| 4 Father's invitation to Sofía; she crosses; Pam's phone | partly; her cross 0/3 | 3/3: the hand-over is "a giving, she reaches" 3/3; her cross named with its time 3/3 |
+| 5 "Everyone's with me", the realisation, the blind, the loop | 3/3 | 3/3: the shock 3/3; "he hides again" 2/3; loops 3/3 |
+
+Pass: 5/5 for each viewer. Screenshot: 6.1b2 (the shock in front of the invitations) 2/3; the heel 1/3.
+Shared misreads left (none breaks a beat):
+- 5.4 Don's lifted leg: 3/3 unsure ("kicking / strutting / stamping");
+- the oil can taken as a bribe: 3/3 (close to what is meant);
+- 5.5b: which side her feet are on needs the DON label (2/3);
+- 5.6 Pam "wrapped in the blinds": 2/3 unsure why;
+- the opening's glow (1.1): 2/3 unsure.
