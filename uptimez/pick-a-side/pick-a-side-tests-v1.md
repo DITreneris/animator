@@ -773,3 +773,20 @@ Scene 5 by beat (v6 + v8): pen 2/2, can and heart 2/2, Don's foot back 2/2, Pam'
 ## Scene 6 v3, LOCKED (Tomas 26 Nov: "pasukam akis ir judam toliau")
 
 `ps_scenes.LOOK_61B` (opt-in): in 6.1b his eyes go up and to his left, to the phone (the board's look went right, 2/2 noticed). Looked at in the frames; not cold-tested again. The loop's md5 still equal; check / check v5 38 / 0; board v4 md5-identical. Tag `uptimez-pick-a-side-s6-v3` (local).
+
+## The join v1 and the whole-film cold test (26 Nov; /grill-me: a 540 copy · bubbles on, mute · hard cuts, the bass with the cut · join as it is, fix after the test)
+
+`ps_film_join_v1_540.mp4`: s1 v5 + s2 v4 (rebuilt: Pam's mug thumb off, as 1/3/4 were) + s3 v6 + s4 v11 + s5 v8 + s6 v3, concatenated, hard cuts. 67.9 s, 2037 frames, 30 fps, −15.8 LUFS, −2.3 dBTP (review copy: not the G5 master).
+
+Three viewers, six sheets at 3 fps (216 px tiles), bubbles on, no sound. Viewer 1's report mentions the series by name, so it was not fully cold: counted, with that caveat.
+
+| Beat (intended) | V1 | V2 | V3 | |
+|---|---|---|---|---|
+| 1 The blind war, the blind lands on Don | read | read | read | all three: "the robot works the blind" |
+| 2 The tape, "Pick a side.": Pam his general, Mom refuses, the diplomatic heel, BOTH | read | read | read | "the robot sits in the throne" 3/3 (meant: its OWNER: INVESTOR card on it) |
+| 3 The photo, Approved, #TeamDon reaches the red room; "That one.", "Invite her." | read | read | read | the post ties the places 3/3; Father the boss 3/3; **who says "That one.": the Client 1, "a bodyguard" 1, "his team" 1** |
+| 4 The guard's HR? CV for Sofía; she crosses; Pam's phone: INVITATION · DAD | partly | partly | partly | offered HR by the House 3/3; Pam's phone 3/3; **her crossing the tape: named by 0/3** |
+| 5 "Everyone's with me.", the buzz, the blinds up, the loop | read | read | read | "leads back in" 3/3; next: the blind war again 3/3 |
+
+Pass: each viewer 4 of 5 or better; the loop reads. Screenshot: the heel on the tape 3/3 (second: "BOTH.").
+Shared misreads to fix or accept: "That one."'s speaker (2/3 wrong); Sofía's cross (0/3); the robot "in" the throne (3/3); "Some pose. Others notice." taken for a sign (2/3).
