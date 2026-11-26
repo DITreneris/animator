@@ -808,3 +808,21 @@ Pass: 4/5 each. Misreads all three share (staging faults):
 
 Shared by two: 5.3a robot "holding hands"; Mom never introduced; 5.5b says nothing about who crossed (1/3).
 Loop question: unfair in this test. "Frame 1" for them was the club (4.3c), not 1.1, so the answer measures nothing.
+
+## The new ending animated: scene 5 v9, scene 6 v4, join v2 (26 Nov)
+
+`src/ps_film_end.py` (opt-in): it patches ps_film's maps at run time, so scene 5 v8 and scene 6 v3 still build from ps_film unchanged.
+- **5.1:** three knocks on the shut glass (0.40/0.58/0.76 s), each with a contact spot and strokes; the blank invitation is in his other hand.
+- **5.2:** the pen writes all five letters of SOFÍA (`PEN_52_END`, ~3 px per font unit).
+- **5.3:**
+  - 0–1.25 s: the glass slides open in 0.15 s; he is behind it until it has slid, then steps in; the robot says "Welcome." with a wheel-bob;
+  - 1.25–2.45 s: the hand-over, variant C (he holds it out, her arm comes up open, she steps in, her hand closes, he lets go, it goes with her);
+  - then the old 5.3b (the can, the heart).
+  - The 5.3a camera is 28 units left so OUR FIRST CLIENT is past the edge; the robot and Sofía are moved in so her face stays off the rail.
+  - Allowed: the throne's card in the rail during 5.3c (background there).
+- **5.5b** (1.0 s, new): her far foot steps on; Don's shoe stays on his side.
+- **6.1:** behind his line, Pam's thumb comes down on ACCEPT at 1.9 s with a tap and the ring.
+- **6.1b** (1.5 s): freeze 0.3 s, shock 0.6 s (the spring's overshoot, the lean over two drawings), drop 0.6 s. The phone buzzes until the drop.
+- **6.2** (1.4 s): down 0.45 s (eyes shut, scowling, the rattle), the robot up 0.45 s (his eyes snap open), then 1.1's frame 0. The last drawing is md5-equal to 1.1's first (dc52ae94…).
+- s5 v9: 233 drawings, −16.1 LUFS, −2.7 dBTP; one passing fault. s6 v4: 88 drawings, −15.3 LUFS, −3.2 dBTP; no faults.
+- `ps_film_join_v2_540.mp4`: s1 v5 + s2 v4 + s3 v6 + s4 v11 + s5 v9 + s6 v4, 71.1 s, −15.6 LUFS, −2.1 dBFS peak (review copy).
