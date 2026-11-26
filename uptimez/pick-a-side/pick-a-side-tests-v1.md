@@ -968,3 +968,14 @@ Checks:
 - one stretch under −45 dBFS: 69.0 s, the shock (on purpose);
 - speech 18/19. "Both." (2.10) reads "Bose" in the three windows: the same in the voice-only take and in master v1. With "And you?" before it, it reads "both". The take is weak alone; the bubble carries it on screen.
 - Files: `pick-a-side/ps_film_master_v5_540.mp4`, `/tmp/ps_master_v5_1080.mp4`.
+
+## Sound v6: the robot's "Both." re-recorded (Tomas: "perrašyk įrašą")
+
+Tried as voice B (am_echo through robotize), each in 4 windows alone:
+- "Both." / "Both!" / speed 1.0 or 0.9 / "Bothe." / "Bowth.": all "Bose" 4/4. The raw Kokoro voice also said "Bose", so it is not the robot effect. A high band of the raw voice mixed back in did not help.
+- The misaki phoneme syntax: it was read aloud as text.
+- "Both sides." / "Both. Sides.": 4/4.
+
+Take: "Both. Sides." with only its first word kept (`ps_voices.CUT`, 0.36 s, 25 ms fade). Alone it is heard "both" 4/4; `takes()` gives 3/3. The old take is gone from the tree but stays in git history (445043d). The line and its bubble are still "Both.".
+
+Master v6: −15.3 LUFS, −1.8 dBTP; speech 19/19 (2.10 "both" 1.00). Files: `pick-a-side/ps_film_master_v6_540.mp4`, `/tmp/ps_master_v6_1080.mp4`.

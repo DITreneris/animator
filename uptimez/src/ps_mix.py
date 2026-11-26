@@ -272,7 +272,7 @@ def build(path="/tmp/ps_mix_v1.wav"):
     return path, total
 
 
-def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v5_1080.mp4"):
+def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v6_1080.mp4"):
     vids = VIDS
     with open("/tmp/ps_mix_vids.txt", "w") as f:
         for v in vids:
@@ -281,7 +281,7 @@ def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v5_1080.mp4"):
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", "/tmp/ps_mix_vids.txt",
                            "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest"]
                           + tags + [out])
-    c540 = os.path.join(pf.OUT, "ps_film_master_v5_540.mp4")
+    c540 = os.path.join(pf.OUT, "ps_film_master_v6_540.mp4")
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-vf", "scale=540:960:flags=lanczos,format=yuv420p",
                            "-c:v", "libx264", "-crf", "20", "-preset", "veryfast"] + tags + ["-c:a", "copy", c540])
     print("wrote", out, c540, osd.levels(out))
