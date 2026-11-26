@@ -94,4 +94,5 @@ s = np.zeros(N); p = 0.; rl = np.exp(-1 / (.2 * SR))
 for i in range(N): p = e[i] if e[i] > p else p * rl; s[i] = p
 out = vo + amb * (1 - .8 * s) + fx + mus * (1 - .75 * s)
 out = out / np.abs(out).max() * .9
+fd = int(.02 * SR); ramp = np.linspace(0, 1, fd); out[:fd] *= ramp; out[-fd:] *= ramp[::-1]   # v3 loop: both ends fade through zero, so the wrap never clicks; the last voice ends .47 s before the end, the first starts at .07 s
 sf.write('mix.wav', out, SR, subtype='PCM_16'); print('mix ok', round(len(out) / SR, 2), 's')
