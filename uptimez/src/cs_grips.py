@@ -131,6 +131,7 @@ def _behind_then_thumb(k, hx, hy, w, skin, d, obj, thumb_from, thumb_to):
 
 
 PAM_CUFF = (0.36, 0.22, 0.50)
+V20, PEN52, ZOOM52, OFF52 = [False], [None], [1.6], [70.0]                                                     # v20 (cs_os20)
 SHIFT52 = [0.0]                                                                   # v17: the 5.2 insert moved up (cs_v17)
 
 
@@ -213,12 +214,16 @@ def s5_2(k, d):
     c = k.c
     sb.bg(c, (0.30, 0.26, 0.22))
     c.save(); c.translate(0, -SHIFT52[0])                                          # v17: the tape higher, her sleeve shorter
+    if V20[0]:                                                                     # v20: closer on the tape: the plan fills the
+        c.translate(*s5.TAPE); c.scale(ZOOM52[0], ZOOM52[0]); c.translate(-s5.TAPE[0], -s5.TAPE[1] + OFF52[0])   # frame (no empty floor)
     c.set_source_surface(s4._plan_surface("number"), 0, 0); c.paint()
     if SHIFT52[0]:                                                                 # the plan's own floor on down past its edge
         c.set_source_surface(s4._plan_surface("number"), 0, SHIFT52[0]); c.rectangle(0, 960, 540, SHIFT52[0] + 4); c.fill()
     n_, bx, by, bw, bh = [b for b in s5.ac._bays() if b[0] == 7][0]
     W = (bw + 8) * 11.0
     c.save(); c.translate(*s5.TAPE); c.rotate(-0.06)
+    if V20[0]:                                                                     # v20: a soft shadow under the paper (review 05)
+        c.set_source_rgba(0, 0, 0, 0.22); c.rectangle(-W / 2 + 10, -52, W - 8, 120); c.fill()
     c.set_source_rgb(0.98, 0.96, 0.86); c.rectangle(-W / 2 + 4, -60, W - 8, 120); c.fill()
     c.select_font_face("Comic Neue", 0, 1); c.set_font_size(46.2); c.set_source_rgb(*s5.PEN)
     tip = None
@@ -236,9 +241,9 @@ def s5_2(k, d):
     tx_ = c.user_to_device(*tip) if tip else None
     c.restore()
     if tip:                                                                       # v17: back through the context, not / HI:
-        s5_2_pen(k, *c.device_to_user(*tx_))                                       # a scratch surface without the device scale
+        (PEN52[0] or s5_2_pen)(k, *c.device_to_user(*tx_))                         # a scratch surface without the device scale
     c.restore()
-    if d >= 20:
+    if d >= 20 and not V20[0]:                                                     # v20: no phone poking in (tiny, ownerless)
         u = s1.ease((d - 20) / 6.0)
         x, y = 372, 640 + (1 - u) * 420
         c.save(); c.translate(x, y); c.rotate(0.10)

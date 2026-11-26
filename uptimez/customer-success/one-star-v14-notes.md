@@ -111,3 +111,31 @@ v19a (review 8/10, "polish and ship"): the dots read as confetti, so the row and
 laughing and thumbs-down faces (drawn, no emoji font). Past 10K the number is red and bold and grows to 135% at 48K,
 with a pulse at 10K and on 48K. The row sits 18 higher. Notification pops come closer and closer (16, accelerating),
 with a low thud on 48K. Speech still 15/16; 1.2 is heard 3/3 under the pops.
+
+## v20: the frame-by-frame hand audit (26 Nov; Tomas: not ready to publish, hands, elbows, fingers)
+
+`python3 cs_film_v20.py ../customer-success 2`; all behind `cs_os20.install()`.
+
+Why the lessons were not used: the gates only measured geometry (a rig hand under a grip, the thumb's side, an
+elbow's bend), and the fixes were checked on crops. The rules that failed had no gate: an insert arm without its
+owner (224/225), a phone that appears, a key word under a finger, an empty band in the frame.
+
+| Shot | v19 | v20 |
+|---|---|---|
+| 4.3s 0:41 | a long olive sleeve from the bottom to mid-frame, a fist over half the 7 | over his shoulder (fs_film31's back of his head), his own arm with an elbow, thumb in front below the 7, fingertips round the far edge |
+| 4.3a 0:40 | the strip in a fist with watch and badge, one lump | his three fingers across its back, the heel past its edge; brows up ("dawning") |
+| 5.1 0:46 | the phone appears in his hand | in his hand from d0; Sofía's side-eye at Pam from d14 |
+| 5.2 0:49-0:51 | an empty dark lower half (v17), a thick pen, a tiny ownerless NEW CONTACT phone | v16's plan filling the frame (1.6 on the tape), a thinner pen in a readable tripod, a short sleeve at the edge, a shadow under the paper, no phone |
+| 5.3 0:52 | the finger over SAVE; "note: finds things" small; SAVED 0.6 s | the tap right of the word; "finds things" 35 % bigger under a small "note:"; SAVED 1.5 s (the shot 11 drawings longer) |
+| 1.1, 1.4 | the robot's phone on the end of its stick | in its claw |
+| 3.3, 3.4b, 4.1 | four equal capsules | unequal tapered fingers (clutch); a fist round Pam's tube (handle_grip) |
+| 6.6a | phone and hands one black blob | the phone's rim and lenses |
+| 4.2, 4.3w | every bay as loud as the 7 | the other bays toned down 38 %, the 7 and the title bright |
+| 5.2a | a frozen face | a closed smile and a blush from d7 |
+| plant | green spears over feet | 20 % smaller, round leaves, a pot's rim |
+| bezels | thick | thinner on the full-frame phones |
+
+Kept: the robot's line ("The result was obtained by a h-human.", recorded). Gates: hand 0, elbow 0, insert 0,
+flat-band 0 (3.1b, 3.2a, 3.5, 6.3 at 30-40 %: a wall or a floor, looked at). Speech 14/16: "Approved." as before, and
+"Still one star." heard alone every time but lost in its context window whatever its level or place (+1.5, +3 dB,
++0.15 s tried): Whisper, not the mix. Film 67.25 s.

@@ -109,10 +109,16 @@ def robot_face(k, state="repair", seed=920):
 
 # --- the phone ----------------------------------------------------------------------------------------------------------
 
+THIN = [False]
+
+
 def _phone(k, seed):
     c = k.c
     _bg(c, (0.24, 0.22, 0.20))
-    rect(k, 38, 20, 464, 920, (0.10, 0.11, 0.14), seed, lw=3)
+    if THIN[0]:                                                                    # v20 One Star: a thinner bezel (review 07)
+        rect(k, 47, 47, 446, 866, (0.10, 0.11, 0.14), seed, lw=3)                  # (the screen itself where it was)
+    else:
+        rect(k, 38, 20, 464, 920, (0.10, 0.11, 0.14), seed, lw=3)
     c.set_source_rgb(*LIGHT); c.rectangle(58, 70, 424, 820); c.fill()
     return 58, 70, 424
 
