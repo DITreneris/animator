@@ -98,3 +98,23 @@ v62 had left the old grip on every phone v4c did not draw upright: tilted (2.7),
 - **Cold viewers (2), pre-existing points:**
   - 11.6 "Answer it.": the bubble covers Father's phone (as in v8);
   - the booth: the guard's grey sleeve reads as "someone else's arm", and Father's ring fist shows no fingers.
+
+## H. Daddy's Home v10, One Star v29 (26 Nov, Tomas's /grill-me after the v9/v28 cold test)
+
+**Daddy's Home v10** (`dh_film_v10.py`, `dh_hands_v10.py`; changed against v9 only in scene 1, drawings 27-134, and scene 8, 191-202):
+- **The booth:** both hands on the post are now Father's. The left sleeve is his velvet. His ring hand clutches the right edge, four fingers over the front, the ring on them; in 0.5 the tap lifts the whole hand.
+- **11.6 "Answer it.":** the box first went on Father's other side, as Tomas picked. There it covered Don's face, because Don's rig is not logged as a face. So the box is over Father's head (form T, dh_say.SAY), and the phone is logged so the box stays off it.
+
+**One Star v29** (`cs_film_v29.py`; changed only at 65.6-65.9 s): in 6.6a the phone is clamped in both hands at one size from the first drawing. Every gate passes.
+
+Phone gate 0 faults on both.
+
+**Cold viewers (2):** the fixes read.
+- The tablet is held by "his hands (red sleeves, white cuffs)".
+- "No bubble covers a face, phone or hand."
+- Neither viewer saw a size jump in 6.6a.
+
+**Points both viewers raised that were already in earlier versions:**
+- the booth's face-down post (0.7) reads as "a different object";
+- One Star 6.5, Sofía's phone hand has no sleeve ("a hand without an arm");
+- Daddy's Home, the invoice arm with no hand ("fused into the paper").

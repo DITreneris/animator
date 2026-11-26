@@ -70,6 +70,9 @@ def r_call(s, k, o, t, tt, n):
     ds._arm_phone_off = True
     f_ = dc.father(k, a8.FA2[0], a8.FA2[1], a8.FS, pose=(-20, -130, 8, 0), face="hard", look=(1, 0))
     hx, hy = f_["hands"][0]
+    import sys as _sys
+    if "dh_hands_v10" in _sys.modules:                # v10 keeps the bubble off this phone
+        _sys.modules["dh_hands_v10"].LAST_HAND[0] = (hx, hy)
     sc = 28.0 / 44.0                                  # v8's phone: 28 x 50 centred at (hx - 4, hy - 30)
     cx, cy = hx - 4, hy - 30
     tip = (0.0, -22.0 + 12.6) if pressed else None    # the thumb on the green button, in the grip's units from the palm
