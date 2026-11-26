@@ -123,6 +123,9 @@ def _legs(k, x, feet, s, u):
     c.restore()
 
 
+BLIND_GAP_FIX = [False]
+
+
 def blind_over(k, head, s, seed=4800):
     """1.2-1.3: the whole blind over him, his face through a bent gap in the slats, the cord dangling."""
     c = k.c
@@ -132,7 +135,10 @@ def blind_over(k, head, s, seed=4800):
     c.set_source_rgba(0.25, 0.22, 0.20, 0.0)
     c.new_path(); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
     c.rectangle(hx - w / 2, top, w, bot - top)
-    c.save(); c.translate(hx, hy + 6 * s); c.scale(44 * s, 40 * s); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.save(); c.translate(hx, hy + 6 * s); c.scale(44 * s, 40 * s)
+    if BLIND_GAP_FIX[0]:                                     # opt-in (Pick a Side film, 25 Nov): without a new sub-path the
+        c.new_sub_path()                                     # arc joined the rectangle's corner: a stroke across his eye,
+    c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()              # read as "an eyepatch" by 6 cold viewers
     c.set_source_rgb(*SLAT); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.2); c.stroke()
     c.set_fill_rule(cairo.FILL_RULE_WINDING)
     c.set_source_rgba(0.10, 0.12, 0.25, 0.13)                                         # his body, a shadow through the slats
@@ -190,11 +196,19 @@ def cape_rail(k, head, s, seed=4811):
     c.restore()
 
 
+ROLL_TAIL = [False]
+
+
 def tape_roll(k, x, y, s, ang=0.0):
     """The roll of yellow tape: a fat ring, a tongue of tape hanging off it."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
-    cut(k, [(10, 8), (30, 10), (34, 60), (22, 64), (14, 56)], TAPE, lw=1.8)
+    if ROLL_TAIL[0]:                                         # opt-in (film, 25 Nov: the roll read as "a coin, a ring"): a
+        cut(k, [(10, 8), (32, 10), (39, 78), (26, 82), (16, 68)], TAPE, lw=1.8)      # longer tongue of tape, flat, a
+        c.set_source_rgb(0.80, 0.62, 0.10); c.set_line_width(2)                      # torn end
+        c.move_to(26, 82); c.line_to(30, 74); c.line_to(34, 81); c.line_to(39, 78); c.stroke()
+    else:
+        cut(k, [(10, 8), (30, 10), (34, 60), (22, 64), (14, 56)], TAPE, lw=1.8)
     for col, lw in ((INK, 30), (TAPE, 25)):
         c.set_source_rgb(*col); c.set_line_width(lw); c.new_path(); c.arc(0, 0, 26, 0, 2 * math.pi); c.stroke()
     c.set_source_rgb(0.80, 0.62, 0.10); c.set_line_width(3); c.new_path(); c.arc(0, 0, 16, 0, 2 * math.pi); c.stroke()

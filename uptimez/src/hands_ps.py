@@ -244,6 +244,13 @@ def draw(k, g, hx, hy, w, skin, d, arm):
         for fy in (-0.12, 0.10):                                      # two short finger lines at the tips
             _crease(c, [(0.68 * w, -s_ * fy * w), (0.90 * w, -s_ * fy * w)], 1.3)
         c.restore(); return
+    if g == "pinch":                                                  # v6 (Pick a Side 4.3b, Tomas 26 Nov, a new shape): the
+        _blob(c, 0.22 * w, 0, 0.44 * w, 0.42 * w, skin)               # thumb and the index meet at the tips (a nose between),
+        for fy in (0.02, 0.24):                                       # the other three curled back into the palm
+            _blob(c, 0.56 * w, s_ * fy * w, 0.16 * w, 0.15 * w, skin)
+        _cap(c, [(0.46 * w, -s_ * 0.22 * w), (0.92 * w, -s_ * 0.24 * w), (1.10 * w, -s_ * 0.08 * w)], t, skin)   # the index,
+        _cap(c, [(0.18 * w, s_ * 0.38 * w), (0.74 * w, s_ * 0.40 * w), (1.04 * w, s_ * 0.14 * w)], t * 1.05, skin)  # the thumb
+        c.restore(); return
     _blob(c, 0.22 * w, 0, 0.46 * w, 0.44 * w, skin)                   # fist, point, relax: the palm
     for fy in (-0.27, 0.0, 0.27):                                     # three curled knuckles
         _blob(c, 0.60 * w, fy * w, 0.18 * w, 0.17 * w, skin)

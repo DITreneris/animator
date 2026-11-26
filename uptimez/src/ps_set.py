@@ -41,6 +41,10 @@ PHONE_AT = (640, 640)
 
 
 UI_KIT = [False]                                            # opt-in (25 Nov): Pam's phone via episode 13's of_ui.invite
+CASE = [False]                                               # opt-in (ep 14 review, 25 Nov, Tomas picked B): Pam's phone in a
+                                                             # muted purple case, cream flowers on the rim only (never the screen)
+CASE_COL = (0.52, 0.40, 0.62)
+CREAM = (0.98, 0.94, 0.82)
 DOOR_OPEN = [0.0]                                           # opt-in (ep 14 gags, 25 Nov): 5.3, the robot opens the door (0..1)
 
 
@@ -212,9 +216,28 @@ def tape_line(k, mark=True):
     c.set_line_cap(0); c.restore()
 
 
+SPIN = [None]                                                # opt-in (the film, 2.2): 0..1 the spin; None = as the board
+
+
 def throne(k, spun=False, card=False):
     """spun: seen from behind (2.2 on), the price tag's blank back, the robot's card on the back (card: from 2.1b)."""
     x, feet, s = THRONE
+    if SPIN[0] is not None:                                  # a cut-out spin: the chair narrows to its edge and widens again,
+        u = SPIN[0]                                          # its front before the middle, its back after; the casters' lines
+        c = k.c
+        sx = max(0.06, abs(math.cos(math.pi * u)))
+        c.save(); c.translate(x, 0); c.scale(sx, 1); c.translate(-x, 0)
+        o = dp.ceo_chair(k, x, feet, s)
+        if u >= 0.5:
+            throne_back(k, x, feet, s)
+        c.restore()
+        if 0.05 < u < 0.95:
+            c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
+            for i, yy in enumerate((feet - 300 * s, feet - 200 * s, feet - 100 * s)):
+                c.new_path(); c.arc(x, yy, 120 * s, math.pi * (0.15 + 0.1 * i), math.pi * (0.55 + 0.1 * i)); c.stroke()
+            c.set_line_cap(0)
+        price_tag(k, x + 56 * s * sx, feet - 432 * s, s * 2.4, back=u >= 0.5, swing=0.18 + 0.45 * math.sin(math.pi * u))
+        return o
     o = dp.ceo_chair(k, x, feet, s)
     if spun:
         throne_back(k, x, feet, s)
@@ -271,11 +294,30 @@ def price_tag(k, x, y, s=1.0, back=False, swing=0.18):     # speech bubble 3 of 
     c.restore()
 
 
+def _flower(c, x, y, r):
+    """five cream petals round an ochre middle: Pam's case."""
+    for i in range(5):
+        a = i * 2 * math.pi / 5 - math.pi / 2
+        c.new_path(); c.arc(x + 0.55 * r * math.cos(a), y + 0.55 * r * math.sin(a), 0.48 * r, 0, 2 * math.pi)
+        c.set_source_rgb(*CREAM); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(0.12 * r); c.stroke()
+    c.new_path(); c.arc(x, y, 0.30 * r, 0, 2 * math.pi); c.set_source_rgb(0.85, 0.66, 0.30); c.fill()
+
+
+def phone_stand(k, x, y, s=1.0):
+    """opt-in (ep 14 review, 25 Nov: "the phone hangs in the air"): a small dark desk stand under an upright phone; (x, y)
+    is where the phone's bottom edge rests, s the phone's own scale (phone_close units)."""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(s, s)
+    cut(k, [(-30, -10), (30, -10), (40, 16), (-40, 16)], (0.22, 0.22, 0.26), shadow=False, lw=2.6)   # the foot, on the counter
+    cut(k, [(-34, -26), (34, -26), (34, -8), (-34, -8)], (0.30, 0.30, 0.34), shadow=False, lw=2.6)   # the lip the phone sits in
+    c.restore()
+
+
 def pam_phone(k, x, y, s=1.0, lit=False):
     """Face up on the counter: dark, or lit with INVITATION · DAD (unreadable at the set's scale: see phone_close)."""
     c = k.c
     c.save(); c.translate(x, y); c.scale(s, s)
-    cut(k, [(-13, -5), (13, -5), (16, 5), (-16, 5)], (0.12, 0.12, 0.14), shadow=False, lw=1.4)
+    cut(k, [(-13, -5), (13, -5), (16, 5), (-16, 5)], CASE_COL if CASE[0] else (0.12, 0.12, 0.14), shadow=False, lw=1.4)
     if lit:
         c.set_source_rgba(0.60, 0.90, 1.0, 0.35); c.save(); c.scale(1, 0.4); c.new_path(); c.arc(0, 0, 34, 0, 2 * math.pi); c.restore(); c.fill()
         cut(k, [(-10, -3.5), (10, -3.5), (12, 3.5), (-12, 3.5)], (0.97, 0.94, 0.86), shadow=False, lw=0.8)
@@ -286,11 +328,16 @@ def phone_close(k, x, y, s=1.0, lit=True, buzz=True):
     """5.7's insert-in-shot: the phone face up, seen from above, INVITATION · DAD readable at 270 px."""
     c = k.c
     c.save(); c.translate(x, y); c.scale(s, s)
-    rect(k, -60, -110, 120, 220, (0.10, 0.10, 0.12), 4960, shadow=False, lw=2.2)
+    if CASE[0]:                                              # the case is a little wider than the phone, so its flowers
+        rect(k, -68, -120, 136, 240, CASE_COL, 4960, shadow=False, lw=2.2)   # read at 270 px without touching the screen
+        for fx, fy, fr in ((-50, -110, 9.0), (52, 110, 9.0), (-60, 50, 7.0)):
+            _flower(c, fx, fy, fr)
+    else:
+        rect(k, -60, -110, 120, 220, (0.10, 0.10, 0.12), 4960, shadow=False, lw=2.2)
     rect(k, -52, -98, 104, 196, (0.97, 0.94, 0.86) if lit else (0.06, 0.06, 0.08), 4961, shadow=False, lw=1.2)
     if lit and UI_KIT[0]:                                    # opt-in (25 Nov): episode 13's invitation screen itself (of_ui)
         import of_ui
-        of_ui.full(c, -52, -98, 104, 196, of_ui.invite)
+        of_ui.full(c, -52, -98, 104, 196, of_ui.invite_small)   # phone review 25 Nov: DAD (30) the biggest word; ep 13's own small card
         c.set_source_rgb(0.06, 0.20, 0.40); c.set_line_width(2.4)
         for i in (1, 2, 3) if buzz else ():
             c.new_path(); c.arc(0, 0, 60 + i * 12, -0.5, 0.5); c.stroke(); c.new_path(); c.arc(0, 0, 60 + i * 12, math.pi - 0.5, math.pi + 0.5); c.stroke()
