@@ -84,6 +84,25 @@ def _father_face(k, x, y, face, look, glasses=False, seed=0):
 FATHER_STEP = [None]                                       # opt-in: ((dx, lift), (dx, lift)) per foot, or None: standing
 
 
+FATHER_HEM = [False]      # opt-in (episode 15, character audit 26 Nov: "the legs and shoes merge into one black mass"): a grey
+                          # rim round each shoe and a lighter hem line where the trouser meets it
+
+
+FATHER_NOD = [0.0]        # opt-in (episode 15, audit 26 Nov: "the nod is a face shift, not a head move"): the head and hair
+                          # dropped this many units straight down at the neck; the body stays still. (A sideways tip was
+                          # tried in sheet v3 and read as an eye roll 2/2: no tilt.)
+
+
+def _shoe_rim(k, fx, fy):
+    c = k.c
+    c.set_source_rgba(1, 1, 1, 0.70); c.set_line_width(2.6); c.set_line_cap(1)            # v2: a leather shine along the toe
+    c.move_to(fx - 14, fy - 4); c.curve_to(fx - 6, fy - 7, fx + 4, fy - 7, fx + 12, fy - 5); c.stroke()
+    c.set_source_rgb(0.46, 0.46, 0.52); c.set_line_width(2.2)
+    c.save(); c.translate(fx, fy); c.scale(1, 8 / 24.0); c.new_path(); c.arc(0, 0, 25.5, math.pi * 1.05, math.pi * 1.95); c.restore(); c.stroke()
+    c.set_source_rgb(*BLACK_L); c.set_line_width(3.0); c.set_line_cap(1)
+    c.move_to(fx - 17, fy - 9); c.line_to(fx + 17, fy - 9); c.stroke()
+
+
 def _father_costume(k, name, p, body_top, seed):
     c = k.c
     bt = body_top
@@ -97,13 +116,21 @@ def _father_costume(k, name, p, body_top, seed):
                     (fx + 20, -lift - 2), (fx - 20, -lift - 2)], BLACK, shadow=False, lw=2)
             ellipse(k, fx, -4 - lift, 24, 8, (0.06, 0.06, 0.07), seed + 80 + sx, shadow=False, lw=2)
             c.set_source_rgba(1, 1, 1, 0.5); c.arc(fx + 6, -7 - lift, 2.4, 0, 2 * math.pi); c.fill()
+            if FATHER_HEM[0]:
+                _shoe_rim(k, fx, -4 - lift)
     else:
         cut(k, [(-45, waist), (45, waist), (47, 0), (-47, 0)], BLACK, shadow=False, lw=2)   # black trousers, a crease
         c.set_source_rgb(*BLACK_L); c.set_line_width(1.6)
         c.move_to(0, waist + 14); c.line_to(0, -4); c.stroke()
+        if FATHER_HEM[0]:                                                                   # the inner seams, lighter: two legs
+            c.set_source_rgb(0.30, 0.30, 0.34); c.set_line_width(2.4)
+            for sx in (-1, 1):
+                c.move_to(sx * 3, waist + 40); c.line_to(sx * 4, -10); c.stroke()
         for sx in (-1, 1):                                                                  # good shoes, shined
             ellipse(k, sx * 24, -4, 24, 8, (0.06, 0.06, 0.07), seed + 80 + sx, shadow=False, lw=2)
             c.set_source_rgba(1, 1, 1, 0.5); c.arc(sx * 30, -7, 2.4, 0, 2 * math.pi); c.fill()
+            if FATHER_HEM[0]:
+                _shoe_rim(k, sx * 24, -4)
     cut(k, [(-20, bt), (20, bt), (16, waist), (-16, waist)], BLACK, shadow=False, lw=1.6)   # the black shirt
     cut(k, [(0, bt + 40), (-13, bt - 2), (13, bt - 2)], SKIN_F, shadow=False, lw=1.6)       # open at the neck
     for sx in (-1, 1):
@@ -124,6 +151,19 @@ def _father_costume(k, name, p, body_top, seed):
 
 def father(k, x, feet, s=1.0, pose="stand", face="hard", look=(0, 0), seed=1500):
     """Returns {"head", "hands"} in canvas coordinates. pose: a kit.ARM_POSES name or four angles. face: "hard", "talk"."""
+    if FATHER_NOD[0]:                                       # two passes: the body below the neck, then the head tipped
+        nod, FATHER_NOD[0] = FATHER_NOD[0], 0.0
+        c = k.c
+        neck = feet + (-300 * 1.12 + 78 + 2) * s
+        try:
+            c.save(); c.rectangle(-5000, neck, 10000, 5000); c.clip()
+            o = father(k, x, feet, s, pose, face, look, seed); c.restore()
+            c.save(); c.rectangle(-5000, -5000, 10000, 5000 + neck + nod * s); c.clip()
+            c.translate(0, nod * s)
+            father(k, x, feet, s, pose, face, look, seed); c.restore()
+        finally:
+            FATHER_NOD[0] = nod
+        return o
     old_hook, old_face = kit.BADGE_HOOK, kit.face_draw
     kit.PEOPLE["FATHER"] = dict(skin=SKIN_F, body=VELVET, hair=SKIN_F, bald=True, h=1.12)
     kit.BADGE_HOOK = _father_costume

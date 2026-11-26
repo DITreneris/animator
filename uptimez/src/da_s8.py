@@ -381,6 +381,9 @@ def sheet_furniture(out):
 
 # --- L6, the meeting, and the whole frame ---------------------------------------------------------------------------------
 FATHER_FOLDED = (-20, 140, 20, -140)                          # arms folded, hands together at the chest (sheet D/E)
+V5 = [False]   # opt-in (26 Nov, after the cast analysis and the Father sheet's cold test): Sofía in her episode 15 outfit
+               # (sofia_da, the job interview, charcoal); Father leaning back, the ring hand on the chair's armrest, the other
+               # on his belly (the fold misread 3 times: "checking a watch"). False draws the locked v4 exactly.
 PLAN_AT = (226, 682, 1.40)
 
 
@@ -406,10 +409,52 @@ def meeting(k):
     g = cairo.RadialGradient(300, 470, 10, 300, 470, 120)
     g.add_color_stop_rgba(0, 0.95, 0.85, 0.70, 0.22); g.add_color_stop_rgba(1, 0.95, 0.85, 0.70, 0.0)
     c.save(); c.rectangle(264, 378, 144, 280); c.clip(); c.set_source(g); c.paint(); c.restore()
-    heads["father"] = seated(k, lambda: dc.father(k, 336, 706, 0.78, FATHER_FOLDED, "hard", (-0.6, 0.9))["head"])
-    heads["sofia"] = seated(k, lambda: sp.sofia(k, 444, 748, 0.66, "hold", "smile", look=(-1.0, 0.9))["head"])
+    if V5[0]:
+        import hands_ps as hp
+        import hands_v4 as hv
+        import kit as kit_
+        import sofia_da as sd
+        hv.enable(); kit_.HAND[0] = hp.hand                    # the canon hand for both (rules-hands: one hand for the cast)
+        try:
+            hp.reset("quiet", "quiet")
+            heads["father"] = seated(k, lambda: _father_rest(k))
+            heads["sofia"] = seated(k, lambda: sd.with_board(k, 444, 748, 0.66, "binder", face_kind="interested",
+                                                              look=(-1.0, 0.9), lift=62)["head"])    # reading: board_two
+        finally:
+            hv.disable(); kit_.HAND[0] = None
+    else:
+        heads["father"] = seated(k, lambda: dc.father(k, 336, 706, 0.78, FATHER_FOLDED, "hard", (-0.6, 0.9))["head"])
+        heads["sofia"] = seated(k, lambda: sp.sofia(k, 444, 748, 0.66, "hold", "smile", look=(-1.0, 0.9))["head"])
     heads["pam"] = seated(k, lambda: pam_taking(k)["head"])
     return heads
+
+
+def _father_rest(k, x=336, feet=706, s=0.78):
+    import dh_cast as dc
+    """V5: leaning back in Don's chair, the ring hand (screen right) on the armrest, the other flat on his belly; his
+    sleeves in the dark velvet so the arms read on the jacket (the Father sheet v4's 8.1)."""
+    import kit as kit_
+    from cand_bc import ik
+    c = k.c
+    bt = -300 * 1.12 + 78
+    rest = ik(-40, bt + 14, 4, bt + 112, 48, 48, -1) + ik(40, bt + 14, 80, bt + 146, 48, 48, 1)
+    seat = feet + (bt + 150) * s
+    orig = kit_.arm
+    kit_.arm = lambda k_, sx, sy, a1, a2, col, *a, **kw: orig(k_, sx, sy, a1, a2, dc.VELVET_D if col == dc.VELVET else col, *a, **kw)
+    try:
+        for p_ in (0, 1):                                      # pass 0 finds the ring hand; the armrest goes under it; pass 1 draws
+            if p_ == 0:
+                c.push_group()
+            c.save(); c.translate(x, seat); c.rotate(-0.05); c.translate(-x, -seat)
+            o = dc.father(k, x, feet, s, rest, "hard", (-0.6, 0.9))
+            c.restore()
+            if p_ == 0:
+                c.pop_group()
+                hx, hy = o["hands"][1]
+                kit_.rect(k, hx - 24 * s, hy + 7 * s, 50 * s, 13 * s, (0.30, 0.22, 0.17), 5100, lw=2)   # the armrest, under the hand
+    finally:
+        kit_.arm = orig
+    return o["head"]
 
 
 PAM_AT = (212, 762, 0.66)
@@ -497,5 +542,8 @@ if __name__ == "__main__":
         sheet_window(os.path.join(out, "da_s8_window_v1.png"))
     elif what == "frame":
         still(os.path.join(out, "da_s8_final_v4.png"))
+    elif sys.argv[1] == "frame5":
+        V5[0] = True
+        still(os.path.join(out, "da_s8_final_v5.png"))
     elif what == "furniture":
         sheet_furniture(os.path.join(out, "da_s8_furniture_v1.png"))

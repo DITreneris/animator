@@ -1,0 +1,524 @@
+{
+ "total": 68.24,
+ "script_total": 65.2,
+ "shots": [
+  {
+   "scene": "Act I \u00b7 the occupation and the gift",
+   "shot": "1.1",
+   "script": 1.4,
+   "picture": "**Frame 0** (the push's last framing): Don and the robot pull the gold throne across the tape line, Don leaning back toward his side, the robot toward Father's. **0:00.4 Don's back foot lands on the roll's sticky tail; the roll comes up with his foot**",
+   "line": null,
+   "start": 0.0,
+   "len": 1.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 the occupation and the gift",
+   "shot": "1.2",
+   "script": 0.8,
+   "picture": "He shakes his foot once; the roll swings round and **whacks his other shin**; he lets go with one hand",
+   "line": "(Don, effort: \"Oof\")",
+   "start": 1.4,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 the occupation and the gift",
+   "shot": "1.3",
+   "script": 1.6,
+   "picture": "**Polished shoes and a burgundy hem step over the tape** between them; a ringed hand hangs **REVIEW \u00b7 TOMORROW** on the throne beside $49,999, in passing. **The robot lets go at once** (it obeys the owner); Don is left on one leg, holding his shin",
+   "line": null,
+   "start": 2.2,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 the occupation and the gift",
+   "shot": "1.4",
+   "script": 1.2,
+   "picture": "**Sof\u00eda follows Father over the line** with a folder and a box of paperclips; the box catches on the throne's armrest and **the clips spill across the floor**, round the throne's casters. She doesn't stop; she goes in after Father. **The robot kneels and starts picking them up**",
+   "line": null,
+   "start": 3.8,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 the occupation and the gift",
+   "shot": "1.5",
+   "script": 0.8,
+   "picture": "He pulls the roll off his sole and drops it by the throne",
+   "line": null,
+   "start": 5.0,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 the occupation and the gift",
+   "shot": "2.1",
+   "script": 2.2,
+   "picture": "Don walks to his line, toes at the edge. **Inside the glass:** Father sits down in Don's chair; the Client already there, Sof\u00eda just putting her folder down. Low on the floor: the robot picking clips",
+   "line": null,
+   "start": 5.8,
+   "len": 2.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 the occupation and the gift",
+   "shot": "2.2",
+   "script": 2.6,
+   "picture": "Father's foot up on Don's desk; Don's gold desk photo (DON \u00b7 CEO) is where the second foot goes: **his heel nudges it face down, then rests on it** like a footstool. The Client glances at the photo. Behind the glass, small: Don at his line, the robot crouched beside the throne",
+   "line": "**FATHER (calm): \"I paid for it.\"**",
+   "start": 8.0,
+   "len": 3.28,
+   "takes": [
+    "2.2"
+   ],
+   "picks": [
+    "A"
+   ],
+   "take_at": [
+    1.0
+   ],
+   "longer": 0.68
+  },
+  {
+   "scene": "Act I \u00b7 the occupation and the gift",
+   "shot": "2.3",
+   "script": 1.2,
+   "picture": "**Don straightens his vest**, offended, chin up (a readable human face: cold test F1)",
+   "line": null,
+   "start": 11.28,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 the occupation and the gift",
+   "shot": "2.4",
+   "script": 2.8,
+   "picture": "**The gift:** Don, dignity restored, turns to Pam at the counter end and presents **a mustard mug with a gold bow** (his side's loyalty gift). Pam, flustered, **lets go of her old blue mug: it shatters** at her feet; she takes the new one in both hands and holds it to her chest",
+   "line": null,
+   "start": 12.48,
+   "len": 2.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "3.1",
+   "script": 1.2,
+   "picture": "Don, without turning, one hand up",
+   "line": "**DON: \"Pam! Coffee.\"**",
+   "start": 15.28,
+   "len": 1.61,
+   "takes": [
+    "3.1"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.15
+   ],
+   "longer": 0.41
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "3.2",
+   "script": 1.2,
+   "picture": "Pam at the counter's end pours from her thermos: **her mustard mug** and Don's cup and saucer",
+   "line": null,
+   "start": 16.89,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "3.3",
+   "script": 2.4,
+   "picture": "Pam carries both past Mom's desk toward Don; the office door opens a hand's width; **the Client's oily hand takes her mustard mug** and turns back inside with it. **Pam follows her mug on reflex**, Don's cup still in her other hand (nobody pulls her: the first crossing is an accident). **Mom stands up**, her knitting still in one hand",
+   "line": "**CLIENT (from the door): \"Pam. We need you.\"**",
+   "start": 18.09,
+   "len": 2.4,
+   "takes": [
+    "3.3"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.6
+   ],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "3.4",
+   "script": 3.6,
+   "picture": "**The shoulder-pad wall:** Don leans left, the pads go left; right, right; **then he feints** and stays put. **Mom doesn't move.** She never looks at him: **one hand keeps knitting** the whole time, the body blocks on its own (low behind her, the robot frozen, pincer up)",
+   "line": "**MOM: \"Your rule, sweetheart.\"** (after the hold, never on the feint)",
+   "start": 20.49,
+   "len": 4.05,
+   "takes": [
+    "3.4"
+   ],
+   "picks": [
+    "A"
+   ],
+   "take_at": [
+    2.0
+   ],
+   "longer": 0.45
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "3.5",
+   "script": 1.6,
+   "picture": "Pam sets **her mug** on Father's table; wipes the Client's oily print off Don's white office mug. Through the glass: Mom's back, Don's head bobbing",
+   "line": null,
+   "start": 24.54,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "4.1",
+   "script": 1.6,
+   "picture": "Pam comes out, **crosses the tape** to Don, hands him the cup and saucer. Mom sits",
+   "line": null,
+   "start": 26.14,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "4.2",
+   "script": 3.0,
+   "picture": "**Don turns his back on his office** to preen in the street door's glass, sipping; **behind him Pam crosses back to the door with her notepad** (her choice)",
+   "line": null,
+   "start": 27.74,
+   "len": 3.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "4.3",
+   "script": 1.2,
+   "picture": "Pam passes Mom's desk; Mom knits on, doesn't look up; Pam slips in",
+   "line": null,
+   "start": 30.74,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "5.1",
+   "script": 1.4,
+   "picture": "Don's view: **her mug on Father's table**",
+   "line": null,
+   "start": 31.94,
+   "len": 1.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "5.2",
+   "script": 2.8,
+   "picture": "**The coffee betrayal:** his cup rattles on the saucer, coffee slops into it; he drinks from the saucer, eyes never leaving the office; **he notices how it looks, lifts his little finger** and goes on as if he meant to",
+   "line": null,
+   "start": 33.34,
+   "len": 2.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "5.3",
+   "script": 1.6,
+   "picture": "He charges and **stops dead at his own line**: the feet stop, the body goes on, the headset slips, arms windmilling, nearly down; he recovers and straightens his vest",
+   "line": null,
+   "start": 36.14,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the crossings",
+   "shot": "5.4",
+   "script": 2.2,
+   "picture": "**Mom's step:** round the counter's left end, she plants herself on Father's side between him and the glass, arms folded, looking at him; the robot, between them and the throne, freezes with a clip",
+   "line": null,
+   "start": 37.74,
+   "len": 2.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "6.1",
+   "script": 1.4,
+   "picture": "Pam comes out of the door behind Mom with the robot's printed minutes, crosses to Don",
+   "line": null,
+   "start": 39.94,
+   "len": 1.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "6.2",
+   "script": 1.2,
+   "picture": "Don narrows his eyes at her; she holds out the page",
+   "line": null,
+   "start": 41.34,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "6.3",
+   "script": 1.0,
+   "picture": "**AGENDA: WITHOUT HIM** (the robot's printout)",
+   "line": null,
+   "start": 42.54,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "6.4",
+   "script": 1.8,
+   "picture": "Suspicion \u2192 **delight**",
+   "line": "**DON: \"You're spying for me?\"**",
+   "start": 43.54,
+   "len": 2.23,
+   "takes": [
+    "6.4"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.6
+   ],
+   "longer": 0.43
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "6.5",
+   "script": 1.0,
+   "picture": "Pam opens her mouth to correct him",
+   "line": null,
+   "start": 45.77,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "6.6",
+   "script": 1.0,
+   "picture": "Her view: **the Client waiting, his blue blueprint rolled in his hands**, looking at her",
+   "line": null,
+   "start": 46.77,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "6.7",
+   "script": 0.8,
+   "picture": "**Pam closes her mouth**",
+   "line": null,
+   "start": 47.77,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "6.8",
+   "script": 2.4,
+   "picture": "**Don looks left, looks right** (Pam half a metre away), **pulls his headset mic to his mouth** and whispers into it; **Pam leans in** to hear him",
+   "line": "**DON: \"Keep infiltrating.\"**",
+   "start": 48.57,
+   "len": 2.72,
+   "takes": [
+    "6.8"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.9
+   ],
+   "longer": 0.32
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "7.1",
+   "script": 1.2,
+   "picture": "He crouches and **peels a long strip of his tape up**",
+   "line": null,
+   "start": 51.29,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "7.2",
+   "script": 2.8,
+   "picture": "**The barrier:** the strip held high, chin up; **Pam ducks under it** and walks past Mom to the door; the robot, frozen, has one clip left: under the throne",
+   "line": "**DON (grandly, as she passes under): \"Approved.\"**",
+   "start": 52.49,
+   "len": 2.8,
+   "takes": [
+    "7.2"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    1.0
+   ],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "7.3",
+   "script": 3.4,
+   "picture": "**The Client slides his blueprint (MY GARAGES) across the desk to Pam; she takes it with both hands; Father nods once** (the hand-over: cold test S8 v3 left it to this shot)",
+   "line": "**CLIENT: \"Don't lose it.\"** \u00b7 then **FATHER (calm, not turning): \"Let him play.\"**",
+   "start": 55.29,
+   "len": 4.15,
+   "takes": [
+    "7.3a",
+    "7.3b"
+   ],
+   "picks": [
+    "B",
+    "B"
+   ],
+   "take_at": [
+    0.8,
+    2.35
+   ],
+   "longer": 0.75
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "7.4",
+   "script": 3.0,
+   "picture": "Don, proud, lowers the strip and turns. **The last paperclip lies under the throne's caster:** the robot rolls the throne off it, **through the gap in his line toward Father's side**, and reaches for the clip. Don sees only his throne going: he dives, grabs an armrest and **hauls it back onto the clip**, his back foot ending just in front of the dropped roll. The robot pulls it off again to reach it: **the tug begins, each for something else** (Don the chair, the robot the clip)",
+   "line": "**DON (on the dive, bubble after the first grab): \"NOT THE CHAIR!\"**",
+   "start": 59.44,
+   "len": 3.0,
+   "takes": [
+    "7.4"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    1.4
+   ],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "8.1",
+   "script": 4.0,
+   "picture": "**The final image (locked, `da_s8_final_v4.png`):** inside, the Client's finger on MY GARAGES, Pam's hands on it, Father in Don's chair, Sof\u00eda reading; behind the glass Don and the robot pulling the throne across the line. Nobody inside looks up",
+   "line": "**PAM (under her breath): \"Some take sides. Others take notes.\"** (kept as written, Tomas 26 Nov)",
+   "start": 62.44,
+   "len": 4.0,
+   "takes": [
+    "8.1"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    1.0
+   ],
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the double agent is authorized",
+   "shot": "9.1",
+   "script": 1.8,
+   "picture": "**The push:** the camera moves through the glass (the blinds' rail passes the top, the glass's sheen slides off) into the tug on the floor; **the new S8r background** (the floor from the office side) takes over from the far room as the glass passes, ending on **1.1's framing: frame 0**",
+   "line": null,
+   "start": 66.44,
+   "len": 1.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "longer": 0.0
+  }
+ ]
+}

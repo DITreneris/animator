@@ -1,0 +1,564 @@
+{
+ "2.2": {
+  "who": "FATHER",
+  "text": "I paid for it.",
+  "note": "calm, a fact",
+  "takes": {
+   "A": {
+    "len": 1.93,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "I paid for it.",
+     "I paid for it.",
+     "I paid for it."
+    ]
+   },
+   "B": {
+    "len": 1.87,
+    "ok": 2,
+    "exact": 2,
+    "asr": [
+     "I paid for it.",
+     "I I paid I paid I",
+     "I paid for it."
+    ]
+   },
+   "C": {
+    "len": 1.56,
+    "ok": 2,
+    "exact": 2,
+    "asr": [
+     "I paid for it.",
+     "I paid I paid I paid I paid I",
+     "I paid for it."
+    ]
+   },
+   "D": {
+    "len": 1.47,
+    "ok": 1,
+    "exact": 1,
+    "asr": [
+     "I I",
+     "I paid for it.",
+     "I I I I I"
+    ]
+   }
+  },
+  "pick": "A",
+  "len": 1.93,
+  "ok": 3
+ },
+ "3.1": {
+  "who": "DON",
+  "text": "Pam! Coffee.",
+  "note": "an order, not turning",
+  "takes": {
+   "A": {
+    "len": 1.18,
+    "ok": 3,
+    "exact": 2,
+    "asr": [
+     "Pam coffee",
+     "Pam Coffey",
+     "Pam coffee"
+    ]
+   },
+   "B": {
+    "len": 1.11,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam coffee",
+     "Pam coffee",
+     "Pam coffee"
+    ]
+   },
+   "C": {
+    "len": 1.06,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam Coffee",
+     "Pam Coffee",
+     "Pam Coffee"
+    ]
+   },
+   "D": {
+    "len": 0.98,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam Coffee",
+     "Pam coffee",
+     "Pam Coffee"
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.11,
+  "ok": 3
+ },
+ "3.3": {
+  "who": "CLIENT",
+  "text": "Pam. We need you.",
+  "note": "flat, from the door",
+  "takes": {
+   "A": {
+    "len": 1.2,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam we need you.",
+     "Pam we need you",
+     "Pam we need you."
+    ]
+   },
+   "B": {
+    "len": 1.2,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam we need you.",
+     "Pam we need you",
+     "Pam we need you."
+    ]
+   },
+   "C": {
+    "len": 1.09,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam we need you.",
+     "Pam, we need you.",
+     "Pam we need you."
+    ]
+   },
+   "D": {
+    "len": 1.03,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam we need you.",
+     "Pam we need you",
+     "Pam we need you."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.2,
+  "ok": 3
+ },
+ "3.4": {
+  "who": "MOM",
+  "text": "Your rule, sweetheart.",
+  "note": "sweet, final; a stop after rule: run together it is heard as rules",
+  "takes": {
+   "A": {
+    "len": 1.7,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Your rule sweetheart",
+     "Your rule sweetheart",
+     "Your rule sweetheart."
+    ]
+   },
+   "B": {
+    "len": 1.53,
+    "ok": 3,
+    "exact": 0,
+    "asr": [
+     "Your rules sweetheart.",
+     "Your rules sweetheart",
+     "Your rules sweetheart."
+    ]
+   },
+   "C": {
+    "len": 1.43,
+    "ok": 3,
+    "exact": 1,
+    "asr": [
+     "Your rules sweetheart.",
+     "Your rule sweetheart",
+     "Your rules sweetheart."
+    ]
+   },
+   "D": {
+    "len": 1.36,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Your rule, sweetheart.",
+     "Your rule sweetheart",
+     "Your rule, sweetheart."
+    ]
+   }
+  },
+  "pick": "A",
+  "len": 1.7,
+  "ok": 3
+ },
+ "6.4": {
+  "who": "DON",
+  "text": "You're spying for me?",
+  "note": "suspicion into delight",
+  "takes": {
+   "A": {
+    "len": 1.49,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "You're spying for me.",
+     "You're spying for me.",
+     "You're spying for me."
+    ]
+   },
+   "B": {
+    "len": 1.28,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "You're spying for me.",
+     "You're spying for me.",
+     "You're spying for me."
+    ]
+   },
+   "C": {
+    "len": 1.28,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "You're spying for me.",
+     "You're spying for me.",
+     "You're spying for me."
+    ]
+   },
+   "D": {
+    "len": 1.21,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "You're spying for me.",
+     "You're spying for me.",
+     "You're spying for me."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.28,
+  "ok": 3
+ },
+ "6.8": {
+  "who": "DON",
+  "text": "Keep infiltrating.",
+  "note": "a whisper into the mic: quieter",
+  "takes": {
+   "A": {
+    "len": 1.6,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Keep infiltrating.",
+     "Keep infiltrating.",
+     "Keep infiltrating."
+    ]
+   },
+   "B": {
+    "len": 1.47,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Keep infiltrating.",
+     "Keep infiltrating.",
+     "Keep infiltrating."
+    ]
+   },
+   "C": {
+    "len": 1.42,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Keep infiltrating.",
+     "Keep infiltrating.",
+     "Keep infiltrating."
+    ]
+   },
+   "D": {
+    "len": 1.42,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Keep infiltrating.",
+     "Keep infiltrating.",
+     "Keep infiltrating."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.47,
+  "ok": 3
+ },
+ "7.2": {
+  "who": "DON",
+  "text": "Approved.",
+  "note": "grand",
+  "takes": {
+   "A": {
+    "len": 0.79,
+    "ok": 2,
+    "exact": 2,
+    "asr": [
+     "approved",
+     "approved approved approved approved approved approved",
+     "approved"
+    ]
+   },
+   "B": {
+    "len": 0.74,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "approved",
+     "approved",
+     "Approved."
+    ]
+   },
+   "C": {
+    "len": 0.72,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "approved",
+     "approved",
+     "approved"
+    ]
+   },
+   "D": {
+    "len": 0.74,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "approved",
+     "approved",
+     "approved"
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 0.74,
+  "ok": 3
+ },
+ "7.3a": {
+  "who": "CLIENT",
+  "text": "Don't lose it.",
+  "note": "trust, dry",
+  "takes": {
+   "A": {
+    "len": 0.98,
+    "ok": 3,
+    "exact": 0,
+    "asr": [
+     "don don don don don",
+     "don't don't don don't",
+     "don don don don don don don",
+     "[with the line before] approved don't lose it",
+     "[with the line before] approved don't lose it",
+     "[with the line before] approved. Don't lose it."
+    ]
+   },
+   "B": {
+    "len": 0.95,
+    "ok": 3,
+    "exact": 0,
+    "asr": [
+     "don don don don don",
+     "don't lose don't lose don",
+     "don don don don don don don",
+     "[with the line before] approved don't lose it",
+     "[with the line before] approved. Don't lose it.",
+     "[with the line before] approved. Don't lose it."
+    ]
+   },
+   "C": {
+    "len": 0.94,
+    "ok": 3,
+    "exact": 0,
+    "asr": [
+     "don",
+     "don't don't lose don't",
+     "don",
+     "[with the line before] approved don't lose",
+     "[with the line before] approved. Don't lose it.",
+     "[with the line before] approved. Don't lose it."
+    ]
+   },
+   "D": {
+    "len": 0.88,
+    "ok": 2,
+    "exact": 0,
+    "asr": [
+     "don don don don don",
+     "don't lose don't lose don",
+     "don",
+     "[with the line before] approved",
+     "[with the line before] approved. Don't lose it.",
+     "[with the line before] approved. Don't lose it."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 0.95,
+  "ok": 3
+ },
+ "7.3b": {
+  "who": "FATHER",
+  "text": "Let him play.",
+  "note": "calm, not turning",
+  "takes": {
+   "A": {
+    "len": 1.62,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Let him play.",
+     "Let him play",
+     "Let him play."
+    ]
+   },
+   "B": {
+    "len": 1.45,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Let him play.",
+     "Let him play.",
+     "Let him play."
+    ]
+   },
+   "C": {
+    "len": 1.33,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Let him play.",
+     "Let him play",
+     "Let him play."
+    ]
+   },
+   "D": {
+    "len": 1.33,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Let him play.",
+     "Let him play",
+     "Let him play."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.45,
+  "ok": 3
+ },
+ "7.4": {
+  "who": "DON",
+  "text": "NOT THE CHAIR!",
+  "note": "a shout on the dive",
+  "takes": {
+   "A": {
+    "len": 1.06,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Not the chair.",
+     "Not the chair.",
+     "Not the chair."
+    ]
+   },
+   "B": {
+    "len": 0.93,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Not the chair.",
+     "Not the chair",
+     "Not the chair."
+    ]
+   },
+   "C": {
+    "len": 0.93,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Not the chair.",
+     "Not the chair",
+     "Not the chair."
+    ]
+   },
+   "D": {
+    "len": 0.9,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Not the chair.",
+     "Not the chair.",
+     "Not the chair."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 0.93,
+  "ok": 3
+ },
+ "8.1": {
+  "who": "PAM",
+  "text": "Some take sides. Others take notes.",
+  "note": "under her breath",
+  "takes": {
+   "A": {
+    "len": 2.51,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Some take sides, others take notes.",
+     "Some take sides, others take notes.",
+     "Some take sides, others take notes."
+    ]
+   },
+   "B": {
+    "len": 2.49,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Some take sides, others take notes.",
+     "Some take sides, others take notes.",
+     "Some take sides, others take notes."
+    ]
+   },
+   "C": {
+    "len": 2.32,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Some take sides, others take notes.",
+     "Some take sides, others take notes.",
+     "Some take sides, others take notes."
+    ]
+   },
+   "D": {
+    "len": 2.32,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Some take sides, others take notes.",
+     "Some take sides, others take notes.",
+     "Some take sides, others take notes."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 2.49,
+  "ok": 3
+ }
+}

@@ -24,9 +24,15 @@
 
 Three cold viewers, independently: **"Fighting Over the Wrong Chair"**, **"They fight for the wrong chair"**, **"The Real Throne Is Here."** The two planes are the episode in one image: the men who think they hold power fight over a chair while the real deal is done behind their backs. The push and the loop say it again: the film starts where the camera leaves them, still fighting.
 
+## Tomas's decisions, round 2 (26 Nov, /grill-me)
+
+| Question | Decision |
+|---|---|
+| Why the robot already pulls the throne at frame 0 | **No reason given**: the tug is under way from the first frame, as 14's blinds tug of war was; the REVIEW · TOMORROW tag (1.3) explains it later |
+| The sticky salute | **Cut** (fewer hand jobs; the salute read as a phone call 3/3) |
+| Between 7.3 (the plan to Pam) and the final S8 | **Don goes back to the throne:** after the barrier he sees the robot rolling the throne to Father's side and throws himself at it; the tug starts on screen, then S8 |
+
 ## Open (for the script)
 
-1. Why the tug starts: who brings the robot to the throne in 15 (at 1.1 it is already pulling: it obeys the majority owner; Father's tag REVIEW · TOMORROW at 1.3 gives the reason).
-2. The sticky salute: cut, or after 7.2.
-3. The loop's state (lesson 183): the push's last framing and frame 0 must be drawn by the same code; what differs between them is only Pam's line (spoken inside, not seen from outside).
-4. The STORYLINE v3.5 row for 15 and the note for 16 (the robot's badge, the tear).
+1. The loop's state (lesson 183): the push's last framing and frame 0 must be drawn by the same code; what differs between them is only Pam's line (spoken inside, not seen from outside).
+2. The STORYLINE v3.5 row for 15 and the note for 16 (the robot's badge, the tear).
