@@ -31,6 +31,8 @@ DIRS = []                                                   # (d, arm) per hand 
 LW = 2.0
 
 
+PINCH_V2 = [False]                                                   # opt-in: the simpler pinch (index and thumb straight)
+
 def reset(left="relax", right="relax"):
     GEST[0] = (left, right); _N[0] = 0; LATE.clear(); DIRS.clear()
 
@@ -237,6 +239,12 @@ def draw(k, g, hx, hy, w, skin, d, arm):
         c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(LW); c.stroke()
         for fy in (-0.12, 0.10):                                      # two short finger lines at the tips
             _crease(c, [(0.68 * w, -s_ * fy * w), (0.90 * w, -s_ * fy * w)], 1.3)
+        c.restore(); return
+    if g == "pinch" and PINCH_V2[0]:                                  # v7 (review 26 Nov: "too many fingers at the nose"): the palm
+        _blob(c, 0.22 * w, 0.06 * s_ * w, 0.46 * w, 0.44 * w, skin)    # with the three curled into it (one shape, one crease), the
+        _crease(c, [(0.30 * w, s_ * 0.08 * w), (0.58 * w, s_ * 0.12 * w)])   # index and thumb straight, their tips together
+        _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.08 * w, -s_ * 0.10 * w)], t, skin)
+        _cap(c, [(0.36 * w, s_ * 0.36 * w), (1.02 * w, s_ * 0.10 * w)], t * 1.05, skin)
         c.restore(); return
     if g == "pinch":                                                  # v6 (Pick a Side 4.3b, Tomas 26 Nov, a new shape): the
         _blob(c, 0.22 * w, 0, 0.44 * w, 0.42 * w, skin)               # thumb and the index meet at the tips (a nose between),

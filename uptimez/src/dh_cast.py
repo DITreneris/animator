@@ -249,6 +249,8 @@ def pass_card(k, x, y, s=1.0, seed=1780):
 
 
 FRONT_HAND_S = [1.0]                                         # its width x the rig's hand (limb passes hand_r / 0.6 * 0.8)
+GUARD_TURN = [(0.0, 0.0)]                                    # opt-in (Pick a Side 4.3b, 26 Nov): (dx, tilt): the face slid dx rig units
+                                                             # inside the head's outline (a 3/4 cheat) and the head tilted (radians) at the neck
 BACK_HAND = [None]                                           # opt-in (audit 26 Nov): a hands_ps shape for the other arm's hand while
                                                              # ARM_FRONT is set (alone, the rig's ball read as "an extra fist" 2/2)
 FRONT_HAND = [None]                                          # opt-in: a hands_ps shape for the ARM_FRONT arm's hand
@@ -334,7 +336,8 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
     if case:
         tool_case(k, hands[-1][0], hands[-1][1] + 4, 1.0, seed + 60)
     hy = HY
-    c.save(); c.translate(0, hy + 55); c.scale(co.HEAD, co.HEAD); c.translate(0, -(hy + 55))
+    tdx, tilt = GUARD_TURN[0] if kind == "guard" else (0.0, 0.0)
+    c.save(); c.translate(0, hy + 55); c.rotate(tilt); c.scale(co.HEAD, co.HEAD); c.translate(0, -(hy + 55))
     pts = co._head_pts(k, hy, seed + 20)
     for sx in (-1, 1):
         ellipse(k, sx * 48, hy + 2, 7.5, 12, co.SKIN, seed + 26 + sx, shadow=False, lw=2)
@@ -343,6 +346,11 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
     cut(k, [(-47, hy - 4), (-49, hy - 30), (-38, hy - 52), (-10, hy - 62), (22, hy - 60), (44, hy - 46), (49, hy - 26),
             (47, hy - 4), (42, hy - 24), (26, hy - 38), (0, hy - 41), (-26, hy - 38), (-42, hy - 24)], hair, shadow=False, lw=2)
     if kind == "guard":
+        if tdx:                                              # GUARD_TURN: the face slides inside the head (hair redrawn over)
+            c.save(); c.new_path(); c.move_to(*pts[0])
+            for p_ in pts[1:]:
+                c.line_to(*p_)
+            c.close_path(); c.clip(); c.translate(tdx, 0)
         co._face(k, hy + 4, "plain", (0, 0), mouth, seed + 30, "none")
         for sx in (-1, 1):                                                                   # the sunglasses
             cut(k, [(sx * 4, hy - 12), (sx * 38, hy - 13), (sx * 36, hy + 8), (sx * 20, hy + 13), (sx * 6, hy + 8)],
@@ -352,6 +360,10 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
         c.set_source_rgb(0.03, 0.03, 0.04); c.set_line_width(4)
         c.move_to(-6, hy - 9); c.line_to(6, hy - 9); c.stroke()
         c.move_to(-37, hy - 9); c.line_to(-49, hy - 6); c.stroke(); c.move_to(37, hy - 9); c.line_to(49, hy - 6); c.stroke()
+        if tdx:
+            c.restore()
+            cut(k, [(-47, hy - 4), (-49, hy - 30), (-38, hy - 52), (-10, hy - 62), (22, hy - 60), (44, hy - 46), (49, hy - 26),
+                    (47, hy - 4), (42, hy - 24), (26, hy - 38), (0, hy - 41), (-26, hy - 38), (-42, hy - 24)], hair, shadow=False, lw=2)
         c.set_source_rgb(0.92, 0.92, 0.90); c.set_line_width(2.4)                            # the earpiece: a coil down the neck
         c.move_to(51, hy + 4)
         for i in range(7):

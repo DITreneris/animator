@@ -31,6 +31,8 @@ TAKE_AT["1.3"] = [TAKE_AT["1.3"][0] + DUR["1.2b"]]
 DUR["4.3"] += 0.40                                           # Tomas 25 Nov (plan §7 a): Father's take 0.4 s later, the
 TAKE_AT["4.3"] = [TAKE_AT["4.3"][0], TAKE_AT["4.3"][1] + 0.40 + 0.25]   # guards' close gets 0.45 s between the lines;
 DUR["4.3"] += 0.25                                           # v2 (review 26 Nov): 0.38 s of Father's silence before "Invite her."
+DUR["4.3"] += 0.45                                           # v8 (Tomas 26 Nov): the close 0.95 s, the guards react in turn
+TAKE_AT["4.3"][1] += 0.45                                    # (A pinches, B covers his mouth and turns away), Father after
 SIP_ON = [False]                                             # 3.7's sip: tried v3/v4, read as "a phone" 3 rounds; Tomas 25 Nov:
 DUR["3.7"] += 0.40 if SIP_ON[0] else 0.0                     # the silence without the sip, the cup at her chin (the board)
 
@@ -485,25 +487,27 @@ def s42(t):
     return BOARD["4.2"]
 
 
-CLOSE_43V5 = (1.25, -254, -194)                              # was (1.45, -345, -302): both guards cut by the frame's edges
-A_43, B_43 = 0.95, 1.45                                      # 4.3a the Client .. 4.3b the guards' close .. 4.3c Father
+GB_43 = dict(lean=-0.08, turn=(-8, 0.12), pose=(-74, -82), hand="palm")   # v8: guard B recoils, head away, palm over mouth and nose
+CLOSE_43V5 = (1.25, -230, -220)                              # was (1.45, -345, -302): both guards cut by the frame's edges
+A_43, B_43 = 0.95, 1.90                                      # 4.3a the Client .. 4.3b the guards' close .. 4.3c Father
 
 
 def s43(t):
     """4.3a "That one."; 4.3b the guards turn away and pinch their noses, the stink rises (no line); 4.3c Father: "Invite
     her." The board's three framings (BOOTH_PART_V4), drawn in turn."""
     part = 0 if t < A_43 else (2 if t < B_43 else 1)
-    pu = (ease((t - A_43 - 0.02) / 0.20), ease((t - A_43 - 0.02 - 2.0 / DPS) / 0.18))   # v5 (review 26 Nov): the second
+    pu = (ease((t - A_43 - 0.02) / 0.20), ease((t - A_43 - 0.42) / 0.22))   # v8: B 0.4 s after A (Tomas: different gestures)   # v5 (review 26 Nov): the second
                                                              # guard 2 drawings later (5 left him unpinched in the 0.45 s close)
     def draw(k):
         ps.PART[0] = part
         ps.BOOTH_PART_V4[2] = CLOSE_43V5                     # v5 (26 Nov audit): the close wide enough for both guards' hands
         ps.PINCH_43[0] = pu if t < B_43 + 0.4 else 1.0
+        ps.GUARD_B[0] = GB_43
         ps.STINK_RISE[0] = 60 * t
         try:
             return ps.ins_booth_43(k)
         finally:
-            ps.PINCH_43[0] = 1.0; ps.STINK_RISE[0] = 0.0
+            ps.PINCH_43[0] = 1.0; ps.STINK_RISE[0] = 0.0; ps.GUARD_B[0] = None
     return ps.S("4.3", "screen", draw=draw)
 
 
@@ -569,10 +573,10 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 2}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 3}
 STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
            ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
-           ("4.3", 1.3, "noses pinched"), ("4.3", 1.6, "Father, silent"), ("4.3", 2.4, "Invite her.")]
+           ("4.3", 1.3, "A pinches"), ("4.3", 1.75, "B turns away"), ("4.3", 2.05, "Father, silent"), ("4.3", 2.85, "Invite her.")]
 STILLS3 = [("3.1", 0.3, "the arm telescopes"), ("3.1", 1.8, "Chin up: in to Mom"), ("3.2", 0.02, "FLASH"), ("3.2", 1.5, "the photo"),
            ("3.3", 0.8, "Public post?"), ("3.4", 0.10, "the arm up"), ("3.4", 0.40, "it sinks, the phone slides"),
            ("3.4", 0.60, "APPROVED"), ("3.4", 1.15, "thumb back up"), ("3.5", 0.35, "the slide"), ("3.6", 0.1, "before"),
@@ -593,6 +597,7 @@ def stills(n):
     ps.gags_v5()
     import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_S[0], dc_.BACK_HAND[0] = "pinch", 0.9, "quiet"   # 4.3b (26 Nov): the pinch through limb's
     ps.PINCH_POSE[0], ps.PINCH_LEAD[0] = (-80, -87), 1.6       # audit 26 Nov: under the glasses, the hand up the chest (not sideways)
+    import client_ps as cps_, hands_ps as hp_; cps_.POINT_V2[0] = ps.SHOT43_V8[0] = hp_.PINCH_V2[0] = True; cps_.POINT_SKIN[0], cps_.POINT_W[0] = (0.86, 0.64, 0.50), 1.3   # v8 (review 26 Nov): his index clear, the phone whole, his box off it
     ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
@@ -744,6 +749,7 @@ def sound(n, path):
         osd.put(buf, sm, S_["4.2"] + 0.70, 0.35)                                      # 4.2 the smudge as it lands
         sn = osd.hp(osd.noise(0.25), 2) * np.sin(np.pi * osd.t_(0.25) / 0.25)
         osd.put(buf, sn, S_["4.3"] + A_43 + 0.05, 0.12)                               # 4.3b a sharp sniff
+        osd.put(buf, sn[::-1] * 0.7, S_["4.3"] + A_43 + 0.47, 0.09)                  # v8: guard B, a muffled huff
         osd.put(buf, osd.hp(osd.noise(0.4), 3) * np.sin(np.pi * osd.t_(0.4) / 0.4), S_["4.3"] + TAKE_AT["4.3"][1] + 1.45, 0.20)  # send
     if n == 3:                                               # the sound map (plan v2 §2)
         S_ = starts
@@ -824,6 +830,7 @@ def film(n, ver=1):
     ps.gags_v5()
     import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_S[0], dc_.BACK_HAND[0] = "pinch", 0.9, "quiet"   # 4.3b (26 Nov): the pinch through limb's
     ps.PINCH_POSE[0], ps.PINCH_LEAD[0] = (-80, -87), 1.6       # audit 26 Nov: under the glasses, the hand up the chest (not sideways)
+    import client_ps as cps_, hands_ps as hp_; cps_.POINT_V2[0] = ps.SHOT43_V8[0] = hp_.PINCH_V2[0] = True; cps_.POINT_SKIN[0], cps_.POINT_W[0] = (0.86, 0.64, 0.50), 1.3   # v8 (review 26 Nov): his index clear, the phone whole, his box off it
     ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True

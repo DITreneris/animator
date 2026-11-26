@@ -652,3 +652,18 @@ Built (plan v2 §7): 4.1 the neon's flicker, the black sleeve lifts the #TeamDon
 | E4 | Pam's mug: an extra thumb | The sip-era thumb capsule left on | pm_ps.MUG_THUMB off | rebuilt s1 v5, s3 v6 |
 
 check / check v5: 38 shots, 0 faults each. Board defaults unchanged (PINCH_LEAD 1.0, BACK_HAND None).
+
+## Scene 4 v8: review 7.8/10 (26 Nov), Tomas: different gestures, longer close
+
+| Point | Fix (opt-in, film only) | Cold test |
+|---|---|---|
+| Client's hand "a brown fist, no index" | `client_ps.POINT_V2`: skin, index long, three curled as one block, thumb over; `POINT_SKIN` (0.86, 0.64, 0.50), `POINT_W` 1.3; the hand on the phone screen, index on the purple figure (`POINT_43`, `AIM43`) | 2/2 "a pointing index finger" (round 1: 2/2 "a stick/cigar"). Open: 2/2 "points vaguely up-left, no clear target"; 1/2 still "stick-like" |
+| Guards' fingers tangled | `hands_ps.PINCH_V2`: index and thumb straight, the others in the palm | 2/2 nose pinch; at feed size still "blobby" 1/2 |
+| Different gestures (Tomas) | `GUARD_B` / `dh_cast.GUARD_TURN` (new: face slid in the head, tilt): B turns his head away, palm over mouth and nose, 0.4 s after A | Variants (417): folded / palm up / palm at chest read 0/2 as smell (wave, stop, nervous); palm over mouth+nose 2/2 "different from the pinch" |
+| Longer reaction | 4.3b 0.95 s (B_43 1.90), Father's take +0.45 s; a muffled huff for B | |
+| #TeamDon photo small, cut | `SHOT43_V8`: phone 1.45, whole in the frame (x 244) | |
+| Bubble over hand and photo | "That one." in two rows (`NARROW_43` 84), it fits on his right | 2/2 the Client says it (was 2/3 unclear) |
+| 4.3a→4.3b a near-identical reframe | 4.3b in 4.3a's camera (no cut) | |
+| Not done (disagree) | table lower 25–30 %, captions at the bottom: y > 720 is the app's UI | |
+
+check / check v5: 38 / 0 each. Board v4 md5-identical (44 frames, against a315cc5).
