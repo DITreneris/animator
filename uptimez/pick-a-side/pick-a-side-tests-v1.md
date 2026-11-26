@@ -896,3 +896,39 @@ Picks:
 | Loop seam | — | the last 0.3 s −28.5 dB (bar 24's tail), the first 0.3 s −14.3 (bar 1's chord and the tug): restarts on the downbeat |
 
 What the checks can't tell: whether the bed is too sweet or too much, and whether the laughs land. That needs people listening with sound on.
+
+## Sound v3: the opener (Tomas 26 Nov: "the blinds start in silence? a killer opener, not Chopin"; /grill-me)
+
+Picks:
+- a layered, realistic blind;
+- the bed comes in on the blind's crash;
+- sound runs through the loop's seam;
+- the robot's servo, louder rounds, a bigger fall, Don's effort.
+
+`src/ps_blind_sfx.py`: all synthesised from scratch, nothing reused.
+- zip: the cord through the pulley, friction with the ratchet speeding up.
+- slats: aluminium pings with inharmonic partials, running down or stacking up.
+- clack: the bottom or head rail.
+- servo: rising, with its motor's buzz.
+- creak: under frame 0.
+- settle: into the seam.
+- crash: a thud, 42 slats spilling, the head rail ringing.
+- grunt: Don's own voice, "Hup! / Huh! / Hah!", 1.5 semitones down. Kokoro spells "Hnngh!" as words, so only the short syllables are used.
+
+`ps_mix.py` (`OPENER`):
+- scene 1's and 6.2's captured rattles are replaced by these;
+- they go on their own bus, saturated (drive 3) and set 3 dB under the lines. In v3a the pings' crest drove the whole opening into the limiter, flat, with the crash no louder than the tug;
+- the bed starts on bar 1 at the crash (2.0 s) and is out from the shock to the end, so the seam and the tug are only the blind.
+
+The first 4 s, 0.1 s windows (dB):
+- frame 0: −27 → −18 (the creak);
+- round 1: −16; round 2: −13; round 3: −12;
+- a 0.2 s breath at −27;
+- the crash: −8.
+- The loop's end: the settle runs into the creak.
+
+Checks:
+- −15.3 LUFS, −1.8 dBTP;
+- speech 19/19;
+- one stretch under −45 dBFS: 69.0 s, the shock (on purpose).
+- Files: `/tmp/ps_master_v3_1080.mp4`, `pick-a-side/ps_film_master_v3_540.mp4`.

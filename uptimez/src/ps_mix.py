@@ -25,6 +25,9 @@ BARS = 24
 DUCK = 5.0                                                   # dB the bed dips under a line (2.5 "my" was lost under it: 0.67)
 STOPS = [("2.10", "take1", -0.20, 0.90), ("6.1b", "start", 0.0, 1.45)]   # the bed out for "BOTH." (from its take) and the shock
 FOLEY = []
+OPENER = [True]                                              # v3 (Tomas 26 Nov: "a killer opener, not Chopin"); False = sound v2
+OB_DRIVE, OB_OVER = 3.0, -3.0  # the opener bus's saturation and level
+CRASH_AT = 0.20                                              # 1.2a: the blind lands (ps_film's own crash time)
 VIDS = ["/tmp/ps_film_s1_v6_1080.mp4", "/tmp/ps_film_s2_v5_1080.mp4", "/tmp/ps_film_s3_v6_1080.mp4",
         "/tmp/ps_film_s4_v11_1080.mp4", "/tmp/ps_film_s5_v10_1080.mp4", "/tmp/ps_film_s6_v5_1080.mp4"]
 VID_LEN = []                                                   # filled by foley_map() once the starts are known
@@ -110,6 +113,49 @@ def foley_map(sh):
     return out
 
 
+def opener(sc, sh):
+    """the blind war's own sounds: 1.1's six strokes (Don down, the robot up; each round louder and faster), Don's
+    effort, the robot's servo, the crash of 1.2a; 6.2's down and up into the seam, the slats settling over it, and the
+    cord creaking under frame 0 until his first yank"""
+    import ps_blind_sfx as bs
+    import ps_motion as pm_
+    out = []
+    D = pf.DUR["1.1"]
+    strokes = [x for x in pm_.TUG if x[2] != "hold"]
+    out.append((bs.creak(pf.HOLD0), 0.0, 0.40))                               # under frame 0: the cord takes his weight
+    grunts = ["Hup!", "Huh!", "Hah!"]
+    for k_, (a_, b_, kind, _w) in enumerate(strokes):
+        ta = pf.HOLD0 + (a_ - 0.2) * ((D - pf.HOLD0) / 1.6)
+        tb = pf.HOLD0 + (b_ - 0.2) * ((D - pf.HOLD0) / 1.6)
+        rnd = k_ // 2
+        g = 0.6 * 10 ** (4.0 * rnd / 20)                                      # each round +4 dB before the bus (about +2.5 after)
+        d = tb - ta
+        up = kind == "up"
+        out.append((bs.zip_(d, 1.0, 26 + 14 * rnd, 70 + 20 * rnd), ta, 0.55 * g))
+        out.append((bs.slats(d, 12 + 3 * rnd, up=up), ta + 0.02, 0.60 * g))
+        out.append((bs.clack(top=up), tb - 0.01, 0.55 * g))
+        if up:
+            out.append((bs.servo(d, 620 * (1.15 ** rnd)), ta, 0.30 * g))
+        else:
+            out.append((bs.grunt(grunts[rnd]), ta + 0.01, 1.4 * g))
+    out.append((bs.crash(), sh["1.2a"] + CRASH_AT, 2.2))                    # 1.2a: it comes down off its brackets
+    t2 = sh["6.2"]                                                            # 6.2: his yank down, the robot's up
+    import ps_film_end as fe
+    a0, a1 = fe.DOWN_62
+    out.append((bs.zip_(a1 - a0, 1.0, 40, 100), t2 + a0, 0.70))
+    out.append((bs.slats(a1 - a0, 16), t2 + a0 + 0.02, 0.75))
+    out.append((bs.grunt("Hah!"), t2 + a0 + 0.01, 1.6))
+    out.append((bs.clack(), t2 + a1 - 0.01, 0.70))
+    b0, b1 = fe.UP_62
+    out.append((bs.zip_(b1 - b0, 1.0, 40, 100), t2 + b0, 0.70))
+    out.append((bs.slats(b1 - b0, 16, up=True), t2 + b0 + 0.02, 0.75))
+    out.append((bs.servo(b1 - b0, 620 * 1.15 ** 3), t2 + b0, 0.38))
+    out.append((bs.clack(top=True), t2 + b1 - 0.01, 0.70))
+    end = sc[6] + VID_LEN[5] if VID_LEN else t2 + pf.DUR["6.2"]
+    out.append((bs.settle(end - (t2 + b1)), t2 + b1 + 0.05, 0.8))            # the slats swing still, into the seam
+    return out
+
+
 def fx_end():
     import ps_film_end as fe
     return fe
@@ -133,15 +179,38 @@ def build(path="/tmp/ps_mix_v1.wav"):
                 g = 10 ** ((VOICE_RMS - speech_rms(a)) / 20)
                 report.append("voice %-6s %+5.1f dB" % (tk, 20 * np.log10(g)))
                 osd.put(voice, a, sh[sid] + at, g)
+    s62 = sh["6.2"] - sc[6]
     for n in (1, 2, 3, 4, 5, 6):                             # every scene's own effects, at its place
         for a, t0, g in effects(n):
+            if OPENER[0] and (n == 1 or (n == 6 and t0 >= s62 - 0.01)):
+                continue                                     # the blind's own sounds below replace the tug's and 6.2's
             osd.put(efx, a, sc[n] + t0, g)
+    if OPENER[0]:                                            # the blind's sounds on their own bus, saturated (their pings'
+        ob = np.zeros(L)                                     # crest drove the whole opening into the limiter: v3a's first 4 s
+        for a, t0, g in opener(sc, sh):                      # sat at the ceiling, flat, the rounds and the crash level)
+            osd.put(ob, a, t0, g)
+        pk = np.abs(ob).max() + 1e-9
+        ob = np.tanh(OB_DRIVE * ob / pk) / np.tanh(OB_DRIVE)
+        vr0 = rms_db(voice[np.abs(voice) > 1e-4])
+        seg = ob[int(0.4 * SR):int(pf.DUR["1.1"] * SR)]
+        ob *= 10 ** ((vr0 + OB_OVER - rms_db(seg)) / 20)     # the tug as loud as a line (OB_OVER dB over it)
+        efx += ob
+        report.append("opener bus: drive %.1f, the tug %+.1f dB over the voices" % (OB_DRIVE, OB_OVER))
     club = osd.lp(osd.noise(sc[5] - sc[4]), 40) * 0.5          # Father's club: a low murmur of the room under the bass
     osd.put(efx, club * np.minimum(1, osd.t_(sc[5] - sc[4]) / 0.15) * np.minimum(1, (sc[5] - sc[4] - osd.t_(sc[5] - sc[4])) / 0.1),
             sc[4], 0.05)                                     # (44-45.5 s was the film's only gap left at -45 dB)
     for a, t0, g in foley_map(sh):
         osd.put(efx, a, t0, g)
-    bl, br, bar = obm.bed(total, BARS, "A")                  # the bed
+    if OPENER[0]:                                            # bar 1 on the crash; whole bars up to the shock
+        t_in = sh["1.2a"] + CRASH_AT
+        span = sh["6.1b"] - t_in
+        nb = max(8, int(round(span / 2.96)))
+        bl0, br0, bar = obm.bed(nb * (span / nb) + 3.0, nb + 1, "A")
+        i0 = int(t_in * SR)
+        bl, br = np.zeros(L), np.zeros(L)
+        n_ = min(L - i0, len(bl0)); bl[i0:i0 + n_] = bl0[:n_]; br[i0:i0 + n_] = br0[:n_]
+    else:
+        bl, br, bar = obm.bed(total, BARS, "A")              # the bed
     env = np.ones(L)
     def fade_out(t0, t1, d=0.12):
         i0, i1 = int(t0 * SR), int(t1 * SR); k = int(d * SR)
@@ -149,6 +218,10 @@ def build(path="/tmp/ps_mix_v1.wav"):
         env[max(0, i0 - k):i0] = np.minimum(env[max(0, i0 - k):i0], np.linspace(1, 0, i0 - max(0, i0 - k)))
         env[i1:i1 + k] = np.minimum(env[i1:i1 + k], np.linspace(0, 1, len(env[i1:i1 + k])))
     fade_out(sc[4], sc[5], 0.08)                             # Father's club: the club's own bass only
+    if OPENER[0]:                                            # v3: the bed comes in on the blind's crash (bar 1) and is out
+        t_in = sh["1.2a"] + CRASH_AT                         # from the shock to the end: the seam and the tug are the blind's
+        fade_out(0.0, t_in, 0.01)
+        fade_out(sh["6.1b"], total + 0.1, 0.12)
     for sid, ref, a_, b_ in STOPS:
         t0 = sh[sid] + (pf.TAKE_AT[sid][1] if ref == "take1" else 0.0)
         fade_out(t0 + a_, t0 + b_)
@@ -185,7 +258,7 @@ def build(path="/tmp/ps_mix_v1.wav"):
     return path, total
 
 
-def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v2_1080.mp4"):
+def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v3_1080.mp4"):
     vids = VIDS
     with open("/tmp/ps_mix_vids.txt", "w") as f:
         for v in vids:
@@ -194,7 +267,7 @@ def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v2_1080.mp4"):
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", "/tmp/ps_mix_vids.txt",
                            "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest"]
                           + tags + [out])
-    c540 = os.path.join(pf.OUT, "ps_film_master_v2_540.mp4")
+    c540 = os.path.join(pf.OUT, "ps_film_master_v3_540.mp4")
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-vf", "scale=540:960:flags=lanczos,format=yuv420p",
                            "-c:v", "libx264", "-crf", "20", "-preset", "veryfast"] + tags + ["-c:a", "copy", c540])
     print("wrote", out, c540, osd.levels(out))
