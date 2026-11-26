@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 60, 2: 59, 3: 60, 4: 52, 5: 59}
+VER = {1: 61, 2: 59, 3: 61, 4: 52, 5: 59}
 SOUND = "of_sound_v30.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -427,7 +427,7 @@ def s28f(t, L):
     x = 538 + 8 * up + sh_ - 2 * rt                         # v9 (cold test v47, 3 of 3: "it flips through odd shapes"): no flip.
     y = 668 - 16 * up + (YEND - 652) * dr                    # Dead, he LIFTS it a little and tips it toward him (the cage stays
     la = -1.05 + 0.25 * up - 1.1 * rt + (0.14 * math.sin((t - 1.52) * 2 * math.pi * 1.7) * math.exp(-(t - 1.52) * 4) if t > 1.52 else 0.0)   # v52: its weight sways on                       # down), shakes it once, and lets it hang: one shape all the way
-    sw = 2.5 * math.sin(t * 4.0) * (1 - dr) - sh_ * 1.6 + 16 * math.sin(max(0.0, t - 1.10) * 14) * math.exp(-max(0.0, t - 1.10) * 5) * (1 if t > 1.10 else 0)
+    sw = 5.0 * math.sin(t * 4.0 + 1.0) * (1 - dr) - sh_ * 1.6 + 16 * math.sin(max(0.0, t - 1.10) * 14) * math.exp(-max(0.0, t - 1.10) * 5) * (1 if t > 1.10 else 0)
     gx_, gf_ = sc.BLOCK[3]["g1"]
     return (dict(_cam=LAMP_GAG_CAM, dim=0.14 if dark else 0.0, moved=dict(g1=(gx_, gf_ + 8 * dr))),
             dict(g1=dict(targets_xy=[(x, y)], lamp="held", cone_side=0.03 if dark else (1.35 if t > 0.35 else 1.0), lamp_ang=la,

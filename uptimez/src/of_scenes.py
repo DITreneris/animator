@@ -845,6 +845,8 @@ def garage_shot(k, sh, scene, heads, cam):
         c.save(); c.translate(px + 50, py + 2); c.rotate(math.atan2(-110, 26))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
         rect(k, -9, -35, 18, 70, (0.97, 0.97, 0.94), 3409, shadow=False, lw=1.8)            # his white cuff, at the phone
         c.restore()
+        for col_, lw_ in ((INK, 34), ((0.92, 0.74, 0.60), 28)):               # v61 (cold test v60: "a cuff with no forearm"): his WRIST, from the cuff to the palm
+            c.set_source_rgb(*col_); c.set_line_width(lw_); c.set_line_cap(1); c.move_to(px + 56, py - 6); c.line_to(px + 6, py + 40); c.stroke()
         S04, A04 = 90 / 44.0, 0.0                                             # v7: the same phone grip as every phone, big
         gx_, gy_ = px - 22 * S04 * math.sin(A04) * 0 - 45 * math.sin(A04), py + 45 * math.cos(A04)
         _oc.phone_grip(k, gx_, gy_, S04, ang=A04, skin=(0.92, 0.74, 0.60), body_x=gx_ + 400, part="back", ink=0.6)
