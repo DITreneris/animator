@@ -77,6 +77,10 @@ def paris(c, f=0, s=1.0, cx0=540, horizon=None):
     for k in range(5): y = base - 540 - k * 75; c.move_to(cx - 100 + k * 11, y); c.line_to(cx + 100 - k * 11, y - 75); c.set_source_rgb(*IRON_D); c.set_line_width(3); c.stroke()
     rr(c, cx - 80, base - 920, 160, 26, 5); fs(c, IRON, 5)                     # second platform
     c.move_to(cx - 44, base - 896); c.line_to(cx - 8, base - 1290); c.line_to(cx + 8, base - 1290); c.line_to(cx + 44, base - 896); c.close_path(); fs(c, IRON, 5)
+    for k in range(4):                                                        # X-braces on the upper shaft: iron lattice, not a wooden prop (v2)
+        t0, t1 = k / 4, (k + 1) / 4; y0, y1 = base - 896 - 394 * t0, base - 896 - 394 * t1; w0, w1 = (44 - 36 * t0) * .85, (44 - 36 * t1) * .85
+        for a_, b_ in (((cx - w0, y0), (cx + w1, y1)), ((cx + w0, y0), (cx - w1, y1))):
+            c.move_to(*a_); c.line_to(*b_); c.set_source_rgb(*IRON_D); c.set_line_width(3); c.stroke()
     rr(c, cx - 22, base - 1310, 44, 24, 5); fs(c, IRON, 4)
     c.move_to(cx, base - 1310); c.line_to(cx, base - 1370); c.set_source_rgb(*INK); c.set_line_width(5); c.stroke()
     c.restore(); c.restore()
@@ -136,9 +140,9 @@ def rome(c, f=0, s=1.0, cx=540, horizon=None):
     for i in range(48): rr(c, (i * 137) % 1080, hz + 40 + (i * 53) % (H - hz - 60), 60, 26, 10); c.set_source_rgb(*hx('cbbd9f')); c.fill()
 
 PLACES = dict(pisa=pisa, paris=paris, giza=egypt, rome=rome)
-STAMP = dict(pisa=('PISA', 'c8323c', -.18, 220), paris=('PARIS', '2f5fb3', .14, 870), giza=('GIZA', 'b5651d', -.1, 240), rome=('ROMA', '7b3fa0', .2, 870))   # name, ink, tilt, x (kept off the landmark)
+STAMP = dict(pisa=('PISA', 'c8323c', -.18, 270), paris=('PARIS', '2f5fb3', .14, 740), giza=('GIZA', 'b5651d', -.1, 240), rome=('ROMA', '7b3fa0', .2, 740))   # name, ink, tilt, x (kept off the landmark)
 
-def stamp(c, place, x=None, y=500, k=1.0, op=.85):
+def stamp(c, place, x=None, y=570, k=1.0, op=.85):
     """A small passport stamp naming the place, in the photo's top-right corner (clear of the title bar and the app's buttons).
     k animates it in (0..1: it thumps down from a bit bigger)."""
     if k <= 0: return
