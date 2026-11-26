@@ -140,3 +140,9 @@ Istorijos testas po nuotraukų: 3 nauji žiūrovai, tik 4.3–6.2, klausimai: ka
 **Kaip daroma *The Onboarding* (`set_ob.door`, `ob_anim._through_glass`, s1_1, s10_4):** tas pats `DOOR` stačiakampis (22, 392, 150, h) kaip mūsų `ps_set`; stiklas **slenka kairėn** (`open_` 0..1, iki 0,85); už jo **šviesi gatvė**; lauke esantis piešiamas angos viduje, o stiklas permatomai uždedamas virš jo, kur dar neatslinko; atsidaro ~0,15 s (lesson 133) ir trenkiasi į atramą (siena sudreba); užsidaro už jo. Mūsų `ps_set` tai jau turi kaip `DOOR_OPEN` (opt-in).
 
 **Pataisyta v4:** 5.1 durys uždarytos, sargybinis lauke šviesioje gatvėje, spalvotas (3.6 rodė tik tamsų siluetą), beldžia į stiklą krūtinės aukštyje (kumštis prie ausies skaitosi kaip skambutis), CV tuščias; 5.3a durys nuslinkusios (`DOOR_OPEN` 0,85), jis įžengęs, robotas: „Welcome.“ Judesyje: atsidaro per 0,15 s, sustoja su smūgiu, kaip s1_1.
+
+## 10. CV → Tėvo kvietimas (Tomas 26 Nov, /grill-me: „sargybinis atneša CV? kokia logika?“)
+
+Senoji logika: jos CV iš 12 serijos, Tėvas ant jo užrašo „HR?“ (darbo pasiūlymas). Be 12 serijos konteksto neskaitoma.
+Sprendimai: **kvietimo kortelė** (tas pats „INVITATION · from DAD“ kaip Pam telefone; ryšys su 1.4 „susitikimas be manęs“ ir 4.3 „Invite her.“) · **rašiklis įrašo jos vardą** „to: SOFÍA“ (5.2) · **Pam kvietimas lieka telefonu** · **skardinė robotui lieka**.
+Įgyvendinta `sofia_ps.INVITE` (opt-in): `cv_coo` piešia kortelę CV dydžio, tad visos rankos, laikiusios CV (5.1, 5.3a, 5.3c, 5.5, 6.1), laiko ją. Filme liko: 5.2 rašiklio laikai penkioms raidėms (`PEN_52` dabar trims).

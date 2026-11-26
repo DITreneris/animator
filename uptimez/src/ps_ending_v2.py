@@ -28,8 +28,9 @@ HALL = (0.36, 0.38, 0.42)
 
 
 def look():
-    """the film's look (as ps_film's stills)"""
+    """the film's look (as ps_film's stills); Tomas 26 Nov: the CV is Father's invitation"""
     ps.gags_v5()
+    sp.INVITE[0] = True
     pf.dp.BLIND_GAP_FIX[0] = pf.dp.ROLL_TAIL[0] = True
     pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
     ps.LIGHT_V5[0] = True
@@ -241,7 +242,7 @@ def s62n():
     return dict(sh, cast=cast, id="6.2n")
 
 
-NEW = [("5.1", s51, None, "outside the shut glass, knocks, the CV"),
+NEW = [("5.1", s51, None, "knocks, the invitation"),
        ("5.3a", s53a, 'ROBOT: "Welcome."', "the door slid open: Welcome."),
        ("5.3c", s53c, None, "the hand-over"),
        ("5.5b", s55b, None, "both shoes over the tape"),
@@ -266,9 +267,9 @@ def main(ver):
     look()
     old = lambda sid, t: pf.drawing(sid, t)
     seq = [("4.3c", lambda: old("4.3", 2.85), "Invite her.", False),
-           ("5.1", None, None, True), ("5.2", lambda: old("5.2", 1.3), "HR?", False),
+           ("5.1", None, None, True), ("5.2", lambda: old("5.2", 1.3), "he writes her name", False),
            ("5.3a", None, None, True), ("5.3c", None, None, True), ("5.3b", lambda: old("5.3", 2.0), "the can, the heart", False),
-           ("5.4", lambda: old("5.4", 1.5), "the foot", False), ("5.5", lambda: old("5.5", 1.0), "HR? on the tape", False),
+           ("5.4", lambda: old("5.4", 1.5), "the foot", False), ("5.5", lambda: old("5.5", 1.0), "the invitation, on the tape", False),
            ("5.5b", None, None, True), ("5.6", lambda: old("5.6", 1.8), "Some draw lines.", False),
            ("5.7", lambda: old("5.7", 1.1), "INVITATION · DAD", False),
            ("6.1", None, None, True), ("6.1b", None, None, True),
