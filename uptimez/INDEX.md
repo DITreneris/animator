@@ -6,12 +6,13 @@ A map of every document in `uptimez/`, so a person, worker or agent can find the
 
 | # | Document | What it's for | Authority |
 |---|---|---|---|
+| 0 | [`CANON.md`](CANON.md) | **Where the current canon is:** scenes (the set pages and locked stills), character looks, and the hand class sheet with how a row changes | Map. The page it links wins |
 | 1 | [`STORYLINE.md`](STORYLINE.md) | **The series bible (v3.4).** Premise, world rules (why Find returns 0), the four leads (want, private lie, contradiction, silent reaction, moral line), the supporting cast, relationships, Season 1 in four acts (including physical *Civil War*), episode rules, canon locks | **Canon.** Overrides anything older |
 | — | [`series/production-process.md`](series/production-process.md) | v1, current (22 Nov): how an episode goes from script to final film; stages, checks, Tomas's five stops, version budgets | Process |
 | — | [`gates-v2-plan.md`](gates-v2-plan.md) | v1 (23 Nov): the four measured gates (`src/gates_os.py`) — **GV** shot variety, **GP** proportions, **GD** depth and volume, **GH** hands | Gates |
 | 2 | [`CLAUDE.md`](CLAUDE.md) | **How to work here:** gates, production rules, QA, rules for bubbles and tails, how Tomas wants decisions asked | Process |
 | 3 | [`README.md`](README.md) | Cast table, brand, every episode (synopsis + files + how it's built) | Episode facts |
-| 4 | [`../docs/rules-hands-and-phones.md`](../docs/rules-hands-and-phones.md) | Current rules for hands, two-bone arms, close-up inserts and phone UI (`of_ui.py`), consolidated from lessons 147–226 | Craft rules |
+| 4 | [`../docs/rules-hands-and-phones.md`](../docs/rules-hands-and-phones.md) | The hand for every film: one job table (`quiet`, `point`, `grab`, `clutch`, `pinch`, `phone_grip`, …), then the drawing rules. History stays at the bottom. A new job is a new row on this page | Craft rules |
 | 5 | [`../docs/lessons.md`](../docs/lessons.md) | What went wrong before and the rule it produced, by episode | Craft rules |
 | 6 | [`../docs/sessions.md`](../docs/sessions.md) | Work log for the whole repo: what each session made and what's in the repo | History |
 
