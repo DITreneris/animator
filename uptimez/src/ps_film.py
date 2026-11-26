@@ -588,6 +588,7 @@ STILLS = {4: STILLS4, 3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.
 
 def stills(n):
     ps.gags_v5()
+    import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_BACK[0] = "pinch", 1.2   # 4.3b (26 Nov, 2 viewers): the new pinch
     ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
@@ -817,6 +818,7 @@ HOLD_D = 5                                                   # drawings (0.33 s)
 def film(n, ver=1):
     import subprocess, shutil
     ps.gags_v5()
+    import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_BACK[0] = "pinch", 1.2   # 4.3b (26 Nov, 2 viewers): the new pinch
     ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
