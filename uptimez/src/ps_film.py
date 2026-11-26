@@ -716,11 +716,11 @@ def s61b(t):
     if i < 2:
         return dict(base, fg=ps.fg_61)
     def fg(k):
-        ps.SPRING_61B[0] = pm_.SPRING_AT.get(i, 1.0)
+        ps.SPRING_61B[0] = pm_.SPRING_AT.get(i, 1.0); ps.LOOK_61B[0] = (-0.5, -1)   # his eyes to the phone
         try:
             return ps.fg_61b(k)
         finally:
-            ps.SPRING_61B[0] = 1.0
+            ps.SPRING_61B[0] = 1.0; ps.LOOK_61B[0] = (1, -1)
     return dict(base, fg=fg)
 
 
@@ -812,7 +812,7 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 8, 6: 2}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 8, 6: 3}
 STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
            ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
            ("4.3", 1.3, "A pinches"), ("4.3", 1.75, "B turns away"), ("4.3", 2.05, "Father, silent"), ("4.3", 2.85, "Invite her.")]

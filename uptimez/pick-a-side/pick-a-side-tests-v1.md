@@ -769,3 +769,7 @@ Scene 5 by beat (v6 + v8): pen 2/2, can and heart 2/2, Don's foot back 2/2, Pam'
 ## Scene 6 v2 (Tomas 26 Nov: "taip", the phone hops only at 6.1b)
 
 `ps_scenes.PHONE_61` (opt-in): through 6.1 Pam's phone is lit and still, no arcs; at 6.1b it hops (9 px up, then a 3 px shake over six drawings) and its arcs come on. Cold test (2 viewers, 7.5 fps strip of the encoded v2, mute): **"the phone on the shelf buzzes, then he is startled" 2/2** (v1: the cause not seen 2/2); thumbs-up and closed eyes before 2/2. Open 2/2: his eyes go up and to the right, the phone is up and to his left (the board's `fg_61b` look). 6.2's last drawing = 1.1's first, md5 still equal. check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 6 v3, LOCKED (Tomas 26 Nov: "pasukam akis ir judam toliau")
+
+`ps_scenes.LOOK_61B` (opt-in): in 6.1b his eyes go up and to his left, to the phone (the board's look went right, 2/2 noticed). Looked at in the frames; not cold-tested again. The loop's md5 still equal; check / check v5 38 / 0; board v4 md5-identical. Tag `uptimez-pick-a-side-s6-v3` (local).

@@ -571,6 +571,7 @@ def cast_61(k):
     return heads
 
 
+LOOK_61B = [(1, -1)]                                          # film (Tomas 26 Nov): his eyes to the phone (up and to his left)
 PHONE_61 = [None]                                             # film (Tomas 26 Nov): the phone calm through 6.1, it hops and buzzes at 6.1b
 DON_X_61 = [110]
 # GAGS_V5 (review 25 Nov: "Pam's action unclear"): her arm toward her phone on the counter. The phone is 3 arm lengths away
@@ -588,7 +589,7 @@ def fg_61b(k):
     """6.1b (Tomas 24 Nov, Office Noir 1's startle as the model: the cat hisses, his eyes go round, the hat jumps): the
     phone behind him buzzes; eyes round and over to it, his one hair sprung straight up (no hat), two jump strokes."""
     s_ = 0.60 * 2.5
-    o = dp.don(k, DON_X_61[0], 1150, s_, "vest", FACE_61B[0], (1, -1), chin=0)
+    o = dp.don(k, DON_X_61[0], 1150, s_, "vest", FACE_61B[0], LOOK_61B[0], chin=0)
     hx, hy = o["head"]
     c = k.c
     import fs_storyboard as fsb
