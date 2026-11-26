@@ -110,6 +110,9 @@ STOP41 = (20, 150)                                          # her screen-right a
 HAND41 = ["quiet"]
 
 
+LINE41 = [None]
+
+
 def s4_1(k, d):
     """24 drawings (2.0 s). He is going for the door; Pam steps in from the left, the blue roll upright in her hand;
     he stops short; her other hand goes up and pushes her glasses into her hair (d12); she holds his eye."""
@@ -125,7 +128,9 @@ def s4_1(k, d):
     got = {}
 
     def pre(k_):
-        got["o"] = o = pam(k_, px, ROLL_ARM + arm, "neutral", (1, -0.2), glasses="up" if d >= 12 else "low", d=d)
+        mouth = s3.talk_code(d / float(DPS), *LINE41[0]) if LINE41[0] else None      # v22: "Wait."
+        got["o"] = o = pam(k_, px, ROLL_ARM + arm, "neutral", (1, -0.2), glasses="up" if d >= 12 else "low", d=d,
+                           mouth=mouth)
         hx, hy = min(o["hands"])                                                  # her screen-left hand: the roll in it
         c = k_.c
         c.save(); c.translate(hx - 1, hy - 4); c.rotate(-0.08)
@@ -606,10 +611,13 @@ if V == "v5":
 def schedule():
     n = sum(nd for sh, nd, _ in SHOTS[:-1])
     out = [("4.4", n / float(DPS) + LINE44[0])]
+    if LINE41[0]:                                                                  # v22: Pam's "Wait." as she lands
+        st41 = sum(nd for sh, nd, _ in SHOTS[:SHOTS.index(next(x for x in SHOTS if x[0] == "4.1"))])
+        out.insert(0, ("4.1p", st41 / float(DPS) + LINE41[0][0]))
     if PAM_LINE[0]:
         st = sum(nd for sh, nd, _ in SHOTS[:SHOTS.index(next(x for x in SHOTS if x[0] == "4.2b"))])
         out.insert(0, ("4.2p", st / float(DPS) + LINE42b[0]))
-    return out
+    return sorted(out, key=lambda x: x[1])                                         # v22: in time order (the checks read them so)
 
 
 def draw(fn, d):

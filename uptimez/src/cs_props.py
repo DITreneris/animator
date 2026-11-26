@@ -245,6 +245,8 @@ def pam_photo(k, cx, cy, r, seed=0):
     pb_.pam(k, cx, cy + 0.15 * r - head_off, s_, "stand", "pleased", (0, 0.1), glasses="low")
     c.restore()
     c.set_source_rgb(*INK); c.set_line_width(max(2, r * 0.05)); c.new_path(); c.arc(cx, cy, r, 0, 2 * math.pi); c.stroke()                                          # props v4 (the third props review): see plan(), ai_site(), phone2()
+CLOWN_R = [16]                                            # v22 One Star: the clown's size
+VALUE = [(20, 0.45)]                                      # v22: the corporate line's size and alpha
 REPLY_BIG = [False]                                       # props v3: the reply dominates its insert
 SAME_LAYOUT = [False]                                     # props v3: the UPDATE keeps the post's lines where they were
 FIT2 = [False]                                            # v18 (23 Nov, Tomas): every line inside the screen: UPDATE on its own row, Pam's card shorter
@@ -346,7 +348,7 @@ def phone2(k, kind="crisis", seed=950):
                     if r3 == "CLOWN":                                    # v18: the clown after "human."
                         import clown as _cl
                         c.select_font_face("Inter", 0, 1 if kind == "reply" else 0); c.set_font_size(30)
-                        _cl.clown(c, x0 + 100 + c.text_extents(r2).x_advance + 32, ry + 74, 16)
+                        _cl.clown(c, x0 + 100 + c.text_extents(r2).x_advance + 32 + (CLOWN_R[0] - 16), ry + 74 - (CLOWN_R[0] - 16) / 2, CLOWN_R[0])
                     else:
                         T(c, r3, x0 + 100, ry + 120, 30, center=False, bold=(kind == "reply"))
                     ry += 0 if kind == "pam" else 40                           # 6.3b: her card covers the dimmed rest
@@ -358,8 +360,8 @@ def phone2(k, kind="crisis", seed=950):
                 c.save(); c.push_group()
                 fy = min(ry + 150, y0 + 820 - 26) if FIT2[0] else ry + 150             # v18: the ring stays on the screen
                 _avatar(k, x0 + 44, fy, 16, (0.98, 0.84, 0.40), seed + 9, ring=SOFIA_RING)
-                T(c, "We value every client's journey\u2026", x0 + 70, fy + 6, 20, col=GREY, bold=False, center=False)
-                c.pop_group_to_source(); c.paint_with_alpha(0.45); c.restore()
+                T(c, "We value every client's journey\u2026", x0 + 70, fy + 7, VALUE[0][0], col=GREY, bold=False, center=False)
+                c.pop_group_to_source(); c.paint_with_alpha(VALUE[0][1]); c.restore()
             elif kind == "reply":
                 c.save(); c.push_group()
                 _avatar(k, x0 + 52, ry + 160, 26, (0.98, 0.84, 0.40), seed + 9, ring=SOFIA_RING)

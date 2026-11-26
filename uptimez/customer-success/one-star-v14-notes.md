@@ -148,3 +148,14 @@ flat-band 0 (3.1b, 3.2a, 3.5, 6.3 at 30-40 %: a wall or a floor, looked at). Spe
 - P1 5.3: SAVE blue and active before the tap (grey read "disabled"), a darker blue when pressed, green SAVED after.
 - P1 4.2/4.3w: the other bays a further 25 % down, a soft light rim round bay 7.
 QA: 2020 frames, -15.6 LUFS; bubbles 12/0; hand, elbow, insert and flat-band gates 0; PSNR 35.1; speech 14/16 as v20.
+
+## v22: 0:11 the feed scrolls; Pam's "Wait." (26 Nov)
+
+`python3 cs_film_v22.py ../customer-success 2` (`cs_os22.install()`, voices `cs_voices/film_v11`).
+- 1.4b: the reply no longer slides up over the reactions: the feed scrolls up 96 (the header leaves whole) and the
+  reply comes in under the 48K row. The row outside 1.2 now shows 1.2's end (48K, red); it showed 1.2K. The clown
+  +18 %, "We value every client's journey..." 22 px at 80 % (was 20 px at 45 %).
+- 4.1: Pam's "Wait." (voice A, take a, Tomas's pick) with her STOP palm, the bubble over her head. Heard 3/3.
+- cs_scene4.schedule returns its lines in time order (the speech check segfaulted on 4.2p before 4.1p).
+QA: 2020 frames, -15.6 LUFS; bubbles 13/0; hand, elbow, insert, flat-band gates 0; PSNR 35.1; speech 15/17
+("Approved." and "Still one star." in its context window, as before).
