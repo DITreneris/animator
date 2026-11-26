@@ -790,3 +790,21 @@ Three viewers, six sheets at 3 fps (216 px tiles), bubbles on, no sound. Viewer 
 
 Pass: each viewer 4 of 5 or better; the loop reads. Screenshot: the heel on the tape 3/3 (second: "BOTH.").
 Shared misreads to fix or accept: "That one."'s speaker (2/3 wrong); Sofía's cross (0/3); the robot "in" the throne (3/3); "Some pose. Others notice." taken for a sign (2/3).
+
+## Ending cold test, stills v7 (26 Nov): 18 frames 4.3c → 1.1 frame 0, no bubbles, 3 fresh viewers
+
+| Beat (intended) | V1 | V2 | V3 | Verdict |
+|---|---|---|---|---|
+| 1 Father orders the invitation; the guard brings it | read | read | read | 3/3 |
+| 2 The guard gives Sofía Father's invitation (5.3c variant C) | read ("giving, not a tug") | read ("fists never touch, slightly a stand-off") | read ("no tug") | 3/3 |
+| 3 Sofía crosses to Father's side | read | read (but 5.5b "doesn't say who crossed") | read | 3/3 |
+| 4 Don boasts; his team (Pam on her phone) has gone over; he realises | read | read | read | 3/3 |
+| 5 Don yanks the blind down (won't look), the robot yanks it up → the tug of war, loop | missed ("robot comforting, let the light in") | missed ("faces reality") | missed ("brightness up = bright side") | 0/3 |
+
+Pass: 4/5 each. Misreads all three share (staging faults):
+- the floor "← D" fragments in 5.3c and 5.4: 3/3 (the tape's floor sign cut by the frame);
+- 6.1b2's sprung hair against the dark throne: 3/3 read as "a crack / scribble over the INVESTOR chair";
+- 6.2's visor sun-with-arrow icon: 3/3 read as "brightness up"; Don's yank down doesn't show in a still (eyes shut read as calm).
+
+Shared by two: 5.3a robot "holding hands"; Mom never introduced; 5.5b says nothing about who crossed (1/3).
+Loop question: unfair in this test. "Frame 1" for them was the club (4.3c), not 1.1, so the answer measures nothing.
