@@ -18,7 +18,7 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 52, 2: 52, 3: 52, 4: 52, 5: 55}
+VER = {1: 52, 2: 52, 3: 52, 4: 52, 5: 56}
 SOUND = "of_sound_v28.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
@@ -565,28 +565,32 @@ def s42_slam(t, L):
     pocket; his fist comes up as the guard's does at frame 0; his flat palm (scene 2's own, the ring on it) SLAMS the
     Client's bonnet, on the metal; the car dips and comes back, one brow moves. The palm stays. Frame 0's fist follows.
     One path for the hand: hip -> out and up -> down on the bonnet."""
-    P0, P1, P2, P3 = (176, F_ - 110), (160, F_ - 82), (196, F_ - 150), (204, F_ - 86)
+    P0, PM, PIN, P1, P2, P3 = (176, F_ - 110), (163, F_ - 90), (161, F_ - 66), (166, F_ - 84), (196, F_ - 150), (204, F_ - 86)
+    PK = (150, 176, F_ - 80)                               # v56: the coat pocket's mouth
+    R0, RB, RF = (109, F_ - 66), (97, F_ - 74), (123, F_ - 61)   # v56 ("the other arm never moves"): it swings back on the wind-up, forward on the blow
     st = dict(_cam=SLAM_CAM, _cast=("father",), black_car=True, burn=1.0, insert=None, moved=dict(father=(140, F_ + 26)))
-    if t < T_POCKET:                                       # into the pocket: the phone is gone for the last two drawings
-        u = ease(t / (T_POCKET - 0.08))
-        fa = dict(face="hard", look=(0.6, 0.6 * u), targets_xy=[om.lerp(P0, P1, u)])
-        if t < T_POCKET - 0.13:
-            fa.update(phone_donnie=True, phone_dark=True, phone_ang=-0.15 + 0.65 * u)
-        return st, dict(father=fa)
+    if t < T_POCKET:                                       # to the pocket's mouth (0.16), IN (0.14): it sinks; the hand comes out empty
+        if t < 0.30:
+            u1, u2 = ease(t / 0.16), ease((t - 0.16) / 0.14)
+            hp = om.lerp(om.lerp(P0, PM, u1), PIN, u2)
+            return st, dict(father=dict(face="hard", look=(0.6, 0.6 * u1), targets_xy=[hp, R0], phone_donnie=True, phone_dark=True,
+                                        phone_ang=-0.15 + 0.35 * u1, pocket=PK if u1 > 0.5 else None))
+        u = ease((t - 0.30) / 0.10)
+        return st, dict(father=dict(face="hard", look=(0.6 + 0.4 * u, 0.6 - 0.6 * u), targets_xy=[om.lerp(PIN, P1, u), R0], pocket=PK))
     if t < T_UP:                                           # the fist comes up, out past his side (not past the shoulder)
         u = ease((t - T_POCKET) / (T_UP - T_POCKET - 0.06))
         q = (1 - u) ** 2, 2 * u * (1 - u), u ** 2
         via = (206, F_ - 108)
-        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.05 * u,
-                                    targets_xy=[(q[0] * P1[0] + q[1] * via[0] + q[2] * P2[0], q[0] * P1[1] + q[1] * via[1] + q[2] * P2[1])]))
+        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.05 * u, pocket=PK,
+                                    targets_xy=[(q[0] * P1[0] + q[1] * via[0] + q[2] * P2[0], q[0] * P1[1] + q[1] * via[1] + q[2] * P2[1]), om.lerp(R0, RB, u)]))
     if t < T_HIT:                                          # down: the elbow stays bent, the forearm opens last
         u = (t - T_UP) / (T_HIT - T_UP)
-        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.05 + 0.11 * u, targets_xy=[om.lerp(P2, (192, F_ - 122), u)]))
+        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.05 + 0.11 * u, pocket=PK, targets_xy=[om.lerp(P2, (192, F_ - 122), u), om.lerp(RB, RF, u)]))
     d = t - T_HIT                                          # SLAM: the palm on the metal and it stays; the car dips 0.07 s, back by 0.25
     k_ = math.exp(-d * 9)
     st.update(tilt=-0.05 * k_ - 0.01, legs_jolt=8 * k_)
-    return st, dict(father=dict(face="brow" if d < 0.14 else "hard", look=(1, 0), lean=0.06 - 0.01 * min(1.0, d / 0.2),
-                                targets_xy=[(P3[0], P3[1] - 2 * (1 - k_))], palm=True, impact=max(0.25, k_)))
+    return st, dict(father=dict(face="brow" if d < 0.14 else "hard", look=(1, 0), lean=0.06 - 0.01 * min(1.0, d / 0.2), pocket=PK,
+                                targets_xy=[(P3[0], P3[1] - 2 * (1 - k_)), om.lerp(RF, R0, 1 - k_)], palm=True, impact=max(0.25, k_)))
 
 
 MOTION["4.2"] = s42_slam

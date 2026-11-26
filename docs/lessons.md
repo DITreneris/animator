@@ -1103,3 +1103,5 @@ Tomas, on v54's new last shot (the phone on a black car's roof): rejected, hard.
 - **A raised hand with a phone drifts to the ear.** The wind-up goes out past his side with an empty fist, as the guard's does.
 - **Contact is on the material that takes it:** the first palm landed at the windscreen's edge ("he hits the glass"); moved onto the bonnet's metal. The rig's ring finger hung under the palm ("a blood drop"): `dh_cast.RING_ON`, an opt-out hook, off only for this palm, which carries the ring itself.
 - **Timing v27:** 4.2 is 1.15 s (pocket 0.40, up 0.33, down 0.13, slam and hold 0.29); the film 64.5 s. The audit's 0.5 s hold was cut to 0.2 s so frame 0's fist stays the second beat.
+- **v56 (Tomas, the two points left open):** the phone now goes INTO the pocket: the hand reaches the pocket's mouth, the phone and the hand sink below a seam drawn over them (clipped, nothing drawn below it), and the hand comes out empty (0.16 + 0.14 + 0.10 s); the rig's ring finger is off while the hand is in it. The other arm swings back on the wind-up and forward on the blow (it hung still for the whole shot).
+
