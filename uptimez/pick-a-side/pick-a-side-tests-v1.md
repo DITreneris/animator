@@ -932,3 +932,18 @@ Checks:
 - speech 19/19;
 - one stretch under −45 dBFS: 69.0 s, the shock (on purpose).
 - Files: `/tmp/ps_master_v3_1080.mp4`, `pick-a-side/ps_film_master_v3_540.mp4`.
+
+## Sound v4: the middle opener (Tomas: "ne max versijos, kažko atsisakom")
+
+What `MID` drops:
+- Don's effort and the robot's servo in rounds 1 and 2. They stay only in the last round, the climax before the crash.
+- Slats: 8 instead of 12 a stroke, and softer (0.45).
+- The creak under frame 0: quieter (0.28).
+
+Kept on every stroke: the cord's zip and the clack (the rhythm).
+
+The first 3 s: frame 0 −28 → −19; round 1 −19/−17; round 2 −15/−14; round 3 −13; the breath −26; the crash −8.
+
+Checks: −15.3 LUFS, −2.0 dBTP, speech 19/19.
+
+Files: `pick-a-side/ps_film_master_v4_540.mp4`, `/tmp/ps_master_v4_1080.mp4`. v3 can be rebuilt with `MID = [False]`.

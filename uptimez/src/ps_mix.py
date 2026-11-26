@@ -26,6 +26,8 @@ DUCK = 5.0                                                   # dB the bed dips u
 STOPS = [("2.10", "take1", -0.20, 0.90), ("6.1b", "start", 0.0, 1.45)]   # the bed out for "BOTH." (from its take) and the shock
 FOLEY = []
 OPENER = [True]                                              # v3 (Tomas 26 Nov: "a killer opener, not Chopin"); False = sound v2
+MID = [True]                                                 # v4 (Tomas: "not the max version, drop something"): the effort and
+                                                             # the servo only in the last round, fewer and softer slats
 OB_DRIVE, OB_OVER = 3.0, -3.0  # the opener bus's saturation and level
 CRASH_AT = 0.20                                              # 1.2a: the blind lands (ps_film's own crash time)
 VIDS = ["/tmp/ps_film_s1_v6_1080.mp4", "/tmp/ps_film_s2_v5_1080.mp4", "/tmp/ps_film_s3_v6_1080.mp4",
@@ -122,7 +124,7 @@ def opener(sc, sh):
     out = []
     D = pf.DUR["1.1"]
     strokes = [x for x in pm_.TUG if x[2] != "hold"]
-    out.append((bs.creak(pf.HOLD0), 0.0, 0.40))                               # under frame 0: the cord takes his weight
+    out.append((bs.creak(pf.HOLD0), 0.0, 0.28 if MID[0] else 0.40))                               # under frame 0: the cord takes his weight
     grunts = ["Hup!", "Huh!", "Hah!"]
     for k_, (a_, b_, kind, _w) in enumerate(strokes):
         ta = pf.HOLD0 + (a_ - 0.2) * ((D - pf.HOLD0) / 1.6)
@@ -131,12 +133,13 @@ def opener(sc, sh):
         g = 0.6 * 10 ** (4.0 * rnd / 20)                                      # each round +4 dB before the bus (about +2.5 after)
         d = tb - ta
         up = kind == "up"
+        last = k_ >= len(strokes) - 2                                        # the last round (his and its)
         out.append((bs.zip_(d, 1.0, 26 + 14 * rnd, 70 + 20 * rnd), ta, 0.55 * g))
-        out.append((bs.slats(d, 12 + 3 * rnd, up=up), ta + 0.02, 0.60 * g))
+        out.append((bs.slats(d, (8 if MID[0] else 12) + 3 * rnd, up=up), ta + 0.02, (0.45 if MID[0] else 0.60) * g))
         out.append((bs.clack(top=up), tb - 0.01, 0.55 * g))
-        if up:
+        if up and (last or not MID[0]):
             out.append((bs.servo(d, 620 * (1.15 ** rnd)), ta, 0.30 * g))
-        else:
+        elif not up and (last or not MID[0]):
             out.append((bs.grunt(grunts[rnd]), ta + 0.01, 1.4 * g))
     out.append((bs.crash(), sh["1.2a"] + CRASH_AT, 2.2))                    # 1.2a: it comes down off its brackets
     t2 = sh["6.2"]                                                            # 6.2: his yank down, the robot's up
@@ -258,7 +261,7 @@ def build(path="/tmp/ps_mix_v1.wav"):
     return path, total
 
 
-def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v3_1080.mp4"):
+def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v4_1080.mp4"):
     vids = VIDS
     with open("/tmp/ps_mix_vids.txt", "w") as f:
         for v in vids:
@@ -267,7 +270,7 @@ def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v3_1080.mp4"):
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", "/tmp/ps_mix_vids.txt",
                            "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest"]
                           + tags + [out])
-    c540 = os.path.join(pf.OUT, "ps_film_master_v3_540.mp4")
+    c540 = os.path.join(pf.OUT, "ps_film_master_v4_540.mp4")
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-vf", "scale=540:960:flags=lanczos,format=yuv420p",
                            "-c:v", "libx264", "-crf", "20", "-preset", "veryfast"] + tags + ["-c:a", "copy", c540])
     print("wrote", out, c540, osd.levels(out))
