@@ -183,7 +183,7 @@ def clip_box(k, x, y, s=1.0, full=1.0, seed=4400):
     c.restore()
 
 
-def sheet(out="../the-double-agent/da_sofia_v3.png"):
+def sheet(out="../the-double-agent/da_sofia_v4.png"):
     """v2: 14's look beside the new one at series scale; the jobs of episode 15 (the binder, the box of clips, reading);
     four faces; the phone-size check against Don's navy vest."""
     import sofia_ps
@@ -194,7 +194,7 @@ def sheet(out="../the-double-agent/da_sofia_v3.png"):
     c.set_source_rgb(0.93, 0.89, 0.82); c.paint()
     def t(x, y, s_, size=12, bold=0):
         c.select_font_face("Inter", 0, bold); c.set_font_size(size); c.set_source_rgb(0.15, 0.15, 0.18); c.move_to(x, y); c.show_text(s_)
-    t(30, 40, "SOFÍA · The Double Agent (15) · v3 · the next day: the job interview", 20, 1)
+    t(30, 40, "SOFÍA · The Double Agent (15) · v4 · the next day: the job interview", 20, 1)
     t(30, 62, "v2 (character audit 26 Nov): charcoal, not navy (Don's vest is navy); shoulders 12 % narrower; no gold lapel edge,"
       " pearl buttons; the pearls stay; the series' high ponytail.", 11)
     t(30, 78, "v3 (hands canon): her hands through hands_ps at the class sheet's female width 15, no nail; the binder and the"
@@ -239,4 +239,6 @@ def sheet(out="../the-double-agent/da_sofia_v3.png"):
 
 
 if __name__ == "__main__":
+    import da_arms
+    da_arms.setup()                                           # v4: thumbs mirrored per arm (no two left hands)
     sheet(*sys.argv[1:])

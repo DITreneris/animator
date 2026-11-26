@@ -16,6 +16,9 @@ import client_ps as cps
 import dh_cast as dc
 import robot_ps
 
+import da_arms
+da_arms.setup()                                              # Tomas 26 Nov: no two left hands (thumbs inward on hanging arms)
+
 EP = "../the-double-agent/"
 BG = (0.93, 0.89, 0.82)
 INKT = (0.15, 0.15, 0.18)
@@ -213,7 +216,7 @@ def seated_rest(k, x, seat_y, s, look=(0.4, 0.2), seed=4950):
     return o
 
 
-def father(out=EP + "uptimez-father-v5-sheet.png"):
+def father(out=EP + "uptimez-father-v6-sheet.png"):
     import hands_ps as hp
     import hands_v4
     from cand_bc import ik
@@ -224,7 +227,7 @@ def father(out=EP + "uptimez-father-v5-sheet.png"):
     kit.HAND[0] = hp.hand
     try:
         _t(c, 30, 46, "FATHER · the investor", 26, 1)
-        _t(c, 30, 70, "UptimeZ Inc. · character sheet v5 · the first sheet (12 on) · dh_cast.father · episode 15 jobs", 12)
+        _t(c, 30, 70, "UptimeZ Inc. · character sheet v6 · the first sheet (12 on) · dh_cast.father · episode 15 jobs", 12)
         _t(c, 30, 88, "v3 (Father v2 audit): feet up reused from Daddy's Home (dh_poses.don_seated); the folded forearms dark under,"
            " light over, a fist with the ring; the tag from the fingertips;", 11)
         _t(c, 30, 120, "v5 (hands canon): every rest hand quiet (no legacy relax); the tag drawn first, the pinch again on top of it"
@@ -291,10 +294,10 @@ def father(out=EP + "uptimez-father-v5-sheet.png"):
     print("wrote", out)
 
 
-def lineup(out=EP + "uptimez-lineup-civil-war-v3.png"):
+def lineup(out=EP + "uptimez-lineup-civil-war-v4.png"):
     W, H = 1500, 760
     s, c, k = _surf(W, H)
-    _t(c, 30, 46, "THE CIVIL WAR CAST · height line-up v3", 26, 1)
+    _t(c, 30, 46, "THE CIVIL WAR CAST · height line-up v4", 26, 1)
     _t(c, 30, 70, "UptimeZ Inc. · episodes 13-17 · the film's own rigs at front desk v4 home scales (= the canon 16:9 sheets'"
        " scales) · one floor line", 12)
     F = 600
@@ -329,5 +332,159 @@ def lineup(out=EP + "uptimez-lineup-civil-war-v3.png"):
     print("wrote", out)
 
 
+
+# ---- Don and Pam, episode 15 (Tomas 26 Nov, /grill-me: the sheets, then S8r, then the hand check) ----------------------
+
+MUSTARD = (0.86, 0.66, 0.16)                                 # da_set.MUG
+PAM_CANON = dict(lips="rose", brooch=False)                  # the office canon (pam-ss-v2, pam-mf-v2, pam-xmas-v4): dusty rose, no
+                                                             # brooch. pm_ps's defaults (berry, the flower) are episode 8's touches
+GOLD_BOW = (0.93, 0.74, 0.22)
+
+
+def gift_mug(k, x, y, s, bow=True, col=MUSTARD, seed=5600):
+    """Pam's new mug (Don's gift, 2.4): the series mug shape (pm_ps.mug_at), mustard, a gold bow on its handle."""
+    import pm_ps
+    old = pm_ps.MUG; pm_ps.MUG = col
+    try:
+        pm_ps.mug_at(k, x, y, s)
+    finally:
+        pm_ps.MUG = old
+    if bow:
+        c = k.c
+        c.save(); c.translate(x, y - 24 * s); c.scale(s, s)                                   # the bow on the rim, to us
+        for sx in (-1, 1):
+            kit.cut(k, [(0, 0), (sx * 14, -9), (sx * 14, 9)], GOLD_BOW, shadow=False, lw=1.8)
+        kit.ellipse(k, 0, 0, 4, 4, GOLD_BOW, seed, shadow=False, lw=1.6)
+        c.restore()
+
+
+def _shards(k, x, y, s, col=(0.36, 0.62, 0.80), seed=5650):
+    import random
+    r = random.Random(seed)
+    for i in range(6):
+        a = r.uniform(0, 6.28); d_ = r.uniform(8, 34) * s
+        px, py = x + d_ * 1.6 * (1 if i % 2 else -1) * abs(math.cos(a)), y - r.uniform(0, 5) * s
+        k.c.save(); k.c.translate(px, py); k.c.rotate(r.uniform(-1, 1))
+        kit.cut(k, [(-7 * s, 0), (6 * s, -5 * s), (8 * s, 2 * s)], col, shadow=False, lw=1.6)
+        k.c.restore()
+
+
+import math  # noqa: E402  (used by the episode sheets below)
+
+
+def don_sheet(out=EP + "uptimez-don-da-v2-sheet.png"):
+    """Don's beats in 15, canon hands (hands_v4: grab, pinch, fist; quiet at rest), tapered arms (da_arms, opt-in)."""
+    import hands_ps as hp
+    import hands_v4 as hv
+    import da_arms
+    from cand_bc import ik
+    W, H = 1500, 1020
+    s, c, k = _surf(W, H)
+    _t(c, 30, 46, "DON · The Double Agent (15) · his beats · v2", 26, 1)
+    _t(c, 30, 70, "Cold test F1 (the establishing frame: Don read as a robot 0/3): a readable human face in every beat. Canon hands"
+       " (hands_v4 grab / pinch / fist, quiet at rest); tapered arms (da_arms, opt-in).", 11)
+    F, S = 470, 0.95
+    _floor(c, 30, W - 30, F)
+    bt = -300 * 1.12 + 78
+    hv.enable()
+    try:
+        with da_arms.tapered():
+            x = 110                                                                   # 2.3 offended, the vest straightened
+            don_ps.don(k, x, F, S, (-36, 150, 36, -150), "squint", look=(0, -0.3), chin=1, hands=("fist", "fist"))
+            _t(c, x - 70, F + 22, "2.3 offended: the vest, chin up", 11)
+            x = 330                                                                   # 2.4 the gift: the mug held out
+            o = don_ps.don(k, x, F, S, (-8, 0) + ik(40, bt + 14, 104, bt + 70, 48, 48, 1), "happy", look=(1, 0),
+                           hands=("quiet", "grab"))
+            hx, hy = o["hands"][1]
+            gift_mug(k, hx + 16 * S, hy + 2 * S, S * 0.9); hp.redraw_at(k, hx, hy)
+            _t(c, x - 60, F + 22, "2.4 the gift: grab, the bow", 11)
+            x = 560                                                                   # 6.4 suspicion -> delight
+            don_ps.don(k, x - 50, F, S * 0.8, "stand", "squint", look=(1, 0), hands=("quiet", "quiet"))
+            don_ps.don(k, x + 60, F, S * 0.8, "stand", "grin", look=(1, 0), hands=("quiet", "quiet"))
+            _arrow(c, x - 10, F - 240, x + 30, F - 230)
+            _t(c, x - 110, F + 22, "6.4 suspicion -> delight", 11)
+            x = 790                                                                   # 6.8 the whisper into the mic
+            o = don_ps.don(k, x, F, S, (-8, 0) + ik(40, bt + 14, 30, bt - 40, 48, 48, 1), "squint", look=(-1, 0),
+                           hands=("quiet", "pinch"))
+            _t(c, x - 70, F + 22, "6.8 the mic to his mouth: pinch", 11)
+            x = 1020                                                                  # 7.2 "Approved." the strip held high
+            o = don_ps.don(k, x, F, S, (-50, -40) + ik(40, bt + 14, 70, bt - 110, 48, 48, 1), "happy", look=(-1, 0), chin=1,
+                           hands=("palm", "grab"))
+            hx, hy = o["hands"][1]
+            c.save(); c.translate(hx, hy); kit.cut(k, [(-6, 0), (6, 0), (12, 120), (0, 124)], (0.95, 0.78, 0.15), shadow=False, lw=2); c.restore()
+            hp.redraw_at(k, hx, hy)
+            _t(c, x - 60, F + 22, "7.2 \"Approved.\": the strip, grab", 11)
+            x = 1270                                                                  # 7.4 the dive for the armrest
+            don_ps.don(k, x, F, S, (60, 30, 100, -30), "panic", look=(1, 0), lean=0.22, hands=("grab", "grab"))
+            _t(c, x - 70, F + 22, "7.4 the dive: grab, grab", 11)
+        # the new job
+        y2 = F + 90
+        _t(c, 30, y2, "NEW JOB, NOT IN THE CANON TABLE (rules-hands 0.2: three silhouettes, two cold viewers, the row first):", 13, 1)
+        _t(c, 30, y2 + 20, "5.2 the saucer sip with the little finger up (cup and saucer in two hands, one finger raised). Not drawn"
+           " until the row exists.", 12)
+        _t(c, 30, y2 + 50, "Watch (rules-hands, Gestures): 6.8's hand at the cheek reads as a phone call. Here that is the joke"
+           " (spy comms into his own headset); keep it, check it cold.", 12)
+    finally:
+        hv.disable()
+    s.write_to_png(out)
+    print("wrote", out)
+
+
+def pam_sheet(out=EP + "uptimez-pam-da-v3-sheet.png"):
+    """Pam's beats in 15: Don's gift (the mustard mug, the blue one shattered), the open and the closed mouth, the
+    lean-in, the duck. Canon hands: the mug in a grab (not the legacy "cup"), quiet at rest."""
+    import hands_ps as hp
+    import hands_v4 as hv
+    import pm_ps
+    import pam_mf as pmf
+    W, H = 1500, 900
+    s, c, k = _surf(W, H)
+    _t(c, 30, 46, "PAM · The Double Agent (15) · her beats · v3", 26, 1)
+    _t(c, 30, 70, "Her mug is now Don's gift: mustard, a gold bow in 2.4 and 3.2 (off from 3.3); the blue mug of 12-14 shatters in 2.4."
+       " Canon hands: grab for a held mug, quiet at rest.", 11)
+    _t(c, 30, 88, "v2 (Tomas: to the canon): dusty-rose lips, no brooch (the office canon: pam-ss-v2, pam-mf-v2, pam-xmas-v4);"
+       " the closed hold is \"pressed\" (thin lips, an ink line).", 11)
+    F, S = 470, 1.0
+    _floor(c, 30, W - 30, F)
+    PB = pmf.BT
+    extra = {"_mug": (-8, 0) + pmf.ik(1, 40, PB + 70), "_drop": pmf.ik(-1, -60, PB + 40) + pmf.ik(1, 60, PB + 40),
+             "_rest": (-8, 0, 8, 0)}
+    hands = {"_mug": ("quiet", "grab"), "_drop": ("palm", "palm"), "_rest": ("quiet", "quiet")}
+    pm_ps.P_POSES.update(extra); pm_ps.P_HANDS.update(hands)
+    hv.enable()
+    try:
+        x = 110                                                                       # 2.4 she takes the gift
+        o = pm_ps.pam(k, x, F, S, "_mug", "hopeful", look=(-1, 0), mug=False, **PAM_CANON)
+        hx, hy = o["hands"][1]; gift_mug(k, hx + 12 * S, hy + 4 * S, S); hp.redraw_at(k, hx, hy)
+        _t(c, x - 60, F + 22, "2.4 Don's gift: grab, the bow", 11)
+        x = 330                                                                       # 2.4 the blue mug drops and shatters
+        pm_ps.pam(k, x, F, S, "_drop", "peer", look=(0, 1), mug=False, mouth="O", **PAM_CANON)
+        pm_ps.mug_at(k, x + 40, F - 120, S, tilt=0.6)
+        _shards(k, x, F - 2, S)
+        _t(c, x - 70, F + 22, "2.4 the old blue mug falls, shatters", 11)
+        x = 560
+        pm_ps.pam(k, x, F, S, "_rest", "doubt", look=(-1, 0), mug=False, mouth="O", **PAM_CANON)
+        _t(c, x - 70, F + 22, "6.5 opens her mouth to correct him", 11)
+        x = 780
+        pm_ps.pam(k, x, F, S, "_rest", "pressed", look=(-1, 0), mug=False, **PAM_CANON)
+        _t(c, x - 70, F + 22, "6.7 closes it: pressed (held 0.6 s)", 11)
+        x = 1000
+        c.save(); c.translate(x, F); c.rotate(-0.16); c.translate(-x, -F)              # the lean, about her feet
+        pm_ps.pam(k, x, F, S, "_rest", "peer", look=(-1, 0), mug=False, **PAM_CANON); c.restore()
+        _t(c, x - 60, F + 22, "6.8 leans in to hear", 11)
+        x = 1230
+        c.save(); c.translate(x, F); c.rotate(0.42); c.translate(-x, -F)
+        pm_ps.pam(k, x, F, S, "_rest", "quiet", look=(1, 0.4), mug=False, **PAM_CANON); c.restore()
+        _t(c, x - 60, F + 22, "7.2 ducks under the strip", 11)
+        _t(c, 30, F + 80, "Not on this sheet: her hands on the plan (7.3, 8.1) are the locked S8's palms; the mug carried with Don's cup and"
+           " saucer (3.2-3.3) is a two-prop carry to test cold at stage 4.", 12)
+    finally:
+        hv.disable()
+        for kk in extra:
+            pm_ps.P_POSES.pop(kk, None); pm_ps.P_HANDS.pop(kk, None)
+    s.write_to_png(out)
+    print("wrote", out)
+
+
 if __name__ == "__main__":
-    {"father": father, "lineup": lineup}[sys.argv[1]]()
+    {"father": father, "lineup": lineup, "don": don_sheet, "pam": pam_sheet}[sys.argv[1]]()

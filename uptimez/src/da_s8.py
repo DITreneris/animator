@@ -381,6 +381,8 @@ def sheet_furniture(out):
 
 # --- L6, the meeting, and the whole frame ---------------------------------------------------------------------------------
 FATHER_FOLDED = (-20, 140, 20, -140)                          # arms folded, hands together at the chest (sheet D/E)
+V6 = [False]   # opt-in (26 Nov, Tomas: "to the canon"): V5 plus Pam in her office canon (dusty-rose lips, no brooch; pm_ps's
+               # berry lips and flower are episode 8's touches)
 V5 = [False]   # opt-in (26 Nov, after the cast analysis and the Father sheet's cold test): Sofía in her episode 15 outfit
                # (sofia_da, the job interview, charcoal); Father leaning back, the ring hand on the chair's armrest, the other
                # on his belly (the fold misread 3 times: "checking a watch"). False draws the locked v4 exactly.
@@ -475,7 +477,8 @@ def _pam_pose():
 def pam_taking(k):
     import pm_ps as pm
     x, feet, s = PAM_AT
-    return pm.pam(k, x, feet, s, _pam_pose(), "neutral", (0.1, 1.0), mug=False)
+    kw = dict(lips="rose", brooch=False) if V6[0] else {}
+    return pm.pam(k, x, feet, s, _pam_pose(), "neutral", (0.1, 1.0), mug=False, **kw)
 
 
 def pam_hands_over(k):
@@ -542,6 +545,14 @@ if __name__ == "__main__":
         sheet_window(os.path.join(out, "da_s8_window_v1.png"))
     elif what == "frame":
         still(os.path.join(out, "da_s8_final_v4.png"))
+    elif sys.argv[1] == "frame7":
+        import da_arms
+        da_arms.setup()                                        # v7: the thumbs mirrored per arm (no two left hands)
+        V5[0] = True; V6[0] = True
+        still(os.path.join(out, "da_s8_final_v7.png"))
+    elif sys.argv[1] == "frame6":
+        V5[0] = True; V6[0] = True
+        still(os.path.join(out, "da_s8_final_v6.png"))
     elif sys.argv[1] == "frame5":
         V5[0] = True
         still(os.path.join(out, "da_s8_final_v5.png"))

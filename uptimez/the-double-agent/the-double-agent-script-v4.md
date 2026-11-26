@@ -30,7 +30,7 @@ UptimeZ Inc. · episode 15 · *Civil War* 3 of 5 · 26 Nov. **Stage 1, Tomas's s
 2. **The 0:01 roll** in the throne tug, and the push back into it at the end (the loop).
 3. **Mom's shoulder-pad wall with the feint**, knitting on (3.4).
 4. **Pam's closed mouth → "Keep infiltrating." → Don lifts his own tape for her** (6.5–7.2).
-5. **The final image** (8.1, `da_s8_final_v5.png`, locked 26 Nov).
+5. **The final image** (8.1, `da_s8_final_v7.png`, locked 26 Nov).
 
 ## The set and the cast
 
@@ -89,7 +89,7 @@ Size: W wide, M medium, MC medium close, C close, I insert. Lines in speech bubb
 | 7.2 | 0:50.2 | 2.8 | S7 · W | **The barrier:** the strip held high, chin up; **Pam ducks under it** and walks past Mom to the door; the robot, frozen, has one clip left: under the throne | — | **DON (grandly, as she passes under): "Approved."** | — |
 | 7.3 | 0:53.0 | 3.4 | S8 · MC two-shot | **The Client slides his blueprint (MY GARAGES) across the desk to Pam; she takes it with both hands; Father nods once** (the hand-over: cold test S8 v3 left it to this shot) | Pam looks down at it; then the casters start outside (7.4's sound, a J-cut): **Father doesn't turn round** | **CLIENT: "Don't lose it."** · then **FATHER (calm, not turning): "Let him play."** | paper slide; casters under, from outside |
 | 7.4 | 0:56.4 | 3.0 | S1 · W | Don, proud, lowers the strip and turns. **The last paperclip lies under the throne's caster:** the robot rolls the throne off it, **through the gap in his line toward Father's side**, and reaches for the clip. Don sees only his throne going: he dives, grabs an armrest and **hauls it back onto the clip**, his back foot ending just in front of the dropped roll. The robot pulls it off again to reach it: **the tug begins, each for something else** (Don the chair, the robot the clip) | the robot's pincer hovering over the clip, then the caster back on it | **DON (on the dive, bubble after the first grab): "NOT THE CHAIR!"** | *tik*; casters; Don's grunt |
-| 8.1 | 0:59.4 | 4.0 | S8 · W | **The final image (locked, `da_s8_final_v5.png`):** inside, the Client's finger on MY GARAGES, Pam's hands on it, Father in Don's chair, Sofía reading; behind the glass Don and the robot pulling the throne across the line. Nobody inside looks up | long hold | **PAM (under her breath): "Some take sides. Others take notes."** (kept as written, Tomas 26 Nov) | pen; muffled squeaks of the tug |
+| 8.1 | 0:59.4 | 4.0 | S8 · W | **The final image (locked, `da_s8_final_v7.png`):** inside, the Client's finger on MY GARAGES, Pam's hands on it, Father in Don's chair, Sofía reading; behind the glass Don and the robot pulling the throne across the line. Nobody inside looks up | long hold | **PAM (under her breath): "Some take sides. Others take notes."** (kept as written, Tomas 26 Nov) | pen; muffled squeaks of the tug |
 | 9.1 | 1:03.4 | 1.8 | S8 → S8r · push | **The push:** the camera moves through the glass (the blinds' rail passes the top, the glass's sheen slides off) into the tug on the floor; **the new S8r background** (the floor from the office side) takes over from the far room as the glass passes, ending on **1.1's framing: frame 0** | — | — | the tug's squeak grows; the room tone carries through the seam |
 
 **Total 65.2 s (script); with the voices about 68.2 s.** The last drawing of 9.1 is frame 0, drawn by 1.1's own code (lessons 57, 183).
