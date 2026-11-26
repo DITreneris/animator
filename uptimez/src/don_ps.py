@@ -93,6 +93,7 @@ def _cap(c, pts, t, col, lw=2.0):
     c.set_line_cap(0); c.set_line_join(0)
 
 
+ROLL_GRIP = [0]                                              # opt-in: rig units the roll hangs under the fist (0 = round it)
 LEG = [None]
 
 
@@ -215,6 +216,9 @@ ROLL_TAIL = [False]
 def tape_roll(k, x, y, s, ang=0.0):
     """The roll of yellow tape: a fat ring, a tongue of tape hanging off it."""
     c = k.c
+    hx_, hy_ = x, y
+    if ROLL_GRIP[0]:                                         # opt-in (audit P2, 26 Nov: "the hand a disc inside the roll"): the
+        y = y + ROLL_GRIP[0] * s                             # ring hangs under the fist, the fist drawn again over its rim
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
     if ROLL_TAIL[0]:                                         # opt-in (film, 25 Nov: the roll read as "a coin, a ring"): a
         cut(k, [(10, 8), (32, 10), (39, 78), (26, 82), (16, 68)], TAPE, lw=1.8)      # longer tongue of tape, flat, a
@@ -226,6 +230,8 @@ def tape_roll(k, x, y, s, ang=0.0):
         c.set_source_rgb(*col); c.set_line_width(lw); c.new_path(); c.arc(0, 0, 26, 0, 2 * math.pi); c.stroke()
     c.set_source_rgb(0.80, 0.62, 0.10); c.set_line_width(3); c.new_path(); c.arc(0, 0, 16, 0, 2 * math.pi); c.stroke()
     c.restore()
+    if ROLL_GRIP[0]:
+        hp.redraw_at(k, hx_, hy_)
 
 
 def tape_strip(k, a, b, s):

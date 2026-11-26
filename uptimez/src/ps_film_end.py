@@ -222,6 +222,7 @@ def s61(t):
 
 # --- 6.1b: freeze -> shock -> the arms drop (1.5 s) -----------------------------------------------------------------------
 FREEZE_61B, DROP_61B = 0.30, 0.90
+SHOCK_POSE_61B = ["vest"]                                   # ps_film_fix (audit P15): "balance", the arms flung out
 
 
 def s61b(t):
@@ -236,7 +237,7 @@ def s61b(t):
             j = i - int(round(FREEZE_61B * pf.DPS))
             sp_ = {0: 1.35, 1: 0.80, 2: 1.12}.get(j, 1.0)   # the spring's overshoot (test I's SPRING_AT)
             ln = e.LEAN_TEAM[0] * min(1.0, (j + 1) / 2.0)    # the head goes over to the team in two drawings
-            return e.fg_61x(e.LOOK_TEAM[0], "shock", "vest", spring=sp_, lean=ln)
+            return e.fg_61x(e.LOOK_TEAM[0], "shock", SHOCK_POSE_61B[0], spring=sp_, lean=ln)
         return e.fg_61x(e.LOOK_DROP[0], e.FACE_DROP[0], "stand", spring=None)
     return dict(b, cast=lambda k: cast_61(k, t + 3.0, buzz=buzz), room=dict(b["room"], phone=None), fg=fg)
 

@@ -27,6 +27,7 @@ GEST = [("relax", "relax")]
 _N = [0]
 LATE = []                                                   # hands drawn again on top (redraw_late): over the head, round a mug
 ON_TOP = ("salute", "cup", "two", "two_s")
+DRAWN = []                                                  # every hand drawn since reset(): (matrix, draw args)
 DIRS = []                                                   # (d, arm) per hand drawn since reset(): to place a held prop
 LW = 2.0
 
@@ -37,7 +38,21 @@ PINCH_V3 = [False]                                                   # opt-in: t
 PINCH_V2 = [False]                                                   # opt-in: the simpler pinch (index and thumb straight)
 
 def reset(left="relax", right="relax"):
-    GEST[0] = (left, right); _N[0] = 0; LATE.clear(); DIRS.clear()
+    GEST[0] = (left, right); _N[0] = 0; LATE.clear(); DIRS.clear(); DRAWN.clear()
+
+
+def redraw_at(k, x, y):
+    """draw again, on top, the recorded hand nearest (x, y) (user space now): a held prop under its fingers (lesson 224)"""
+    c = k.c
+    dx, dy = c.user_to_device(x, y)
+    best = None
+    for m, args in DRAWN:
+        c.save(); c.set_matrix(m); hx, hy = c.user_to_device(args[1], args[2]); c.restore()
+        dd = (hx - dx) ** 2 + (hy - dy) ** 2
+        if best is None or dd < best[0]:
+            best = (dd, m, args)
+    if best and best[0] < 60 ** 2:
+        c.save(); c.set_matrix(best[1]); draw(k, *best[2]); c.restore()
 
 
 def redraw_late(k):
@@ -79,6 +94,7 @@ def hand(k, hx, hy, w, skin, seed, d, side):
     """kit.HAND hook. The forearm runs along d into (hx, hy); arms arrive screen-left first."""
     g = GEST[0][_N[0] % 2]; arm = -1 if _N[0] % 2 == 0 else 1; _N[0] += 1
     DIRS.append((d, arm))
+    DRAWN.append((k.c.get_matrix(), (g, hx, hy, w * 1.25, skin, d, arm)))   # record only (a held prop may redraw it on top)
     draw(k, g, hx, hy, w * 1.25, skin, d, arm)
     if g in ON_TOP:
         LATE.append((k.c.get_matrix(), (g, hx, hy, w * 1.25, skin, d, arm)))

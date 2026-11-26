@@ -234,6 +234,7 @@ NO_STRIP_14 = [True]
 LOOK_14 = [1.0]                                              # ps_film (stage 7): the three's look, 0 on Don .. 1 the board's
 FACES_14 = [None]                                            # ps_film: (pam, mom, sofia) faces for the look; None = the board's
 ROLL_RIGHT_14 = [False]                                      # ps_film 1.4a: the roll in his frame-right hand (his box is left)
+FACE_14 = [None]                                             # opt-in (audit P1): his face in 1.4; None = "hollow" (grey eyes read as sunglasses)
 LIFT_14 = [1.0]                                              # ps_film: the roll, 0 at his side .. 1 up (the board)
 TRIO_DX_14 = [0]                                            # tried 150/220 (review round 1): the frame goes too wide; kept
 
@@ -253,7 +254,7 @@ def cast_14(k):
     if FIX_V4[0]:                                            # v4 (Tomas 24 Nov): the roll in his other hand (frame left), so
         p_ = dp.POSES["lift_roll"]                           # his bubble sits on his right with a short tail, clear of it
         up_ = (-p_[2], -p_[3], -p_[0], -p_[1]) if not ROLL_RIGHT_14[0] else p_; lo_ = (-8, 0, 8, 0); lf = LIFT_14[0]   # the film: the roll comes up
-        o, heads["don"] = don(k, (dx_, F + 90), tuple(a + (b - a) * lf for a, b in zip(lo_, up_)), "hollow", (0, 0), hands=("fist", "fist"))
+        o, heads["don"] = don(k, (dx_, F + 90), tuple(a + (b - a) * lf for a, b in zip(lo_, up_)), FACE_14[0] or "hollow", (0, 0), hands=("fist", "fist"))
         dp.cape_rail(k, o["head"], SC["don"])
         if not NO_STRIP_14[0]:                               # round 1 fix: the strip between his hands framed his box
             dp.tape_strip(k, o["hands"][0], o["hands"][1], SC["don"])   # like a sign he holds (2 of 3): the roll alone

@@ -96,6 +96,9 @@ def sofia(k, x, feet, s=1.0, pose="hold", face_kind="smile", look=(0, 0), lag=(0
         ss.SLEEK[0] = False
 
 
+TAPE_LONG = [False]
+
+
 def heel(k, x, y, s=1.0, tape=True, seed=3300):
     """v2 (the sheet review): the insert of 2.8, drawn from the foot outward. A low side view, toe to screen left: the
     lower leg leans forward over the shoe, the instep curves into a short pointed pump, the gold stiletto grows out of
@@ -103,7 +106,10 @@ def heel(k, x, y, s=1.0, tape=True, seed=3300):
     (x, y): the heel's tip on the floor."""
     c = k.c
     c.save(); c.translate(x, y); c.scale(s, s)
-    if tape:                                                 # the tape on the floor plane, running away from us, under the arch
+    if tape and TAPE_LONG[0]:                                # opt-in (audit P4: "the line short, it ends mid-frame"): the tape
+        cut(k, [(-16, 280), (62, 280), (-205, -500), (-238, -500)], TAPE, shadow=False, lw=2.2)   # edge to edge, receding
+        c.set_source_rgba(1, 1, 1, 0.40); c.set_line_width(3); c.move_to(4, 270); c.line_to(-226, -490); c.stroke()
+    elif tape:                                               # the tape on the floor plane, running away from us, under the arch
         cut(k, [(-60, 120), (0, 120), (-90, -112), (-128, -112)], TAPE, shadow=False, lw=2.2)   # receding left, away from the heel
         c.set_source_rgba(1, 1, 1, 0.40); c.set_line_width(3); c.move_to(-44, 112); c.line_to(-112, -106); c.stroke()
     for cx, rx in ((-140, 46), (5, 12)):                     # two contacts: the ball and the heel tip

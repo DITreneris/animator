@@ -238,10 +238,13 @@ def s22(t):
     return ps.S("2.2", base["cam"], room, cast)
 
 
+BEATS_23 = [((0.35, 0.75, 100), (0.75, 1.15, 120), (1.15, 1.55, 140))]   # opt-in override (audit P3: the roll over his face)
+
+
 def s23(t):
     """he stamps on his half (a short knee-drop and the floor lines), then the roll points at each of them in turn."""
     base = BOARD["2.3"]
-    beats = ((0.35, 0.75, 100), (0.75, 1.15, 120), (1.15, 1.55, 140))   # (the roll kept off the rail)
+    beats = BEATS_23[0]                                      # (the roll kept off the rail)
     a = 120
     for t0, t1, ang in beats:
         if t >= t0:

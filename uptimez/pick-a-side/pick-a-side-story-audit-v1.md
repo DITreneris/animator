@@ -184,3 +184,31 @@ Fixes from the ending cold test's shared misreads:
 - **5.3c:** no DON floor mark (`room(mark=False)`): only its arrow fragment was in frame (3/3 "← D?"). The tape itself stays.
 - **5.3a:** Sofía 8 px left, off the button rail.
 - Board v4 44/44 md5-identical; loop md5-equal.
+
+## 14. The P1–P15 sweep on join v2 (26 Nov)
+
+Every P was checked at its time in join v2 at full size. Fixes are in `src/ps_film_fix.py` (opt-in: setup() sets them; it also calls ps_film_end.setup()).
+
+| ID | Status | What |
+|---|---|---|
+| P1 1.4 face | fixed | `FACE_14 = "neutral"` (the "hollow" grey eyes read as sunglasses) |
+| P2 the roll on the fist | fixed | `don_ps.ROLL_GRIP`: the ring hangs under the fist, which is drawn again on its rim (`hands_ps.redraw_at`, lesson 224). In 1.4 it rests on the fist at his side and swings under it as it comes up |
+| P3 2.3 the roll over his face | fixed | `BEATS_23` 96/106/116° (was 100/120/140) |
+| P4 2.8 the short tape | fixed | `sofia_ps.TAPE_LONG`: edge to edge. The leg from the top edge stays (it comes out of the frame) |
+| P5 3.1 | as is | the robot's arm reads in motion; no cold-test misread |
+| P6 3.6 the icon on the wall | as is | it is the set's UptimeZ plaque (front desk v4) |
+| P7 3.7 the cup | closed | Tomas 25 Nov: the cup at her chin |
+| P8 4.1 the phone hand | closed | BRIDGE_V2 (5.7's grip) since scene 4 v9 |
+| P9 4.3a the rag | as is | scene 4 locked v11 after its rounds; whole-film test 3/3 "That one." correct |
+| P10 5.2 the hand | fixed earlier | the pinch grip (Tomas 26 Nov) |
+| P11 5.4 the leg | Tomas's lock | the whole-film test: 3/3 unsure (strut / kick) |
+| P12 5.6 the blind | Tomas's lock | v2 staging |
+| P13 5.7 | Tomas's lock | |
+| P14 6.1 Pam's arm | gone | in the new ending Pam is in frame with her phone |
+| P15 6.1b the hands piled | fixed | `SHOCK_POSE_61B = "balance"`: the arms flung out |
+
+New renders: s1 v6, s2 v5, s5 v10, s6 v5. Scenes 3 and 4 are unchanged.
+- `ps_film_join_v3_540.mp4`, 71.1 s.
+- The loop is md5-equal.
+- Board v4 is 44/44 identical.
+- Without setup() the old drawings come back (checked: 2.3, 1.4).
