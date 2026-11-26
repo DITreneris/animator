@@ -106,3 +106,8 @@ at 2/3. Before release: two or three people with sound, on a phone.
 episode's module, hence `os19`). 1.2's reactions count now accelerates, 1.2K → 48K exponentially by 0:05.5, a new
 number every drawing (v13 eased out, 0.3K → 2.4K, slowing). Past 10K it turns red and bold with a bump. Reaction dots
 fly up out of the three dots, more and more of them. Speech 15/16 as in v18.
+
+v19a (review 8/10, "polish and ship"): the dots read as confetti, so the row and the flying reactions are angry,
+laughing and thumbs-down faces (drawn, no emoji font). Past 10K the number is red and bold and grows to 135% at 48K,
+with a pulse at 10K and on 48K. The row sits 18 higher. Notification pops come closer and closer (16, accelerating),
+with a low thud on 48K. Speech still 15/16; 1.2 is heard 3/3 under the pops.
