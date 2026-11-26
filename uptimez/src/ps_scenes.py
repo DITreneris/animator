@@ -234,6 +234,7 @@ NO_STRIP_14 = [True]
 LOOK_14 = [1.0]                                              # ps_film (stage 7): the three's look, 0 on Don .. 1 the board's
 FACES_14 = [None]                                            # ps_film: (pam, mom, sofia) faces for the look; None = the board's
 ROLL_RIGHT_14 = [False]                                      # ps_film 1.4a: the roll in his frame-right hand (his box is left)
+FACE_14 = [None]                                             # opt-in (audit P1): his face in 1.4; None = "hollow" (grey eyes read as sunglasses)
 LIFT_14 = [1.0]                                              # ps_film: the roll, 0 at his side .. 1 up (the board)
 TRIO_DX_14 = [0]                                            # tried 150/220 (review round 1): the frame goes too wide; kept
 
@@ -253,7 +254,7 @@ def cast_14(k):
     if FIX_V4[0]:                                            # v4 (Tomas 24 Nov): the roll in his other hand (frame left), so
         p_ = dp.POSES["lift_roll"]                           # his bubble sits on his right with a short tail, clear of it
         up_ = (-p_[2], -p_[3], -p_[0], -p_[1]) if not ROLL_RIGHT_14[0] else p_; lo_ = (-8, 0, 8, 0); lf = LIFT_14[0]   # the film: the roll comes up
-        o, heads["don"] = don(k, (dx_, F + 90), tuple(a + (b - a) * lf for a, b in zip(lo_, up_)), "hollow", (0, 0), hands=("fist", "fist"))
+        o, heads["don"] = don(k, (dx_, F + 90), tuple(a + (b - a) * lf for a, b in zip(lo_, up_)), FACE_14[0] or "hollow", (0, 0), hands=("fist", "fist"))
         dp.cape_rail(k, o["head"], SC["don"])
         if not NO_STRIP_14[0]:                               # round 1 fix: the strip between his hands framed his box
             dp.tape_strip(k, o["hands"][0], o["hands"][1], SC["don"])   # like a sign he holds (2 of 3): the roll alone
@@ -446,6 +447,8 @@ def cast_37(k):
 
 
 LARM_53, CAN_53 = [(-130, -80)], [0.0]
+GIVE_53 = [1.0]
+HEART_53 = [True]                                             # film: the heart comes on once the can is up
 TREAT_53 = (286, 752, 2.05)                                  # GAGS_V5: 5.3b's camera, close on bodyguard 2 and the robot (Pam and the
 GUARD_S = 0.56 / 0.52 * 0.60                                 # signs out of frame); the guard at Daddy's Home's scale against Don
 
@@ -456,12 +459,14 @@ def cast_53_treat(k):
     The robot has rolled 30 px to him from its 5.3a mark. Cold test round 4: the can, the treat and the delight read 2 of 2."""
     import dh_cast as dc
     heads = {}; c = k.c
-    og = dc.guard(k, 196, F + 46, GUARD_S, pose=(dc.GUARD_POSE[0], dc.GUARD_POSE[1], 10, 20))   # his giving hand still out
+    g_ = GIVE_53[0]                                          # film: 1 his giving hand still out .. 0 back with the other (the can is the robot's)
+    og = dc.guard(k, 196, F + 46, GUARD_S, pose=(dc.GUARD_POSE[0], dc.GUARD_POSE[1], dc.GUARD_POSE[2] + (10 - dc.GUARD_POSE[2]) * g_,
+                                                 dc.GUARD_POSE[3] + (20 - dc.GUARD_POSE[3]) * g_))
     heads["guard"] = (og["head"][0], og["head"][1], 40 * GUARD_S)
     rxy, arms = (312, F + 50), (LARM_53[0], (20, 10))        # the can in its near hand, raised, over his dark suit: its face clear
     c.push_group(); orb, _ = robot(k, rxy, arms=arms); c.pop_group()
     rh = orb["hands"][0]
-    _, heads["robot"] = robot(k, rxy, arms=arms, visor="heart", look=(-1, -0.4))
+    _, heads["robot"] = robot(k, rxy, arms=arms, look=(-1, -0.4), **({"visor": "heart"} if HEART_53[0] else {}))
     cs, ca = 1.15, CAN_53[0]                                    # the can held BY ITS HANDLE: its base placed so the loop handle sits
     hx_, hy_ = rp.CAN_HANDLE[0] * cs, rp.CAN_HANDLE[1] * cs  # on the hand the rig returns, then the same hand again on top (224)
     rp.oil_can(k, rh[0] - (hx_ * math.cos(ca) - hy_ * math.sin(ca)), rh[1] - (hx_ * math.sin(ca) + hy_ * math.cos(ca)), cs, ca)
@@ -507,6 +512,9 @@ def cast_56(k):
     return heads
 
 
+STOOL_56 = [False]
+LOOK_56 = [(1, 0.1)]                                          # film: her eyes follow Sofía
+PAM_DY_56 = [0]                                              # film (opt-in): Pam this much lower in the frame
 PAM_X_56 = [160]                                            # her own frame (Sofía out): her box clear of the button rail
 
 
@@ -514,10 +522,12 @@ def fg_56(k):
     """Pam near, on the stool, frozen with the blind; the frame's left, her eyes over to Sofía crossing."""
     s_ = 0.54 * 2.2
     px = PAM_X_56[0] if FIX_V4[0] else 140                   # round 5: Pam in from the edge, the wall on her left for her line
+    if STOOL_56[0]:                                          # film (review 26 Nov: "hung from the bar"): what she stands on, in frame
+        pm.stool(k, px, 1060 + PAM_DY_56[0], s_)
     tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
-    hh = pm.pam(Ctx(cairo.Context(tmp), 0), px, 1060 - 98 * s_, s_, "rail", "frozen", (1, 0.1))["hands"]
+    hh = pm.pam(Ctx(cairo.Context(tmp), 0), px, 1060 + PAM_DY_56[0] - 98 * s_, s_, "rail", "frozen", LOOK_56[0])["hands"]
     pm.blind_rail(k, hh[0], hh[1], s_)                               # v3: the blind hangs from her rail
-    o = pm.pam(k, px, 1060 - 98 * s_, s_, "rail", "frozen", (1, 0.1), late=False)
+    o = pm.pam(k, px, 1060 + PAM_DY_56[0] - 98 * s_, s_, "rail", "frozen", LOOK_56[0], late=False)
     pm.rail_bar(k, o["hands"][0], o["hands"][1], s_)
     import hands_ps as hp
     hp.redraw_late(k)
@@ -550,8 +560,9 @@ def cast_61(k):
         sp.cv_coo(k, hx + 4, hy + (40 if FIX_V4[0] else 4), CV_61[0] if FIX_V4[0] else 0.8)   # at her chest, COO? up; v4 lower
     if FIX_V4[0]:                                            # review round 1 (Tomas: the loop's trigger): Pam's phone on the
         x_, y_ = pss.PHONE_AT                                # counter buzzes behind Don, 5.7's own phone small and upright
-        k.c.save(); k.c.translate(x_, y_ - 26); k.c.rotate(-0.08)   # (bare arcs read as "a blue spiral", cold test)
-        pss.phone_close(k, 0, 0, 0.34, lit=True, buzz=True)
+        bz, (jx_, jy_) = PHONE_61[0] if PHONE_61[0] else (True, (0, 0))   # film: (arcs on, a hop in px) per drawing
+        k.c.save(); k.c.translate(x_ + jx_, y_ - 26 + jy_); k.c.rotate(-0.08)   # (bare arcs read as "a blue spiral", cold test)
+        pss.phone_close(k, 0, 0, 0.34, lit=True, buzz=bz)
         if GAGS_V5[0]:                                       # review 25 Nov: "hangs in the air": it sits in a desk stand,
             pss.phone_stand(k, 0, 110 * 0.34, 0.34)          # its lip over the phone's foot
         k.c.restore()
@@ -561,6 +572,8 @@ def cast_61(k):
     return heads
 
 
+LOOK_61B = [(1, -1)]                                          # film (Tomas 26 Nov): his eyes to the phone (up and to his left)
+PHONE_61 = [None]                                             # film (Tomas 26 Nov): the phone calm through 6.1, it hops and buzzes at 6.1b
 DON_X_61 = [110]
 # GAGS_V5 (review 25 Nov: "Pam's action unclear"): her arm toward her phone on the counter. The phone is 3 arm lengths away
 # (behind her, up), so the hand stops at 0.92 of the reach along that line (lesson 179: never a straight pole).
@@ -570,6 +583,7 @@ PAM_61 = ["reach"]
 
 
 FACE_61B = ["shock"]
+SPRING_HALO = [False]
 SPRING_61B = [1.0]                                           # motion test I: the spring's height (overshoot), 1.0 = the board
 
 
@@ -577,7 +591,7 @@ def fg_61b(k):
     """6.1b (Tomas 24 Nov, Office Noir 1's startle as the model: the cat hisses, his eyes go round, the hat jumps): the
     phone behind him buzzes; eyes round and over to it, his one hair sprung straight up (no hat), two jump strokes."""
     s_ = 0.60 * 2.5
-    o = dp.don(k, DON_X_61[0], 1150, s_, "vest", FACE_61B[0], (1, -1), chin=0)
+    o = dp.don(k, DON_X_61[0], 1150, s_, "vest", FACE_61B[0], LOOK_61B[0], chin=0)
     hx, hy = o["head"]
     c = k.c
     import fs_storyboard as fsb
@@ -588,7 +602,12 @@ def fg_61b(k):
     sp_ = SPRING_61B[0]
     for i in range(5):                                     # a spring, straight up
         c.line_to(2 + (6 if i % 2 == 0 else -6) * hs, -50 - (7 + 7 * i) * hs * sp_)
-    c.line_to(2, -50 - 42 * hs * sp_); c.stroke()
+    c.line_to(2, -50 - 42 * hs * sp_)
+    if SPRING_HALO[0]:                                     # opt-in: a pale halo under it (ending v8: over the dark throne it read
+        lw_ = c.get_line_width()                          # as "a crack / scribble", 3/3)
+        c.set_source_rgb(0.98, 0.95, 0.86); c.set_line_width(lw_ * 2.6); c.stroke_preserve()
+        c.set_source_rgb(*kit.INK); c.set_line_width(lw_)
+    c.stroke()
     for sd in (-1, 1):                                     # the jump: strokes either side of it
         c.move_to(sd * 16 * hs, -50 - 30 * hs * sp_); c.line_to(sd * 26 * hs, -50 - 38 * hs * sp_); c.stroke()
     c.set_line_cap(0); c.set_line_join(0)
@@ -776,6 +795,22 @@ def ins_booth_43(k):
 
 
 STINK_V2 = [False]
+POINT_43 = [(300, 600)]                                       # where his pointing hand is (its index toward the photo)
+NARROW_43 = [84]
+NARROW_SHOT, AVOID_SHOT = {}, {}
+PHONE_X43 = [240]
+PHONE_S43 = [1.3]
+AIM43 = [(235, 560)]
+SHOT43_V8 = [False]                                           # film (review 26 Nov, opt-in): 4.3a the #TeamDon phone bigger and whole in
+AVOID_43 = []                                                 # the frame, the Client points at it from clear of it, his bubble off both
+NOSE_AIM = [(0.5, -355.5)]                                    # the nose's lower half in the guard rig's units
+NOSE_43 = [False]                                             # film (opt-in): guard A's nose_pinched face state
+GUARD_B = [None]                                              # film (Tomas 26 Nov, opt-in): the second guard his own reaction, a dict:
+                                                             # pose (u, f) of his front arm or None (hands stay folded), hand (hands_ps shape),
+                                                             # turn (dx, tilt) of his face/head, lean (extra lean away, radians), all x pu
+PINCH_LEAD = [1.0]                                            # film (26 Nov audit, opt-in): the forearm folds ahead of the upper arm,
+                                                             # the hand up the chest, not out sideways (the in-between read as a stretched arm 2/2)
+PINCH_POSE = [(-100, -60)]                                   # the guards' face arm (upper, fore), the board's by default
 FATHER_V2 = [False]
 PINCH_43 = [1.0]                                             # ps_film: the guards' turn and pinch, 0..1 (1 = the board)
 STINK_RISE = [0.0]                                           # ps_film: px the stink lines have risen (0 = the board)
@@ -793,22 +828,33 @@ def _booth_guards(k, seat, tbl):
     for i, gx in enumerate((300, 548)):
         sgn, flip = (-1, False) if i == 0 else (1, True)
         c.save(); c.rectangle(-200, -200, 1400, tbl + 200); c.clip()          # behind the bench: nothing of them under the table
-        c.translate(gx, tbl); c.rotate(sgn * 0.13 * PINCH_43[0]); c.translate(-gx, -tbl)
-        dc.ARM_FRONT[0] = 1                                  # the pinching arm is HIS OWN, drawn after his head (dh_cast, opt-in):
+        pu_ = PINCH_43[0] if not isinstance(PINCH_43[0], tuple) else PINCH_43[0][i]
+        gb = GUARD_B[0] if i == 1 else None
+        c.translate(gx, tbl); c.rotate(sgn * (0.13 + (gb["lean"] if gb else 0.0)) * pu_); c.translate(-gx, -tbl)
+        was_fh, was_t = dc.FRONT_HAND[0], dc.GUARD_TURN[0]
+        dc.NOSE_PINCH[0] = bool(NOSE_43[0]) and i == 0 and pu_ > 0.85   # the face state, once his fingers are on it
+        dc.FRONT_HAND_AIM[0] = NOSE_AIM[0] if (NOSE_43[0] and i == 0 and pu_ > 0.85) else None
+        if gb:
+            dc.GUARD_TURN[0] = (gb["turn"][0] * pu_, gb["turn"][1] * pu_)
+            dc.FRONT_HAND[0] = gb.get("hand")
+        dc.ARM_FRONT[0] = 1 if not gb or gb.get("pose") else None                                  # the pinching arm is HIS OWN, drawn after his head (dh_cast, opt-in):
         try:                                                 # one hand per wrist (179, 208). A second hand drawn on top of the
-            pu = PINCH_43[0]                                 # ps_film: 0 = arms down, upright .. 1 = the board's pinch
-            pz = (dc.GUARD_POSE[0], dc.GUARD_POSE[1], dc.GUARD_POSE[2] + (-100 - dc.GUARD_POSE[2]) * pu,
-                  dc.GUARD_POSE[3] + (-60 - dc.GUARD_POSE[3]) * pu)
+            pu = PINCH_43[0] if not isinstance(PINCH_43[0], tuple) else PINCH_43[0][i]   # ps_film: 0 = arms down .. 1 = the
+                                                             # board's pinch (a pair: each guard his own, the second later)
+            ea, eb = PINCH_POSE[0] if not gb else (gb.get("pose") or (dc.GUARD_POSE[2], dc.GUARD_POSE[3]))
+            pz = (dc.GUARD_POSE[0], dc.GUARD_POSE[1], dc.GUARD_POSE[2] + (ea - dc.GUARD_POSE[2]) * pu,
+                  dc.GUARD_POSE[3] + (eb - dc.GUARD_POSE[3]) * min(1.0, pu * PINCH_LEAD[0]))
             o = dc.guard(k, gx, seat + 10, gs, pose=pz, flip=flip)
         finally:                                             # rig's hidden one failed hand_gate ("two at one wrist", 4.5 px apart)
             dc.ARM_FRONT[0] = None
+            dc.FRONT_HAND[0], dc.GUARD_TURN[0] = was_fh, was_t; dc.NOSE_PINCH[0] = False; dc.FRONT_HAND_AIM[0] = None
         HANDS_LOG.extend(o["hands"])
         if PLANT_HAND[0]:                                    # the gate's planted fault: a foreign hand on the rig's hand
             nose = min(o["hands"], key=lambda h: h[1])
             hp.draw(k, "fist", nose[0] + 3, nose[1] + 3, 30 * gs, (0.91, 0.67, 0.55), (0.7, -0.7), 1)
             grip("pinch", (nose[0] + 3, nose[1] + 3))
         c.restore()
-        a = sgn * 0.13 * PINCH_43[0]                         # his head where the lean put it (for the bubbles to keep off)
+        a = sgn * (0.13 + (gb["lean"] if gb else 0.0)) * pu_   # his head where the lean put it (for the bubbles to keep off)
         dx, dy = o["head"][0] - gx, o["head"][1] - tbl
         heads["guard%d" % (i + 1)] = (gx + dx * math.cos(a) - dy * math.sin(a), tbl + dx * math.sin(a) + dy * math.cos(a), 44 * gs)
     xs, lws = ((352, 424, 496), (6, 6, 6)) if not STINK_V2[0] else ((392, 421, 452), (7, 4.5, 5.5))
@@ -823,6 +869,27 @@ def _booth_guards(k, seat, tbl):
     return heads
 
 
+PHOTO_43 = [False]                                            # film (review 26 Nov, opt-in): the table phone shows 3.1's team photo, the
+FATHER_SPOT = [0.0]                                           # same one as 4.1 and 4.2 (it was four coloured bars: "a bar chart" 2/2)
+HAND_OFF43 = [(60, 38)]
+PHOTO_PT = {}                                                 # the photo's rect in the caller's units, for the finger's aim
+
+
+def _phone_photo(k, x, y, s):
+    """client_ps.phone_on_table's phone (same body, same place), its screen the post: the team photo, #TeamDon under it."""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(s, s)
+    kit.rect(k, -46, -76, 92, 152, (0.08, 0.08, 0.09), 4510, shadow=False, lw=2.2)
+    c.set_source_rgb(0.95, 0.95, 0.97); c.rectangle(-40, -68, 80, 136); c.fill()
+    ph = rp.team_photo(184, 184)
+    c.save(); c.translate(-38, -62); c.scale(76 / 184.0, 76 / 184.0); c.set_source_surface(ph, 0, 0)
+    c.get_source().set_filter(cairo.FILTER_BEST); c.rectangle(0, 0, 184, 184); c.fill(); c.restore()
+    c.set_source_rgb(0.2, 0.2, 0.25); c.select_font_face("Inter", 0, 1); c.set_font_size(12)
+    c.move_to(-36, 34); c.show_text("#TeamDon")
+    c.restore()
+    PHOTO_PT["rect"] = (x - 38 * s, y - 62 * s, 76 * s)
+
+
 def _booth_43(k):
     import dh_cast as dc
     c = k.c
@@ -830,7 +897,20 @@ def _booth_43(k):
     cps.booth_room(k, W, H, seat, tbl)
     guards = _booth_guards(k, seat, tbl) if GAGS_V5[0] else {}
     cps.handprint(k, 430, seat - 150, 1.6, 0.2)
-    cps.phone_on_table(k, 230, tbl - 90, 1.2, prints=True)
+    del AVOID_43[:]
+    if SHOT43_V8[0]:
+        ps_ = PHONE_S43[0]
+        if PHOTO_43[0]:
+            _phone_photo(k, PHONE_X43[0], tbl + 1 - 76 * ps_, ps_)
+        else:
+            cps.phone_on_table(k, PHONE_X43[0], tbl + 1 - 76 * ps_, ps_, prints=True)
+        x0_, y0_ = k.c.user_to_device(PHONE_X43[0] - 47 * ps_, tbl - 152 * ps_)
+        x1_, y1_ = k.c.user_to_device(PHONE_X43[0] + 47 * ps_, tbl)
+        AVOID_43.append((x0_, y0_, x1_, y1_))
+    else:
+        cps.phone_on_table(k, 230, tbl - 90, 1.2, prints=True)
+    if FATHER_SPOT[0] and PART[0] == 1:                      # review 26 Nov: the guard and the phone behind Father go dim, he
+        c.save(); c.identity_matrix(); c.set_source_rgba(0.07, 0.01, 0.03, FATHER_SPOT[0]); c.paint(); c.restore()   # stays lit
     fs_ = 0.62 / 0.52 * 1.15
     of = dc.father(k, 110, seat + 170, fs_, face="hard", look=(0.6, 0.5))
     import client_on3 as co
@@ -839,10 +919,23 @@ def _booth_43(k):
         tg = [(cx - 40, tbl - 6), (cx + 40, tbl - 6)]        # the frame's edge made the speaker a guess: his hands down here
         oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=tg, clip_hip=True)
     else:
-        oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=[(265, tbl - 128), (cx + 40, tbl - 6)],
-                              clip_hip=True, hands={-1: "point"}, aim=(230, tbl - 122))
+        tgt, aim_ = ((POINT_43[0], AIM43[0]) if SHOT43_V8[0] else ((265, tbl - 128), (230, tbl - 122)))
+        if SHOT43_V8[0] and PHOTO_43[0]:                     # his index on Sofía in the photo (184-unit photo: she stands at 158, 128)
+            rx_, ry_, rw_ = PHOTO_PT["rect"]
+            aim_ = (rx_ + 158 / 184.0 * rw_, ry_ + 128 / 184.0 * rw_)
+            tgt = (aim_[0] + HAND_OFF43[0][0], aim_[1] + HAND_OFF43[0][1])
+        oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=[tgt, (cx + 40, tbl - 6)],
+                              clip_hip=True, hands={-1: "point"}, aim=aim_)
+        if SHOT43_V8[0]:
+            hx_, hy_ = k.c.user_to_device(*tgt)
+            AVOID_43.append((hx_ - 90, hy_ - 50, hx_ + 40, hy_ + 50))
     cps.table(k, W, tbl)
     return dict({"father": of["head"] + (50 * fs_,), "client": oc_["head"] + (56 * s,)}, **guards)
+
+
+PEN_HAND, PEN_DIR = ["fist"], [(-1.0, 0.1)]                   # opt-in (grip sheet 26 Nov): the hand on the pen
+CV_EDGE = [(0, 0)]
+CV_FINGERS = [False]                                          # opt-in: her fingertips over the CV's edge (5.5)
 
 
 def ins_cv(hand=False):
@@ -867,7 +960,7 @@ def ins_cv(hand=False):
         else:
             c.set_source_rgb(*sp.HEEL_GOLD); c.rectangle(-4, -70, 8, 76); c.fill()
         c.restore()                                          # the gold pen
-        hp.draw(k, "fist", 392, 410, 70, (0.80, 0.62, 0.50), (-1.0, 0.1), -1)
+        hp.draw(k, PEN_HAND[0], 392, 410, 70, (0.80, 0.62, 0.50), PEN_DIR[0], -1)
         c.restore()
         grip("pen", (392 + (PEN_C[0][0] if low else 0), 410 + (PEN_C[0][1] if low else 0)))
     return f
@@ -892,6 +985,14 @@ def cast_55(k):
             if V55[0] == "A":                                # 5.5 only: the word at COO?'s old size, her mouth clear
                 sp.CV_FONT[0] = 15
             sp.cv_coo(k, hx + 4, hy + 10, 0.75)             # on her hand (the hand sheet: 28 px lower, it hung beside the hand)
+            if CV_FINGERS[0]:                                # three fingertips over the sheet's near edge (lesson 224: the
+                c = k.c                                      # object, then the fingers over it)
+                ex, ey = hx + 4 + 18.5 + CV_EDGE[0][0], hy + 9 + CV_EDGE[0][1]   # the sheet's edge on her arm's side
+                for i, ln in enumerate((5.6, 6.6, 5.0)):         # 15 % smaller, their lengths differ (review 26 Nov)
+                    for col, lw in ((INK, 3.9), (sp.sbc.sf.SKIN, 2.5)):
+                        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+                        c.move_to(ex + 1.5, ey + i * 3.6); c.line_to(ex + 1.5 - ln, ey + i * 3.6 + 0.5); c.stroke()
+                c.set_line_cap(0)
             sp.CV_FONT[0] = was
         else:
             sp.cv_coo(k, hx + 4, hy + 6, 0.9)
@@ -1184,9 +1285,14 @@ def _pass(k, sh, cam):
     return heads
 
 
+HIRES = [1]                                                  # 2: the G5 master's native 1080 (the 540 checks ran on the 540 build)
+
+
 def render(sh):
-    """-> (surface 540x960, the faults)."""
-    surf = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H)
+    """-> (surface 540x960, the faults). HIRES (opt-in, the G5 master): the same drawing at 2x, native (device scale)."""
+    surf = cairo.ImageSurface(cairo.FORMAT_RGB24, W * HIRES[0], H * HIRES[0])
+    if HIRES[0] > 1:
+        surf.set_device_scale(HIRES[0], HIRES[0])
     c = TextRec(surf); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
     pss.GUARD_CUES[0] = pss.PLATE_BIG[0] = pss.TAG_OFF[0] = FIX_V4[0]; rp.HEART[0] = FIX_V4[0]          # v4's set cues travel with the v4 staging
@@ -1230,7 +1336,7 @@ def render(sh):
     f = dict(cam=cam, heads=heads, scene=dict(text=text), bubbles=[], shot=sh["id"])
     LAST[0] = uz.faces(f)
     SIGNS_V4[:] = [t["bbox"] for t in c.texts if t["bbox"][3] - t["bbox"][1] >= 9]
-    msgs = uz.check_signs(f) + uz.check_scale(f, sh["story"]) + covered(sh, cam, surf, c.texts)
+    msgs = uz.check_signs(f) + uz.check_scale(f, sh["story"]) + (covered(sh, cam, surf, c.texts) if HIRES[0] == 1 else [])
     msgs = [m for m in msgs if (sh["id"], m.split(" at ")[0].split(" (")[0]) not in KNOWN]
     return surf, msgs
 
@@ -1495,6 +1601,8 @@ def bubble_v4(k, who, text, fc, taken):
     for name, a0, b0, a1, b1 in pc.PROTECT:
         avoid.append((a0, b0, a1, b1))
     avoid.extend(SIGNS_V4)
+    if CUR_SHOT[0] == "4.3":
+        avoid.extend(AVOID_43)
     import speech_gate as sg_
     avoid.append(sg_.RAIL)                                   # main's gate (24 Nov): no box in the app's button rail
     speech.ROBOT[0] = speech.CLEAR[0] = True                 # the series' robot bubble: tinted, bold mono; the wall with no
@@ -1503,11 +1611,19 @@ def bubble_v4(k, who, text, fc, taken):
         side = ROBOT_WALL[CUR_SHOT[0]]                       # wall closed (Mom stands over its antenna: no box fits above)
         avoid.append((hx - 300, hy - r * 1.2, hx - r * 0.9, hy + r * 1.2) if side > 0 else
                      (hx + r * 0.9, hy - r * 1.2, hx + 300, hy + r * 1.2))
+    narrow43 = SHOT43_V8[0] and CUR_SHOT[0] == "4.3" and who == "client"   # v8: his line in two rows, a narrow box off the photo
+    was_w = speech.MAX_W[0]
+    if narrow43:
+        speech.MAX_W[0] = NARROW_43[0]
+    if CUR_SHOT[0] in NARROW_SHOT:                           # film (opt-in): a shot's own widest row, and rects its boxes keep off
+        speech.MAX_W[0] = NARROW_SHOT[CUR_SHOT[0]]
+    avoid.extend(AVOID_SHOT.get(CUR_SHOT[0], ()))
     try:
         box, tip = speech.draw(k, text, head, mouth=mouth, above=above, mono=mono,
                                others=[v for n, v in fc.items() if n != who], avoid=avoid)
     finally:
         speech.ROBOT[0] = speech.CLEAR[0] = False
+        speech.MAX_W[0] = was_w
     if above and tip and abs(tip[0] - above[0]) < 8 and abs(tip[1] - above[1]) < 8:
         form = "T"
     elif tip and tip[0] >= head[0]:
