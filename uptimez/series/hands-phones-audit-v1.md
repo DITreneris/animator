@@ -118,3 +118,16 @@ Phone gate 0 faults on both.
 - the booth's face-down post (0.7) reads as "a different object";
 - One Star 6.5, Sofía's phone hand has no sleeve ("a hand without an arm");
 - Daddy's Home, the invoice arm with no hand ("fused into the paper").
+
+## I. Daddy's Home v11; One Star 6.5 left as v29 (26 Nov)
+
+**Daddy's Home v11** (`dh_film_v11.py`, `dh_hands_v11.py`). Changed against v10 only where intended; scenes 2, 3, 4, 6 and 7 are identical.
+- 0.7 "Today.": the post face down is the same post's back (full width, a pale rim, two lenses) under Father's hands.
+- 7.6 and 11.1: the repairman's hand clutches the invoice's left edge where his sleeve meets it.
+
+**One Star 6.5** (Sofía's phone hand without a sleeve): not fixed, left as v29 (Tomas, "2"). Three tries did not converge:
+- a sleeve over her hair: the forearm still behind the phone;
+- the phone lower: the counter cuts the frame;
+- the phone in her other hand: the pose name never reached the rig. 6.5 draws through four layers (cs_os24, cs_os23, sofia_fs, sofia_ob), and two renders with different arm orders came out pixel-identical.
+
+It is rig work on Sofía, for its own /grill-me.
