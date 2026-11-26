@@ -508,6 +508,7 @@ def cast_56(k):
     return heads
 
 
+STOOL_56 = [False]
 PAM_DY_56 = [0]                                              # film (opt-in): Pam this much lower in the frame
 PAM_X_56 = [160]                                            # her own frame (Sofía out): her box clear of the button rail
 
@@ -516,6 +517,8 @@ def fg_56(k):
     """Pam near, on the stool, frozen with the blind; the frame's left, her eyes over to Sofía crossing."""
     s_ = 0.54 * 2.2
     px = PAM_X_56[0] if FIX_V4[0] else 140                   # round 5: Pam in from the edge, the wall on her left for her line
+    if STOOL_56[0]:                                          # film (review 26 Nov: "hung from the bar"): what she stands on, in frame
+        pm.stool(k, px, 1060 + PAM_DY_56[0], s_)
     tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
     hh = pm.pam(Ctx(cairo.Context(tmp), 0), px, 1060 + PAM_DY_56[0] - 98 * s_, s_, "rail", "frozen", (1, 0.1))["hands"]
     pm.blind_rail(k, hh[0], hh[1], s_)                               # v3: the blind hangs from her rail
@@ -916,6 +919,11 @@ def _booth_43(k):
     return dict({"father": of["head"] + (50 * fs_,), "client": oc_["head"] + (56 * s,)}, **guards)
 
 
+PEN_HAND, PEN_DIR = ["fist"], [(-1.0, 0.1)]                   # opt-in (grip sheet 26 Nov): the hand on the pen
+CV_EDGE = [(0, 0)]
+CV_FINGERS = [False]                                          # opt-in: her fingertips over the CV's edge (5.5)
+
+
 def ins_cv(hand=False):
     """5.2 (v3): the CV in the guard's dark sleeve, his hand with the gold pen at the ?: whose hand writes is seen."""
     def f(k):
@@ -938,7 +946,7 @@ def ins_cv(hand=False):
         else:
             c.set_source_rgb(*sp.HEEL_GOLD); c.rectangle(-4, -70, 8, 76); c.fill()
         c.restore()                                          # the gold pen
-        hp.draw(k, "fist", 392, 410, 70, (0.80, 0.62, 0.50), (-1.0, 0.1), -1)
+        hp.draw(k, PEN_HAND[0], 392, 410, 70, (0.80, 0.62, 0.50), PEN_DIR[0], -1)
         c.restore()
         grip("pen", (392 + (PEN_C[0][0] if low else 0), 410 + (PEN_C[0][1] if low else 0)))
     return f
@@ -963,6 +971,14 @@ def cast_55(k):
             if V55[0] == "A":                                # 5.5 only: the word at COO?'s old size, her mouth clear
                 sp.CV_FONT[0] = 15
             sp.cv_coo(k, hx + 4, hy + 10, 0.75)             # on her hand (the hand sheet: 28 px lower, it hung beside the hand)
+            if CV_FINGERS[0]:                                # three fingertips over the sheet's near edge (lesson 224: the
+                c = k.c                                      # object, then the fingers over it)
+                ex, ey = hx + 4 + 18.5 + CV_EDGE[0][0], hy + 9 + CV_EDGE[0][1]   # the sheet's edge on her arm's side
+                for i in range(3):
+                    for col, lw in ((INK, 4.6), (sp.sbc.sf.SKIN, 3.0)):
+                        c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
+                        c.move_to(ex + 1.5, ey + i * 4.2); c.line_to(ex - 6, ey + i * 4.2 + 0.6); c.stroke()
+                c.set_line_cap(0)
             sp.CV_FONT[0] = was
         else:
             sp.cv_coo(k, hx + 4, hy + 6, 0.9)

@@ -92,6 +92,10 @@ def plate_big(k):
     e = c.text_extents("DON · CEO"); c.move_to(x + w / 2 - e.x_advance / 2, y - 29); c.show_text("DON · CEO")
 
 
+ARC_K = [1.0]                                                # opt-in: the buzz arcs' reach and spread (0.6 = 40 % less)
+GLASS_PHONE_V2 = [False]
+
+
 def behind_glass(k, x=100, lit=False):
     """Bodyguard 2 behind the glass (3.2-5.3): a big dark shape. lit (3.6, board v2): his phone up at his face, its glow
     lighting it: he is looking at something."""
@@ -101,7 +105,24 @@ def behind_glass(k, x=100, lit=False):
     c.new_path(); c.arc(x, 520, 30, 0, 2 * math.pi); c.fill()
     c.move_to(x - 60, 800); c.line_to(x - 52, 590); c.curve_to(x - 40, 560, x + 40, 560, x + 52, 590)
     c.line_to(x + 60, 800); c.close_path(); c.fill()
-    if lit:
+    if lit and GLASS_PHONE_V2[0]:                             # film 5.1 (review + cold test 26 Nov, "a scan" 2/2): a phone's shape, held up
+        g = cairo.RadialGradient(x + 4, 522, 2, x + 4, 522, 38)   # in his fist beside his chin, its light on his face only
+        g.add_color_stop_rgba(0, 0.70, 0.95, 1.0, 0.75); g.add_color_stop_rgba(1, 0.70, 0.95, 1.0, 0.0)
+        c.set_source(g); c.arc(x + 4, 522, 38, 0, 2 * math.pi); c.fill()
+        c.set_source_rgba(0.08, 0.08, 0.10, 0.92); c.set_line_width(18); c.set_line_cap(1)
+        c.move_to(x + 46, 650); c.line_to(x + 40, 596); c.stroke()
+        c.save(); c.translate(x + 38, 566); c.rotate(0.14)
+        c.set_source_rgb(0.05, 0.05, 0.07); c.rectangle(-15, -27, 30, 54); c.fill()            # the body
+        c.set_source_rgb(0.80, 0.97, 1.0); c.rectangle(-11, -22, 22, 40); c.fill()             # its screen, toward us and him
+        c.set_source_rgb(0.30, 0.55, 0.70); c.set_line_width(2)
+        for yy in (-14, -6, 2):
+            c.move_to(-7, yy); c.line_to(7, yy); c.stroke()
+        c.restore()
+        c.set_source_rgba(0.08, 0.08, 0.10, 0.95); c.set_line_cap(1); c.set_line_width(9)       # his fingers round its foot
+        for i in range(3):
+            c.move_to(x + 24, 578 + i * 9); c.line_to(x + 34, 580 + i * 9); c.stroke()
+        c.set_line_cap(0)
+    elif lit:
         g = cairo.RadialGradient(x + 14, 540, 2, x + 14, 540, 60)
         g.add_color_stop_rgba(0, 0.70, 0.95, 1.0, 0.85); g.add_color_stop_rgba(1, 0.70, 0.95, 1.0, 0.0)
         c.set_source(g); c.arc(x + 14, 540, 60, 0, 2 * math.pi); c.fill()
@@ -340,14 +361,14 @@ def phone_close(k, x, y, s=1.0, lit=True, buzz=True):
         of_ui.full(c, -52, -98, 104, 196, of_ui.invite_small)   # phone review 25 Nov: DAD (30) the biggest word; ep 13's own small card
         c.set_source_rgb(0.06, 0.20, 0.40); c.set_line_width(2.4)
         for i in (1, 2, 3) if buzz else ():
-            c.new_path(); c.arc(0, 0, 60 + i * 12, -0.5, 0.5); c.stroke(); c.new_path(); c.arc(0, 0, 60 + i * 12, math.pi - 0.5, math.pi + 0.5); c.stroke()
+            c.new_path(); c.arc(0, 0, 60 + i * 12 * ARC_K[0], -0.5 * ARC_K[0], 0.5 * ARC_K[0]); c.stroke(); c.new_path(); c.arc(0, 0, 60 + i * 12 * ARC_K[0], math.pi - 0.5 * ARC_K[0], math.pi + 0.5 * ARC_K[0]); c.stroke()
     elif lit:                                                # episode 13's invitation (of_scenes 3.6): the same card
         c.select_font_face("Lilita One"); c.set_source_rgb(0.55, 0.16, 0.46)
         c.set_font_size(18); e = c.text_extents("INVITATION"); c.move_to(-e.x_advance / 2, -16); c.show_text("INVITATION")
         c.set_source_rgb(*INK); c.set_font_size(36); e = c.text_extents("DAD"); c.move_to(-e.x_advance / 2, 26); c.show_text("DAD")
         c.set_source_rgb(0.06, 0.20, 0.40); c.set_line_width(2.4)
         for i in (1, 2, 3) if buzz else ():                                            # it buzzes
-            c.new_path(); c.arc(0, 0, 60 + i * 12, -0.5, 0.5); c.stroke(); c.new_path(); c.arc(0, 0, 60 + i * 12, math.pi - 0.5, math.pi + 0.5); c.stroke()
+            c.new_path(); c.arc(0, 0, 60 + i * 12 * ARC_K[0], -0.5 * ARC_K[0], 0.5 * ARC_K[0]); c.stroke(); c.new_path(); c.arc(0, 0, 60 + i * 12 * ARC_K[0], math.pi - 0.5 * ARC_K[0], math.pi + 0.5 * ARC_K[0]); c.stroke()
     c.restore()
 
 

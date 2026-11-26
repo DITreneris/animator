@@ -587,7 +587,8 @@ def s55(t):
     return dict(pm_.shot_K(t), own_cam=True)                # test K's camera: the board's 5.5
 
 
-CAM_56, WALK_56 = (-78, -60, 1.45), (-72, 46)               # v2 (cold test: her cross 0 of 2, Pam's box "a sign" 2 of 2): the
+DY_56 = -40
+CAM_56, WALK_56 = (-78, 26, 1.45), (-72, 46)               # v2 (cold test: her cross 0 of 2, Pam's box "a sign" 2 of 2): the
                                                              # camera lower and wider, her walk above Pam's box, 190 units long
 
 def s56(t):
@@ -597,13 +598,19 @@ def s56(t):
     u = ease((t - 0.45) / 1.25)
     tx = ps.tape_x(60)
     step = int(t * 5) % 2 if 0.45 < t < 1.70 else 1
-    ps.PAM_X_56[0] = PAM_56; ps.PAM_DY_56[0] = 70
+    import pm_ps as _pm
+    def fg(k):                                               # the shot's own switches, set only while its near layer draws
+        ps.PAM_X_56[0], ps.PAM_DY_56[0], ps.STOOL_56[0], _pm.BLIND_W[0] = PAM_56, DY_56, True, 26
+        try:
+            return ps.fg_56(k)
+        finally:
+            ps.PAM_X_56[0], ps.PAM_DY_56[0], ps.STOOL_56[0], _pm.BLIND_W[0] = 160, 0, False, 0.0
     def cast(k):
         heads = {}
         _, heads["sofia"] = ps.sofia(k, (lerp(tx + WALK_56[0], tx + WALK_56[1], u), F + 60), "walk" if step == 0 else "stand",
                                      "smile", (1, -0.1))
         return heads
-    return dict(ps.S("5.6", (tx + CAM_56[0], F + CAM_56[1], CAM_56[2]), BOARD["5.6"]["room"], cast, fg=ps.fg_56,
+    return dict(ps.S("5.6", (tx + CAM_56[0], F + CAM_56[1], CAM_56[2]), BOARD["5.6"]["room"], cast, fg=fg,
                      story=["pam", "sofia"]), own_cam=True)
 
 
@@ -646,6 +653,7 @@ CAMS = {}
 def shot_at(sid, t):
     """the shot to draw at its time t, its camera locked to the board key frame's."""
     ps.ROOM_OWN[0] = False
+    pss.GLASS_PHONE_V2[0] = sid.startswith("5")              # scene 5 only for now (3.6 keeps its tested look until Tomas says)
     sh = SHOT_FN[sid](t) if sid in SHOT_FN else BOARD[sid]
     if sh["cam"] == "screen":                                # an insert drawn in frame units: no camera to lock
         ps.NO_SHIFT[0] = True; ps.ROOM_OWN[0] = False
@@ -688,7 +696,7 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 3}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 5}
 STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
            ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
            ("4.3", 1.3, "A pinches"), ("4.3", 1.75, "B turns away"), ("4.3", 2.05, "Father, silent"), ("4.3", 2.85, "Invite her.")]

@@ -100,10 +100,29 @@ def stool(k, x, feet, s, h=90):
     c.restore()
 
 
+BLIND_W = [0.0]                                              # opt-in (film 5.6, review 26 Nov: "a grey bar"): the blind this much wider than
+                                                             # her hands each side (rig units), darker slats, its pull cord: it reads a blind
+
 def blind_rail(k, a, b, s, drop=230):
     """The blind half hung: its rail between her hands, the slats hanging (drawn before her: behind)."""
     c = k.c
     (ax, ay), (bx, by) = a, b
+    if BLIND_W[0]:
+        e = BLIND_W[0] * s
+        ax, bx = ax - e, bx + e
+        top = min(ay, by) + 4 * s
+        cut(k, [(ax - 6 * s, top), (bx + 6 * s, top), (bx + 4 * s, top + drop * s), (ax - 4 * s, top + drop * s)], dp.SLAT, shadow=False, lw=2.2)
+        c.set_source_rgb(*dp.SLAT_D); c.set_line_width(2.2)
+        yy = top + 12 * s
+        while yy < top + drop * s - 6 * s:
+            c.move_to(ax - 4 * s, yy); c.line_to(bx + 4 * s, yy); c.stroke(); yy += 12 * s
+        c.set_source_rgb(*INK); c.set_line_width(1.6)                       # the ladder strings and the pull cord with its knob
+        for fx in (0.22, 0.78):
+            xx = ax + (bx - ax) * fx; c.move_to(xx, top); c.line_to(xx, top + drop * s); c.stroke()
+        c.move_to(bx - 2 * s, top); c.line_to(bx + 14 * s, top + drop * s * 0.62); c.stroke()
+        c.new_path(); c.arc(bx + 14 * s, top + drop * s * 0.62 + 5 * s, 5 * s, 0, 2 * math.pi); c.set_source_rgb(0.92, 0.92, 0.88); c.fill_preserve()
+        c.set_source_rgb(*INK); c.stroke()
+        return
     top = min(ay, by) + 4 * s
     cut(k, [(ax - 6 * s, top), (bx + 6 * s, top), (bx + 2 * s, top + drop * s), (ax + 10 * s, top + drop * s - 20 * s)],
         dp.SLAT, shadow=False, lw=2)
@@ -118,7 +137,10 @@ def rail_bar(k, a, b, s):
     (ax, ay), (bx, by) = a, b
     ang = math.atan2(by - ay, bx - ax)
     c.save(); c.translate((ax + bx) / 2, (ay + by) / 2); c.rotate(ang)
-    L = math.hypot(bx - ax, by - ay) + 40 * s
+    L = math.hypot(bx - ax, by - ay) + 40 * s + 2 * BLIND_W[0] * s
+    if BLIND_W[0]:                                           # a few slats gathered under the head rail, in front (a raised blind's stack)
+        for i in range(3):
+            rect(k, -L / 2 + 6 * s, (6 + i * 5.5) * s, L - 12 * s, 5.5 * s, dp.SLAT, 4820 + i, shadow=False, lw=1.6)
     rect(k, -L / 2, -6 * s, L, 12 * s, (0.70, 0.70, 0.66), 4813, shadow=False, lw=2)
     c.restore()
 

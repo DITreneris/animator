@@ -721,3 +721,13 @@ Shots: 5.1 the silhouette, his phone lights (3.6's) · 5.2 the gold pen writes H
 - v2 found: when the box went, the floor's "← DON" under it read as "signed - DON" 2/2. v3: the box stays to the cut (`BOX_TO_END`); her walk starts 72 left of the tape (5.5 ends on it: "a jump" 1/2 at 128). v3 not cold-tested (the scene's third version).
 - Open: Sofía has no CV in 5.6's wide (test F's cast); 5.6's first drawing still shows the floor's DON before the box.
 - check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 5 v5: review 7.5/10 (26 Nov), "what correlates", "proceed"
+
+Applies (rules-hands §0): 224 (the object, then the fingers over it), 208 (one hand per wrist), 149/224 (a real knee), 178 (three misreads: change the gesture), 163 (a face beats a gesture).
+
+- **5.6** `STOOL_56` (the stool in frame, Pam 40 px up, the camera 86 lower so Sofía's walk stays above her box), `pm_ps.BLIND_W` 26 (the blind wider than her hands, darker slats, ladder strings, pull cord, a stack of slats under the rail). The shot's switches are set only while its near layer draws.
+- **5.1** `ps_set.GLASS_PHONE_V2` (scene 5 only; 3.6 keeps its tested look): a phone's body and screen in his fist, the glow on his face.
+- Cold test of v4 (2 viewers, feed size): the phone "a phone, he looks at it" **2/2** (v1: "a scan" 2/2); "stands on a step stool" **2/2**; Sofía left of the line → right of it 2/2; Pam speaks 2/2. **Open: "holds a grey bar or shelf" 2/2, the blind not named** (the stack of slats added after this test, v5, not tested).
+- For Tomas's pick, not in the film: `ps_s5_leg_sheet_v1.png` (`don_ps.LEG`, four legs), `ps_s5_grip_sheet_v1.png` (`PEN_HAND` fist / pinch / grab; the can as it is; `CV_FINGERS`; `ps_set.ARC_K` 0.6).
+- Scene 3 v6 and scene 4 v11 re-rendered from their commits and from the branch: md5-identical. check / check v5 38 / 0; board v4 md5-identical.

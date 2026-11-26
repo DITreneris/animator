@@ -93,6 +93,9 @@ def _cap(c, pts, t, col, lw=2.0):
     c.set_line_cap(0); c.set_line_join(0)
 
 
+LEG = [None]
+
+
 def _legs(k, x, feet, s, u):
     """Under the belt: the screen-left leg planted; the screen-right one bent, the knee up and out, the foot in profile
     hovering, toes toward the line. u 0..1: how high."""
@@ -104,17 +107,25 @@ def _legs(k, x, feet, s, u):
     lift = 44 * u
     kx, ky = 30 + 34 * u, w + 30 - 8 * u                                                      # the knee
     ax, ay = kx + 16 * u, -16 - lift                                                          # the ankle
-    c.set_source_rgba(0, 0, 0, 0.18); c.save(); c.translate(ax + 22, 4); c.scale(1, 0.22)
+    L_ = LEG[0]                                              # opt-in (5.4, review 26 Nov): knee and ankle moved (x u), the shoe
+    if L_:                                                   # smaller and tipped toes-down, a softer shadow
+        kx, ky = kx + L_["knee"][0] * u, ky + L_["knee"][1] * u
+        ax, ay = ax + L_["ankle"][0] * u, ay + L_["ankle"][1] * u
+    c.set_source_rgba(0, 0, 0, L_["shadow"] if L_ else 0.18); c.save(); c.translate(ax + 22, 4); c.scale(1, 0.22)
     c.new_path(); c.arc(0, 0, 34 - 10 * u, 0, 2 * math.pi); c.restore(); c.fill()           # the shadow under the foot
     _cap(c, [(24, w + 10), (kx, ky)], 44, dv.KHAKI)                                           # the thigh
     _cap(c, [(kx, ky), (ax, ay)], 38, dv.KHAKI)                                               # the shin
     c.set_source_rgb(*dv.KHAKI); c.new_path(); c.arc(kx, ky, 21, 0, 2 * math.pi); c.fill()  # the knee, one piece
     c.set_source_rgb(*INK); c.set_line_width(1.6); c.new_path(); c.arc(kx - 4, ky + 2, 14, -0.6, 0.9); c.stroke()  # the fold
+    if L_:
+        c.save(); c.translate(ax, ay); c.rotate(L_["tilt"] * u); c.scale(L_["shoe"], L_["shoe"]); c.translate(-ax, -ay)
     c.new_path()                                                                              # the shoe, side on, toes right
     c.move_to(ax - 18, ay - 6); c.line_to(ax + 14, ay - 8); c.curve_to(ax + 40, ay - 6, ax + 52, ay + 4, ax + 50, ay + 14)
     c.line_to(ax - 20, ay + 14); c.close_path()
     c.set_source_rgb(0.24, 0.18, 0.13); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
     _cap(c, [(ax - 18, ay - 10), (ax + 16, ay - 12)], 10, dv.KHAKI)                          # the hem over it
+    if L_:
+        c.restore()
     if u > 0.6:
         c.set_source_rgb(*INK); c.set_line_width(1.8); c.set_line_cap(1)                       # it wobbles
         for i in (-1, 1):
