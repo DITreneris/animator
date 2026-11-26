@@ -256,6 +256,10 @@ def s5_2(k, d):
 
 # ---- 6.1 ---------------------------------------------------------------------------------------------------------------------
 
+POSE61 = [(22, 62, -22, -62)]
+ONEHAND61 = [None]                                                                # v18: (o -> the holding hand) (cs_v18)
+
+
 def s6_1(k, d):
     """12 drawings. The door behind him, the roll under his arm; his phone in his right hand (the series' phone grip,
     thumb on its face toward his middle), his left hand at its other side, fingers round its edge; eyes down on it."""
@@ -266,6 +270,8 @@ def s6_1(k, d):
 
     def pre(k_):
         c = k_.c
+        if ONEHAND61[0]:                                                           # v18: no roll (two viewers: "a blue pole")
+            return
         c.save(); c.translate(x - 44, 688); c.rotate(-0.42)
         rect(k_, -46, -7, 92, 14, s4.BLUE, 995, lw=1.6)
         ellipse(k_, -46, 0, 3, 7, (0.30, 0.52, 0.92), 996, shadow=False, lw=1.2)
@@ -275,6 +281,12 @@ def s6_1(k, d):
     def ex(k_, o):
         (lx, ly), (rx, ry) = sorted(o["client"]["hands"])
         c = k_.c
+        if ONEHAND61[0]:                                                           # v18: one hand holds it, the other hangs
+            hx, hy = ONEHAND61[0](o)                                               # (the two round it read as a knot)
+            s1.PH_DEV.append(c.user_to_device(hx, hy))
+            SKIN_NEXT[0] = sb.SKIN_CL
+            oc.phone_grip(k_, hx, hy + lift, 0.40, screen=None, ang=-0.10, skin=sb.SKIN_CL, body_x=x, back=True)
+            return
         for hx, hy in ((lx, ly), (rx, ry)):
             s1.PH_DEV.append(c.user_to_device(hx, hy))
         mx, my = (lx + rx) / 2 + 4, max(ly, ry) + lift
@@ -285,7 +297,7 @@ def s6_1(k, d):
     with s4.Strip(None), s1.Breath(sb, "client", s1.br(d, 0.4)):
         s1.S(k, s6.CAM61, auto=False, portrait=False, pre=pre, extra=ex,
              **s1.base(rb=False, sf=False, dn=False, pm=False, mm=False,
-                       cl=s1.at("client", x=x, pose=(22, 62, -22, -62), face=face, look=look)))
+                       cl=s1.at("client", x=x, pose=POSE61[0], face=face, look=look)))
 
 
 # ---- 6.5: Sofía's fingers round the tablet's edge -----------------------------------------------------------------------

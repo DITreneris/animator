@@ -244,11 +244,14 @@ def star(c, x, y, r, fill):
     c.set_source_rgb(*(INK if fill else (0.72, 0.74, 0.78))); c.set_line_width(2.4); c.stroke()
 
 
+RISE65 = [3.0]
+
+
 def s6_5(k, d):
     """20 drawings (1.7 s). Sofía, close, dry. Her phone comes up, turned to us: a real phone in her hand, one
     star of five, big, under "Pam found it." "Still one star." No smile."""
     t = d / float(DPS)
-    up = ease(d / 3.0)
+    up = ease(d / RISE65[0])                                                       # v18: 5 drawings (3 read as a jump)
     talk = LINE65[0] <= t <= LINE65[1]
     mouth = ("A", "E", "M", "O", "E", "M")[int((t - LINE65[0]) * DPS / 2) % 6] if talk else None
     got = {}
