@@ -689,7 +689,14 @@ def s61(t):
             return ps.fg_61(k)
         finally:
             ps.DON_61[0] = was
-    return dict(base, fg=fg)
+    inner = base["cast"]
+    def cast(k):                                             # Pam's phone lit but still: its buzz is 6.1b's (the startle's cause)
+        ps.PHONE_61[0] = (False, (0, 0))
+        try:
+            return inner(k)
+        finally:
+            ps.PHONE_61[0] = None
+    return dict(base, fg=fg, cast=cast)
 
 
 def s61b(t):
@@ -697,6 +704,15 @@ def s61b(t):
     to it; held."""
     base = BOARD["6.1b"]
     i = int(round(t * DPS))
+    inner = base["cast"]
+    hop = {0: (0, -9), 1: (3, -3), 2: (-3, 0), 3: (3, 0), 4: (-3, 0), 5: (2, 0), 6: (-2, 0)}.get(i, (0, 0))
+    def cast(k):                                             # the phone jumps on the counter and its arcs come on: the cause, seen
+        ps.PHONE_61[0] = (True, hop)
+        try:
+            return inner(k)
+        finally:
+            ps.PHONE_61[0] = None
+    base = dict(base, cast=cast)
     if i < 2:
         return dict(base, fg=ps.fg_61)
     def fg(k):
@@ -796,7 +812,7 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 8, 6: 1}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 8, 6: 2}
 STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
            ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
            ("4.3", 1.3, "A pinches"), ("4.3", 1.75, "B turns away"), ("4.3", 2.05, "Father, silent"), ("4.3", 2.85, "Invite her.")]

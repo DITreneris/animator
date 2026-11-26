@@ -559,8 +559,9 @@ def cast_61(k):
         sp.cv_coo(k, hx + 4, hy + (40 if FIX_V4[0] else 4), CV_61[0] if FIX_V4[0] else 0.8)   # at her chest, COO? up; v4 lower
     if FIX_V4[0]:                                            # review round 1 (Tomas: the loop's trigger): Pam's phone on the
         x_, y_ = pss.PHONE_AT                                # counter buzzes behind Don, 5.7's own phone small and upright
-        k.c.save(); k.c.translate(x_, y_ - 26); k.c.rotate(-0.08)   # (bare arcs read as "a blue spiral", cold test)
-        pss.phone_close(k, 0, 0, 0.34, lit=True, buzz=True)
+        bz, (jx_, jy_) = PHONE_61[0] if PHONE_61[0] else (True, (0, 0))   # film: (arcs on, a hop in px) per drawing
+        k.c.save(); k.c.translate(x_ + jx_, y_ - 26 + jy_); k.c.rotate(-0.08)   # (bare arcs read as "a blue spiral", cold test)
+        pss.phone_close(k, 0, 0, 0.34, lit=True, buzz=bz)
         if GAGS_V5[0]:                                       # review 25 Nov: "hangs in the air": it sits in a desk stand,
             pss.phone_stand(k, 0, 110 * 0.34, 0.34)          # its lip over the phone's foot
         k.c.restore()
@@ -570,6 +571,7 @@ def cast_61(k):
     return heads
 
 
+PHONE_61 = [None]                                             # film (Tomas 26 Nov): the phone calm through 6.1, it hops and buzzes at 6.1b
 DON_X_61 = [110]
 # GAGS_V5 (review 25 Nov: "Pam's action unclear"): her arm toward her phone on the counter. The phone is 3 arm lengths away
 # (behind her, up), so the hand stops at 0.92 of the reach along that line (lesson 179: never a straight pole).

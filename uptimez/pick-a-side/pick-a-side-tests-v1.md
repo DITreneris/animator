@@ -765,3 +765,7 @@ Scene 5 by beat (v6 + v8): pen 2/2, can and heart 2/2, Don's foot back 2/2, Pam'
 - Sound: the buzz, a boing, the rattle up.
 - Cold test (2 viewers, the end's 4 fps sheet + the film's first five frames): the line and the thumb 2/2; "he is wrong, nobody behind him is with him, eyes shut" 2/2; startled 2/2; the blind goes up, his hand on the cord 2/2; **the loop: "leads back in, smooth, a tug of war over the blind that repeats" 2/2**. Open: the startle's cause not seen 2/2 (the buzz is sound; the phone behind him looks the same before and after); the cut to the door "no link" 2/2 (shown without scene 1).
 - check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 6 v2 (Tomas 26 Nov: "taip", the phone hops only at 6.1b)
+
+`ps_scenes.PHONE_61` (opt-in): through 6.1 Pam's phone is lit and still, no arcs; at 6.1b it hops (9 px up, then a 3 px shake over six drawings) and its arcs come on. Cold test (2 viewers, 7.5 fps strip of the encoded v2, mute): **"the phone on the shelf buzzes, then he is startled" 2/2** (v1: the cause not seen 2/2); thumbs-up and closed eyes before 2/2. Open 2/2: his eyes go up and to the right, the phone is up and to his left (the board's `fg_61b` look). 6.2's last drawing = 1.1's first, md5 still equal. check / check v5 38 / 0; board v4 md5-identical.
