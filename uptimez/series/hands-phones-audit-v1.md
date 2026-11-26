@@ -66,3 +66,14 @@ Method:
   - **A new fault at 64.5:** v4b's thumb lands on "1/5" and its fingers on "Pam". The rule is "the thumb off the words". The sheet's grip covers more of the screen's edge than v3 did. Decision needed before the other films.
 - **Decision (Tomas, 26 Nov): films keep the old phone grip (v3).** `hands_v4.PHONE_V4B` is off by default. One Star v27 re-rendered: only 0:30 (the gem in the sheet's grab) differs from v26; 1:04 is v26's phone again. Gates pass.
 - **The canon's phone row is now v4c** (DITreneris/uptimez f94fbf1: fingertips stop on the far bezel, the thumb up the near edge; `bp_phone_words.py` passes). `hands_v4` now carries it (`PHONE_ROW = "v4c"`; `enable(phone="v4c")`). One Star v27 uses it. At 1:04, "Pam found it" and "1/5" are clear at full size and at 270 px. Gates pass. Drawings changed from v26: 0:30 (the gem, grab) and 1:04 (the phone). Everything else is identical.
+
+## F. The Offer v58 (26 Nov)
+
+`of_film_v58.py` is v57's five scenes with `hands_v4.enable(phone="v4c")`. Every scene check gives 0 faults; of_cut G5 passes. `of_roughcut_v58_540.mp4`, 64.9 s.
+- **Diff against v57, frame by frame:** scenes 1 and 2 are identical (the DELETE phone is tilted past 0.35 and keeps the old grip, as do the inserts' hands).
+- Changed:
+  - scene 3: the engine-bay tools (sheet grab), the Client's phone ×2, the ignition key (sheet pinch), the guard's calendar phone;
+  - scene 4: Pam's phone ×2, Don's phone;
+  - scene 5: Father's phone ×2.
+- **First try failed:** the sheet's v4c draws its own forearm straight down. Where the rig's arm comes in from the side (the Client at 0:32), that made a second arm, a "U" under the phone. Fix: `hands_v4.FOREARM = False`: the rig's arm runs into the palm, as in the films' grip. Re-rendered: one arm per hand everywhere. One Star v27 re-rendered with it too: 1:04's words are clear, and no extra arm shows.
+- **To look at:** the ignition key (3, f668). The sheet's pinch reads as a closed hand with the key in it, where v57 showed two fingertips on the key.

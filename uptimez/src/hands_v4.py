@@ -149,7 +149,8 @@ def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=oc.SKIN_LIGHT, thumb=None,
             col = INK if inked else skin
             grow = 2 * lw * ink if inked else 0.0
             c.save(); outside_phone()
-            stroke(arm_pts, 0.60 * w + grow, col)
+            if FOREARM[0]:
+                stroke(arm_pts, 0.60 * w + grow, col)
             oval(x, y + 0.44 * w, 0.62 * w + grow / 2, 0.42 * w + grow / 2, col)
             stroke(side_pts, 8.0 * s + grow, col)
             stroke(heel_pts, tt + grow, col)
@@ -175,7 +176,8 @@ def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=oc.SKIN_LIGHT, thumb=None,
         col = INK if inked else skin
         grow = 2 * lw * ink if inked else 0.0
         c.save(); outside_phone()
-        stroke(arm_pts, 0.60 * w + grow, col)
+        if FOREARM[0]:
+            stroke(arm_pts, 0.60 * w + grow, col)
         oval(x, y + 0.44 * w, 0.62 * w + grow / 2, 0.42 * w + grow / 2, col)
         stroke(side_pts, 8.0 * s + grow, col)
         c.restore()
@@ -213,6 +215,9 @@ def tap_insert(k, x, y, edge, w, skin, cuff=(0.20, 0.22, 0.30)):
     _ORIG.get("draw", hp.draw)(k, "point_t", hx, hy, w, skin, d, 1)
 
 
+FOREARM = [False]            # the sheet draws its own forearm straight down; in a film the rig's arm runs into the palm
+                             # (of_cast.phone_grip v3: "no wrist stub"). The Offer v58 first try: a second arm, a "U" under
+                             # the Client's phone where his own arm came in from the side
 PHONE_ROW = ["v4c"]          # which sheet phone enable(phone=True) draws: "v4c" (canon since 26 Nov) or "v4b"
 PHONE_V4B = [False]          # Tomas 26 Nov: films keep the old phone grip (v3). v4b's thumb and fingers cover the screen's
                              # edge words (One Star v27, 1:04: "1/5" and "Pam"); the rule is "the thumb off the words"
