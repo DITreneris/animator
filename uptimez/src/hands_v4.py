@@ -93,6 +93,13 @@ def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=oc.SKIN_LIGHT, thumb=None,
     """sheet v4b: forearm, palm, the side of the hand and the thumb one silhouette; three fingers of unequal length
     round the far edge. Falls back to the old grip for what v4b does not draw (a tilted phone, parts, a pressing thumb,
     the phone's back)."""
+    if ang and abs(ang) < 0.35 and part == "all" and thumb_tip is None and not back:   # a small tilt: the same grip, turned
+        c = k.c; c.save(); c.translate(x, y); c.rotate(ang)
+        try:
+            return phone_grip(k, 0, 0, s, screen=screen, skin=skin, thumb=thumb, body_x=None if body_x is None else body_x - x,
+                              ink=ink)
+        finally:
+            c.restore()
     if ang or part != "all" or thumb_tip is not None or back:
         return _ORIG["phone_grip"](k, x, y, s, screen=screen, ang=ang, skin=skin, thumb=thumb, wrist=wrist, body_x=body_x,
                                    back=back, part=part, ink=ink, thumb_tip=thumb_tip)

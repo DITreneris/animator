@@ -54,3 +54,13 @@ Method:
 3. The opt-in module `hands_v4.py`: draws the sheet's v4 `grab`, `pinch`, `fist` and `phone_grip` behind a flag. Old films are untouched (md5 checks).
 4. Per film, opt-in fixes on the failing moments only (One Star 0:35 / 0:47 / 0:51 / 1:00; Daddy's Home tablet and arms; The Offer to `phone_grip` v4b), each with a 270 px still, a 10 fps strip and the GH gate.
 5. A gate in `gates_os` GH: fail a phone drawn without `phone_grip`, and an insert hand without a cuff. Plant first.
+
+## E. Correction and progress (26 Nov, later)
+
+- **The audit above used stale films for One Star and The Offer.** main had moved on: One Star v14–v26 (with its own frame-by-frame hand audit in v20, a hand gate `cs_grips` and an insert gate) and The Offer v57. I merged main into this branch (one conflict in `hands_ps`: both opt-in flag sets kept; Pick a Side frames md5-identical before and after).
+- **One Star v26, re-rendered and looked at:** the v13 faults (taps with no wrist, the merged hands, the Client's phone) are already fixed there. Taps come from the bottom with a cuff, which is the `tap_insert` row. Its gates pass.
+- **The canon:** DITreneris/uptimez is the canon (branch `hands-v4-rows`: the `board_two` and `tap_insert` rows, silhouette-tested 2/2; CANON.md names `hands_v4`). animator's page is now a dated synced copy that points there.
+- **`hands_v4.py`** (opt-in): the sheet's grab, pinch and fist (v2) and phone_grip (v4b, small tilts turned with it), plus `board_two` and `tap_insert`. Its check sheet is `/tmp/hands_v4_check.png`.
+- **One Star v27** = v26 + `hands_v4.enable()` (`cs_film_v27.py`): every gate passes (hand 0, insert 0, bubbles 0).
+  - Changed drawings: 30.5 s (the Client's fist round the gem: sheet grab) and 64.5 s (Sofía's phone: v4b, one silhouette).
+  - **A new fault at 64.5:** v4b's thumb lands on "1/5" and its fingers on "Pam". The rule is "the thumb off the words". The sheet's grip covers more of the screen's edge than v3 did. Decision needed before the other films.
