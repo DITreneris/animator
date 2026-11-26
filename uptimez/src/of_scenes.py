@@ -76,7 +76,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v28.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v29.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -415,14 +415,20 @@ def _cast_draw0(k, n, scene, sh, heads):
             pk_ = ps.get("pocket")                                               # v56: (x0, x1, y) the coat pocket's mouth: the phone
             if pk_:                                                              # and the hand sink INTO it (nothing drawn below it)
                 c.save(); c.new_path(); c.rectangle(pk_[0] - 400, pk_[2] - 800, 800, 800); c.clip()
-            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, None if ps.get("phone_dark") else scr_d,   # v55: face down = its dark back
-                          ang=ps.get("phone_ang", -0.15), skin=dc.SKIN_F, body_x=x)
+            oc.PHONE_RIM[0] = bool(ps.get("phone_rim"))                          # v58: a pale edge on the face-down phone
+            try:
+                oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, None if ps.get("phone_dark") else scr_d,   # v55: face down = its dark back
+                              ang=ps.get("phone_ang", -0.15), skin=dc.SKIN_F, body_x=x)
+            finally:
+                oc.PHONE_RIM[0] = False
             if pk_:
                 c.restore()
         if ps.get("pocket"):                                                     # the pocket's mouth, a seam on the coat, over it
             pk_ = ps["pocket"]
-            c.set_source_rgb(*INK); c.set_line_width(2.2); c.set_line_cap(1)
-            c.new_path(); c.move_to(pk_[0], pk_[2]); c.curve_to(pk_[0] + 6, pk_[2] + 3, pk_[1] - 6, pk_[2] + 3, pk_[1], pk_[2] - 1); c.stroke()
+            pa_ = ps.get("pocket_a", 1.0)                                        # v58: the seam is there only while the phone goes in; then it fades (it read as "a string")
+            if pa_ > 0.01:
+                c.set_source_rgba(INK[0], INK[1], INK[2], pa_); c.set_line_width(2.2); c.set_line_cap(1)
+                c.new_path(); c.move_to(pk_[0], pk_[2]); c.curve_to(pk_[0] + 6, pk_[2] + 3, pk_[1] - 6, pk_[2] + 3, pk_[1], pk_[2] - 1); c.stroke()
         if ps.get("palm") and ps.get("targets_xy"):                          # v6 (23 Nov, motion_on3's hand): palm and fingers in ONE
             hx, hy = ps["targets_xy"][0]                                         # shape, flat across the lid, the fingers pointing on, a thumb
             sk = dc.SKIN_F
