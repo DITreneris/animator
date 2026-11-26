@@ -832,8 +832,17 @@ def garage_shot(k, sh, scene, heads, cam):
         c.save(); c.translate(px, py); c.scale(1.15, 1.15); c.translate(-px, -py)      # the phone 15 % bigger
         for col, lw in ((INK, 66), (dc.SUIT, 60)):                            # v9 (24 Nov, cold test 3 of 3: "a black diagonal",
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0)       # "floating"; decided: hand + SHORT THICK forearm):
-            c.set_line_join(1); c.move_to(px + 40, py + 26); c.line_to(px + 92, py - 92); c.line_to(px + 330, py - 120); c.stroke()   # v59 (cold test v52: "a pole"): his sleeve BENDS at an elbow inside the frame: forearm, elbow, upper arm to the top-right edge
-        c.save(); c.translate(px + 50, py + 2); c.rotate(math.atan2(-118, 52))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
+            c.set_line_join(1); c.move_to(px + 40, py + 26); c.line_to(px + 66, py - 84); c.line_to(px + 118, py - 152); c.stroke()   # v59 (cold test v52: "a pole"): his sleeve BENDS at an elbow inside the frame: forearm, elbow, upper arm to the top-right edge
+        c.set_line_join(0)                                                      # v60 (cold test v59, 3 of 3: "whose arm?"): HE is in the frame: his shoulder and chest
+        c.save(); c.new_path()                                                  # (suit, white shirt, tie) behind the sleeve, cut by the frame's right edge
+        c.move_to(px + 60, py - 180); c.curve_to(px + 100, py - 230, px + 180, py - 232, px + 280, py - 200)
+        c.line_to(px + 280, py + 40); c.line_to(px + 100, py + 40); c.curve_to(px + 56, py - 20, px + 46, py - 110, px + 60, py - 180); c.close_path()
+        c.set_source_rgb(*INK); c.set_line_width(4); c.stroke_preserve(); c.set_source_rgb(*dc.SUIT); c.fill()
+        c.new_path(); c.move_to(px + 100, py - 196); c.line_to(px + 140, py - 120); c.line_to(px + 100, py - 40); c.close_path()
+        c.set_source_rgb(0.97, 0.97, 0.95); c.fill()                            # the shirt, in the jacket's opening
+        c.set_source_rgb(*INK); c.set_line_width(14); c.set_line_cap(1); c.move_to(px + 116, py - 176); c.line_to(px + 116, py - 70); c.stroke()   # the tie
+        c.restore()
+        c.save(); c.translate(px + 50, py + 2); c.rotate(math.atan2(-110, 26))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
         rect(k, -9, -35, 18, 70, (0.97, 0.97, 0.94), 3409, shadow=False, lw=1.8)            # his white cuff, at the phone
         c.restore()
         S04, A04 = 90 / 44.0, 0.0                                             # v7: the same phone grip as every phone, big
