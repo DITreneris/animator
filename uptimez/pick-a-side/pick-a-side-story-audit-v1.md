@@ -121,3 +121,14 @@ Nauja pabaigos eilė (tik lentos kadrai, kaip nuotraukos; judesys po istorijos t
 | **6.2** | 1,0 | **Donas trūkteli žaliuzes žemyn** (nenori matyti); robotas traukia aukštyn → 1.1 | D1 |
 
 Istorijos testas po nuotraukų: 3 nauji žiūrovai, tik 4.3–6.2, klausimai: kaip sargybinis pateko ir kam davė CV; ar Sofía perėjo; ką daro Pam; kodėl Donas leidžia žaliuzes.
+
+## 8. Naujos pabaigos nuotraukos v3 (`ps_ending_v2.py`, atskiras modulis: lenta ir užrakintos scenos nepaliestos)
+
+`ps_ending_stills_v3.png` (15 kadrų, nauji geltoname rėmelyje) ir atskiri `ps_ending_*_v3.png`.
+- 5.1: atviros durys (koridorius, stiklo varčia atsivėrusi), sargybinis tarpdury beldžia, CV dar tuščias.
+- 5.3a: robotas jam „Welcome.“, Sofía be CV; sargybinio CV jau su HR?.
+- 5.3c: perdavimas, CV tarp dviejų rankų, abiejų pirštai ant kraštų.
+- 5.5b: abu batai už juostos, pirštai nuo Dono pusės, baltas chalato kraštas viršuje (kieno kojos).
+- 6.1 / 6.1b: Pam tarp Mamos ir Sofíos, telefonas rankoje prie krūtinės, nykštys ant ACCEPT; 6.1b tas pats telefonas zvimbia jos rankoje (ne lentynoje).
+- 6.2: Donas užsimerkęs traukia žaliuzes žemyn, roboto ☀.
+Žinomi trūkumai poliravimui: 5.3a „Welcome.“ dėžutė tarp sargybinio ir roboto; 5.3c ženklų kraštai ir rodyklės likutis; 6.1 Pam ir Sofía šiek tiek persidengia. Testas dar nedarytas.
