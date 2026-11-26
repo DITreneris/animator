@@ -9,6 +9,7 @@ k = Kokoro(os.path.join(D, 'kokoro.onnx'), os.path.join(D, 'voices.bin'))
 AI_CHAIN = 'asetrate=24000*1.35,aresample=24000,aecho=0.8:0.5:20:0.22,highpass=f=90'
 LINES = [('ai_stepback', 'stˈɛp bˈˈæk!', True, 'am_puck', .85, AI_CHAIN),          # "Step BACK!"
          ('ai_more', 'mˈˈɔɹ!', True, 'am_puck', .8, AI_CHAIN),                      # "MORE!" (0.8: steadier for speech recognition)
+         ('ai_more_v3', 'More!', False, 'am_puck', .85, AI_CHAIN),                  # v3: plain text at 0.85; the phoneme version read as 'No way' in the mix
          ('ai_thanks', 'Thanks for the photos!', False, 'am_puck', .9, AI_CHAIN),
          ('h_selfie_STANDIN', 'One selfie?', False, 'am_adam', 1.0, 'highpass=f=80'),
          ('h_more_STANDIN', 'One more?', False, 'am_adam', 1.0, 'highpass=f=80'),

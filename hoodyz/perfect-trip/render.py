@@ -16,7 +16,7 @@ oe = lambda t: 1 - (1 - cl(t)) ** 3
 
 # ---------------- voices: where each line sits (shot index, seconds in); the mix and the lip sync both read this
 VO = [('h_invite', 0, .07, .8), ('ai_plan', 0, 2.75, .7), ('h_selfie', 2, .1, .8), ('h_proud', 3, .35, .6), ('ai_stepback', 5, .25, .7),
-      ('h_huh', 5, 1.25, .6), ('ai_more', 7, .2, .95), ('h_whoa', 7, .75, .6), ('h_effort', 7, 1.35, .5),
+      ('h_huh', 5, 1.25, .6), ('ai_more_v3', 7, .2, .95), ('h_whoa', 7, .75, .6), ('h_effort', 7, 1.35, .5),
       ('h_howtrip', 11, .3, .8), ('ai_thanks', 11, 3.0, .7), ('h_sigh', 11, 4.1, .55), ('h_another', 12, .35, .8)]   # Hoody: Tomas's takes
 _ENV = {}
 def env(name):
@@ -251,10 +251,10 @@ def s_giza(c, f, r):   # live: "MORE!" - the camel (rope round the bags) hauls H
     hp = A.hand_at(rx, 1860, 1.3, 1, 'hold')
     E.eva(c, 920, 1880, 1.0, 'laugh' if m > .9 else 'impressed', sip=.1, tilt=-.2 * m, pose='holdlow' if m > .9 else 'coffee', hand_to=hp if m > .9 else None)
     sigh = math.sin(cl(r / 8) * math.pi) * 22 if r < 8 else 0             # a shoulder-drop sigh before MORE!
-    if 0 < r < 9: txt(c, 'pff', rx + 120, 1200, 50, NAVY, lw=0)
-    A.myai(c, rx, 1860 + sigh, 1.3, eye='focus' if r < 30 else 'happy', arms=('wave', 'hold' if m > .9 else 'down'), tilt=10 * m, talk=talk(f, 'ai_more'))
+    if 0 < r < 9: txt(c, 'pff', rx + 170, 1450, 50, NAVY, lw=0)    # on her coat, not over her face (v3)
+    A.myai(c, rx, 1860 + sigh, 1.3, eye='focus' if r < 30 else 'happy', arms=('wave', 'hold' if m > .9 else 'down'), tilt=10 * m, talk=talk(f, 'ai_more_v3'))
     backpack_cat(c, 210, 1720, .9, 'disapproving')
-    TL.bubble(c, ['MORE!'], r - 2, TL.robot_side(rx, 1860, 1.3, -1), cy=1290, cx=540, bend=-.1)
+    TL.bubble(c, ['MORE!'], r - 2, TL.robot_top(rx, 1860, 1.3, 1, dx=50), cy=950, cx=760, bend=.06)   # v3: up in the gap between Hoody's hair and Eva's, so it covers neither face
 
 def s_rome(c, f, r):   # the couple photo, drifting; the label switches after it lands
     kenburns(c, 'rome', r, 60, f)
