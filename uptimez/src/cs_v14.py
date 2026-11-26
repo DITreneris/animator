@@ -46,6 +46,7 @@ ARM14 = ["paddle"]                                         # v15 (bubbles): "non
 ELBOW14 = [1]                                              # v17: -1 lifts the elbow out of his body's outline at the visor
 FOLLOW35 = [None]                                          # v18: 3.5's follow-through pose after the release (cs_v18)
 DOOR31b = [False]                                          # v17: the handle, rail, glints and PUSH sticker (cs_v17)
+FACE14, LOOK14, VIS14 = ["smug"], [(1, -0.3)], [0.92]          # v23: his face, look; where on the visor
 LEAN14 = [0.0]                                             # v17: how far he leans in for the visor (0: v14; cs_v17 sets it)
 
 
@@ -67,7 +68,7 @@ def _geo14():
         sx, sy = GEO14["s"]
         rr = 50 * sb.SC["robot"]
         GEO14["A"] = (sx + 0.34 * rr, sy - 1.40 * rr)
-        GEO14["V"] = (sx + 0.92 * rr, sy + 0.02 * rr)
+        GEO14["V"] = (sx + VIS14[0] * rr, sy + 0.02 * rr)
     return GEO14
 
 
@@ -175,7 +176,7 @@ def s1_4(k, d):
         if True:
             S(k, cam, auto=False, portrait="hang", extra=ex,
               **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=ARM14[0]),
-                     dn=at("don", x=X["don"] - STEP - ln_, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
+                     dn=at("don", x=X["don"] - STEP - ln_, pose=(a1, a2, 8, 0), face=FACE14[0], look=LOOK14[0])))
 
 
 

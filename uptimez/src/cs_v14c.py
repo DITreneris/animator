@@ -251,7 +251,7 @@ def _toss(k, d):
         rb_arm = ("paddle" if not held else "none") if V.ARM14[0] == "paddle" else "none"
         S(k, s1.TWO14_IN, auto=False, portrait="hang", extra=ex,
           **base(cl=False, sf=False, pm=False, mm=False, door=0.0, rb=at("robot", arm=rb_arm),
-                 dn=at("don", x=X["don"] - V.STEP - lean, pose=(a1, a2, 8, 0), face="smug", look=(1, -0.3))))
+                 dn=at("don", x=X["don"] - V.STEP - lean, pose=(a1, a2, 8, 0), face=V.FACE14[0], look=V.LOOK14[0])))
 
 
 def _shapes14():
@@ -319,7 +319,7 @@ def s6_6(k, d):
 
     def held(k_, hx, hy, s_, *a_, seed=900, **kw):
         if seed == 941 and "o" in got:
-            return _phone_between(k_, {"don": got["o"]}, d, buzz=True)
+            return _phone_between(k_, {"don": got["o"]}, d, buzz=not s1.ONLYDON66[0])
         return ph(k_, hx, hy, s_, *a_, seed=seed, **kw)
 
     def fist(k_, hx, hy, s_, skin, seed):

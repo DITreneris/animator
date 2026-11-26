@@ -50,6 +50,7 @@ CL_SH_L = (-46.8, 651.72)                                   # his screen-left sh
 
 
 PHONE51 = [False]
+UP51 = [(CL_X - 60, 688)]
 SOFIA51 = [None]                                    # v20: her face from d14 (her glance at Pam)
 
 
@@ -61,7 +62,7 @@ def s5_1(k, d):
     sx = 418 - (418 - 376) * ease(d / 4.0)
     turned = d >= 5
     up = ease((d - 6) / 4.0)                                                       # the phone comes up
-    hand = lerp((CL_X - 46.8, 715.7), (CL_X - 60, 688), up)
+    hand = lerp((CL_X - 46.8, 715.7), UP51[0], up)                                # v23: UP51 (688 folded the arm, 231)
     a1, a2 = ik(CL_X + CL_SH_L[0], CL_SH_L[1], hand[0], hand[1], s4.CL_LN, s4.CL_LN, 1)
     u = ease((d - PAN51[0]) / float(PAN51[1] - PAN51[0]))
     cam = lerp(CAM51[0], CAM51[1], u)

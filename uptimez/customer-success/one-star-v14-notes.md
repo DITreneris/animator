@@ -159,3 +159,16 @@ QA: 2020 frames, -15.6 LUFS; bubbles 12/0; hand, elbow, insert and flat-band gat
 - cs_scene4.schedule returns its lines in time order (the speech check segfaulted on 4.2p before 4.1p).
 QA: 2020 frames, -15.6 LUFS; bubbles 13/0; hand, elbow, insert, flat-band gates 0; PSNR 35.1; speech 15/17
 ("Approved." and "Still one star." in its context window, as before).
+
+## v23: Tomas's frame notes (26 Nov): 0:09, 0:44, 0:47, 1:04, 1:07
+
+`python3 cs_film_v23.py ../customer-success 2` (`cs_os23.install()`).
+| Time | Was | Now |
+|---|---|---|
+| 0:09 1.4 | Don's eyes shut ("smug": read as asleep); his hand into the robot's head | eyes open ("grin"), looking off and up while he approves; the target at the visor's edge (VIS14 1.12): the fingertip on its rim |
+| 0:44 4.4 | HUMAN plus a green tick ("over-engineered") | HUMAN alone, centred |
+| 0:47 5.1 | his phone at (CL_X-60, 688), 37 below the shoulder: the arm folded into a lump (231) | (CL_X-78, 722): the arm out toward Pam, the elbow open |
+| 1:04 6.5 | a tablet thrust at us, a hand with red nails and no arm, the clipboard in the other hand | a phone in her own hand (phone_grip), her arm from the shoulder (sofia_ob "show", the hand lower and the elbow bent: the first try failed the elbow gate), the clipboard under her other arm, the bubble above the phone |
+| 1:07 6.6 | four phones buzzing, small unclear hands | only Don holds his phone, no zigzags; Pam, Sofía and the boss with their hands down (ONLYDON66) |
+Note: 6.6 no longer matches 1.1 exactly (1.1 still has everyone on their phones): the loop's seam is now the wide room and Don's phone.
+QA: 2020 frames, -15.6 LUFS; bubbles 13/0; hand, elbow, insert, flat-band 0; PSNR 35.1; speech 15/17 as v22.
