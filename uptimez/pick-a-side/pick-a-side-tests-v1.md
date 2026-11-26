@@ -748,3 +748,9 @@ Built (opt-in): 5.4 leg 3 (`don_ps.LEG`: knee up, shin down, the shoe smaller an
 | 5.7 Pam's phone | 2/2 | 2/2 |
 
 **Not converging on 5.6** (seven versions; the scene's budget was three): the stool in frame put Pam 110 px higher and the camera lower, which moved Sofía's walk to the tape's far, short end; v2 (no stool) had the cross and the speech 2/2. Stopped for Tomas's call. Not locked. check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 5 v8: 5.6 back to v2's staging (Tomas, 26 Nov: option 1)
+
+Pam 70 px down (no stool in frame), camera and walk as v2 (128 left of the tape → 46 right), kept: the blind as one sheet, Pam's eyes on Sofía, the four-drawing step, the box to the cut.
+Cold test (2 viewers, 270 px, 5.5–5.7): Pam speaks, the line hers **2/2**; her eyes track Sofía **2/2**; "a window blind" 1, "a blind or paper" 1; Sofía starts left of the line 2/2, ends "past it, crosses" 1, "on it, toes the line" 1 (v2's 2/2 not repeated: the same staging, so viewer spread). Pam's phone 2/2.
+Scene 5 by beat (v6 + v8): pen 2/2, can and heart 2/2, Don's foot back 2/2, Pam's phone 2/2, Sofía's cross 1/2: 4 of 5 by both. Not locked: Tomas's word. check / check v5 38 / 0; board v4 md5-identical.
