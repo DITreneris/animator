@@ -98,3 +98,26 @@ Animacija nė vienos iš šių problemų neišsprendžia.
 3. **Vienas rankų ir daiktų perėjimas per visą filmą** pagal sąrašą (P1–P15 + bet kas nauja): savininkas matomas; pirštai ant daikto; niekas nekabo; veidas ir akys atviri. Rodomas kaip vienas lapas su „prieš / po“.
 4. **Animuoti tik pakeistus kadrus**, užrakintus palikti (md5).
 5. **Viso filmo testas**, daugiausia 2 ratai. Išorinė peržiūra tik su vaizdo įrašu.
+
+## 7. Tomo sprendimai (26 lapkr., /grill-me): A1 · B1 · C1 · D1
+
+Nauja pabaigos eilė (tik lentos kadrai, kaip nuotraukos; judesys po istorijos testo):
+
+| Kadras | s | Kas ekrane | Kas naujo |
+|---|---|---|---|
+| 4.3c | – | Tėvas: „Invite her.“ | nekeičiama |
+| **5.1** | 1,2 | Biuro durys **atviros**, sargybinis tarpdury, CV rankoje, pakelta ranka beldžia į staktą. Žaliuzės jau pakabintos (Pam ant kėdutės šalia). | A1: ne 3.6 siluetas, o atvykimas |
+| 5.2 | 1,6 | Auksinis rašiklis rašo H-R-? (jo ranka, jo rankovė) | nekeičiama |
+| **5.3a** | 1,2 | Robotas prieš jį: „Welcome.“ (rodyklė į sargybinį), Sofía fone **be CV** | A1: kam „Welcome.“ aišku |
+| **5.3c** | 1,0 | Sargybinis ištiesia CV, Sofíos ranka jį paima (abu savininkai kadre) | A1: perdavimas |
+| 5.3b | 1,2 | Skardinė robotui, širdis | nekeičiama (eiliškumas po perdavimo) |
+| 5.4 | 2,8 | Dono kojos gag'as | nekeičiama |
+| 5.5 | 1,2 | Sofía ant juostos, HR? | nekeičiama |
+| **5.5b** | 1,0 | 2.8 intarpo atgarsis: **abu batai** žengia per juostą | B1 |
+| 5.6 | 2,5 | Pam: „Some draw lines. Others cross them.“ | nekeičiama |
+| 5.7 | 1,4 | Pam telefonas: INVITATION · DAD | nekeičiama |
+| **6.1** | 3,0 | Donas: „Everyone's with me.“; fone **Pam matoma, nykštys ant ACCEPT** | C1 |
+| 6.1b | 0,9 | Zvimbimas, išgąstis | nekeičiama |
+| **6.2** | 1,0 | **Donas trūkteli žaliuzes žemyn** (nenori matyti); robotas traukia aukštyn → 1.1 | D1 |
+
+Istorijos testas po nuotraukų: 3 nauji žiūrovai, tik 4.3–6.2, klausimai: kaip sargybinis pateko ir kam davė CV; ar Sofía perėjo; ką daro Pam; kodėl Donas leidžia žaliuzes.
