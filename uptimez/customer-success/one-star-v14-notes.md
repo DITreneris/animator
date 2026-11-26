@@ -172,3 +172,15 @@ QA: 2020 frames, -15.6 LUFS; bubbles 13/0; hand, elbow, insert, flat-band gates 
 | 1:07 6.6 | four phones buzzing, small unclear hands | only Don holds his phone, no zigzags; Pam, Sofía and the boss with their hands down (ONLYDON66) |
 Note: 6.6 no longer matches 1.1 exactly (1.1 still has everyone on their phones): the loop's seam is now the wide room and Don's phone.
 QA: 2020 frames, -15.6 LUFS; bubbles 13/0; hand, elbow, insert, flat-band 0; PSNR 35.1; speech 15/17 as v22.
+
+## v24: camera and more animation (26 Nov, Tomas picked 1-6)
+
+`python3 cs_film_v24.py ../customer-success 2` (`cs_os24.install()`). No shot changes length: the mix is v23's.
+1. Slow push-ins (to 1.08-1.10) about the speaker's head on 1.4 "Approved.", 3.4 the plan, 6.5 "Still one star.".
+2. The frame shakes (4 % up, 9 px decaying over 5 drawings) on 1.1 the phone on its head, 1.2 48K, 3.4b, 3.5b.
+3. A whip from the throw to the hit: 3.5's last 3 drawings and 3.5b's first 2 smear and slide, with a whoosh.
+4. 1.4 d44-48, after his line: the robot's visor close (3.4 x on 1.4's own frame), the green tick, a chime.
+5. 3.4's last 6 drawings: the visor close, "99%" ... "98%", two beeps.
+6. The desk plant sways.
+Not done: the antenna wobble, hair and earring settle, blinks (each rig needs its own hook: next pass).
+QA: 2020 frames, -15.6 LUFS, -2.3 dBFS; bubbles 13/0; gates 0; PSNR 35.2; speech 15/17 as before.
