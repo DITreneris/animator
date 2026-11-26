@@ -112,10 +112,12 @@ def cast_51(k):
     lx, ly = o["hands"][0]
     cv_plain(k, lx - 4, ly + 22, 0.62, word=False)           # blank: 5.2 writes on it
     fingers(k, lx + 6, ly + 2, d=-1)
-    rx, ry = o["hands"][1]                                   # knock, knock: strokes off his knuckles on the glass
-    c = k.c; c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
-    for a in (-0.6, 0.0, 0.6):
-        c.move_to(rx + 14 * math.cos(a), ry + 14 * math.sin(a)); c.line_to(rx + 26 * math.cos(a), ry + 26 * math.sin(a)); c.stroke()
+    rx, ry = o["hands"][1]                                   # knock, knock: his knuckles ON the glass (a pale flat spot where they
+    c = k.c                                                  # touch, v6, review: "clearly touch"), the strokes from that spot
+    c.set_source_rgba(1, 1, 1, 0.55); c.save(); c.translate(rx + 8, ry); c.scale(5, 10); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
+    for a in (-0.7, 0.0, 0.7):
+        c.move_to(rx + 14 + 6 * math.cos(a), ry + 12 * math.sin(a)); c.line_to(rx + 14 + 18 * math.cos(a), ry + 24 * math.sin(a)); c.stroke()
     c.set_line_cap(0)
     return heads
 
@@ -147,22 +149,29 @@ def s53a():
 
 # --- 5.3c: the hand-over -----------------------------------------------------------------------------------------------
 def cast_53c(k):
+    """v6 (Tomas 26 Nov: the series' grab on both): his rig and hers, the card between, then hands_ps "grab" drawn over
+    each rig's hand at the very point it returned (one hand per wrist, lesson 208), its fingers over the card's edge
+    (lesson 224); no loose finger strokes."""
     heads = {}
-    o = guard_at(k, 190, pose_r=(165, -180))                 # his arm out, the hand at her hand's height
+    o = guard_at(k, 164, pose_r=(165, -180))
     heads["guard"] = (o["head"][0], o["head"][1], 40 * GS)
     gx, gy = o["hands"][1]
-    sx = gx + 50 + 75                                        # her "press" hand reaches 75 left of her: the CV between the hands
+    sx = gx + 50 + 85 + CARD_GAP[0]
     os_, heads["sofia"] = ps.sofia(k, (sx, F + 60), "press", "interested", (-1, 0.1))
     hx, hy = min(os_["hands"], key=lambda h: h[0])
-    mx, my = (gx + hx) / 2, (gy + hy) / 2 - 6
-    cv_plain(k, mx, my, 0.80, ang=-0.04)                     # the CV between them, HR? up
-    fingers(k, gx + 2, gy - 10, d=1, skin=co.SKIN)           # his fingers over its left edge
-    fingers(k, hx - 2, hy - 10, d=-1, skin=sp.sbc.sf.SKIN)   # hers over its right
+    mx, my = (gx + hx) / 2, (gy + hy) / 2
+    cv_plain(k, mx, my, 1.0, ang=-0.04)
+    hp.draw(k, "grab", gx, gy, GRAB_W[0], co.SKIN, (1.0, -0.15), 1)            # his: from the left, round the card's edge
+    hp.draw(k, "grab", hx, hy, GRAB_W[1], sp.sbc.sf.SKIN, (-1.0, -0.15), -1)   # hers: from the right
     return heads
 
 
+GRAB_W = [26, 21]
+CARD_GAP = [30]      # extra room between the two rigs so each hand sits on one edge of the card, not on top of the other
+
+
 def s53c():
-    return ps.S("5.3c", (300, F - 150, 1.7), dict(blind="rehung", tape=True, spun=True), cast_53c)
+    return ps.S("5.3c", (306, F - 150, 1.5), dict(blind="rehung", tape=True, spun=True), cast_53c)
 
 
 # --- 5.5b: both shoes over the tape ----------------------------------------------------------------------------------
@@ -171,7 +180,7 @@ def ins_55b(k):
     c.set_source_rgb(*kit.FLOOR); c.paint()
     cut(k, [(70, 960), (150, 960), (300, 0), (250, 0)], pss.TAPE, shadow=False, lw=2.4)    # the tape, receding
     c.set_source_rgba(1, 1, 1, 0.40); c.set_line_width(3); c.move_to(96, 940); c.line_to(262, 20); c.stroke()
-    for x, y, s in ((300, 560, 0.80), (345, 790, 0.95)):     # both feet on Father's side, toes away from Don's
+    for x, y, s in ((340, 540, 0.80), (395, 800, 0.95)):     # both feet on Father's side, toes away from Don's
         c.save(); c.translate(x, y); c.scale(-1, 1)
         sp.heel(k, 0, 0, s, tape=False)
         c.restore()
@@ -226,20 +235,72 @@ def s61bn():
     return dict(b, cast=lambda k: cast_61n(k, buzz=True), room=dict(b["room"], phone=None))
 
 
+# --- 6.1b as three drawings (Tomas 26 Nov grill: phone -> team -> arms, 1.5 s) -----------------------------------------
+def fg_61x(look, face="shock", pose="vest", spring=1.0):
+    """Don, near: the board's fg_61b (spring hair, round eyes) with the eyes aimed by look; pose "stand" drops the
+    spring (the shock is over) and lets the arms hang."""
+    if pose == "vest":
+        ps.SPRING_61B[0] = spring; ps.LOOK_61B[0] = look; ps.FACE_61B[0] = face
+        try:
+            return ps.fg_61b(k_hold[0])
+        finally:
+            ps.SPRING_61B[0] = 1.0; ps.LOOK_61B[0] = (1, -1); ps.FACE_61B[0] = "shock"
+    s_ = 0.60 * 2.5
+    o = ps.dp.don(k_hold[0], ps.DON_X_61[0], 1150, s_, pose, face, look, chin=0)
+    return {"don": (o["head"][0], o["head"][1], ps.R["don"] * s_)}
+
+
+k_hold = [None]
+LOOK_PHONE = [(1, -1)]      # up-right on screen: Pam's phone
+LOOK_TEAM = [(-1, -1)]      # up-left: Mom, Sofía with the card
+
+
+def s61bx(i):
+    b = s61bn()
+    def fg(k):
+        k_hold[0] = k
+        if i == 0:
+            return fg_61x(LOOK_PHONE[0])
+        if i == 1:
+            return fg_61x(LOOK_TEAM[0], spring=0.55)
+        return fg_61x((0, 0.6), "confused", "stand")
+    return dict(b, fg=fg)
+
+
+def s61b1(): return s61bx(0)
+def s61b2(): return s61bx(1)
+def s61b3(): return s61bx(2)
+
+
 # --- 6.2: Don yanks it DOWN, eyes shut ------------------------------------------------------------------------------
-def s62n():
-    sh = pm_.shot_A(0.50, v4=True)                           # test A's first "down": his hand low, the blind coming down
+DIM_62 = 0.16                                                # Tomas 26 Nov: lighter darkening than the 1.1 tug (0.32)
+
+
+def s62x(t, sid, shut):
+    """6.2 (1.4 s, Tomas 26 Nov: down -> the robot up -> 1.1): the 1.1 tug's own shot_A at time t, darkening at DIM_62;
+    shut=True: Don's eyes screwed shut (he yanks it down and won't look)."""
+    pm_.DIM_A[0] = DIM_62
+    sh = pm_.shot_A(t, v4=True)
     inner = sh["cast"]
     def cast(k):
         orig = ps.don
         def don_(k_, at, pose, face, *a, **kw):
-            return orig(k_, at, pose, "squint", *a, **kw)    # eyes screwed shut: he won't look
+            return orig(k_, at, pose, "squint" if shut else face, *a, **kw)
         ps.don = don_; pm_.ps.don = don_
+        pm_.DIM_A[0] = DIM_62
         try:
             return inner(k)
         finally:
-            ps.don = orig; pm_.ps.don = orig
-    return dict(sh, cast=cast, id="6.2n")
+            ps.don = orig; pm_.ps.don = orig; pm_.DIM_A[0] = 0.32
+    return dict(sh, cast=cast, id=sid)
+
+
+def s62n():
+    return s62x(0.55, "6.2n", True)                          # all the way down, eyes shut
+
+
+def s62b():
+    return s62x(0.72, "6.2b", False)                         # the robot yanks it back up; his eyes open on it
 
 
 NEW = [("5.1", s51, None, "knocks, the invitation"),
@@ -247,8 +308,11 @@ NEW = [("5.1", s51, None, "knocks, the invitation"),
        ("5.3c", s53c, None, "the hand-over"),
        ("5.5b", s55b, None, "both shoes over the tape"),
        ("6.1", s61n, 'DON: "Everyone\'s with me."', "Pam's thumb on ACCEPT"),
-       ("6.1b", s61bn, None, "her phone buzzes in her hand"),
-       ("6.2", s62n, None, "Don yanks it down, eyes shut")]
+       ("6.1b", s61b1, None, "buzz: his eyes to her phone"),
+       ("6.1b2", s61b2, None, "his eyes to the team"),
+       ("6.1b3", s61b3, None, "his arms drop"),
+       ("6.2", s62n, None, "down, eyes shut (dim 0.16)"),
+       ("6.2b", s62b, None, "the robot yanks it up")]
 
 
 def frame(fn, line):
@@ -273,7 +337,8 @@ def main(ver):
            ("5.5b", None, None, True), ("5.6", lambda: old("5.6", 1.8), "Some draw lines.", False),
            ("5.7", lambda: old("5.7", 1.1), "INVITATION · DAD", False),
            ("6.1", None, None, True), ("6.1b", None, None, True),
-           ("6.2", None, None, True), ("1.1", lambda: old("1.1", 0.9), "→ 1.1: the tug of war", False)]
+           ("6.1b2", None, None, True), ("6.1b3", None, None, True),
+           ("6.2", None, None, True), ("6.2b", None, None, True), ("1.1", lambda: old("1.1", 0.0), "→ 1.1 frame 0", False)]
     new = {sid: (fn, line, lab) for sid, fn, line, lab in NEW}
     tiles, faults = [], []
     for sid, fn, lab, is_new in seq:

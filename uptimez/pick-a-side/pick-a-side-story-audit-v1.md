@@ -146,3 +146,12 @@ Istorijos testas po nuotraukų: 3 nauji žiūrovai, tik 4.3–6.2, klausimai: ka
 Senoji logika: jos CV iš 12 serijos, Tėvas ant jo užrašo „HR?“ (darbo pasiūlymas). Be 12 serijos konteksto neskaitoma.
 Sprendimai: **kvietimo kortelė** (tas pats „INVITATION · from DAD“ kaip Pam telefone; ryšys su 1.4 „susitikimas be manęs“ ir 4.3 „Invite her.“) · **rašiklis įrašo jos vardą** „to: SOFÍA“ (5.2) · **Pam kvietimas lieka telefonu** · **skardinė robotui lieka**.
 Įgyvendinta `sofia_ps.INVITE` (opt-in): `cv_coo` piešia kortelę CV dydžio, tad visos rankos, laikiusios CV (5.1, 5.3a, 5.3c, 5.5, 6.1), laiko ją. Filme liko: 5.2 rašiklio laikai penkioms raidėms (`PEN_52` dabar trims).
+
+## 11. Stills v6 (Tomas 26 Nov grill: "detalizuok darom")
+
+- **5.3c:** the series' `hands_ps` "grab" on both hands, one per wrist, each on one edge of the card (card scale 1.0, GRAB_W 26/21, CARD_GAP 30, guard x 164, cam (306, F-150, 1.5)). The v6 first try (grab 36 over a 0.8 card, hands 50 apart) read as a fist lump; the card's text was hidden.
+- **5.1:** a contact spot plus knock strokes where the knuckles meet the glass.
+- **5.5b:** both shoes clear of the tape.
+- **6.1b as three drawings (1.5 s):** eyes to Pam's phone (up-right, spring, shock), then eyes to the team (up-left, half spring), then arms drop (pose "stand", face "confused"). The team stays calm. Known: the eye change between drawings 1 and 2 is small at 270 px, so the head may need a turn when animated.
+- **6.2 (1.4 s):** down with eyes shut, then the robot yanks it up, then 1.1 frame 0. Lighter darkening via the new opt-in `ps_motion.DIM_A` (default 0.32 unchanged; the ending uses 0.16).
+- Checks: board v4 is 44/44 md5-identical to /tmp/bnew. The film's 6.2 last drawing still equals 1.1 frame 0 (md5). 5.4 and 5.7 are untouched.

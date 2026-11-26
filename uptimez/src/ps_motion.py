@@ -73,6 +73,9 @@ def tug_state(t):
     return 0.0, None
 
 
+DIM_A = [0.32]                                               # opt-in: how dark the room gets as the blind comes down (6.2 ending: lighter)
+
+
 def shot_A(t, v4=False):
     u, who = tug_state(t)
     n = u / 0.92                                              # 0 up .. 1 down
@@ -102,7 +105,7 @@ def shot_A(t, v4=False):
             for dx in (-8, 8):
                 c.move_to(hx + dx, hy + 18); c.line_to(hx + dx, hy + 34); c.stroke()
         if u > 0:
-            c.set_source_rgba(0.05, 0.05, 0.10, 0.32 * n); c.rectangle(-400, 0, 1800, 1200); c.fill()
+            c.set_source_rgba(0.05, 0.05, 0.10, DIM_A[0] * n); c.rectangle(-400, 0, 1800, 1200); c.fill()
         return heads
     room = dict(blind="down", u=u, dim=False, cords=False) if u > 0.01 else dict(blind="up", cords=False)
     return ps.S("1.1", ps.S2, room, cast)
