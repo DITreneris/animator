@@ -429,6 +429,7 @@ def s3_5(k, d):
 
 N35b = 18
 LEAN35b = [0, 0, 7, 10, 7, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+BOUNCE35b = [False]
 
 
 def s3_5b(k, d):
@@ -436,6 +437,8 @@ def s3_5b(k, d):
     three: his head knocked back and coming forward; it drops out of frame; then he freezes, one eye twitching."""
     cam = __import__("cs_v19").CAMS19["3.5b"]
     lean = LEAN35b[d]
+    if BOUNCE35b[0]:                                                              # v24: the head snaps back harder, overshoots
+        lean = [0, 0, 13, 16, 9, 3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0][d]
     w = 0.45 * math.sin((d - 2) * 1.9) * math.exp(-(d - 2) / 2.5) if d >= 2 else 0.0
     pts = s1.A.lerp(s1.A.MOUTH, s1.A.CROOKED4, w)
     face = "smug" if d < 2 else ("panic" if d < 8 else "neutral")
@@ -455,6 +458,9 @@ def s3_5b(k, d):
         elif d == 2:
             c.save(); c.translate(fx - 5, fy); c.scale(0.6, 0.6); impact(c, 0, 0, 40); c.restore()
             c.save(); c.translate(fx - 2, fy); c.rotate(-0.5); c.scale(0.55, 1.3); g._ball(k_, 0, 0, 7.5); c.restore()
+        elif d < 8 and BOUNCE35b[0]:                                              # v24: it bounces OFF, up and back, then falls
+            q = (d - 2) / 5.0
+            g._ball(k_, fx - 20 - 90 * q, fy - 40 * math.sin(math.pi * min(1, q * 1.6)) + 240 * max(0, q - 0.55) ** 2 * 4, 7.5)
         elif d < 8:                                                               # off his forehead and down out of the frame
             q = (d - 3) / 4.0
             g._ball(k_, fx - 14 - 10 * q, fy + 10 + 260 * q * q, 7.5)

@@ -50,6 +50,7 @@ CL_SH_L = (-46.8, 651.72)                                   # his screen-left sh
 
 
 PHONE51 = [False]
+PHONE51_S = [1.0]                                   # v25: its size (1.0 was smaller than his fingers)
 UP51 = [(CL_X - 60, 688)]
 SOFIA51 = [None]                                    # v20: her face from d14 (her glance at Pam)
 
@@ -74,7 +75,7 @@ def s5_1(k, d):
     def ex(k_, o):
         if up > 0.3 or PHONE51[0]:                                                 # v20: in his hand from d0 (it appeared)
             hx, hy = min(o["client"]["hands"])
-            s1.phone_held(k_, hx, hy, sb.SC["client"], ang=0.15, seed=961)
+            s1.phone_held(k_, hx, hy, sb.SC["client"] * PHONE51_S[0], ang=0.15, seed=961)
             s1.fist(k_, hx, hy, sb.SC["client"], SKIN_CL, 965)
 
     with s4.Strip(None), s3.Client(mouth=code, edge=False), Breath(sb, "client", br(d, 0.4)), \

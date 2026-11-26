@@ -143,6 +143,8 @@ HEAD = {5: (-0.19, -5, -0.05), 6: (0.09, 2, 0.03), 7: (-0.04, 0, 0.0)}          
 STAND = (-8, 0, 8, 0)
 UP = (-160, -20, 160, 20)
 ONHEAD = (-150, -120, 140, 100)
+RELIEF = (-40, 100, 40, -100)                               # v24: hands on his chest, a breath out
+ARC24 = [False]
 GEO = {}
 
 
@@ -184,6 +186,12 @@ def gag(k, d):
         pose, face, look = kit.ARM_POSES["phone_r"], "caught", (0.1, 1.0)
     elif d <= 4:
         pose, face = UP, "shock"
+    elif ARC24[0] and d <= 6:                                                     # v24: the phone in the air: still shock
+        pose, face = UP, "shock"
+    elif ARC24[0] and d <= 8:                                                     # caught: relief, his hands down to his chest
+        pose, face = _mix(UP, RELIEF, (d - 6) / 1.5), "grin"
+    elif ARC24[0]:                                                                # then he sees the 1/5: horror, hands to his head
+        pose, face = _mix(RELIEF, ONHEAD, (d - 8) / 1.5), ("panic" if d < 14 else "shock")   # the 1/5 shows at d9
     elif d <= 10:
         pose, face = _mix(UP, ONHEAD, (d - 4) / 2.0), "shock"
     else:                                                                         # he freezes, hands on his head, mouth shut

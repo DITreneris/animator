@@ -17,11 +17,13 @@ PUSH = {"1.4": ((397, 300), 1.10), "3.4": ((270, 520), 1.08), "6.5": ((300, 390)
 # shot -> drawings with a hit (the shake decays over 4 drawings)
 HITS = {"1.1": [7], "3.5b": [2], "1.2": [40], "3.4b": [3]}
 WHIP_OUT, WHIP_IN = ("3.5", 3), ("3.5b", 2)                 # the last 3 drawings of 3.5, the first 2 of 3.5b
+WHIPPX, WHIP_IN_ON = [60.0], [True]
 CU14 = (44, 49)                                             # 1.4 drawings drawn as the visor close-up
 CU34 = 6                                                    # 3.4's last drawings: the robot's verdict
 N = {}
 ORIG = {}
 VISOR14 = (243.0, 495.0)
+POP14 = [False]
 
 
 def _ease(u):
@@ -80,9 +82,9 @@ def wrap(sh, fn):
         ds = c.get_target().get_device_scale()[0]
         if sh == WHIP_OUT[0] and d >= n - WHIP_OUT[1]:
             u = (d - (n - WHIP_OUT[1]) + 1) / float(WHIP_OUT[1])
-            _blur(c, 60 * u * ds, -1)
-        if sh == WHIP_IN[0] and d < WHIP_IN[1]:
-            _blur(c, 60 * (1 - d / float(WHIP_IN[1])) * ds, -1)
+            _blur(c, WHIPPX[0] * u * ds, -1)
+        if sh == WHIP_IN[0] and d < WHIP_IN[1] and WHIP_IN_ON[0]:
+            _blur(c, WHIPPX[0] * (1 - d / float(WHIP_IN[1])) * ds, -1)
     return f
 
 
@@ -99,6 +101,18 @@ def visor_cu(k, d, kind):
     c.save(); c.translate(270, 470); c.scale(Z, Z); c.translate(-sx, -sy)
     ORIG["1.4"](k, 44 if kind == "tick" else 0)
     c.restore()
+    if kind == "tick" and POP14[0]:                                                # v25: the tick pops in, 110 % then 100 %
+        import cs_props as cp
+        x, y, rx, ry = VC[0]
+        sc = (0.0, 1.10, 1.0, 1.0, 1.0)[min(d - CU14[0], 4)]
+        c.set_source_rgb(0.06, 0.08, 0.12); c.save(); c.translate(x, y); c.scale(rx, ry)
+        c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        if sc:
+            c.save(); c.translate(x, y); c.scale(sc, sc)
+            c.set_source_rgba(*cp.GRN, 0.25); c.arc(0, 0, 0.75 * rx, 0, 2 * math.pi); c.fill()
+            c.set_source_rgb(*cp.GRN); c.set_line_width(0.13 * rx); c.set_line_cap(1); c.set_line_join(1)
+            c.move_to(-0.38 * rx, 0); c.line_to(-0.10 * rx, 0.28 * rx); c.line_to(0.42 * rx, -0.32 * rx); c.stroke()
+            c.restore()
     if kind == "pct":
         x, y, rx, ry = VC[0]
         c.set_source_rgb(0.06, 0.08, 0.12); c.save(); c.translate(x, y); c.scale(rx, ry)

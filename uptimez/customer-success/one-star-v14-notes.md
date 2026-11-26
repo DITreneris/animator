@@ -184,3 +184,18 @@ QA: 2020 frames, -15.6 LUFS; bubbles 13/0; hand, elbow, insert, flat-band 0; PSN
 6. The desk plant sways.
 Not done: the antenna wobble, hair and earring settle, blinks (each rig needs its own hook: next pass).
 QA: 2020 frames, -15.6 LUFS, -2.3 dBFS; bubbles 13/0; gates 0; PSNR 35.2; speech 15/17 as before.
+
+## v25: the review of v24 ("polish, not rebuild": anticipation, action, reaction, hold) and 0:47's phone
+
+`python3 cs_film_v25.py ../customer-success 2` (`cs_os25.install()`), shot lengths and mix as v23.
+- 0:47 5.1: his phone was 1.0 x the series' grip at the Client's scale: smaller than his fingers (since v18, more
+  visible after v23 opened the arm). Now 1.8 x.
+- 1.1 Don: shock while it flies; RELIEF when the robot catches it (a grin, hands to his chest); HORROR when the 1/5
+  shows on its visor (hands to his head).
+- The whip: only 3.5's last 2 drawings, 24 px (v24 smeared 3.5b's incoming ball away). 3.5b: the head snaps back harder
+  and overshoots; the ball bounces OFF, up and back, then falls.
+- 3.4: the finger traces round court A's bottom to where the courts meet, holds there 0.25 s, then slides slowly out.
+- 1.4: the tick pops in on the visor close-up (110 % then 100 %).
+Not done: Don glancing at "his phone" before approving (the robot holds it); the robot's catch cushion and flinch;
+6.5's hold after the line is already 0.5 s.
+QA: 2020 frames, -15.6 LUFS; bubbles 13/0; gates 0; PSNR 35.2; speech 15/17 as before.
