@@ -676,3 +676,10 @@ check / check v5: 38 / 0 each. Board v4 md5-identical (44 frames, against a315cc
 - Hand sheet `ps_s4_hand_sheet_v1.png`: guard A's hand at the nose in five shapes, for Tomas's pick. Film v9 after it.
 - Not done (Tomas has not answered): different guard faces, neon rim light. Disagreed: table lower, stink lines.
 - check / check v5 38 / 0; board v4 md5-identical. No cold test on these stills yet.
+
+## Scene 4 v9 film: the hand-sheet review (26 Nov), "proceed"
+
+- **Cause of "lines across the hand" (all five variants):** `dh_cast` drew the clasped hand's three finger strokes at the wrist of side 1 whatever hand was there. Off when a hands_ps hand is hooked (`not hook`). 2/2 "no stray lines".
+- **Pinch v3** (`hands_ps.PINCH_V3`): a C, the index round one side, the thumb's pad round the other, the three curled as one block with two lines, the nose's tip red between the tips, a contact shadow. Hand 0.8, PINCH_POSE (-73, -93). Not done: another skin colour for the hand (one skin for the cast).
+- Cold test of the encoded v9 at feed size (2 viewers): the photo on the phone and his point at it 2/2; Father the most important 2/2; no stray lines, no extra hand, no call 2/2. **Open: the pinch reads as "a fist to the nose or mouth" 2/2, and the two guards as "the same gesture" 2/2**: a guard's face is about 45 px wide at feed size, the fingers cannot be told apart there. The smell reads from the stink lines.
+- check / check v5 38 / 0; board v4 md5-identical.

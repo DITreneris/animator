@@ -322,7 +322,8 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
             wx, wy = hx - ux * (co.HAND + 1), hy_ - uy * (co.HAND + 1)
             cut(k, [(wx + px * 19 - ux * 6, wy + py * 19 - uy * 6), (wx + px * 18, wy + py * 18), (wx - px * 18, wy - py * 18),
                     (wx - px * 19 - ux * 6, wy - py * 19 - uy * 6)], co.SHIRT, shadow=False, lw=1.8)
-        if kind == "guard" and side == 1:                                                    # v3: the gripping hand has fingers
+        if kind == "guard" and side == 1 and not hook:                                       # v3: the gripping hand has fingers (not on a
+                                                             # hands_ps hand: the three strokes crossed every shape at the nose, review 26 Nov)
             c.set_source_rgb(*INK); c.set_line_width(1.8); c.set_line_cap(1)
             for i in (-1, 0, 1):
                 c.move_to(hx - 16, hy_ + i * 8 + 1); c.line_to(hx + 2, hy_ + i * 8 + 3); c.stroke()
