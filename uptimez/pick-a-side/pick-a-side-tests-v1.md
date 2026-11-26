@@ -731,3 +731,20 @@ Applies (rules-hands §0): 224 (the object, then the fingers over it), 208 (one 
 - Cold test of v4 (2 viewers, feed size): the phone "a phone, he looks at it" **2/2** (v1: "a scan" 2/2); "stands on a step stool" **2/2**; Sofía left of the line → right of it 2/2; Pam speaks 2/2. **Open: "holds a grey bar or shelf" 2/2, the blind not named** (the stack of slats added after this test, v5, not tested).
 - For Tomas's pick, not in the film: `ps_s5_leg_sheet_v1.png` (`don_ps.LEG`, four legs), `ps_s5_grip_sheet_v1.png` (`PEN_HAND` fist / pinch / grab; the can as it is; `CV_FINGERS`; `ps_set.ARC_K` 0.6).
 - Scene 3 v6 and scene 4 v11 re-rendered from their commits and from the branch: md5-identical. check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 5 v6 → v7: review 8.2/10, Tomas's picks (26 Nov: 5.7's grip stays, 3.6 not changed, the blind fixed)
+
+Built (opt-in): 5.4 leg 3 (`don_ps.LEG`: knee up, shin down, the shoe smaller and tipped, no hem shape, the standing shoe wider, a lean onto it, elbows 16° in) · 5.2 `PEN_HAND` pinch · 5.3b `GIVE_53` (the guard's hand lets go and folds back as the can rises) · 5.5 `CV_FINGERS` (smaller, three lengths) · 5.7 `ARC_K` 0.6 · 5.6 `LOOK_56` (Pam's eyes follow Sofía), a four-drawing step (`sofia_ss.LEGS`) · 5.3a camera 13 px right.
+
+| Asked | v6 (2 viewers, 200 px tiles) | v7 (2 viewers, 270 px, 5.5–5.7 only) |
+|---|---|---|
+| 5.1 a phone | 2/2 | |
+| 5.2 HR?; the grip | 2/2; "a writing grip" 1, "a fist" 1 | |
+| 5.3b who holds the can | the robot 1, "the man, both hands" 1 | |
+| 5.4 the foot back, no cross | **2/2** (v1: 1.5/2); the leg "a kick" 1, "a flat block" 1 | |
+| 5.6 Sofía crosses | **0/2** "on the line" (v3's shorter walk, never tested) | walk 118 left → 60 right: 1 "crosses", 1 "stops beside it" |
+| 5.6 the blind | separate slats: **"a stack of paper" 2/2** | back to the sheet (`BLIND_STYLE`): "a window blind or papers" 2/2, unsure |
+| 5.6 Pam speaks; eyes | 1/2; eyes to Sofía 2/2 | "the box has no clear speaker" 2/2; eyes 1/2 |
+| 5.7 Pam's phone | 2/2 | 2/2 |
+
+**Not converging on 5.6** (seven versions; the scene's budget was three): the stool in frame put Pam 110 px higher and the camera lower, which moved Sofía's walk to the tape's far, short end; v2 (no stool) had the cross and the speech 2/2. Stopped for Tomas's call. Not locked. check / check v5 38 / 0; board v4 md5-identical.

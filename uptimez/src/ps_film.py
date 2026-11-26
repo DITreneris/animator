@@ -534,12 +534,15 @@ def s52(t):
     lift = 10 * max(0.0, 1 - abs((t - 0.44) / 0.10)) + 10 * max(0.0, 1 - abs((t - 0.84) / 0.10))   # the nib up between letters
     base = BOARD["5.2"]
     def draw(k):
-        was, wn = ps.PEN_C[0], ps.sp.CV_N[0]
+        import hands_ps as hp_
+        was, wn, wv = ps.PEN_C[0], ps.sp.CV_N[0], hp_.PINCH_V2[0]
         ps.PEN_C[0] = (was[0] + dx, was[1] - lift); ps.sp.CV_N[0] = n
+        ps.PEN_HAND[0], ps.PEN_DIR[0], hp_.PINCH_V2[0] = "pinch", (-0.9, -0.45), True   # Tomas's pick (grip sheet, 26 Nov)
         try:
             return base["draw"](k)
         finally:
             ps.PEN_C[0], ps.sp.CV_N[0] = was, wn
+            ps.PEN_HAND[0], ps.PEN_DIR[0], hp_.PINCH_V2[0] = "fist", (-1.0, 0.1), wv
     return ps.S("5.2", "screen", draw=draw)
 
 
@@ -559,13 +562,15 @@ def s53(t):
         ps.LARM_53[0] = (a0[0] + (a1[0] - a0[0]) * u, a0[1] + (a1[1] - a0[1]) * u)
         ps.CAN_53[0] = 0.5 * (1 - u)
         ps.HEART_53[0] = heart
+        ps.GIVE_53[0] = 1 - ease((t - TREAT_AT - 0.05) / 0.30)   # his hand lets go and folds back as the can goes up
         try:
             return ps.cast_53_treat(k)
         finally:
-            ps.LARM_53[0], ps.CAN_53[0] = was, wc; ps.HEART_53[0] = True
+            ps.LARM_53[0], ps.CAN_53[0] = was, wc; ps.HEART_53[0] = True; ps.GIVE_53[0] = 1.0
     return dict(ps.S("5.3b", ps.TREAT_53, BOARD["5.3"]["room"], cast), own_cam=True)
 
 
+LEG_54 = dict(knee=(-8, -22), ankle=(-10, 10), shoe=0.84, tilt=0.28, shadow=0.10, nohem=True, wide=True)
 WIDE_54 = 0.85                                              # 5.4a the wide (his door across the tape) .. 5.4b test C
 
 
@@ -579,16 +584,39 @@ def s54(t):
             _, heads["don"] = ps.don(k, "don_line", "stand", "neutral", look)
             return heads
         return dict(ps.S("5.4a", ps.KEYS_V4["5.4"][0], BOARD["5.4"]["room"], cast), own_cam=True)
-    return dict(pm_.shot_C(t - WIDE_54), room=BOARD["5.4"]["room"])
+    sh = dict(pm_.shot_C(t - WIDE_54), room=BOARD["5.4"]["room"])
+    tc = t - WIDE_54                                         # Tomas's pick (leg sheet 3, 26 Nov): the knee up, the shin down, the shoe
+    kn = ease(tc / 0.3) if tc < 0.9 else max(0.0, 1 - ease((tc - 0.9) / 0.3))   # tipped, his weight over the standing leg
+    inner = sh["cast"]
+    def cast(k):
+        orig = ps.don
+        def don_(k_, at, pose, *a, **kw):
+            if pose == "balance":                            # elbows a little bent (review: "a marionette")
+                b_ = dp.POSES["balance"]; pose = (b_[0], b_[1] - 16, b_[2], b_[3] + 16)
+            return orig(k_, at, pose, *a, **dict(kw, lean=-0.05 * kn))
+        dp.LEG[0] = LEG_54; ps.don = don_; pm_.ps.don = don_
+        try:
+            return inner(k)
+        finally:
+            dp.LEG[0] = None; ps.don = orig; pm_.ps.don = orig
+    return dict(sh, cast=cast)
 
 
 def s55(t):
     """test K: Sofía steps onto the tape, the CV at her chest, HR? up."""
-    return dict(pm_.shot_K(t), own_cam=True)                # test K's camera: the board's 5.5
+    sh = pm_.shot_K(t)
+    inner = sh["cast"]
+    def cast(k):
+        ps.CV_FINGERS[0] = True                              # Tomas's pick: her fingertips over the sheet's edge
+        try:
+            return inner(k)
+        finally:
+            ps.CV_FINGERS[0] = False
+    return dict(sh, cast=cast, own_cam=True)                 # test K's camera: the board's 5.5
 
 
 DY_56 = -40
-CAM_56, WALK_56 = (-78, 26, 1.45), (-72, 46)               # v2 (cold test: her cross 0 of 2, Pam's box "a sign" 2 of 2): the
+CAM_56, WALK_56 = (-66, 26, 1.45), (-118, 60)               # v2 (cold test: her cross 0 of 2, Pam's box "a sign" 2 of 2): the
                                                              # camera lower and wider, her walk above Pam's box, 190 units long
 
 def s56(t):
@@ -600,15 +628,23 @@ def s56(t):
     step = int(t * 5) % 2 if 0.45 < t < 1.70 else 1
     import pm_ps as _pm
     def fg(k):                                               # the shot's own switches, set only while its near layer draws
-        ps.PAM_X_56[0], ps.PAM_DY_56[0], ps.STOOL_56[0], _pm.BLIND_W[0] = PAM_56, DY_56, True, 26
+        ps.PAM_X_56[0], ps.PAM_DY_56[0], ps.STOOL_56[0], _pm.BLIND_W[0] = PAM_56, DY_56, True, 30
+        ps.LOOK_56[0] = (0.5 + 0.5 * u, -0.9 + 0.3 * u)       # her eyes follow Sofía across (her body and hands stay frozen)
+        ps.CV_FINGERS[0] = False
         try:
             return ps.fg_56(k)
         finally:
             ps.PAM_X_56[0], ps.PAM_DY_56[0], ps.STOOL_56[0], _pm.BLIND_W[0] = 160, 0, False, 0.0
+            ps.LOOK_56[0] = (1, 0.1)
     def cast(k):
         heads = {}
-        _, heads["sofia"] = ps.sofia(k, (lerp(tx + WALK_56[0], tx + WALK_56[1], u), F + 60), "walk" if step == 0 else "stand",
-                                     "smile", (1, -0.1))
+        ph = int(t * 7.5) % 4 if 0.45 < t < 1.70 else 1      # a step in four drawings: a foot forward and up, down, the other
+        ps.sp.ss.LEGS[0] = {0: ((9, 7), (-7, 0)), 2: ((-7, 0), (9, 7))}.get(ph)
+        try:
+            _, heads["sofia"] = ps.sofia(k, (lerp(tx + WALK_56[0], tx + WALK_56[1], u), F + 60 - (2 if ph in (0, 2) else 0)),
+                                         "stand", "smile", (1, -0.1))
+        finally:
+            ps.sp.ss.LEGS[0] = None
         return heads
     return dict(ps.S("5.6", (tx + CAM_56[0], F + CAM_56[1], CAM_56[2]), BOARD["5.6"]["room"], cast, fg=fg,
                      story=["pam", "sofia"]), own_cam=True)
@@ -624,11 +660,11 @@ def s57(t):
     on = BUZZ_57[0] <= t < BUZZ_57[1]
     jx = (3.0 if int(round(t * DPS)) % 2 else -3.0) if on else 0.0   # a shake per drawing (a 7.5 Hz sine sampled at 15 is 0)
     def draw(k):
-        k.c.save(); k.c.translate(jx, 0)
+        k.c.save(); k.c.translate(jx, 0); pss.ARC_K[0] = 0.6   # Tomas's pick: the arcs 40 % less
         try:
             return base["draw"](k)
         finally:
-            k.c.restore()
+            k.c.restore(); pss.ARC_K[0] = 1.0
     return ps.S("5.7", "screen", draw=draw)
 
 
@@ -684,7 +720,7 @@ PUSH = {"1.4a": ("1.4", 0.20, 0.50)}                         # v3 (cold test 2/2
                                                              # the three, one room), then pushes in to Don
 
 
-NUDGE = {"1.4b": (10, 10, 1.3), "1.4a": (0, 40, 1.0), "2.2": (26, 0, 1.0), "2.10c": (112, 0, 1.0), "3.1c": (52, 64, 1.0)}   # 2.2: the front tag (before the spin) whole                                   # 1.4b: $49,999, SHRED off the right, OUR FIRST CLIENT off the top
+NUDGE = {"5.3": (13, 0, 1.0), "1.4b": (10, 10, 1.3), "1.4a": (0, 40, 1.0), "2.2": (26, 0, 1.0), "2.10c": (112, 0, 1.0), "3.1c": (52, 64, 1.0)}   # 2.2: the front tag (before the spin) whole                                   # 1.4b: $49,999, SHRED off the right, OUR FIRST CLIENT off the top
 
 
 def draw(sid, t):
@@ -696,7 +732,7 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 5}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 7}
 STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
            ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
            ("4.3", 1.3, "A pinches"), ("4.3", 1.75, "B turns away"), ("4.3", 2.05, "Father, silent"), ("4.3", 2.85, "Invite her.")]

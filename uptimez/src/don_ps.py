@@ -103,7 +103,8 @@ def _legs(k, x, feet, s, u):
     c.save(); c.translate(x, feet); c.scale(s, s)
     w = WAIST_Y
     cut(k, [(-45, w), (2, w), (-2, -10), (-47, -10)], dv.KHAKI, shadow=False, lw=2)          # the planted leg
-    cut(k, [(-50, -12), (2, -12), (4, 2), (-52, 2)], (0.24, 0.18, 0.13), shadow=False, lw=2)   # its shoe
+    e_ = 3 if LEG[0] and LEG[0].get("wide") else 0        # opt-in: the standing shoe 10 % wider (the weight is on it)
+    cut(k, [(-50 - e_, -12), (2 + e_, -12), (4 + e_, 2), (-52 - e_, 2)], (0.24, 0.18, 0.13), shadow=False, lw=2)   # its shoe
     lift = 44 * u
     kx, ky = 30 + 34 * u, w + 30 - 8 * u                                                      # the knee
     ax, ay = kx + 16 * u, -16 - lift                                                          # the ankle
@@ -123,7 +124,8 @@ def _legs(k, x, feet, s, u):
     c.move_to(ax - 18, ay - 6); c.line_to(ax + 14, ay - 8); c.curve_to(ax + 40, ay - 6, ax + 52, ay + 4, ax + 50, ay + 14)
     c.line_to(ax - 20, ay + 14); c.close_path()
     c.set_source_rgb(0.24, 0.18, 0.13); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
-    _cap(c, [(ax - 18, ay - 10), (ax + 16, ay - 12)], 10, dv.KHAKI)                          # the hem over it
+    if not (L_ and L_.get("nohem")):                       # (review 26 Nov: the hem's own shape read as "an extra joint")
+        _cap(c, [(ax - 18, ay - 10), (ax + 16, ay - 12)], 10, dv.KHAKI)                      # the hem over it
     if L_:
         c.restore()
     if u > 0.6:

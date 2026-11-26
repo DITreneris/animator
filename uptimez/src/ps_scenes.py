@@ -446,6 +446,7 @@ def cast_37(k):
 
 
 LARM_53, CAN_53 = [(-130, -80)], [0.0]
+GIVE_53 = [1.0]
 HEART_53 = [True]                                             # film: the heart comes on once the can is up
 TREAT_53 = (286, 752, 2.05)                                  # GAGS_V5: 5.3b's camera, close on bodyguard 2 and the robot (Pam and the
 GUARD_S = 0.56 / 0.52 * 0.60                                 # signs out of frame); the guard at Daddy's Home's scale against Don
@@ -457,7 +458,9 @@ def cast_53_treat(k):
     The robot has rolled 30 px to him from its 5.3a mark. Cold test round 4: the can, the treat and the delight read 2 of 2."""
     import dh_cast as dc
     heads = {}; c = k.c
-    og = dc.guard(k, 196, F + 46, GUARD_S, pose=(dc.GUARD_POSE[0], dc.GUARD_POSE[1], 10, 20))   # his giving hand still out
+    g_ = GIVE_53[0]                                          # film: 1 his giving hand still out .. 0 back with the other (the can is the robot's)
+    og = dc.guard(k, 196, F + 46, GUARD_S, pose=(dc.GUARD_POSE[0], dc.GUARD_POSE[1], dc.GUARD_POSE[2] + (10 - dc.GUARD_POSE[2]) * g_,
+                                                 dc.GUARD_POSE[3] + (20 - dc.GUARD_POSE[3]) * g_))
     heads["guard"] = (og["head"][0], og["head"][1], 40 * GUARD_S)
     rxy, arms = (312, F + 50), (LARM_53[0], (20, 10))        # the can in its near hand, raised, over his dark suit: its face clear
     c.push_group(); orb, _ = robot(k, rxy, arms=arms); c.pop_group()
@@ -509,6 +512,7 @@ def cast_56(k):
 
 
 STOOL_56 = [False]
+LOOK_56 = [(1, 0.1)]                                          # film: her eyes follow Sofía
 PAM_DY_56 = [0]                                              # film (opt-in): Pam this much lower in the frame
 PAM_X_56 = [160]                                            # her own frame (Sofía out): her box clear of the button rail
 
@@ -520,9 +524,9 @@ def fg_56(k):
     if STOOL_56[0]:                                          # film (review 26 Nov: "hung from the bar"): what she stands on, in frame
         pm.stool(k, px, 1060 + PAM_DY_56[0], s_)
     tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
-    hh = pm.pam(Ctx(cairo.Context(tmp), 0), px, 1060 + PAM_DY_56[0] - 98 * s_, s_, "rail", "frozen", (1, 0.1))["hands"]
+    hh = pm.pam(Ctx(cairo.Context(tmp), 0), px, 1060 + PAM_DY_56[0] - 98 * s_, s_, "rail", "frozen", LOOK_56[0])["hands"]
     pm.blind_rail(k, hh[0], hh[1], s_)                               # v3: the blind hangs from her rail
-    o = pm.pam(k, px, 1060 + PAM_DY_56[0] - 98 * s_, s_, "rail", "frozen", (1, 0.1), late=False)
+    o = pm.pam(k, px, 1060 + PAM_DY_56[0] - 98 * s_, s_, "rail", "frozen", LOOK_56[0], late=False)
     pm.rail_bar(k, o["hands"][0], o["hands"][1], s_)
     import hands_ps as hp
     hp.redraw_late(k)
@@ -974,10 +978,10 @@ def cast_55(k):
             if CV_FINGERS[0]:                                # three fingertips over the sheet's near edge (lesson 224: the
                 c = k.c                                      # object, then the fingers over it)
                 ex, ey = hx + 4 + 18.5 + CV_EDGE[0][0], hy + 9 + CV_EDGE[0][1]   # the sheet's edge on her arm's side
-                for i in range(3):
-                    for col, lw in ((INK, 4.6), (sp.sbc.sf.SKIN, 3.0)):
+                for i, ln in enumerate((5.6, 6.6, 5.0)):         # 15 % smaller, their lengths differ (review 26 Nov)
+                    for col, lw in ((INK, 3.9), (sp.sbc.sf.SKIN, 2.5)):
                         c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
-                        c.move_to(ex + 1.5, ey + i * 4.2); c.line_to(ex - 6, ey + i * 4.2 + 0.6); c.stroke()
+                        c.move_to(ex + 1.5, ey + i * 3.6); c.line_to(ex + 1.5 - ln, ey + i * 3.6 + 0.5); c.stroke()
                 c.set_line_cap(0)
             sp.CV_FONT[0] = was
         else:

@@ -100,6 +100,7 @@ def stool(k, x, feet, s, h=90):
     c.restore()
 
 
+BLIND_STYLE = ["sheet"]                                     # "sheet" or "slats" (v2: separate slats, read as "a stack of paper" 2/2)
 BLIND_W = [0.0]                                              # opt-in (film 5.6, review 26 Nov: "a grey bar"): the blind this much wider than
                                                              # her hands each side (rig units), darker slats, its pull cord: it reads a blind
 
@@ -107,7 +108,7 @@ def blind_rail(k, a, b, s, drop=230):
     """The blind half hung: its rail between her hands, the slats hanging (drawn before her: behind)."""
     c = k.c
     (ax, ay), (bx, by) = a, b
-    if BLIND_W[0]:
+    if BLIND_W[0] and BLIND_STYLE[0] == "sheet":      # v1: one sheet of slats, strings, the cord ("a bar or shelf" 2/2)
         e = BLIND_W[0] * s
         ax, bx = ax - e, bx + e
         top = min(ay, by) + 4 * s
@@ -120,6 +121,26 @@ def blind_rail(k, a, b, s, drop=230):
         for fx in (0.22, 0.78):
             xx = ax + (bx - ax) * fx; c.move_to(xx, top); c.line_to(xx, top + drop * s); c.stroke()
         c.move_to(bx - 2 * s, top); c.line_to(bx + 14 * s, top + drop * s * 0.62); c.stroke()
+        c.new_path(); c.arc(bx + 14 * s, top + drop * s * 0.62 + 5 * s, 5 * s, 0, 2 * math.pi); c.set_source_rgb(0.92, 0.92, 0.88); c.fill_preserve()
+        c.set_source_rgb(*INK); c.stroke()
+        return
+    if BLIND_W[0]:                                           # v2 (cold test: "a grey bar or shelf" 2/2, the sheet of slats not seen as
+        e = BLIND_W[0] * s                                   # a blind): separate slats with the wall between, a few crooked, a bottom
+        ax, bx = ax - e, bx + e                              # rail, ladder strings and the pull cord
+        top = min(ay, by) + 8 * s
+        r_ = k.rng(4830)
+        n = int(drop / 13)
+        for xx in (ax + (bx - ax) * 0.2, ax + (bx - ax) * 0.8):
+            c.set_source_rgb(*INK); c.set_line_width(1.6); c.move_to(xx, top - 6 * s); c.line_to(xx, top + n * 13 * s); c.stroke()
+        for i in range(n):
+            yy = top + i * 13 * s
+            a_ = (r_.random() - 0.5) * (0.10 if i % 5 == 3 else 0.02)
+            c.save(); c.translate((ax + bx) / 2, yy + 3.5 * s); c.rotate(a_)
+            rect(k, -(bx - ax) / 2, -3.5 * s, bx - ax, 7 * s, dp.SLAT, 4840 + i, shadow=False, lw=1.5)
+            c.restore()
+        rect(k, ax - 2 * s, top + n * 13 * s, bx - ax + 4 * s, 9 * s, (0.70, 0.70, 0.66), 4839, shadow=False, lw=1.8)
+        c.set_source_rgb(*INK); c.set_line_width(1.6)
+        c.move_to(bx - 2 * s, top - 6 * s); c.line_to(bx + 14 * s, top + drop * s * 0.62); c.stroke()
         c.new_path(); c.arc(bx + 14 * s, top + drop * s * 0.62 + 5 * s, 5 * s, 0, 2 * math.pi); c.set_source_rgb(0.92, 0.92, 0.88); c.fill_preserve()
         c.set_source_rgb(*INK); c.stroke()
         return
