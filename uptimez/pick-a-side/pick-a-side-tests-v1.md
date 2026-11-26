@@ -947,3 +947,24 @@ The first 3 s: frame 0 −28 → −19; round 1 −19/−17; round 2 −15/−14
 Checks: −15.3 LUFS, −2.0 dBTP, speech 19/19.
 
 Files: `pick-a-side/ps_film_master_v4_540.mp4`, `/tmp/ps_master_v4_1080.mp4`. v3 can be rebuilt with `MID = [False]`.
+
+## Sound v5: a bug found (Tomas: "pranyko nuplėšiamos juostos garsas?")
+
+My bug: from sound v2 to v4, scenes 2–4 had none of their own effects. `ps_film_end.setup()` swaps `pf.sound` for the ending's sound map, which only maps scenes 5–6, so the capture got nothing for 1–4. Lost with it:
+- the tape's screech; the clip and SLAP; the casters; the stamp; the landings; the heel click;
+- the beeps; the squeaks; the BONK; the servo; the shutter; the chime; the whoosh; the DING;
+- the club's bass; the smudge; the sniff; the huff.
+
+Nothing checked for it: the levels passed, and the gaps were filled by the bed and the foley.
+
+Fix: `effects(n)` calls ps_film's own map (`ps_film_end._old_sound`) for scenes 1–4. Captured now: 8 / 15 / 6 / 20 / 21 / 5 placements.
+
+With the effects back:
+- the effects duck 8 dB under every line, 0.12 s ahead;
+- a short effect on a line's first syllable moves ahead of it. Two moved: 2.9's second alarm beep sat on "Border" (Whisper heard "Order"), and 5.3's knock on "Welcome".
+
+Checks:
+- −15.3 LUFS, −1.6 dBTP;
+- one stretch under −45 dBFS: 69.0 s, the shock (on purpose);
+- speech 18/19. "Both." (2.10) reads "Bose" in the three windows: the same in the voice-only take and in master v1. With "And you?" before it, it reads "both". The take is weak alone; the bubble carries it on screen.
+- Files: `pick-a-side/ps_film_master_v5_540.mp4`, `/tmp/ps_master_v5_1080.mp4`.

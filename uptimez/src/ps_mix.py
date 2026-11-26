@@ -22,6 +22,7 @@ SR = osd.SR
 VOICE_RMS = -20.0                                            # dBFS, every take's speech RMS before the master
 BED_UNDER = 15.0                                             # dB the bed sits under the voices (lesson 429: measure it)
 BARS = 24
+FX_DUCK = 8.0                                                # dB the effects dip under a line
 DUCK = 5.0                                                   # dB the bed dips under a line (2.5 "my" was lost under it: 0.67)
 STOPS = [("2.10", "take1", -0.20, 0.90), ("6.1b", "start", 0.0, 1.45)]   # the bed out for "BOTH." (from its take) and the shock
 FOLEY = []
@@ -72,7 +73,8 @@ def effects(n):
         return np.zeros_like(a), sr
     osd.put, pf._take = put, take
     try:
-        pf.sound(n, "/tmp/ps_mix_fx_s%d.wav" % n)
+        import ps_film_end as fe                             # scenes 1-4: ps_film's own map (fe.setup() swaps pf.sound for
+        (fe._old_sound if n < 5 else fe.sound)(n, "/tmp/ps_mix_fx_s%d.wav" % n)   # the ending's, which maps 5-6 only)
     finally:
         osd.put, pf._take = put0, take0
     return got
@@ -183,11 +185,18 @@ def build(path="/tmp/ps_mix_v1.wav"):
                 report.append("voice %-6s %+5.1f dB" % (tk, 20 * np.log10(g)))
                 osd.put(voice, a, sh[sid] + at, g)
     s62 = sh["6.2"] - sc[6]
+    onsets = [sh[sid] + at for n in (1, 2, 3, 4, 5, 6) for sid in pf.SCENES[n] for at in pf.TAKE_AT[sid]]
     for n in (1, 2, 3, 4, 5, 6):                             # every scene's own effects, at its place
         for a, t0, g in effects(n):
             if OPENER[0] and (n == 1 or (n == 6 and t0 >= s62 - 0.01)):
                 continue                                     # the blind's own sounds below replace the tug's and 6.2's
-            osd.put(efx, a, sc[n] + t0, g)
+            T, d_ = sc[n] + t0, len(a) / SR
+            hit = [o for o in onsets if T - 0.02 <= o < T + d_]
+            if hit and d_ < 0.3:                             # v5: a short effect on a line's first syllable moves ahead of it
+                report.append("moved a %.2f-s effect off the line at %.2f s" % (d_, hit[0]))   # (2.9's second beep: "Order")
+                T = hit[0] - d_ - 0.03
+            osd.put(efx, a, T, g)
+    ob_ = np.zeros(L)
     if OPENER[0]:                                            # the blind's sounds on their own bus, saturated (their pings'
         ob = np.zeros(L)                                     # crest drove the whole opening into the limiter: v3a's first 4 s
         for a, t0, g in opener(sc, sh):                      # sat at the ceiling, flat, the rounds and the crash level)
@@ -197,7 +206,7 @@ def build(path="/tmp/ps_mix_v1.wav"):
         vr0 = rms_db(voice[np.abs(voice) > 1e-4])
         seg = ob[int(0.4 * SR):int(pf.DUR["1.1"] * SR)]
         ob *= 10 ** ((vr0 + OB_OVER - rms_db(seg)) / 20)     # the tug as loud as a line (OB_OVER dB over it)
-        efx += ob
+        ob_ = ob
         report.append("opener bus: drive %.1f, the tug %+.1f dB over the voices" % (OB_DRIVE, OB_OVER))
     club = osd.lp(osd.noise(sc[5] - sc[4]), 40) * 0.5          # Father's club: a low murmur of the room under the bass
     osd.put(efx, club * np.minimum(1, osd.t_(sc[5] - sc[4]) / 0.15) * np.minimum(1, (sc[5] - sc[4] - osd.t_(sc[5] - sc[4])) / 0.1),
@@ -241,7 +250,9 @@ def build(path="/tmp/ps_mix_v1.wav"):
     bed = bm * env * gb
     report.append("bed: %.1f dB under the voices (gain %.3f), %d bars of %.2f s" % (BED_UNDER, gb, BARS, bar))
     room = osd.room(L / SR + 0.01)[:L] * 0.012
-    mix = voice + efx + bed + room
+    pre = np.maximum(act, np.roll(act, -int(0.12 * SR)))          # 0.12 s ahead: the first consonant clear (2.9's beep ate the "B")
+    efx_duck = 1 - (1 - 10 ** (-FX_DUCK / 20)) * osd.lp(pre, int(0.04 * SR))   # v5: the effects step back under a line too
+    mix = voice + efx * efx_duck + ob_ + bed + room                   # (2.10's squeak ate "Both.": 0.00; 2.9's beeps the "B")
     x = mix / (np.abs(mix).max() + 1e-9) * 0.5               # one linear gain to -15 LUFS, a look-ahead limiter (pf.sound's)
     from scipy.ndimage import minimum_filter1d
     g, ceil = 1.0, 10 ** (-4.0 / 20)
@@ -261,7 +272,7 @@ def build(path="/tmp/ps_mix_v1.wav"):
     return path, total
 
 
-def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v4_1080.mp4"):
+def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v5_1080.mp4"):
     vids = VIDS
     with open("/tmp/ps_mix_vids.txt", "w") as f:
         for v in vids:
@@ -270,7 +281,7 @@ def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v4_1080.mp4"):
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", "/tmp/ps_mix_vids.txt",
                            "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest"]
                           + tags + [out])
-    c540 = os.path.join(pf.OUT, "ps_film_master_v4_540.mp4")
+    c540 = os.path.join(pf.OUT, "ps_film_master_v5_540.mp4")
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-vf", "scale=540:960:flags=lanczos,format=yuv420p",
                            "-c:v", "libx264", "-crf", "20", "-preset", "veryfast"] + tags + ["-c:a", "copy", c540])
     print("wrote", out, c540, osd.levels(out))
