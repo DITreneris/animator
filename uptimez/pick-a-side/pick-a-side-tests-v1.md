@@ -667,3 +667,12 @@ check / check v5: 38 shots, 0 faults each. Board defaults unchanged (PINCH_LEAD 
 | Not done (disagree) | table lower 25–30 %, captions at the bottom: y > 720 is the app's UI | |
 
 check / check v5: 38 / 0 each. Board v4 md5-identical (44 frames, against a315cc5).
+
+## Scene 4 v9 stills: review 6.5/10 (26 Nov), "proceed"
+
+- **The table phone shows the team photo** (`PHOTO_43`, `_phone_photo`: 3.1's `rp.team_photo`, as 4.1 and 4.2), not four bars. Phone 1.3 at x 240, whole in the frame.
+- **The Client's index ends at Sofía** (`HAND_OFF43` (60, 38), `POINT_LEN` 0.85). Five other hand places folded the arm into a lump (his shoulder is beside the phone: rule "keep the target in reach"); from above, the sleeve drew over the finger.
+- **4.3c**: the guard and the phone dimmed 35 % behind Father (`FATHER_SPOT`), Father lit.
+- Hand sheet `ps_s4_hand_sheet_v1.png`: guard A's hand at the nose in five shapes, for Tomas's pick. Film v9 after it.
+- Not done (Tomas has not answered): different guard faces, neon rim light. Disagreed: table lower, stink lines.
+- check / check v5 38 / 0; board v4 md5-identical. No cold test on these stills yet.

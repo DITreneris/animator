@@ -778,7 +778,8 @@ def ins_booth_43(k):
 STINK_V2 = [False]
 POINT_43 = [(300, 600)]                                       # where his pointing hand is (its index toward the photo)
 NARROW_43 = [84]
-PHONE_X43 = [244]
+PHONE_X43 = [240]
+PHONE_S43 = [1.3]
 AIM43 = [(235, 560)]
 SHOT43_V8 = [False]                                           # film (review 26 Nov, opt-in): 4.3a the #TeamDon phone bigger and whole in
 AVOID_43 = []                                                 # the frame, the Client points at it from clear of it, his bubble off both
@@ -844,6 +845,27 @@ def _booth_guards(k, seat, tbl):
     return heads
 
 
+PHOTO_43 = [False]                                            # film (review 26 Nov, opt-in): the table phone shows 3.1's team photo, the
+FATHER_SPOT = [0.0]                                           # same one as 4.1 and 4.2 (it was four coloured bars: "a bar chart" 2/2)
+HAND_OFF43 = [(60, 38)]
+PHOTO_PT = {}                                                 # the photo's rect in the caller's units, for the finger's aim
+
+
+def _phone_photo(k, x, y, s):
+    """client_ps.phone_on_table's phone (same body, same place), its screen the post: the team photo, #TeamDon under it."""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(s, s)
+    kit.rect(k, -46, -76, 92, 152, (0.08, 0.08, 0.09), 4510, shadow=False, lw=2.2)
+    c.set_source_rgb(0.95, 0.95, 0.97); c.rectangle(-40, -68, 80, 136); c.fill()
+    ph = rp.team_photo(184, 184)
+    c.save(); c.translate(-38, -62); c.scale(76 / 184.0, 76 / 184.0); c.set_source_surface(ph, 0, 0)
+    c.get_source().set_filter(cairo.FILTER_BEST); c.rectangle(0, 0, 184, 184); c.fill(); c.restore()
+    c.set_source_rgb(0.2, 0.2, 0.25); c.select_font_face("Inter", 0, 1); c.set_font_size(12)
+    c.move_to(-36, 34); c.show_text("#TeamDon")
+    c.restore()
+    PHOTO_PT["rect"] = (x - 38 * s, y - 62 * s, 76 * s)
+
+
 def _booth_43(k):
     import dh_cast as dc
     c = k.c
@@ -853,13 +875,18 @@ def _booth_43(k):
     cps.handprint(k, 430, seat - 150, 1.6, 0.2)
     del AVOID_43[:]
     if SHOT43_V8[0]:
-        ps_ = 1.45
-        cps.phone_on_table(k, PHONE_X43[0], tbl + 1 - 76 * ps_, ps_, prints=True)
+        ps_ = PHONE_S43[0]
+        if PHOTO_43[0]:
+            _phone_photo(k, PHONE_X43[0], tbl + 1 - 76 * ps_, ps_)
+        else:
+            cps.phone_on_table(k, PHONE_X43[0], tbl + 1 - 76 * ps_, ps_, prints=True)
         x0_, y0_ = k.c.user_to_device(PHONE_X43[0] - 47 * ps_, tbl - 152 * ps_)
         x1_, y1_ = k.c.user_to_device(PHONE_X43[0] + 47 * ps_, tbl)
         AVOID_43.append((x0_, y0_, x1_, y1_))
     else:
         cps.phone_on_table(k, 230, tbl - 90, 1.2, prints=True)
+    if FATHER_SPOT[0] and PART[0] == 1:                      # review 26 Nov: the guard and the phone behind Father go dim, he
+        c.save(); c.identity_matrix(); c.set_source_rgba(0.07, 0.01, 0.03, FATHER_SPOT[0]); c.paint(); c.restore()   # stays lit
     fs_ = 0.62 / 0.52 * 1.15
     of = dc.father(k, 110, seat + 170, fs_, face="hard", look=(0.6, 0.5))
     import client_on3 as co
@@ -869,6 +896,10 @@ def _booth_43(k):
         oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=tg, clip_hip=True)
     else:
         tgt, aim_ = ((POINT_43[0], AIM43[0]) if SHOT43_V8[0] else ((265, tbl - 128), (230, tbl - 122)))
+        if SHOT43_V8[0] and PHOTO_43[0]:                     # his index on Sofía in the photo (184-unit photo: she stands at 158, 128)
+            rx_, ry_, rw_ = PHOTO_PT["rect"]
+            aim_ = (rx_ + 158 / 184.0 * rw_, ry_ + 128 / 184.0 * rw_)
+            tgt = (aim_[0] + HAND_OFF43[0][0], aim_[1] + HAND_OFF43[0][1])
         oc_ = cps.cast_client(k, cx, seat - co.HIP * s, s, look=(-1.2, 1.4), targets=[tgt, (cx + 40, tbl - 6)],
                               clip_hip=True, hands={-1: "point"}, aim=aim_)
         if SHOT43_V8[0]:
