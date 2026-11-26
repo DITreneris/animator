@@ -1080,3 +1080,32 @@ Four fixes, all read 3 of 3 by the v50 cold viewers, plus pacing:
 - **A cable lags the hand.** Its belly swings against the hand's speed (−2.2 × px per 0.08 s, ±26 px), in the Client's hand and the guard's.
 - **A weight sways when the arm stops** (the lamp, 0.14 rad, damped), and the body turns back only after the drop (1.45 s).
 - **An off-screen speaker leans in.** The robot's head, bigger (r 46), leans in from the edge in 0.2 s at the cut, the card under its chin, and leans out after the line; the card goes with it.
+
+
+## 243. *One Star* v16–v26 (25–26 Nov): from "publish" to "not ready", and what the gates missed
+
+- **The gates measured geometry, not reading.** Hand, elbow and bubble gates were at 0 while Tomas found an ownerless
+  sleeve, a phone that appeared, an empty dark half, a finger over SAVE. Two gates were added and tried first on the
+  planted fault: an `insert_cuff` sleeve over 200 frame units inside the frame without its owner, and a one-colour band
+  over 40 % of the height. A fix is checked on the WHOLE frame: v17's 5.2 shift was checked on a crop and shipped an
+  empty lower half.
+- **Never say "publish" while a check fails.** The speech check failed on two lines every build; that is a "not yet".
+- **The master-vs-540 PSNR check finds real bugs.** It found 5.2's hand drawn at half its place at 1080
+  (`user_to_device / HI` on a scratch surface without the device scale): use `device_to_user` through the context.
+- **A gate in device units differs between sizes.** At 1080 half the passes draw on a 540 scratch surface; the hand
+  gate's tolerance moved with it. Log and test in frame units.
+- **A line lost in the mix: measure it alone and in its checker's context window before re-recording.** "Still one
+  star." was heard 3/3 alone and lost behind Pam's line; +3 dB fixed it once, and any later 1/12 s shift of the mix lost
+  it again. Whisper's context window is not a listener: people with sound decide.
+- **A target 37 px below the shoulder folds the arm into a lump** (231 again): the Client's "elbow" at 0:47.
+- **A prop drawn by the episode, not the rig, has no arm.** Sofía's tablet held by a hand with red nails at its edge;
+  now a phone in her own hand (`phone_grip`, the rig's arm from the shoulder, the elbow bent: the first try was a
+  straight "pole" and failed the elbow gate).
+- **Paint on a rig's part only inside that part.** The visor close-ups painted a guessed second ellipse: a double,
+  wavy contour. Capture the part as the rig draws it (its seed) and clip to it, with no outline of your own.
+- **A whip blur can erase the action it carries.** Smearing 3.5b's first drawings hid the incoming ball; the blur
+  goes on the outgoing shot only, light.
+- **Camera moves without changing shot lengths** (push-ins about the speaker's head, shakes on hits, close-ups taken
+  from inside a shot after its line) keep the mix and the locked bubbles as they were.
+- **Eyes shut read as asleep** when the beat is "approves without looking": eyes open, looking away.
+- **Shock, relief, horror:** a reaction needs its turn (the catch) before the next one (the 1/5), or it is one held face.

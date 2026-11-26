@@ -101,6 +101,10 @@ Read by cold viewers, in this order of what failed: one stroke from the edge = "
 - **A phone's back on a dark costume** needs a rim and its camera lenses, or phone and hands become one black blob.
 - **A gate on words is not a gate on hearing**: Whisper's context window lost "Still one star." whenever the mix
   moved by a fraction of a second, at any level; alone it was heard every time. People with sound decide.
+- **Paint on a rig's part only inside that part** (One Star v26): capture the part's own shape as the rig draws it and
+  clip to it; never a second guessed shape over it (a double contour in a close-up).
+- **A phone shown to us is held by its owner's arm** (`phone_grip` at the rig's hand), never a hand drawn at a prop's
+  edge; check the elbow gate after (a straight arm out is "a pole").
 - **A shared rig is patched from its source in the episode** (as `client_of` does), never edited in place: another film's
   build reads that source as text.
 
