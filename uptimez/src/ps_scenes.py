@@ -1285,9 +1285,14 @@ def _pass(k, sh, cam):
     return heads
 
 
+HIRES = [1]                                                  # 2: the G5 master's native 1080 (the 540 checks ran on the 540 build)
+
+
 def render(sh):
-    """-> (surface 540x960, the faults)."""
-    surf = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H)
+    """-> (surface 540x960, the faults). HIRES (opt-in, the G5 master): the same drawing at 2x, native (device scale)."""
+    surf = cairo.ImageSurface(cairo.FORMAT_RGB24, W * HIRES[0], H * HIRES[0])
+    if HIRES[0] > 1:
+        surf.set_device_scale(HIRES[0], HIRES[0])
     c = TextRec(surf); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
     pss.GUARD_CUES[0] = pss.PLATE_BIG[0] = pss.TAG_OFF[0] = FIX_V4[0]; rp.HEART[0] = FIX_V4[0]          # v4's set cues travel with the v4 staging
@@ -1331,7 +1336,7 @@ def render(sh):
     f = dict(cam=cam, heads=heads, scene=dict(text=text), bubbles=[], shot=sh["id"])
     LAST[0] = uz.faces(f)
     SIGNS_V4[:] = [t["bbox"] for t in c.texts if t["bbox"][3] - t["bbox"][1] >= 9]
-    msgs = uz.check_signs(f) + uz.check_scale(f, sh["story"]) + covered(sh, cam, surf, c.texts)
+    msgs = uz.check_signs(f) + uz.check_scale(f, sh["story"]) + (covered(sh, cam, surf, c.texts) if HIRES[0] == 1 else [])
     msgs = [m for m in msgs if (sh["id"], m.split(" at ")[0].split(" (")[0]) not in KNOWN]
     return surf, msgs
 

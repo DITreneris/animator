@@ -844,3 +844,18 @@ Shared misreads left (none breaks a beat):
 - 5.5b: which side her feet are on needs the DON label (2/3);
 - 5.6 Pam "wrapped in the blinds": 2/3 unsure why;
 - the opening's glow (1.1): 2/3 unsure.
+
+## G5 master v1 (26 Nov)
+
+- `ps_scenes.HIRES` (opt-in, default 1): the same drawings at 2x on a device-scaled surface. The 540 builds ran the checks; `covered()` is skipped at 2x.
+- `ps_film_fix.py master N VER`: each scene to /tmp at 1080, then joined into `/tmp/ps_master_v1_1080.mp4` (not committed, series rule).
+- s1 v6, s2 v5, s3 v6, s4 v11, s5 v10, s6 v5.
+
+| Check | Result |
+|---|---|
+| Format | 1080×1920, 30/1, 2133 frames (71.1 s), BT.709 tags. Native 2x render, not an upscale |
+| Loudness | −15.4 LUFS, true peak −2.2 dBTP on the final AAC (pass: −14 to −16, ≤ −1) |
+| Speech | `ps_asr_check.py`, 19 lines × 3 windows inside the final mix: 19/19 at 1.00 (4.3 heard "that that one": the window's lead-in) |
+| Frame 0 / loop | 1.1 held 0.4 s (HOLD0); the last drawing md5-equal to the first; the rattle runs up into frame 0 |
+| Text | bubbles placed by speech.draw with the rail and safe rect (the 540 builds' gates passed) |
+| Board v4 | 44/44 md5-identical after the HIRES change |

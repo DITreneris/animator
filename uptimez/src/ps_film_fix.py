@@ -46,8 +46,49 @@ def s14(t):
     return dict(sh, cast=cast)
 
 
+def master(n, ver):
+    """G5: scene n at native 1080 (ps_scenes.HIRES 2: the same drawings at 2x), 30 fps, BT.709 tags, the scene's
+    sound; written to /tmp (series rule: 1080 masters are not committed). The faults were checked on the 540 build."""
+    import os, shutil, subprocess
+    ps.gags_v5()
+    import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_S[0], dc_.BACK_HAND[0] = "pinch", 0.8, "quiet"
+    ps.PINCH_POSE[0], ps.PINCH_LEAD[0] = (-73, -93), 1.6
+    import client_ps as cps_, hands_ps as hp_; cps_.POINT_V2[0] = ps.SHOT43_V8[0] = hp_.PINCH_V2[0] = True; cps_.POINT_SKIN[0], cps_.POINT_W[0] = (0.86, 0.64, 0.50), 1.3
+    hp_.PINCH_V4[0] = ps.NOSE_43[0] = True; hp_.PINCH_CLOSE[0] = 1.0; cps_.POINT_LEN[0] = 0.85; ps.PHOTO_43[0] = True; ps.FATHER_SPOT[0] = 0.35
+    ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True
+    dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True
+    ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
+    ps.LIGHT_V5[0] = True; import pm_ps; pm_ps.MUG_RING[0] = True       # (the film()'s look, as ps_film.film)
+    ps.HIRES[0] = 2
+    d = "/tmp/ps_master_s%d" % n
+    shutil.rmtree(d, ignore_errors=True); os.makedirs(d)
+    frames = []
+    for sid in pf.SCENES[n]:
+        for i in range(int(round(pf.DUR[sid] * pf.DPS))):
+            surf, _ = pf.drawing(sid, i / pf.DPS)
+            assert surf.get_width() == 1080, surf.get_width()
+            p = os.path.join(d, "%04d.png" % len(frames)); surf.write_to_png(p); frames.append(p)
+    ps.HIRES[0] = 1
+    lst = os.path.join(d, "list.txt")
+    with open(lst, "w") as f:
+        for p in frames:
+            f.write("file '%s'\nduration %.5f\n" % (p, 1.0 / pf.DPS))
+        f.write("file '%s'\n" % frames[-1])
+    wav = os.path.join(d, "s%d.wav" % n)
+    I, P = pf.sound(n, wav)
+    out = "/tmp/ps_film_s%d_v%d_1080.mp4" % (n, ver)
+    tags = ["-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709"]
+    subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst, "-i", wav,
+                           "-vf", "fps=%d,format=yuv420p" % pf.FPS, "-c:v", "libx264", "-crf", "18", "-preset", "veryfast"] + tags +
+                          ["-c:a", "aac", "-b:a", "192k", "-shortest", out])
+    print("wrote %s  (%d drawings, %.1f LUFS, %.1f dB)" % (out, len(frames), I, P))
+    return out
+
+
 if __name__ == "__main__":
     setup()
+    if len(sys.argv) > 2 and sys.argv[1] == "master":
+        sys.exit(0 if master(int(sys.argv[2]), int(sys.argv[3])) else 1)
     if len(sys.argv) > 2 and sys.argv[1] == "film":
         sys.exit(0 if pf.film(int(sys.argv[2]), int(sys.argv[3]) if len(sys.argv) > 3 else 1) else 1)
     print(__doc__)
