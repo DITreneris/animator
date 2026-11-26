@@ -129,14 +129,30 @@ def pen52(k, px, py):
     far = (wrist[0] + 0.55 * (wrist[1] - top + 60), top - 60)                      # the forearm, off the top edge
     _taper(k, far, wrist, 62, 50, s4.PURPLE, lw=3.0)                              # her sleeve
     _taper(k, at(150, 26), at(140, 22), 54, 52, g.PAM_CUFF, lw=2.6)               # its cuff
-    _taper(k, at(124, 18), at(92, 10), 64, 54, sk, lw=2.6)                        # the back of her hand
+    _taper(k, at(128, 2), at(100, 4), 66, 58, sk, lw=2.6)                         # the back of her hand, above the grip
+    if TRIPOD[0]:                                                                 # v21 (review P0: "still a fist round the pen"):
+        _taper(k, at(92, 20), at(34, 9), 17, 15, sk, lw=2.0)                      # the middle finger, under the pen (behind it)
+        _pen(c, at, L)
+        _taper(k, at(86, 26), at(46, 13), 21, 17, sk, lw=2.2)                     # the thumb, on its lower side
+        _taper(k, at(104, -13), at(24, -6), 18, 15, sk, lw=2.2)                   # the index along its top, to near the tip
+        tx, ty = at(30, -6)
+        c.set_source_rgb(0.99, 0.90, 0.86); c.save(); c.translate(tx, ty); c.rotate(math.atan2(uy, ux))
+        c.scale(7, 4.5); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()   # its nail: a fingertip
+        return
     _taper(k, at(90, -6), at(58, -8), 20, 18, sk, lw=2.2)                         # the middle finger under the pen
+    _pen(c, at, L)
+    _taper(k, at(96, 10), at(34, 5), 22, 18, sk, lw=2.2)                          # the index finger along its top
+    _taper(k, at(92, -20), at(40, -9), 26, 20, sk, lw=2.2)                        # the thumb, pinching from the near side
+
+
+TRIPOD = [False]
+
+
+def _pen(c, at, L):
     c.set_line_cap(1)
     c.set_source_rgb(*INK); c.set_line_width(11.0); c.move_to(*at(0)); c.line_to(*at(L)); c.stroke()
     c.set_source_rgb(*s5_pen()); c.set_line_width(7.5); c.move_to(*at(8)); c.line_to(*at(L)); c.stroke()
     c.set_source_rgb(0.85, 0.85, 0.88); c.set_line_width(7.5); c.move_to(*at(0)); c.line_to(*at(8)); c.stroke()   # its tip
-    _taper(k, at(96, 10), at(34, 5), 22, 18, sk, lw=2.2)                          # the index finger along its top
-    _taper(k, at(92, -20), at(40, -9), 26, 20, sk, lw=2.2)                        # the thumb, pinching from the near side
 
 
 def s5_pen():

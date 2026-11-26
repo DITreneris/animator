@@ -188,6 +188,7 @@ TYPE53 = (3, 11)                                           # drawings the note i
 TAP53 = 15
 TAPAT53 = [(300, 692)]                               # v20: on the button's right, clear of SAVE
 BIG53 = [False]
+SAVE_BLUE = [False]
 
 
 def s5_3(k, d):
@@ -212,7 +213,10 @@ def s5_3(k, d):
         lx = 270 - (full if isinstance(full, (int, float)) else 250) / 2.0
         cp.T(c, "note: " + NOTE[:n] + cur, lx, y0 + 503, 38, col=NOTE_COL, center=False)
     if d < TAP53:
-        rect(k, 118, 650, 304, 90, (0.72, 0.74, 0.78) if d < TAP53 - 1 else (0.55, 0.80, 0.60), 990, shadow=False, lw=2)
+        col = (0.72, 0.74, 0.78) if d < TAP53 - 1 else (0.55, 0.80, 0.60)
+        if SAVE_BLUE[0]:                                                           # v21: active blue, pressed a darker blue
+            col = (0.20, 0.47, 0.90) if d < TAP53 - 1 else (0.13, 0.33, 0.70)
+        rect(k, 118, 650, 304, 90, col, 990, shadow=False, lw=2)
         cp.T(c, "SAVE", 270, 710, 42, col=(1, 1, 1))
     if d <= 2:
         p = lerp((560, 900), (330, 842), ease(d / 2.0))

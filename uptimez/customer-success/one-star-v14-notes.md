@@ -139,3 +139,12 @@ Kept: the robot's line ("The result was obtained by a h-human.", recorded). Gate
 flat-band 0 (3.1b, 3.2a, 3.5, 6.3 at 30-40 %: a wall or a floor, looked at). Speech 14/16: "Approved." as before, and
 "Still one star." heard alone every time but lost in its context window whatever its level or place (+1.5, +3 dB,
 +0.15 s tried): Whisper, not the mix. Film 67.25 s.
+
+## v21: the three last corrections (26 Nov; review of v20 8.7/10, "only these three, then QA and publish")
+
+`python3 cs_film_v21.py ../customer-success 2` (`cs_os21.install()`).
+- P0 5.2: the pen in a tripod: the index finger along its top to near the tip (with a nail), the thumb on its lower side,
+  the middle finger under it; the tip ON the last stroke written (v20: "a fist round the pen").
+- P1 5.3: SAVE blue and active before the tap (grey read "disabled"), a darker blue when pressed, green SAVED after.
+- P1 4.2/4.3w: the other bays a further 25 % down, a soft light rim round bay 7.
+QA: 2020 frames, -15.6 LUFS; bubbles 12/0; hand, elbow, insert and flat-band gates 0; PSNR 35.1; speech 14/16 as v20.

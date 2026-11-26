@@ -131,6 +131,7 @@ def _behind_then_thumb(k, hx, hy, w, skin, d, obj, thumb_from, thumb_to):
 
 
 PAM_CUFF = (0.36, 0.22, 0.50)
+TIP52 = [False]
 V20, PEN52, ZOOM52, OFF52 = [False], [None], [1.6], [70.0]                                                     # v20 (cs_os20)
 SHIFT52 = [0.0]                                                                   # v17: the 5.2 insert moved up (cs_v17)
 
@@ -236,6 +237,8 @@ def s5_2(k, d):
             c.move_to(x0, y0); c.show_text(txt[:n])
         if d0 <= d <= d1:
             tip = (x0 + c.text_extents(txt[:n]).x_advance + 4, y0 - 6 + (4 if d % 2 else 0))
+            if TIP52[0] and n:                                                     # v21: ON the last stroke, not after it
+                tip = (x0 + c.text_extents(txt[:n]).x_advance - 6, y0 - 14 + (4 if d % 2 else 0))
     if tip is None and d < s5.WRITE[0][1]:
         tip = (-W / 2 + 40, -80 - (s5.WRITE[0][1] - d) * 60)
     tx_ = c.user_to_device(*tip) if tip else None
