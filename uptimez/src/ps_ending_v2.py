@@ -81,31 +81,54 @@ def fingers(k, x, y, n=3, ln=7.0, w=4.0, d=-1, skin=co.SKIN):
 
 
 # --- 5.1 ---------------------------------------------------------------------------------------------------------------
+# v4 (Tomas 26 Nov: "analizuok duris the-onboarding"): the set's own door, not an invented one. The Onboarding's glass door
+# (set_ob.door, the same DOOR rect as ours) SLIDES left, the bright street behind it; a visitor outside is drawn inside the
+# opening with the glass over him (ob_anim._through_glass); it slides open in ~0.15 s (lesson 133) and shut behind him
+# (ob s10_4). ps_set already has it opt-in: DOOR_OPEN. v1-v3 drew a hinged panel and a dark corridor: wrong.
+import set_ob as sto
+
+
+def through_glass(k, draw_, open_):
+    """ob_anim._through_glass (reused): someone outside, inside the opening, the glass over him where it has not slid"""
+    c = k.c
+    x, y, w, h = sto.DOOR
+    c.save(); c.rectangle(x, y, w, h); c.clip()
+    out = draw_()
+    px = x - w * 0.92 * open_
+    c.set_source_rgba(*sto.GLASS, 0.26); c.rectangle(px, y, w, h); c.fill()
+    c.restore()
+    return out
+
+
 def cast_51(k):
+    """the door SHUT: he is outside on the bright street, in colour (3.6 showed only his dark shape), the CV in one hand,
+    his knuckles on the glass"""
     heads = {}
-    open_door(k)
-    o = guard_at(k, pss.GX0 + pss.GW / 2 + 4, pose_r=(150, -300), pose_l=(-40, -200))
+    def draw_():
+        return guard_at(k, sto.DOOR[0] + sto.DOOR[2] / 2 - 4, pose_r=(104, -262), pose_l=(-40, -200))   # knock at chest height: a fist by the ear reads as a call (rules §1)
+    o = through_glass(k, draw_, 0.0)
     heads["guard"] = (o["head"][0], o["head"][1], 40 * GS)
-    lx, ly = o["hands"][0]                                   # the CV in his low hand: blank yet (5.2 writes on it)
-    cv_plain(k, lx - 4, ly + 22, 0.62, word=False)
+    lx, ly = o["hands"][0]
+    cv_plain(k, lx - 4, ly + 22, 0.62, word=False)           # blank: 5.2 writes on it
     fingers(k, lx + 6, ly + 2, d=-1)
-    rx, ry = o["hands"][1]                                   # the knock: his knuckles on the swung panel, two strokes
+    rx, ry = o["hands"][1]                                   # knock, knock: strokes off his knuckles on the glass
     c = k.c; c.set_source_rgb(*INK); c.set_line_width(2.6); c.set_line_cap(1)
-    for i, a in enumerate((-0.5, 0.0, 0.5)):
-        c.move_to(rx + 18 + 6 * math.cos(a), ry + 14 * math.sin(a)); c.line_to(rx + 32 + 12 * math.cos(a), ry + 26 * math.sin(a)); c.stroke()
+    for a in (-0.6, 0.0, 0.6):
+        c.move_to(rx + 14 * math.cos(a), ry + 14 * math.sin(a)); c.line_to(rx + 26 * math.cos(a), ry + 26 * math.sin(a)); c.stroke()
     c.set_line_cap(0)
     return heads
 
 
 def s51():
+    pss.DOOR_OPEN[0] = 0.0
     return ps.S("5.1n", (130, F - 150, 1.75), dict(blind="torn", tape=True, spun=True), cast_51)
 
 
 # --- 5.3a ---------------------------------------------------------------------------------------------------------------
 def cast_53a(k):
+    """the door has slid open (the set's DOOR_OPEN, as the robot opens it in the board); he steps in off the street"""
     heads = {}
-    open_door(k)
-    o = guard_at(k, pss.GX0 + pss.GW / 2 + 30, pose_l=(-40, -200))
+    o = guard_at(k, pss.GX0 + pss.GW / 2 + 40, pose_l=(-40, -200))
     heads["guard"] = (o["head"][0], o["head"][1], 40 * GS)
     lx, ly = o["hands"][0]
     cv_plain(k, lx - 4, ly + 22, 0.62)                      # HR? written now (5.2)
@@ -117,6 +140,7 @@ def cast_53a(k):
 
 def s53a():
     ps.ROBOT_WALL["5.3n"] = 1                                # its box not on the guard's side: over or right of it
+    pss.DOOR_OPEN[0] = 0.85
     return ps.S("5.3n", (205, F - 160, 1.45), dict(blind="torn", tape=True, spun=True), cast_53a)
 
 
@@ -217,8 +241,8 @@ def s62n():
     return dict(sh, cast=cast, id="6.2n")
 
 
-NEW = [("5.1", s51, None, "the guard at the open door, the CV"),
-       ("5.3a", s53a, 'ROBOT: "Welcome."', "Welcome. (to him)"),
+NEW = [("5.1", s51, None, "outside the shut glass, knocks, the CV"),
+       ("5.3a", s53a, 'ROBOT: "Welcome."', "the door slid open: Welcome."),
        ("5.3c", s53c, None, "the hand-over"),
        ("5.5b", s55b, None, "both shoes over the tape"),
        ("6.1", s61n, 'DON: "Everyone\'s with me."', "Pam's thumb on ACCEPT"),
@@ -228,11 +252,14 @@ NEW = [("5.1", s51, None, "the guard at the open door, the CV"),
 
 def frame(fn, line):
     sh = fn()
-    if line:
-        return ps.board_frame(sh, line)
-    import ps_checks as pc
-    pc.install_scene(ps); pc.begin()
-    return ps.render(sh)
+    try:
+        if line:
+            return ps.board_frame(sh, line)
+        import ps_checks as pc
+        pc.install_scene(ps); pc.begin()
+        return ps.render(sh)
+    finally:
+        pss.DOOR_OPEN[0] = 0.0
 
 
 def main(ver):

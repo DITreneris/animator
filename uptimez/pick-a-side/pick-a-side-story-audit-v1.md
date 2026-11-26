@@ -132,3 +132,11 @@ Istorijos testas po nuotraukų: 3 nauji žiūrovai, tik 4.3–6.2, klausimai: ka
 - 6.1 / 6.1b: Pam tarp Mamos ir Sofíos, telefonas rankoje prie krūtinės, nykštys ant ACCEPT; 6.1b tas pats telefonas zvimbia jos rankoje (ne lentynoje).
 - 6.2: Donas užsimerkęs traukia žaliuzes žemyn, roboto ☀.
 Žinomi trūkumai poliravimui: 5.3a „Welcome.“ dėžutė tarp sargybinio ir roboto; 5.3c ženklų kraštai ir rodyklės likutis; 6.1 Pam ir Sofía šiek tiek persidengia. Testas dar nedarytas.
+
+## 9. Durys v4 (Tomas 26 Nov: „analizuok duris the-onboarding… kodėl nepatikrini?“)
+
+**Klaida (mano):** v1–v3 nupiešiau savo duris (varstomą varčią ir tamsų koridorių) nepatikrinęs, kaip šias pačias duris serialas jau išsprendė. Pažeista CLAUDE.md taisyklė „Reuse what was approved“.
+
+**Kaip daroma *The Onboarding* (`set_ob.door`, `ob_anim._through_glass`, s1_1, s10_4):** tas pats `DOOR` stačiakampis (22, 392, 150, h) kaip mūsų `ps_set`; stiklas **slenka kairėn** (`open_` 0..1, iki 0,85); už jo **šviesi gatvė**; lauke esantis piešiamas angos viduje, o stiklas permatomai uždedamas virš jo, kur dar neatslinko; atsidaro ~0,15 s (lesson 133) ir trenkiasi į atramą (siena sudreba); užsidaro už jo. Mūsų `ps_set` tai jau turi kaip `DOOR_OPEN` (opt-in).
+
+**Pataisyta v4:** 5.1 durys uždarytos, sargybinis lauke šviesioje gatvėje, spalvotas (3.6 rodė tik tamsų siluetą), beldžia į stiklą krūtinės aukštyje (kumštis prie ausies skaitosi kaip skambutis), CV tuščias; 5.3a durys nuslinkusios (`DOOR_OPEN` 0,85), jis įžengęs, robotas: „Welcome.“ Judesyje: atsidaro per 0,15 s, sustoja su smūgiu, kaip s1_1.
