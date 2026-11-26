@@ -776,6 +776,9 @@ def ins_booth_43(k):
 
 
 STINK_V2 = [False]
+PINCH_LEAD = [1.0]                                            # film (26 Nov audit, opt-in): the forearm folds ahead of the upper arm,
+                                                             # the hand up the chest, not out sideways (the in-between read as a stretched arm 2/2)
+PINCH_POSE = [(-100, -60)]                                   # the guards' face arm (upper, fore), the board's by default
 FATHER_V2 = [False]
 PINCH_43 = [1.0]                                             # ps_film: the guards' turn and pinch, 0..1 (1 = the board)
 STINK_RISE = [0.0]                                           # ps_film: px the stink lines have risen (0 = the board)
@@ -793,12 +796,15 @@ def _booth_guards(k, seat, tbl):
     for i, gx in enumerate((300, 548)):
         sgn, flip = (-1, False) if i == 0 else (1, True)
         c.save(); c.rectangle(-200, -200, 1400, tbl + 200); c.clip()          # behind the bench: nothing of them under the table
-        c.translate(gx, tbl); c.rotate(sgn * 0.13 * PINCH_43[0]); c.translate(-gx, -tbl)
+        pu_ = PINCH_43[0] if not isinstance(PINCH_43[0], tuple) else PINCH_43[0][i]
+        c.translate(gx, tbl); c.rotate(sgn * 0.13 * pu_); c.translate(-gx, -tbl)
         dc.ARM_FRONT[0] = 1                                  # the pinching arm is HIS OWN, drawn after his head (dh_cast, opt-in):
         try:                                                 # one hand per wrist (179, 208). A second hand drawn on top of the
-            pu = PINCH_43[0]                                 # ps_film: 0 = arms down, upright .. 1 = the board's pinch
-            pz = (dc.GUARD_POSE[0], dc.GUARD_POSE[1], dc.GUARD_POSE[2] + (-100 - dc.GUARD_POSE[2]) * pu,
-                  dc.GUARD_POSE[3] + (-60 - dc.GUARD_POSE[3]) * pu)
+            pu = PINCH_43[0] if not isinstance(PINCH_43[0], tuple) else PINCH_43[0][i]   # ps_film: 0 = arms down .. 1 = the
+                                                             # board's pinch (a pair: each guard his own, the second later)
+            ea, eb = PINCH_POSE[0]                           # the board's (-100, -60); the film's pinch hand its own target
+            pz = (dc.GUARD_POSE[0], dc.GUARD_POSE[1], dc.GUARD_POSE[2] + (ea - dc.GUARD_POSE[2]) * pu,
+                  dc.GUARD_POSE[3] + (eb - dc.GUARD_POSE[3]) * min(1.0, pu * PINCH_LEAD[0]))
             o = dc.guard(k, gx, seat + 10, gs, pose=pz, flip=flip)
         finally:                                             # rig's hidden one failed hand_gate ("two at one wrist", 4.5 px apart)
             dc.ARM_FRONT[0] = None
@@ -808,7 +814,7 @@ def _booth_guards(k, seat, tbl):
             hp.draw(k, "fist", nose[0] + 3, nose[1] + 3, 30 * gs, (0.91, 0.67, 0.55), (0.7, -0.7), 1)
             grip("pinch", (nose[0] + 3, nose[1] + 3))
         c.restore()
-        a = sgn * 0.13 * PINCH_43[0]                         # his head where the lean put it (for the bubbles to keep off)
+        a = sgn * 0.13 * pu_                                 # his head where the lean put it (for the bubbles to keep off)
         dx, dy = o["head"][0] - gx, o["head"][1] - tbl
         heads["guard%d" % (i + 1)] = (gx + dx * math.cos(a) - dy * math.sin(a), tbl + dx * math.sin(a) + dy * math.cos(a), 44 * gs)
     xs, lws = ((352, 424, 496), (6, 6, 6)) if not STINK_V2[0] else ((392, 421, 452), (7, 4.5, 5.5))

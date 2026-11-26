@@ -248,7 +248,9 @@ def pass_card(k, x, y, s=1.0, seed=1780):
     c.restore()
 
 
-FRONT_HAND_BACK = [0.0]
+FRONT_HAND_S = [1.0]                                         # its width x the rig's hand (limb passes hand_r / 0.6 * 0.8)
+BACK_HAND = [None]                                           # opt-in (audit 26 Nov): a hands_ps shape for the other arm's hand while
+                                                             # ARM_FRONT is set (alone, the rig's ball read as "an extra fist" 2/2)
 FRONT_HAND = [None]                                          # opt-in: a hands_ps shape for the ARM_FRONT arm's hand
 ARM_FRONT = [None]                                         # opt-in (Pick a Side, 25 Nov): -1 / 1, that side's arm is drawn AFTER
                                                            # the head: the rig's own hand at his face (one hand per wrist, 179, 208)
@@ -299,7 +301,17 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
 
     def arm_(side, u, f_):
         sy_ = bt + 26; sx_ = side * SH[0]
-        hx, hy_ = limb(k, sx_, sy_, u, f_, LN1, LN2, 47, 39, J, J, co.SKIN, co.HAND, seed + 10 + side)
+        shape = FRONT_HAND[0] if side == ARM_FRONT[0] else (BACK_HAND[0] if ARM_FRONT[0] is not None else None)
+        hook = bool(shape)           # opt-in (Pick a Side 4.3b, 26 Nov, after "two hands"): the
+        if hook:                                                 # series' hand through kit.HAND (lesson 147), drawn by limb AT
+            import hands_ps as hp                                # the wrist in place of its ball: one hand per wrist; the cuff
+            was = kit.HAND[0]                                    # below covers the joint
+            kit.HAND[0] = lambda k_, x_, y_, w_, sk_, sd_, d_, sg_: hp.draw(k_, shape, x_, y_, w_ * (FRONT_HAND_S[0] if side == ARM_FRONT[0] else 1.0), sk_, d_, side)
+        try:
+            hx, hy_ = limb(k, sx_, sy_, u, f_, LN1, LN2, 47, 39, J, J, co.SKIN, co.HAND, seed + 10 + side)
+        finally:
+            if hook:
+                kit.HAND[0] = was
         ellipse(k, side * (SH[0] - 1), sy_ - 1, 23, 20, J, seed + 14 + side, shadow=False, lw=2)
         c.set_source_rgb(*J); c.rectangle(min(side * 60, side * 86), sy_ - 12, 26, 32); c.fill()
         if kind == "guard":                                                                  # a white cuff
@@ -308,14 +320,6 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
             wx, wy = hx - ux * (co.HAND + 1), hy_ - uy * (co.HAND + 1)
             cut(k, [(wx + px * 19 - ux * 6, wy + py * 19 - uy * 6), (wx + px * 18, wy + py * 18), (wx - px * 18, wy - py * 18),
                     (wx - px * 19 - ux * 6, wy - py * 19 - uy * 6)], co.SHIRT, shadow=False, lw=1.8)
-        if FRONT_HAND[0] and side == ARM_FRONT[0]:                                           # opt-in (Pick a Side, 26 Nov):
-            import hands_ps as hp                                                            # the series' hand (rules §1,
-            dx_, dy_ = (hx - ex) / LN2, (hy_ - ey) / LN2                                     # lesson 147) on the face arm,
-            w_ = 2.3 * co.HAND; b_ = FRONT_HAND_BACK[0] * w_                                 # backed down its own forearm, so
-            hp.draw(k, FRONT_HAND[0], hx - dx_ * b_, hy_ - dy_ * b_, w_, co.SKIN, (dx_, dy_), side)   # the fingertips, not the
-                                                                                             # knuckles, land on the target
-            hands[side] = (hx, hy_)
-            return
         if kind == "guard" and side == 1:                                                    # v3: the gripping hand has fingers
             c.set_source_rgb(*INK); c.set_line_width(1.8); c.set_line_cap(1)
             for i in (-1, 0, 1):

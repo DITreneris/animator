@@ -485,6 +485,7 @@ def s42(t):
     return BOARD["4.2"]
 
 
+CLOSE_43V5 = (1.25, -254, -194)                              # was (1.45, -345, -302): both guards cut by the frame's edges
 A_43, B_43 = 0.95, 1.45                                      # 4.3a the Client .. 4.3b the guards' close .. 4.3c Father
 
 
@@ -492,10 +493,12 @@ def s43(t):
     """4.3a "That one."; 4.3b the guards turn away and pinch their noses, the stink rises (no line); 4.3c Father: "Invite
     her." The board's three framings (BOOTH_PART_V4), drawn in turn."""
     part = 0 if t < A_43 else (2 if t < B_43 else 1)
-    pu = ease((t - A_43 - 0.02) / 0.20) if t >= A_43 else 0.0
+    pu = (ease((t - A_43 - 0.02) / 0.20), ease((t - A_43 - 0.02 - 2.0 / DPS) / 0.18))   # v5 (review 26 Nov): the second
+                                                             # guard 2 drawings later (5 left him unpinched in the 0.45 s close)
     def draw(k):
         ps.PART[0] = part
-        ps.PINCH_43[0] = pu if t < B_43 else 1.0
+        ps.BOOTH_PART_V4[2] = CLOSE_43V5                     # v5 (26 Nov audit): the close wide enough for both guards' hands
+        ps.PINCH_43[0] = pu if t < B_43 + 0.4 else 1.0
         ps.STINK_RISE[0] = 60 * t
         try:
             return ps.ins_booth_43(k)
@@ -588,7 +591,8 @@ STILLS = {4: STILLS4, 3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.
 
 def stills(n):
     ps.gags_v5()
-    import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_BACK[0] = "pinch", 1.2   # 4.3b (26 Nov, 2 viewers): the new pinch
+    import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_S[0], dc_.BACK_HAND[0] = "pinch", 0.9, "quiet"   # 4.3b (26 Nov): the pinch through limb's
+    ps.PINCH_POSE[0], ps.PINCH_LEAD[0] = (-80, -87), 1.6       # audit 26 Nov: under the glasses, the hand up the chest (not sideways)
     ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
@@ -818,7 +822,8 @@ HOLD_D = 5                                                   # drawings (0.33 s)
 def film(n, ver=1):
     import subprocess, shutil
     ps.gags_v5()
-    import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_BACK[0] = "pinch", 1.2   # 4.3b (26 Nov, 2 viewers): the new pinch
+    import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_S[0], dc_.BACK_HAND[0] = "pinch", 0.9, "quiet"   # 4.3b (26 Nov): the pinch through limb's
+    ps.PINCH_POSE[0], ps.PINCH_LEAD[0] = (-80, -87), 1.6       # audit 26 Nov: under the glasses, the hand up the chest (not sideways)
     ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True

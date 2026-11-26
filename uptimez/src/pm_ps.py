@@ -24,6 +24,7 @@ from kit import Ctx, INK, cut, rect, ellipse
 
 MUG = (0.36, 0.62, 0.80)
 MUG_RING = [False]
+MUG_THUMB = [False]
 TAPE = dp.TAPE
 STOOL = (0.55, 0.58, 0.62)
 PHY, PBT = pm.HY, pm.BT
@@ -51,7 +52,8 @@ def pam(k, x, feet, s=0.54, pose="stand", face="neutral", look=(0, 0), mug=True,
                 mug_at(k, hx + dx * 14 * s, hy + dy * 14 * s + 4 * s, s)      # past the fingers: the forearm shows
         if late:
             hp.redraw_late(k)
-        if MUG_RING[0] and mug and g == "cup":               # its thumb over the mug's front, apart from the fingers
+        if MUG_THUMB[0] and MUG_RING[0] and mug and g == "cup":   # its thumb over the mug's front (26 Nov audit: off, a second
+                                                             # thumb beside the rig hand's own: "two fingers", read as a phone)
             hx, hy = o["hands"][1]
             (dx, dy), _ = hp.DIRS[1]
             c = k.c; c.set_line_cap(1)

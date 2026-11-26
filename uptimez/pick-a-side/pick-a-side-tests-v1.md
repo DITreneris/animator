@@ -639,3 +639,16 @@ Built (plan v2 §7): 4.1 the neon's flicker, the black sleeve lifts the #TeamDon
 - Disagreed (logged in the reply): one guard turning instead of both (undoes Tomas's mirrored pick); filling the bottom quarter (the platforms' captions).
 - Open: "That one." speaker 2/3 unclear (the table's clutter).
 - **The pinch, v4 (Tomas: a new shape):** `hands_ps` "pinch" (opt-in, a new name: no other shape changes): the thumb and the index meet at the tips, the other three curled. 3 variants at feed size (the rig's ball, pinch backed 1.2, pinch backed 1.0), 2 viewers: both "the pinch reads, the ball is a mask / mitten"; best 1.2 and 1.0 one each, 1.0 "a clump" → 1.2. 10 fps strip of the encoded file (3.9–4.6 s): no jumps. `ps_film_s4_v4_540.mp4`.
+
+## Audit 26 Nov: all sheets, hands and palms (scene 4 v7)
+
+| # | Found | Cause | Fix | Check |
+|---|---|---|---|---|
+| E1 | Guards: a double hand on the pinching wrist | The pinch hand was drawn on top of the rig's own ball and backed down the forearm: two geometries at one wrist | `dh_cast.FRONT_HAND` hook through `limb` (kit.HAND): one hand per wrist, the cuff over the joint | 2/2 "normal hands"; hand_gate 0 |
+| E2 | The pinch read as "pressing the earpiece" (2/2) | The hand sat at the cheek/ear side (rules §1: hand at the ear = a call) | PINCH_POSE (-80, -87), FRONT_HAND_S 0.9: the fingers on the nose under the glasses, forearm upright | 2/2 "pinches the bridge of the nose, under the glasses" |
+| E2b | The in-between read as a stretched "noodle" arm (2/2) | Linear interpolation of both angles swung the straight arm out sideways | `PINCH_LEAD` 1.6 (opt-in): the forearm folds first, the hand rises up the chest | 2/2 gone; 10 fps strip of v7 clean |
+| E2c | The other hand at the belt read as "an extra fist" (2/2) | Clasped, the front hand covered it; alone it was the rig's bare ball, the cuff apart from it | `dh_cast.BACK_HAND` "quiet" (opt-in while ARM_FRONT is set) | 2/2 count two hands, hanging |
+| E3 | The Client's grey palm on his shirt read as "a floating hand" by some | Not a fault: the approved oily palm print (client_ps overlay, v2 review) | Not changed: Tomas's call | 4/6 viewers read it as a stain |
+| E4 | Pam's mug: an extra thumb | The sip-era thumb capsule left on | pm_ps.MUG_THUMB off | rebuilt s1 v5, s3 v6 |
+
+check / check v5: 38 shots, 0 faults each. Board defaults unchanged (PINCH_LEAD 1.0, BACK_HAND None).
