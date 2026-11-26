@@ -859,3 +859,40 @@ Shared misreads left (none breaks a beat):
 | Frame 0 / loop | 1.1 held 0.4 s (HOLD0); the last drawing md5-equal to the first; the rattle runs up into frame 0 |
 | Text | bubbles placed by speech.draw with the rail and safe rect (the 540 builds' gates passed) |
 | Board v4 | 44/44 md5-identical after the HIRES change |
+
+## Sound v2: the whole film as one timeline (Tomas 26 Nov, /grill-me on the sound)
+
+Picks:
+- the office vibes bed, The Onboarding's "A";
+- foley in every gap;
+- one timeline with one linear gain;
+- voices levelled to ±1 dB;
+- the club with no office music, its bass only;
+- 8-bar phrases over the film;
+- the bed's stops: "parink geriausiai" (I chose "BOTH." and the 6.1b shock).
+
+`src/ps_mix.py`:
+- **Voices:** every take at −20 dBFS speech RMS. The per-take gains came out −2.1…+0.8 dB, so the old 4 dB spread was the per-scene normalising.
+- **Effects:** captured from each scene's own sound map (`osd.put` recorded, takes muted), so ps_film's and ps_film_end's maps stay the one source.
+- **Foley:** in the audit's gaps, only for what is on screen:
+  - 1.4 the roll's rustle; 2.4 Pam's hops; 2.7 her coat;
+  - 3.2 the flash's whine and pop; 3.5 the post's blip;
+  - 4.1 the neon's hum; 4.3 the guards' weight; 6.1 the tap;
+  - the club's low murmur under scene 4.
+- **Bed:**
+  - `sound_ob_music.bed(total, 24, "A")`: 24 bars of 2.96 s, three 8-bar phrases, so the loop restarts on a downbeat;
+  - 15 dB under the voices, ducking 5 dB under every line;
+  - out in scene 4 and for "BOTH." (25.57–26.67 s) and the shock (68.13–69.58 s).
+- **Master:** one linear gain and a look-ahead limiter (ceiling −4 dB sample).
+- The timeline follows each scene video's own length (the concat holds the last drawing one frame more).
+
+`/tmp/ps_master_v2_1080.mp4` and `pick-a-side/ps_film_master_v2_540.mp4`:
+
+| Check | v1 | v2 |
+|---|---|---|
+| Loudness / true peak (final AAC) | −15.4 / −2.2 (dynamic loudnorm by mistake) | −15.3 LUFS / −1.8 dBTP, LRA 5.3 |
+| Stretches under −45 dBFS (0.5 s windows) | 22 (~10 s) | 1: 69.0 s, the shock's silence (on purpose) |
+| Speech, 19 lines × 3 windows | 19/19 | 19/19 (the first bed without ducking lost "my" in 2.5: 0.67, fixed by the duck) |
+| Loop seam | — | the last 0.3 s −28.5 dB (bar 24's tail), the first 0.3 s −14.3 (bar 1's chord and the tug): restarts on the downbeat |
+
+What the checks can't tell: whether the bed is too sweet or too much, and whether the laughs land. That needs people listening with sound on.
