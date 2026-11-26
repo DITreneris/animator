@@ -186,3 +186,90 @@ if __name__ == "__main__":
     frame(None, os.path.join(out, "da_establish_v3_world.png"), scale=1, world=True)
     for n, v in h.items():
         print(n, tuple(round(a) for a in v[:2]))
+
+
+# --- S8: inside DON's office, looking out through the glass (the final image, 8.1) ------------------------------------
+# Tomas 26 Nov (/grill-me): a still now, before the script. Frame units (540x960), no world camera: the office is a new
+# room. Mirror rule: seen from inside, the floor is reversed, so Don's side (with the throne) is on screen RIGHT of the
+# tape, Father's side (the counter, right outside the glass) is in front of it.
+MUG = (0.86, 0.66, 0.16)                                    # Pam's mug: mustard (Tomas 26 Nov), one silhouette
+G8 = (34, 120, 472, 400)                                    # the glass in frame units: x 34-506, y 120-520
+
+
+def pam_mug(k, x, y, s=1.0):
+    """Pam's mug: a tall mustard mug with a big round handle on the right (the same silhouette in every shot)."""
+    c = k.c
+    rect(k, x - 13 * s, y - 30 * s, 26 * s, 30 * s, MUG, 5501, shadow=False, lw=2)
+    c.set_source_rgba(0, 0, 0, 0.18); c.rectangle(x + 4 * s, y - 28 * s, 8 * s, 27 * s); c.fill()      # its shaded side
+    c.set_source_rgba(1, 1, 1, 0.35); c.rectangle(x - 9 * s, y - 27 * s, 3 * s, 24 * s); c.fill()     # a highlight
+    c.set_source_rgb(*INK); c.set_line_width(4.5 * s); c.new_path()
+    c.arc(x + 15 * s, y - 15 * s, 8 * s, -1.5, 1.5); c.stroke()
+    c.set_source_rgb(*MUG); c.set_line_width(2.4 * s); c.new_path()
+    c.arc(x + 15 * s, y - 15 * s, 8 * s, -1.5, 1.5); c.stroke()
+
+
+def _floor_through_glass(k, don_pose="salute", strip=True):
+    """What the glass shows from inside: the far (camera-side) wall, the floor, the tape receding, Don at his line
+    facing us, the throne's back on his side, the counter's back right outside the glass."""
+    c = k.c
+    x, y, w, h = G8
+    hz = y + 150                                             # the far wall meets the floor
+    c.set_source_rgb(*kit.WALL); c.rectangle(x, y, w, hz - y); c.fill()
+    c.set_source_rgb(*kit.FLOOR); c.rectangle(x, hz, w, y + h - hz); c.fill()
+    c.set_source_rgb(*INK); c.set_line_width(2); c.move_to(x, hz); c.line_to(x + w, hz); c.stroke()
+    # the tape: near (bottom of the glass) wide, far narrow; DON on his side (screen right)
+    tn, tf = (250, y + h), (300, hz)
+    c.new_path(); c.move_to(tn[0] - 22, tn[1]); c.line_to(tn[0] + 22, tn[1]); c.line_to(tf[0] + 6, tf[1]); c.line_to(tf[0] - 6, tf[1])
+    c.close_path(); c.set_source_rgb(*pss.TAPE); c.fill_preserve(); c.set_source_rgb(0.30, 0.22, 0.02); c.set_line_width(1.8); c.stroke()
+    # Don at his line, facing the office: saluting, the strip stuck to his saluting hand
+    s4.shadow(k, 330, hz + 92, 28)
+    o = dp.don(k, 330, hz + 90, 0.34, don_pose, "pleased" if hasattr(dp, "don") else "neutral", look=(-0.4, 0.2))
+    if strip and o.get("hands"):                              # the peeled strip hanging from his raised hand
+        hx, hy = max(o["hands"], key=lambda p: -p[1])
+        c.save(); c.translate(hx, hy + 4); c.rotate(0.12)
+        rect(k, -4, 0, 8, 46, pss.TAPE, 5510, shadow=False, lw=1.4)
+        c.restore()
+    return o
+
+
+def s8_final(k):
+    """8.1: the meeting at Don's desk, nobody looks up; through the glass, Don saluting at his line."""
+    c = k.c
+    c.set_source_rgb(*IN_WALL); c.paint()
+    x, y, w, h = G8
+    c.save(); c.rectangle(x, y, w, h); c.clip()
+    heads = {"don": _floor_through_glass(k)["head"]}
+    # the counter's back, right outside the glass (its top and the backs of Pam's monitor and Mom's nameplate)
+    rect(k, x - 4, y + h - 46, w + 8, 50, (0.80, 0.72, 0.58), 5520, shadow=False, lw=2)
+    c.restore()
+    c.set_source_rgba(*GLASS, 0.14); c.rectangle(x, y, w, h); c.fill()
+    keep = (pss.GX0, pss.GY0, pss.GW, pss.GH, pss.CORD_L, pss.CORD_R)
+    pss.GX0, pss.GY0, pss.GW, pss.GH, pss.CORD_L, pss.CORD_R = x, y, w, h, x + 10, x + w - 8
+    try:
+        pss.blinds(k, "up", 0.0, seed=5530, cords=True)
+    finally:
+        pss.GX0, pss.GY0, pss.GW, pss.GH, pss.CORD_L, pss.CORD_R = keep
+    c.set_source_rgb(*INK); c.set_line_width(4); c.rectangle(x, y, w, h); c.stroke()
+    # the meeting, at the desk, in front of the glass: the Client left, Pam, Father in Don's chair, Sofía right
+    rect(k, 226, 500, 92, 220, (0.12, 0.12, 0.14), 5540, shadow=False, lw=2)                # Don's chair, its tall back
+    heads["client"] = cps.client(k, 86, 846, 0.66, pose="open", face="bored", look=(1, 0.3))["head"]
+    heads["father"] = dc.father(k, 272, 840, 0.66 * 1.19, face="hard", look=(0, 0.5))["head"]
+    heads["sofia"] = sp.sofia(k, 466, 830, 0.62, "hold", "smile", look=(-1, 0.3))["head"]
+    heads["pam"] = pm.pam(k, 176, 840, 0.62, "stand", "neutral", look=(0.3, 0.8))["head"]
+    # Don's desk across the bottom: the blueprint open in front of Pam, her mug, Don's photo face down, his white mug
+    rect(k, -10, 760, 560, 30, DESK, 5550, shadow=False, lw=2.4)
+    rect(k, -10, 788, 560, 180, DESK_D, 5551, shadow=False, lw=2.4)
+    import acts_ob as ac
+    c.save(); c.translate(184, 772); c.scale(1, 0.55); ac.plan_open(k, 0, 0, 0.95); c.restore()
+    pam_mug(k, 108, 776, 1.0)
+    rect(k, 330, 760, 70, 12, (0.83, 0.66, 0.24), 5560, shadow=False, lw=1.8)               # Don's gold photo, face down
+    rect(k, 420, 744, 22, 26, (0.97, 0.97, 0.95), 5561, shadow=False, lw=1.8)                # his white office mug
+    return heads
+
+
+def s8_still(out):
+    surf = cairo.ImageSurface(cairo.FORMAT_RGB24, 1080, 1920)
+    c = cairo.Context(surf); c.scale(2, 2); k = Ctx(c, 0)
+    h = s8_final(k)
+    surf.write_to_png(out)
+    return h

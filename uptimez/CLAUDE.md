@@ -46,6 +46,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 
 ## Never break earlier work
 
+- **An approved film is frozen** (decided 26 Nov): a rule written later (hands, bubbles, gates) applies from the next episode, not to it. Only a fault Tomas sees himself reopens it.
 - New behaviour is **opt-in**: a module flag or a keyword argument whose default draws exactly as before.
 - Existing `_vN.py` files stay untouched and keep importing the pinned modules they were built with. **From 24 Nov on (decided), new episodes pin approved versions with immutable `git tag`s** (e.g., `uptimez-<ep>-vN`) instead of copying whole `_vN.py` files in `src/`.
 - After any shared-module change, rebuild the approved sheets, covers and renders and **compare md5**. They must be byte-identical.

@@ -130,6 +130,7 @@ Cold viewers see the episode three times: the **board** (stage 5), each **motion
 
 - **"Fixed" means seen in the render.** Look at the changed shot at full size, frame by frame, before saying it. A contact sheet is for finding faults, not for confirming fixes.
 - **Never break earlier work.** New behaviour on shared modules is opt-in, existing `_vN` files stay untouched, and approved renders rebuild md5-identical (see `../CLAUDE.md`).
+- **The freeze rule (decided 26 Nov, Tomas):** an approved film is not reopened for a rule written later (hands, bubbles, gates); the rule applies from the next episode. The only exception is a fault Tomas sees himself.
 - **Pinning (decided 24 Nov):** for new episodes, pin each approved stage or cut with an immutable `git tag` (for example, `uptimez-<ep>-vN`) rather than copying whole `_vN.py` files in `src/`. Existing `_vN.py` files stay as built.
 - **Disk:** the build keeps only the current version's frame folder. Old folders and test renders are deleted at each version (lesson 122).
 - **Language and commits:** reply in Lithuanian when Tomas writes Lithuanian. Commit and push only when he asks, on the episode branch, never to main.
