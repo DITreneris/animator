@@ -235,8 +235,23 @@ def tape_line(k, mark=True):
     c.move_to(-e.x_advance - 90, -18); c.line_to(-e.x_advance - 68, -36); c.stroke()
     c.move_to(-e.x_advance - 90, -18); c.line_to(-e.x_advance - 68, 0); c.stroke()
     c.set_line_cap(0); c.restore()
+    if DAD_MARK[0]:                                          # opt-in (Tomas 26 Nov): the other side named too, in the same
+        dx_, dy_, sc_ = DAD_AT[0]                            # marker: "DAD" and its arrow, mirrored, past the tape
+        if MARK_SMALL[0]:
+            sc_ *= 0.7
+        c.save(); c.translate(x0 + dx_, F + dy_); c.rotate(0.04); c.scale(sc_, sc_ * 0.55)
+        c.select_font_face("Permanent Marker", 0, 1); c.set_font_size(52); c.set_source_rgb(0.08, 0.08, 0.10)
+        e = c.text_extents("DAD"); c.move_to(0, 0); c.show_text("DAD")
+        c.set_line_width(7); c.set_line_cap(1)
+        c.move_to(e.x_advance + 14, -18); c.line_to(e.x_advance + 90, -18); c.stroke()
+        c.move_to(e.x_advance + 90, -18); c.line_to(e.x_advance + 68, -36); c.stroke()
+        c.move_to(e.x_advance + 90, -18); c.line_to(e.x_advance + 68, 0); c.stroke()
+        c.set_line_cap(0); c.restore()
 
 
+DAD_MARK = [False]
+DAD_AT = [(46, 105, 0.8)]                                    # (dx from the tape's far end, dy from the wall line, scale): far back,
+                                                             # where the tape is narrow and most shots still hold it
 SPIN = [None]                                                # opt-in (the film, 2.2): 0..1 the spin; None = as the board
 
 

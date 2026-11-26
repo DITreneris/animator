@@ -24,15 +24,15 @@ BED_UNDER = 15.0                                             # dB the bed sits u
 BARS = 24
 FX_DUCK = 8.0                                                # dB the effects dip under a line
 DUCK = 5.0                                                   # dB the bed dips under a line (2.5 "my" was lost under it: 0.67)
-STOPS = [("2.10", "take1", -0.20, 0.90), ("6.1b", "start", 0.0, 1.45)]   # the bed out for "BOTH." (from its take) and the shock
+STOPS = [("2.10", "take1", -0.15, 0.45), ("6.1b", "start", 0.0, 1.45)]   # the bed out for "BOTH." (from its take) and the shock
 FOLEY = []
 OPENER = [True]                                              # v3 (Tomas 26 Nov: "a killer opener, not Chopin"); False = sound v2
 MID = [True]                                                 # v4 (Tomas: "not the max version, drop something"): the effort and
                                                              # the servo only in the last round, fewer and softer slats
 OB_DRIVE, OB_OVER = 3.0, -3.0  # the opener bus's saturation and level
 CRASH_AT = 0.20                                              # 1.2a: the blind lands (ps_film's own crash time)
-VIDS = ["/tmp/ps_film_s1_v6_1080.mp4", "/tmp/ps_film_s2_v5_1080.mp4", "/tmp/ps_film_s3_v6_1080.mp4",
-        "/tmp/ps_film_s4_v11_1080.mp4", "/tmp/ps_film_s5_v10_1080.mp4", "/tmp/ps_film_s6_v5_1080.mp4"]
+VIDS = ["/tmp/ps_film_s1_v6_1080.mp4", "/tmp/ps_film_s2_v6_1080.mp4", "/tmp/ps_film_s3_v7_1080.mp4",
+        "/tmp/ps_film_s4_v11_1080.mp4", "/tmp/ps_film_s5_v11_1080.mp4", "/tmp/ps_film_s6_v6_1080.mp4"]
 VID_LEN = []                                                   # filled by foley_map() once the starts are known
 
 
@@ -114,6 +114,10 @@ def foley_map(sh):
     for j in range(2):                                                        # 4.3 the guards shift their weight
         out.append((osd.lp(osd.noise(0.12), 4) * np.exp(-osd.t_(0.12) * 25), sh["4.3"] + 1.05 + 0.4 * j, 0.25))
     out.append((tone(1700, 1700, 0.05, 40), sh["6.1"] + fx_end().PRESS_61, 0.20))   # 6.1 the tap on ACCEPT, louder
+    if "2.1c" in sh:                                                          # 2.1c "DAD ->" written: three marker squeaks
+        for j, (at, d) in enumerate(((0.0, 0.10), (0.12, 0.09), (0.22, 0.13))):
+            sq = osd.hp(osd.noise(d), 2) * np.sin(np.pi * osd.t_(d) / d) * (1 + 0.6 * np.sin(2 * np.pi * (900 + 200 * j) * osd.t_(d)))
+            out.append((sq, sh["2.1c"] + at, 0.16))
     return out
 
 
@@ -272,7 +276,7 @@ def build(path="/tmp/ps_mix_v1.wav"):
     return path, total
 
 
-def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v6_1080.mp4"):
+def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v7_1080.mp4"):
     vids = VIDS
     with open("/tmp/ps_mix_vids.txt", "w") as f:
         for v in vids:
@@ -281,7 +285,7 @@ def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v6_1080.mp4"):
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", "/tmp/ps_mix_vids.txt",
                            "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest"]
                           + tags + [out])
-    c540 = os.path.join(pf.OUT, "ps_film_master_v6_540.mp4")
+    c540 = os.path.join(pf.OUT, "ps_film_master_v7_540.mp4")
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-vf", "scale=540:960:flags=lanczos,format=yuv420p",
                            "-c:v", "libx264", "-crf", "20", "-preset", "veryfast"] + tags + ["-c:a", "copy", c540])
     print("wrote", out, c540, osd.levels(out))

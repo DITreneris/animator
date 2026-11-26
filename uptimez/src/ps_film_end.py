@@ -178,6 +178,8 @@ def s55b(t):
         c.set_source_rgb(0.80, 0.76, 0.66); c.set_line_width(2); c.move_to(320, 0); c.line_to(318, 146); c.stroke()
         e.don_foot_55b(k)
         e.kit.text(k, "DON", 60, 600, 30, e.INK)
+        if pss.DAD_MARK[0]:                                  # her side named: she is on DAD's
+            e.kit.text(k, "DAD", 440, 600, 30, e.INK)
         return {}
     return ps.S("5.5b", "screen", draw=draw)
 
@@ -278,13 +280,16 @@ def _door_reset(fn):
     return f
 
 
+_DUR53 = pf.DUR["5.3"]
+
+
 def setup():
     e.look()
     pf.SCENES[5] = ["5.1", "5.2", "5.3", "5.4", "5.5", "5.5b", "5.6", "5.7"]
     pf.TIMING["5.5b"] = dict(shot="5.5b", len=1.0, line=None, takes=[], take_at=[])
     pf.DUR["5.5b"], pf.TAKE_AT["5.5b"] = 1.0, []
     pf.BOARD["5.5b"] = dict(e.s55b(), id="5.5b")
-    pf.DUR["5.3"] = pf.DUR["5.3"] + (B_53 - pf.TREAT_AT)     # 5.3c's 1.2 s
+    pf.DUR["5.3"] = _DUR53 + (B_53 - pf.TREAT_AT)            # 5.3c's 1.2 s (idempotent: setup() may run twice)
     pf.DUR["6.1b"], pf.DUR["6.2"] = 1.5, 1.4
     pf.PEN_52 = PEN_52_END
     for sid, fn in (("5.1", s51), ("5.3", s53), ("5.5b", s55b), ("6.1", s61), ("6.1b", s61b), ("6.2", s62)):

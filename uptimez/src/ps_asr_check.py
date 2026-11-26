@@ -13,6 +13,8 @@ a=np.frombuffer(raw,np.float32)
 def asr(t0,t1):
     s=rec.create_stream(); s.accept_waveform(16000,a[max(0,int(t0*16000)):int(t1*16000)]); rec.decode_stream(s); return s.result.text.strip()
 norm=lambda x: re.findall(r"[a-z0-9']+", x.lower().replace("’","'"))
+import ps_mix as mx_
+VL = mx_._vid_len()   # each scene's video length, as muxed (was a fixed table)
 st=0.0; rows=[]
 for n in (1,2,3,4,5,6):
     acc=st
@@ -29,5 +31,5 @@ for n in (1,2,3,4,5,6):
                     if best is None or hit>best[0]: best=(hit,' '.join(got))
                 rows.append((sid,round(t0,2),' '.join(want),best[1],round(best[0],2)))
         acc+=pf.DUR[sid]
-    st+= {1:8.166667,2:20.733333,3:13.833333,4:6.833333,5:15.566667,6:5.933333}[n]
+    st += VL[n - 1]
 for r in rows: print("%-5s %6.2f  want: %-45s got: %-45s %.2f"%r)

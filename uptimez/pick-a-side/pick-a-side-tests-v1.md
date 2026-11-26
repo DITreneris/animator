@@ -979,3 +979,24 @@ Tried as voice B (am_echo through robotize), each in 4 windows alone:
 Take: "Both. Sides." with only its first word kept (`ps_voices.CUT`, 0.36 s, 25 ms fade). Alone it is heard "both" 4/4; `takes()` gives 3/3. The old take is gone from the tree but stays in git history (445043d). The line and its bubble are still "Both.".
 
 Master v6: −15.3 LUFS, −1.8 dBTP; speech 19/19 (2.10 "both" 1.00). Files: `pick-a-side/ps_film_master_v6_540.mp4`, `/tmp/ps_master_v6_1080.mp4`.
+
+## Master v7: "DAD →" and 0:26 (Tomas 26 Nov, /grill-me)
+
+- **2.1c (new, 0.6 s):** an insert after 2.1b. The floor from above, the tape down the middle; "← DON" as he wrote it, and "DAD →" written on while we look (0.35 s), with three marker squeaks in ps_mix.
+- **The floor mark** (`ps_set.DAD_MARK`, opt-in): "DAD →" in the same marker past the tape, at (46, 105, 0.8).
+  - Not drawn in shots whose camera cuts it at the edge (`ps_film_fix.DAD_HIDE`, measured at 10/50/90 % of each shot): 2.1b, 2.5, 2.7, 2.9b, 3.1, 3.3, 5.4.
+  - Also not drawn in 6.1 and 6.1b, where it is three-quarters behind Don.
+  - It shows in 2.6 (Mom: "I don't pick sides") and 2.10 (the robot's "Both." standing on DAD).
+  - 5.5b gets "DAD" on her side.
+- **0:26:** 2.10 is 0.9 s shorter. After "Both." there is a 0.3 s beat, then the cut; before, the robot was frozen 1.2 s with the bed silent. The bed's stop for "Both." is −0.15…+0.45 s around the word (was −0.2…+0.9).
+- `ps_asr_check.py` now takes each scene's length from the muxed videos. Its fixed table had put 3.1's window 0.3 s off after the cut: "up donnie" 0.67.
+
+Renders: s2 v6, s3 v7, s5 v11, s6 v6 at 540 and 1080 (s6 v6 with no faults).
+
+Master v7:
+- 70.78 s, 1080×1920, 2123 frames;
+- −15.3 LUFS, −2.0 dBTP;
+- speech 19/19;
+- one stretch under −45 dBFS: 68.5 s, the shock;
+- the loop: the last frame vs the first, mean |Δ| 0.47 (encoding).
+- Files: `pick-a-side/ps_film_master_v7_540.mp4`, `/tmp/ps_master_v7_1080.mp4`.
