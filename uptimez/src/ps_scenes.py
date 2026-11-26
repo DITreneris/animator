@@ -582,6 +582,7 @@ PAM_61 = ["reach"]
 
 
 FACE_61B = ["shock"]
+SPRING_HALO = [False]
 SPRING_61B = [1.0]                                           # motion test I: the spring's height (overshoot), 1.0 = the board
 
 
@@ -600,7 +601,12 @@ def fg_61b(k):
     sp_ = SPRING_61B[0]
     for i in range(5):                                     # a spring, straight up
         c.line_to(2 + (6 if i % 2 == 0 else -6) * hs, -50 - (7 + 7 * i) * hs * sp_)
-    c.line_to(2, -50 - 42 * hs * sp_); c.stroke()
+    c.line_to(2, -50 - 42 * hs * sp_)
+    if SPRING_HALO[0]:                                     # opt-in: a pale halo under it (ending v8: over the dark throne it read
+        lw_ = c.get_line_width()                          # as "a crack / scribble", 3/3)
+        c.set_source_rgb(0.98, 0.95, 0.86); c.set_line_width(lw_ * 2.6); c.stroke_preserve()
+        c.set_source_rgb(*kit.INK); c.set_line_width(lw_)
+    c.stroke()
     for sd in (-1, 1):                                     # the jump: strokes either side of it
         c.move_to(sd * 16 * hs, -50 - 30 * hs * sp_); c.line_to(sd * 26 * hs, -50 - 38 * hs * sp_); c.stroke()
     c.set_line_cap(0); c.set_line_join(0)

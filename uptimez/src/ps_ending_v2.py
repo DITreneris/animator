@@ -32,6 +32,7 @@ def look():
     ps.gags_v5()
     sp.INVITE[0] = True
     HAND_53[0] = "C"; DON_55B[0] = True       # stills v7 (review 26 Nov)
+    ps.SPRING_HALO[0] = True                   # v8 (cold test: the spring over the throne read as a crack)
     pf.dp.BLIND_GAP_FIX[0] = pf.dp.ROLL_TAIL[0] = True
     pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
     ps.LIGHT_V5[0] = True
@@ -137,7 +138,7 @@ def cast_53a(k):
     lx, ly = o["hands"][0]
     cv_plain(k, lx - 4, ly + 22, 0.62)                      # HR? written now (5.2)
     fingers(k, lx + 6, ly + 2, d=-1)
-    _, heads["sofia"] = ps.sofia(k, (350, F + 60), "hip", "smile", (-1, -0.2))
+    _, heads["sofia"] = ps.sofia(k, (342, F + 60), "hip", "smile", (-1, -0.2))
     _, heads["robot"] = ps.robot(k, (262, F + 40), arms=((-80, -30), (40, 0)), look=(-1, -0.3))
     return heads
 
@@ -238,7 +239,7 @@ CARD_GAP = [30]      # extra room between the two rigs so each hand sits on one 
 
 
 def s53c():
-    return ps.S("5.3c", (300, F - 150, 1.4), dict(blind="rehung", tape=True, spun=True), cast_53c)
+    return ps.S("5.3c", (300, F - 150, 1.4), dict(blind="rehung", tape=True, spun=True, mark=False), cast_53c)
 
 
 # --- 5.5b: both shoes over the tape ----------------------------------------------------------------------------------
@@ -339,7 +340,12 @@ def fg_61x(look, face="shock", pose="vest", spring=1.0, hands=None, lean=0.0):
     orig = ps.dp.don
     def don_(k, x, feet, s, p_, f_, l_, **kw):
         kw.update(hands=hands, lean=lean)
-        return orig(k, x, feet, s, pose, f_, l_, **kw)
+        o = orig(k, x, feet, s, pose, f_, l_, **kw)
+        if lean:                                         # v8: the rig returns its head unrotated; the spring sits on the
+            hx, hy = o["head"]                           # head as drawn, so turn the point about his feet too
+            ca, sa = math.cos(lean), math.sin(lean)
+            o = dict(o, head=(x + (hx - x) * ca - (hy - feet) * sa, feet + (hx - x) * sa + (hy - feet) * ca))
+        return o
     ps.dp.don = don_
     ps.SPRING_61B[0] = spring; ps.LOOK_61B[0] = look; ps.FACE_61B[0] = face
     try:
@@ -351,7 +357,7 @@ def fg_61x(look, face="shock", pose="vest", spring=1.0, hands=None, lean=0.0):
 
 k_hold = [None]
 LOOK_PHONE = [(1, -1)]      # up-right on screen: Pam's phone
-LOOK_TEAM = [(-1, -1)]      # up-left: Mom, Sofía with the card
+LOOK_TEAM = [(0.6, -1)]      # v8: up and right, where the team stands (v7 looked up-left, at nobody)
 
 
 def s61bx(i):
@@ -368,7 +374,7 @@ def s61bx(i):
     return dict(b, fg=fg)
 
 
-LEAN_TEAM = [-0.06]     # the head goes with the eyes (radians about his feet; minus: toward screen-left)
+LEAN_TEAM = [0.10]       # v8: the head goes with the eyes, toward the team (screen-right, off the dark throne)
 FACE_DROP = ["neutral"]      # v7: "confused" read as angry (brows down); flat mouth, eyes down = deflated
 LOOK_DROP = [(0.4, 1)]
 
@@ -382,27 +388,39 @@ def s61b3(): return s61bx(2)
 DIM_62 = 0.16                                                # Tomas 26 Nov: lighter darkening than the 1.1 tug (0.32)
 
 
+FACE_62 = ["squint"]
+BROWS_62 = [True]     # Don's face on the yank down (shut=True)
+T_62 = [0.42]            # v8: mid-stroke, the motion lines under his hand show the yank
+
+
 def s62x(t, sid, shut):
     """6.2 (1.4 s, Tomas 26 Nov: down -> the robot up -> 1.1): the 1.1 tug's own shot_A at time t, darkening at DIM_62;
     shut=True: Don's eyes screwed shut (he yanks it down and won't look)."""
-    pm_.DIM_A[0] = DIM_62
+    pm_.DIM_A[0] = DIM_62; pm_.VISOR_A[0] = False
     sh = pm_.shot_A(t, v4=True)
     inner = sh["cast"]
     def cast(k):
         orig = ps.don
         def don_(k_, at, pose, face, *a, **kw):
-            return orig(k_, at, pose, "squint" if shut else face, *a, **kw)
+            return orig(k_, at, pose, FACE_62[0] if shut else face, *a, **kw)
         ps.don = don_; pm_.ps.don = don_
-        pm_.DIM_A[0] = DIM_62
+        pm_.DIM_A[0] = DIM_62; pm_.VISOR_A[0] = False
         try:
-            return inner(k)
+            h = inner(k)
+            if shut and BROWS_62[0] and "don" in h:              # v8: shut AND scowling (3/3 read plain shut eyes as calm)
+                hx, hy, r = h["don"]
+                c = k.c; c.set_source_rgb(*INK); c.set_line_width(max(2.4, r * 0.11)); c.set_line_cap(1)
+                for sd in (-1, 1):
+                    c.move_to(hx + sd * r * 0.62, hy - r * 0.42); c.line_to(hx + sd * r * 0.14, hy - r * 0.22); c.stroke()
+                c.set_line_cap(0)
+            return h
         finally:
-            ps.don = orig; pm_.ps.don = orig; pm_.DIM_A[0] = 0.32
+            ps.don = orig; pm_.ps.don = orig; pm_.DIM_A[0] = 0.32; pm_.VISOR_A[0] = True
     return dict(sh, cast=cast, id=sid)
 
 
 def s62n():
-    return s62x(0.55, "6.2n", True)                          # all the way down, eyes shut
+    return s62x(T_62[0], "6.2n", True)                          # all the way down, eyes shut
 
 
 def s62b():

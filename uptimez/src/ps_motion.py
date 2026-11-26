@@ -73,6 +73,7 @@ def tug_state(t):
     return 0.0, None
 
 
+VISOR_A = [True]                                             # opt-in: False = no sun pictogram on its visor (6.2 ending: 3/3 read it as "brightness up")
 DIM_A = [0.32]                                               # opt-in: how dark the room gets as the blind comes down (6.2 ending: lighter)
 
 
@@ -94,7 +95,7 @@ def shot_A(t, v4=False):
         rx, rf = ps.at("rob_cord")
         if v4:                                               # the film (ps_film, board v4): the robot a step left of the door
             rx -= 30; hi = (-180, 0); arm = (lerp(lo[0], hi[0], n), lerp(lo[1], hi[1], n))   # frame, as board v4's 1.1
-        o2, heads["robot"] = ps.robot(k, (rx + 12, rf), arms=(arm, (8, 0)), visor="sun" if n > 0.5 else None,
+        o2, heads["robot"] = ps.robot(k, (rx + 12, rf), arms=(arm, (8, 0)), visor="sun" if (n > 0.5 and VISOR_A[0]) else None,
                                       tilt=(0.10 if who == "robot" else 0.0))
         c = k.c
         cord_to(c, pss.CORD_L, top, o["hands"][0], pss.PULL)

@@ -170,3 +170,17 @@ Sprendimai: **kvietimo kortelė** (tas pats „INVITATION · from DAD“ kaip Pa
 - **6.1b in v7:** 1 freeze (thumbs still up, smile on, eyes wide to her phone, no spring yet); 2 shock, the body leaning to the team (lean −0.06) with the spring; 3 arms drop, face "neutral" with eyes down ("confused" read as angry).
 - Unchanged: 5.4; 6.2 → 1.1 (md5-equal; frame 0 held ≥ 0.4 s by the rules, so the review's "no pause" is not taken).
 - Checks: board v4 44/44 md5-identical; film loop md5-equal.
+
+## 13. Stills v8 (Tomas: "taisom ir einam prie animacijos")
+
+Fixes from the ending cold test's shared misreads:
+- **6.2:** no sun on the visor (`ps_motion.VISOR_A`, opt-in; 3/3 read it as "brightness up"). The still is mid-stroke (t 0.42), so the motion lines under his hand show. Don's eyes are shut and scowling (brows over `squint`; plain shut eyes read as calm 3/3).
+- **6.1b2:**
+  - the spring has a pale halo (`ps_scenes.SPRING_HALO`, opt-in; it read as "a crack over the throne" 3/3);
+  - he leans toward the team (+0.10, screen-right);
+  - the spring now sits on the rotated head (the rig returns the head unrotated);
+  - the eyes look up-right, at the team (v7 looked up-left, at nobody);
+  - INVESTOR is clear.
+- **5.3c:** no DON floor mark (`room(mark=False)`): only its arrow fragment was in frame (3/3 "← D?"). The tape itself stays.
+- **5.3a:** Sofía 8 px left, off the button rail.
+- Board v4 44/44 md5-identical; loop md5-equal.
