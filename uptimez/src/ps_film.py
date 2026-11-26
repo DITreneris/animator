@@ -29,7 +29,8 @@ DUR["1.3"] += DUR["1.2b"]                                    # v3: 1.3 starts wh
 TAKE_AT = {k: list(v["take_at"]) for k, v in TIMING.items()}
 TAKE_AT["1.3"] = [TAKE_AT["1.3"][0] + DUR["1.2b"]]
 DUR["4.3"] += 0.40                                           # Tomas 25 Nov (plan §7 a): Father's take 0.4 s later, the
-TAKE_AT["4.3"] = [TAKE_AT["4.3"][0], TAKE_AT["4.3"][1] + 0.40]   # guards' close gets 0.45 s between the lines
+TAKE_AT["4.3"] = [TAKE_AT["4.3"][0], TAKE_AT["4.3"][1] + 0.40 + 0.25]   # guards' close gets 0.45 s between the lines;
+DUR["4.3"] += 0.25                                           # v2 (review 26 Nov): 0.38 s of Father's silence before "Invite her."
 SIP_ON = [False]                                             # 3.7's sip: tried v3/v4, read as "a phone" 3 rounds; Tomas 25 Nov:
 DUR["3.7"] += 0.40 if SIP_ON[0] else 0.0                     # the silence without the sip, the cup at her chin (the board)
 
@@ -565,10 +566,10 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 1}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 2}
 STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
            ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
-           ("4.3", 1.3, "noses pinched"), ("4.3", 2.2, "Invite her.")]
+           ("4.3", 1.3, "noses pinched"), ("4.3", 1.6, "Father, silent"), ("4.3", 2.4, "Invite her.")]
 STILLS3 = [("3.1", 0.3, "the arm telescopes"), ("3.1", 1.8, "Chin up: in to Mom"), ("3.2", 0.02, "FLASH"), ("3.2", 1.5, "the photo"),
            ("3.3", 0.8, "Public post?"), ("3.4", 0.10, "the arm up"), ("3.4", 0.40, "it sinks, the phone slides"),
            ("3.4", 0.60, "APPROVED"), ("3.4", 1.15, "thumb back up"), ("3.5", 0.35, "the slide"), ("3.6", 0.1, "before"),
@@ -587,6 +588,7 @@ STILLS = {4: STILLS4, 3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.
 
 def stills(n):
     ps.gags_v5()
+    ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
     ps.LIGHT_V5[0] = True; import pm_ps; pm_ps.MUG_RING[0] = True   # the film's look (review 25 Nov)
@@ -815,6 +817,7 @@ HOLD_D = 5                                                   # drawings (0.33 s)
 def film(n, ver=1):
     import subprocess, shutil
     ps.gags_v5()
+    ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
     ps.LIGHT_V5[0] = True; import pm_ps; pm_ps.MUG_RING[0] = True

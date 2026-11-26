@@ -629,3 +629,12 @@ Built (plan v2 §7): 4.1 the neon's flicker, the black sleeve lifts the #TeamDon
 | Father doesn't react to the smell | 3/3 |
 
 5 of 5. Shared, not beats: the cut 4.3b → 4.3c "same room?" 3/3 unsure.
+
+### Scene 4 v2–v3 (outside review 26 Nov, 7.5/10; Tomas "proceed"; rules §0 this time)
+
+- **The pinch (§0):** `hands_ps` has no pinch. `dh_cast.FRONT_HAND` (opt-in) draws the series' hand on the guard's face arm, backed down its forearm (`FRONT_HAND_BACK`) so the fingertips, not the knuckles, land on the nose; a sheet of 8 shapes. Silhouettes don't work here (the hand is in front of a black suit: all black, as logged before), so the 3 variants (palm, beckon, the rig's ball) went to 2 viewers in colour at feed size: split (palm best 1, the ball best 1), "a boxing glove", "a paddle with lines", "pointing / shh". No existing shape reads as a pinch → a new shape is needed (asked Tomas). Unchanged in the film.
+- **4.1:** 5.7's grip (palm under the phone's foot, the backs of the fingers behind its left edge), the phone +20 % (`BRIDGE_V2`): "a hand round the phone" 3/3.
+- **4.2:** the photo 35 % closer (`ZOOM_42`). v2: the finger still landed on her coat 3/3 — the measured offsets (100 px, 46 px) didn't scale with the zoom; v3 scales them and moves the photo so her heels sit under the `point_t` tip: "her shoe / foot" 2/2.
+- **4.3:** stink lines off the Client's head, each its own width and phase (`STINK_V2`); Father +12 % (`FATHER_V2`, framed left to keep the phone off the rail), 0.38 s of silence before "Invite her." (his take +0.25 s): "in charge" 3/3.
+- Disagreed (logged in the reply): one guard turning instead of both (undoes Tomas's mirrored pick); filling the bottom quarter (the platforms' captions).
+- Open: "That one." speaker 2/3 unclear (the table's clutter).

@@ -248,6 +248,8 @@ def pass_card(k, x, y, s=1.0, seed=1780):
     c.restore()
 
 
+FRONT_HAND_BACK = [0.0]
+FRONT_HAND = [None]                                          # opt-in: a hands_ps shape for the ARM_FRONT arm's hand
 ARM_FRONT = [None]                                         # opt-in (Pick a Side, 25 Nov): -1 / 1, that side's arm is drawn AFTER
                                                            # the head: the rig's own hand at his face (one hand per wrist, 179, 208)
 
@@ -306,6 +308,14 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
             wx, wy = hx - ux * (co.HAND + 1), hy_ - uy * (co.HAND + 1)
             cut(k, [(wx + px * 19 - ux * 6, wy + py * 19 - uy * 6), (wx + px * 18, wy + py * 18), (wx - px * 18, wy - py * 18),
                     (wx - px * 19 - ux * 6, wy - py * 19 - uy * 6)], co.SHIRT, shadow=False, lw=1.8)
+        if FRONT_HAND[0] and side == ARM_FRONT[0]:                                           # opt-in (Pick a Side, 26 Nov):
+            import hands_ps as hp                                                            # the series' hand (rules §1,
+            dx_, dy_ = (hx - ex) / LN2, (hy_ - ey) / LN2                                     # lesson 147) on the face arm,
+            w_ = 2.3 * co.HAND; b_ = FRONT_HAND_BACK[0] * w_                                 # backed down its own forearm, so
+            hp.draw(k, FRONT_HAND[0], hx - dx_ * b_, hy_ - dy_ * b_, w_, co.SKIN, (dx_, dy_), side)   # the fingertips, not the
+                                                                                             # knuckles, land on the target
+            hands[side] = (hx, hy_)
+            return
         if kind == "guard" and side == 1:                                                    # v3: the gripping hand has fingers
             c.set_source_rgb(*INK); c.set_line_width(1.8); c.set_line_cap(1)
             for i in (-1, 0, 1):

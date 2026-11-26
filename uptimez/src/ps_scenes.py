@@ -658,7 +658,30 @@ def _post_bridge(k):
 BRIDGE_DROP = [0.0]
 
 
+BRIDGE_V2 = [False]                                          # ps_film (review 26 Nov: "the phone small, the fingertips separate
+                                                             # ovals"): +20 %, 5.7's grip (palm under the foot, the backs of the
+                                                             # fingers joining the tips to it, rules §1 / lesson 56)
+
+
 def _post_bridge_(k, c, ocs):
+    if BRIDGE_V2[0]:
+        px, py, ps_ = 270, 520, 1.5
+        hw = 52 * ps_                                        # the phone's half width (of_ui.full, 104 units)
+        pal, gs = (px, py + 94 * ps_ - 8), hw / 22.0 * 0.98
+        c.set_source_rgb(0.06, 0.06, 0.08); c.new_path()     # his sleeve, from the bottom-right edge into the palm
+        c.move_to(540, 960); c.line_to(540, 820); c.line_to(pal[0] + 40, pal[1] + 10); c.line_to(pal[0] - 10, pal[1] + 70)
+        c.line_to(420, 960); c.close_path(); c.fill()
+        sk = (0.91, 0.67, 0.55)
+        ocs.phone_grip(k, pal[0], pal[1], gs, body_x=700, part="back", skin=sk, ink=0.45)
+        x0_, w_, r_ = px - hw - 34, 70, 26                   # the backs of his fingers behind the phone's left edge
+        y0_, h_ = pal[1] - 30 * gs - 18, 30 * gs + 30
+        c.new_path(); c.arc(x0_ + r_, y0_ + r_, r_, math.pi, 1.5 * math.pi); c.arc(x0_ + w_ - r_, y0_ + r_, r_, 1.5 * math.pi, 2 * math.pi)
+        c.arc(x0_ + w_ - r_, y0_ + h_ - r_, r_, 0, 0.5 * math.pi); c.arc(x0_ + r_, y0_ + h_ - r_, r_, 0.5 * math.pi, math.pi); c.close_path()
+        c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(3.0); c.stroke()
+        rp.phone_screen(k, px, py, ps_, "posted")
+        ocs.phone_grip(k, pal[0], pal[1], gs, body_x=700, part="front", skin=sk, ink=0.45, thumb_tip=(22.5, 0))
+        grip("phone", pal, 1, 1)
+        return
     px, py, ps_ = 270, 560, 1.25
     palm, body_x = (300, 690), 520                           # his right hand from the bottom right (his body off frame, right)
     c.set_source_rgb(0.06, 0.06, 0.08); c.new_path()             # his sleeve
@@ -670,6 +693,7 @@ def _post_bridge_(k, c, ocs):
     grip("phone", palm, want, want)
 
 
+ZOOM_42 = [False]                                            # ps_film (review 26 Nov, 0 of 3 saw the heel): the photo 35 % closer
 HEEL_42 = (330, 470)
 FINGER_42 = [1.0]                                            # motion test J: 0 = off the frame's edge, 1 = on her heel                                        # where Sofía's heel lands in the pushed-in photo (frame px)
 
@@ -697,9 +721,12 @@ def _prints_v4(k):
     import hands_ps as hp
     import client_ob as cob
     c = k.c
-    s_ = 7.0                                                 # the phone's own heel point: (22.3, 13.6) in its units
+    s_ = 7.0 * (1.35 if ZOOM_42[0] else 1.0)                                                # the phone's own heel point: (22.3, 13.6) in its units
     hp_ = __import__("ps_ui").HEEL_PT if rp.UI_KIT[0] else (22.3, 13.6)   # the UI kit's post puts the photo elsewhere
-    px, py = HEEL_42[0] - hp_[0] * s_ - 100, HEEL_42[1] - hp_[1] * s_ + 46   # measured: her heel sits 100 px right, 46 up
+    k7 = s_ / 7.0 if ZOOM_42[0] else 1.0                      # ZOOM_42: the measured offsets scale with the zoom (26 Nov: unscaled,
+    px, py = HEEL_42[0] - hp_[0] * s_ - 100 * k7, HEEL_42[1] - hp_[1] * s_ + 46 * k7   # the finger landed on her coat, 3 of 3)
+    if ZOOM_42[0]:                                           # measured on the zoomed frame: her heels sit 30 px left of and
+        px, py = px + 30, py - 73                            # 73 px below where the point_t tip lands: the photo moved to it
     import ps_checks as pc
     pc.NO_DECLARE[0] = True                                  # the screen fills the frame: the story rect is the heel + finger
     try:
@@ -729,13 +756,16 @@ def _prints_v4(k):
 
 
 CLOSE_43 = [1.45, -345, -302]                                  # GAGS_V5: 4.3b, the bodyguards close (x' = s x + tx)
-BOOTH_PART_V4 = {0: (1.25, -230, -220), 1: (1.25, 100, -220), 2: (CLOSE_43[0], CLOSE_43[1], CLOSE_43[2])}   # round 5: 4.3a on the Client, 4.3b on Father (x' = s x + tx)
+BOOTH_PART_V4 = {0: (1.25, -230, -220), 1: (1.25, 100, -220), 2: (CLOSE_43[0], CLOSE_43[1], CLOSE_43[2])}
+FATHER_BIG = (1.40, 23, -297)                                 # ps_film (review 26 Nov): 4.3c Father +12 %, his face where it was   # round 5: 4.3a on the Client, 4.3b on Father (x' = s x + tx)
 
 
 def ins_booth_43(k):
     c = k.c
     c.set_source_rgb(0.10, 0.03, 0.05); c.paint()
     t = BOOTH_PART_V4.get(PART[0]) if FIX_V4[0] else None
+    if t is not None and PART[0] == 1 and FATHER_V2[0]:
+        t = FATHER_BIG
     if t is None:
         return _booth_43(k)
     s_, tx, ty = t                                           # one speaker per key frame, the other off the edge: the box's wall
@@ -745,6 +775,8 @@ def ins_booth_43(k):
     return {n: (x * s_ + tx, y * s_ + ty, r * s_) for n, (x, y, r) in h.items() if -40 < x * s_ + tx < W + 40}
 
 
+STINK_V2 = [False]
+FATHER_V2 = [False]
 PINCH_43 = [1.0]                                             # ps_film: the guards' turn and pinch, 0..1 (1 = the board)
 STINK_RISE = [0.0]                                           # ps_film: px the stink lines have risen (0 = the board)
 
@@ -779,9 +811,12 @@ def _booth_guards(k, seat, tbl):
         a = sgn * 0.13 * PINCH_43[0]                         # his head where the lean put it (for the bubbles to keep off)
         dx, dy = o["head"][0] - gx, o["head"][1] - tbl
         heads["guard%d" % (i + 1)] = (gx + dx * math.cos(a) - dy * math.sin(a), tbl + dx * math.sin(a) + dy * math.cos(a), 44 * gs)
-    for j, x in enumerate((352, 424, 496)):
-        y = seat - 400 - 18 * (j % 2) - STINK_RISE[0] - 14 * math.sin(STINK_RISE[0] / 9.0 + j)   # ps_film: they rise
-        for col, lw in (((0.10, 0.16, 0.05), 11), ((0.56, 0.78, 0.22), 6)):
+    xs, lws = ((352, 424, 496), (6, 6, 6)) if not STINK_V2[0] else ((392, 421, 452), (7, 4.5, 5.5))
+    for j, x in enumerate(xs):                               # STINK_V2 (review 26 Nov): off the Client's head, not the guards'
+        y = seat - 400 - 18 * (j % 2) - STINK_RISE[0] * (1 + 0.25 * j) - 14 * math.sin(STINK_RISE[0] / 9.0 + 2.1 * j)
+        if STINK_V2[0]:
+            y = seat - 400 - ((STINK_RISE[0] * (1 + 0.3 * j) + 40 * j) % 120)   # each its own phase, looping up from him
+        for col, lw in (((0.10, 0.16, 0.05), lws[j] + 5), ((0.56, 0.78, 0.22), lws[j])):
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1); c.new_path(); c.move_to(x, y + 110)
             c.curve_to(x - 30, y + 80, x + 30, y + 60, x, y + 36); c.curve_to(x - 26, y + 18, x + 20, y + 8, x, y - 10); c.stroke()
     c.set_line_cap(0)
