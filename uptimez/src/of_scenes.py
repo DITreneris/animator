@@ -402,9 +402,9 @@ def _cast_draw0(k, n, scene, sh, heads):
         heads[n] = (hx0_, hy0_, 50 * FS)
         if ps.get("impact") and ps.get("palm") and ps.get("targets_xy"):     # v55: his flat palm SLAMS: the film's own lines (frame 0's)
             hx, hy = ps["targets_xy"][0]
-            c.set_source_rgb(*INK); c.set_line_width(3.2); c.set_line_cap(1)
-            for a_ in (-2.15, -1.8, -1.45, -1.1, -0.75):                     # up, clear of his face and of the glass
-                r0, r1 = 24, 24 + 22 * ps["impact"]
+            c.set_source_rgb(*INK); c.set_line_width(4.2); c.set_line_cap(1)      # v59: as big as frame 0's hit (lines 4.2 wide, longer)
+            for a_ in (-1.75, -1.45, -1.15, -0.85, -0.55, -0.3):                # up, clear of his face and of the glass
+                r0, r1 = 26, 26 + 34 * ps["impact"]
                 c.new_path(); c.move_to(hx + 12 + r0 * math.cos(a_), hy - 4 + r0 * math.sin(a_)); c.line_to(hx + 12 + r1 * math.cos(a_), hy - 4 + r1 * math.sin(a_)); c.stroke()
         if ps.get("phone_donnie") and ps.get("targets_xy"):                  # v1 (23 Nov): DONNIE calling, in his hand, he looks at it
             want = ps["targets_xy"][0]
@@ -832,8 +832,8 @@ def garage_shot(k, sh, scene, heads, cam):
         c.save(); c.translate(px, py); c.scale(1.15, 1.15); c.translate(-px, -py)      # the phone 15 % bigger
         for col, lw in ((INK, 66), (dc.SUIT, 60)):                            # v9 (24 Nov, cold test 3 of 3: "a black diagonal",
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0)       # "floating"; decided: hand + SHORT THICK forearm):
-            c.move_to(px + 40, py + 26); c.line_to(px + 150, py - 230); c.stroke()   # his sleeve, as wide as the hand, straight
-        c.save(); c.translate(px + 51, py + 0.4); c.rotate(math.atan2(-256, 110))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
+            c.set_line_join(1); c.move_to(px + 40, py + 26); c.line_to(px + 92, py - 92); c.line_to(px + 330, py - 120); c.stroke()   # v59 (cold test v52: "a pole"): his sleeve BENDS at an elbow inside the frame: forearm, elbow, upper arm to the top-right edge
+        c.save(); c.translate(px + 50, py + 2); c.rotate(math.atan2(-118, 52))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
         rect(k, -9, -35, 18, 70, (0.97, 0.97, 0.94), 3409, shadow=False, lw=1.8)            # his white cuff, at the phone
         c.restore()
         S04, A04 = 90 / 44.0, 0.0                                             # v7: the same phone grip as every phone, big
@@ -1076,17 +1076,17 @@ def insert_shot(k, sh):
         # v50 (cold test v47, 2 of 3: "it dangles from above like a ceiling light"): the lamp is HELD: the bodyguard's black
         # sleeve and white cuff come in from the top right, his fist round the handle, the cage aimed down at the hands
         la_ = -0.62
-        lx_, ly_ = 372, 150
+        lx_, ly_ = 352, 172                                                   # v59 (cold test v52: "the lamp floats alone"): lower, so the owner's hand and cuff are more of the frame
         hx_, hy_ = lx_ + 26 * math.cos(la_), ly_ + 26 * math.sin(la_)
         ux_, uy_ = math.cos(la_), math.sin(la_)
         nx_, ny_ = -uy_, ux_
-        w0, w1 = 21, 30
+        w0, w1 = 26, 36
         cut(k, [(hx_ + 14 * ux_ + w0 * nx_, hy_ + 14 * uy_ + w0 * ny_), (hx_ + 240 * ux_ + w1 * nx_, hy_ + 240 * uy_ + w1 * ny_),
                 (hx_ + 240 * ux_ - w1 * nx_, hy_ + 240 * uy_ - w1 * ny_), (hx_ + 14 * ux_ - w0 * nx_, hy_ + 14 * uy_ - w0 * ny_)], (0.11, 0.11, 0.13), lw=2.4)
-        cut(k, [(hx_ + 10 * ux_ + 19 * nx_, hy_ + 10 * uy_ + 19 * ny_), (hx_ + 22 * ux_ + 20 * nx_, hy_ + 22 * uy_ + 20 * ny_),
-                (hx_ + 22 * ux_ - 20 * nx_, hy_ + 22 * uy_ - 20 * ny_), (hx_ + 10 * ux_ - 19 * nx_, hy_ + 10 * uy_ - 19 * ny_)], (0.97, 0.97, 0.95), shadow=False, lw=1.8)
+        cut(k, [(hx_ + 10 * ux_ + 24 * nx_, hy_ + 10 * uy_ + 24 * ny_), (hx_ + 26 * ux_ + 25 * nx_, hy_ + 26 * uy_ + 25 * ny_),
+                (hx_ + 26 * ux_ - 25 * nx_, hy_ + 26 * uy_ - 25 * ny_), (hx_ + 10 * ux_ - 24 * nx_, hy_ + 10 * uy_ - 24 * ny_)], (0.97, 0.97, 0.95), shadow=False, lw=1.8)
         gs.lamp(k, lx_, ly_, ang=la_, lit=True, glow=False, cable=False)
-        _oc.handle_grip(k, hx_, hy_, 24, la_ + math.pi / 2, co_skin())
+        _oc.handle_grip(k, hx_, hy_, 32, la_ + math.pi / 2, co_skin())
         c.save(); c.translate(120, 470)                                                 # his red rag, over the block's edge
         # v4 (24 Nov, audit: "a cylinder"; two rags at once): NO rag on the engine: his one rag is in his back pocket
         c.restore()
