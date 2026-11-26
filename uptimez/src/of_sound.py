@@ -175,7 +175,7 @@ def room(total):
 
 # --- the mix ----------------------------------------------------------------------------------------------------------
 def timing():
-    d = json.load(open(os.path.join(OUT, "of_timing_v27.json")))
+    d = json.load(open(os.path.join(OUT, "of_timing_v28.json")))
     return {s["shot"]: s for s in d["shots"]}, d["total"]
 
 
@@ -264,7 +264,7 @@ def mix():
     put(fxb, ring_out(1.25), T("3.7") + 0.15, 0.30)                        # v5: it rings, and rings; nobody answers
     put(fxb, bm.buzz_phone(0.7), T("4.1") + 0.05, 0.35)
     put(fxb, car_door(), E("4.1") - 0.30, 0.45)
-    put(fxb, cloth_thud(), T("4.2") + 0.28, 0.10)   # v55: the phone into his pocket
+    put(fxb, cloth_thud(), T("4.2") + 0.50, 0.10)   # v57: the phone into his pocket (after the stop at its mouth)
     # v15 (24 Nov, the music check, decided): the new gags and shots get their sounds
     # v20 (24 Nov, Tomas: "the engine's hum is not real, it was better before"): no synthetic idle after the start
     for a_, b_ in ((0.35, 0.40), (0.47, 0.52)):                            # the lamp: buzz, buzz, tick, dark (of_film.s28f v5)
@@ -273,7 +273,7 @@ def mix():
     put(fxb, cloth_thud(), T("2.8f") + 1.05, 0.14)                         # the sag
     put(fxb, pin_tap(), T("0.9") + 0.2, 0.45)                              # v17: the knee knocks the car from below, on "Off"
     pass  # v53: no plan, no paper                           # of_film.PIN_T: the fresh plan slides up
-    put(fxb, cloth_thud(), T("4.2") + 0.86, 0.70); put(fxb, pin_tap(), T("4.2") + 0.86, 0.40)   # v55: his palm on the bonnet                             # and the pin goes in
+    put(fxb, cloth_thud(), T("4.2") + 1.16, 0.85); put(fxb, pin_tap(), T("4.2") + 1.16, 0.45)   # v55: his palm on the bonnet                             # and the pin goes in
     # music: in after the doors (0.3), cut dead on the click (1.2), back after "Done." (2.8c), out at the office cut
     bed = fm.bed("B", total + 1.0)
     # v15: it stops when the lamp dies (the gag gets the silence) and is back on Father's walk; and the garage theme
@@ -334,7 +334,7 @@ def master(a, target=-14.0, tp=-2.6):          # AAC adds about 0.9 dB
     stays under tp (lessons: the AAC overshoot is checked on the final file too)."""
     from scipy.signal import resample_poly
     from scipy.ndimage import minimum_filter1d
-    path = os.path.join(OUT, "of_sound_v28.wav")
+    path = os.path.join(OUT, "of_sound_v29.wav")
     g = 1.0
     x = a / (np.abs(a).max() + 1e-9) * 0.5
     for _ in range(6):
@@ -359,7 +359,7 @@ def check(lines, path=None, out=None):
     path: another mix to check (the rough cut's decoded AAC); out: where the json goes."""
     import of_voices as ov
     import sound_fs as sfs
-    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v28.wav"))
+    a, sr = sf.read(path or os.path.join(OUT, "of_sound_v29.wav"))
     if a.ndim > 1:
         a = a.mean(axis=1)
     r = ov.recognizer()
@@ -386,7 +386,7 @@ def check(lines, path=None, out=None):
         prev = (t0, line.split(":", 1)[1] if ":" in line else line)
         res[sid] = dict(line=line, heard=heard, ok=ok)
         print("%-5s %d/3  %-48s | %s" % (sid, ok, line[:48], heard[0]), flush=True)
-    json.dump(res, open(out or os.path.join(OUT, "of_sound_v28_check.json"), "w"), indent=1)
+    json.dump(res, open(out or os.path.join(OUT, "of_sound_v29_check.json"), "w"), indent=1)
     return res
 
 
@@ -399,7 +399,7 @@ def levels(path):
 if __name__ == "__main__":
     a, lines, total = mix()
     master(a)
-    I, P = levels(os.path.join(OUT, "of_sound_v28.wav"))
+    I, P = levels(os.path.join(OUT, "of_sound_v29.wav"))
     print("master: %.1f s, %.1f LUFS, true peak %.1f dBTP" % (total, I, P))
     res = check(lines)
     KNOWN = {"2.6": "\"And then?\" is heard \"On then\" in 2 of 3 windows in the mix (1 of 3 dry at stop 2 without context): "

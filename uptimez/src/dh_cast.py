@@ -28,6 +28,7 @@ STEEL, STEEL_D = (0.78, 0.80, 0.84), (0.55, 0.57, 0.62)
 CUP = (0.93, 0.90, 0.82)
 
 
+BROW_ARCH = [False]                                           # opt-in (v57): a raised brow that arches (inner end up) instead of a grey slab
 BROW_UP = [9]; BROW_DARK = [False]                                  # how far "brow" lifts; episode 13 raises it for one shot (default unchanged)
 CHAIN_DX = [0.0]                                          # opt-in (24 Nov, episode 13): the gold chain's swing, px
 COIL_DX = [0.0]                                           # opt-in (24 Nov, episode 13): the earpiece coil trails the head, px
@@ -58,9 +59,12 @@ def _father_face(k, x, y, face, look, glasses=False, seed=0):
     bd = 2.5 if low else 0.0                                                   # low: the brows press down over the eyes
     for sx, lift in ((-1, 0), (1, up)):                                         # brows: grey, thick, level
         c.set_source_rgb(*((0.36, 0.36, 0.38) if lift and BROW_DARK[0] else GREY_HAIR)); c.set_line_width(7); c.set_line_cap(1)
-        c.move_to(x + sx * 28, y - 12 + bd * 0.4 - lift * 0.6); c.line_to(x + sx * 7, y - 12 + bd - lift); c.stroke()
+        if lift and BROW_ARCH[0]: lift = min(lift, 5)                          # v57: kept below the hairline (grey on grey read as a bruise)
+        ol_ = 0.0 if (lift and BROW_ARCH[0]) else lift * 0.6                    # v57: the outer end stays, the inner end rises: it arches
+        if lift and BROW_ARCH[0]: c.set_line_width(5.5)
+        c.move_to(x + sx * 28, y - 12 + bd * 0.4 - ol_); c.line_to(x + sx * 7, y - 12 + bd - lift); c.stroke()
         c.set_source_rgb(*INK); c.set_line_width(1.6)
-        c.move_to(x + sx * 28, y - 8.5 - lift * 0.6); c.line_to(x + sx * 7, y - 8.5 - lift); c.stroke()
+        c.move_to(x + sx * 28, y - 8.5 - ol_ + (0.5 if (lift and BROW_ARCH[0]) else 0)); c.line_to(x + sx * 7, y - 8.5 - lift + (0.5 if (lift and BROW_ARCH[0]) else 0)); c.stroke()
     c.set_source_rgba(0.45, 0.30, 0.28, 0.8); c.set_line_width(2.0)             # the lines from the nose to the mouth
     for sx in (-1, 1):
         c.move_to(x + sx * 9, y + 13); c.curve_to(x + sx * 15, y + 19, x + sx * 17, y + 25, x + sx * 16, y + 31); c.stroke()
