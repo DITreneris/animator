@@ -155,3 +155,18 @@ Sprendimai: **kvietimo kortelė** (tas pats „INVITATION · from DAD“ kaip Pa
 - **6.1b as three drawings (1.5 s):** eyes to Pam's phone (up-right, spring, shock), then eyes to the team (up-left, half spring), then arms drop (pose "stand", face "confused"). The team stays calm. Known: the eye change between drawings 1 and 2 is small at 270 px, so the head may need a turn when animated.
 - **6.2 (1.4 s):** down with eyes shut, then the robot yanks it up, then 1.1 frame 0. Lighter darkening via the new opt-in `ps_motion.DIM_A` (default 0.32 unchanged; the ending uses 0.16).
 - Checks: board v4 is 44/44 md5-identical to /tmp/bnew. The film's 6.2 last drawing still equals 1.1 frame 0 (md5). 5.4 and 5.7 are untouched.
+
+## 12. Stills v7 (outside review 26 Nov, 8/10: "5.3c FAIL, rope pull")
+
+- **5.3c silhouette test** (rules-hands §0.2; lessons 178, 179, 208, 263, 264, 417), three variants at 270 px, two cold viewers:
+  - **C** (he holds the card out by its left margin, her open hand a gap short of it): 2/2 "giving / she is about to take it";
+  - **A** (both grab, diagonal): "hand-over, but maybe both holding", the hands merge;
+  - **B** (his grab on the top edge, her palm under): 2/2 "could be a tug / struggle".
+  - C is in. It changes Tomas's grill pick (grab on both): the gesture changed, not the position (178). A stays behind `HAND_53 = "A"`.
+  - Pixel checks: DAD and SOFÍA clear of fingers; her fingertips about 22 px short at 540 (about 11 at 270).
+  - Her hand is `hands_ps` "palm" (fingers to the card); her arm is bent (`SOF_53`).
+  - The guard is at x 148 and the camera at (300, F-150, 1.4): her face is off the button rail.
+- **5.5b:** Don's planted shoe and khaki shin come in from the left frame edge (lesson 38), toes short of the tape; the tape's near end is moved right for room; "DON" is on his side.
+- **6.1b in v7:** 1 freeze (thumbs still up, smile on, eyes wide to her phone, no spring yet); 2 shock, the body leaning to the team (lean −0.06) with the spring; 3 arms drop, face "neutral" with eyes down ("confused" read as angry).
+- Unchanged: 5.4; 6.2 → 1.1 (md5-equal; frame 0 held ≥ 0.4 s by the rules, so the review's "no pause" is not taken).
+- Checks: board v4 44/44 md5-identical; film loop md5-equal.

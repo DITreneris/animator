@@ -31,6 +31,7 @@ def look():
     """the film's look (as ps_film's stills); Tomas 26 Nov: the CV is Father's invitation"""
     ps.gags_v5()
     sp.INVITE[0] = True
+    HAND_53[0] = "C"; DON_55B[0] = True       # stills v7 (review 26 Nov)
     pf.dp.BLIND_GAP_FIX[0] = pf.dp.ROLL_TAIL[0] = True
     pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
     ps.LIGHT_V5[0] = True
@@ -149,6 +150,8 @@ def s53a():
 
 # --- 5.3c: the hand-over -----------------------------------------------------------------------------------------------
 def cast_53c(k):
+    if HAND_53[0]:
+        return cast_53v(k, HAND_53[0])
     """v6 (Tomas 26 Nov: the series' grab on both): his rig and hers, the card between, then hands_ps "grab" drawn over
     each rig's hand at the very point it returned (one hand per wrist, lesson 208), its fingers over the card's edge
     (lesson 224); no loose finger strokes."""
@@ -167,19 +170,84 @@ def cast_53c(k):
 
 
 GRAB_W = [26, 21]
+HAND_53 = [None]        # opt-in (review 26 Nov, "rope pull"): None = v6; "A" diagonal grab, "B" his top / her palm under, "C" he holds it out, her hand nearly there
+C53_SHAPE = [("palm", 24, (-1.0, 0.0))]   # C: her reaching hand (shape, width, finger direction)
+C53_DX = [47]          # C: the card's centre from his hand: he holds its left margin, the D of DAD clear
+C53_GAP = [26]         # C: her fingertips short of the card's right edge (world units; ~24 px at 540)
+SOF_53 = {"A": (-120, 80), "B": (-110, 60), "C": (-100, 30)}      # her near arm (shoulder, elbow): bent, ~20 % shorter than "press"
+
+
+def _sofia_hand_off(k, pose):
+    """where her screen-left hand lands for pose, relative to her feet (drawn into a discarded group)"""
+    c = k.c; c.push_group()
+    try:
+        o, _ = ps.sofia(k, (0, F + 60), pose, "interested", (-1, 0.3))
+        return min(o["hands"], key=lambda h: h[0])
+    finally:
+        c.pop_group()
+
+
+def _card_at(k, cx, cy, ang, s=1.0):
+    cv_plain(k, cx, cy, s, ang=ang)
+
+
+def cast_53v(k, v):
+    """5.3c variants for the silhouette test (rules-hands 0.2): A diagonal (both grab, his hand high on the card's
+    top-left corner, hers low on its right edge); B his grab on the top edge, her open palm under the card; C he holds
+    it out by its edge, her open hand a short gap from it. Her arm bent (SOF_53), her eyes on the card."""
+    heads = {}
+    sb = sp.sbc
+    sb.POSES["_take53"] = SOF_53[v] + (8, 0)
+    if v == "A":
+        o = guard_at(k, 164, pose_r=(160, -215))
+        gx, gy = o["hands"][1]
+        H = (gx + 57, gy + 40)
+    elif v == "B":
+        o = guard_at(k, 164, pose_r=(160, -215))
+        gx, gy = o["hands"][1]
+        H = (gx + 34, gy + 96)
+    else:
+        o = guard_at(k, 148, pose_r=(185, -120))
+        gx, gy = o["hands"][1]
+        H = (gx + C53_DX[0] + 26 + 17 + C53_GAP[0], gy + 14)   # her fingertips reach 17 ahead of the hand point
+    heads["guard"] = (o["head"][0], o["head"][1], 40 * GS)
+    ox, oy = _sofia_hand_off(k, "_take53")
+    sx = H[0] - ox
+    os_, heads["sofia"] = ps.sofia(k, (sx, F + 60), "_take53", "interested", (-1, 0.3))
+    hx, hy = min(os_["hands"], key=lambda h: h[0])
+    skin_s = sb.sf.SKIN
+    if v == "A":                                   # the card between them, its top-left under his hand, right edge in hers
+        th = math.atan2(hy - gy, hx - gx)
+        ang = th - math.atan2(48, 50)
+        cx, cy = (gx + hx) / 2 - 1, (gy + hy) / 2
+        _card_at(k, cx, cy, ang)
+        hp.draw(k, "grab", gx, gy, 24, co.SKIN, (0.7, 0.7), 1)
+        hp.draw(k, "grab", hx, hy, 20, skin_s, (-0.8, -0.5), -1)
+    elif v == "B":                                 # hangs from his fingers; her palm under it, open, waiting
+        _card_at(k, gx + 6, gy + 34, 0.06)
+        hp.draw(k, "grab", gx, gy, 24, co.SKIN, (0.2, 1.0), 1)
+        hp.draw(k, "palm", hx, hy, 20, skin_s, (-1.0, -0.15), -1)
+    else:                                          # held out by its left edge, toward her; her open hand 16 px short
+        _card_at(k, gx + C53_DX[0], gy + 6, -0.18)
+        hp.draw(k, "grab", gx, gy, 24, co.SKIN, (1.0, 0.2), 1)
+        hp.draw(k, C53_SHAPE[0][0], hx, hy, C53_SHAPE[0][1], skin_s, C53_SHAPE[0][2], -1)      # open, reaching for it
+    return heads
+
+
 CARD_GAP = [30]      # extra room between the two rigs so each hand sits on one edge of the card, not on top of the other
 
 
 def s53c():
-    return ps.S("5.3c", (306, F - 150, 1.5), dict(blind="rehung", tape=True, spun=True), cast_53c)
+    return ps.S("5.3c", (300, F - 150, 1.4), dict(blind="rehung", tape=True, spun=True), cast_53c)
 
 
 # --- 5.5b: both shoes over the tape ----------------------------------------------------------------------------------
 def ins_55b(k):
     c = k.c
     c.set_source_rgb(*kit.FLOOR); c.paint()
-    cut(k, [(70, 960), (150, 960), (300, 0), (250, 0)], pss.TAPE, shadow=False, lw=2.4)    # the tape, receding
-    c.set_source_rgba(1, 1, 1, 0.40); c.set_line_width(3); c.move_to(96, 940); c.line_to(262, 20); c.stroke()
+    tb = 70 if DON_55B[0] else 0                             # v7: the tape's near end further right: room for his foot
+    cut(k, [(70 + tb, 960), (150 + tb, 960), (300, 0), (250, 0)], pss.TAPE, shadow=False, lw=2.4)    # the tape, receding
+    c.set_source_rgba(1, 1, 1, 0.40); c.set_line_width(3); c.move_to(96 + tb, 940); c.line_to(262, 20); c.stroke()
     for x, y, s in ((340, 540, 0.80), (395, 800, 0.95)):     # both feet on Father's side, toes away from Don's
         c.save(); c.translate(x, y); c.scale(-1, 1)
         sp.heel(k, 0, 0, s, tape=False)
@@ -187,7 +255,31 @@ def ins_55b(k):
     cut(k, [(150, -10), (470, -10), (480, 120), (420, 140), (330, 150), (230, 140), (160, 120)], (0.97, 0.95, 0.90), lw=2.6)   # her
     c.set_source_rgb(0.80, 0.76, 0.66); c.set_line_width(2)                                    # white coat's hem: whose legs
     c.move_to(320, 0); c.line_to(318, 146); c.stroke()
-    kit.text(k, "← DON", 110, 880, 30, INK)
+    if DON_55B[0]:
+        don_foot_55b(k)
+        kit.text(k, "DON", 60, 600, 30, INK)
+    else:
+        kit.text(k, "← DON", 110, 880, 30, INK)
+
+
+DON_55B = [False]       # opt-in (review 26 Nov, "show she crossed"): Don's shoe on his side of the tape, toes to it
+
+
+def don_foot_55b(k, ax=78, ay=830, s=1.5):
+    """Don's planted foot, side on (don_ps._legs' shoe), its leg out of the frame's left edge (lesson 38: a limb comes
+    out of the frame, never floats); toes stop short of the tape."""
+    import don_v4 as dv
+    c = k.c
+    c.save(); c.translate(ax, ay); c.scale(s, s)
+    c.set_source_rgba(0, 0, 0, 0.18); c.save(); c.translate(18, 16); c.scale(1, 0.22)
+    c.new_path(); c.arc(0, 0, 36, 0, 2 * math.pi); c.restore(); c.fill()
+    cut(k, [(-150, -150), (-100, -170), (-6, -10), (-58, -4)], dv.KHAKI, shadow=False, lw=2)     # the shin, in from off-frame left
+    c.new_path()                                                                              # the shoe, toes right
+    c.move_to(-60, -6); c.line_to(14, -8); c.curve_to(40, -6, 52, 4, 50, 14)
+    c.line_to(-60, 14); c.close_path()
+    c.set_source_rgb(0.24, 0.18, 0.13); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
+    cut(k, [(-60, -16), (-10, -18), (-8, -4), (-60, -2)], dv.KHAKI, shadow=False, lw=2)        # the hem over it
+    c.restore()
 
 
 def s55b():
@@ -236,18 +328,25 @@ def s61bn():
 
 
 # --- 6.1b as three drawings (Tomas 26 Nov grill: phone -> team -> arms, 1.5 s) -----------------------------------------
-def fg_61x(look, face="shock", pose="vest", spring=1.0):
-    """Don, near: the board's fg_61b (spring hair, round eyes) with the eyes aimed by look; pose "stand" drops the
-    spring (the shock is over) and lets the arms hang."""
-    if pose == "vest":
-        ps.SPRING_61B[0] = spring; ps.LOOK_61B[0] = look; ps.FACE_61B[0] = face
-        try:
-            return ps.fg_61b(k_hold[0])
-        finally:
-            ps.SPRING_61B[0] = 1.0; ps.LOOK_61B[0] = (1, -1); ps.FACE_61B[0] = "shock"
-    s_ = 0.60 * 2.5
-    o = ps.dp.don(k_hold[0], ps.DON_X_61[0], 1150, s_, pose, face, look, chin=0)
-    return {"don": (o["head"][0], o["head"][1], ps.R["don"] * s_)}
+def fg_61x(look, face="shock", pose="vest", spring=1.0, hands=None, lean=0.0):
+    """Don, near: the board's fg_61b (spring hair, round eyes) with the eyes aimed by look; pose / hands / lean swapped
+    in through a wrapper on dp.don (v7, review 26 Nov: smile -> freeze -> shock; the head turns, not only the pupils).
+    spring=None: no spring (the shock is over)."""
+    if spring is None:
+        s_ = 0.60 * 2.5
+        o = ps.dp.don(k_hold[0], ps.DON_X_61[0], 1150, s_, pose, face, look, chin=0, hands=hands, lean=lean)
+        return {"don": (o["head"][0], o["head"][1], ps.R["don"] * s_)}
+    orig = ps.dp.don
+    def don_(k, x, feet, s, p_, f_, l_, **kw):
+        kw.update(hands=hands, lean=lean)
+        return orig(k, x, feet, s, pose, f_, l_, **kw)
+    ps.dp.don = don_
+    ps.SPRING_61B[0] = spring; ps.LOOK_61B[0] = look; ps.FACE_61B[0] = face
+    try:
+        return ps.fg_61b(k_hold[0])
+    finally:
+        ps.dp.don = orig
+        ps.SPRING_61B[0] = 1.0; ps.LOOK_61B[0] = (1, -1); ps.FACE_61B[0] = "shock"
 
 
 k_hold = [None]
@@ -256,15 +355,22 @@ LOOK_TEAM = [(-1, -1)]      # up-left: Mom, Sofía with the card
 
 
 def s61bx(i):
+    """v7: 1 freeze (thumbs still up, the smile on, eyes wide to her phone, the hair just starting); 2 shock, the head
+    and body turned to the team; 3 the arms drop."""
     b = s61bn()
     def fg(k):
         k_hold[0] = k
         if i == 0:
-            return fg_61x(LOOK_PHONE[0])
+            return fg_61x(LOOK_PHONE[0], "grin", "thumbs", spring=None)
         if i == 1:
-            return fg_61x(LOOK_TEAM[0], spring=0.55)
-        return fg_61x((0, 0.6), "confused", "stand")
+            return fg_61x(LOOK_TEAM[0], "shock", "vest", spring=1.0, lean=LEAN_TEAM[0])
+        return fg_61x(LOOK_DROP[0], FACE_DROP[0], "stand", spring=None)
     return dict(b, fg=fg)
+
+
+LEAN_TEAM = [-0.06]     # the head goes with the eyes (radians about his feet; minus: toward screen-left)
+FACE_DROP = ["neutral"]      # v7: "confused" read as angry (brows down); flat mouth, eyes down = deflated
+LOOK_DROP = [(0.4, 1)]
 
 
 def s61b1(): return s61bx(0)
