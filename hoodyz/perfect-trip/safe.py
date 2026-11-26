@@ -5,15 +5,7 @@ mod = os.path.join(HERE, 'render.py'); out = sys.argv[1] if len(sys.argv) > 1 el
 spec = importlib.util.spec_from_file_location('trip_mod', mod); T = importlib.util.module_from_spec(spec); sys.modules['trip_mod'] = T; spec.loader.exec_module(T)
 import cairo
 REC = []; cur = [0]
-orig_b = T.R.bubble
-def bub(c, lines, r, tail, cy=500, size=66, cx=540):
-    k = T.R.back(r / 5)
-    if k > .03:
-        c.save(); c.select_font_face('Lilita One'); c.set_font_size(size)
-        w = max(c.text_extents(l).width for l in lines) + 90; h = len(lines) * size * 1.12 + 56; c.restore()
-        REC.append((cur[0], 'bubble:' + ' '.join(lines), cx - w / 2 * k, cy - h / 2 * k, cx + w / 2 * k, cy + h / 2 * k))
-    return orig_b(c, lines, r, tail, cy=cy, size=size, cx=cx)
-T.R.bubble = bub
+import tails as TLm
 STAMPS = {}
 orig_s = T.P.stamp
 def stamp(c, place, x=None, y=570, k=1.0, op=.85):
@@ -31,7 +23,8 @@ def kb(c, place, r, d, f, **kw):
         REC.append((cur[0], 'stamp:' + place, tx + z * (x1 - tx), ty + z * (y1 - ty), tx + z * (x2 - tx), ty + z * (y2 - ty)))
 T.kenburns = kb
 for f in range(0, T.NF, step):
-    cur[0] = f; T.draw(f)
+    cur[0] = f; TLm.BOXES.clear(); T.draw(f)
+    for lab, x1, y1, x2, y2 in TLm.BOXES: REC.append((f, 'bubble:' + lab, x1, y1, x2, y2))
 bad = {}
 for f, nm, x1, y1, x2, y2 in REC:
     v = []
@@ -42,3 +35,4 @@ for f, nm, x1, y1, x2, y2 in REC:
     if v: bad.setdefault(nm, []).append((f, v, round(x1), round(x2), round(y1), round(y2)))
 res = {nm: dict(first=b[0][0], last=b[-1][0], n=len(b), worst=max(max(a for _, a in v[1]) for v in b), sample=b[0]) for nm, b in bad.items()}
 json.dump(res, open(out, 'w'), indent=1, default=str); print(len(REC), 'boxes;', len(res), 'items outside the zone'); print(json.dumps(res, indent=1, default=str)[:3000])
+sys.exit(1 if res else 0)

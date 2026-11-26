@@ -7,6 +7,7 @@ import os, sys, math, subprocess, cairo
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import trip_photos as TP
 import photo as PH
+import tails as TL
 import places as P
 from trip_photos import R, K, Sh, E, A, tele_arm, backpack_cat, camel, suitcase
 from kit import INK, WHITE, NAVY, YEL, rr, fs, ell, limb, hx, lerp, cl, ss, txt
@@ -71,8 +72,8 @@ def s_invite(c, f, r):  # before: "Do you want to go on a trip?" - she nods - MY
              dict(eye='focus' if r > 86 else 'wide', arms=('up', 'up') if r < 90 else ('down', 'wave'), talk=talk(f, 'ai_plan')),
              .2 + .8 * talk(f, 'h_invite'), 'charmed' if r >= 62 else 'evacalm',
              math.sin(cl((r - 62) / 12) * math.pi * 2) * .08 if 62 <= r < 74 else 0)
-    if r < 78: R.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], 10, (394, 1176), cy=905, cx=430, size=54)   # up at frame 0; short tail to his cheek (v2)
-    if r >= 80: R.bubble(c, ["I'LL PLAN", 'EVERYTHING!'], r - 80, (540, lerp(AI_HIDE, AI_UP, pop) - 420 * 1.1), cy=720, cx=560, size=58)
+    if r < 78: TL.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], 10, TL.sit_ear(330), cy=905, cx=430, size=54, bend=-.12)   # up at frame 0; tail stops 20 px beside his ear (v3)
+    if r >= 80: TL.bubble(c, ["I'LL PLAN", 'EVERYTHING!'], r - 80, TL.robot_top(540, lerp(AI_HIDE, AI_UP, pop), 1.1, -1, dx=45), cy=740, cx=560, size=58, bend=.1)
 def bench_scene_back(c, f):
     R.park(c, f, zoom=1.35, cy=1500)
 def bench_front(c):
@@ -97,15 +98,15 @@ def s_after(c, f, r):   # after: "How did you like our trip?" - she turns her ph
         rr(c, px - 10, py - 10, pw + 20, ph + 20, 30); fs(c, hx('1d2130'), 6)
         c.save(); rr(c, px, py, pw, ph, 22); c.clip(); c.translate(px, py); c.scale(pw / W, ph / H); c.set_source_surface(_PHOTO, 0, 0); c.paint(); c.restore()
         ell(c, px + pw + 6, py + ph * .6, 26, 30); fs(c, E.SKIN_E, 5)
-    if r < 88: R.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, (366, 1176), cy=905, cx=430, size=56)
-    if r >= 90: R.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], r - 90, (880, BS - 6 - 420), cy=755, cx=700, size=56)
+    if r < 88: TL.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, TL.sit_ear(300), cy=905, cx=430, size=56, bend=-.12)
+    if r >= 90: TL.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], r - 90, TL.robot_top(880, BS - 6, 1.0, -1, dx=30), cy=800, cx=760, size=56, bend=.08)
 def s_another(c, f, r): # "...Another trip?" - quietly, to her. MY AI ducks back behind the bench: the last frame is frame 0
     duck = oe((r - 22) / 10)                                               # a facepalm at "another trip?", then it ducks back down
     fp = 3 <= r < 22
     two_shot(c, f, lerp(AI_UP, AI_HIDE, duck), dict(eye='blank' if fp else 'happy', arms=('down', 'chest' if fp else 'down'), tilt=-12 if fp else 0),
              .2 + .8 * talk(f, 'h_another'))
-    if r < 50: R.bubble(c, ['...ANOTHER TRIP?'], r - 8, (394, 1176), cy=940, cx=450, size=58)
-    else: R.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], 10, (394, 1176), cy=905, cx=430, size=54)   # v2: the question for the loop, up before frame 0
+    if r < 50: TL.bubble(c, ['...ANOTHER TRIP?'], r - 8, TL.sit_ear(330, -1, y=1100), cy=800, cx=400, size=58, bend=.08)
+    else: TL.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], 10, TL.sit_ear(330), cy=905, cx=430, size=54, bend=-.12)   # v2: the question for the loop, up before frame 0
 
 def s_rome_act(c, f, r):  # MY AI hands Hoody the phone ("you take it") and sits down with Eva: the cameraman is made
     P.rome(c, f, s=.62, cx=540, horizon=1230)
@@ -132,7 +133,7 @@ def s_open(c, f, r):   # frame 0: the giant face in the phone preview at Pisa - 
     K.hoodie(c, 540, 1080 + 150 * 2.8, 2.8 * 1.1)
     K.hoodyz_head(c, 540, 1080, 2.8, era='young', expr='happy', blink=False, op=.2 + .8 * talk(f, 'h_selfie'))
     phone_ui(c)
-    R.bubble(c, ['ONE SELFIE?'], r + 5, (640, 1262), cy=1130, cx=750, size=54)   # beside the face, short tail to the mouth corner (v2)
+    TL.bubble(c, ['ONE SELFIE?'], r + 5, (640, 1262), cy=1130, cx=750, size=54, bend=.1)   # beside the face, short tail to the mouth corner (v2)
     flash(c, r)                                                            # the shutter fires: a hard cut into the photo, no crossfade (v2)
 def phone_ui(c):
     """The camera preview: dark rounded corners and a shutter dot."""
@@ -218,7 +219,7 @@ def s_paris(c, f, r):  # live: "STEP BACK!" - Hoody backs away and shrinks into 
         sh = (rx - 72 * rs, rgy - 280 * rs + 112 * rs)
         tele_arm(c, rx, rgy, rs, -1, (lerp(sh[0] - 40, tipxy[0], k), lerp(sh[1] - 60, tipxy[1] + 16, k)), tip='claw', grip=ss(cl((k - .72) / .28)))
     backpack_cat(c, 210, 1720, .9, 'shocked' if r > 30 else 'suspicious')
-    R.bubble(c, ['STEP BACK!'], r - 4, (rx, rgy - 420 * rs), cy=700, cx=720)
+    TL.bubble(c, ['STEP BACK!'], r - 4, TL.robot_top(rx, rgy, rs, -1, dx=30), cy=1010, cx=720, bend=.08)
 
 def s_giza(c, f, r):   # live: "MORE!" - the camel (rope round the bags) hauls Hoody back to the luggage; MY AI takes Eva's hand
     P.egypt(c, f, s=.72, cx0=600, horizon=1460)
@@ -253,7 +254,7 @@ def s_giza(c, f, r):   # live: "MORE!" - the camel (rope round the bags) hauls H
     if 0 < r < 9: txt(c, 'pff', rx + 120, 1200, 50, NAVY, lw=0)
     A.myai(c, rx, 1860 + sigh, 1.3, eye='focus' if r < 30 else 'happy', arms=('wave', 'hold' if m > .9 else 'down'), tilt=10 * m, talk=talk(f, 'ai_more'))
     backpack_cat(c, 210, 1720, .9, 'disapproving')
-    R.bubble(c, ['MORE!'], r - 2, (rx, 1860 - 420 * 1.3), cy=1030, cx=700)
+    TL.bubble(c, ['MORE!'], r - 2, TL.robot_side(rx, 1860, 1.3, -1), cy=1290, cx=540, bend=-.1)
 
 def s_rome(c, f, r):   # the couple photo, drifting; the label switches after it lands
     kenburns(c, 'rome', r, 60, f)
@@ -279,6 +280,12 @@ FNS = [s_invite, s_title, s_open, s_pisa, s_photo('pisa', 30), s_paris, s_photo(
 SHOTS = []; _t = 0
 for fn, d in zip(FNS, DUR): SHOTS.append((fn, _t, _t + d)); _t += d
 NF = _t
+_BLINK0 = K.blinking
+def _loop_blink(f, seed):
+    """v3: blink windows of NF/12 frames, so the whole blink pattern repeats exactly at the loop point (a blink never crosses the seam)."""
+    P_ = NF // 12; g = f % NF; w = g // P_
+    import random; o = random.Random(w * 31 + seed).randint(0, P_ - 8); return o <= g % P_ < o + 3
+K.blinking = _loop_blink
 TRIP = range(1, 11)                                                       # the "memory": title card to the Rome photo
 XF = 6                                                                    # crossfade frames between trip shots, photo-story style
 
@@ -291,9 +298,9 @@ def draw(f):
     i = next(k for k, (fn, a, b) in enumerate(SHOTS) if a <= f < b)
     fn, a, b = SHOTS[i]; r = f - a
     S = render_shot(i, f); c = cairo.Context(S)
-    if i in TRIP and i - 1 in TRIP and r < XF and fn is not s_open:                            # crossfade from the shot before
+    if i in TRIP and i - 1 in TRIP and r < XF and fn not in (s_open, s_pisa):   # the shutter flash is the cut: no ghost of the giant face over the wide shot (v3)                            # crossfade from the shot before
         prev = render_shot(i - 1, a - 1); c.set_source_surface(prev, 0, 0); c.paint_with_alpha(1 - (r + 1) / (XF + 1))
-    label = 'ITS TRIP' if (fn is s_rome and r >= 14) or fn in (s_after, s_another) else 'HIS TRIP'
+    label = 'ITS TRIP' if (fn is s_rome and r >= 14) or fn is s_after or (fn is s_another and r < 52) else 'HIS TRIP'   # v3: it flips back once MY AI is hidden, so the last frame is frame 0
     Sh.topbar(c, label)
     if fn is s_rome and 14 <= r < 30: pulse(c, r - 14)
     if fn.__name__.endswith('_photo') or fn is s_rome:                    # the stamp thumps down at the shutter (drawn over the bar's level, unscaled)
