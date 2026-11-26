@@ -783,6 +783,8 @@ PHONE_S43 = [1.3]
 AIM43 = [(235, 560)]
 SHOT43_V8 = [False]                                           # film (review 26 Nov, opt-in): 4.3a the #TeamDon phone bigger and whole in
 AVOID_43 = []                                                 # the frame, the Client points at it from clear of it, his bubble off both
+NOSE_AIM = [(0.5, -355.5)]                                    # the nose's lower half in the guard rig's units
+NOSE_43 = [False]                                             # film (opt-in): guard A's nose_pinched face state
 GUARD_B = [None]                                              # film (Tomas 26 Nov, opt-in): the second guard his own reaction, a dict:
                                                              # pose (u, f) of his front arm or None (hands stay folded), hand (hands_ps shape),
                                                              # turn (dx, tilt) of his face/head, lean (extra lean away, radians), all x pu
@@ -810,6 +812,8 @@ def _booth_guards(k, seat, tbl):
         gb = GUARD_B[0] if i == 1 else None
         c.translate(gx, tbl); c.rotate(sgn * (0.13 + (gb["lean"] if gb else 0.0)) * pu_); c.translate(-gx, -tbl)
         was_fh, was_t = dc.FRONT_HAND[0], dc.GUARD_TURN[0]
+        dc.NOSE_PINCH[0] = bool(NOSE_43[0]) and i == 0 and pu_ > 0.85   # the face state, once his fingers are on it
+        dc.FRONT_HAND_AIM[0] = NOSE_AIM[0] if (NOSE_43[0] and i == 0 and pu_ > 0.85) else None
         if gb:
             dc.GUARD_TURN[0] = (gb["turn"][0] * pu_, gb["turn"][1] * pu_)
             dc.FRONT_HAND[0] = gb.get("hand")
@@ -823,7 +827,7 @@ def _booth_guards(k, seat, tbl):
             o = dc.guard(k, gx, seat + 10, gs, pose=pz, flip=flip)
         finally:                                             # rig's hidden one failed hand_gate ("two at one wrist", 4.5 px apart)
             dc.ARM_FRONT[0] = None
-            dc.FRONT_HAND[0], dc.GUARD_TURN[0] = was_fh, was_t
+            dc.FRONT_HAND[0], dc.GUARD_TURN[0] = was_fh, was_t; dc.NOSE_PINCH[0] = False; dc.FRONT_HAND_AIM[0] = None
         HANDS_LOG.extend(o["hands"])
         if PLANT_HAND[0]:                                    # the gate's planted fault: a foreign hand on the rig's hand
             nose = min(o["hands"], key=lambda h: h[1])

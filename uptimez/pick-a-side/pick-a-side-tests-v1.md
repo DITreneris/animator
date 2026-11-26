@@ -683,3 +683,11 @@ check / check v5: 38 / 0 each. Board v4 md5-identical (44 frames, against a315cc
 - **Pinch v3** (`hands_ps.PINCH_V3`): a C, the index round one side, the thumb's pad round the other, the three curled as one block with two lines, the nose's tip red between the tips, a contact shadow. Hand 0.8, PINCH_POSE (-73, -93). Not done: another skin colour for the hand (one skin for the cast).
 - Cold test of the encoded v9 at feed size (2 viewers): the photo on the phone and his point at it 2/2; Father the most important 2/2; no stray lines, no extra hand, no call 2/2. **Open: the pinch reads as "a fist to the nose or mouth" 2/2, and the two guards as "the same gesture" 2/2**: a guard's face is about 45 px wide at feed size, the fingers cannot be told apart there. The smell reads from the stink lines.
 - check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 4 v10: review FAIL "a pink lump, the nose not squeezed" (26 Nov), "proceed"
+
+- **`dh_cast.NOSE_PINCH`** (a face state, opt-in, guard A only via `ps.NOSE_43`): the nose's lower half redrawn a quarter narrower, nostrils as slits, a crease each side.
+- **Pinch v4** (`hands_ps.PINCH_V4`): a clamp, index one side, thumb the other, the three curled as one block with one line; no red tip, no shadow blob.
+- **`dh_cast.FRONT_HAND_AIM`**: the hand turns at the wrist to the nose point (rig units) and is sized so the clamp lands on it: measured, not nudged (three rounds of pose nudging never put it on the nose).
+- Cold test of the encoded v10 (2 viewers, feed-size strip + one full-size frame): **"pinches his nose with index and thumb" 2/2** at both sizes (v9: 0/2 "a fist"); no stray lines, lump, extra hand or call 2/2. Open: **2/2 "could read as a horns / rock-on sign at a glance"**; the guards "the same action" 2/2 at feed size.
+- Stopped here as planned (one sheet, one test). check / check v5 38 / 0; board v4 md5-identical.

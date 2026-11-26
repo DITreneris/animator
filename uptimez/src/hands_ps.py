@@ -31,6 +31,7 @@ DIRS = []                                                   # (d, arm) per hand 
 LW = 2.0
 
 
+PINCH_V4 = [False]                                                   # opt-in: the clamp (the nose its own, between the fingers)
 PINCH_V3 = [False]                                                   # opt-in: the C-shaped pinch (review 26 Nov)
 PINCH_V2 = [False]                                                   # opt-in: the simpler pinch (index and thumb straight)
 
@@ -240,6 +241,15 @@ def draw(k, g, hx, hy, w, skin, d, arm):
         c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(LW); c.stroke()
         for fy in (-0.12, 0.10):                                      # two short finger lines at the tips
             _crease(c, [(0.68 * w, -s_ * fy * w), (0.90 * w, -s_ * fy * w)], 1.3)
+        c.restore(); return
+    if g == "pinch" and PINCH_V4[0]:                                  # v10 (review 26 Nov): a clamp. The index straight up one side
+        _blob(c, 0.18 * w, 0, 0.40 * w, 0.40 * w, skin)               # of the (narrowed) nose, the thumb up the other, the nose its
+        c.new_path(); c.save(); c.translate(0.38 * w, 0); c.scale(0.20 * w, 0.17 * w)   # own, seen between them; the three
+        c.arc(0, 0, 1, -math.pi / 2, math.pi / 2); c.line_to(-0.8, 1); c.line_to(-0.8, -1); c.close_path(); c.restore()   # curled: one
+        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(LW); c.stroke()              # block,
+        _crease(c, [(0.38 * w, 0), (0.54 * w, 0)], 1.0)                                                                  # one line
+        _cap(c, [(0.36 * w, -s_ * 0.36 * w), (0.74 * w, -s_ * 0.36 * w), (0.98 * w, -s_ * 0.30 * w)], t * 0.68, skin)   # index
+        _cap(c, [(0.10 * w, s_ * 0.38 * w), (0.66 * w, s_ * 0.38 * w), (0.90 * w, s_ * 0.32 * w)], t * 0.82, skin)      # thumb
         c.restore(); return
     if g == "pinch" and PINCH_V3[0]:                                  # v9 (review 26 Nov): a C: the index round one side of the
         pass                                                          # nose, the thumb (a pad) round the other, a gap between the

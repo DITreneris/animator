@@ -249,6 +249,17 @@ def pass_card(k, x, y, s=1.0, seed=1780):
 
 
 FRONT_HAND_S = [1.0]                                         # its width x the rig's hand (limb passes hand_r / 0.6 * 0.8)
+FRONT_HAND_AIM = [None]
+AIM_LOG = []
+FRONT_HAND_ROT = [0.0]                                       # opt-in: the front hand bent at the wrist (radians, in rig space)
+
+
+def _rot(d, a):
+    return (d[0] * math.cos(a) - d[1] * math.sin(a), d[0] * math.sin(a) + d[1] * math.cos(a)) if a else d
+
+
+NOSE_PINCH = [False]                                         # opt-in (Pick a Side 4.3b, review 26 Nov): the guard's nose squeezed: its
+                                                             # lower half a quarter narrower, a crease each side above (a face state)
 GUARD_TURN = [(0.0, 0.0)]                                    # opt-in (Pick a Side 4.3b, 26 Nov): (dx, tilt): the face slid dx rig units
                                                              # inside the head's outline (a 3/4 cheat) and the head tilted (radians) at the neck
 BACK_HAND = [None]                                           # opt-in (audit 26 Nov): a hands_ps shape for the other arm's hand while
@@ -308,7 +319,17 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
         if hook:                                                 # series' hand through kit.HAND (lesson 147), drawn by limb AT
             import hands_ps as hp                                # the wrist in place of its ball: one hand per wrist; the cuff
             was = kit.HAND[0]                                    # below covers the joint
-            kit.HAND[0] = lambda k_, x_, y_, w_, sk_, sd_, d_, sg_: hp.draw(k_, shape, x_, y_, w_ * (FRONT_HAND_S[0] if side == ARM_FRONT[0] else 1.0), sk_, d_, side)
+            def _hand(k_, x_, y_, w_, sk_, sd_, d_, sg_):
+                w2 = w_ * (FRONT_HAND_S[0] if side == ARM_FRONT[0] else 1.0)
+                d2 = _rot(d_, FRONT_HAND_ROT[0] if side == ARM_FRONT[0] else 0.0)
+                if FRONT_HAND_AIM[0] and side == ARM_FRONT[0]:   # the hand turns at the wrist to the point (rig units) and is
+                    ax, ay = FRONT_HAND_AIM[0]                   # sized so its clamp (0.80 w) lands on it: measured, not nudged
+                    dist = math.hypot(ax - x_, ay - y_)
+                    if 0.55 * w2 <= dist <= 1.15 * w2:
+                        d2 = ((ax - x_) / dist, (ay - y_) / dist); w2 = min(max(dist / 0.80, 0.8 * w2), 1.15 * w2)
+                    AIM_LOG[:] = [dist, w2]
+                hp.draw(k_, shape, x_, y_, w2, sk_, d2, side)
+            kit.HAND[0] = _hand
         try:
             hx, hy_ = limb(k, sx_, sy_, u, f_, LN1, LN2, 47, 39, J, J, co.SKIN, co.HAND, seed + 10 + side)
         finally:
@@ -365,6 +386,17 @@ def _heavy(k, x, feet, s, kind, pose, look, seed, flip, mouth, case):
             c.restore()
             cut(k, [(-47, hy - 4), (-49, hy - 30), (-38, hy - 52), (-10, hy - 62), (22, hy - 60), (44, hy - 46), (49, hy - 26),
                     (47, hy - 4), (42, hy - 24), (26, hy - 38), (0, hy - 41), (-26, hy - 38), (-42, hy - 24)], hair, shadow=False, lw=2)
+        if NOSE_PINCH[0]:                                    # the nose below the glasses redrawn narrow (client_ob draws it 22 wide)
+            y_ = hy + 4
+            c.set_source_rgb(*co.SKIN); c.rectangle(-15, y_ + 10, 30, 15); c.fill()
+            c.set_source_rgb(0.42, 0.25, 0.18); c.set_line_width(3.0); c.set_line_cap(1); c.set_line_join(1)
+            for sx in (-1, 1):                               # the nostrils, pressed to slits
+                c.move_to(sx * 1.7, y_ + 18.5); c.line_to(sx * 1.4, y_ + 21); c.stroke()
+            c.new_path(); c.move_to(-3.5, y_ + 9); c.curve_to(-4.5, y_ + 14, -5, y_ + 19, -2.5, y_ + 22)
+            c.curve_to(-1, y_ + 23.5, 2, y_ + 23.5, 3.5, y_ + 22); c.curve_to(6, y_ + 19, 5.5, y_ + 14, 4.5, y_ + 9); c.stroke()
+            c.set_line_width(1.6)
+            for sx in (-1, 1):
+                c.move_to(sx * 9, y_ + 10); c.line_to(sx * 6, y_ + 12.5); c.stroke()
         c.set_source_rgb(0.92, 0.92, 0.90); c.set_line_width(2.4)                            # the earpiece: a coil down the neck
         c.move_to(51, hy + 4)
         for i in range(7):
