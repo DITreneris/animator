@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 52, 2: 52, 3: 52, 4: 52, 5: 54}
-SOUND = "of_sound_v27.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 52, 2: 52, 3: 52, 4: 52, 5: 55}
+SOUND = "of_sound_v28.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -555,7 +555,41 @@ MOTION["0.9"] = s09_wide
 MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
 MOTION["0.10"] = s010_same
 PIN_T = 1.60                                               # v5 (24 Nov, decided): the burnt plan 0.25 s, the fresh one slides
-MOTION["4.2"] = lambda t, L: (dict(_cam="insert", insert="slap", slap_u=0.10 + 0.9 * t / (L - 0.14)), {})   # v53: the phone comes down on his roof; frame 0 lands it
+SLAM_CAM = (200, 722, 2.35)                               # v55: Father whole, the Client's car, the legs under it; the plan and GARAGE 7 out
+T_POCKET, T_UP, T_HIT = 0.40, 0.73, 0.86
+
+
+def s42_slam(t, L):
+    """v55 (26 Nov, Tomas rejected v54's drawn-from-nothing insert; storyboard and two cold viewers first, 2 of 2 "a real
+    hit", "a deliberate echo"): in the garage, the film's own set and rig. The phone, face down, goes to his coat
+    pocket; his fist comes up as the guard's does at frame 0; his flat palm (scene 2's own, the ring on it) SLAMS the
+    Client's bonnet, on the metal; the car dips and comes back, one brow moves. The palm stays. Frame 0's fist follows.
+    One path for the hand: hip -> out and up -> down on the bonnet."""
+    P0, P1, P2, P3 = (176, F_ - 110), (160, F_ - 82), (196, F_ - 150), (204, F_ - 86)
+    st = dict(_cam=SLAM_CAM, _cast=("father",), black_car=True, burn=1.0, insert=None, moved=dict(father=(140, F_ + 26)))
+    if t < T_POCKET:                                       # into the pocket: the phone is gone for the last two drawings
+        u = ease(t / (T_POCKET - 0.08))
+        fa = dict(face="hard", look=(0.6, 0.6 * u), targets_xy=[om.lerp(P0, P1, u)])
+        if t < T_POCKET - 0.13:
+            fa.update(phone_donnie=True, phone_dark=True, phone_ang=-0.15 + 0.65 * u)
+        return st, dict(father=fa)
+    if t < T_UP:                                           # the fist comes up, out past his side (not past the shoulder)
+        u = ease((t - T_POCKET) / (T_UP - T_POCKET - 0.06))
+        q = (1 - u) ** 2, 2 * u * (1 - u), u ** 2
+        via = (206, F_ - 108)
+        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.05 * u,
+                                    targets_xy=[(q[0] * P1[0] + q[1] * via[0] + q[2] * P2[0], q[0] * P1[1] + q[1] * via[1] + q[2] * P2[1])]))
+    if t < T_HIT:                                          # down: the elbow stays bent, the forearm opens last
+        u = (t - T_UP) / (T_HIT - T_UP)
+        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.05 + 0.11 * u, targets_xy=[om.lerp(P2, (192, F_ - 122), u)]))
+    d = t - T_HIT                                          # SLAM: the palm on the metal and it stays; the car dips 0.07 s, back by 0.25
+    k_ = math.exp(-d * 9)
+    st.update(tilt=-0.05 * k_ - 0.01, legs_jolt=8 * k_)
+    return st, dict(father=dict(face="brow" if d < 0.14 else "hard", look=(1, 0), lean=0.06 - 0.01 * min(1.0, d / 0.2),
+                                targets_xy=[(P3[0], P3[1] - 2 * (1 - k_))], palm=True, impact=max(0.25, k_)))
+
+
+MOTION["4.2"] = s42_slam
 _pin_v52 = lambda t, L: (dict(_cam="insert", insert="pin", pin_slide=ease((t - 0.25) / 0.28),   # up over it, the finger pins
                                    pin_u=ease((t - 0.72) / 0.2)), {}) if t < PIN_T else s42_service(t - PIN_T + 0.55, L)
 # v6 (timing v12): the pin held 0.3 s longer, the rest as it was

@@ -60,3 +60,13 @@ Decided by Tomas (25 Nov): no plan at the end; Father slaps the phone on his car
 
 Left, minor (2 of 2): face down, the phone is a dark slab, known only from the shot before; DECLINED is small, the screen going grey carries it. One each: the two blows are so close they could be one hit shown twice; the black car and the blue one could be the same car for a moment.
 
+## v55 (26 Nov): v54 rejected by Tomas; storyboard strips, no render, two fresh viewers each
+
+| Variant | Does he hit? | The loop point |
+|---|---|---|
+| A: the phone lands on the bonnet | partial 2/2 ("a light tap", "phone or wallet") | an echo, with a seam |
+| B: cut in the air, before contact (an outside audit's proposal) | FAIL 2/2 ("he doesn't strike anything") | FAIL 2/2 ("a break") |
+| Palm: the phone to his pocket, his palm slams the bonnet | OK 2/2 ("a real hit") | OK 2/2 ("a deliberate echo: the guard copies the boss") |
+
+The palm variant was built (v55). Not tested with viewers after the render.
+

@@ -1090,3 +1090,16 @@ The end card (a fresh plan pinned over the burnt one, DON circled) read as "a gl
 - **The loop gate changed with it** (`of_cut.slap_ok`): the last frame must BE that picture (bright street, black roof, velvet sleeve); the planted faults were rebuilt and are caught. The old gate (the set identical to frame 0) is kept in the file, unused.
 - **Timing v26:** 4.2 2.55 → 0.6 s, 4.1 2.8 → 3.1 s; the film 65.6 → 64.0 s. The paper and pin sounds are gone; the garage theme comes back on DECLINED and runs through the seam.
 - **v54 (two cold viewers on v53's ending: "seat backs?", "it never lands", "a jump"):** an insert's object needs its own signs (the black roof got a windscreen, pillar, side windows, handles, an aerial, a mirror), and a match cut needs the first action FINISHED: the phone lands in the last two drawings, with a burst, a thud and the car dipping, so frame 0's fist is the second blow, not the end of a cut-off first one. The loop gate's planted fault had to move with the picture (a fault outside the checked band was "caught by: NOTHING").
+
+## 244. *The Offer* v55 (26 Nov): v54's last shot was drawn against the rules; the ending again, storyboard first
+
+Tomas, on v54's new last shot (the phone on a black car's roof): rejected, hard. It was a picture drawn from nothing (a flat black car, an arm from the corner with no owner, a phone as a slab, an empty street), rendered before he saw a still, and "tested" only for whether it could be read. Every one of those is a rule on the rules page; none was listed before drawing.
+
+- **Section 0 is not optional under time pressure.** List the rules, then a storyboard PNG, then his word, then the render. v54 skipped all four the same evening.
+- **Cold viewers answer "can it be read", never "is it good" or "does it belong in this film".** A pass from them is not a pass on style. Compare the new frame with its neighbours yourself, and show Tomas.
+- **Use the set and the rigs that exist.** v55's last shot is the garage, Father's own rig, scene 2's flat palm, frame 0's own SLAM lines; the only new thing is a camera position (`SLAM_CAM`).
+- **The same misread three times: change the gesture (178).** The phone on a car read as "a wallet, a block" in v54 and in both storyboard variants. Now the phone goes to his pocket and his PALM slams the bonnet: 2 of 2 "a real hit", 2 of 2 "a deliberate echo" of frame 0's fist.
+- **Cutting before the contact failed again** (2 of 2 "a break", as in v53): an outside audit asked for it twice; the storyboard test settled it without a render.
+- **A raised hand with a phone drifts to the ear.** The wind-up goes out past his side with an empty fist, as the guard's does.
+- **Contact is on the material that takes it:** the first palm landed at the windscreen's edge ("he hits the glass"); moved onto the bonnet's metal. The rig's ring finger hung under the palm ("a blood drop"): `dh_cast.RING_ON`, an opt-out hook, off only for this palm, which carries the ring itself.
+- **Timing v27:** 4.2 is 1.15 s (pocket 0.40, up 0.33, down 0.13, slam and hold 0.29); the film 64.5 s. The audit's 0.5 s hold was cut to 0.2 s so frame 0's fist stays the second beat.

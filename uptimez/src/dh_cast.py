@@ -148,13 +148,16 @@ def father(k, x, feet, s=1.0, pose="stand", face="hard", look=(0, 0), seed=1500)
         pass
     c.restore()
     for i, (qx, qy) in enumerate(o["hands"]):                                                # the ring, on his right hand
-        if i == 1:
+        if i == 1 and RING_ON[0]:
             c.save(); c.translate(qx, qy); c.scale(s, s)
             rect(k, -3.5, 5, 7, 13, SKIN_F, seed + 94, shadow=False, lw=1.5)                 # v3: one finger, and the ring on it
             rect(k, -5.5, 9, 11, 4, GOLD, seed + 95, shadow=False, lw=1.2)
             rect(k, -4, 6.5, 8, 7, (0.62, 0.05, 0.12), seed + 96, shadow=False, lw=1.2)
             c.restore()
     return o
+
+
+RING_ON = [True]          # opt-out hook (The Offer v55): a film that draws its own flat palm with the ring on it turns the rig's off
 
 
 def ring(k, x, y, s=1.0, seed=1595):

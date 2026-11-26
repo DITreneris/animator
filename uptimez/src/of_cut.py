@@ -1,6 +1,6 @@
 """THE OFFER (episode 13), stage 8: the rough cut and its G5 QA.
 
-The five scenes (of_film.py, drawn on the timeline's grid) joined frame by frame on the master sound (of_sound_v27.wav);
+The five scenes (of_film.py, drawn on the timeline's grid) joined frame by frame on the master sound (of_sound_v28.wav);
 each scene is placed at its own start on the 30 fps grid, so the picture cannot drift from the sound across the film.
 Then G5, measured on the final file; the build fails on any miss:
 
@@ -24,7 +24,7 @@ import soundfile as sf
 from PIL import Image
 import of_scenes as sc
 
-VERSION = 54
+VERSION = 55
 TMP = "/tmp/of_cut"
 FRAMES = "/tmp/of_film/s%d"                                 # each scene's drawings, as of_film left them (or a copy in TMP)
 FPS = 30
@@ -46,7 +46,7 @@ def scene_dirs():
 def assemble():
     """-> (the frame list on the global grid, the sound's length). Each scene starts at round(start * 30)."""
     tm = sc._timing()
-    a, sr = sf.read(os.path.join(sc.OUT, "of_sound_v27.wav"))
+    a, sr = sf.read(os.path.join(sc.OUT, "of_sound_v28.wav"))
     total = len(a) / sr
     starts = [int(round(tm[shots[0]["id"]]["start"] * FPS)) for _, _, _, shots in sc.SCENES] + [int(round(total * FPS))]
     seq = []
@@ -73,7 +73,7 @@ def encode(seq):
     m1080 = os.path.join(TMP, "of_roughcut_v%d_1080.mp4" % VERSION)
     m540 = os.path.join(sc.OUT, "of_roughcut_v%d_540.mp4" % VERSION)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-framerate", str(FPS), "-i", os.path.join(d, "f%05d.png"),
-                    "-i", os.path.join(sc.OUT, "of_sound_v27.wav"), "-vf", "format=yuv420p", "-c:v", "libx264", "-crf", "18",
+                    "-i", os.path.join(sc.OUT, "of_sound_v28.wav"), "-vf", "format=yuv420p", "-c:v", "libx264", "-crf", "18",
                     "-preset", "veryfast"] + TAGS + ["-c:a", "aac", "-b:a", "192k", "-shortest", m1080], check=True)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", m1080, "-vf", "scale=540:960:flags=lanczos,format=yuv420p",
                     "-c:v", "libx264", "-crf", "20", "-preset", "veryfast"] + TAGS + ["-c:a", "copy", m540], check=True)
@@ -99,15 +99,17 @@ def frame_at(path, i, out):
 
 
 def slap_ok(fl):
-    """v53 (25 Nov, decided): the loop is a MATCH CUT, not the same drawing: the last frame is Father's phone a hand
-    above his black car's roof; frame 0's fist lands the blow. The check: the last frame IS that picture (the bright
-    street on top, the black roof in a band below the middle, his velvet sleeve in the upper right, no garage wall)."""
+    """v55 (26 Nov, decided): the loop is an ECHO, not the same drawing: the last frame is Father's palm on the Client's
+    bonnet, in the garage; frame 0's fist is the next blow. The check: the last frame IS that picture: his velvet coat
+    left of the middle, the blue car right of it, and no plan (no blue) in the upper right, where frame 0 has it."""
     h, w = fl.shape[:2]
-    top = fl[: int(0.15 * h), : int(0.5 * w)].mean()
-    roof = fl[int(0.80 * h): int(0.95 * h), int(0.02 * w): int(0.20 * w)].mean()   # v54: the car's black door, lower left
-    r, g, b = [fl[int(0.02 * h): int(0.60 * h), int(0.5 * w):, i] for i in range(3)]
-    velvet = float(((r > 80) & (r < 160) & (g < 50) & (b < 70)).mean())
-    return top > 215 and roof < 45 and velvet > 0.02
+    def share(y0, y1, x0, x1, f):
+        r, g, b = [fl[int(y0 * h): int(y1 * h), int(x0 * w): int(x1 * w), i].astype(int) for i in range(3)]
+        return float(f(r, g, b).mean())
+    velvet = share(0.38, 0.62, 0.10, 0.45, lambda r, g, b: (r > 80) & (r < 170) & (g < 55) & (b < 75))
+    car = share(0.40, 0.60, 0.55, 1.0, lambda r, g, b: (b > 110) & (b > r + 40) & (g > 70))
+    plan = share(0.0, 0.22, 0.60, 1.0, lambda r, g, b: (b > 120) & (b > r + 60))
+    return velvet > 0.08 and car > 0.30 and plan < 0.02
 
 
 def loop_diff(f0, fl):
@@ -166,9 +168,9 @@ def qa(m1080, n_frames):
     res["frame0"] = dict(std=float(f0.std()), ink=ink0, vs_frame1=float(np.abs(f0 - f1).mean()))
     if f0.std() < 20 or ink0 < 0.005 or np.abs(f0 - f1).mean() > 12:
         fails.append("frame 0 incomplete or flashing: %s" % res["frame0"])
-    res["loop"] = dict(kind="match cut: the phone over the roof -> frame 0's fist", last_frame_is_the_slap=bool(slap_ok(fl)))
+    res["loop"] = dict(kind="echo: Father's palm on the bonnet -> frame 0's fist", last_frame_is_the_slap=bool(slap_ok(fl)))
     if not slap_ok(fl):
-        fails.append("loop: the last frame is not the phone over the roof (the match cut into frame 0)")
+        fails.append("loop: the last frame is not Father's palm on the bonnet (the echo into frame 0)")
     res["fails"] = fails
     json.dump(res, open(os.path.join(sc.OUT, "of_roughcut_v%d_qa.json" % VERSION), "w"), indent=1)
     return res
@@ -199,8 +201,8 @@ def validate():
         "untagged colour": ["-c", "copy", "-bsf:v", "h264_metadata=colour_primaries=2:transfer_characteristics=2:matrix_coefficients=2"],
         "540 wide": ["-vf", "scale=540:960", "-c:a", "copy"],
         "flash at frame 0": ["-vf", "drawbox=x=0:y=0:w=iw:h=ih:color=white:t=fill:enable='eq(n,0)'", "-c:a", "copy"],
-        "loop broken (the last frame: the set changed)": ["-vf", "drawbox=x=0:y=1560:w=400:h=240:color=0x2e5f8a:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
-        "loop broken (the last frame: the plan burnt)": ["-vf", "drawbox=x=0:y=0:w=540:h=300:color=0x3a2410:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
+        "loop broken (the last frame: the set changed)": ["-vf", "drawbox=x=700:y=60:w=340:h=300:color=0x2e5f8a:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
+        "loop broken (the last frame: the plan burnt)": ["-vf", "drawbox=x=100:y=740:w=420:h=460:color=0x3a2410:t=fill:enable='eq(n,%d)'" % (n - 1), "-c:a", "copy"],
     }
     ok = True
     for name, args in cases.items():
