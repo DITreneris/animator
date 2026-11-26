@@ -31,6 +31,7 @@ DIRS = []                                                   # (d, arm) per hand 
 LW = 2.0
 
 
+PINCH_CLOSE = [0.0]                                                  # 0 = v10's open V .. 1 = the tips meet over the nose (Tomas 26 Nov: 'horns' 2/2)
 PINCH_V4 = [False]                                                   # opt-in: the clamp (the nose its own, between the fingers)
 PINCH_V3 = [False]                                                   # opt-in: the C-shaped pinch (review 26 Nov)
 PINCH_V2 = [False]                                                   # opt-in: the simpler pinch (index and thumb straight)
@@ -248,8 +249,8 @@ def draw(k, g, hx, hy, w, skin, d, arm):
         c.arc(0, 0, 1, -math.pi / 2, math.pi / 2); c.line_to(-0.8, 1); c.line_to(-0.8, -1); c.close_path(); c.restore()   # curled: one
         c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(LW); c.stroke()              # block,
         _crease(c, [(0.38 * w, 0), (0.54 * w, 0)], 1.0)                                                                  # one line
-        _cap(c, [(0.36 * w, -s_ * 0.36 * w), (0.74 * w, -s_ * 0.36 * w), (0.98 * w, -s_ * 0.30 * w)], t * 0.68, skin)   # index
-        _cap(c, [(0.10 * w, s_ * 0.38 * w), (0.66 * w, s_ * 0.38 * w), (0.90 * w, s_ * 0.32 * w)], t * 0.82, skin)      # thumb
+        _cap(c, [(0.36 * w, -s_ * 0.36 * w), (0.74 * w, -s_ * 0.36 * w), (0.98 * w, -s_ * (0.30 - 0.16 * PINCH_CLOSE[0]) * w)], t * 0.68, skin)   # index
+        _cap(c, [(0.10 * w, s_ * 0.38 * w), (0.66 * w, s_ * 0.38 * w), (0.92 * w, s_ * (0.32 - 0.16 * PINCH_CLOSE[0]) * w)], t * 0.82, skin)      # thumb
         c.restore(); return
     if g == "pinch" and PINCH_V3[0]:                                  # v9 (review 26 Nov): a C: the index round one side of the
         pass                                                          # nose, the thumb (a pad) round the other, a gap between the

@@ -573,7 +573,7 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 6}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7}
 STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
            ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
            ("4.3", 1.3, "A pinches"), ("4.3", 1.75, "B turns away"), ("4.3", 2.05, "Father, silent"), ("4.3", 2.85, "Invite her.")]
@@ -598,7 +598,7 @@ def stills(n):
     import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_S[0], dc_.BACK_HAND[0] = "pinch", 0.8, "quiet"   # 4.3b (26 Nov): the pinch through limb's
     ps.PINCH_POSE[0], ps.PINCH_LEAD[0] = (-73, -93), 1.6       # audit 26 Nov: under the glasses, the hand up the chest (not sideways)
     import client_ps as cps_, hands_ps as hp_; cps_.POINT_V2[0] = ps.SHOT43_V8[0] = hp_.PINCH_V2[0] = True; cps_.POINT_SKIN[0], cps_.POINT_W[0] = (0.86, 0.64, 0.50), 1.3
-    hp_.PINCH_V4[0] = ps.NOSE_43[0] = True; cps_.POINT_LEN[0] = 0.85; ps.PHOTO_43[0] = True; ps.FATHER_SPOT[0] = 0.35   # v9 (review 26 Nov): the same photo on the table phone, his index at Sofía; Father lit, the rest dim   # v8 (review 26 Nov): his index clear, the phone whole, his box off it
+    hp_.PINCH_V4[0] = ps.NOSE_43[0] = True; hp_.PINCH_CLOSE[0] = 1.0; cps_.POINT_LEN[0] = 0.85; ps.PHOTO_43[0] = True; ps.FATHER_SPOT[0] = 0.35   # v9 (review 26 Nov): the same photo on the table phone, his index at Sofía; Father lit, the rest dim   # v8 (review 26 Nov): his index clear, the phone whole, his box off it
     ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True
@@ -832,7 +832,7 @@ def film(n, ver=1):
     import dh_cast as dc_; dc_.FRONT_HAND[0], dc_.FRONT_HAND_S[0], dc_.BACK_HAND[0] = "pinch", 0.8, "quiet"   # 4.3b (26 Nov): the pinch through limb's
     ps.PINCH_POSE[0], ps.PINCH_LEAD[0] = (-73, -93), 1.6       # audit 26 Nov: under the glasses, the hand up the chest (not sideways)
     import client_ps as cps_, hands_ps as hp_; cps_.POINT_V2[0] = ps.SHOT43_V8[0] = hp_.PINCH_V2[0] = True; cps_.POINT_SKIN[0], cps_.POINT_W[0] = (0.86, 0.64, 0.50), 1.3
-    hp_.PINCH_V4[0] = ps.NOSE_43[0] = True; cps_.POINT_LEN[0] = 0.85; ps.PHOTO_43[0] = True; ps.FATHER_SPOT[0] = 0.35   # v9 (review 26 Nov): the same photo on the table phone, his index at Sofía; Father lit, the rest dim   # v8 (review 26 Nov): his index clear, the phone whole, his box off it
+    hp_.PINCH_V4[0] = ps.NOSE_43[0] = True; hp_.PINCH_CLOSE[0] = 1.0; cps_.POINT_LEN[0] = 0.85; ps.PHOTO_43[0] = True; ps.FATHER_SPOT[0] = 0.35   # v9 (review 26 Nov): the same photo on the table phone, his index at Sofía; Father lit, the rest dim   # v8 (review 26 Nov): his index clear, the phone whole, his box off it
     ps.BRIDGE_V2[0] = ps.ZOOM_42[0] = ps.STINK_V2[0] = ps.FATHER_V2[0] = True   # scene 4 v2 (review 26 Nov)
     dp.BLIND_GAP_FIX[0] = dp.ROLL_TAIL[0] = True              # v4 (Tomas 25 Nov): the eye stroke gone, the roll a roll
     ps.pss.NO_DOOR_CONFETTI[0] = ps.rp.SUN_UP[0] = True

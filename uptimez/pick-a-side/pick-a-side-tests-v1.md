@@ -691,3 +691,9 @@ check / check v5: 38 / 0 each. Board v4 md5-identical (44 frames, against a315cc
 - **`dh_cast.FRONT_HAND_AIM`**: the hand turns at the wrist to the nose point (rig units) and is sized so the clamp lands on it: measured, not nudged (three rounds of pose nudging never put it on the nose).
 - Cold test of the encoded v10 (2 viewers, feed-size strip + one full-size frame): **"pinches his nose with index and thumb" 2/2** at both sizes (v9: 0/2 "a fist"); no stray lines, lump, extra hand or call 2/2. Open: **2/2 "could read as a horns / rock-on sign at a glance"**; the guards "the same action" 2/2 at feed size.
 - Stopped here as planned (one sheet, one test). check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 4 v11: the pinch's tips closed (Tomas 26 Nov: "1 padarom, 2 paliekam")
+
+- `hands_ps.PINCH_CLOSE` 1.0: the index's and thumb's tips meet over the nose (a loop round it), no open V. 0 restores v10.
+- Cold test of the encoded v11 (2 viewers, feed-size strip + one full frame): "pinches his nose with index and thumb, a bad smell" 2/2; "no horns, no OK sign, no call, no stray lines, no extra hand" 2/2 (v10: horns 2/2). Note 1/2: at feed size the hand "could be a fist or a lump at the nose", read right from the stink lines.
+- Guards A / B left as they are (Tomas). check / check v5 38 / 0; board v4 md5-identical.
