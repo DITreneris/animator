@@ -99,3 +99,10 @@ Rebuild: `python3 cs_film_v18.py ../customer-success 2`; all behind `cs_v18.inst
 Speech 15/16 ("Approved." as before). The check is fragile: moving the Client's 1.2 line by 1/12 s changed the mix
 by about -32 dB around 15 s and Whisper lost "Nine o'clock." and "Still one star."; with LINE12 back at 1.42 both pass
 at 2/3. Before release: two or three people with sound, on a phone.
+
+## v19: the post goes viral (26 Nov, Tomas: "0:02 counts from 0.1K: not convincing, no speed or dynamics")
+
+`python3 cs_film_v19.py ../customer-success 2` (only scene 1 changes; `cs_os19.install()`. Note: `cs_v19.py` is another
+episode's module, hence `os19`). 1.2's reactions count now accelerates, 1.2K → 48K exponentially by 0:05.5, a new
+number every drawing (v13 eased out, 0.3K → 2.4K, slowing). Past 10K it turns red and bold with a bump. Reaction dots
+fly up out of the three dots, more and more of them. Speech 15/16 as in v18.
