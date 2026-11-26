@@ -93,6 +93,8 @@ def phone_grip(k, x, y, s, screen=None, ang=0.0, skin=oc.SKIN_LIGHT, thumb=None,
     """sheet v4b: forearm, palm, the side of the hand and the thumb one silhouette; three fingers of unequal length
     round the far edge. Falls back to the old grip for what v4b does not draw (a tilted phone, parts, a pressing thumb,
     the phone's back)."""
+    if PHONE_ROW[0] == "v4c" and ALL_V4C[0]:
+        return _v4c_any(k, x, y, s, screen, ang, skin, thumb, body_x, back, part, ink, thumb_tip)
     if ang and abs(ang) < 0.35 and part == "all" and thumb_tip is None and not back:   # a small tilt: the same grip, turned
         c = k.c; c.save(); c.translate(x, y); c.rotate(ang)
         try:
@@ -218,6 +220,8 @@ def tap_insert(k, x, y, edge, w, skin, cuff=(0.20, 0.22, 0.30)):
 FOREARM = [False]            # the sheet draws its own forearm straight down; in a film the rig's arm runs into the palm
                              # (of_cast.phone_grip v3: "no wrist stub"). The Offer v58 first try: a second arm, a "U" under
                              # the Client's phone where his own arm came in from the side
+ALL_V4C = [False]          # v62b (26 Nov, Tomas: "the phones are not fixed"): EVERY phone v4c: any tilt, its back
+                           # (at the ear), the inserts' parts (palm behind / fingers in front) and a pressing thumb
 PHONE_ROW = ["v4c"]          # which sheet phone enable(phone=True) draws: "v4c" (canon since 26 Nov) or "v4b"
 PHONE_V4B = [False]          # Tomas 26 Nov: films keep the old phone grip (v3). v4b's thumb and fingers cover the screen's
                              # edge words (One Star v27, 1:04: "1/5" and "Pam"); the rule is "the thumb off the words"
@@ -266,3 +270,71 @@ def sheet(path="/tmp/hands_v4_check.png"):
 
 if __name__ == "__main__":
     print(sheet())
+
+
+def _v4c_any(k, x, y, s, screen, ang, skin, thumb, body_x, back, part, ink, thumb_tip):
+    """phone_grip v4c for every phone: drawn at the palm (x, y) and turned by ang about it, like the films' grip.
+    The phone stands on the palm; the palm, its side and heel go behind (clipped round the phone); three fingertips stop
+    on the far bezel, the thumb runs up the near edge (or to thumb_tip, in the phone's units from the palm, to press).
+    back: the phone's back to us (at the ear), the thumb on the other side. part: "back" (the palm, for an insert that
+    draws its own big phone over it), "front" (the thumb and fingertips), "all"."""
+    c = k.c
+    want = None if body_x is None else oc.inner_thumb(x, body_x, back)
+    t_ = want if want is not None else (thumb if thumb is not None else -1)
+    if part in ("all", "back"):
+        oc.log_grip(c, "phone", x, y, t_, want)
+    far = -t_
+    w = 26.0 * s
+    edge = 22.0 * s
+    lw = hp.LW
+    c.save(); c.translate(x, y); c.rotate(ang)
+    if part == "all":
+        oc.phone(k, 0, -22.0 * s, s, None if back else screen)
+
+    def stroke(pts, t, col):
+        c.set_source_rgb(*col); c.set_line_width(t)
+        c.set_line_cap(cairo.LINE_CAP_ROUND); c.set_line_join(cairo.LINE_JOIN_ROUND)
+        c.new_path(); c.move_to(*pts[0])
+        for p in pts[1:]:
+            c.line_to(*p)
+        c.stroke()
+
+    def oval(cx, cy, rx, ry, col):
+        c.save(); c.translate(cx, cy); c.scale(rx, ry); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgb(*col); c.fill()
+
+    def outside_phone():
+        pts = kit.rough_rect_pts(k, -22, -38, 44, 76, 3501)
+        c.new_path(); c.rectangle(-10 * w, -10 * w, 20 * w, 20 * w)
+        c.move_to(pts[0][0] * s, -22.0 * s + pts[0][1] * s)
+        for px_, py_ in pts[1:]:
+            c.line_to(px_ * s, -22.0 * s + py_ * s)
+        c.close_path(); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD); c.clip(); c.set_fill_rule(cairo.FILL_RULE_WINDING)
+
+    fingers = [[(far * (edge + out * s), fy * s - 1.5 * s), (far * (edge - tip_in * s), fy * s + 1.0 * s)]
+               for fy, out, tip_in in ((-20.0, 6.0, -0.5), (-11.0, 7.5, 0.0), (-2.0, 5.0, -1.0))]
+    thumb_pts = [(t_ * (edge - 3.0 * s), 22.0 * s), (t_ * (edge + 3.0 * s), 11.0 * s),
+                 (t_ * (edge + 1.5 * s), 1.0 * s), (t_ * (edge - 1.0 * s), -6.0 * s)]
+    if thumb_tip is not None:                                 # it presses: from the near edge to the tip
+        tip = (thumb_tip[0] * s, thumb_tip[1] * s)
+        thumb_pts = thumb_pts[:3] + [tip]
+    heel_pts = [(0.0, 0.44 * w), thumb_pts[0]]
+    side_pts = [(far * 0.40 * w, 0.66 * w), (far * (edge + 3.0 * s), 0.22 * w), (far * (edge + 4.5 * s), -3.5 * s)]
+    tf, tt = 0.27 * w, 0.30 * w
+    for inked in (True, False):
+        col = INK if inked else skin
+        grow = 2 * lw * ink * (s if s > 1.5 else 1.0) ** 0.5 if inked else 0.0
+        if part in ("all", "back"):
+            c.save()
+            if part == "all":
+                outside_phone()
+            oval(0, 0.44 * w, 0.62 * w + grow / 2, 0.42 * w + grow / 2, col)
+            stroke(side_pts, 8.0 * s + grow, col)
+            stroke(heel_pts, tt + grow, col)
+            c.restore()
+        if part in ("all", "front"):
+            for pts in fingers:
+                stroke(pts, tf + grow, col)
+            stroke(thumb_pts, tt + grow, col)
+    c.set_line_cap(cairo.LINE_CAP_BUTT); c.set_line_join(cairo.LINE_JOIN_MITER)
+    c.restore()
