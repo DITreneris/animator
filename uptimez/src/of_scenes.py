@@ -76,7 +76,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v25.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v28.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -373,7 +373,11 @@ def _cast_draw0(k, n, scene, sh, heads):
                 dx_, dy_ = k_.c.user_to_device(hx_, hy_)
                 return None if math.hypot(dx_ - pd_[0], dy_ - pd_[1]) < pt_ else hk(k_, hx_, hy_, *a_)
             _kit.HAND[0] = _pskip
+            dc.RING_ON[0] = not (ps.get("impact") or ps.get("slam_hold"))          # v55: the slam's palm carries the ring itself (v57: also after its lines fade)
+        if ps.get("pocket") and ps.get("phone_donnie"):                          # v56: the hand going into the pocket: no ring finger hanging below it
+            dc.RING_ON[0] = False
         dc.FATHER_STEP[0] = st.get("father_step")                                # v1 (23 Nov): his feet, when he walks
+        dc.BROW_ARCH[0] = bool(ps.get("slam_hold"))                              # v57: the slam's raised brow arches
         ln_ = ps.get("lean", 0.0)                                                # v1 (23 Nov audit, decided): a weight shift,
         if ln_:                                                                  # the whole man tilted about his feet
             c.save(); c.translate(x, f); c.rotate(ln_); c.translate(-x, -f)
@@ -386,6 +390,8 @@ def _cast_draw0(k, n, scene, sh, heads):
                 o = draw_f()
         finally:
             dc.FATHER_STEP[0] = None
+            dc.BROW_ARCH[0] = False
+            dc.RING_ON[0] = True
             _kit.HAND[0] = hk
             if ln_:
                 c.restore()
@@ -394,17 +400,33 @@ def _cast_draw0(k, n, scene, sh, heads):
             hx0_, hy0_ = (x + (hx0_ - x) * math.cos(ln_) - (hy0_ - f) * math.sin(ln_),
                           f + (hx0_ - x) * math.sin(ln_) + (hy0_ - f) * math.cos(ln_))
         heads[n] = (hx0_, hy0_, 50 * FS)
+        if ps.get("impact") and ps.get("palm") and ps.get("targets_xy"):     # v55: his flat palm SLAMS: the film's own lines (frame 0's)
+            hx, hy = ps["targets_xy"][0]
+            c.set_source_rgb(*INK); c.set_line_width(3.2); c.set_line_cap(1)
+            for a_ in (-2.15, -1.8, -1.45, -1.1, -0.75):                     # up, clear of his face and of the glass
+                r0, r1 = 24, 24 + 22 * ps["impact"]
+                c.new_path(); c.move_to(hx + 12 + r0 * math.cos(a_), hy - 4 + r0 * math.sin(a_)); c.line_to(hx + 12 + r1 * math.cos(a_), hy - 4 + r1 * math.sin(a_)); c.stroke()
         if ps.get("phone_donnie") and ps.get("targets_xy"):                  # v1 (23 Nov): DONNIE calling, in his hand, he looks at it
             want = ps["targets_xy"][0]
             hx, hy = min(o.get("hands") or [want], key=lambda h: (h[0] - want[0]) ** 2 + (h[1] - want[1]) ** 2)
             def scr_d(c_):
                 import of_ui as ui
                 ui.hand(c_, ui.call, "DONNIE")
-            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, scr_d, ang=-0.15, skin=dc.SKIN_F, body_x=x)
+            pk_ = ps.get("pocket")                                               # v56: (x0, x1, y) the coat pocket's mouth: the phone
+            if pk_:                                                              # and the hand sink INTO it (nothing drawn below it)
+                c.save(); c.new_path(); c.rectangle(pk_[0] - 400, pk_[2] - 800, 800, 800); c.clip()
+            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, None if ps.get("phone_dark") else scr_d,   # v55: face down = its dark back
+                          ang=ps.get("phone_ang", -0.15), skin=dc.SKIN_F, body_x=x)
+            if pk_:
+                c.restore()
+        if ps.get("pocket"):                                                     # the pocket's mouth, a seam on the coat, over it
+            pk_ = ps["pocket"]
+            c.set_source_rgb(*INK); c.set_line_width(2.2); c.set_line_cap(1)
+            c.new_path(); c.move_to(pk_[0], pk_[2]); c.curve_to(pk_[0] + 6, pk_[2] + 3, pk_[1] - 6, pk_[2] + 3, pk_[1], pk_[2] - 1); c.stroke()
         if ps.get("palm") and ps.get("targets_xy"):                          # v6 (23 Nov, motion_on3's hand): palm and fingers in ONE
             hx, hy = ps["targets_xy"][0]                                         # shape, flat across the lid, the fingers pointing on, a thumb
             sk = dc.SKIN_F
-            c.save(); c.translate(hx + 5, hy); c.scale(0.95, 0.95)                # v7 (audit: "the guard's hand"): from HIS cuff, short of the sleeve
+            c.save(); c.translate(hx + 5, hy); c.rotate(ps.get("palm_ang", 0.0)); c.scale(0.95, 0.95)      # v57: the wrist turns with the bonnet's slope; v7 (audit: "the guard's hand"): from HIS cuff, short of the sleeve
             c.new_path(); c.move_to(-8, -7); c.curve_to(4, -10, 18, -9, 21, -3); c.curve_to(22, 3, 16, 7, 2, 7); c.line_to(-8, 7); c.close_path()
             c.set_source_rgb(*sk); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
             c.set_source_rgb(*INK); c.set_line_width(1.3); c.set_line_cap(1)

@@ -1081,8 +1081,33 @@ Four fixes, all read 3 of 3 by the v50 cold viewers, plus pacing:
 - **A weight sways when the arm stops** (the lamp, 0.14 rad, damped), and the body turns back only after the drop (1.45 s).
 - **An off-screen speaker leans in.** The robot's head, bigger (r 46), leans in from the edge in 0.2 s at the cut, the card under its chin, and leans out after the line; the card goes with it.
 
+## 243. *The Offer* v53 (25 Nov, cold test v52, Tomas: "the concept changed, we can think of something else")
 
-## 243. *One Star* v16–v26 (25–26 Nov): from "publish" to "not ready", and what the gates missed
+The end card (a fresh plan pinned over the burnt one, DON circled) read as "a glitch" or "a flash-forward" for 3 of 3, in every version since v30. Decided: no plan at the end.
+
+- **The loop is a match cut on an action.** After DECLINED (held 0.3 s longer), Father, outside at his black car, brings the phone down, face down, on its roof. The film ends a hand above the roof (0.6 s); frame 0's fist on the blue car's roof lands the blow, with the film's own SLAM.
+- **The last frame doesn't show the wall,** so nothing "heals": the burnt plan is never beside the whole one.
+- **The loop gate changed with it** (`of_cut.slap_ok`): the last frame must BE that picture (bright street, black roof, velvet sleeve); the planted faults were rebuilt and are caught. The old gate (the set identical to frame 0) is kept in the file, unused.
+- **Timing v26:** 4.2 2.55 → 0.6 s, 4.1 2.8 → 3.1 s; the film 65.6 → 64.0 s. The paper and pin sounds are gone; the garage theme comes back on DECLINED and runs through the seam.
+- **v54 (two cold viewers on v53's ending: "seat backs?", "it never lands", "a jump"):** an insert's object needs its own signs (the black roof got a windscreen, pillar, side windows, handles, an aerial, a mirror), and a match cut needs the first action FINISHED: the phone lands in the last two drawings, with a burst, a thud and the car dipping, so frame 0's fist is the second blow, not the end of a cut-off first one. The loop gate's planted fault had to move with the picture (a fault outside the checked band was "caught by: NOTHING").
+
+## 244. *The Offer* v55 (26 Nov): v54's last shot was drawn against the rules; the ending again, storyboard first
+
+Tomas, on v54's new last shot (the phone on a black car's roof): rejected, hard. It was a picture drawn from nothing (a flat black car, an arm from the corner with no owner, a phone as a slab, an empty street), rendered before he saw a still, and "tested" only for whether it could be read. Every one of those is a rule on the rules page; none was listed before drawing.
+
+- **Section 0 is not optional under time pressure.** List the rules, then a storyboard PNG, then his word, then the render. v54 skipped all four the same evening.
+- **Cold viewers answer "can it be read", never "is it good" or "does it belong in this film".** A pass from them is not a pass on style. Compare the new frame with its neighbours yourself, and show Tomas.
+- **Use the set and the rigs that exist.** v55's last shot is the garage, Father's own rig, scene 2's flat palm, frame 0's own SLAM lines; the only new thing is a camera position (`SLAM_CAM`).
+- **The same misread three times: change the gesture (178).** The phone on a car read as "a wallet, a block" in v54 and in both storyboard variants. Now the phone goes to his pocket and his PALM slams the bonnet: 2 of 2 "a real hit", 2 of 2 "a deliberate echo" of frame 0's fist.
+- **Cutting before the contact failed again** (2 of 2 "a break", as in v53): an outside audit asked for it twice; the storyboard test settled it without a render.
+- **A raised hand with a phone drifts to the ear.** The wind-up goes out past his side with an empty fist, as the guard's does.
+- **Contact is on the material that takes it:** the first palm landed at the windscreen's edge ("he hits the glass"); moved onto the bonnet's metal. The rig's ring finger hung under the palm ("a blood drop"): `dh_cast.RING_ON`, an opt-out hook, off only for this palm, which carries the ring itself.
+- **Timing v27:** 4.2 is 1.15 s (pocket 0.40, up 0.33, down 0.13, slam and hold 0.29); the film 64.5 s. The audit's 0.5 s hold was cut to 0.2 s so frame 0's fist stays the second beat.
+- **v56 (Tomas, the two points left open):** the phone now goes INTO the pocket: the hand reaches the pocket's mouth, the phone and the hand sink below a seam drawn over them (clipped, nothing drawn below it), and the hand comes out empty (0.16 + 0.14 + 0.10 s); the rig's ring finger is off while the hand is in it. The other arm swings back on the wind-up and forward on the blow (it hung still for the whole shot).
+
+- **v57 (Tomas, after the cold test of v56: the pocket and the other arm not read, the slam a "knock"):** timing v28, 4.2 is 1.55 s (the pocket 0.70: mouth 0.20, the phone STOPS at it 0.15, IN 0.20, out empty 0.15; up 0.33; down 0.13; slam and hold 0.39); the film 64.94 s. Harder slam: higher wind-up, the car dips twice as far (tilt −0.10), the camera jolts 0.07 s, palm and car hold 2 drawings; then the arm GIVES (elbow bends, the palm stays on the metal: v55 canon, no off-the-bonnet recoil), the car rebounds once, the lines are gone 0.12 s after the hold, the man settles (lean to 0, other hand home, brow down). The wrist turns with the bonnet's slope (`palm_ang`). The other hand swings back and UP inside the frame (a first try at x 72 put the elbow outside it) and forward across him. The raised brow arches and stays below the hairline (`dh_cast.BROW_ARCH`, opt-in): grey on grey read as a bruise (2 of 3 viewers on v56, 0 of 3 on v57). Cold test v57, 3 viewers, 8 fps sheets: the phone into the pocket read 3 of 3 (v56: 0 of 3); the other arm seen by 2 of 3 ("a counterweight"); the slam read as a firm, annoyed bang (medium force), the car "jolts"; the loop read as a rhyme 3 of 3. Still open: the black phone against the dark coat, the thumb "a pill" in 4.1's close-up, the curved dark line across his waist, the framing jump from 4.1's wide to the slam camera.
+
+## 245. *One Star* v16–v26 (25–26 Nov): from "publish" to "not ready", and what the gates missed
 
 - **The gates measured geometry, not reading.** Hand, elbow and bubble gates were at 0 while Tomas found an ownerless
   sleeve, a phone that appeared, an empty dark half, a finger over SAVE. Two gates were added and tried first on the

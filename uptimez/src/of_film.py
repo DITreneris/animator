@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 52, 2: 52, 3: 52, 4: 52, 5: 52}
-SOUND = "of_sound_v26.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 52, 2: 52, 3: 52, 4: 52, 5: 57}
+SOUND = "of_sound_v29.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -555,7 +555,60 @@ MOTION["0.9"] = s09_wide
 MOTION["0.8"] = s08_slam                                   # v8 (22 Nov): the joke at 0:00
 MOTION["0.10"] = s010_same
 PIN_T = 1.60                                               # v5 (24 Nov, decided): the burnt plan 0.25 s, the fresh one slides
-MOTION["4.2"] = lambda t, L: (dict(_cam="insert", insert="pin", pin_slide=ease((t - 0.25) / 0.28),   # up over it, the finger pins
+SLAM_CAM = (200, 722, 2.35)                               # v55: Father whole, the Client's car, the legs under it; the plan and GARAGE 7 out
+T_POCKET, T_UP, T_HIT = 0.70, 1.03, 1.16                    # v57 (Tomas): the pocket 0.70 (mouth 0.20, pause 0.15, IN 0.20, out 0.15), up 0.33, down 0.13, slam and hold 0.39
+
+
+def s42_slam(t, L):
+    """v57 (26 Nov, Tomas picked: the pocket held at its mouth, 0.4 s more, a harder slam, the other arm big, an outside
+    audit of the storyboard): the pocket 0.70 s (to the mouth 0.20, the phone STOPS there 0.15, IN 0.20, out empty 0.15);
+    a higher wind-up; the car dips twice as far, the camera jolts 0.07 s, the palm and the car hold 2 drawings, then
+    the arm GIVES (elbow bends, the palm stays on the metal, v55 canon), the car rebounds once on its stands, the lines
+    fade by 0.12 s, the man settles (lean back to 0, the other hand home, the brow down) by the end. The other hand swings
+    back and UP on the wind-up (kept inside the frame) and forward across him on the blow."""
+    P0, PM, PIN, P1 = (176, F_ - 110), (163, F_ - 90), (161, F_ - 66), (166, F_ - 84)
+    P2, P3 = (200, F_ - 168), (204, F_ - 86)
+    PK = (150, 176, F_ - 80)                               # the coat pocket's mouth
+    R0, RB, RF = (109, F_ - 66), (100, F_ - 93), (128, F_ - 60)
+    T_MOUTH, T_PAUSE, T_IN, T_OUT = 0.20, 0.35, 0.55, 0.70
+    SHAKE = [(0, 0), (-7, 9), (6, -7), (-3, 4), (2, -2)]
+    st = dict(_cam=SLAM_CAM, _cast=("father",), black_car=True, burn=1.0, insert=None, moved=dict(father=(140, F_ + 26)))
+    if t < T_POCKET:
+        if t < T_OUT:
+            if t < T_MOUTH: u1, u2 = ease(t / T_MOUTH), 0.0
+            elif t < T_PAUSE: u1, u2 = 1.0, 0.0
+            else: u1, u2 = 1.0, ease((t - T_PAUSE) / (T_IN - T_PAUSE))
+            hp = om.lerp(om.lerp(P0, PM, u1), PIN, u2)
+            return st, dict(father=dict(face="hard", look=(0.6, 0.6 * u1), targets_xy=[hp, R0], phone_donnie=True, phone_dark=True,
+                                        phone_ang=-0.15 + 0.35 * u1, pocket=PK if u1 > 0.5 else None))
+        u = ease((t - T_OUT) / (T_POCKET - T_OUT))
+        return st, dict(father=dict(face="hard", look=(0.6 + 0.4 * u, 0.6 - 0.6 * u), targets_xy=[om.lerp(PIN, P1, u), R0], pocket=PK))
+    if t < T_UP:                                           # the fist comes up, out past his side (not past the shoulder)
+        u = ease((t - T_POCKET) / (T_UP - T_POCKET - 0.06))
+        q = (1 - u) ** 2, 2 * u * (1 - u), u ** 2
+        via = (210, F_ - 118)
+        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.09 * u, pocket=PK,
+                                    targets_xy=[(q[0] * P1[0] + q[1] * via[0] + q[2] * P2[0], q[0] * P1[1] + q[1] * via[1] + q[2] * P2[1]), om.lerp(R0, RB, u)]))
+    if t < T_HIT:                                          # down: the elbow stays bent, the forearm opens last
+        u = (t - T_UP) / (T_HIT - T_UP)
+        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.09 + 0.17 * u, pocket=PK, targets_xy=[om.lerp(P2, (196, F_ - 128), u), om.lerp(RB, RF, u)]))
+    d = t - T_HIT
+    hold, e = 0.07, max(0.0, t - T_HIT - 0.07)
+    k_ = 1.0 if d < hold else math.exp(-e * 9)
+    reb = 0.03 * math.sin(e * 2 * math.pi / 0.30) * math.exp(-e * 7)              # the car rebounds once on its stands
+    sx, sy = SHAKE[min(int(d * 15), 4)] if d < 0.34 else (0, 0)
+    cx, cy, z = SLAM_CAM
+    st.update(_cam=(cx + sx, cy + sy, z), tilt=-0.10 * k_ - 0.01 + reb, legs_jolt=16 * k_)
+    give = 5.0 * math.sin(math.pi * min(1.0, e / 0.20)) if e < 0.20 else 0.0      # the arm gives: the elbow bends, the palm stays
+    settle = ease(min(1.0, max(0.0, (d - 0.14) / 0.25)))                           # 1.30 s -> the end: the man settles
+    imp = max(0.0, 1.6 * math.exp(-e * 9) - 0.25 * min(1.0, e / 0.12)) if e < 0.12 else 0.0   # the lines are gone by 0.12 s after the hold
+    return st, dict(father=dict(face="brow" if d < 0.14 else "hard", look=(1, 0), lean=0.08 * (1 - settle) + 0.0 * settle - 0.02 * min(1.0, d / 0.2) * (1 - settle), pocket=PK,
+                                targets_xy=[(P3[0] - 0.8 * give, P3[1] - 2 * (1 - k_) + 0.6 * give), om.lerp(om.lerp(RF, R0, 1 - k_), R0, settle)],
+                                palm=True, palm_ang=-0.30, slam_hold=True, impact=imp))
+
+
+MOTION["4.2"] = s42_slam
+_pin_v52 = lambda t, L: (dict(_cam="insert", insert="pin", pin_slide=ease((t - 0.25) / 0.28),   # up over it, the finger pins
                                    pin_u=ease((t - 0.72) / 0.2)), {}) if t < PIN_T else s42_service(t - PIN_T + 0.55, L)
 # v6 (timing v12): the pin held 0.3 s longer, the rest as it was
 MOTION["0.4"] = lambda t, L: (dict(legs_work=math.sin(t * 2 * math.pi * 1.2)), {})    # the knee taps: he works on

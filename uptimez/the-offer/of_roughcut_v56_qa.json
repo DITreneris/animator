@@ -1,0 +1,31 @@
+{
+ "format": {
+  "size": "1080x1920",
+  "fps": "30/1",
+  "frames": 1936,
+  "color": [
+   "bt709",
+   "bt709",
+   "bt709"
+  ]
+ },
+ "level": {
+  "lufs": -14.3,
+  "true_peak": -2.1
+ },
+ "lines": {
+  "heard": 15,
+  "of": 15,
+  "known": []
+ },
+ "frame0": {
+  "std": 56.771096965295825,
+  "ink": 0.1487673611111111,
+  "vs_frame1": 0.03959426440329218
+ },
+ "loop": {
+  "kind": "echo: Father's palm on the bonnet -> frame 0's fist",
+  "last_frame_is_the_slap": true
+ },
+ "fails": []
+}
