@@ -45,6 +45,9 @@ import sofia_ob as so
 from kit import INK, cut, rect, ellipse, rough_ellipse_pts, text
 from sofia_v4 import SKIN, HAIR, HAIR_SHINE, HAIR_SHADE, RED, GOLD, GOLD_LIGHT, H
 
+NOSE = [False]                                         # sheet only. Off, the face is unchanged.
+HEEL = [False]                                         # sheet only. Off, the boot is the old sliver.
+
 FUCHSIA = (0.86, 0.18, 0.52)
 FUCHSIA_DARK = (0.66, 0.10, 0.38)
 FUCHSIA_LIGHT = (0.96, 0.46, 0.70)
@@ -124,6 +127,9 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="smile", look=(0, 0), lag=(
         cut(k, [(sx_ - 7.5, -66), (sx_ + 7.5, -66), (sx_ + 6, -12), (sx_ + 6 + o * 10, -2), (sx_ + 6 + o * 10, 0),
                 (sx_ - 1 + o * 2, 0), (sx_ - 6, -8)], BOOT, shadow=False, lw=1.8)
         cut(k, [(sx_ - o * 6.0, -8), (sx_ - o * 2.8, -8), (sx_ - o * 3.6, 0), (sx_ - o * 5.6, 0)], BOOT, shadow=False, lw=1.4)  # the heel
+        if HEEL[0]:                                                                          # a heel post on the inner side, past the shaft
+            cut(k, [(sx_ - o * 2, -12), (sx_ - o * 16, -10), (sx_ - o * 18, 0), (sx_ - o * 2, 0)],
+                (0.02, 0.02, 0.02), shadow=False, lw=1.8)
         c.set_source_rgba(1, 1, 1, 0.45); c.set_line_width(2.0); c.set_line_cap(1)
         c.move_to(sx_ - 2.5, -58); c.line_to(sx_ - 2, -22); c.stroke()                                  # the shine
     # the coat-dress: body to the hem just above the knee
@@ -189,6 +195,9 @@ def sofia(k, x, feet, s=1.0, pose="stand", face_kind="smile", look=(0, 0), lag=(
     for sx_ in (-1, 1):
         earring(k, sx_ * 51 + lgx * 0.6, hy + 20, lgx, sparkle if sx_ > 0 else sparkle * 0.55, seed + 30 + sx_)
     ss.face(k, 0, hy + 4, face_kind, look, seed + 60)
+    if NOSE[0]:                                                                # a short J, tipped to her look. Eye outline is 2.
+        c.set_source_rgb(*INK); c.set_line_width(1.6); c.set_line_cap(0)
+        c.move_to(0.2, hy + 12); c.curve_to(0.8, hy + 15.4, 2.6, hy + 17.6, 5.8, hy + 17.1); c.stroke()
     if face_kind not in ("horrified", "curious", "surprised"):
         c.set_source_rgba(1, 1, 1, 0.75); c.set_line_width(2.0); c.set_line_cap(1)
         c.move_to(-4, hy + 35); c.line_to(2, hy + 35); c.stroke()

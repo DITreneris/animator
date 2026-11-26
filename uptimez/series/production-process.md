@@ -107,7 +107,7 @@ Each row lists what goes in, what comes out, what must pass, and whether Tomas a
 | 1 | **Script** | The concept or the storyline row | `<ep>-script-vN.md`: every shot, line and action; the protect list; section times; open decisions | **G0** series check, **G1** protect list; a line budget; every verbal joke has an action; checked against the set (lesson 108) and the canon locks; outside reviews triaged (**G6**) | **1** |
 | 2 | **Voices** | The approved script | Auditions for new voices; every take; `<ep>_timing.json` | Whisper on every dry take; **the real length is known** and within 40–90 s (arc: 60–90 s) | **2** |
 | 3 | **Look and set** | New characters, props and sets | Look sheets at series proportions beside the cast; set changes opt-in; the set doc updated | Earlier episodes rebuild **md5-identical**; signs on new props read at 270 px | — |
-| 4 | **Scene file and layouts** | Script, timing, set | `src/<ep>_scenes.py`; generated: script, a layout sheet per scene, a top-down shot plan, a blocking sheet for the hardest beat | **G2**: action and reaction per beat, sizes and eyelines; every turn is an action. **`uz_check`** on each layout frame (scale, signs, tails, limbs, text). The blocking test (lesson 62) | **3** |
+| 4 | **Scene file and layouts** | Script, timing, set | `src/<ep>_scenes.py`; generated: script, a layout sheet per scene, a top-down shot plan, a blocking sheet for the hardest beat | **G2**: action and reaction per beat, sizes and eyelines; every turn is an action. **`uz_check`** on each 9:16 layout. **`/quality-assurance-agent`** on a 16:9 layout. The blocking test (lesson 62) | **3** |
 | 5 | **Board** | Scene file | One key frame per shot at 540, generated | **G3**; **G4 on the whole board** with two cold viewers and the loop question; two viewers making the same mistake is a staging fault | — |
 | 6 | **Motion tests** | The hardest moments, named in the scene file (an entrance, an impact, a reach, a head turn) | A short test each, at film rate | **G4**: two cold viewers on 8 fps strips; `uz_check` | — |
 | 7 | **Animation** | Scene file, tests | Scene renders, native 1080 (rendered at 2×), **15 drawings a second for acting, 30 fps camera** (decided) | `uz_check` on every frame, including the drawing map; every change seen in a before/after strip of that shot | — |
@@ -116,6 +116,18 @@ Each row lists what goes in, what comes out, what must pass, and whether Tomas a
 | 10 | **Reviews** | Outside reviews | A triage table: OK / partial / fail / disagree, what correlates, which points undo Tomas's choices | **G6**: two rounds at most; protect list intact | — |
 | 11 | **Master and cover** | The approved film | 1080 master and 540 preview (rebuilt locally, not committed from 24 Nov per `.gitignore`), the cover (committed) | G5 on the final AAC; a clean-checkout rebuild; cover read at 120 px and in the profile crop | **5** |
 | 12 | **Close** | The master | `<ep>-film-vN.md` (the film as built, shot by shot); lessons; README, INDEX and STORYLINE rows written from the built film; old render frames deleted | Committed and pushed when Tomas asks; a pull request per episode | — |
+
+## Drawing audit
+
+Before a still is called locked, and on the layout sheet at stage 4, run `/quality-assurance-agent`. The command is `.cursor/commands/quality-assurance-agent.md`. It follows `.cursor/skills/quality-assurance-agent/SKILL.md`: measure, then open the PNG at full size. A thumbnail is not a pass.
+
+| Picture | Checker |
+|---|---|
+| UptimeZ 9:16 | `uz_check.py` |
+| Blueprint 16:9 | `bp_draw_audit.py` |
+| Hoodyz | `hoodyz/qa.py` |
+
+GV, GP, GD and GH stay in `gates_os.py`. They report on One Star. They are not this command, and their 4-second shot cap is not the Blueprint paper cut. There is no color-contrast gate. A 9:16 number is not applied to the 16:9 room.
 
 ## Cold viewers (decided: board, motion tests, rough cut)
 

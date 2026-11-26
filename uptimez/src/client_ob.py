@@ -77,6 +77,8 @@ LOOKS = {
 
 
 NO_FOB = [False]                                           # fs v32: the 0:48 shot leaves the car fob off
+ELBOW = [False]                                            # sheet only: a jacket disc in the sleeve gap. Off, the two segments stay.
+QUIET = [False]                                            # sheet only: cheek, wrinkles and hair shine at about half. The broken nose stays.
 
 
 def _ik(side, tx, ty):
@@ -191,13 +193,14 @@ def _face(k, y, face, look, mouth, seed, chin):
     f = FACES[face]
     lx, ly = look
     ey = y - 5
-    c.set_source_rgba(0.86, 0.36, 0.26, 0.11)                                # a little weather on the cheeks
+    c.set_source_rgba(0.86, 0.36, 0.26, 0.05 if QUIET[0] else 0.11)           # a little weather on the cheeks
     for sx in (-1, 1):
         c.save(); c.translate(sx * 30, y + 14); c.scale(12, 8); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
     up = {"shock": 5, "dawning": 3, "puzzled": 2}.get(face, 0)               # the forehead, working
-    c.set_source_rgba(*SKIN_DARK, 0.85 if up else 0.5); c.set_line_width(1.8 if up else 1.4); c.set_line_cap(1)
-    for i, fy in enumerate((y - 36, y - 30) + ((y - 42,) if up > 3 else ())):
-        c.move_to(-18 + i * 3, fy - up * 0.4); c.curve_to(-6, fy - 2 - up, 8, fy - 2 - up, 19 - i * 4, fy - up * 0.6); c.stroke()
+    if not QUIET[0]:
+        c.set_source_rgba(*SKIN_DARK, 0.85 if up else 0.5); c.set_line_width(1.8 if up else 1.4); c.set_line_cap(1)
+        for i, fy in enumerate((y - 36, y - 30) + ((y - 42,) if up > 3 else ())):
+            c.move_to(-18 + i * 3, fy - up * 0.4); c.curve_to(-6, fy - 2 - up, 8, fy - 2 - up, 19 - i * 4, fy - up * 0.6); c.stroke()
     for n_, sx in enumerate((-17, 17)):
         R = f["eye"]
         kx, ky = f.get("skew", ((0, 0), (0, 0)))[n_]
@@ -221,10 +224,11 @@ def _face(k, y, face, look, mouth, seed, chin):
         if face in ("tired", "exhausted"):                                   # the bag under it
             c.set_source_rgba(*SKIN_DARK, 0.9); c.set_line_width(1.6)
             c.move_to(sx - 8, ey + R + 2); c.curve_to(sx - 3, ey + R + 6, sx + 4, ey + R + 6, sx + 9, ey + R + 1); c.stroke()
-        s_ = 1 if sx > 0 else -1                                             # crow's feet
-        c.set_source_rgba(*SKIN_DARK, 0.75); c.set_line_width(1.5)
-        for dy, dx in ((-3, 5), (3, 5.5)):
-            c.move_to(sx + s_ * (R + 2.6), ey + dy * 0.6 + 2); c.line_to(sx + s_ * (R + 2.6 + dx), ey + dy + 2); c.stroke()
+        if not QUIET[0]:                                                     # crow's feet
+            s_ = 1 if sx > 0 else -1
+            c.set_source_rgba(*SKIN_DARK, 0.75); c.set_line_width(1.5)
+            for dy, dx in ((-3, 5), (3, 5.5)):
+                c.move_to(sx + s_ * (R + 2.6), ey + dy * 0.6 + 2); c.line_to(sx + s_ * (R + 2.6 + dx), ey + dy + 2); c.stroke()
     by = y - 23                                                              # heavy brows
     (a1, a2), (b1, b2) = f["bl"], f["br"]
     _brow(c, -32, by + a1, -7, by + a2, 8.0); _brow(c, 7, by + b1, 32, by + b2, 8.0)
@@ -236,7 +240,7 @@ def _face(k, y, face, look, mouth, seed, chin):
     c.curve_to(-4, y + 22, 6, y + 22, 10, y + 17); c.stroke()
     c.set_line_width(2.2); c.move_to(10, y + 17); c.curve_to(13, y + 13, 11, y + 9, 7, y + 9); c.stroke()
     my = y + 34
-    c.set_source_rgba(*SKIN_DARK, 0.9); c.set_line_width(2.0)                 # the lines a smile has worn in
+    c.set_source_rgba(*SKIN_DARK, 0.40 if QUIET[0] else 0.9); c.set_line_width(2.0)  # the lines a smile has worn in
     for sx in (-1, 1):
         c.move_to(sx * 14, y + 17); c.curve_to(sx * 23, y + 23, sx * 26, y + 31, sx * 23, my + 3); c.stroke()
     c.set_source_rgb(*INK); c.set_line_cap(1)
@@ -348,6 +352,8 @@ def client(k, x, feet, s=1.0, pose="arrive", face="confident", look=(0, 0), seed
         ex, ey = sx_ + _d(u)[0] * LN1, sy_ + _d(u)[1] * LN1
         hr = 17 if (side == 1 and pocket) else HAND                           # in the pocket only the heel of it shows
         hx, hy_ = limb(k, sx_, sy_, u, f_, LN1, LN2, 47, 39, J, J, SKIN, hr, seed + 10 + side)
+        if ELBOW[0]:                                                     # fills the gap where the two sleeves meet
+            ellipse(k, ex, ey, 18, 18, J, seed + 15 + side, shadow=False, outline=False)
         ellipse(k, side * (SH[0] - 1), sy_ - 1, 23, 20, J, seed + 14 + side, shadow=False, lw=2)   # the shoulder
         c.set_source_rgb(*J); c.rectangle(min(side * 60, side * 86), sy_ - 12, 26, 32); c.fill()
         ux, uy = (hx - ex) / LN2, (hy_ - ey) / LN2
@@ -402,12 +408,12 @@ def client(k, x, feet, s=1.0, pose="arrive", face="confident", look=(0, 0), seed
         c.close_path(); c.clip()
     if v["chin"] in ("stubble", "moustache"):                                # two days' shadow, and not even
         c.save(); inside()
-        c.set_source_rgba(0.20, 0.15, 0.13, 0.17 if v["chin"] == "stubble" else 0.10)
+        c.set_source_rgba(0.20, 0.15, 0.13, (0.08 if v["chin"] == "stubble" else 0.05) if QUIET[0] else (0.17 if v["chin"] == "stubble" else 0.10))
         c.move_to(-56, hy + 12); c.curve_to(-36, hy + 22, -28, hy + 24, -24, hy + 39)
         c.curve_to(-10, hy + 25, 10, hy + 25, 24, hy + 39); c.curve_to(28, hy + 24, 36, hy + 20, 56, hy + 8)
         c.line_to(56, hy + 72); c.line_to(-56, hy + 72); c.close_path(); c.fill()
         r = k.rng(seed + 27)
-        c.set_source_rgba(0.16, 0.11, 0.10, 0.42); c.set_line_width(1.3); c.set_line_cap(1)
+        c.set_source_rgba(0.16, 0.11, 0.10, 0.20 if QUIET[0] else 0.42); c.set_line_width(1.3); c.set_line_cap(1)
         for _ in range(26):
             qx = r.uniform(-42, 42); qy = hy + r.uniform(26, 58)
             if abs(qx) < 21 and qy < hy + 44:
@@ -428,9 +434,10 @@ def client(k, x, feet, s=1.0, pose="arrive", face="confident", look=(0, 0), seed
         for sx in (-1, 1):
             cut(k, [(sx * 47, hy - 2), (sx * 49, hy - 26), (sx * 41, hy - 30), (sx * 39, hy - 14)], GREY, shadow=False,
                 lw=1.6)
-        c.set_source_rgba(1, 1, 1, 0.20); c.set_line_width(2.6); c.set_line_cap(1)
-        for dy in (0, 9):
-            c.move_to(-26, hy - 50 + dy); c.curve_to(-6, hy - 60 + dy, 14, hy - 58 + dy, 32, hy - 46 + dy); c.stroke()
+        if not QUIET[0]:
+            c.set_source_rgba(1, 1, 1, 0.20); c.set_line_width(2.6); c.set_line_cap(1)
+            for dy in (0, 9):
+                c.move_to(-26, hy - 50 + dy); c.curve_to(-6, hy - 60 + dy, 14, hy - 58 + dy, 32, hy - 46 + dy); c.stroke()
         cut(k, [(4, hy - 40), (18, hy - 42), (27, hy - 31), (23, hy - 24), (17, hy - 33)], HAIR, shadow=False, lw=1.6)   # a strand that will not stay back
     elif v["head"] == "curls":
         for sx in (-1, 1):

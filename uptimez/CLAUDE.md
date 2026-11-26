@@ -43,6 +43,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | G4 Cold mute test | Fresh viewers who have never seen the script (people, or new subagents shown frames only) tell back at least 4 of 5 beats |
 | G5 QA worker | Fails the build on any miss (below) |
 | G6 Audit triage | At most two review rounds, then go back to premises or test on viewers |
+| Drawing audit | `/quality-assurance-agent` before a still is called locked. 16:9 uses `bp_draw_audit.py`. 9:16 uses `uz_check.py`. GV, GP, GD, GH stay in `gates_os.py` for One Star. There is no color-contrast gate |
 
 ## Never break earlier work
 

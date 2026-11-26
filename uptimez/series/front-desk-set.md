@@ -1,5 +1,7 @@
 # The front desk set (v4)
 
+The 9:16 room. The 16:9 pilot does not use this file. Its source of truth is [`../the-blueprint/set-16x9.md`](../the-blueprint/set-16x9.md).
+
 The room where Act B happens (episodes 9–11) and the default room for the series from episode 10 on. Built for *First Search*: `src/fs_set4.py` (draws it), `first-search/fs_set_v4.png` (the sheet). Earlier versions are kept: `fs_set3.py` (v3), `fs_setmap.py` (the v1 map).
 
 ## Zones: each with one job

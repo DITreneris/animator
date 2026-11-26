@@ -8,6 +8,7 @@ import math
 import cairo
 
 SAFE = (18, 96, 522, 820)   # x0, y0, x1, y1 at 540x960 (CLAUDE.md, G5)
+SAFE_16X9 = (24, 24, 936, 516)  # same inset idea at 960x540; 9:16 callers keep SAFE
 RAIL = (470, 380, 540, 860)  # the app's button rail: no text there (CLAUDE.md "Text", G3 dead zones)
 TAIL_MIN, TAIL_MAX = 10, 20
 
@@ -130,18 +131,20 @@ def _overlap(a, b):
     return a[0] < b[2] and a[2] > b[0] and a[1] < b[3] and a[3] > b[1]
 
 
-def check(surface, box, tip, faces, above=None, aim=None, before=None, avoid=(), fill=None):
-    """Fail on a long tail, a tip on hair, eyes or the mouth, a box outside SAFE, in the button rail, over a face,
+def check(surface, box, tip, faces, above=None, aim=None, before=None, avoid=(), fill=None, safe=None):
+    """Fail on a long tail, a tip on hair, eyes or the mouth, a box outside the safe rect, in the button rail, over a face,
     or over a rect the caller keeps clear (avoid: the signs, story props and hands drawn in this frame).
     fill: a tinted bubble's paper (speech.ROBOT), so its tail is seen.
+    safe replaces SAFE. The 9:16 button rail applies only when safe is omitted.
     above is a bare-scalp or antenna point. aim is a tip the caller measured on this frame
     (a visor rim, the mouth a profile drew, a voice in the dark). A tip landing on either is allowed.
     before is snapshot() from just before this bubble. Returns a list of faults. Empty means it may ship."""
     msgs = []
     x0, y0, x1, y1 = box
-    if x0 < SAFE[0] or y0 < SAFE[1] or x1 > SAFE[2] or y1 > SAFE[3]:
+    rect = SAFE if safe is None else safe
+    if x0 < rect[0] or y0 < rect[1] or x1 > rect[2] or y1 > rect[3]:
         msgs.append("BUBBLE outside the safe area %s" % (tuple(round(v) for v in box),))
-    if _overlap(box, RAIL):
+    if rect == SAFE and _overlap(box, RAIL):
         msgs.append("BUBBLE in the right button rail %s" % (tuple(round(v) for v in box),))
     for a in avoid:
         if _overlap(box, a):
