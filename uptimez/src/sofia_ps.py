@@ -140,6 +140,7 @@ CV_WORD = ["COO?"]                                          # opt-in (Tomas, 25 
                                                             # the robot's own badge: Father's side offers her its job
 
 
+CV_N = [None]                                              # opt-in (film 5.2): only the first n letters written so far, in the word's place
 CV_FONT, CV_AT = [None], ["top"]                            # opt-in (25 Nov, 5.5: HR? over her mouth): a size, "top" / "bottom"
 
 
@@ -153,7 +154,7 @@ def cv_coo(k, x, y, s=1.0, ang=-0.06):
     c.select_font_face("Lilita One"); c.set_font_size(fs_)
     e = c.text_extents(w_)
     ty = (-40 if len(w_) > 3 else -37) if CV_AT[0] == "top" else 27      # "bottom": across the sheet's foot, clear of its edge (opt-in, 25 Nov)
-    c.set_source_rgb(*INK); c.set_line_width(3.2); c.move_to(-e.x_advance / 2, ty); c.text_path(w_); c.stroke_preserve()
+    c.set_source_rgb(*INK); c.set_line_width(3.2); c.move_to(-e.x_advance / 2, ty); c.text_path(w_ if CV_N[0] is None else w_[:CV_N[0]]); c.stroke_preserve()
     c.set_source_rgb(*HEEL_GOLD); c.fill()
     c.restore()
 

@@ -697,3 +697,27 @@ check / check v5: 38 / 0 each. Board v4 md5-identical (44 frames, against a315cc
 - `hands_ps.PINCH_CLOSE` 1.0: the index's and thumb's tips meet over the nose (a loop round it), no open V. 0 restores v10.
 - Cold test of the encoded v11 (2 viewers, feed-size strip + one full frame): "pinches his nose with index and thumb, a bad smell" 2/2; "no horns, no OK sign, no call, no stray lines, no extra hand" 2/2 (v10: horns 2/2). Note 1/2: at feed size the hand "could be a fist or a lump at the nose", read right from the stink lines.
 - Guards A / B left as they are (Tomas). check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 4 LOCKED at v11 (Tomas, 26 Nov)
+
+Tag `uptimez-pick-a-side-s4-v11` (local: the push of tags is refused by the session's proxy, 403). After scene 5's code, scene 4 v11 re-rendered from the tag's tree and from the branch: md5-identical (be72e2a2…).
+
+## Scene 5 (26 Nov): v1 → v3
+
+Shots: 5.1 the silhouette, his phone lights (3.6's) · 5.2 the gold pen writes H, R, ? a letter at a time (`sofia_ps.CV_N`, the hand moving on) · 5.3a the board, 5.3b the can comes up from his hand, then the heart (`HEART_53`) · 5.4a wide 0.85 s, then test C · 5.5 test K · 5.6 test F's staging · 5.7 the phone shakes with its buzz. Sound: buzz, a scratch per letter, three knocks, a clink and a chime, heels, buzz.
+
+| Beat | v1 (2 viewers, 4 fps sheets) | v2 / v3 |
+|---|---|---|
+| The pen writes HR? on the CV, a black sleeve | 2/2 | |
+| The oil can, the heart | 2/2 | |
+| Don's foot over the line and back, the vest | 2/2 the foot; 1/2 "content to have crossed" | |
+| Sofía holds HR? at the line (5.5) | 2/2 | |
+| Sofía crosses the tape (5.6) | **0/2** (hidden by Pam's box) | v2: **2/2** "crosses left to right" |
+| Pam's line is spoken | **0/2** ("a sign she holds": a six-row narrow box by her raised arms) | v2: 2/2 "she speaks" |
+| Pam's phone, INVITATION · DAD | 2/2 | 2/2 |
+| 5.1 who is outside | 2/2 "a figure in sunglasses", the phone's glow "a scan" 2/2 | not changed: 3.6 sets it up in the film |
+
+- v2: 5.6's own camera (lower, wider), Sofía's walk above Pam's box, Pam 70 px lower (`PAM_DY_56`), the box in two rows on her right.
+- v2 found: when the box went, the floor's "← DON" under it read as "signed - DON" 2/2. v3: the box stays to the cut (`BOX_TO_END`); her walk starts 72 left of the tape (5.5 ends on it: "a jump" 1/2 at 128). v3 not cold-tested (the scene's third version).
+- Open: Sofía has no CV in 5.6's wide (test F's cast); 5.6's first drawing still shows the floor's DON before the box.
+- check / check v5 38 / 0; board v4 md5-identical.

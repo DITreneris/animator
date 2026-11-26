@@ -19,6 +19,7 @@ from kit import Ctx, INK
 DPS, FPS = 15, 30
 OUT = ps.OUT
 SCENES = {1: ["1.1", "1.2a", "1.3", "1.4"],
+          5: ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7"],
           4: ["4.1", "4.2", "4.3"],
           3: ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7"],
           2: ["2.1", "2.1b", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.9b", "2.10", "2.11"]}                 # v3 (Tomas 25 Nov): 1.2b cut (misread 3 times), its 0.5 s to 1.3
@@ -511,11 +512,125 @@ def s43(t):
     return ps.S("4.3", "screen", draw=draw)
 
 
+# --- scene 5 ------------------------------------------------------------------------------------------------------------
+LIT_51 = 0.45                                               # the buzz; his phone lights at his face behind the glass (3.6's)
+
+
+def s51(t):
+    """Outside the glass: bodyguard 2's phone buzzes and lights; the room as the board's."""
+    base = BOARD["5.1"]
+    return ps.S("5.1", base["cam"], dict(base["room"], silhouette="phone" if t >= LIT_51 else True), base["cast"])
+
+
+PEN_52 = ((0.20, 1, -74), (0.62, 2, -38), (1.02, 3, 0))     # (time, letters written, the nib's x from its last place)
+
+
+def s52(t):
+    """The gold pen writes H, R, ? across the CV's foot, a letter at a time; the hand moves on with the nib."""
+    n, dx = 0, PEN_52[0][2] - 26
+    for at, n_, dx_ in PEN_52:
+        if t >= at:
+            n, dx = n_, dx_
+    lift = 10 * max(0.0, 1 - abs((t - 0.44) / 0.10)) + 10 * max(0.0, 1 - abs((t - 0.84) / 0.10))   # the nib up between letters
+    base = BOARD["5.2"]
+    def draw(k):
+        was, wn = ps.PEN_C[0], ps.sp.CV_N[0]
+        ps.PEN_C[0] = (was[0] + dx, was[1] - lift); ps.sp.CV_N[0] = n
+        try:
+            return base["draw"](k)
+        finally:
+            ps.PEN_C[0], ps.sp.CV_N[0] = was, wn
+    return ps.S("5.2", "screen", draw=draw)
+
+
+TREAT_AT = 1.25                                             # 5.3a the door, "Welcome." .. 5.3b the oil can
+
+
+def s53(t):
+    """5.3a: the robot welcomes Sofía at the door (she walks in, it bobs with its word). 5.3b: bodyguard 2 has handed it
+    an oil can: it lifts the can beside its head, the heart comes on."""
+    if t < TREAT_AT:
+        return BOARD["5.3"]
+    u = ease((t - TREAT_AT - 0.10) / 0.35)                   # the can up from its side
+    heart = t >= TREAT_AT + 0.42
+    def cast(k):
+        a0, a1 = (-98, -22), ps.LARM_53[0]
+        was, wc = ps.LARM_53[0], ps.CAN_53[0]
+        ps.LARM_53[0] = (a0[0] + (a1[0] - a0[0]) * u, a0[1] + (a1[1] - a0[1]) * u)
+        ps.CAN_53[0] = 0.5 * (1 - u)
+        ps.HEART_53[0] = heart
+        try:
+            return ps.cast_53_treat(k)
+        finally:
+            ps.LARM_53[0], ps.CAN_53[0] = was, wc; ps.HEART_53[0] = True
+    return dict(ps.S("5.3b", ps.TREAT_53, BOARD["5.3"]["room"], cast), own_cam=True)
+
+
+WIDE_54 = 0.85                                              # 5.4a the wide (his door across the tape) .. 5.4b test C
+
+
+def s54(t):
+    """5.4a: wide, Don at his line looks across the tape at DON · CEO. 5.4b (test C): the foot lifts over the line, held
+    0.6 s, back; he straightens his vest."""
+    if t < WIDE_54:
+        look = (0.2, 0) if t < 0.25 else (1, 0)
+        def cast(k):
+            heads = {}
+            _, heads["don"] = ps.don(k, "don_line", "stand", "neutral", look)
+            return heads
+        return dict(ps.S("5.4a", ps.KEYS_V4["5.4"][0], BOARD["5.4"]["room"], cast), own_cam=True)
+    return dict(pm_.shot_C(t - WIDE_54), room=BOARD["5.4"]["room"])
+
+
+def s55(t):
+    """test K: Sofía steps onto the tape, the CV at her chest, HR? up."""
+    return dict(pm_.shot_K(t), own_cam=True)                # test K's camera: the board's 5.5
+
+
+CAM_56, WALK_56 = (-78, -60, 1.45), (-72, 46)               # v2 (cold test: her cross 0 of 2, Pam's box "a sign" 2 of 2): the
+                                                             # camera lower and wider, her walk above Pam's box, 190 units long
+
+def s56(t):
+    """over Pam on the stool, frozen with the blind (test F's staging, the film's camera); beyond her Sofía walks across
+    the tape, in the clear above Pam's line."""
+    F, lerp = pm_.F, pm_.lerp
+    u = ease((t - 0.45) / 1.25)
+    tx = ps.tape_x(60)
+    step = int(t * 5) % 2 if 0.45 < t < 1.70 else 1
+    ps.PAM_X_56[0] = PAM_56; ps.PAM_DY_56[0] = 70
+    def cast(k):
+        heads = {}
+        _, heads["sofia"] = ps.sofia(k, (lerp(tx + WALK_56[0], tx + WALK_56[1], u), F + 60), "walk" if step == 0 else "stand",
+                                     "smile", (1, -0.1))
+        return heads
+    return dict(ps.S("5.6", (tx + CAM_56[0], F + CAM_56[1], CAM_56[2]), BOARD["5.6"]["room"], cast, fg=ps.fg_56,
+                     story=["pam", "sofia"]), own_cam=True)
+
+
+PAM_56 = 150
+BUZZ_57 = (0.10, 0.75)
+
+
+def s57(t):
+    """Pam's phone in her hand: INVITATION · DAD; it buzzes (shakes 3 px) and settles."""
+    base = BOARD["5.7"]
+    on = BUZZ_57[0] <= t < BUZZ_57[1]
+    jx = (3.0 if int(round(t * DPS)) % 2 else -3.0) if on else 0.0   # a shake per drawing (a 7.5 Hz sine sampled at 15 is 0)
+    def draw(k):
+        k.c.save(); k.c.translate(jx, 0)
+        try:
+            return base["draw"](k)
+        finally:
+            k.c.restore()
+    return ps.S("5.7", "screen", draw=draw)
+
+
 SHOT_FN = {"1.1": s11, "1.2a": s12a, "1.2b": s12b, "1.3": s13, "1.4": s14,
            "2.1": s21, "2.1b": s21b, "2.2": s22, "2.3": s23, "2.4": s24, "2.5": s25, "2.6": s26, "2.7": s27,
            "2.9": s29, "2.10": s210, "2.11": s211,
            "3.1": s31, "3.2": s32, "3.3": s33, "3.4": s34, "3.5": s35, "3.6": s36, "3.7": s37,
-           "4.1": s41, "4.2": s42, "4.3": s43}
+           "4.1": s41, "4.2": s42, "4.3": s43,
+           "5.1": s51, "5.2": s52, "5.3": s53, "5.4": s54, "5.5": s55, "5.6": s56, "5.7": s57}
 HOLDS = {"2.8": "the heel insert, held by the script (0.6 s at least)", "2.9b": "Sofía flat, only her mouth moves"}
 
 
@@ -573,7 +688,7 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 3}
 STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
            ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
            ("4.3", 1.3, "A pinches"), ("4.3", 1.75, "B turns away"), ("4.3", 2.05, "Father, silent"), ("4.3", 2.85, "Invite her.")]
@@ -588,7 +703,12 @@ STILLS2 = [("2.1", 0.5, "the tape rips"), ("2.1", 1.2, "the feet hop"), ("2.1b",
            ("2.5", 1.3, "her half salute"), ("2.5", 1.75, "the smile in the cup"), ("2.6", 0.08, "Mom plants"),
            ("2.7", 0.6, "Sofía stops mid-step"), ("2.9", 0.8, "Border breach"), ("2.10", 0.5, "And you?"),
            ("2.10", 1.6, "Both."), ("2.10", 2.4, "Don's face"), ("2.11", 0.4, "the haul"), ("2.11", 1.3, "the bump")]
-STILLS = {4: STILLS4, 3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
+STILLS5 = [("5.1", 0.2, "the silhouette"), ("5.1", 0.9, "his phone lights"), ("5.2", 0.3, "H"), ("5.2", 0.7, "HR"),
+           ("5.2", 1.3, "HR?"), ("5.3", 0.6, "Welcome."), ("5.3", 1.40, "the can comes up"), ("5.3", 2.0, "the heart"),
+           ("5.4", 0.5, "his door, across the tape"), ("5.4", 1.5, "the foot over the line"), ("5.4", 2.6, "the vest"),
+           ("5.5", 0.3, "onto the tape"), ("5.5", 1.0, "HR? up"), ("5.6", 0.6, "Pam frozen"), ("5.6", 1.3, "Sofía crosses"),
+           ("5.6", 2.2, "across"), ("5.7", 0.3, "the buzz"), ("5.7", 1.1, "INVITATION · DAD")]
+STILLS = {5: STILLS5, 4: STILLS4, 3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
               ("1.2a", 0.45, "the blind lands"), ("1.3", 0.3, "the blind still sways"),
               ("1.4", 0.2, "1.4a opens wide"), ("1.4", 1.2, "pushed in: Don speaks"), ("1.4", 1.9, "the roll up"), ("1.4", 2.5, "the three look")]}
 
@@ -639,6 +759,9 @@ def _take(sid):
     return _TAKE[sid]
 
 
+BOX_TO_END = ("5.6",)                                       # the box stays to the cut (it lifted off the floor's DON: "signed - DON" 2 of 2)
+
+
 def part_at(sid, t, bubble=False):
     """-> the index of the take speaking at t in shot sid (a split shot has two), or None. bubble: its box's window
     (on from the take's start, or after a push; off one drawing after the take ends)."""
@@ -647,7 +770,7 @@ def part_at(sid, t, bubble=False):
         t0 = at - 0.02 if bubble else at - LIP_AHEAD
         if bubble and i == 0:
             t0 = max(t0, max((p_[2] for k_, p_ in PUSH.items() if k_.startswith(sid)), default=0.0))   # v3: not on a push
-        if t0 <= t <= at + len(a) / sr + (1.0 / DPS if bubble else 0.0):
+        if t0 <= t <= at + len(a) / sr + (1.0 / DPS if bubble else 0.0) or (bubble and sid in BOX_TO_END and t >= t0):
             return i
     return None
 
@@ -682,7 +805,8 @@ def mouth(k, head, o):
     c.set_source_rgb(0.33, 0.10, 0.10); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
 
 
-ALLOW = {"2.11": ("SIGN partly covered: 'DON'",),             # test H's own allowance: the floor's DON under his shoes
+ALLOW = {"5.6": ("SIGN partly covered: 'DON'",),         # Pam, near, stands over the floor's DON
+         "2.11": ("SIGN partly covered: 'DON'",),             # test H's own allowance: the floor's DON under his shoes
          "*": ("SIGN partly covered: 'SHRED'",)}              # SHRED_OK: someone passing in front of it (render_test)
 
 
@@ -741,6 +865,21 @@ def sound(n, path):
     def tone(f0, f1, d, k_=8.0):
         tt = osd.t_(d); ph = 2 * np.pi * np.cumsum(np.linspace(f0, f1, len(tt))) / SR
         return np.sin(ph) * np.minimum(1.0, tt / 0.005) * np.exp(-tt * k_)
+    if n == 5:                                               # the sound map (plan v2 §2: buzz, pen, knocks, clink, heels, buzz)
+        S_ = starts
+        import sound_bc_mix as bm_
+        osd.put(buf, osd.lp(bm_.buzz_phone(0.5), 4), S_["5.1"] + LIT_51 - 0.25, 0.22)   # 5.1 outside, muffled
+        for at, _n, _dx in PEN_52:                            # 5.2 a scratch per letter
+            sc = osd.hp(osd.noise(0.16), 3) * np.sin(np.pi * osd.t_(0.16) / 0.16) * (1 + 0.5 * np.sin(2 * np.pi * 55 * osd.t_(0.16)))
+            osd.put(buf, sc, S_["5.2"] + at - 0.12, 0.16)
+        for j in range(3):                                    # 5.3 three knocks, then the latch
+            osd.put(buf, osd.slam() * 0.22, S_["5.3"] + 0.0 + 0.11 * j, 0.28)
+        osd.put(buf, tone(2100, 2100, 0.25, 9) + 0.5 * tone(3150, 3150, 0.25, 12), S_["5.3"] + TREAT_AT + 0.40, 0.14)   # the can: a clink
+        osd.put(buf, bm_.chime([1319, 1568], gap=0.08, d=0.4), S_["5.3"] + TREAT_AT + 0.45, 0.10)                    # the heart
+        tt = osd.t_(0.04); clk = osd.hp(osd.noise(0.04), 2) * np.exp(-tt * 120)
+        for j in range(5):                                    # 5.6 her heels across (a step every 0.2 s, test F)
+            osd.put(buf, clk, S_["5.6"] + 0.6 + 0.2 * j, 0.45)
+        osd.put(buf, bm_.buzz_phone(BUZZ_57[1] - BUZZ_57[0]), S_["5.7"] + BUZZ_57[0], 0.38)   # 5.7 Pam's phone
     if n == 4:                                               # the sound map (plan v2 §7)
         S_ = starts
         for b in range(int(total / 0.48) + 1):                # the club's bass, low, through the whole stretch
@@ -880,7 +1019,7 @@ def film(n, ver=1):
     return not real
 
 
-STRIP8 = {1: (0.0, 2.8), 2: (1.6, 4.4), 3: (7.6, 10.4), 4: (2.6, 5.0)}                      # 2: 2.1b's slap and 2.2's spin
+STRIP8 = {1: (0.0, 2.8), 2: (1.6, 4.4), 3: (7.6, 10.4), 4: (2.6, 5.0), 5: (4.0, 6.8)}                      # 2: 2.1b's slap and 2.2's spin
 
 
 def sheets(n, frames):

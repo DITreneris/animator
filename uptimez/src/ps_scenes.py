@@ -446,6 +446,7 @@ def cast_37(k):
 
 
 LARM_53, CAN_53 = [(-130, -80)], [0.0]
+HEART_53 = [True]                                             # film: the heart comes on once the can is up
 TREAT_53 = (286, 752, 2.05)                                  # GAGS_V5: 5.3b's camera, close on bodyguard 2 and the robot (Pam and the
 GUARD_S = 0.56 / 0.52 * 0.60                                 # signs out of frame); the guard at Daddy's Home's scale against Don
 
@@ -461,7 +462,7 @@ def cast_53_treat(k):
     rxy, arms = (312, F + 50), (LARM_53[0], (20, 10))        # the can in its near hand, raised, over his dark suit: its face clear
     c.push_group(); orb, _ = robot(k, rxy, arms=arms); c.pop_group()
     rh = orb["hands"][0]
-    _, heads["robot"] = robot(k, rxy, arms=arms, visor="heart", look=(-1, -0.4))
+    _, heads["robot"] = robot(k, rxy, arms=arms, look=(-1, -0.4), **({"visor": "heart"} if HEART_53[0] else {}))
     cs, ca = 1.15, CAN_53[0]                                    # the can held BY ITS HANDLE: its base placed so the loop handle sits
     hx_, hy_ = rp.CAN_HANDLE[0] * cs, rp.CAN_HANDLE[1] * cs  # on the hand the rig returns, then the same hand again on top (224)
     rp.oil_can(k, rh[0] - (hx_ * math.cos(ca) - hy_ * math.sin(ca)), rh[1] - (hx_ * math.sin(ca) + hy_ * math.cos(ca)), cs, ca)
@@ -507,6 +508,7 @@ def cast_56(k):
     return heads
 
 
+PAM_DY_56 = [0]                                              # film (opt-in): Pam this much lower in the frame
 PAM_X_56 = [160]                                            # her own frame (Sofía out): her box clear of the button rail
 
 
@@ -515,9 +517,9 @@ def fg_56(k):
     s_ = 0.54 * 2.2
     px = PAM_X_56[0] if FIX_V4[0] else 140                   # round 5: Pam in from the edge, the wall on her left for her line
     tmp = cairo.ImageSurface(cairo.FORMAT_RGB24, 4, 4)
-    hh = pm.pam(Ctx(cairo.Context(tmp), 0), px, 1060 - 98 * s_, s_, "rail", "frozen", (1, 0.1))["hands"]
+    hh = pm.pam(Ctx(cairo.Context(tmp), 0), px, 1060 + PAM_DY_56[0] - 98 * s_, s_, "rail", "frozen", (1, 0.1))["hands"]
     pm.blind_rail(k, hh[0], hh[1], s_)                               # v3: the blind hangs from her rail
-    o = pm.pam(k, px, 1060 - 98 * s_, s_, "rail", "frozen", (1, 0.1), late=False)
+    o = pm.pam(k, px, 1060 + PAM_DY_56[0] - 98 * s_, s_, "rail", "frozen", (1, 0.1), late=False)
     pm.rail_bar(k, o["hands"][0], o["hands"][1], s_)
     import hands_ps as hp
     hp.redraw_late(k)
@@ -778,6 +780,7 @@ def ins_booth_43(k):
 STINK_V2 = [False]
 POINT_43 = [(300, 600)]                                       # where his pointing hand is (its index toward the photo)
 NARROW_43 = [84]
+NARROW_SHOT, AVOID_SHOT = {}, {}
 PHONE_X43 = [240]
 PHONE_S43 = [1.3]
 AIM43 = [(235, 560)]
@@ -1577,6 +1580,9 @@ def bubble_v4(k, who, text, fc, taken):
     was_w = speech.MAX_W[0]
     if narrow43:
         speech.MAX_W[0] = NARROW_43[0]
+    if CUR_SHOT[0] in NARROW_SHOT:                           # film (opt-in): a shot's own widest row, and rects its boxes keep off
+        speech.MAX_W[0] = NARROW_SHOT[CUR_SHOT[0]]
+    avoid.extend(AVOID_SHOT.get(CUR_SHOT[0], ()))
     try:
         box, tip = speech.draw(k, text, head, mouth=mouth, above=above, mono=mono,
                                others=[v for n, v in fc.items() if n != who], avoid=avoid)
