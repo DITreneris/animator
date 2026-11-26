@@ -77,3 +77,24 @@ Method:
   - scene 5: Father's phone ×2.
 - **First try failed:** the sheet's v4c draws its own forearm straight down. Where the rig's arm comes in from the side (the Client at 0:32), that made a second arm, a "U" under the phone. Fix: `hands_v4.FOREARM = False`: the rig's arm runs into the palm, as in the films' grip. Re-rendered: one arm per hand everywhere. One Star v27 re-rendered with it too: 1:04's words are clear, and no extra arm shows.
 - **To look at:** the ignition key (3, f668). The sheet's pinch reads as a closed hand with the key in it, where v57 showed two fingertips on the key.
+
+## G. Every held phone (26 Nov, Tomas after The Offer v62: "the phones are not fixed, every frame carefully")
+
+v62 had left the old grip on every phone v4c did not draw upright: tilted (2.7), at the ear (3.7), the inserts drawn in two parts (0.4 DELETE, 2.8 PAM) and the pressing thumb (4.1 DONNIE).
+- **`hands_v4.ALL_V4C`** (opt-in, off by default, so v62 and One Star v27 stay as they were) draws all of those in v4c: turned about the palm, the phone's back to us, palm-behind / fingers-in-front for inserts, the thumb to `thumb_tip`.
+- **`phone_gate.py`**: a held phone painted without a v4c grip on the call stack fails the film. Its self-test plants the old grip first. On The Offer, v62 FAILS (27 drawings at 3 sites: 4.1, 2.7, 3.7) and v63 PASSES.
+- **Limit:** a phone a scene paints itself (a rectangle, not `of_cast.phone`) is invisible to the gate. Daddy's Home 11.6 was one; the frames are still the check.
+
+**The Offer v63** (PR #141): every phone v4c. 4.1's thumb lifts 0.15 s after DECLINED so the word reads.
+
+**One Star v28** (`cs_film_v28.py`): v27 with ALL_V4C. Every gate passes, the phone gate included (840 phone drawings, 0 faults). Changed at 0:00, 0:02, 0:13-0:15, 0:46-0:48, 0:56, 1:06; every one is the phone's back held in v4c.
+
+**Daddy's Home v9** (`dh_film_v9.py`, `dh_hands_v9.py`). v8's baseline was rendered fresh first. Changed against it: scene 1 drawings 27-142, scene 8 188-205; scene 7 54-69 only by a bubble's 12 px shift; the rest identical.
+- 0.4-0.7b, Don's phone, at his ear and lowered, was a rectangle with a hands2 grip: now phone_grip v4c, with The Offer v58's pale rim on its back (cold viewers read the black back at his ear as "a hand on his ear").
+- 11.6, Father's phone, was a rectangle with an oval thumb: now v4c, the thumb pressing the green button.
+- 0.3-0.7, the booth, the guard's hand on the post: now of_cast.clutch on its left edge.
+- Phone gate 0 faults.
+- **Not done:** Don's straight arms ("Brace yourselves" with arms wide) are a pose, not a broken elbow, so they were left as they are.
+- **Cold viewers (2), pre-existing points:**
+  - 11.6 "Answer it.": the bubble covers Father's phone (as in v8);
+  - the booth: the guard's grey sleeve reads as "someone else's arm", and Father's ring fist shows no fingers.
