@@ -64,3 +64,4 @@ Method:
 - **One Star v27** = v26 + `hands_v4.enable()` (`cs_film_v27.py`): every gate passes (hand 0, insert 0, bubbles 0).
   - Changed drawings: 30.5 s (the Client's fist round the gem: sheet grab) and 64.5 s (Sofía's phone: v4b, one silhouette).
   - **A new fault at 64.5:** v4b's thumb lands on "1/5" and its fingers on "Pam". The rule is "the thumb off the words". The sheet's grip covers more of the screen's edge than v3 did. Decision needed before the other films.
+- **Decision (Tomas, 26 Nov): films keep the old phone grip (v3).** `hands_v4.PHONE_V4B` is off by default. One Star v27 re-rendered: only 0:30 (the gem in the sheet's grab) differs from v26; 1:04 is v26's phone again. Gates pass.

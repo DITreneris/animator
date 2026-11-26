@@ -1,7 +1,7 @@
 """The hand class sheet v4 as an opt-in film module (Tomas 26 Nov, series hands/phones audit v1, /grill-me: "yes, an
 opt-in module"). The canon is DITreneris/uptimez: docs/rules-hands-and-phones.md and the sheet
 the-blueprint/rough_work/pic_hands/bp_hand_classes_v4.png, whose ACCEPTED table says grab v2, pinch v2, phone_grip v4b.
-The drawings below are copied from that repo's src/bp_hand_sheet_v2.py (_grab, _pinch, _fist) and
+The drawings below are copied (phone_grip v4b only behind PHONE_V4B, off by default: films keep the old grip) from that repo's src/bp_hand_sheet_v2.py (_grab, _pinch, _fist) and
 src/bp_hand_sheet_v4.py (_phone_b), changed only to sit at a film's hand point and forearm direction.
 
 Nothing changes until a film calls enable(): hands_ps.draw and of_cast.phone_grip are the old functions again after
@@ -188,12 +188,17 @@ def tap_insert(k, x, y, edge, w, skin, cuff=(0.20, 0.22, 0.30)):
     _ORIG.get("draw", hp.draw)(k, "point_t", hx, hy, w, skin, d, 1)
 
 
-def enable():
+PHONE_V4B = [False]          # Tomas 26 Nov: films keep the old phone grip (v3). v4b's thumb and fingers cover the screen's
+                             # edge words (One Star v27, 1:04: "1/5" and "Pam"); the rule is "the thumb off the words"
+
+
+def enable(phone=None):
     if _ORIG:
         return
     _ORIG["draw"], _ORIG["phone_grip"] = hp.draw, oc.phone_grip
     hp.draw = draw
-    oc.phone_grip = phone_grip
+    if PHONE_V4B[0] if phone is None else phone:
+        oc.phone_grip = phone_grip
 
 
 def disable():

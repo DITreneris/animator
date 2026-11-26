@@ -1,5 +1,5 @@
 """ONE STAR rough cut v27 (26 Nov, series hands/phones audit, Tomas: "taisom One Star"): v26 with the hand class
-sheet v4 (hands_v4.enable(): grab, pinch, fist v2; phone_grip v4b). Nothing else changes.
+sheet v4 (hands_v4.enable(): grab, pinch, fist v2; the phone keeps the old grip, Tomas 26 Nov). Nothing else changes.
   python3 cs_film_v27.py [out_dir] [hi] [scene numbers ...]"""
 import sys
 import importlib
