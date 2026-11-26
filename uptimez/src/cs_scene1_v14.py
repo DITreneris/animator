@@ -121,7 +121,7 @@ def key(k, name):
         if name == "D":                                                           # in its claw; the visor is the punch line
             hx, hy = o["robot"]["hands"][1]
             _phone(k_, hx, hy - 10, -0.2, 1.25)
-            ellipse(k_, sx, sy, 0.86 * rr, 0.68 * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
+            ellipse(k_, sx, sy, VIS_W[0] * rr, VIS_W[1] * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
             _star(c_, sx - 0.36 * rr, sy - 0.02 * rr, 0.44 * rr, (1.0, 0.75, 0.1))
             cp.T(c_, "1/5", sx + 0.08 * rr, sy + 0.20 * rr, 0.52 * rr, col=(0.95, 0.96, 1.0), center=False)
 
@@ -145,6 +145,7 @@ UP = (-160, -20, 160, 20)
 ONHEAD = (-150, -120, 140, 100)
 RELIEF = (-40, 100, 40, -100)                               # v24: hands on his chest, a breath out
 ARC24 = [False]
+VIS_W = [0.86, 0.68]                                       # v26: the visor patch's size (0.80, 0.62 as 1.4: no bulge)
 GEO = {}
 
 
@@ -253,7 +254,7 @@ def gag(k, d):
             if d == 5:
                 c_.save(); c_.translate(ph[0], ph[1] + 17); c_.scale(0.55, 0.55); impact(c_, 0, 0, 40); c_.restore()
             if d >= 8:
-                ellipse(k_, sx, sy, 0.86 * rr, 0.68 * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
+                ellipse(k_, sx, sy, VIS_W[0] * rr, VIS_W[1] * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
             if d >= 9:
                 z = 1.3 if d == 9 else 1.0                                       # it pops on, a drawing oversize
                 _star(c_, sx - 0.36 * rr, sy - 0.02 * rr, 0.44 * rr * z, (1.0, 0.75, 0.1))
@@ -309,7 +310,7 @@ def wide(k, d):
             phone_held(k_, hx, hy, sb.SC["mom"], ang=-0.1, buzz=buzz, d=d + 3, seed=961)
             fist(k_, hx, hy, sb.SC["mom"], kit.PEOPLE.get("MOM", {}).get("skin", (0.95, 0.80, 0.70)), 965)
         sx, sy = o["robot"]["screen"]
-        ellipse(k_, sx, sy, 0.86 * rr, 0.68 * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
+        ellipse(k_, sx, sy, VIS_W[0] * rr, VIS_W[1] * rr, (0.06, 0.08, 0.12), 990, shadow=False, lw=1.6)
         _star(k_.c, sx - 0.36 * rr, sy - 0.02 * rr, 0.44 * rr, (1.0, 0.75, 0.1))
         cp.T(k_.c, "1/5", sx + 0.08 * rr, sy + 0.20 * rr, 0.52 * rr, col=(0.95, 0.96, 1.0), center=False)
         hx, hy = o["robot"]["hands"][1]

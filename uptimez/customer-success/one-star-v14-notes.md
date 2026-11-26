@@ -199,3 +199,14 @@ QA: 2020 frames, -15.6 LUFS, -2.3 dBFS; bubbles 13/0; gates 0; PSNR 35.2; speech
 Not done: Don glancing at "his phone" before approving (the robot holds it); the robot's catch cushion and flinch;
 6.5's hold after the line is already 0.5 s.
 QA: 2020 frames, -15.6 LUFS; bubbles 13/0; gates 0; PSNR 35.2; speech 15/17 as before.
+
+## v26: the robot's visor clean in every drawing; 3.5b in frame (26 Nov, review of v25)
+
+`python3 cs_film_v26.py ../customer-success 2`.
+- The visor close-ups (1.4 d44-48, 3.4's last 6): the tick and the "99% ... 98%" are clipped to the visor's own patch,
+  captured as 1.4 draws it (seed 990), a smooth ellipse 6 % inside it, no outline of its own: v25 painted a second
+  ellipse of a guessed size and place over it (a double, uneven contour).
+- 1.1: the visor patch 0.80 x 0.62 as 1.4's (0.86 x 0.68 bulged past the visor at d9).
+- 3.5b: the head's snap back 6 deg at most (v25's 16 put his head off the right edge) and the shake 4 px there.
+Not changed: the pointing hand in 3.4 (hands2 "point"; the review: "a little unnatural").
+QA: -15.6 LUFS; bubbles 13/0; gates 0; PSNR 35.2; speech 15/17 as before.

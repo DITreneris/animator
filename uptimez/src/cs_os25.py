@@ -17,10 +17,13 @@ import cs_v15b as B
 
 def install():
     v14.ARC24[0] = True
+    v14.VIS_W[:] = [0.80, 0.62]                                                    # v26: 1.1's visor patch as 1.4's (no bulge)
     g24.WHIP_OUT = ("3.5", 2)
     g24.WHIPPX[0] = 24.0
     g24.WHIP_IN_ON[0] = False
     V.BOUNCE35b[0] = True
+    V.LEAN35b_V25[:] = [0, 0, 5, 6, 4, 2, -1.2, -0.4] + [0] * 10
+    g24.SHAKE_A["3.5b"] = 4.0                  # v26: his head stays in the frame
     B.TRACE34[0] = True
     g24.POP14[0] = True
     import cs_scene5 as s5

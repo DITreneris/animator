@@ -430,6 +430,7 @@ def s3_5(k, d):
 N35b = 18
 LEAN35b = [0, 0, 7, 10, 7, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 BOUNCE35b = [False]
+LEAN35b_V25 = [0, 0, 13, 16, 9, 3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
 def s3_5b(k, d):
@@ -438,7 +439,7 @@ def s3_5b(k, d):
     cam = __import__("cs_v19").CAMS19["3.5b"]
     lean = LEAN35b[d]
     if BOUNCE35b[0]:                                                              # v24: the head snaps back harder, overshoots
-        lean = [0, 0, 13, 16, 9, 3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0][d]
+        lean = LEAN35b_V25[d]
     w = 0.45 * math.sin((d - 2) * 1.9) * math.exp(-(d - 2) / 2.5) if d >= 2 else 0.0
     pts = s1.A.lerp(s1.A.MOUTH, s1.A.CROOKED4, w)
     face = "smug" if d < 2 else ("panic" if d < 8 else "neutral")
