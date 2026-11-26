@@ -754,3 +754,14 @@ Built (opt-in): 5.4 leg 3 (`don_ps.LEG`: knee up, shin down, the shoe smaller an
 Pam 70 px down (no stool in frame), camera and walk as v2 (128 left of the tape → 46 right), kept: the blind as one sheet, Pam's eyes on Sofía, the four-drawing step, the box to the cut.
 Cold test (2 viewers, 270 px, 5.5–5.7): Pam speaks, the line hers **2/2**; her eyes track Sofía **2/2**; "a window blind" 1, "a blind or paper" 1; Sofía starts left of the line 2/2, ends "past it, crosses" 1, "on it, toes the line" 1 (v2's 2/2 not repeated: the same staging, so viewer spread). Pam's phone 2/2.
 Scene 5 by beat (v6 + v8): pen 2/2, can and heart 2/2, Don's foot back 2/2, Pam's phone 2/2, Sofía's cross 1/2: 4 of 5 by both. Not locked: Tomas's word. check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 5 LOCKED at v8 (Tomas, 26 Nov). Tag `uptimez-pick-a-side-s5-v8` (local; tag pushes are refused, 403).
+
+## Scene 6 v1 (26 Nov, /grill-me: the board's background · the thumbs up with the line · 6.1b +0.3 s · 6.2 ends on 1.1's frame 0)
+
+- **6.1** `s61`: the board's cast behind him; his hands leave the vest and come up as thumbs over 0.15–0.45 s (each joint the short way round: the long way swung his arm out), held.
+- **6.1b** `s61b` (0.9 s): test I's startle (two drawings still smug, the hair's spring with its overshoot), held.
+- **6.2** `s62`: test A's robot pull once, 0.08–0.50 s, then `shot_A(0)`; his face "shock" under the blind (he comes from the startle). **The last drawing of 6.2 and the first of 1.1 are md5-identical.**
+- Sound: the buzz, a boing, the rattle up.
+- Cold test (2 viewers, the end's 4 fps sheet + the film's first five frames): the line and the thumb 2/2; "he is wrong, nobody behind him is with him, eyes shut" 2/2; startled 2/2; the blind goes up, his hand on the cord 2/2; **the loop: "leads back in, smooth, a tug of war over the blind that repeats" 2/2**. Open: the startle's cause not seen 2/2 (the buzz is sound; the phone behind him looks the same before and after); the cut to the door "no link" 2/2 (shown without scene 1).
+- check / check v5 38 / 0; board v4 md5-identical.

@@ -20,6 +20,7 @@ DPS, FPS = 15, 30
 OUT = ps.OUT
 SCENES = {1: ["1.1", "1.2a", "1.3", "1.4"],
           5: ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7"],
+          6: ["6.1", "6.1b", "6.2"],
           4: ["4.1", "4.2", "4.3"],
           3: ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7"],
           2: ["2.1", "2.1b", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.9b", "2.10", "2.11"]}                 # v3 (Tomas 25 Nov): 1.2b cut (misread 3 times), its 0.5 s to 1.3
@@ -32,6 +33,7 @@ TAKE_AT["1.3"] = [TAKE_AT["1.3"][0] + DUR["1.2b"]]
 DUR["4.3"] += 0.40                                           # Tomas 25 Nov (plan §7 a): Father's take 0.4 s later, the
 TAKE_AT["4.3"] = [TAKE_AT["4.3"][0], TAKE_AT["4.3"][1] + 0.40 + 0.25]   # guards' close gets 0.45 s between the lines;
 DUR["4.3"] += 0.25                                           # v2 (review 26 Nov): 0.38 s of Father's silence before "Invite her."
+DUR["6.1b"] += 0.30                                          # Tomas 26 Nov (grill): the startle held 0.3 s longer before the blinds
 DUR["4.3"] += 0.45                                           # v8 (Tomas 26 Nov): the close 0.95 s, the guards react in turn
 TAKE_AT["4.3"][1] += 0.45                                    # (A pinches, B covers his mouth and turns away), Father after
 SIP_ON = [False]                                             # 3.7's sip: tried v3/v4, read as "a phone" 3 rounds; Tomas 25 Nov:
@@ -668,12 +670,74 @@ def s57(t):
     return ps.S("5.7", "screen", draw=draw)
 
 
+# --- scene 6 (Tomas's picks, 26 Nov: the board's background, the thumbs up with the line, 6.1b +0.3 s, 6.2 ends on frame 0) ----
+THUMB_61 = (0.15, 0.45)                                     # his hands leave the vest and come up as he starts the line
+
+
+def s61(t):
+    """Don big in front, eyes shut: the thumbs come up with "Everyone's with me." Behind him, as the board: Pam's phone lit
+    on the counter, Mom turned away, Sofía with HR?. Nobody looks at him."""
+    base = BOARD["6.1"]
+    u = ease((t - THUMB_61[0]) / (THUMB_61[1] - THUMB_61[0]))
+    a, b = dp.POSES["vest"], dp.POSES["thumbs"]
+    def fg(k):
+        was = ps.DON_61[0]
+        ps.DON_61[0] = ("vest", None) if u <= 0 else (("thumbs", None) if u >= 1 else
+                        (tuple(x + (((y - x + 180) % 360) - 180) * u for x, y in zip(a, b)),   # each joint the short way round
+                         ("thumb", "thumb") if u > 0.5 else ("fist", "fist")))
+        try:
+            return ps.fg_61(k)
+        finally:
+            ps.DON_61[0] = was
+    return dict(base, fg=fg)
+
+
+def s61b(t):
+    """test I: the phone behind him buzzes; two drawings still smug, then the hair springs (overshoot), eyes round and over
+    to it; held."""
+    base = BOARD["6.1b"]
+    i = int(round(t * DPS))
+    if i < 2:
+        return dict(base, fg=ps.fg_61)
+    def fg(k):
+        ps.SPRING_61B[0] = pm_.SPRING_AT.get(i, 1.0)
+        try:
+            return ps.fg_61b(k)
+        finally:
+            ps.SPRING_61B[0] = 1.0
+    return dict(base, fg=fg)
+
+
+UP_62 = (0.08, 0.50)                                        # the robot's yank: the blind from down to up (test A's "up" stroke)
+
+
+def s62(t):
+    """The blinds shoot up (test A's robot pull, once, fast); then exactly 1.1's frame 0: his hand on his cord, the
+    robot's on its own. The film's last drawing IS its first."""
+    if t >= UP_62[1]:
+        return dict(pm_.shot_A(0.0, v4=True), id="6.2")
+    v = max(0.0, (t - UP_62[0]) / (UP_62[1] - UP_62[0]))
+    sh = pm_.shot_A(0.55 + 0.2999 * v, v4=True)
+    inner = sh["cast"]
+    def cast(k):                                             # he comes from 6.1b's startle: no smile under the blind
+        orig = ps.don
+        def don_(k_, at, pose, face, *a, **kw):
+            return orig(k_, at, pose, "shock", *a, **kw)
+        ps.don = don_; pm_.ps.don = don_
+        try:
+            return inner(k)
+        finally:
+            ps.don = orig; pm_.ps.don = orig
+    return dict(sh, cast=cast, id="6.2")
+
+
 SHOT_FN = {"1.1": s11, "1.2a": s12a, "1.2b": s12b, "1.3": s13, "1.4": s14,
            "2.1": s21, "2.1b": s21b, "2.2": s22, "2.3": s23, "2.4": s24, "2.5": s25, "2.6": s26, "2.7": s27,
            "2.9": s29, "2.10": s210, "2.11": s211,
            "3.1": s31, "3.2": s32, "3.3": s33, "3.4": s34, "3.5": s35, "3.6": s36, "3.7": s37,
            "4.1": s41, "4.2": s42, "4.3": s43,
-           "5.1": s51, "5.2": s52, "5.3": s53, "5.4": s54, "5.5": s55, "5.6": s56, "5.7": s57}
+           "5.1": s51, "5.2": s52, "5.3": s53, "5.4": s54, "5.5": s55, "5.6": s56, "5.7": s57,
+           "6.1": s61, "6.1b": s61b, "6.2": s62}
 HOLDS = {"2.8": "the heel insert, held by the script (0.6 s at least)", "2.9b": "Sofía flat, only her mouth moves"}
 
 
@@ -732,7 +796,7 @@ def draw(sid, t):
     return surf, msgs
 
 
-STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 8}
+STILLS_VER = {1: 4, 2: 1, 3: 3, 4: 7, 5: 8, 6: 1}
 STILLS4 = [("4.1", 0.05, "the neon, the phone coming up"), ("4.1", 0.5, "#TeamDon in his hand"), ("4.2", 0.3, "the finger"),
            ("4.2", 1.5, "the print on the heel"), ("4.3", 0.6, "That one."), ("4.3", 1.0, "the guards turn"),
            ("4.3", 1.3, "A pinches"), ("4.3", 1.75, "B turns away"), ("4.3", 2.05, "Father, silent"), ("4.3", 2.85, "Invite her.")]
@@ -752,7 +816,10 @@ STILLS5 = [("5.1", 0.2, "the silhouette"), ("5.1", 0.9, "his phone lights"), ("5
            ("5.4", 0.5, "his door, across the tape"), ("5.4", 1.5, "the foot over the line"), ("5.4", 2.6, "the vest"),
            ("5.5", 0.3, "onto the tape"), ("5.5", 1.0, "HR? up"), ("5.6", 0.6, "Pam frozen"), ("5.6", 1.3, "Sofía crosses"),
            ("5.6", 2.2, "across"), ("5.7", 0.3, "the buzz"), ("5.7", 1.1, "INVITATION · DAD")]
-STILLS = {5: STILLS5, 4: STILLS4, 3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
+STILLS6 = [("6.1", 0.05, "Don, hands in his vest"), ("6.1", 0.30, "the thumbs coming up"), ("6.1", 1.2, "Everyone's with me."),
+           ("6.1", 2.6, "nobody looks"), ("6.1b", 0.05, "the buzz"), ("6.1b", 0.20, "the hair springs"), ("6.1b", 0.75, "held"),
+           ("6.2", 0.02, "the blind down"), ("6.2", 0.30, "it shoots up"), ("6.2", 0.95, "= 1.1's frame 0")]
+STILLS = {6: STILLS6, 5: STILLS5, 4: STILLS4, 3: STILLS3, 2: STILLS2, 1: [("1.1", 0.0, "frame 0, held 0.4 s"), ("1.1", 0.70, "pull 1: Don, down"), ("1.1", 1.05, "the robot, up"),
               ("1.2a", 0.45, "the blind lands"), ("1.3", 0.3, "the blind still sways"),
               ("1.4", 0.2, "1.4a opens wide"), ("1.4", 1.2, "pushed in: Don speaks"), ("1.4", 1.9, "the roll up"), ("1.4", 2.5, "the three look")]}
 
@@ -909,6 +976,12 @@ def sound(n, path):
     def tone(f0, f1, d, k_=8.0):
         tt = osd.t_(d); ph = 2 * np.pi * np.cumsum(np.linspace(f0, f1, len(tt))) / SR
         return np.sin(ph) * np.minimum(1.0, tt / 0.005) * np.exp(-tt * k_)
+    if n == 6:                                               # the sound map: the buzz, the spring, the rattle up into 1.1's
+        S_ = starts
+        import sound_bc_mix as bm_
+        osd.put(buf, bm_.buzz_phone(0.45), S_["6.1b"] + 0.0, 0.40)
+        osd.put(buf, tone(500, 1400, 0.16, 5) * (1 + 0.4 * np.sin(2 * np.pi * 45 * osd.t_(0.16))), S_["6.1b"] + 0.13, 0.16)   # boing
+        osd.put(buf, rattle_run(UP_62[1] - UP_62[0], 1.6), S_["6.2"] + UP_62[0], 0.40)
     if n == 5:                                               # the sound map (plan v2 §2: buzz, pen, knocks, clink, heels, buzz)
         S_ = starts
         import sound_bc_mix as bm_
@@ -1063,7 +1136,7 @@ def film(n, ver=1):
     return not real
 
 
-STRIP8 = {1: (0.0, 2.8), 2: (1.6, 4.4), 3: (7.6, 10.4), 4: (2.6, 5.0), 5: (4.0, 6.8)}                      # 2: 2.1b's slap and 2.2's spin
+STRIP8 = {1: (0.0, 2.8), 2: (1.6, 4.4), 3: (7.6, 10.4), 4: (2.6, 5.0), 5: (4.0, 6.8), 6: (2.9, 4.9)}                      # 2: 2.1b's slap and 2.2's spin
 
 
 def sheets(n, frames):
