@@ -32,7 +32,7 @@ MID = [True]                                                 # v4 (Tomas: "not t
 OB_DRIVE, OB_OVER = 3.0, -3.0  # the opener bus's saturation and level
 CRASH_AT = 0.20                                              # 1.2a: the blind lands (ps_film's own crash time)
 VIDS = ["/tmp/ps_film_s1_v6_1080.mp4", "/tmp/ps_film_s2_v6_1080.mp4", "/tmp/ps_film_s3_v7_1080.mp4",
-        "/tmp/ps_film_s4_v11_1080.mp4", "/tmp/ps_film_s5_v11_1080.mp4", "/tmp/ps_film_s6_v6_1080.mp4"]
+        "/tmp/ps_film_s4_v11_1080.mp4", "/tmp/ps_film_s5_v12_1080.mp4", "/tmp/ps_film_s6_v7_1080.mp4"]
 VID_LEN = []                                                   # filled by foley_map() once the starts are known
 
 
@@ -276,7 +276,7 @@ def build(path="/tmp/ps_mix_v1.wav"):
     return path, total
 
 
-def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v7_1080.mp4"):
+def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v8_1080.mp4"):
     vids = VIDS
     with open("/tmp/ps_mix_vids.txt", "w") as f:
         for v in vids:
@@ -285,7 +285,7 @@ def mux(wav="/tmp/ps_mix_v1.wav", out="/tmp/ps_master_v7_1080.mp4"):
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", "/tmp/ps_mix_vids.txt",
                            "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest"]
                           + tags + [out])
-    c540 = os.path.join(pf.OUT, "ps_film_master_v7_540.mp4")
+    c540 = os.path.join(pf.OUT, "ps_film_master_v8_540.mp4")
     subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", out, "-vf", "scale=540:960:flags=lanczos,format=yuv420p",
                            "-c:v", "libx264", "-crf", "20", "-preset", "veryfast"] + tags + ["-c:a", "copy", c540])
     print("wrote", out, c540, osd.levels(out))

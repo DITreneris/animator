@@ -1000,3 +1000,36 @@ Master v7:
 - one stretch under −45 dBFS: 68.5 s, the shock;
 - the loop: the last frame vs the first, mean |Δ| 0.47 (encoding).
 - Files: `pick-a-side/ps_film_master_v7_540.mp4`, `/tmp/ps_master_v7_1080.mp4`.
+
+## Master v8: three outside reviews of 0:55 and 1:05 (26 Nov; table and "what correlates" sent; Tomas: "tvarkom")
+
+Not taken (reasons sent to Tomas):
+- the SECURITY badge: cold tests read him as Father's bodyguard 3/3;
+- lower background contrast: the set is canon;
+- "Don should not realise": Tomas's 6.1b pick.
+
+**5.3c v2**, the hand-over in phases (1.2 s):
+- he holds it out;
+- her open hand comes up; she steps in;
+- both hold it, a card's width between their hands;
+- HE LETS GO: his hand opens, palm up, 22 units off its edge (0.85 s);
+- then his arm goes back while she brings it in by its top edge (`END_53C` (−40, 70); the "chest" pose put her forearm over her face). DAD and SOFÍA stay clear.
+
+**5.3b v2** (`cast_53b`), where 5.3c left them:
+- the guard at x 156 with one hand down and one at his belt (no clasped pair);
+- the robot where Sofía stood (278). Sofía walks out right with her card in the first 0.45 s;
+- the robot holds the can up in its FAR hand by the loop handle. The can is mirrored (spout away from him), at 0.9 size, tipped 0.55 rad, with the label redrawn unmirrored;
+- the heart beats: a pale ring every other drawing.
+- Camera (262, 752, 2.05).
+
+**6.1 v2** (`cast_61_v2`):
+- **Pam:**
+  - the phone 25 % smaller (0.255), held in the series' grip (`of_cast.phone_grip`, scale 0.48: at 0.62 its thumb read as a stick);
+  - her rig's cup hand swapped for a fist under the palm;
+  - the thumb comes onto ACCEPT, which turns to "✓ ACCEPTED" in dark green;
+  - her face goes "doubt" → "quiet" (eyes down, a private smile).
+- **Sofía:** the card 20 % smaller, in both hands at its upper corners, her eyes on it.
+
+Renders: s5 v12, s6 v7 at 540 and 1080, no faults.
+
+Master v8: 70.77 s; −15.3 LUFS, −2.0 dBTP; speech 19/19. Files: `pick-a-side/ps_film_master_v8_540.mp4`, `/tmp/ps_master_v8_1080.mp4`.

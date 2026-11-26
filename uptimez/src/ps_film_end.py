@@ -60,6 +60,8 @@ PEN_52_END = ((0.15, 1, -36), (0.40, 2, -15), (0.65, 3, 0), (0.90, 4, 15), (1.15
 
 # --- 5.3: the door slides open, "Welcome." -> the hand-over -> the can, the heart ----------------------------------------
 A_53, B_53 = 1.25, 2.45
+END_53C = [(-40, 70)]
+V2_53 = [True]                                               # 5.3c / 5.3b v2 (reviews 26 Nov); False = master v7's
 CAM_53A, ROB_53A, SOF_53A = [177], [238], [302]   # film: OUR FIRST CLIENT out past the right edge (stills v8 cut it), her face off the rail                                      # 5.3a .. 5.3c .. 5.3b (the old shot from its TREAT_AT on)
 SLIDE_53 = (0.05, 0.20)                                      # the glass slides in ~0.15 s (lesson 133, The Onboarding)
 
@@ -92,24 +94,26 @@ def _arm(a, b, u):
 
 
 def cast_53c_anim(k, t):
-    """the hand-over in 1.2 s (variant C): he holds it out (0-0.25), her arm comes up open (0.25-0.55), she steps in
-    (0.55-0.75), her hand closes on its edge (0.75-0.85), he lets go and folds his hands, it goes with her (0.85-1.2)."""
+    """the hand-over in 1.2 s, v2 (three reviews, 26 Nov: "the fingers merge", "he must let go before he pulls back",
+    "one clear grip"): he holds it out (0-0.25), her open hand comes up (0.25-0.55), she steps in (0.55-0.72), both hold
+    it, a card's width between their hands (0.72-0.85), HE LETS GO: his hand opens and comes off it (0.85-0.95), then
+    his arm goes back down while she brings it in to her chest, held by its top edge, DAD and SOFÍA clear (0.95-1.2)."""
     heads = {}
     sb = sp.sbc
     full = e.SOF_53["C"]
     ua = ease(t / 0.25)
     ub = ease((t - 0.25) / 0.30)
-    uc = ease((t - 0.55) / 0.20)
-    held = t >= 0.75
-    ue = ease((t - 0.85) / 0.30)
-    pr = _arm((120, -40), (185, -120), ua)                  # his arm from his side, out to her
+    uc = ease((t - 0.55) / 0.17)
+    held = t >= 0.72
+    let_go = t >= 0.85
+    ue = ease((t - 0.95) / 0.25)
+    pr = _arm((120, -40), (185, -120), ua)                  # his arm from his side, out to her; back once he has let go
     if ue > 0:
         pr = _arm((185, -120), (120, -40), ue)
-    o = e.guard_at(k, 148, pose_r=pr if ue < 1 else None)
+    o = e.guard_at(k, 148, pose_r=pr)
     heads["guard"] = (o["head"][0], o["head"][1], 40 * e.GS)
     gx, gy = o["hands"][1]
     sb.POSES["_take53"] = full + (8, 0)
-    gx_f, gy_f = None, None                                  # where his hand is when fully out (the still's solve)
     k.c.push_group()
     try:
         of = e.guard_at(k, 148, pose_r=(185, -120)); gx_f, gy_f = of["hands"][1]
@@ -120,27 +124,38 @@ def cast_53c_anim(k, t):
     sx0 = H[0] - ox
     sx = sx0 - (e.C53_GAP[0] + 4) * uc                      # the step in: her fingertips onto the card's edge
     pose = _arm((-8, 0), full, ub)
+    chest = END_53C[0]                                       # her arm at the end (the "chest" pose put her forearm over her face)
     if ue > 0:
-        pose = _arm(full, (-30, 110), ue)                   # the card comes in to her (the "hip" arm)
+        pose = _arm(full, chest, ue)                        # the card comes in to her chest
     sb.POSES["_take53a"] = pose + (8, 0)
     legs = {0: ((9, 7), (-7, 0))}.get(0 if 0.58 < t < 0.70 else None)
     sp.ss.LEGS[0] = legs
     try:
-        os_, heads["sofia"] = ps.sofia(k, (sx, F + 60 - (2 if legs else 0)), "_take53a", "interested", (-1, 0.3))
+        os_, heads["sofia"] = ps.sofia(k, (sx, F + 60 - (2 if legs else 0)), "_take53a",
+                                       "smile" if ue > 0.3 else "interested", (-1, 0.3) if ue < 0.5 else (-0.3, 0.9))
     finally:
         sp.ss.LEGS[0] = None
     hx, hy = min(os_["hands"], key=lambda h: h[0])
     skin_s = sb.sf.SKIN
+    cx_held, cy_held = gx_f + e.C53_DX[0], gy_f + 6         # where the card is while both hold it (his reach)
     if not held:
         e._card_at(k, gx + e.C53_DX[0], gy + 6, -0.18)
         hp.draw(k, "grab", gx, gy, 24, co.SKIN, (1.0, 0.2), 1)
         if ub > 0:
             hp.draw(k, e.C53_SHAPE[0][0], hx, hy, e.C53_SHAPE[0][1], skin_s, e.C53_SHAPE[0][2], -1)
-    else:                                                    # hers now: the card off her fingers' far side
-        e._card_at(k, hx - 17 - 26 + 8, hy - 8, lerp(-0.18, -0.06, ue))
-        if ue < 0.35:
-            hp.draw(k, "grab", gx, gy, 24, co.SKIN, (1.0, 0.2), 1)
+    elif not let_go or ue <= 0:                              # both on it, or he has just let go: the card stays put
+        e._card_at(k, cx_held, cy_held, -0.18)
         hp.draw(k, "grab", hx, hy, 21, skin_s, (-1.0, -0.1), -1)
+        if not let_go:
+            hp.draw(k, "grab", gx, gy, 24, co.SKIN, (1.0, 0.2), 1)
+        else:                                                # his hand open and off its edge: a clear gap
+            hp.draw(k, "palm", gx - 22, gy - 8, 24, co.SKIN, (0.25, -1.0), 1)   # open, up, off it: let go
+    else:                                                    # hers, coming in to her chest by its top edge
+        tx, ty = lerp(cx_held, hx - 4, ue), lerp(cy_held, hy + 34, ue)
+        e._card_at(k, tx, ty, lerp(-0.18, -0.03, ue), lerp(1.0, 0.85, ue))
+        hp.draw(k, "grab", hx, hy, 21, skin_s, lerp(-1.0, 0.0, ue) and (lerp(-1.0, -0.2, ue), lerp(-0.1, 1.0, ue)), -1)
+        if ue < 0.25:
+            hp.draw(k, "palm", gx - 22, gy - 8, 24, co.SKIN, (0.25, -1.0), 1)
     return heads
 
 
@@ -150,11 +165,80 @@ def s53c(t):
                      lambda k: cast_53c_anim(k, t)), own_cam=True)
 
 
+CAN_TILT_53B = 0.55
+FAR_53B = (130, 80)                                          # its far arm, up: the can beside its head, in frame
+GUARD_53B = (156, 278)                                       # v2: him where 5.3c left him; the robot where Sofía stood
+CAM_53B = (262, 752, 2.05)
+
+
+def cast_53b(k, t):
+    """5.3b v2 (three reviews, 26 Nov: "the can's handle and spout across his chest", "two fists stuck together", "who
+    holds it?"): where 5.3c left them. He has one hand down at his side, the other at his belt (no clasped pair). The
+    robot holds the can up in its FAR hand by the loop handle, the spout turned away from him (mirrored), at 0.9 of its
+    size; its near arm reaches to him. The heart beats in two drawings. Sofía walks out of frame right with her card
+    for 0.4 s (she goes on to the tape: 5.5)."""
+    import dh_cast as dc
+    import robot_ps as rp
+    from cand_bc import ik
+    c = k.c
+    heads = {}
+    give = 1 - ease((t - 0.05) / 0.30)                       # his giving hand back to his side
+    down = ik(-dc.co.SH[0], dc.co.BT + 26, -dc.co.SH[0] - 6, dc.co.HIP + 64, dc.co.LN1, dc.co.LN2, -1)
+    belt = ik(dc.co.SH[0], dc.co.BT + 26, -16, dc.co.HIP + 2, dc.co.LN1, dc.co.LN2, 1)
+    gp = (down[0], down[1], belt[0] + (10 - belt[0]) * give, belt[1] + (20 - belt[1]) * give)
+    og = dc.guard(k, GUARD_53B[0], F + 46, ps.GUARD_S, pose=gp)
+    heads["guard"] = (og["head"][0], og["head"][1], 40 * ps.GUARD_S)
+    if t < 0.45:                                             # Sofía off to the right, the card at her chest
+        u = ease(t / 0.45)
+        o, _h = ps.sofia(k, (400 + 150 * u, F + 60), "walk", "smile", (1, 0))
+        hx, hy = o["hands"][1]
+        sp.cv_coo(k, hx + 6, hy + 10, 0.55)
+    up = ease((t - 0.10) / 0.35)                             # the can comes up in its far hand
+    heart = t >= 0.42
+    far = (20 + (FAR_53B[0] - 20) * up, 10 + (FAR_53B[1] - 10) * up)
+    arms = ((-70, -20), far)
+    rxy = (GUARD_53B[1], F + 50)
+    c.push_group(); orb, _ = ps.robot(k, rxy, arms=arms); c.pop_group()
+    rh = orb["hands"][1]
+    _, heads["robot"] = ps.robot(k, rxy, arms=arms, look=(0.6, -0.5) if heart else (-1, -0.3),
+                                 **({"visor": "heart"} if heart else {}))
+    cs = 0.9 * 1.15
+    hx_, hy_ = rp.CAN_HANDLE[0] * cs, rp.CAN_HANDLE[1] * cs
+    tilt = CAN_TILT_53B * up                                 # tipped back as it comes up: the spout points up, in frame
+    c.save(); c.translate(rh[0], rh[1]); c.scale(-1, 1); c.rotate(tilt)   # mirrored: the spout away from him
+    rp.oil_can(k, -hx_, -hy_, cs, 0.0, label=False)
+    c.restore()
+    c.save(); c.translate(rh[0], rh[1]); c.rotate(-tilt); c.translate(hx_, -hy_); c.scale(cs, cs)   # its label, unmirrored
+    c.set_source_rgb(0.97, 0.95, 0.88); c.rectangle(-17, -24, 34, 19); c.fill_preserve()
+    c.set_source_rgb(*e.INK); c.set_line_width(1.6); c.stroke()
+    c.select_font_face("Lilita One"); c.set_font_size(15)
+    ex = c.text_extents("OIL"); c.move_to(-ex.x_advance / 2, -9.5); c.show_text("OIL")
+    c.restore()
+    rp.hand_again(k, rh[0], rh[1], ps.SC["robot"])
+    if heart and int((t - 0.42) * 7.5) % 2 == 0:             # the heartbeat: every other drawing a bigger heart over it
+        hxr, hyr, rr = heads["robot"]
+        c.save(); c.translate(hxr, hyr + rr * 0.05); s_ = rr * 0.82
+        c.move_to(0, 0.35 * s_)
+        c.curve_to(-1.0 * s_, -0.35 * s_, -0.45 * s_, -0.95 * s_, 0, -0.45 * s_)
+        c.curve_to(0.45 * s_, -0.95 * s_, 1.0 * s_, -0.35 * s_, 0, 0.35 * s_)
+        c.set_source_rgba(0.85, 0.97, 1.0, 0.85); c.set_line_width(2.2); c.stroke()   # a pale ring round it: the beat
+        c.restore()
+    ps.HANDS_LOG.extend(orb["hands"]); ps.HANDS_LOG.extend(og["hands"])
+    return heads
+
+
+def s53b(t):
+    pss.DOOR_OPEN[0] = 0.0
+    return dict(ps.S("5.3b", CAM_53B, pf.BOARD["5.3"]["room"], lambda k: cast_53b(k, t)), own_cam=True)
+
+
 def s53(t):
     if t < A_53:
         return s53a(t)
     if t < B_53:
         return s53c(t - A_53)
+    if V2_53[0]:
+        return s53b(t - B_53)
     pss.DOOR_OPEN[0] = 0.0
     return pf.s53(t - B_53 + pf.TREAT_AT)                    # the old 5.3b, from its own TREAT_AT
 
@@ -188,7 +272,70 @@ def s55b(t):
 PRESS_61 = 1.90                                              # after his line: the thumb comes down, the ring comes on
 
 
+V2_61 = [True]                                               # reviews 26 Nov: the phone held, ACCEPTED, eyes; Sofía's card in two hands
+PH_61 = 0.34 * 0.75                                          # the phone 25 % smaller ("a tablet")
+CARD_61 = 0.80                                               # her card 10 % smaller
+BTN_61 = (0, 51)                                             # ACCEPT on phone_close's screen (of_ui.invite_small's pill), local units
+
+
+def cast_61_v2(k, t, buzz=False):
+    """6.1 v2: Mom as before. Sofía holds the card in BOTH hands by its side edges (hands_ps "grab"), her eyes on it.
+    Pam holds the phone in the series' grip (of_cast.phone_grip: the palm behind, the thumb on its near edge, three
+    fingertips round the far one); her eyes on the screen; her thumb comes onto ACCEPT, which turns to ACCEPTED with a
+    tick, and she smiles."""
+    import of_cast as ofc
+    import pam_mf
+    heads = {}
+    c = k.c
+    _, heads["mom"] = ps.mom(k, "mom_tape", "folded", "stern", (1, -0.6))
+    o, heads["sofia"] = ps.sofia(k, (ps.SOF_61[0], F + 40), "chest", "smile", (0.1, 1.0))
+    (ax, ay), (bx_, by_) = o["hands"]
+    cs = ps.CV_61[0] * 0.82 * CARD_61
+    cx, cy = (ax + bx_) / 2, max(ay, by_) + 34 * cs
+    sp.cv_coo(k, cx, cy, cs)
+    w2 = 26 * cs
+    for side, (hxx, hyy) in ((-1, (cx - w2, cy - 24 * cs)), (1, (cx + w2, cy - 24 * cs))):   # its upper corners
+        hp.draw(k, "grab", hxx, hyy, 15, sp.sbc.sf.SKIN, (-side * 1.0, 0.1), side)
+    pressed = t >= PRESS_61 and not buzz
+    import pm_ps
+    was_h = pm_ps.P_HANDS["cup_mid"]
+    pm_ps.P_HANDS["cup_mid"] = (was_h[0], "fist")            # her rig's cup hand read as "a stick" across the phone: a fist,
+    try:                                                     # under the grip's palm
+        o, heads["pam"] = ps.pam(k, (e.PAM_X_61N[0], F + 40), "cup_mid", "quiet" if pressed else "doubt",
+                                 (0.15, 1.0), mug=False)     # doubt -> the press -> her private smile, eyes on the screen
+    finally:
+        pm_ps.P_HANDS["cup_mid"] = was_h
+    px, py = o["hands"][1]
+    jx = (2.0 if int(round(t * pf.DPS)) % 2 else -2.0) if buzz else 0.0
+    gs = 0.48                                                # the grip to the smaller phone (0.62: its thumb a "stick")
+    palm = (px + jx, py + 6)
+    ofc.phone_grip(k, palm[0], palm[1], gs, part="back", skin=pam_mf.SKIN, body_x=e.PAM_X_61N[0])
+    pcx, pcy = palm[0], palm[1] - 30 * PH_61 * 2.2
+    c.save(); c.translate(pcx, pcy)
+    pss.phone_close(k, 0, 0, PH_61, lit=True, buzz=buzz)
+    if pressed:                                              # ACCEPT -> ACCEPTED, a tick
+        c.save(); c.scale(PH_61, PH_61)
+        c.new_path(); c.rectangle(BTN_61[0] - 44, BTN_61[1] - 15, 88, 30)
+        c.set_source_rgb(0.10, 0.45, 0.22); c.fill()
+        c.select_font_face("Lilita One"); c.set_font_size(17); c.set_source_rgb(1, 1, 1)
+        ex = c.text_extents("ACCEPTED"); c.move_to(BTN_61[0] - ex.x_advance / 2 + 7, BTN_61[1] + 6); c.show_text("ACCEPTED")
+        c.set_line_width(3.2); c.set_line_cap(1)
+        c.move_to(BTN_61[0] - ex.x_advance / 2 - 14, BTN_61[1]); c.line_to(BTN_61[0] - ex.x_advance / 2 - 8, BTN_61[1] + 6)
+        c.line_to(BTN_61[0] - ex.x_advance / 2 + 2, BTN_61[1] - 7); c.stroke(); c.set_line_cap(0)
+        c.restore()
+    c.restore()
+    u = ease((t - (PRESS_61 - 0.35)) / 0.30) if not buzz else 0.0   # the thumb comes onto the button
+    bxw, byw = pcx + BTN_61[0] * PH_61, pcy + BTN_61[1] * PH_61
+    tip_rest = ((bxw - palm[0]) / gs + 14, (byw - palm[1]) / gs + 10)
+    tip_on = ((bxw - palm[0]) / gs, (byw - palm[1]) / gs)
+    tip = (lerp(tip_rest[0], tip_on[0], u), lerp(tip_rest[1], tip_on[1], u))
+    ofc.phone_grip(k, palm[0], palm[1], gs, part="front", skin=pam_mf.SKIN, body_x=e.PAM_X_61N[0], thumb_tip=tip)
+    return heads
+
+
 def cast_61(k, t, buzz=False):
+    if V2_61[0]:
+        return cast_61_v2(k, t, buzz)
     heads = {}
     _, heads["mom"] = ps.mom(k, "mom_tape", "folded", "stern", (1, -0.6))
     o, heads["sofia"] = ps.sofia(k, (ps.SOF_61[0], F + 40), "chest", "smile", (0.2, 0.6))
