@@ -1106,3 +1106,31 @@ Tomas, on v54's new last shot (the phone on a black car's roof): rejected, hard.
 - **v56 (Tomas, the two points left open):** the phone now goes INTO the pocket: the hand reaches the pocket's mouth, the phone and the hand sink below a seam drawn over them (clipped, nothing drawn below it), and the hand comes out empty (0.16 + 0.14 + 0.10 s); the rig's ring finger is off while the hand is in it. The other arm swings back on the wind-up and forward on the blow (it hung still for the whole shot).
 
 - **v57 (Tomas, after the cold test of v56: the pocket and the other arm not read, the slam a "knock"):** timing v28, 4.2 is 1.55 s (the pocket 0.70: mouth 0.20, the phone STOPS at it 0.15, IN 0.20, out empty 0.15; up 0.33; down 0.13; slam and hold 0.39); the film 64.94 s. Harder slam: higher wind-up, the car dips twice as far (tilt −0.10), the camera jolts 0.07 s, palm and car hold 2 drawings; then the arm GIVES (elbow bends, the palm stays on the metal: v55 canon, no off-the-bonnet recoil), the car rebounds once, the lines are gone 0.12 s after the hold, the man settles (lean to 0, other hand home, brow down). The wrist turns with the bonnet's slope (`palm_ang`). The other hand swings back and UP inside the frame (a first try at x 72 put the elbow outside it) and forward across him. The raised brow arches and stays below the hairline (`dh_cast.BROW_ARCH`, opt-in): grey on grey read as a bruise (2 of 3 viewers on v56, 0 of 3 on v57). Cold test v57, 3 viewers, 8 fps sheets: the phone into the pocket read 3 of 3 (v56: 0 of 3); the other arm seen by 2 of 3 ("a counterweight"); the slam read as a firm, annoyed bang (medium force), the car "jolts"; the loop read as a rhyme 3 of 3. Still open: the black phone against the dark coat, the thumb "a pill" in 4.1's close-up, the curved dark line across his waist, the framing jump from 4.1's wide to the slam camera.
+
+## 245. *One Star* v16–v26 (25–26 Nov): from "publish" to "not ready", and what the gates missed
+
+- **The gates measured geometry, not reading.** Hand, elbow and bubble gates were at 0 while Tomas found an ownerless
+  sleeve, a phone that appeared, an empty dark half, a finger over SAVE. Two gates were added and tried first on the
+  planted fault: an `insert_cuff` sleeve over 200 frame units inside the frame without its owner, and a one-colour band
+  over 40 % of the height. A fix is checked on the WHOLE frame: v17's 5.2 shift was checked on a crop and shipped an
+  empty lower half.
+- **Never say "publish" while a check fails.** The speech check failed on two lines every build; that is a "not yet".
+- **The master-vs-540 PSNR check finds real bugs.** It found 5.2's hand drawn at half its place at 1080
+  (`user_to_device / HI` on a scratch surface without the device scale): use `device_to_user` through the context.
+- **A gate in device units differs between sizes.** At 1080 half the passes draw on a 540 scratch surface; the hand
+  gate's tolerance moved with it. Log and test in frame units.
+- **A line lost in the mix: measure it alone and in its checker's context window before re-recording.** "Still one
+  star." was heard 3/3 alone and lost behind Pam's line; +3 dB fixed it once, and any later 1/12 s shift of the mix lost
+  it again. Whisper's context window is not a listener: people with sound decide.
+- **A target 37 px below the shoulder folds the arm into a lump** (231 again): the Client's "elbow" at 0:47.
+- **A prop drawn by the episode, not the rig, has no arm.** Sofía's tablet held by a hand with red nails at its edge;
+  now a phone in her own hand (`phone_grip`, the rig's arm from the shoulder, the elbow bent: the first try was a
+  straight "pole" and failed the elbow gate).
+- **Paint on a rig's part only inside that part.** The visor close-ups painted a guessed second ellipse: a double,
+  wavy contour. Capture the part as the rig draws it (its seed) and clip to it, with no outline of your own.
+- **A whip blur can erase the action it carries.** Smearing 3.5b's first drawings hid the incoming ball; the blur
+  goes on the outgoing shot only, light.
+- **Camera moves without changing shot lengths** (push-ins about the speaker's head, shakes on hits, close-ups taken
+  from inside a shot after its line) keep the mix and the locked bubbles as they were.
+- **Eyes shut read as asleep** when the beat is "approves without looking": eyes open, looking away.
+- **Shock, relief, horror:** a reaction needs its turn (the catch) before the next one (the 1/5), or it is one held face.

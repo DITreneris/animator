@@ -111,3 +111,102 @@ v19a (review 8/10, "polish and ship"): the dots read as confetti, so the row and
 laughing and thumbs-down faces (drawn, no emoji font). Past 10K the number is red and bold and grows to 135% at 48K,
 with a pulse at 10K and on 48K. The row sits 18 higher. Notification pops come closer and closer (16, accelerating),
 with a low thud on 48K. Speech still 15/16; 1.2 is heard 3/3 under the pops.
+
+## v20: the frame-by-frame hand audit (26 Nov; Tomas: not ready to publish, hands, elbows, fingers)
+
+`python3 cs_film_v20.py ../customer-success 2`; all behind `cs_os20.install()`.
+
+Why the lessons were not used: the gates only measured geometry (a rig hand under a grip, the thumb's side, an
+elbow's bend), and the fixes were checked on crops. The rules that failed had no gate: an insert arm without its
+owner (224/225), a phone that appears, a key word under a finger, an empty band in the frame.
+
+| Shot | v19 | v20 |
+|---|---|---|
+| 4.3s 0:41 | a long olive sleeve from the bottom to mid-frame, a fist over half the 7 | over his shoulder (fs_film31's back of his head), his own arm with an elbow, thumb in front below the 7, fingertips round the far edge |
+| 4.3a 0:40 | the strip in a fist with watch and badge, one lump | his three fingers across its back, the heel past its edge; brows up ("dawning") |
+| 5.1 0:46 | the phone appears in his hand | in his hand from d0; Sofía's side-eye at Pam from d14 |
+| 5.2 0:49-0:51 | an empty dark lower half (v17), a thick pen, a tiny ownerless NEW CONTACT phone | v16's plan filling the frame (1.6 on the tape), a thinner pen in a readable tripod, a short sleeve at the edge, a shadow under the paper, no phone |
+| 5.3 0:52 | the finger over SAVE; "note: finds things" small; SAVED 0.6 s | the tap right of the word; "finds things" 35 % bigger under a small "note:"; SAVED 1.5 s (the shot 11 drawings longer) |
+| 1.1, 1.4 | the robot's phone on the end of its stick | in its claw |
+| 3.3, 3.4b, 4.1 | four equal capsules | unequal tapered fingers (clutch); a fist round Pam's tube (handle_grip) |
+| 6.6a | phone and hands one black blob | the phone's rim and lenses |
+| 4.2, 4.3w | every bay as loud as the 7 | the other bays toned down 38 %, the 7 and the title bright |
+| 5.2a | a frozen face | a closed smile and a blush from d7 |
+| plant | green spears over feet | 20 % smaller, round leaves, a pot's rim |
+| bezels | thick | thinner on the full-frame phones |
+
+Kept: the robot's line ("The result was obtained by a h-human.", recorded). Gates: hand 0, elbow 0, insert 0,
+flat-band 0 (3.1b, 3.2a, 3.5, 6.3 at 30-40 %: a wall or a floor, looked at). Speech 14/16: "Approved." as before, and
+"Still one star." heard alone every time but lost in its context window whatever its level or place (+1.5, +3 dB,
++0.15 s tried): Whisper, not the mix. Film 67.25 s.
+
+## v21: the three last corrections (26 Nov; review of v20 8.7/10, "only these three, then QA and publish")
+
+`python3 cs_film_v21.py ../customer-success 2` (`cs_os21.install()`).
+- P0 5.2: the pen in a tripod: the index finger along its top to near the tip (with a nail), the thumb on its lower side,
+  the middle finger under it; the tip ON the last stroke written (v20: "a fist round the pen").
+- P1 5.3: SAVE blue and active before the tap (grey read "disabled"), a darker blue when pressed, green SAVED after.
+- P1 4.2/4.3w: the other bays a further 25 % down, a soft light rim round bay 7.
+QA: 2020 frames, -15.6 LUFS; bubbles 12/0; hand, elbow, insert and flat-band gates 0; PSNR 35.1; speech 14/16 as v20.
+
+## v22: 0:11 the feed scrolls; Pam's "Wait." (26 Nov)
+
+`python3 cs_film_v22.py ../customer-success 2` (`cs_os22.install()`, voices `cs_voices/film_v11`).
+- 1.4b: the reply no longer slides up over the reactions: the feed scrolls up 96 (the header leaves whole) and the
+  reply comes in under the 48K row. The row outside 1.2 now shows 1.2's end (48K, red); it showed 1.2K. The clown
+  +18 %, "We value every client's journey..." 22 px at 80 % (was 20 px at 45 %).
+- 4.1: Pam's "Wait." (voice A, take a, Tomas's pick) with her STOP palm, the bubble over her head. Heard 3/3.
+- cs_scene4.schedule returns its lines in time order (the speech check segfaulted on 4.2p before 4.1p).
+QA: 2020 frames, -15.6 LUFS; bubbles 13/0; hand, elbow, insert, flat-band gates 0; PSNR 35.1; speech 15/17
+("Approved." and "Still one star." in its context window, as before).
+
+## v23: Tomas's frame notes (26 Nov): 0:09, 0:44, 0:47, 1:04, 1:07
+
+`python3 cs_film_v23.py ../customer-success 2` (`cs_os23.install()`).
+| Time | Was | Now |
+|---|---|---|
+| 0:09 1.4 | Don's eyes shut ("smug": read as asleep); his hand into the robot's head | eyes open ("grin"), looking off and up while he approves; the target at the visor's edge (VIS14 1.12): the fingertip on its rim |
+| 0:44 4.4 | HUMAN plus a green tick ("over-engineered") | HUMAN alone, centred |
+| 0:47 5.1 | his phone at (CL_X-60, 688), 37 below the shoulder: the arm folded into a lump (231) | (CL_X-78, 722): the arm out toward Pam, the elbow open |
+| 1:04 6.5 | a tablet thrust at us, a hand with red nails and no arm, the clipboard in the other hand | a phone in her own hand (phone_grip), her arm from the shoulder (sofia_ob "show", the hand lower and the elbow bent: the first try failed the elbow gate), the clipboard under her other arm, the bubble above the phone |
+| 1:07 6.6 | four phones buzzing, small unclear hands | only Don holds his phone, no zigzags; Pam, Sofía and the boss with their hands down (ONLYDON66) |
+Note: 6.6 no longer matches 1.1 exactly (1.1 still has everyone on their phones): the loop's seam is now the wide room and Don's phone.
+QA: 2020 frames, -15.6 LUFS; bubbles 13/0; hand, elbow, insert, flat-band 0; PSNR 35.1; speech 15/17 as v22.
+
+## v24: camera and more animation (26 Nov, Tomas picked 1-6)
+
+`python3 cs_film_v24.py ../customer-success 2` (`cs_os24.install()`). No shot changes length: the mix is v23's.
+1. Slow push-ins (to 1.08-1.10) about the speaker's head on 1.4 "Approved.", 3.4 the plan, 6.5 "Still one star.".
+2. The frame shakes (4 % up, 9 px decaying over 5 drawings) on 1.1 the phone on its head, 1.2 48K, 3.4b, 3.5b.
+3. A whip from the throw to the hit: 3.5's last 3 drawings and 3.5b's first 2 smear and slide, with a whoosh.
+4. 1.4 d44-48, after his line: the robot's visor close (3.4 x on 1.4's own frame), the green tick, a chime.
+5. 3.4's last 6 drawings: the visor close, "99%" ... "98%", two beeps.
+6. The desk plant sways.
+Not done: the antenna wobble, hair and earring settle, blinks (each rig needs its own hook: next pass).
+QA: 2020 frames, -15.6 LUFS, -2.3 dBFS; bubbles 13/0; gates 0; PSNR 35.2; speech 15/17 as before.
+
+## v25: the review of v24 ("polish, not rebuild": anticipation, action, reaction, hold) and 0:47's phone
+
+`python3 cs_film_v25.py ../customer-success 2` (`cs_os25.install()`), shot lengths and mix as v23.
+- 0:47 5.1: his phone was 1.0 x the series' grip at the Client's scale: smaller than his fingers (since v18, more
+  visible after v23 opened the arm). Now 1.8 x.
+- 1.1 Don: shock while it flies; RELIEF when the robot catches it (a grin, hands to his chest); HORROR when the 1/5
+  shows on its visor (hands to his head).
+- The whip: only 3.5's last 2 drawings, 24 px (v24 smeared 3.5b's incoming ball away). 3.5b: the head snaps back harder
+  and overshoots; the ball bounces OFF, up and back, then falls.
+- 3.4: the finger traces round court A's bottom to where the courts meet, holds there 0.25 s, then slides slowly out.
+- 1.4: the tick pops in on the visor close-up (110 % then 100 %).
+Not done: Don glancing at "his phone" before approving (the robot holds it); the robot's catch cushion and flinch;
+6.5's hold after the line is already 0.5 s.
+QA: 2020 frames, -15.6 LUFS; bubbles 13/0; gates 0; PSNR 35.2; speech 15/17 as before.
+
+## v26: the robot's visor clean in every drawing; 3.5b in frame (26 Nov, review of v25)
+
+`python3 cs_film_v26.py ../customer-success 2`.
+- The visor close-ups (1.4 d44-48, 3.4's last 6): the tick and the "99% ... 98%" are clipped to the visor's own patch,
+  captured as 1.4 draws it (seed 990), a smooth ellipse 6 % inside it, no outline of its own: v25 painted a second
+  ellipse of a guessed size and place over it (a double, uneven contour).
+- 1.1: the visor patch 0.80 x 0.62 as 1.4's (0.86 x 0.68 bulged past the visor at d9).
+- 3.5b: the head's snap back 6 deg at most (v25's 16 put his head off the right edge) and the shake 4 px there.
+Not changed: the pointing hand in 3.4 (hands2 "point"; the review: "a little unnatural").
+QA: -15.6 LUFS; bubbles 13/0; gates 0; PSNR 35.2; speech 15/17 as before.

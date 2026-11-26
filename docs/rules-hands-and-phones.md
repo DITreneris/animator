@@ -91,6 +91,20 @@ Read by cold viewers, in this order of what failed: one stroke from the edge = "
   fold over ~140° is a lump (231). Measured faults were few; the "breaks" people see are mostly drawing: square shoulder
   patches (the Client: one round cap), a wrist over a counter's edge (keep the target on the prop), crossed forearms at
   the chest (elbows out, hands meet at the prop).
+- **Two more gates (One Star v20, 26 Nov)**, because the geometric ones passed a film full of misreads: the **insert
+  gate** (an `insert_cuff` sleeve with more than 200 frame units inside the frame and no owner: 224/225) and the
+  **flat-band gate** (a run of one-colour rows over 40 % of the frame: v17's 5.2 shipped an empty dark lower half
+  because the fix was checked on a crop). Both were tried on the planted v17 5.2 first. Check every change on the
+  WHOLE frame, not a crop.
+- **A prop that is held is held**: a robot's phone sits in its claw (two prongs over the phone), not on the end of
+  its stick; a phone or card does not appear in a hand between two drawings: it is in the hand from the shot's start.
+- **A phone's back on a dark costume** needs a rim and its camera lenses, or phone and hands become one black blob.
+- **A gate on words is not a gate on hearing**: Whisper's context window lost "Still one star." whenever the mix
+  moved by a fraction of a second, at any level; alone it was heard every time. People with sound decide.
+- **Paint on a rig's part only inside that part** (One Star v26): capture the part's own shape as the rig draws it and
+  clip to it; never a second guessed shape over it (a double contour in a close-up).
+- **A phone shown to us is held by its owner's arm** (`phone_grip` at the rig's hand), never a hand drawn at a prop's
+  edge; check the elbow gate after (a straight arm out is "a pole").
 - **A shared rig is patched from its source in the episode** (as `client_of` does), never edited in place: another film's
   build reads that source as text.
 
