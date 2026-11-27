@@ -1,5 +1,5 @@
 """Perfect Trip cover: the Paris photo (Hoody pushed back to an annoyed extra, MY AI in front with the spire on its fingertip)
-with the title. It tells "pushed out" without giving the ending away. Writes cover.png."""
+with the title. It tells "pushed out" without giving the ending away. Writes cover_v2.png."""
 import os, sys, cairo
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import trip_photos as TP
@@ -10,4 +10,4 @@ TP.paris(c, 0); TP.P.stamp = _stamp
 c.save(); c.translate(540, 470); c.rotate(-.05)
 txt(c, 'PERFECT', 0, 0, 150, YEL, lw=14); txt(c, 'TRIP', 0, 150, 180, WHITE, lw=16)
 c.restore()
-S.write_to_png(os.path.join(HERE, 'cover.png')); print('cover ok')
+S.write_to_png(os.path.join(HERE, 'cover_v2.png'))   # v2+: the v1 cover stays untouched; print('cover ok')
