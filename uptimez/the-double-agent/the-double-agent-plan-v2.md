@@ -12,7 +12,7 @@ UptimeZ Inc. · episode 15 · *Civil War* 3 of 5 · 26 Nov · for Tomas's decisi
 | S8 (8.1) | **Locked v7** (`da_s8.py frame7`, `da_s8_final_v7.png`, md5 53a1ac37…; local tags s8-v5, s8-v7) |
 | S8r (1.1, 9.1 end) | **Locked v4, 27 Nov** (`da_s8r.py`, `da_s8r_frame0_v4.png`, md5 851120fe…, loop seam PASS) |
 | Hands | **The gate** `src/da_hand_gate.py` (13 rules incl. SEEN on the frame and THUMB by `hands_lr`; 10 planted faults fail, S8r v4 passes). **The job list** `the-double-agent-hand-jobs-v1.md` (every hand of script v4, its canon row). **Hand library v3 locked** (sandbox, `src/hand_lib_v3.py`; 3 poses; to the canon after 15). **`hands_lr`** copied from the canon (PR #11) for all new drawing. **5.2 still** (`da_s52.py`, gate and hands_lr clean) |
-| 3 Look and set | 3.1 S8r ✔, 3.3 the loop state ✔, 3.6 job list ✔ + library ✔; **left: 3.6 the episode hand sheet (the library's other poses first), 3.4 props, 3.2 the 9.1 push strip** |
+| 3 Look and set | 3.1 S8r ✔, 3.3 the loop state ✔, 3.6 job list ✔ + library v4 ✔ + **the hand sheet ✔** (`da_hand_sheet_v1.png`, 28 jobs), **3.4 props ✔** (`da_props_v1.png`, `src/da_props.py`); **left: 3.2 the 9.1 push strip** |
 | 4–12 | Not started. Per plan v1 §6.2: **in parallel up to the board; animation only after 14's master** |
 
 ## 1. The cast against the character canon (re-analysed 26 Nov, canon main 47fd6d3)
@@ -119,6 +119,9 @@ At film rate, 540, 8 fps strips, two cold viewers each; a beat that fails three 
 **Closed (26–27 Nov):** Pam's mug mustard, the old blue one shatters (2.4); Sofía in a new interview suit; Mom's
 5.4 hands on hips (the script's folded arms are a canon fault); 5.2 the cup sip, little finger out; the hand library
 goes to the canon after episode 15, through its row process; no nose for Sofía (her sheet v4 as it is).
+**For stage 4's layouts (from the props sheet, 27 Nov):** a sign's capitals at 270 px are about 2-4 px in a wide shot
+(z 0.9 x the cast's 0.6), 6-10 px in a medium close, 12-20 px in an insert. Only MC and inserts read: REVIEW · TOMORROW
+in 1.3 (S1 · W) cannot be read there; it must be framed closer, or the shot must not need it read.
 **Still open:** Pam's calm lid as her default (canon tg-v2)? The Client's look in 15: the office (`client_ob`) or the
 garage coveralls (`client-of-v2`)?
 

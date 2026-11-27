@@ -101,3 +101,23 @@ library only when Tomas asks.
   (`DRAWERS` / `ACCEPTED` in `bp_hand_sheet_v4.py`, two attempts per row: the library's three rounds were the sandbox).
 - **"An episode does not get its own hands file."** `src/da_hands.py` is marked SUPERSEDED (kept only so the 5.2
   silhouette tests rebuild); `da_s8r.clutch_v4` is recorded as an exception inside the locked S8r v4.
+
+## Hand library v4 and the episode hand sheet (27 Nov, Tomas "darom 1-2")
+
+`src/hand_lib_v4.py` keeps v3's three poses as they were and adds one per canon row, the same construction:
+GRAB, CLUTCH (front view: the back of the hand on a bar, the fingers over its face, the thumb behind: the canon's
+clutch as one outline), PINCH, PALM, FIST. `src/hand_lib_sheet_v4.py` (`hand_lib_v4_sheet.png`; `check`: all eight pass
+PIECES, WRIST, CONTACT, MIRROR; hands_lr clean). Cold viewers, two fresh each, silhouettes, neutral prompt:
+
+| Pose | Round 1 | Round 2 (the canon's limit: two attempts) |
+|---|---|---|
+| CLUTCH | 2/2 "a fist gripping a bar", "a believable overhand grip" | — |
+| PALM | 2/2 "waving hi, stop" | — |
+| FIST | 2/2 "a relaxed fist at the side" (one: "or a boot") | — |
+| GRAB | 0/2 "a hammer, a dumbbell" (the mug's body as wide as the fist, one black block) | 2/2 "a fist round a pole" (a thermos narrower than the fist, the knuckles past its edge); both: no fingers to see |
+| PINCH | 2/2 "dangling a tag"; the hand "a mitten, a duck's bill" | 2/2 "dangling a box on a string"; the string from the fingertip, no pinch seen |
+
+**The episode hand sheet** `src/da_hand_sheet.py` -> `da_hand_sheet_v1.png` (28 jobs of script v4, each with its prop
+from `da_props.py`, the cast's hand sizes, male 17 / female 15) and `_feed.png`; hands_lr clean. Looked at full size:
+fixed there, the knitting drawn under Mom's fingers (it was over them) and clear of her hand (half covered, DON read
+"ON"); the minutes held by their corner (the hand covered AGENDA).
