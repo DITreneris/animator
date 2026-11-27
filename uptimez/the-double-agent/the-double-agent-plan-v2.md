@@ -6,11 +6,14 @@ UptimeZ Inc. · episode 15 · *Civil War* 3 of 5 · 26 Nov · for Tomas's decisi
 
 | Stage | State |
 |---|---|
-| 1 Script | v3 amended (3 of 4 versions used): 34 shots, 11 lines, 5 speakers; the loop's state table; at stop 1 |
-| 2 Voices | v1 (1 of 2): Whisper 11/11; the Client's "Don't lose it." passes only with the line before (a Whisper artefact on short takes, evidence in `takes.json`, allowed by name); at stop 2, awaiting the picks |
-| S8 (8.1) | Locked v4 (`da_s8.py`, `da_s8_final_v4.png`, tag local only) |
-| S8r (1.1, 9.1 end) | **Locked v4, 27 Nov** (`da_s8r.py`, `da_s8r_frame0_v4.png`, md5 851120fe…, loop seam PASS); hands through `da_hand_gate.py` (12 rules, 9 planted faults) |
-| 3–12 | Not started. Per plan v1 §6.2: **in parallel up to the board; animation only after 14's master** |
+| 1 Script | **v4** (`the-double-agent-script-v4.md`): 35 shots, 11 lines, ~65.2 s (~68.2 s with the voices); 2.4 the gift; 5.2 changed 27 Nov to the cup sip, little finger out (the saucer sip read 0/2 in silhouette) |
+| 2 Voices | v2 against script v4 (`src/da_voices.py`, `da_timing_v2.json`); Whisper word-for-word; the Client's "Don't lose it." allowed by name |
+| Sheets | Father v6, the Civil War line-up v4, Don (episode) v2, Pam (episode) v3 with the canon's rose lips, no brooch; Sofía's interview look v4 (`sofia_da.py`). Canon proposals in `canon-proposal/`, not sent |
+| S8 (8.1) | **Locked v7** (`da_s8.py frame7`, `da_s8_final_v7.png`, md5 53a1ac37…; local tags s8-v5, s8-v7) |
+| S8r (1.1, 9.1 end) | **Locked v4, 27 Nov** (`da_s8r.py`, `da_s8r_frame0_v4.png`, md5 851120fe…, loop seam PASS) |
+| Hands | **The gate** `src/da_hand_gate.py` (13 rules incl. SEEN on the frame and THUMB by `hands_lr`; 10 planted faults fail, S8r v4 passes). **The job list** `the-double-agent-hand-jobs-v1.md` (every hand of script v4, its canon row). **Hand library v3 locked** (sandbox, `src/hand_lib_v3.py`; 3 poses; to the canon after 15). **`hands_lr`** copied from the canon (PR #11) for all new drawing. **5.2 still** (`da_s52.py`, gate and hands_lr clean) |
+| 3 Look and set | 3.1 S8r ✔, 3.3 the loop state ✔, 3.6 job list ✔ + library ✔; **left: 3.6 the episode hand sheet (the library's other poses first), 3.4 props, 3.2 the 9.1 push strip** |
+| 4–12 | Not started. Per plan v1 §6.2: **in parallel up to the board; animation only after 14's master** |
 
 ## 1. The cast against the character canon (re-analysed 26 Nov, canon main 47fd6d3)
 
@@ -112,6 +115,14 @@ At film rate, 540, 8 fps strips, two cold viewers each; a beat that fails three 
 | Mom still reads "rules" in the mix | The take with a stop after "rule" (A) is picked; recheck word by word in the final mix |
 
 ## 8. Decisions for Tomas (multiple choice when asked)
+
+**Closed (26–27 Nov):** Pam's mug mustard, the old blue one shatters (2.4); Sofía in a new interview suit; Mom's
+5.4 hands on hips (the script's folded arms are a canon fault); 5.2 the cup sip, little finger out; the hand library
+goes to the canon after episode 15, through its row process; no nose for Sofía (her sheet v4 as it is).
+**Still open:** Pam's calm lid as her default (canon tg-v2)? The Client's look in 15: the office (`client_ob`) or the
+garage coveralls (`client-of-v2`)?
+
+Asked in v2:
 
 1. **The new sheets:** Father and the Civil War line-up (required), plus Don's and Pam's episode sheets, or only the two required?
 2. **Pam's mug in 15:** mustard (decided in plan v1: apart from the Client's blue) or her blue mug of 12–14 (continuity)?
