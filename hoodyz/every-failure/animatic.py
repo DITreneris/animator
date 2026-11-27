@@ -84,16 +84,29 @@ def particles(c, src, dst, k, n=26, col=TEAL, seed=1):
         x = lerp(src[0], dst[0], t) + rnd.uniform(-18, 18) * (1 - t); y = lerp(src[1], dst[1], t * t * (3 - 2 * t))
         z = 36 - 18 * t; c.rectangle(x - z / 2, y - z / 2, z, z); c.set_source_rgba(*col, .95); c.fill_preserve(); c.set_source_rgba(*INK, .5); c.set_line_width(2); c.stroke()
 
+def smalls(c, f, ant):
+    """The montage's small failures, wedged under the deck (from old frame 110)."""
+    if f < 110: return
+    a_ = 1 - seg(f, 330, 350)
+    if a_ > 0:
+        for w_, x_, y_, s_ in SMALL + [PEB]:
+            c.push_group(); shaded(c, dark_of(w_, y_), lambda: rock(c, x_, y_, s_, w_, rot=(x_ % 7 - 3) * .06, ty=0)); c.pop_group_to_source(); c.paint_with_alpha(a_)
+        if a_ < 1: particles(c, (570, GL + 120), ant, 1 - a_, n=30, seed=23)
+
 def bridge(c, f, ant):
     rubble = False
-    for name, x, y, sx, sy, r in BRIDGE:
+    order = BRIDGE[:2] + [None] + BRIDGE[2:]                                              # the montage's order: deep slabs, the small ones, then BUG and 404 on top
+    for item in order:
+        if item is None: smalls(c, f, ant); continue
+        name, x, y, sx, sy, r = item
         st = stone_at(name, f)
         if not st or st[0] in ('flight', 'gone'): continue
         if name == 'REJECTED' and st[1] > .5: rubble = True
-        c.push_group(); slab(c, x, y, sx, sy, name, r); c.pop_group_to_source(); c.paint_with_alpha(st[1])
+        c.push_group(); shaded(c, dark_of(name, y), lambda: slab(c, x, y, sx, sy, name, r)); c.pop_group_to_source(); c.paint_with_alpha(st[1])
+        if st[1] >= 1 and f >= 110: jam(c, name)                                       # the v4 wedging, carried on from the montage
         if name in GONE and st[1] < 1: particles(c, (x, y), ant, 1 - st[1], seed=hash(name) % 97)
         a, b = THROWS[name]
-        if 0 <= f - b < 8:                                                                # landing dust
+        if 0 <= f - b < 8 and b > 110:                                                    # landing dust (the montage already threw the early ones)
             for kk in range(6): ell(c, x - 110 + kk * 44, y - 30 - (kk % 2) * 14, 28 * (1 + (f - b) * .08), 16); c.set_source_rgba(*hx('e9c98f'), .8 * (1 - (f - b) / 8)); c.fill()
     if rubble:
         for x, y, r in ((CX0 + 34, GL + 300, 26), (CX1 - 30, GL + 290, 24), (CX0 + 40, GL + 92, 22), (CX1 - 38, GL + 96, 22), (572, GL + 86, 20), (CX0 + 30, GL + 500, 28), (CX1 - 26, GL + 520, 26)):
@@ -169,7 +182,7 @@ def hook(f, with_bubbles):
     if with_bubbles: TL.bubble(cairo.Context(S), ['EVERY FAILURE...'], 10, ear(), cy=1010, cx=650, size=52, bend=-.1)
     return S
 
-def draw(f, with_bubbles=True):
+def draw_old(f, with_bubbles=True):
     if f < 36 or f >= 525: return hook(f, with_bubbles)
     S = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(S)
     if 240 <= f < 270:                                                                    # the deadpan close-up; only the capsule pops
@@ -209,6 +222,124 @@ def draw(f, with_bubbles=True):
     pop = 1.0
     F.topbar(c, lab) if not (500 <= f < 510) else capsule_pop(c, lab, 1.0)
     return S
+
+# ======== v4: the stone montage (A) - accelerating throws, 12 failures, the hole fills; total length unchanged ========
+SMALL = [('NO', 455, GL + 60, .34), ('ERROR', 690, GL + 70, .34), ('OOPS', 520, GL + 190, .3), ('500', 640, GL + 200, .3),
+         ('NOPE', 430, GL + 150, .3), ('TRY AGAIN', 700, GL + 160, .3), ('?!', 575, GL + 40, .3), ('NULL', 470, GL + 250, .3)]
+M0, M1, SHIFT = 36, 145, 35                                       # montage frames; everything after shifts +35, then two holds give 35 back
+def old_of(n):
+    """New frame -> the frame of the v3 timeline (outside the montage)."""
+    o = n - SHIFT
+    if o >= 205: o += 20                                          # the held bow: 20 frames shorter
+    if o >= 455: o += 15                                          # the hold after "More?": 15 frames shorter
+    return o
+def new_of(o):
+    """v3 frame -> new frame (for sound cues)."""
+    if o < 110: return o + SHIFT if o >= 36 else o
+    n = o + SHIFT
+    if o >= 225: n -= 20
+    if o >= 470: n -= 15
+    return n
+# the montage's throws (new frames): (name, lift start, throw start, landing, kind, x, y)
+MTH = [('FAIL', None, 36, 48, 'big'), ('REJECTED', 50, 56, 66, 'big')]
+MTH += [(w, t - 3, t, t + 5, 'small') for (w, *_), t in zip(SMALL, range(70, 110, 5))]
+MTH += [('BUG', 110, 114, 122, 'big'), ('404', 124, 128, 138, 'big')]
+PEB = ('', 572, GL + 2, .16)                                      # the last one: a pebble, two-handed, deadpan - "TIK"
+MTH += [('', 138, 140, 144, 'peb')]
+LANDS = [m[3] for m in MTH if m[4] != 'peb']                 # the pebble lands without a thump: TIK, nothing moves
+def spot(name):
+    for w, x, y, s_ in SMALL + [PEB]:
+        if w == name: return x, y, s_
+    e = [b for b in BRIDGE if b[0] == name][0]; return e[1], e[2], None
+
+DEPTH = {'FAIL': .32, 'REJECTED': .2, 'BUG': 0, '404': 0}
+def dark_of(name, y): return DEPTH.get(name, max(0, min(.3, (y - GL - 30) / 700)))   # the deeper, the darker: the hole fills upward
+def shaded(c, a, fn):
+    """Draw fn() and darken it by a (the stone, its ink and word together)."""
+    if a <= 0: fn(); return
+    c.push_group(); fn(); p = c.pop_group(); c.set_source(p); c.paint(); c.set_source_rgba(.08, .05, .03, a); c.mask(p)
+def jam(c, name):
+    """A big stone bites into both walls: cracks running into the rock and chips at the contact."""
+    e = [b for b in BRIDGE if b[0] == name][0]; x, y, sx = e[1], e[2], e[3]
+    for q in (-1, 1):
+        ex = x + q * 150 * sx; wall = (CX0 + 46) if q < 0 else (CX1 - 46); cx = (ex + wall) / 2 if abs(ex - wall) < 80 else wall
+        for k, (dx, dy) in enumerate(((22, -30), (30, 6), (18, 30))):
+            c.move_to(cx, y + dy * .6); c.line_to(cx + q * dx, y + dy); c.set_source_rgb(*INK); c.set_line_width(4); c.stroke()
+        for k, (dx, dy, r) in enumerate(((-4, -40, 14), (6, 38, 12))):
+            ell(c, cx + q * dx, y + dy, r, r * .75); fs(c, hx('7c7c78'), 4)
+def landed(n, land, kind):
+    """Contact, a short bounce, a twist, settling: (dy, drot)."""
+    d = n - land
+    if d < 0 or d >= 7: return 0, 0
+    h = 16 if kind == 'big' else (10 if kind == 'small' else 6)
+    dy = -h * abs(math.sin(math.pi * d / 3.5)) * (1 - d / 7); return dy, .07 * math.sin(d * 1.3) * (1 - d / 7)
+
+def montage(n, with_bubbles=True):
+    S = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c = cairo.Context(S)
+    k = max([1 - (n - b) / 4 for b in LANDS if 0 <= n - b < 4] + [0])          # camera jolt on every landing
+    big = sum(1 for m in MTH if m[4] == 'big' and 0 <= n - m[3] < 4)
+    c.save(); c.translate(0, -(abs((n * 53) % 9 - 4) + 2) * 1.6 * k * (2 if big else 1))          # a vertical thump, upwards only: keeps the words inside the safe zone
+    backdrop(c, 0); chasm(c); rock(c, 60, GL - 34, .4, ''); rock(c, 118, GL - 26, .3, ''); success_sign(c, 845, 470, 0)
+    held = None; flying = None
+    for name, lift, t, land, kind in MTH:                                       # landed stones (deepest first), the one in flight
+        x, y, s_ = spot(name)
+        if n >= land:
+            dy, dr = landed(n, land, kind)
+            if kind == 'big':
+                e = [b for b in BRIDGE if b[0] == name][0]
+                shaded(c, dark_of(name, y), lambda: slab(c, x, y + dy, e[3], e[4], name, e[5] + dr)); jam(c, name)
+            else: shaded(c, dark_of(name, y), lambda: rock(c, x, y + dy, s_, name, rot=(x % 7 - 3) * .06 + dr, ty=0))
+            if n - land < 6:
+                for kk in range(5): ell(c, x - 80 + kk * 40, y - 24 - (kk % 2) * 10, 22 * (1 + (n - land) * .1), 12); c.set_source_rgba(*hx('e9c98f'), .8 * (1 - (n - land) / 6)); c.fill()
+        elif t <= n < land: flying = (name, kind, seg(n, t, land), x, y, s_)
+        elif (lift is not None and lift <= n < t) or (name == 'FAIL' and n < t): held = (name, kind, ss(seg(n, lift, t)) if lift is not None else 1)
+    if n >= 66:                                                                 # rubble jammed in once REJECTED sits
+        for x, y, r in ((CX0 + 34, GL + 300, 26), (CX1 - 30, GL + 290, 24), (CX0 + 30, GL + 500, 28), (CX1 - 26, GL + 520, 26)):
+            ell(c, x, y, r, r * .8); fs(c, hx('8c8c88'), 5)
+    if flying:
+        name, kind, u, x, y, s_ = flying
+        x0, y0 = (RC[0], RC[1] - 60) if kind == 'big' else (HX + 60, GL - 520)
+        hh = 150 if kind == 'big' else 110                                      # out at constant speed, up, then falling ever faster
+        fx_, fy_ = lerp(x0, x, u), lerp(y0, y, u) - hh * 4 * u * (1 - u) * (1 - .35 * u)
+        if kind == 'big' and u >= .5:
+            e = [b for b in BRIDGE if b[0] == name][0]; slab(c, fx_, fy_, lerp(RS, e[3], u), lerp(RS, e[4], u), name, e[5] + (1 - u) * .6)
+        else: rock(c, fx_, fy_, RS if kind == 'big' else (.45 if kind == 'small' else .16), name, rot=-.06 + u * 1.2, ty=-34 if kind == 'big' else 0)
+    KP.eva(c, 'urge')
+    ant_glow = .7 if any(0 <= n - b < 4 for b in LANDS) else 0                  # its antenna blinks on every landing: it is watching (learning)
+    tgt = (fx_, fy_) if flying else ((RC[0], RC[1]) if held else (570, GL + 60))  # its eyes follow every stone: it is studying him
+    lk = (max(-6, min(16, (tgt[0] - AX) * .05)), max(-14, min(10, (tgt[1] - (GL - 230)) * .04)))
+    shadow(c, AX, 60); A.myai(c, AX, GL, AS, eye='open', look=lk, talk=ant_glow)
+    tired = seg(n, 70, 140)                                                     # he wears out: more sweat, then the flat face
+    expr = 'shock' if n < 118 else 'deadpan'
+    shadow(c, HX + 10, 95)
+    slump = seg(n, 66, 132) * (1 - ss(seg(n, 140, 145)))                                                     # he sags: shorter, tipped forward, shoulders down
+    c.save(); c.translate(HX, GL); c.rotate(.07 * slump); c.scale(1 + .03 * slump, 1 - .06 * slump); c.translate(-HX, -GL)
+    if held:
+        name, kind, lift = held; teeter = .06 + .05 * tired
+        c.save(); c.translate(HX, GL); c.rotate(teeter); c.translate(-HX, -GL)
+        sc = RS if kind == 'big' else (.5 if kind == 'small' else .16)
+        src = (PILE[0] + 50, PILE[1]) if kind == 'big' else (HX - 70, GL - 330)                  # small ones come up from behind him, clear of the robot
+        cx, cy = lerp(src[0], RC[0], lift), lerp(src[1], RC[1] + (0 if kind == 'big' else 40), lift)
+        rock(c, cx, cy, sc, name, rot=-.06, ty=-34 if kind == 'big' else 0)
+        braced_hoody(c, HX, HS, n, (cx, cy), sc, teeter)
+        for kk in range(1 + int(tired * 3)): sweat(c, HX + (150 - kk * 40) * HS, HY - (20 + kk * 30) * HS, HS)
+        c.restore()
+    else:
+        thrown = any(0 <= n - m[2] < 5 for m in MTH if m[4] != 'peb')                            # arms follow the throw through: the stone leaves his hands
+        R.hoody(c, HX, GL, HS, expr=expr, arms=('up', 'up') if (70 <= n < 110 or thrown) else ('rest', 'rest'), f=n)
+        for kk in range(int(tired * 3)): sweat(c, HX + (150 - kk * 40) * HS, HY - (20 + kk * 30) * HS, HS)
+    c.restore()
+    c.restore()
+    if with_bubbles:
+        if n < 45: TL.bubble(c, ['EVERY FAILURE...'], 10, ear(), cy=1010, cx=650, size=52, bend=-.1)
+        elif n < 120: TL.bubble(c, ['...BUILDS SUCCESS!'], n - 45, ear(), cy=1010, cx=650, size=52, bend=-.1)
+    F.topbar(c, 'HIS SUCCESS')
+    return S
+
+def draw(n, with_bubbles=True):
+    if n < M0 or n >= 525: return draw_old(n, with_bubbles)
+    if n < M1: return montage(n, with_bubbles)
+    return draw_old(old_of(n), with_bubbles)
 
 if __name__ == '__main__':
     cmd = sys.argv[1] if len(sys.argv) > 1 else 'sheet'

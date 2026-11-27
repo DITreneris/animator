@@ -29,7 +29,8 @@ n = 0
 for f in range(AN.NF):
     REC.clear(); TL.BOXES.clear(); AN.draw(f)
     boxes = REC[:] + [('bubble:' + l, *b) for l, *b in TL.BOXES]
-    if 360 <= f < 420:                                                  # the medium shot: everything but the bar was drawn before the push
+    of = AN.old_of(f) if AN.M1 <= f < 525 else f                       # the montage re-timed the middle: the push lives in old frames
+    if 360 <= of < 420:                                                  # the medium shot: everything but the bar was drawn before the push
         z, cx, cy, ox, oy = 1.25, 540, 1000, 415, AN.GL - 360
         boxes = [(l, cx + (a - ox) * z, cy + (b - oy) * z, cx + (c_ - ox) * z, cy + (d - oy) * z) if not l.startswith('bar') else (l, a, b, c_, d) for l, a, b, c_, d in boxes]
     for l, a, b, c_, d in boxes:
