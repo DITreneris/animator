@@ -19,6 +19,10 @@ from kit import Ctx, INK, cut, rect, ellipse
 
 OIL = (0.17, 0.13, 0.11)
 OIL_SHINE = (0.42, 0.36, 0.32)
+POINT_V2 = [False]                                 # opt-in (Pick a Side 4.3a, review 26 Nov: "a brown fist, no index"): the pointing hand
+POINT_SKIN = [(0.66, 0.46, 0.34)]                  # the film sets its own (below in ps_film)
+POINT_LEN = [1.30]
+POINT_W = [1.0]                    # in dirty skin, not oil, its index long and clear, the others one curled block
 HAND_OIL = (0.21, 0.12, 0.07)                      # the hands: oil, warm enough that of_cast.cartoon_hand doesn't take them for the robot's grey
 VELVET, VELVET_D = (0.42, 0.06, 0.12), (0.26, 0.03, 0.07)
 TABLE, TABLE_D = (0.20, 0.12, 0.08), (0.12, 0.07, 0.05)
@@ -100,7 +104,25 @@ def hand(k, hx, hy, w, skin, seed, d, side):
     c.move_to(-0.55 * w, -0.30 * w); c.line_to(0.05 * w, -0.34 * w); c.line_to(0.05 * w, 0.34 * w)
     c.line_to(-0.55 * w, 0.30 * w); c.close_path()
     c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.0); c.stroke()
-    if style == "point":
+    if style == "point" and POINT_V2[0]:
+        skin = POINT_SKIN[0]
+        w = w * POINT_W[0]
+        c.new_path(); c.move_to(-0.55 * w, -0.30 * w); c.line_to(0.05 * w, -0.34 * w); c.line_to(0.05 * w, 0.34 * w)
+        c.line_to(-0.55 * w, 0.30 * w); c.close_path()                                       # the wrist again, in skin
+        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()
+        blob(0.20 * w, 0.06 * w, 0.46 * w, 0.40 * w)                                         # the back of the hand
+        c.new_path(); c.save(); c.translate(0.50 * w, 0.18 * w); c.scale(0.26 * w, 0.26 * w)  # the three fingers: one curled block
+        c.arc(0, 0, 1, -math.pi / 2, math.pi / 2); c.line_to(-0.6, 1); c.line_to(-0.6, -1); c.close_path(); c.restore()
+        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.4); c.stroke()
+        c.set_line_width(1.6)
+        for fy in (0.10, 0.26):
+            c.move_to(0.48 * w, fy * w); c.line_to(0.70 * w, fy * w); c.stroke()
+        finger(0.36 * w, -0.20 * w, POINT_LEN[0] * w, 0.32 * w, -0.04)                               # the index, long and straight
+        blob(0.24 * w, side * 0.36 * w, 0.30 * w, 0.14 * w, side * 0.5)                     # the thumb, over the curled ones
+        c.set_source_rgba(*OIL, 0.55)                                                        # his oil, on the back and the knuckle
+        c.save(); c.translate(0.08 * w, 0.02 * w); c.scale(0.20 * w, 0.14 * w); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        c.save(); c.translate((POINT_LEN[0] - 0.35) * w, -0.20 * w); c.scale(0.12 * w, 0.09 * w); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    elif style == "point":
         for fy in (0.06, 0.30):                                                              # two fingers curled under
             blob(0.52 * w, fy * w + side * 0.0, 0.22 * w, 0.15 * w)
         blob(0.18 * w, 0.0, 0.48 * w, 0.42 * w)                                              # the palm

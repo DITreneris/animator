@@ -62,6 +62,7 @@ def _desk(k):
 
 # ---- 4.4 ----------------------------------------------------------------------------------------------------------------
 
+NOTICK44 = [False]
 NO_ARROW44 = [False]                                      # v17 (cs_v17): no arrow, the paddle leans to her
 
 
@@ -97,9 +98,12 @@ def s4_4(k, d):
         c.save(); c.translate(px, py); c.rotate(-0.04); c.scale(max(0.06, abs(turn)), 1.0)
         rect(k_, -33, -20, 66, 40, (1, 1, 1) if turn < 0 else (0.80, 0.82, 0.86), 982, lw=2)
         if turn < 0:                                                               # v15e: one word, big, and a tick
-            cp.T(c, "HUMAN", -5, 7, 14, col=cp.GRN)
-            c.set_source_rgb(*cp.GRN); c.set_line_width(3.0); c.set_line_cap(1); c.set_line_join(1)
-            c.move_to(18, 1); c.line_to(22, 7); c.line_to(29, -7); c.stroke()
+            if NOTICK44[0]:                                                        # v23: the word alone (the tick over it: "over-engineered")
+                cp.T(c, "HUMAN", 0, 7, 15, col=cp.GRN)
+            else:
+                cp.T(c, "HUMAN", -5, 7, 14, col=cp.GRN)
+                c.set_source_rgb(*cp.GRN); c.set_line_width(3.0); c.set_line_cap(1); c.set_line_join(1)
+                c.move_to(18, 1); c.line_to(22, 7); c.line_to(29, -7); c.stroke()
         c.restore()
         c.restore()
         if turn < 0 and "pam" in got and not NO_ARROW44[0]:                                              # the arrow, from the paddle down to her badge

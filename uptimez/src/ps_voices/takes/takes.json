@@ -82,14 +82,11 @@
  "2.10b": {
   "who": "ROBOT",
   "text": "Both.",
-  "len": 0.52,
+  "len": 0.36,
   "asr": [
-   "Bose",
-   "Bose",
-   "Bose",
-   "[with the line before] and you. Both.",
-   "[with the line before] and you. Both.",
-   "[with the line before] and you. Both."
+   "both",
+   "Both",
+   "both"
   ],
   "ok": 3
  },

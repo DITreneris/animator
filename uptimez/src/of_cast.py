@@ -429,11 +429,16 @@ def rag(k, x, y, s=1.0):
     c.restore()
 
 
+PHONE_RIM = [False]                                       # v58 opt-in: a pale edge on a face-down phone (a black phone on a dark coat read as 'a small dark thing')
+
+
 def phone(k, x, y, s, screen=None, ang=0.0, face_out=True):
     """a phone in a hand; screen: None (its back), or a function(c) drawing in a 40 x 72 box."""
     c = k.c
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
     rect(k, -22, -38, 44, 76, (0.08, 0.09, 0.12), 3501, lw=2)
+    if PHONE_RIM[0] and not screen:
+        c.set_source_rgb(0.70, 0.74, 0.80); c.set_line_width(1.8); c.new_path(); c.rectangle(-18.5, -34.5, 37, 69); c.stroke()
     if screen and face_out:
         import of_set as gs_
         gs_.protect(c, "a phone screen", -22, -38, 22, 38)

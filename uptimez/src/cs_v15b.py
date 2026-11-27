@@ -91,6 +91,9 @@ def _hand_at(k, tip, press=0.0, lean=0.0):
     hands2.arm(k, bx, by, wx, wy, HAND_W, (0.42, 0.44, 0.24), s3.SKIN_CL, cuff=(0.98, 0.97, 0.94), pose="point", side=1, seed=951)
 
 
+TRACE34 = [False]
+
+
 def s3_4(k, d):
     """26 drawings (2.17 s). d0-5 the plan alone. d6-8 the hand comes up from the bottom; d9 taps COURT A (d10 press);
     d11-13 over to COURT B, the wrist leading; d14 taps; d15-17 it goes back down out of the frame; d18-25 the clean
@@ -109,6 +112,24 @@ def s3_4(k, d):
     s3.cp.T(c, "RECOVERED BY AI", 270, 208, 29, col=(0.85, 0.92, 1.0))
     s3.cp.T(c, "99% CONFIDENT", 270, 248, 38, col=(1, 0.9, 0.3))
     low = (COURT_A[0] + 40, 1000)
+    if TRACE34[0]:                                                                 # v24: the finger TRACES the outline (review):
+        A0 = (206.0, 690.0); R = 74.0                                              # up to court A's left edge, round its bottom
+        edge = (A0[0] - R, A0[1])                                                  # to where the two courts meet; a hold there;
+        def on_a(deg):                                                             # then it slides slowly down and out
+            return (A0[0] + R * math.cos(math.radians(deg)), A0[1] + R * math.sin(math.radians(deg)))
+        tip = None; press = 0
+        if 5 <= d <= 7:
+            tip = lerp((edge[0] + 30, 1000), edge, ease((d - 4) / 3.0))
+        elif 8 <= d <= 13:
+            tip = on_a(180 - 150 * ease((d - 7) / 6.0)); press = 3
+        elif 14 <= d <= 16:
+            tip = on_a(30); press = 4 if d == 14 else 2                            # the hold where they meet
+        elif 17 <= d <= 19:
+            tip = lerp(on_a(30), (on_a(30)[0] + 20, 1040), ease((d - 16) / 4.0) ** 1.6)
+        if tip:
+            _hand_at(k, tip, press, lean=3)
+        c.restore()
+        return
     if 6 <= d <= 17:
         if d <= 8:
             tip = lerp(low, COURT_A, ease((d - 5) / 3.0)); press = 0
