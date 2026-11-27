@@ -20,6 +20,9 @@ v4: the same times as v3. SHEET and MOM_ARMS are on for this version only, so th
 the frames. Shot 12's star insert is the phone grip from the signed still, on that still's crop. The
 rectangle phone stays on v3. Shred, the card and the tape stay point. write_timing() is not called.
 
+v5: the same times as v4. Sheet look stays on. Shred, the card and the tape use clutch (Holding an edge).
+v1–v4 keep the point path. write_timing() is not called.
+
   python3 bp_picture.py plant     -> the bubble, the gap and the zero, each on a known wrong frame; exit 1 unless all three fail
   python3 bp_picture.py bubbles   -> speech_gate on one frame of every line; exit 1 on a fault
   python3 bp_picture.py beats     -> the fall, the firing and the matching; exit 1 on a fault
@@ -150,6 +153,8 @@ HOLDS = {"hold", "promise", "rest", "joke", "found", "match"}
 # point, from the hands_ps sheet (the index out along the arm). grab, the hand already used on an object.
 DON_HAND = "point"
 PAM_HAND = "point"
+# v5 clutch scales. Pam's is also named later as PAM_CLUTCH for the stills.
+DON_CLUTCH = 0.72
 # The fists the room already draws (stand pose). The sleeve starts there, so it is the same arm reached out.
 DON_FIST = (508.0, 410.6)
 PAM_FIST = (705.0, 341.0)
@@ -275,6 +280,23 @@ def _sleeve(c, shoulder, wrist, color):
     c.restore()
 
 
+def _forearm(c, shoulder, wrist, color):
+    """Sleeve to the wrist for v5. Does not log the banned grip stroke."""
+    c.save()
+    c.set_line_cap(cairo.LINE_CAP_ROUND)
+    c.move_to(*shoulder)
+    c.line_to(*wrist)
+    c.set_source_rgb(0.15, 0.12, 0.10)
+    c.set_line_width(18)
+    c.stroke()
+    c.move_to(*shoulder)
+    c.line_to(*wrist)
+    c.set_source_rgb(*color)
+    c.set_line_width(12)
+    c.stroke()
+    c.restore()
+
+
 def _limb(c, pose, gesture, skin, sleeve, arm_side):
     if pose is None:
         return
@@ -288,34 +310,55 @@ def _limb(c, pose, gesture, skin, sleeve, arm_side):
     hands_ps.draw(kit.Ctx(c, 0), gesture, hx, hy, w, skin, d, arm_side)
 
 
-def don_hand(c, t):
+def _clutch_limb(c, pose, skin, sleeve, scale, pam=False):
+    """Holding an edge: clutch, no sleeve stroke and no second point."""
+    if pose is None:
+        return
+    hx, hy, w, d, shoulder = pose
+    if pam:
+        _lip_wrist(c, (hx, hy), sleeve)
+    elif shoulder is not None:
+        _forearm(c, shoulder, (hx, hy), sleeve)
+        _wrist_bridge(c, hx, hy, d, w / 1.15, skin)
+    _clutch_world(c, hx, hy, w, skin, scale)
+
+
+def don_hand(c, t, version=1):
     import kit
-    _limb(c, shred_pose(t)[3], DON_HAND, kit.PEOPLE["DON"]["skin"], DON_SLEEVE, -1)
+    pose = shred_pose(t)[3]
+    if version >= 5:
+        _clutch_limb(c, pose, kit.PEOPLE["DON"]["skin"], DON_SLEEVE, DON_CLUTCH)
+    else:
+        _limb(c, pose, DON_HAND, kit.PEOPLE["DON"]["skin"], DON_SLEEVE, -1)
 
 
-def pam_hand(c, t):
+def pam_hand(c, t, version=1):
     import kit
-    _limb(c, pocket_pose(t)[3], PAM_HAND, kit.PEOPLE["PAM"]["skin"], PAM_SLEEVE, -1)
+    pose = pocket_pose(t)[3]
+    if version >= 5:
+        _clutch_limb(c, pose, kit.PEOPLE["PAM"]["skin"], PAM_SLEEVE, PAM_CLUTCH, pam=True)
+    else:
+        _limb(c, pose, PAM_HAND, kit.PEOPLE["PAM"]["skin"], PAM_SLEEVE, -1)
 
 
-def _after_hand(kind):
+def _after_hand(kind, version=1):
     """World space, after the prop. Don's hand rides the page. Pam's hand meets the card as it arrives."""
-    def draw(c, i, n, kind=kind):
+    def draw(c, i, n, kind=kind, version=version):
         t = i / max(1, n - 1)
         if kind == "shred":
-            don_hand(c, t)
+            don_hand(c, t, version)
         elif kind == "pocket" and t >= 0.90:
-            pam_hand(c, t)
+            pam_hand(c, t, version)
     return draw
 
 
-def _hold_overlay(shot, kind):
+def _hold_overlay(shot, kind, version=1):
     if kind == "promise":
         return lambda c: bs.shred_sheet(c, 0.0)
     if kind == "found":
-        def both(c):
+        def both(c, version=version):
             bs.pocket(c, 1.0)
-            pam_hand(c, 1.0)
+            pam_hand(c, 1.0, version)
         return both
     if kind in ("rest", "joke"):
         return None
@@ -490,12 +533,16 @@ def match_pose(hand=True, arm=True):
     return sheet, hand_r, _box(PAM_FIST, (hx, hy), 8), (hx, hy, w, d, PAM_FIST)
 
 
-def _match_world(c, hand=True, arm=True):
+def _match_world(c, hand=True, arm=True, version=1):
     import fs_set
     import kit
     fs_set.plan_patched(kit.Ctx(c, 0), MATCH_AT[0], MATCH_AT[1], MATCH_S)
     if hand:
-        _limb(c, match_pose(True, arm)[3], PAM_HAND, kit.PEOPLE["PAM"]["skin"], PAM_SLEEVE, -1)
+        pose = match_pose(True, arm)[3]
+        if version >= 5:
+            _clutch_limb(c, pose, kit.PEOPLE["PAM"]["skin"], PAM_SLEEVE, PAM_CLUTCH, pam=True)
+        else:
+            _limb(c, pose, PAM_HAND, kit.PEOPLE["PAM"]["skin"], PAM_SLEEVE, -1)
 
 
 def match_faults(hand=True, arm=True):
@@ -548,7 +595,7 @@ def _v3(shot, kind):
     return kind == "match"
 
 
-def _v3_maker(shot, kind, extra):
+def _v3_maker(shot, kind, extra, version=3):
     """draw(i, n) for the three beats. v1 and v2 never call this."""
     if shot["id"] == "01" and kind == "arrive":
         base, cam = _base(shot, extra, skip_client=True, skip_portrait=True)
@@ -587,7 +634,7 @@ def _v3_maker(shot, kind, extra):
         return draw
     if kind == "match":
         base, cam = _base(shot, extra)
-        sheet = _compose(base, cam, lambda c: _match_world(c))
+        sheet = _compose(base, cam, lambda c, version=version: _match_world(c, version=version))
 
         def draw(i, n, sheet=sheet):
             return sheet
@@ -638,10 +685,10 @@ def maker(shot, kind, dull, version=1):
     if version >= 4 and kind == "star":
         return _star_v4()
     if version >= 3 and _v3(shot, kind):
-        return _v3_maker(shot, kind, extra), cam_of(shot, kind)
+        return _v3_maker(shot, kind, extra, version), cam_of(shot, kind)
     if kind in HOLDS:
-        return bs._static(shot, _hold_overlay(shot, kind), extra), cam_of(shot, kind)
-    after = _after_hand(kind) if version >= 2 and kind in ("shred", "pocket") else None
+        return bs._static(shot, _hold_overlay(shot, kind, version), extra), cam_of(shot, kind)
+    after = _after_hand(kind, version) if version >= 2 and kind in ("shred", "pocket") else None
     return bs._motion_draw(kind, shot, extra, after), cam_of(shot, kind)
 
 
@@ -2067,6 +2114,71 @@ def look_gate():
     return 1 if faults else 0
 
 
+def v5_gate():
+    """Clutch on shred, card and tape. Sheet look stays on. Does not render."""
+    import of_cast as oc
+    faults = []
+    if not os.path.isfile(timing_path(5)):
+        write_v5_timing()
+    if not os.path.isfile(timing_path(5)):
+        faults.append("missing bp_pic_v5_timing.json")
+    elif os.path.isfile(timing_path(4)):
+        fresh = json.load(open(timing_path(5), encoding="utf-8"))
+        src = json.load(open(timing_path(4), encoding="utf-8"))
+        if fresh.get("picture") != "bp_pic_v5" or fresh.get("lines") != src.get("lines"):
+            faults.append("v5 times are not the v4 times")
+    if not _locked_ok():
+        faults.append("locked stills changed before the gate")
+    poster = (350.0, 146.0)
+    bs.GRIP_WATCH[0] = True
+    try:
+        with _look(5):
+            _draw, (cam, name) = maker(_shot("12"), "star", False, 5)
+            _draw(0, 1)
+            star_log = list(bs.DRAW_LOG)
+        if name != "phone":
+            faults.append("v5 star is on %s" % name)
+        if _has(star_log, "slide"):
+            faults.append("v5 star drew the rectangle")
+        if not _has(star_log, "word"):
+            faults.append("v5 star has no 1/5")
+        if not _fits(cam, (poster,)):
+            faults.append("v5 star crop misses the poster 0")
+        old = maker(_shot("01"), "hold", True, 3)[0](0, 1)
+        with _look(5):
+            new = maker(_shot("01"), "hold", True, 5)[0](0, 1)
+        if np.array_equal(_buf(old), _buf(new)):
+            faults.append("v5 S0 matches v3; the sheet look is off")
+        for label, sid, kind, i, n in (
+            ("shred", "03", "shred", 30, 60),
+            ("pocket", "11", "pocket", 59, 60),
+            ("match", "05", "match", 0, 1),
+        ):
+            _clear_logs()
+            with _look(5):
+                maker(_shot(sid), kind, False, 5)[0](i, n)
+            if _has(bs.DRAW_LOG, "stroke"):
+                faults.append("%s drew a sleeve stroke" % label)
+            if _has(bs.DRAW_LOG, "point"):
+                faults.append("%s drew point" % label)
+            if not any(g.get("kind") == "clutch" for g in oc.GRIP_LOG):
+                faults.append("%s did not draw clutch" % label)
+    finally:
+        bs.GRIP_WATCH[0] = False
+    if not _locked_ok():
+        faults.append("locked stills changed after the frames")
+    if beats():
+        faults.append("beats failed")
+    if bubbles("full", 5):
+        faults.append("bubbles full 5 failed")
+    if bubbles("nonight", 5):
+        faults.append("bubbles nonight 5 failed")
+    if not _locked_ok():
+        faults.append("locked stills changed after bubbles")
+    print("V5 " + ("FAIL " + "; ".join(faults) if faults else "PASS"), flush=True)
+    return 1 if faults else 0
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "plant"
     if cmd == "plant":
@@ -2079,6 +2191,8 @@ if __name__ == "__main__":
         sys.exit(beats("--plant" in sys.argv))
     elif cmd == "look":
         sys.exit(look_gate())
+    elif cmd == "v5":
+        sys.exit(v5_gate())
     elif cmd == "render":
         version = int(sys.argv[2]) if len(sys.argv) > 2 else 1
         render(version, "full")
@@ -2090,4 +2204,4 @@ if __name__ == "__main__":
     elif cmd == "handstills":
         handstills()
     else:
-        raise SystemExit("plant | bubbles [full|nonight] [version] | beats | look | render <version> | grips | handstills | use")
+        raise SystemExit("plant | bubbles [full|nonight] [version] | beats | look | v5 | render <version> | grips | handstills | use")

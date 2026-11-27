@@ -123,7 +123,8 @@ The drawings that were already on the sheets, and not in the room. `bp_set.SHEET
 - [x] Tomas approved these four, 26 Nov 2026. The next picture turns this look on.
 - [x] `bp_pic_v4` rendered 27 Nov 2026. `bp_pic_v4.mp4` `fd263e1eee822917db682d15fe5ac2a8`, no-night `6bb05a079721c02bebe560afccdbe2a9`. The look from `rough_work/pic_use/`. Shred, the card and the tape stay `point`. The clutch stills in `rough_work/pic_hands/` were not part of this approval. `bp_picture.py look` exits 0. Locked stills unchanged. Note `rough/bp_pic_v4_note.md`.
 - [x] Watch `bp_pic_v4.mp4` (400 s) and `bp_pic_v4_nonight.mp4`, 27 Nov 2026. Sheet look against `rough_work/pic_use/` signed off. Shred, the card and the tape staying `point` is this version. The clutch stills in `rough_work/pic_hands/` stay out of v4.
-- [ ] `bp_pic_v5`: clutch on shred, card and tape (`of_cast.clutch`, job Holding an edge). `bp_pic_v5_timing.json`. `--grips` exits 0; `--grips --plant` exits 1. Locked stills unchanged. No `bp_sound_v4` until this picture is watched.
+- [x] `bp_pic_v5` rendered 27 Nov 2026. Clutch on shred, card and tape (`of_cast.clutch`, job Holding an edge). `bp_pic_v5.mp4` `91889e7a1ed4d8a62e42239fc14cc19a`, no-night `3fcec6b6bda3f4526913424c40ca0daf`. `bp_pic_v5_timing.json`. `--grips` exits 0; `--grips --plant` exits 1. `bp_picture.py look` and `v5` exit 0. Locked stills and `bp_pic_v4` md5s unchanged. Note `rough/bp_pic_v5_note.md`.
+- [ ] Watch `bp_pic_v5.mp4` and `_nonight`: shred author, pocket author, tape match, sheet look vs `pic_use/`. No `bp_sound_v4` until this watch.
 
 ## Not this cut
 
