@@ -48,7 +48,7 @@ Size: W wide, M medium, MC medium close, C close, I insert. Lines in speech bubb
 |---|---|---|---|---|---|---|---|
 | 1.1 | 0:00.0 | 1.4 | S8r · M | **Frame 0** (the push's last framing): Don and the robot pull the gold throne across the tape line, Don leaning back toward his side, the robot toward Father's. **0:00.4 Don's back foot lands on the roll's sticky tail; the roll comes up with his foot** | Don looks down at it | — | throne casters squeak; tacky *thk* |
 | 1.2 | 0:01.4 | 0.8 | S3 · M | He shakes his foot once; the roll swings round and **whacks his other shin**; he lets go with one hand | the robot gains a hand's width | (Don, effort: "Oof") | thwack |
-| 1.3 | 0:02.2 | 1.6 | S1 · W | **Polished shoes and a burgundy hem step over the tape** between them; a ringed hand hangs **REVIEW · TOMORROW** on the throne beside $49,999, in passing. **The robot lets go at once** (it obeys the owner); Don is left on one leg, holding his shin | Don frozen, watching the shoes go to his office door; 0.5 s | — | slow heels; tag flick |
+| 1.3 | 0:02.2 | 1.6 | S1 · W | **Polished shoes and a burgundy hem step over the tape** between them; a ringed hand hangs **REVIEW · TOMORROW** on the throne's **back** (to this camera), in passing. **The robot lets go at once** (it obeys the owner); Don is left on one leg, holding his shin | Don frozen, watching the shoes go to his office door; 0.5 s | — | slow heels; tag flick |
 | 1.4 | 0:03.8 | 1.2 | S1 · W | **Sofía follows Father over the line** with a folder and a box of paperclips; the box catches on the throne's armrest and **the clips spill across the floor**, round the throne's casters. She doesn't stop; she goes in after Father. **The robot kneels and starts picking them up** | Don looks at the clips, then at the robot | — | a bright clatter; one pincer *tik* |
 | 1.5 | 0:05.0 | 0.8 | S3 · M | He pulls the roll off his sole and drops it by the throne | — | — | rip; thud |
 | 2.1 | 0:05.8 | 2.2 | S7 · W | Don walks to his line, toes at the edge. **Inside the glass:** Father sits down in Don's chair; the Client already there, Sofía just putting her folder down. Low on the floor: the robot picking clips | Don stares | — | the chair's creak, muffled; *tik* |
@@ -69,7 +69,7 @@ Size: W wide, M medium, MC medium close, C close, I insert. Lines in speech bubb
 | 4.2 | 0:26.2 | 3.0 | S1 · W | **Don turns his back on his office** to preen in the street door's glass, sipping; **behind him Pam crosses back to the door with her notepad** (her choice) | — | — | her quiet steps |
 | 4.3 | 0:29.2 | 1.2 | S5 · M | Pam passes Mom's desk; Mom knits on, doesn't look up; Pam slips in | — | — | — |
 | 5.1 | 0:30.4 | 1.4 | S9 · C | Don's view: **her mug on Father's table** | — | — | music stops |
-| 5.2 | 0:31.8 | 2.8 | S3 · MC | **The coffee betrayal:** his cup rattles on the saucer, coffee slops into it; he drinks from the saucer, eyes never leaving the office; **he notices how it looks, lifts his little finger** and goes on as if he meant to | held, dead serious | — | rattle; slurp |
+| 5.2 | 0:31.8 | 2.8 | S3 · MC | **The coffee betrayal:** his cup rattles on the saucer, coffee slops into it; he sips from the cup, the saucer held out in his other hand, eyes never leaving the office; **he notices how it looks, lifts his little finger** and goes on as if he meant to (Tomas 27 Nov: the saucer sip read 0/2 in silhouette) | held, dead serious | — | rattle; slurp |
 | 5.3 | 0:34.6 | 1.6 | S1 · W | He charges and **stops dead at his own line**: the feet stop, the body goes on, the headset slips, arms windmilling, nearly down; he recovers and straightens his vest | — | — | skid; cup clink |
 | 5.4 | 0:36.2 | 2.2 | S7 · M | **Mom's step:** round the counter's left end, she plants herself on Father's side between him and the glass, arms folded, looking at him; the robot, between them and the throne, freezes with a clip | he looks from her to the glass and back | — | her heels, two steps |
 
@@ -133,15 +133,15 @@ Frame 0 (1.1's opening) and 9.1's last drawing must show **the same state**, not
 
 | Object | At 1.1 (first pass) | At 9.1's end | In frame 0 |
 |---|---|---|---|
-| REVIEW · TOMORROW tag | not yet hung | on the throne | hangs on the throne's front; **S8r sees the throne from behind**: out of sight |
-| Gap in the tape | none | the strip Don peeled | the throne stands over the gap: **hidden under the seat**; the tape either side looks the same |
-| Last paperclip | none spilled yet | under the caster | **under the throne**: hidden |
+| REVIEW · TOMORROW tag | not yet hung | on the throne's back | S8r sees the throne's front ($49,999 to us): **the back tag is covered** |
+| Gap in the tape | none | the strip Don peeled | the throne stands over it; from the office side the tape runs on **behind the throne**, and the gap is the stretch its back and seat cover |
+| Last paperclip | none spilled yet | under the caster | **behind the seat** from this side (the base's thin legs would show it) |
 | Spilled-clip pile | none | gone (all picked up) | none either way: matches |
 | The roll | on the floor behind Don's back foot, not yet stepped on | dropped by the throne in 1.5; when Don hauls the throne back in 7.4 it ends up behind his back foot again | **must lie behind his back foot, untouched, in both**: the step onto it (0:00.4) comes after frame 0 |
 | The blue shards (2.4) | — | swept or not, by the counter end | **out of frame 0** (S8r is framed on the throne and the tape; the counter end is off left) |
 | Don's headset, vest | straight | straight (he straightened at 5.3) | matches |
 
-The check at stage 4: draw 9.1's last frame and 1.1's frame 0 from the same code and compare them pixel for pixel (md5 of the 540 render).
+**S8r locked v4 (Tomas, 27 Nov: "tvirtinam"), `src/da_s8r.py still` → `da_s8r_frame0_v4.png` / `da_s8r_end_v4.png`:** frame 0 and the push's end drawn by one function with each state, md5 identical at 1080×1920 (851120fe1f0a59f840faacd971bf9261, PASS); the hand gate (`src/da_hand_gate.py`) passes on both. Marks: the throne (232, FEET+4, scale 1.0), the robot (88), Don (384, FEET+14) in front of the throne, drawn once; the roll behind his back heel. Faces out of the dead zones (Don's head x 398, y 371; the robot's x 88, y 487). Still open for motion: the 0:00.4 step onto the roll's tongue (mostly under his heel at frame 0), the tug's weight.
 
 ## Decided at stop 1 (26 Nov)
 

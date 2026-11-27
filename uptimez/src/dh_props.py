@@ -72,7 +72,7 @@ def _price_tag(k, style, seed):
     c.move_to(-W / 2 + 6, 13); c.line_to(W / 2 - 6, 13); c.line_to(W / 2 - 6, H - 6); c.line_to(-W / 2 + 6, H - 6); c.close_path(); c.stroke()
     ellipse(k, 0, 8, 5.5, 5.5, CORD, seed + 62, shadow=False, lw=1.8)        # the eyelet, brass
     ellipse(k, 0, 8, 2.2, 2.2, (0.20, 0.16, 0.10), seed + 63, shadow=False, outline=False)
-    c.select_font_face(kit.FONT); c.set_font_size(23)
+    c.select_font_face(kit.FONT); c.set_font_size(TAG_FONT[0])
     e = c.text_extents("$49,999")
     c.set_source_rgb(0.72, 0.08, 0.12); c.move_to(-e.x_advance / 2, 41); c.show_text("$49,999")
     c.restore()
@@ -82,6 +82,7 @@ CROWN_ROT = [0.0]                                          # opt-in (24 Nov, epi
 TAG = [False]                                              # opt-in (22 Nov, Tomas: "add price tag"): the price still hanging off the crown
 REPLY_V18 = [False]                                        # opt-in (23 Nov, Tomas): the reply is "Stupid human." and a clown
 STARS_FIT = [False]                                        # opt-in (v8): the phone's empty stars kept inside its screen
+TAG_FONT = [23]                                            # opt-in (26 Nov, episode 15 S8r): the price's size; 23 draws as before
 TAG_ANG = [0.0]                                            # its swing, radians, for the animation
 
 

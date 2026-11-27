@@ -9,6 +9,7 @@ UptimeZ Inc. · episode 15 · *Civil War* 3 of 5 · 26 Nov · for Tomas's decisi
 | 1 Script | v3 amended (3 of 4 versions used): 34 shots, 11 lines, 5 speakers; the loop's state table; at stop 1 |
 | 2 Voices | v1 (1 of 2): Whisper 11/11; the Client's "Don't lose it." passes only with the line before (a Whisper artefact on short takes, evidence in `takes.json`, allowed by name); at stop 2, awaiting the picks |
 | S8 (8.1) | Locked v4 (`da_s8.py`, `da_s8_final_v4.png`, tag local only) |
+| S8r (1.1, 9.1 end) | **Locked v4, 27 Nov** (`da_s8r.py`, `da_s8r_frame0_v4.png`, md5 851120fe…, loop seam PASS); hands through `da_hand_gate.py` (12 rules, 9 planted faults) |
 | 3–12 | Not started. Per plan v1 §6.2: **in parallel up to the board; animation only after 14's master** |
 
 ## 1. The cast against the character canon (re-analysed 26 Nov, canon main 47fd6d3)
