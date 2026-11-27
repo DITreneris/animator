@@ -57,7 +57,7 @@ A change is made in the scene file and regenerated. A script written by hand (st
 | **Text** | Every bubble and card inside the safe area (18, 96, 522, 820); narration under the top bar; no bubble over a face | Office Noir's cards under the top bar |
 | **Loop** | Frame 0 and the last frame drawn by the same code; difference only where the script says (a date, a mark) | First Search's frame 0 drawn from the set's old master |
 | **Sound** | Per line, three Whisper windows inside the final mix; −14 to −16 LUFS; true peak ≤ −1 dBTP on the final AAC; no dead stop at the seam | One Star's room tone (7 of 14 lines lost) |
-| **Format** | 1080×1920, 30 fps, expected frame count, BT.709 converted and tagged | Flat colours from BT.601 tagged as BT.709 |
+| **Format** | 1080×1920, 30 fps, expected frame count, BT.709 converted and tagged. **The Blueprint (16:9):** 1920×1080 from logical 960×540 at 2×; bubble safe `SAFE_16X9` `(24, 24, 936, 516)` | Flat colours from BT.601 tagged as BT.709 |
 
 **Validation so far** (`src/uz_check_validate.py`, results in `src/uz_check_validation.json`; 19 cases, all behave). Each case must fail on the faulty version and pass on the fixed one:
 
@@ -120,6 +120,8 @@ Each row lists what goes in, what comes out, what must pass, and whether Tomas a
 ## Drawing audit
 
 Before a still is called locked, and on the layout sheet at stage 4, run `/quality-assurance-agent`. The command is `.cursor/commands/quality-assurance-agent.md`. It follows `.cursor/skills/quality-assurance-agent/SKILL.md`: measure, then open the PNG at full size. A thumbnail is not a pass.
+
+A hand is not cleared by an arm count. `bp_draw_audit.py --hands` measures the boxes the drawing just built, so a sleeve and a second hand exit 0. `uz_check` limbs fails only a third declared arm. On a 16:9 hand or phone, `--grips` is the hand command and `--grips --plant` must exit 1. The pass is the PNG against the job table in `docs/rules-hands-and-phones.md`. A cold viewer who names the action has not passed the hand.
 
 | Picture | Checker |
 |---|---|

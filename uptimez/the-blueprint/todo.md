@@ -71,7 +71,7 @@ Not a new camera. Rough v5 carries them. They stay out of `set-16x9.md` until a 
 - [x] Cannon. Shot 04, after the 90-frame walk, 3 seconds on S0. `set_ob.cannon` at (619, 504, 0.72), between the shredder and the desk. `stills/bp_still_cannon.png`.
 - [x] One star. Shot 12, after the ZERO crop, 3 seconds on S0. The phone is in front of Sofía. The poster stays 0. `stills/bp_still_star.png`.
 - [x] The mute week. Shot 08, COUNTER, 7.5 seconds each: retries, STUPID in lipstick, MON 1 and THU 4, one deleted message. `stills/bp_still_retry.png`, `bp_still_lipstick.png`, `bp_still_calendar.png`, `bp_still_deleted.png`.
-- [ ] Watch `bp_rough_v5.mp4` with the sound off. The note is `rough/bp_rough_v5_note.md`.
+- [x] Watch `bp_rough_v5.mp4` with the sound off. The note is `rough/bp_rough_v5_note.md`. Two cold viewers, 26 Nov 2026: **fail**, 2 of 5 beats each. The week, the zero and the lost plan read. The shred, the pocket and the stamp do not, because no hand does them. Not redrawn: the rough budget is spent.
 
 ## 8. Shared files this pilot imports
 
@@ -81,6 +81,49 @@ Not a new camera. Rough v5 carries them. They stay out of `set-16x9.md` until a 
 - [x] `speech.draw(..., safe=SAFE_16X9)` still places a 16:9 bubble. A caller that omits `safe` keeps the 9:16 rect and the button rail. `speech_gate.py` selftest passes.
 - [x] `pam_mf.NOSE` stays off unless a sheet turns it on. `GCHAIN_DX` from `main` stays.
 - [x] `bp_draw_audit.py` exits 0 after that.
+
+## 8b. main on 27 Nov
+
+`origin/main` `2205945` is in this branch at `2ce3e7e`, 27 Nov 2026. Not pushed. The 26 Nov boxes above stay as they were.
+
+- [x] Read. Of the imported modules, only `hands_ps.py`, `of_cast.py` and `of_scenes.py` differ. Pinch flags and `PHONE_RIM` default off. The `of_scenes` edits are The Offer. `ik2` is unchanged. `bp_frame.py`, `bp_set.py` and `the-blueprint/` are not in the diff. A re-render of v4 would not move a pixel from these three files.
+- [x] Merge `origin/main` `2205945` at `2ce3e7e`, 27 Nov 2026. Pinch flags and `PHONE_RIM` default off. `bp_picture.py look` exits 0. `bp_draw_audit.py` exits 0 and `--plant` exits 1 with the eight old fails. `speech_gate` selftest passes. Locked stills and `bp_pic_v4.mp4` (`fd263e1e`) kept their md5. Not pushed. The v4 watch did not wait on it.
+
+## 9. Rough with sound
+
+Budget `bp_sound_v1` to `v5`. v1 copies the silent v5 picture. v2 copies `bp_pic_v2`.
+
+- [x] Voices. `src/bp_voices/`, `bp_voices.py`. 37 shipped takes copied byte for byte (md5-checked), 6 night takes new and local only. Gate 43 of 43, plants 3 of 3, rebuild identical.
+- [x] Stop 2 package. `voices/bp_stop2_voices.md`, audition `voices/bp_night_takes_v1.wav`.
+- [x] Stop 2, night takes: Tomas keeps them for the local rough (26 Nov 2026).
+- [x] Stop 2, shot 10: the two off-screen voices are accepted on `bp_sound_v1` only (26 Nov 2026). "Paid $999" stays. The picture pass puts shot 10 on PUSH.
+- [x] Picture budget. `bp_pic_v1` to `v5`, because the silent budget was picture without talk and the sound budget is mixes on a frozen picture.
+- [x] Times. `bp_sound_v1_timing.json` from `bp_scenes.timeline()`. `bp_draw_audit.py --lines` exits 0 with shot 10's two speakers as OPEN; `--lines --plant` exits 1.
+- [x] Mix. `bp_sound.py`. `bp_sound_v1_nonight.mp4` −15.2 LUFS / −2.1 dBTP, `bp_sound_v1.mp4` −15.1 / −1.5, on the AAC. `uz_check` no faults on both.
+- [x] Whisper inside the mix. 43 of 43 and 37 of 37. Two muted lines are lost exactly; room tone ×5 loses none.
+- [x] Cold viewers on frames plus the transcript, 26 Nov 2026: **fail**, 3 of 5 beats each (silent v5: 2 of 5). The deal, the deadline, the search failing and the stamp read. Lines land on the wrong woman (no mouths move), and the shred and the pocket still have no author. Picture faults on v5, so no `bp_sound_v2` on that picture.
+- [x] Picture v1. `bp_pic_v1.mp4` and `bp_pic_v1_nonight.mp4`. Bubbles, dull zero until `fs_4.3`, shot 10 on PUSH, inserts in the v5 order. `speech_gate` 43 of 43 and 37 of 37. The zero plant caught a green disc with no overlay. Locked stills unchanged. Note `rough/bp_pic_v1_note.md`.
+- [x] Who speaks, third watch, 26 Nov 2026: **pass on the body**. Both put "I won't draw one" on the blonde and the other two lines on the woman in the purple top at the desk. Names are not printed. Watches 1 and 2 did not pass. The older-woman reading fell between them.
+- [x] Picture v2. Don's hand on the shred after the promise. Pam's hand on the card after the joke; the card leaves on "Check your pocket." `bp_pic_v2_timing.json`. `--hands` exits 0; `--hands --plant` exits 1. Note `rough/bp_pic_v2_note.md`.
+- [x] Five questions, 26 Nov 2026: **pass**, 4 of 5 each. Don shreds. The finder is that desk woman. Both missed the stamp, with different wrong answers. v3 stays unspent. The stamp draws CUSTOMER SUCCESS.
+- [x] Sound v2. `bp_sound_v2.mp4` −15.2 LUFS / −4.4 dBTP, no-night −15.2 / −1.2. Whisper 43 of 43 and 37 of 37. The mute plant loses exactly `fs_4.1` and `cs_6.5`. A second `bp_sound_v1_nonight` build is md5 `ce8403457c981d5f1d05cd8c01e5cd5e`. The v1 timing file is still `74f55afb586fcbb0f5b643063b0279bf`. `uz_check` no faults.
+- [x] Stop 4, 26 Nov 2026: answer 1. Leave the stamp. It stays CUSTOMER SUCCESS in the note and is not redrawn. `bp_pic_v3` is the falling portrait, the cannon firing, and Pam matching the strips. Package `rough/bp_stop4.md`.
+- [x] Picture v3. The portrait falls, the cannon fires, Pam's hand is on the tape for "I'm matching them." `beats` exits 0; `beats --plant` exits 1. Note `rough/bp_pic_v3_note.md`.
+- [x] Cold watch, 26 Nov 2026: **pass**. [I](0f3375b4-fdc7-4442-8a3b-ac458a3f13ef) 5 of 5, [J](c775c735-83e1-48fc-a6db-cf321cc6c07d) 4 of 5. Both read a framed face, a firing cannon, and the strips being matched. J gave the finder to the older woman. Both read the stamp as CUSTOMER SUCCESS. v4 stays unspent.
+- [x] Sound v3. `bp_sound_v3.mp4` −15.2 LUFS / −4.4 dBTP, no-night −15.2 / −1.2. Whisper 43 of 43 and 37 of 37. The mute plant loses exactly `fs_4.1` and `cs_6.5`. A second `bp_sound_v1_nonight` build is md5 `ce8403457c981d5f1d05cd8c01e5cd5e`. The v1 timing file is still `74f55afb586fcbb0f5b643063b0279bf`. `bp_sound_v1.mp4` is still `9762e9991976878bf9ff07339208188b`. `uz_check` no faults.
+
+## 10. The sheet look
+
+The drawings that were already on the sheets, and not in the room. `bp_set.SHEET` stays off, so a locked still does not change. `wsl bash -lc "cd /mnt/c/04_animator/uptimez/src && ~/bpvenv/bin/python bp_picture.py use"` writes the new files. `QUIET` stays off. `of_cast.phone_grip` stays the old function.
+
+- [x] Room. `rough_work/pic_use/bp_use_room.png` and `_270.png`. Sofia's nose and heel, Pam's nose, the Client's elbow, Don's cuffs.
+- [x] Night. `bp_use_night.png` and `_270.png`. The same wide, the night light. The nose stays in that grade.
+- [x] Phone. `bp_use_phone.png` and `_270.png`. Sheet `phone_grip` v4b, the star and `1/5`. The poster's 0 stays in the frame.
+- [x] Mom. Her elbow differs from the room's two segments, so `bp_use_mom.png` and `_270.png` use the one sleeve.
+- [x] Tomas approved these four, 26 Nov 2026. The next picture turns this look on.
+- [x] `bp_pic_v4` rendered 27 Nov 2026. `bp_pic_v4.mp4` `fd263e1eee822917db682d15fe5ac2a8`, no-night `6bb05a079721c02bebe560afccdbe2a9`. The look from `rough_work/pic_use/`. Shred, the card and the tape stay `point`. The clutch stills in `rough_work/pic_hands/` were not part of this approval. `bp_picture.py look` exits 0. Locked stills unchanged. Note `rough/bp_pic_v4_note.md`.
+- [x] Watch `bp_pic_v4.mp4` (400 s) and `bp_pic_v4_nonight.mp4`, 27 Nov 2026. Sheet look against `rough_work/pic_use/` signed off. Shred, the card and the tape staying `point` is this version. The clutch stills in `rough_work/pic_hands/` stay out of v4.
+- [ ] `bp_pic_v5`: clutch on shred, card and tape (`of_cast.clutch`, job Holding an edge). `bp_pic_v5_timing.json`. `--grips` exits 0; `--grips --plant` exits 1. Locked stills unchanged. No `bp_sound_v4` until this picture is watched.
 
 ## Not this cut
 

@@ -949,6 +949,8 @@ The v30 cold test: the close-up arms were "a pole" or "a tube" in 8 of 9 mention
 
 Eight lessons about hands and two about phones (147–226) had become a diary of versions, some contradicting each other (222's "hand only" against 224's "the owner in the frame"). `docs/rules-hands-and-phones.md` keeps only what holds now, with the superseded lessons named. Read it before drawing a hand, a close-up arm or a phone screen; add to it, not only to this list, when a hand or a screen teaches something new.
 
+26 Nov. The page opens with the job table. Name that row before drawing. A new job is a new row on the page. An episode does not get its own hands file, and `docs/lessons.md` is not grepped for a hand shape.
+
 ## 228. *The Offer* v40 (24 Nov): the repo's bubble, and a pause after a full stop
 
 - The shared `speech.py` bubble (beside the mouth, a 10-20 px tail) put the speaker beyond doubt where cold viewers had guessed ("Off the car.", "Put it in the calendar."), but at its defaults (26, 220 px) a line beside a centred face wrapped to 4-5 rows. Opt-in settings were added to `speech.py` (SIZE, MONO_SIZE, MAX_W, MONO_BOLD, SIGNS_FIRST; defaults unchanged, so other films rebuild byte-identical); The Offer uses 30 / 28 / 300 / bold robot / props first. A line that still needs more than 3 rows keeps the v39 bubble over the head (measured on a scratch surface first). The robot's bubble goes over its visor, never across the card. A prop the beat needs is `protect`ed so no bubble covers it (the calendar phone).
@@ -1141,3 +1143,12 @@ Tomas, on v54's new last shot (the phone on a black car's roof): rejected, hard.
   from inside a shot after its line) keep the mix and the locked bubbles as they were.
 - **Eyes shut read as asleep** when the beat is "approves without looking": eyes open, looking away.
 - **Shock, relief, horror:** a reaction needs its turn (the catch) before the next one (the 1/5), or it is one held face.
+## 249. A bad hand kept passing (26 Nov)
+
+The drawing was wrong and every check that was asked said it was fine. Three different questions were treated as the hand.
+
+- **The box check agrees with the drawer.** Blueprint `bp_draw_audit.py --hands` measures the rectangles `shred_pose`, `pocket_pose` and `match_pose` have just built. A one-width sleeve from a typed fist to a second `point` overlaps those rectangles, so the command exits 0. `--hands --plant` drops the hand, then the arm. It never plants a second hand, a sleeve stroke, or a phone rectangle. The grip command is `--grips`. Live exits 0 on the grip stills. Plant exits 1 when those three are caught.
+- **The limb check counts arms.** `uz_check.check_limbs` fails a character with more than two declared arms. A stroke that was never declared, a second shape on the same wrist, and a phone drawn as a rectangle are invisible to it. A clean LIMBS line is not a hand pass.
+- **The cold watch asks the plot.** Viewers on the Blueprint picture were asked what Don does with the page. Both said he shreds it. The sheet moved, and a hand-shaped mark sat on it. They were not asked whether the mark was his hand. A story pass is not a hand pass. The hand passes when the still shows the job's shape, from `docs/rules-hands-and-phones.md`, on the hand the pose returns.
+
+The page's section 0 already said a check that measures its own boxes does not count. The audit skill's limb row was still "more than two arms", so an agent following the skill could mark the hand ok. The skill, the command, and this lesson now say the same thing.

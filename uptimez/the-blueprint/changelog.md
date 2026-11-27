@@ -9,14 +9,137 @@ The picture is locked. The film is not. The set source of truth is [`set-16x9.md
 | Set | Locked 25 Nov 2026. Sheet `stills/bp_still_s0.png` |
 | Close views | `stills/bp_still_shred.png`, `stills/bp_still_counter.png` |
 | Paper cut | Shot list, line ledger, script, and cut-down, all v1. 6:40 |
-| Rough | `bp_rough_v5.mp4` is the current silent cut of this room, 400 s. `bp_rough_v1.mp4` is the **old** room. v2, v3 and v4 were not rewritten |
+| Rough | `bp_rough_v5.mp4` is the last silent cut of this room, 400 s. `bp_rough_v1.mp4` is the **old** room. v2, v3 and v4 were not rewritten. The sound under v2 to v5 is pink noise |
+| Rough with sound | `bp_sound_v3.mp4` (400 s, local only: the night lines are Kokoro) on `bp_pic_v3`, and `bp_sound_v3_nonight.mp4` (360 s). −15.2 LUFS on the AAC, true peak −4.4 / −1.2 dBTP. `bp_sound_v1` stays on v5's picture. `bp_sound_v2` stays on `bp_pic_v2`. Budget 5, three spent. Note `rough/bp_pic_v3_note.md` |
+| Voices | `src/bp_voices/`: 37 shipped takes copied byte for byte, 6 new night takes (local only). Stop 2 package `voices/bp_stop2_voices.md` |
 | Layouts and motion | `layouts/` and `motion/*_v2.mp4` are on this room. The other `motion/` files are the old coordinates |
 | Night | Approved 25 Nov 2026. `stills/bp_still_night.png` `31e044d813fe94ead453458d7b71d5fe`. NIGHT (560, 360, 1.85) is in `set-16x9.md` |
-| Drawing audit | `/quality-assurance-agent`. Live `bp_draw_audit.py` exits 0. `--plant` exits 1 with the eight old fails |
-| Series code | Branch `uptimez-blueprint` is `d14139b` (26 Nov). `speech.draw` takes `safe=`. A caller that omits it stays on the 9:16 rect |
-| Next | Watch `bp_rough_v5.mp4`. SCREEN, BIN, VOID, and the new axes stay unasked |
+| Drawing audit | `/quality-assurance-agent`. Live `bp_draw_audit.py` exits 0. `--plant` exits 1 with the eight old fails. `--lines` exits 0 with shot 10's two off-screen speakers as OPEN; `--lines --picture` exits 0. `--hands` exits 0; `--hands --plant` exits 1. That hands check measures the boxes `bp_picture.py` just built. `--grips` exits 0 on the hand stills; `--grips --plant` exits 1. A named action is not a hand pass. The still is opened beside the previous picture |
+| Series code | Merged `origin/main` `2205945` (The Offer, PR #141) at `2ce3e7e`. Branch point stays `d14139b`. Pinch flags and `PHONE_RIM` default off. `ik2` is unchanged. `bp_picture.py look` exits 0 after the merge. `bp_pic_v4.mp4` md5 `fd263e1eee822917db682d15fe5ac2a8` and the no-night `6bb05a079721c02bebe560afccdbe2a9` did not move. Locked stills `25111ff3`, `da34775d`, `0a25fcc6`, `31e044d8` |
+| Picture | `bp_pic_v4.mp4` (400 s) and `bp_pic_v4_nonight.mp4` (360 s), watched 27 Nov 2026. Sheet look vs `rough_work/pic_use/` signed off. md5 `fd263e1eee822917db682d15fe5ac2a8` / no-night `6bb05a079721c02bebe560afccdbe2a9`. Budget `bp_pic_v1` to `v5`, four spent. Note `rough/bp_pic_v4_note.md` |
+| Hands | Four stills in `rough_work/pic_hands/`, full size and 270 px. `clutch` on the shred sheet, the card and the tape. Those three were not part of the 26 Nov sheet approval. v4 motion stayed `point`. Pam's clutch is 0.70 of width 18, with an 8 px sleeve from the desk into the palm. Don's cuff is covered by skin. The extra tape strip is off on those two stills. The card in the air has no hand. The old phone drawing is `bp_hand_plant_phone.png` |
+| Sheet look | Approved 26 Nov 2026. `rough_work/pic_use/`: `bp_use_room.png`, `bp_use_night.png`, `bp_use_phone.png`, `bp_use_mom.png`, each full size and 270 px. Sofia's nose and heel, Pam's nose, the Client's elbow, Don's cuffs, Mom's one sleeve. The phone still is `phone_grip` v4b with the star and `1/5`. `QUIET` stays off. `of_cast.phone_grip` was not edited. The four locked stills kept their md5 |
+| Next | `bp_pic_v5` planned: clutch on shred, card and tape after the grips stills. No `bp_sound_v4` until v5 is watched. SCREEN, BIN, VOID, and the new axes stay unasked. No public master until the Kokoro licence is decided |
 
 ## Log
+
+### 2026-11-27 — safety lock before clutch v5
+
+`bp_picture.py` and `bp_sound.py` refuse to overwrite an existing `bp_pic_vN` / `bp_sound_vN`. `rows()` only loads timing JSON; `write_vN_timing` creates a missing file once. `look` no longer rewrites v4 timing. A named picture stem picks that stem's timing for a later mix. `look` exit 0; locked stills and `bp_pic_v4` md5s held. Not pushed.
+
+### 2026-11-27 — origin/main merged
+
+`2ce3e7e` merges `origin/main` `2205945` into `uptimez-blueprint`. The one content conflict was `docs/rules-hands-and-phones.md`: the synced copy from main, including `board_two` and `tap_insert`, plus the earlier-version archive. `PINCH_V2`, `PINCH_V3`, `PINCH_V4` and `PHONE_RIM` read false on import. `bp_picture.py look` exits 0. `bp_draw_audit.py` exits 0, fails 0, shot 01 included. `--plant` exits 1 with the eight old fails. `speech_gate.py` selftest passes. Locked stills stayed `25111ff3`, `da34775d`, `0a25fcc6`, `31e044d8`. `bp_pic_v4.mp4` stayed `fd263e1eee822917db682d15fe5ac2a8`, the no-night file `6bb05a079721c02bebe560afccdbe2a9`, the v4 timing `a108715b401f2c5855759ae6dcb1eedf`. No render. The Blueprint hand lesson sits after main's 243–248 as lesson 249. Not pushed. **v4 watch closed** 27 Nov 2026: sheet look vs `rough_work/pic_use/` signed off.
+
+### 2026-11-27 — main since the branch point
+
+`origin/main` is `2205945`, 86 commits after `d14139b`. Not merged. The diff against the modules this pilot imports is `hands_ps.py`, `of_cast.py` and `of_scenes.py`. `PINCH_V2`, `PINCH_V3`, `PINCH_V4` and `PHONE_RIM` default off, so `point` and a phone with no rim stay the drawing v4 already uses. The `of_scenes` edits are The Offer's pocket, slam and lamp. `ik2` is not in that diff. `bp_frame.py`, `bp_set.py` and `the-blueprint/` are not in it either. A merge is not required before the v4 watch.
+
+### 2026-11-27 — picture v4, the signed look, not watched
+
+`bp_pic_v4.mp4` and `bp_pic_v4_nonight.mp4`. Same times as v3. `SHEET` and `MOM_ARMS` are on for this version only: Sofia's nose and heel, Pam's nose, the Client's elbow, Don's cuffs, Mom's one sleeve. Shot 12's silent star frames are the phone grip v4b on the signed crop. "Your number." is that pose on S0, because the crop cannot hold the bubble. The rectangle stays on v3. Shred, the card and the tape stay `point`. The four locked stills kept `25111ff3`, `da34775d`, `0a25fcc6` and `31e044d8`. `bp_picture.py look` exits 0. Note `rough/bp_pic_v4_note.md`. Not watched. No `bp_sound_v4`.
+
+### 2026-11-26 — sheet look approved
+
+Tomas approved the four stills in `rough_work/pic_use/`. The room, the night light, the phone and Mom's sleeve are the drawing the next picture uses. Sofia's nose and heel, Pam's nose, the Client's elbow and Don's cuffs are in that look. `QUIET` stays off. The phone on `bp_use_phone.png` is sheet `phone_grip` v4b, not `of_cast.phone_grip`.
+
+`python bp_picture.py use` wrote them, full size and 270 px. `bp_set.SHEET` stays off, so a rebuild of the locked room does not take the look. The class sheet v4 matched the file it replaced, pixel for pixel. v1, v2 and v3 of that sheet kept their md5. The four locked stills kept `25111ff3`, `da34775d`, `0a25fcc6` and `31e044d8`.
+
+The clutch stills in `rough_work/pic_hands/` were not in this approval. `bp_pic_v4` was not opened. The checklist is section 10 of `todo.md`.
+
+### 2026-11-26 — hand still polish
+
+Pam's clutch on the card and on the tape is drawn at 0.70 of width 18. An 8 px sleeve runs from the desk slab into that palm. `pam_taping` skips its blue strip on those two stills only. Don's clutch is 0.72 of the arm width, and a skin stroke covers the shirt's end so the cuff and the palm are one shape. The sheet, the bone length, the phone crop and the flight frame were not moved. `bp_hand_reach.txt` now records the tape contact as 0. The 25 px bone shortfall stays in the note. `--grips` exits 0. `--grips --plant` exits 1. The four locked stills kept their md5. `bp_pic_v4` was not opened. No 10 fps strip.
+
+The working crops named in the entry below were removed after this pass.
+
+### 2026-11-26 — grip plants and crops
+
+`python bp_picture.py grips --plant` writes the old drawing into `rough_work/pic_hands/`, full size and 270 px, and exits 1 when a sleeve stroke, a second `point`, and a phone rectangle are all caught. Those files are `bp_hand_plant_shred.png`, `bp_hand_plant_pocket.png`, `bp_hand_plant_tape.png` and `bp_hand_plant_phone.png`. The four live stills were not replaced.
+
+Crops of the three `clutch` stills, same folder: `crop_shred.png` (the sheet at the slot), `crop_card.png` (the card on the hand), `crop_tape.png` (the fist on the seam). `bp_hand_reach.txt` is unchanged: shred elbow 89°, card and tape 99°, phone 110°, slot gap 19 px. `bp_pic_v4` was not opened. No 10 fps strip.
+
+The drawing audit now says a named action is not a hand pass. The still is opened beside the previous picture. That line is in `.cursor/skills/quality-assurance-agent/lessons.md`. The 9:16 film is not in this log.
+
+### 2026-11-26 — hand stills
+
+`python bp_picture.py grips` paints the stills and exits 1 on a sleeve stroke, a second `point`, or a phone rectangle. `--plant` paints today's picture into the same folder and exits 1 when all three are caught. `bp_draw_audit.py --grips` is that command. `--hands` is unchanged: it still measures the pose boxes, and `--hands --plant` still exits 1.
+
+Full 960×540 and 270 px, under `rough_work/pic_hands/`:
+
+- `bp_hand_shred.png`. Don's returned hand, `of_cast.clutch`. The sheet's far side aims at the slot and stops 19 px short. The arm was shortened 46 px. Bone length stays 48. Elbow 89°.
+- `bp_hand_flight.png`. One frame of the pocket flight. No hand.
+- `bp_hand_card.png`. The card is on the hand `pam_taping` returns, `clutch`. That hand is 72 px from the pocket mark. The mark sits on Mom, so the card was not carried there. Elbow 99°.
+- `bp_hand_tape.png`. The seam moved 44 px onto that same hand. It was 25 px past the two bones. `clutch` on the strip. Elbow 99°.
+- `bp_hand_phone.png`. Sofía in this room, tablet off, `of_cast.phone_grip`. One gold star, `1/5` the largest word, her middle at `body_x`, the thumb below the word. Crop (350, 254, 1.99) is on this still only. At 270 px the word is 4.0 px wide and the poster's 0 is still in the frame. A crop that made the word readable would lose the 0.
+
+`bp_hand_reach.txt` has the bends and the gaps. The four locked stills kept their md5. `bp_pic_v4` was not opened. No 10 fps strip.
+
+### 2026-11-26 — main is past the shared-file pin
+
+`origin/main` is `aaab657`. The shared-files entry below records the fast-forward to `d14139b` (One Star v18). This branch was not moved again. Nothing was merged and nothing was pushed.
+
+`uptimez/customer-success/one-star-v14-notes.md` on `main` continues through v26. The copy on this branch ends at v18. The drawings are opt-in: `cs_os19.py` through `cs_os26.py`, plus later lines in `cs_grips.py` and `cs_scene5.py`. `of_cast.phone_grip` is the same function.
+
+What those notes add, and this branch does not have:
+
+- v20. Hand and elbow gates at 0 while an ownerless sleeve, a phone that appears, and a finger on a word still read. `main` added two gates and tried them on the planted v17 frame first: an insert cuff with no owner, and a one-colour band over 40% of the frame.
+- v23. Sofía's phone is `phone_grip` on her own arm. A hand at the edge of a tablet has no arm. The first straight arm failed the elbow gate. The last wide keeps only Don's phone.
+- v25. The Client's phone at 1.0× was smaller than his fingers. It is 1.8×.
+- v26. `point` on the plan was left. The review called it a little unnatural.
+
+Lesson 245 on `main` records the same pass: clip an overlay to the rig part as drawn, and a phone shown to us is in its owner's arm. This branch's rules page is the job table. It does not name v20–v26. The picture was not redrawn. v4 stays unspent.
+
+### 2026-11-26 — hands page
+
+[`docs/rules-hands-and-phones.md`](../../docs/rules-hands-and-phones.md) is the hand for every film. It opens with the job table (`quiet`, `point`, `point_t`, `grab`, `clutch`, `pinch`, `fist`, `palm`, `thumb`, `phone_grip`, `handle_grip`). A job that is not in the table is a new row on that page, written before code. An episode does not get its own hands file, and `docs/lessons.md` is not grepped for a hand shape. The lesson numbers sit at the bottom.
+
+`uptimez/CLAUDE.md` point 4, [`INDEX.md`](../INDEX.md) and lesson 227 point at that table. The picture, the locked stills, `bp_pic_v3` and `bp_sound_v3` were not rewritten. v4 stays unspent.
+
+The three hands on this cut are still the v2 and v3 drawing: a `point` and a sleeve stroke from a fixed fist, on top of the hand the room already draws. Shot 12's phone is still `star_overlay`, a rectangle, while Sofía's pose is `hold`. `--hands` still exits 0, because it measures those boxes. The next hand names its row first.
+
+### 2026-11-26 — picture pass, sound v2
+
+`bp_picture.py`. A bubble on the speaker (`speech.draw`, `SAFE_16X9`). The poster zero is an overlay: dull grey until Don's "Approved." (`fs_4.3`) ends on shot 07, then the poster's own green. `bp_set._poster` was left alone, and the four locked stills kept their md5. Shot 10 is PUSH in this module only. `SHOTS` stays COUNTER, so a rebuild of rough v5 is unchanged. The finger stays undrawn.
+
+- **v1.** Inserts stay in the v5 order, so who speaks could be judged alone. Three cold watches. The third passed on the body: both viewers put "I won't draw one" on the blonde in the pink coat, and "Check your pocket" and "Some shit, others scoop." on the woman with the brown bob, glasses and purple top at the desk. Neither name is printed. One of them called that desk woman Sofía, because Don shouts the name. The note is `rough/bp_pic_v1_note.md`.
+- **v2.** Shot 03 holds the promise, then Don's hand (the series `point`, sleeve from the fist the room already draws) puts the page in the shredder, then the hold. Shot 11 holds the joke, the card leaves the pocket with "Check your pocket.", and Pam's hand is on the card for the hold after. Times are `bp_pic_v2_timing.json`. `bp_scenes.timeline()` and `bp_sound_v1_timing.json` stay the v5 order (`74f55afb586fcbb0f5b643063b0279bf`). Both cold viewers read 4 of 5. Don shreds the page. The finder is that same desk woman. Both missed the stamp, and they missed it differently: the zero turned green, and a blank yellow circle. The stamp draws CUSTOMER SUCCESS. v3 was not spent. The note is `rough/bp_pic_v2_note.md`.
+- **Sound.** `bp_sound.py` takes a picture. A bare mix still writes `bp_sound_v1` from v5, and a second no-night build is md5 `ce8403457c981d5f1d05cd8c01e5cd5e`. `bp_sound_v2.mp4` copies the v2 packets and uses the v2 times: the same dry takes, room tone at 0.3, no reflections. Loudness on the AAC, limiter 0.80 (0.85 peaked at −0.3 and −0.2): full −15.2 LUFS / −4.4 dBTP, no-night −15.2 / −1.2. Whisper 43 of 43 and 37 of 37. The mute plant loses exactly `fs_4.1` and `cs_6.5`. `uz_check` no faults on either file. `bp_sound_v1.mp4` is still `9762e9991976878bf9ff07339208188b`.
+
+The picture files carry the silent roughs' pink-noise bed, so the loudness check has something to measure. That bed is not the mix. Stop 4 is `rough/bp_stop4.md`. [`INDEX.md`](../INDEX.md), the README episode list, [`set-16x9.md`](set-16x9.md) and [`docs/sessions.md`](../../docs/sessions.md) name `bp_sound_v2.mp4` as the current cut.
+
+### 2026-11-26 — Stop 4, answer 1
+
+Tomas watched `bp_sound_v2.mp4` and left it. The stamp stays CUSTOMER SUCCESS in the note. It is not redrawn, and v3 is not spent on it. `bp_pic_v3` is the three beats a wide still cannot tell: the portrait falling off the wall, the cannon firing, and Pam matching the strips. 400 s, the shot lengths, and the v2 line times stay.
+
+### 2026-11-26 — picture v3, sound v3
+
+`bp_picture.py`, version 3 only. `bp_scenes._motions(5)` and `SHOTS` stay. The wall portrait is skipped only while shot 01 is painted (`SKIP_PORTRAIT`, off by default, so the locked stills do not change).
+
+- **Picture.** The portrait falls from the peg to the floor. The cannon's fuse runs and confetti leaves the muzzle toward the ARCHIVE bin. On "I'm matching them." the taped plan and Pam's hand are on a seam. Times are a copy of `bp_pic_v2_timing.json`. The picture bed is pink noise, −15.3 LUFS. `uz_check` no faults. 12000 and 10800 frames.
+- **Watch.** [I](0f3375b4-fdc7-4442-8a3b-ac458a3f13ef) 5 of 5, [J](c775c735-83e1-48fc-a6db-cf321cc6c07d) 4 of 5. Both read a framed face, a cannon that fires, and the desk woman matching the strips. J gave the finder to the older woman. Both read the stamp as CUSTOMER SUCCESS. v4 was not opened. The note is `rough/bp_pic_v3_note.md`.
+- **Sound.** `bp_sound_v3.mp4` copies the v3 packets and the v2 times. Same dry takes, room tone 0.3, limiter 0.80 (0.85 peaked at −0.3 and −0.2). Full −15.2 LUFS / −4.4 dBTP, no-night −15.2 / −1.2. Whisper 43 of 43 and 37 of 37. The mute plant loses exactly `fs_4.1` and `cs_6.5`. A bare mix still rebuilds `bp_sound_v1_nonight` at `ce8403457c981d5f1d05cd8c01e5cd5e`. `bp_sound_v1.mp4` is still `9762e9991976878bf9ff07339208188b`. The v1 timing file is still `74f55afb586fcbb0f5b643063b0279bf`.
+
+[`INDEX.md`](../INDEX.md), the README episode list, [`set-16x9.md`](set-16x9.md) and [`docs/sessions.md`](../../docs/sessions.md) name `bp_sound_v3.mp4` as the current cut.
+
+### 2026-11-26 — rough with sound v1
+
+The silent roughs v2 to v5 carried pink noise, not a mix: `_concat` laid `anoisesrc` under `loudnorm`. Their −15.3 LUFS measured the noise. They were not rewritten.
+
+- **Voices.** `bp_voices.py` writes `src/bp_voices/`. The 37 inherited lines are the shipped takes in git, copied byte for byte and checked by md5. They are not regenerated: this machine's Kokoro does not reproduce them ("Approved." 0.783 s against the shipped 0.718 s in kokoro-onnx 0.4.4 and 0.4.7; First Search 4.1 rebuilt is heard "make the zero grain"). An earlier ledger line said no WAVs were kept; it was wrong and is corrected. The six night lines are Sofía (`sound_bc.sofia`) and Pam voice A, local only. "Recovered from what?" and "He needs the bays." are given to Kokoro differently from how they are written, because Whisper misheard the written form 3 of 3. Gate 43 of 43, plants 3 of 3, a second build identical.
+- **Times.** `bp_scenes.timeline()` and `bp_sound_v1_timing.json`. `bp_draw_audit.py --lines` checks each speaker's head inside the camera of the moment, and no line over a crop, the shred, the pocket or the stamp.
+- **Mix.** `bp_sound.py`. v5's picture stream-copied (packets identical), dry takes, `cs_film.py` room tone at 0.3, no reflections. Loudness on the AAC with the limiter at 0.85: 0.50 needed more than 10 dB of limiting and fell short of −15.
+- **Cold watch.** Frames plus a timestamped transcript: fail, 3 of 5 beats each (v5 silent: 2 of 5). Both gave Pam's lines to Mom and none to Sofía, because no mouth moves. The shred and the pocket still have no author. Not a sound fault; no v2.
+- **Checks.** `uz_check` no faults on both files. Whisper inside the mix 43 of 43 and 37 of 37; the plant with two lines muted loses exactly those two. Room tone ×5 loses none (no music: the tone stays 38 dB under the voices). The four locked stills kept their md5.
+
+The note is `rough/bp_sound_v1_note.md`.
+
+### 2026-11-26 — decisions before the picture pass
+
+- The six night takes stay in the local rough. The Kokoro licence is still open, so they are not a public master.
+- "Paid $999" stays. It is the shipped One Star take, heard 3 of 3 in the mix. "A thousand dollars" and "1K" were asked and not used.
+- Shot 10's two off-screen voices are accepted on `bp_sound_v1` only. The picture pass puts shot 10 on PUSH. `SHOTS` is not changed, so a rebuild of rough v5 is still COUNTER.
+- The long silent tails after the last line are not filled by stretching the dialogue.
 
 ### 2026-11-26 — shared files
 

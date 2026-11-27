@@ -10,7 +10,7 @@ The sheet is [`stills/bp_still_s0.png`](stills/bp_still_s0.png). The two close v
 
 The three stills, and the numbers in `bp_set.py` and `bp_frame.py`, are the set. Do not add posters, plants, or props. Do not move the logo, the comic labels, the cabinet, the shredder, the doors, or the people in order to restage. A later pass may animate. It does not redesign the room.
 
-`bp_rough_v1.mp4` and `bp_rough_v1_nonight.mp4` are the **old** room and are not this set. `layouts/` and `motion/` from before the lock are the old coordinates. `bp_rough_v2.mp4`, `bp_rough_v3.mp4` and `bp_rough_v4.mp4` are silent cuts of this room. They are not a new lock.
+`bp_rough_v1.mp4` and `bp_rough_v1_nonight.mp4` are the **old** room and are not this set. `layouts/` and `motion/` from before the lock are the old coordinates. `bp_rough_v2.mp4` through `bp_rough_v5.mp4` are silent cuts of this room. `bp_pic_v1.mp4` and `bp_pic_v2.mp4` are the picture pass on the same room: bubbles, an overlay on the poster zero, and two hands. None of these is a new lock. `bp_pic_v3.mp4` is the same room with the falling portrait, the cannon firing, and Pam matching the strips. `bp_pic_v4.mp4` is the current picture (sheet look, watched 27 Nov 2026). The current mix is still `bp_sound_v3.mp4` on `bp_pic_v3`. `bp_pic_v5` is reserved for clutch hands on shred, card and tape; it is not a new lock.
 
 ## Planes
 
@@ -62,4 +62,6 @@ ZERO (357, 108, 2.27), STAMP (246, 430, 2.8) and PLAN (715, 329, 19) are rough c
 
 ## Rebuild
 
-From `uptimez/src`: `python3 bp_scenes.py stills`. On this machine the interpreter is `/tmp/bpvenv/bin/python`.
+From `uptimez/src`: `python3 bp_scenes.py stills`. On this machine the interpreter is `~/bpvenv/bin/python` in WSL (26 Nov 2026). `/tmp/bpvenv` is gone after a WSL restart.
+
+`~/bpvenv` holds numpy 2.3.5, pillow 13.0.0, pycairo 1.29.2, soundfile 0.14.0, scipy 1.18.1, kokoro-onnx 0.4.7, onnxruntime 1.32.0, sherpa-onnx 2.0.3. numpy and pillow are pinned to the versions that drew the locked stills. With them the four stills re-render md5-identical.

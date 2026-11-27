@@ -6,20 +6,11 @@ A Windows filename cannot hold a colon, so this file is `16-9-developing.md`.
 
 ## Where the work stands
 
-The picture of the room is locked (25 Nov 2026). The film is not. The locked cameras are S0, SHRED, COUNTER, PUSH and NIGHT. They are crops of the front wall. ZERO, STAMP and PLAN are rough crops in `bp_frame.py`. They are not in the set file. Left and right of the window, through the glass door, both first-person walks, and a bird's view are new drawings, and the rough has not asked for one.
+The room is locked (25 Nov 2026). The film is not. Live `bp_draw_audit.py` exits 0; `--plant` exits 1 with the eight **old** planted misses only. Geometry (phase 1) is done.
 
-On the morning of the lock, `bp_draw_audit.py` exited 1. It now exits 0. `--plant` still exits 1 with these eight misses:
+**Current picture:** `bp_pic_v4.mp4` (sheet look, watched 27 Nov 2026). **Current mix:** `bp_sound_v3.mp4` on `bp_pic_v3`. **Next:** `bp_pic_v5` — clutch hands on shred, card and tape (`rough_work/pic_hands/`, `--grips`). No `bp_sound_v4` until that picture is watched. Pin tag `uptimez-blueprint-pic-v4` freezes the watched v4 commit once safety work lands.
 
-| Shot | Camera | What is off the picture |
-|---|---|---|
-| 03 | SHRED | Shred sheet and finger at y 705, 724, 741. The frame ends at y 572 |
-| 05 | SHRED | Pam's head at (694, 338). The frame ends at x 631. This is the only new dialogue |
-| 11 | COUNTER | The Client at x 132, and both pocket points. The frame starts at x 426 |
-| 13 | S0 | Stamp page at y 748. The frame ends at y 540 |
-
-Shot 01, the falling frame, is inside S0. That row must keep passing.
-
-The floor line of this room is y 400. Those four marks were drawn for the old floor near y 800.
+The locked cameras are S0, SHRED, COUNTER, PUSH and NIGHT. ZERO, STAMP and PLAN are rough crops in `bp_frame.py`, not in the set file. SCREEN, BIN, VOID and the new axes stay unasked.
 
 ## The order
 
@@ -87,6 +78,38 @@ Cost: a new drawing per angle. The cast's sides, or the room from outside the gl
 Build one only when phase 3 names the beat. Suggested order if the rough asks for the door: the reverse through the glass door at 1:20, then the walk in. The bird's view is one shot, for a beat whose joke is where the paper is. `bp_ground_plan.png` is the label sheet, not that shot.
 
 First person entering and the Client cannot share a frame. First person leaving stops on the door frame and does not replace the stamp.
+
+### 7. Rough with sound
+
+Cost: no drawing. v5's picture, stream-copied, under the dry takes. A budget of its own, `bp_sound_v1` to `v5`, because v1 to v5 were silent picture roughs: they could not judge the holds that were timed for talk, and the v5 cold watch said the meaning is in the talk.
+
+The voices are the shipped takes, copied (`bp_voices.py`). The night lines are local only until the Kokoro licence is decided. The times come from the source films (`bp_scenes.timeline`), and `bp_draw_audit.py --lines` keeps each speaker inside the camera of the moment. Loudness is measured on the AAC.
+
+Pass: `uz_check` without faults, every line heard inside the mix, the drawing audits at their exit codes, the locked stills unchanged, and two cold viewers on frames plus the transcript.
+
+`bp_sound_v1.mp4`, 26 Nov 2026. The note is `rough/bp_sound_v1_note.md`. Stop 2: the night takes stay, local only, and "Paid $999" stays. The cold watch failed on the picture (3 of 5), so there is no `bp_sound_v2` on this picture. Shot 10's two off-screen voices are accepted on this file only.
+
+### 8. Picture pass
+
+Cost: a new picture, not a redraw of v5. Budget `bp_pic_v1` to `v5`. The silent budget of 5 was picture without talk, and the sound budget is mixes on a frozen picture.
+
+Bubbles on the hold while that person talks (`speech.draw`, `SAFE_16X9`). The poster zero stays dull until Don's "Approved." on shot 07, then green, as an overlay: `bp_set._poster` and the four locked stills are not edited. Shot 03's shred follows "We'll take care of it." with Don's hand on the sheet. Shot 11's pocket follows "Is this a joke?" with Pam's hand on the card. Shot 10 is PUSH in this cut only.
+
+Pass: `speech_gate` on every bubble, the zero plant, the hand plant, `uz_check`, the locked stills at their md5, and two cold viewers. A failed bubble check is fixed before any hand work. Two check runs with no fall in faults stops the session.
+
+`bp_pic_v2.mp4`, 26 Nov 2026. The note is `rough/bp_pic_v2_note.md`. v1 (`rough/bp_pic_v1_note.md`) is bubbles, the dull zero and shot 10 on PUSH, with the inserts left in v5 order. Three attribution watches. The third passed on the body: "I won't draw one" is the blonde, and the other two lines are the woman in the purple top at the desk. Names are not printed.
+
+v2 moves the shred to after the promise, with Don's hand on the sheet, and the pocket to after the joke, with Pam's hand on the card. Both viewers read 4 of 5. Don shreds. That same desk woman finds the card. Both missed what the robot stamps, and they gave different wrong answers (the zero turned green; a blank yellow circle). The stamp draws CUSTOMER SUCCESS. That miss does not spend v3.
+
+`bp_sound_v2.mp4` is those packets with the v1 takes and the v2 times. −15.2 LUFS. Whisper 43 of 43 and 37 of 37. A bare mix still rebuilds `bp_sound_v1_nonight` at md5 `ce8403457c981d5f1d05cd8c01e5cd5e`. Stop 4 is `rough/bp_stop4.md`.
+
+Stop 4 is answered 1. The stamp miss does not get a version: the words stay CUSTOMER SUCCESS in the note. `bp_pic_v3` spends the next picture on three beats the wide still cannot tell. The portrait falls off the wall. The cannon fires. Pam matches the strips on "I'm matching them." 400 s and the v2 line times stay.
+
+`bp_pic_v3.mp4`, 26 Nov 2026. The note is `rough/bp_pic_v3_note.md`. Both viewers read a framed face, a cannon that fires, and the desk woman matching the strips. [I](0f3375b4-fdc7-4442-8a3b-ac458a3f13ef) 5 of 5, [J](c775c735-83e1-48fc-a6db-cf321cc6c07d) 4 of 5. J gave the finder to the older woman. Both read the stamp as CUSTOMER SUCCESS.
+
+`bp_sound_v3.mp4` is those packets with the v2 times. −15.2 LUFS. Whisper 43 of 43 and 37 of 37. A bare mix still rebuilds `bp_sound_v1_nonight` at md5 `ce8403457c981d5f1d05cd8c01e5cd5e`.
+
+`bp_pic_v4.mp4`, 27 Nov 2026. The note is `rough/bp_pic_v4_note.md`. Sheet look on (`SHEET`, `MOM_ARMS`). Watched the same day against `rough_work/pic_use/`. Shred, card and tape stayed `point`. `bp_pic_v5` is the clutch pass on those three holds. No `bp_sound_v4` until that picture is watched.
 
 ## What stays put
 

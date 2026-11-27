@@ -382,6 +382,21 @@ Office Noir 4, Pam's dream (a Valentine's special), **first moving rough v1 (24 
 | `office-noir-4-script-v16.md` | **Current script**, generated from `src/on4_scenes.py`; board v1–v9 changes listed in it |
 | `office-noir-4-concept-v2.md`, `on4_coldtest_*.md`, `on4_motiontest_v*.md` | The concept and the cold and motion tests of the board |
 
+### The Blueprint — [`the-blueprint/`](the-blueprint/)
+
+16:9 pilot of Act B. The Client loses a garage blueprint. Don promises it can never be lost, then feeds the page into the shredder. The search stays at 0. The woman at the desk finds the card in the Client's pocket, and the robot stamps CUSTOMER SUCCESS. The room is a new drawing, not a crop of the 9:16 set. The picture on disk is `bp_pic_v4` (watched 27 Nov 2026). The mix still playing is sound v3 on picture v3.
+
+| File | Notes |
+|---|---|
+| `bp_pic_v4.mp4` | **Current picture**, 400 s, watched 27 Nov 2026. v3's picture plus the signed sheet look. No-night cut `bp_pic_v4_nonight.mp4` is 360 s. Note `rough/bp_pic_v4_note.md` |
+| `bp_sound_v3.mp4` | **Current mix**, 400 s, −15.2 LUFS, on `bp_pic_v3`. No-night cut `bp_sound_v3_nonight.mp4` is 360 s. Local only: the six night lines are Kokoro. No `bp_sound_v4` until `bp_pic_v5` is watched |
+| `bp_pic_v3.mp4` | Picture v3. The portrait falls, the cannon fires, and Pam matches the strips. Cold watch 5 of 5 and 4 of 5. v1 is the attribution picture. v2 is the hands |
+| `bp_sound_v1.mp4`, `bp_rough_v5.mp4` | Sound v1 and the last silent rough, both the v5 picture. v1 of the silent rough is the old room |
+| `set-16x9.md`, `stills/bp_still_s0.png` | Locked room, 25 Nov. Close views `bp_still_shred.png`, `bp_still_counter.png`. Night still approved the same day |
+| `rough/bp_stop4.md`, `changelog.md` | Stop 4, and the progress log |
+
+Built from `src/bp_set.py`, `bp_frame.py`, `bp_scenes.py`, `bp_picture.py`, `bp_sound.py`, `bp_voices.py`. **Still open:** no public master until the Kokoro licence is decided. `bp_pic_v5` is planned for clutch hands on shred, card and tape.
+
 ### Happy Compliance (Christmas special) — [`happy-compliance/`](happy-compliance/)
 
 Christmas Eve at the office. DON walks in mid-shave in an open bathrobe: "Sorry. Getting ready for the ball." SOFÍA (glamorous nurse) and PAM (a five-minute home-made superhero: bath-towel cape, cardboard mask, paper "P"): "Eww." Don's eyes drop to the two red ornaments in Sofía's hands: "Nice balls. I've got two for you." The office robot, now promoted to HR and in a Santa hat, rolls in: "Inappropriate balls detected." It points at Don, rolls straight past him, and censors every ornament on the tree, then the two in Sofía's hands. "Violation resolved." Don gives a relieved thumbs-up. Sofía hands Pam a censored ornament: "Get him." The mask goes on: "Human in the loop." Sofía, sweetly: "Merry Christmas, Don." THUD. "Happy compliance!" A bar falls off, the alarm starts again. The joke: AI governance protects the company from the tree, not from the boss.

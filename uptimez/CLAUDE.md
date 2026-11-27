@@ -18,7 +18,7 @@ Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) us
 1. **Collect the lessons first.** Grep `../docs/lessons.md` for the topic (bubbles, tails, signs, mouths, scale...), write every rule that applies into the episode folder as `<episode>-<topic>-lessons-vN.md` with line numbers, and send it to Tomas before building.
 2. **Reuse what was approved.** Search `src/` and `git log origin/main` for a film where the same problem was solved and reviewed (bubbles: `bc_sb.bubble` / `measure`, checks: `qa_bc.py`). Name the file being reused. Write new code only if nothing exists, and say so to Tomas first.
 3. **Look before sending.** Open at least six frames at full size, with crops of the details the change touches (where a tail meets its box, the tip on the cheek). A checker that passes is not a reason to send; the frames are.
-4. **Hands, arms, gestures, poses:** before any change, follow section 0 of `../docs/rules-hands-and-phones.md` (list the applicable lessons with numbers in the reply, silhouettes for a meaningful gesture, measured gaps at feed size, hand sheet, 10 fps strip, change the gesture after three misreads). This holds for every fix from a review or a cold test, not only for new shots (Daddy's Home v8 round 7 skipped it and made a new misread).
+4. **Hands, arms, gestures, poses:** before any change, follow section 0 of `../docs/rules-hands-and-phones.md`. Name the job from that page's table and reply with the row before drawing. Do not grep `docs/lessons.md` for a hand shape, and do not write an episode hands file. A new job is a new row on that page. This holds for every fix from a review or a cold test, not only for new shots.
 5. **Stop when it isn't converging.** After one hour or two full check runs without the faults going down, stop and report to Tomas instead of patching on.
 
 ## Working with Tomas
@@ -43,7 +43,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 | G4 Cold mute test | Fresh viewers who have never seen the script (people, or new subagents shown frames only) tell back at least 4 of 5 beats |
 | G5 QA worker | Fails the build on any miss (below) |
 | G6 Audit triage | At most two review rounds, then go back to premises or test on viewers |
-| Drawing audit | `/quality-assurance-agent` before a still is called locked. 16:9 uses `bp_draw_audit.py`. 9:16 uses `uz_check.py`. GV, GP, GD, GH stay in `gates_os.py` for One Star. There is no color-contrast gate |
+| Drawing audit | `/quality-assurance-agent` before a still is called locked. 16:9 geometry uses `bp_draw_audit.py`. A 16:9 hand or phone uses `--grips` (plant must exit 1); `--hands` exit 0 is the old box check and is not a hand pass. 9:16 uses `uz_check.py`, whose limb check is an arm count, not the drawing. The hand pass is the PNG against `docs/rules-hands-and-phones.md`. GV, GP, GD, GH stay in `gates_os.py` for One Star. There is no color-contrast gate |
 
 ## Never break earlier work
 
@@ -57,7 +57,7 @@ The full gate list for UptimeZ is below. The skill copies in `../hoodyz/.claude/
 
 | Check | Pass |
 |---|---|
-| Format | 1080×1920, 30 fps, the expected frame count, BT.709 tags. Native 1080: render at 2× with `set_device_scale(2,2)`, not an upscale |
+| Format | 1080×1920, 30 fps, the expected frame count, BT.709 tags. Native 1080: render at 2× with `set_device_scale(2,2)`, not an upscale. **The Blueprint (16:9):** 1920×1080 from logical 960×540 at 2×; bubble safe `SAFE_16X9` `(24, 24, 936, 516)` |
 | Loudness | True peak ≤ −1 dBTP and −14 to −16 LUFS, measured on the final AAC (limit around 0.60; AAC overshoots) |
 | Speech | Whisper on every line inside the final mix, three windows per line; a lone word gets the previous line as context; score by words or letters (it runs "Pam a heart" together) |
 | Text | Every bubble, card and shout inside the safe area (18, 96, 522, 820 at 540×960) and off the right-hand button rail. Speech bubbles never cover a face. Narration and cards go at the top, under the bar (y 96): the bottom quarter is where TikTok, Reels and Shorts put captions, even inside the safe area |
