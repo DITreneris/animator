@@ -8,7 +8,7 @@ A Windows filename cannot hold a colon, so this file is `16-9-developing.md`.
 
 The room is locked (25 Nov 2026). The film is not. Live `bp_draw_audit.py` exits 0; `--plant` exits 1 with the eight **old** planted misses only. Geometry (phase 1) is done.
 
-**Current picture:** `bp_pic_v5.mp4` (clutch on shred, card and tape; opened, not watched). **Current mix:** `bp_sound_v3.mp4` on `bp_pic_v3`. **Next:** watch v5, then `bp_sound_v4` with `picture=bp_pic_v5`. Pin tag `uptimez-blueprint-pic-v4` freezes the watched v4 commit.
+**Current picture:** `bp_pic_v5.mp4` (clutch on shred, card and tape; watched 27 Nov 2026). **Current mix:** `bp_sound_v4.mp4` on `bp_pic_v5`. Pin tag `uptimez-blueprint-pic-v4` freezes the watched v4 commit. Sound budget one left.
 
 The locked cameras are S0, SHRED, COUNTER, PUSH and NIGHT. ZERO, STAMP and PLAN are rough crops in `bp_frame.py`, not in the set file. SCREEN, BIN, VOID and the new axes stay unasked.
 

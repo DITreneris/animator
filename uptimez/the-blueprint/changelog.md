@@ -10,18 +10,22 @@ The picture is locked. The film is not. The set source of truth is [`set-16x9.md
 | Close views | `stills/bp_still_shred.png`, `stills/bp_still_counter.png` |
 | Paper cut | Shot list, line ledger, script, and cut-down, all v1. 6:40 |
 | Rough | `bp_rough_v5.mp4` is the last silent cut of this room, 400 s. `bp_rough_v1.mp4` is the **old** room. v2, v3 and v4 were not rewritten. The sound under v2 to v5 is pink noise |
-| Rough with sound | `bp_sound_v3.mp4` (400 s, local only: the night lines are Kokoro) on `bp_pic_v3`, and `bp_sound_v3_nonight.mp4` (360 s). −15.2 LUFS on the AAC, true peak −4.4 / −1.2 dBTP. `bp_sound_v1` stays on v5's picture. `bp_sound_v2` stays on `bp_pic_v2`. Budget 5, three spent. Note `rough/bp_pic_v3_note.md` |
+| Rough with sound | `bp_sound_v4.mp4` (400 s, local only: the night lines are Kokoro) on `bp_pic_v5`, and `bp_sound_v4_nonight.mp4` (360 s). −15.2 LUFS on the AAC, true peak −4.4 / −1.2 dBTP. md5 `3a0cd7cd…` / `b36d06e4…`. `bp_sound_v1` stays on the silent rough. `bp_sound_v2` on `bp_pic_v2`, `bp_sound_v3` on `bp_pic_v3`. Budget 5, four spent. Note `rough/bp_sound_v4_note.md` |
 | Voices | `src/bp_voices/`: 37 shipped takes copied byte for byte, 6 new night takes (local only). Stop 2 package `voices/bp_stop2_voices.md` |
 | Layouts and motion | `layouts/` and `motion/*_v2.mp4` are on this room. The other `motion/` files are the old coordinates |
 | Night | Approved 25 Nov 2026. `stills/bp_still_night.png` `31e044d813fe94ead453458d7b71d5fe`. NIGHT (560, 360, 1.85) is in `set-16x9.md` |
 | Drawing audit | `/quality-assurance-agent`. Live `bp_draw_audit.py` exits 0. `--plant` exits 1 with the eight old fails. `--lines` exits 0 with shot 10's two off-screen speakers as OPEN; `--lines --picture` exits 0. `--hands` exits 0; `--hands --plant` exits 1. That hands check measures the boxes `bp_picture.py` just built. `--grips` exits 0 on the hand stills; `--grips --plant` exits 1. A named action is not a hand pass. The still is opened beside the previous picture |
 | Series code | Merged `origin/main` `2205945` (The Offer, PR #141) at `2ce3e7e`. Branch point stays `d14139b`. Pinch flags and `PHONE_RIM` default off. `ik2` is unchanged. `bp_picture.py look` exits 0 after the merge. `bp_pic_v4.mp4` md5 `fd263e1eee822917db682d15fe5ac2a8` and the no-night `6bb05a079721c02bebe560afccdbe2a9` did not move. Locked stills `25111ff3`, `da34775d`, `0a25fcc6`, `31e044d8` |
-| Picture | `bp_pic_v5.mp4` (400 s) and `bp_pic_v5_nonight.mp4` (360 s), opened, not watched. md5 `91889e7a1ed4d8a62e42239fc14cc19a` / no-night `3fcec6b6bda3f4526913424c40ca0daf`. Clutch on shred, card and tape. Sheet look stays on. Budget `bp_pic_v1` to `v5`, five spent. Tag `uptimez-blueprint-pic-v4` pins watched v4. Note `rough/bp_pic_v5_note.md` |
+| Picture | `bp_pic_v5.mp4` (400 s) and `bp_pic_v5_nonight.mp4` (360 s), watched 27 Nov 2026. md5 `91889e7a1ed4d8a62e42239fc14cc19a` / no-night `3fcec6b6bda3f4526913424c40ca0daf`. Clutch on shred, card and tape. Sheet look stays on. Budget `bp_pic_v1` to `v5`, five spent. Tag `uptimez-blueprint-pic-v4` pins watched v4. Note `rough/bp_pic_v5_note.md` |
 | Hands | Four stills in `rough_work/pic_hands/`. v5 motion uses `clutch` on shred, card and tape. v4 motion stayed `point`. Pam's clutch is 0.70 of width 18. Don's clutch scale 0.72. The card in the air has no hand. The old phone drawing is `bp_hand_plant_phone.png` |
 | Sheet look | Approved 26 Nov 2026. `rough_work/pic_use/`. Watched on v4 the same day as the safety lock. The four locked stills kept their md5 |
-| Next | Watch `bp_pic_v5`. No `bp_sound_v4` until that watch (`picture=bp_pic_v5`). SCREEN, BIN, VOID, and the new axes stay unasked. No public master until the Kokoro licence is decided |
+| Next | Cold watch on `bp_sound_v4` if wanted. Sound budget one left (`bp_sound_v5`). SCREEN, BIN, VOID, and the new axes stay unasked. No public master until the Kokoro licence is decided |
 
 ## Log
+
+### 2026-11-27 — sound v4 on picture v5
+
+`bp_sound_v4.mp4` and `bp_sound_v4_nonight.mp4` on `bp_pic_v5` (`mix … 4 bp_pic_v5`). −15.2 LUFS, peaks −4.4 / −1.2 dBTP. Whisper 43 of 43 and 37 of 37. Mute plant loses exactly `fs_4.1` and `cs_6.5`. `bp_sound_v1`–`v3` and `bp_pic_v5` md5s held. Note `rough/bp_sound_v4_note.md`. **v5 picture watch closed** the same day.
 
 ### 2026-11-27 — picture v5, clutch hands, not watched
 
