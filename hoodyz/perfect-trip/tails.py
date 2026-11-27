@@ -26,9 +26,9 @@ def _tail(c, b, tip, w, bend):
     c.curve_to(m[0] + px * w * .05, m[1] + py * w * .05, m[0] + px * w * .22, m[1] + py * w * .22, b[0] + px * w / 2, b[1] + py * w / 2)
     c.close_path()
 
-def bubble(c, lines, r, tip, cy=500, size=66, cx=540, bend=.16):
+def bubble(c, lines, r, tip=None, cy=500, size=66, cx=540, bend=.16, k=None):
     """Same call as R.bubble (r = frames since it popped), tip = where the tail stops. bend > 0 curves one way, < 0 the other."""
-    k = R.back(r / 5) if r < 5 else 1
+    k = (R.back(r / 5) if r < 5 else 1) if k is None else k   # k given: an explicit scale (a bubble shrinking away)
     if k <= .03: return
     c.save(); c.select_font_face('Lilita One'); c.set_font_size(size)
     w = max(c.text_extents(l).width for l in lines) + 90; h = len(lines) * size * 1.12 + 56; c.restore()

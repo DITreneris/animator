@@ -57,18 +57,24 @@ def eva_seated(c, x, es, expr='evacalm', tilt=0, pose='coffee', sip=.2, hand_to=
     return hand
 
 AI_HIDE, AI_UP = 1662, 1310                                               # MY AI behind the bench: only its antenna showing / popped up
-def two_shot(c, f, ai_gy, ai_kw, hoody_op, eva_expr='evacalm', nod=0, hoody_gaze=20):
-    """The bench two-shot that opens and closes the film (so the loop is seamless): MY AI's antenna peeks over the backrest."""
+def two_shot(c, f, ai_gy, ai_kw, hoody_op, eva_expr='evacalm', nod=0, hoody_gaze=20, eva_x=760, ai_x=540, ai_s=1.1, ai_front=False,
+             hoody_expr='hopeful', hoody_rot=0, after_eva=None):
+    """The bench two-shot that opens and closes the film (so the loop is seamless): MY AI's antenna peeks over the backrest.
+    v3: the after-scene and the end use it too (MY AI standing on the bench end = ai_front), so nothing jumps between them."""
     bench_scene_back(c, f)
-    c.save(); c.rectangle(0, 0, W, BS - 204); c.clip()                  # behind the backrest: only what rises above it shows
-    A.myai(c, 540, ai_gy, 1.1, **ai_kw); c.restore()
+    if not ai_front:
+        c.save(); c.rectangle(0, 0, W, BS - 204); c.clip()              # behind the backrest: only what rises above it shows
+        A.myai(c, ai_x, ai_gy, ai_s, **ai_kw); c.restore()
     bench_front(c)
-    R.hoody(c, 330, BS, 1.0, expr='hopeful', pose='sit', seat=(BX0, BX1), arms=('rest', 'rest'), op=hoody_op, gaze=hoody_gaze, f=f)
-    eva_seated(c, 760, 1.0, eva_expr, tilt=nod, blink=K.blinking(f, 7))
+    R.hoody(c, 330, BS, 1.0, expr=hoody_expr, pose='sit', seat=(BX0, BX1), arms=('rest', 'rest'), op=hoody_op, gaze=hoody_gaze, rot=hoody_rot, f=f)
+    if ai_front: A.myai(c, ai_x, ai_gy, ai_s, **ai_kw)
+    eva_seated(c, eva_x, 1.0, eva_expr, tilt=nod, blink=K.blinking(f, 7))
+    if after_eva: after_eva(c)
 
 def s_invite(c, f, r):  # before: "Do you want to go on a trip?" - she nods - MY AI (its antenna there all along) pops up
     pop = oe((r - 76) / 8)
-    two_shot(c, f, lerp(AI_HIDE, AI_UP, pop),
+    peek = 26 * math.sin(math.pi * cl((r - 24) / 8)) + 34 * math.sin(math.pi * cl((r - 44) / 9))   # v3: the antenna twitches up, twice
+    two_shot(c, f, lerp(AI_HIDE, AI_UP, pop) - peek,
              dict(eye='focus' if r > 86 else 'wide', arms=('up', 'up') if r < 90 else ('down', 'wave'), talk=talk(f, 'ai_plan')),
              .2 + .8 * talk(f, 'h_invite'), 'charmed' if r >= 62 else 'evacalm',
              math.sin(cl((r - 62) / 12) * math.pi * 2) * .08 if 62 <= r < 74 else 0)
@@ -81,32 +87,44 @@ def bench_front(c):
     Sh.cat_one_eye(c, 860, BS - 6, .8, open_eye=False)
 
 _PHOTO = None
+def eva_phone(c, turn):
+    """Her phone, turned to him: the Rome photo (turn 0 = down, 1 = shown)."""
+    if turn <= 0: return
+    pw, ph = 250 * turn + 20, 440
+    px, py = 480 - pw / 2, 1170
+    limb(c, [(564, 1160), (600, 1330), (px + pw + 4, py + ph * .62)], 30, E.COAT)          # her yellow sleeve: it's her phone
+    rr(c, px - 10, py - 10, pw + 20, ph + 20, 30); fs(c, hx('1d2130'), 6)
+    c.save(); rr(c, px, py, pw, ph, 22); c.clip(); c.translate(px, py); c.scale(pw / W, ph / H); c.set_source_surface(_PHOTO, 0, 0); c.paint(); c.restore()
+    ell(c, px + pw + 6, py + ph * .6, 26, 30); fs(c, E.SKIN_E, 5)
 def s_after(c, f, r):   # after: "How did you like our trip?" - she turns her phone: the Rome photo. MY AI: "THANKS FOR THE PHOTOS!"
     global _PHOTO
     if _PHOTO is None:
         _PHOTO = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); TP.rome(cairo.Context(_PHOTO), 0, label='ITS TRIP')
-    bench_scene(c, f)
-    R.hoody(c, 300, BS, 1.0, expr='hopeful' if r < 96 else 'bored', pose='sit', seat=(BX0, BX1), arms=('rest', 'rest'),
-            op=.2 + .8 * talk(f, 'h_howtrip'), gaze=20, f=f)
-    A.myai(c, 880, BS - 6, 1.0, eye='happy', arms=('down', 'wave' if r > 90 else 'down'), talk=talk(f, 'ai_thanks'))
     turn = oe((r - 62) / 10)
-    eva_seated(c, 640, 1.0, 'charmed', tilt=-.15 * turn, blink=K.blinking(f, 7))
-    if turn > 0:                                                         # her phone, turned to him: the Rome photo
-        pw, ph = 250 * turn + 20, 440
-        px, py = 480 - pw / 2, 1170
-        limb(c, [(564, 1160), (600, 1330), (px + pw + 4, py + ph * .62)], 30, E.COAT)          # her yellow sleeve: it's her phone
-        rr(c, px - 10, py - 10, pw + 20, ph + 20, 30); fs(c, hx('1d2130'), 6)
-        c.save(); rr(c, px, py, pw, ph, 22); c.clip(); c.translate(px, py); c.scale(pw / W, ph / H); c.set_source_surface(_PHOTO, 0, 0); c.paint(); c.restore()
-        ell(c, px + pw + 6, py + ph * .6, 26, 30); fs(c, E.SKIN_E, 5)
-    if r < 88: TL.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, TL.sit_ear(300), cy=905, cx=430, size=56, bend=-.12)
+    two_shot(c, f, BS - 6, dict(eye='happy', arms=('down', 'wave' if r > 90 else 'down'), talk=talk(f, 'ai_thanks')),
+             .2 + .8 * talk(f, 'h_howtrip'), 'charmed', nod=-.15 * turn, eva_x=640, ai_x=880, ai_s=1.0, ai_front=True,
+             hoody_expr='hopeful' if r < 96 else 'bored', after_eva=lambda c: eva_phone(c, turn))
+    if r < 88: TL.bubble(c, ['HOW DID YOU LIKE', 'OUR TRIP?'], r - 4, TL.sit_ear(330), cy=905, cx=430, size=56, bend=-.12)
     if r >= 90: TL.bubble(c, ['THANKS FOR', 'THE PHOTOS!'], r - 90, TL.robot_top(880, BS - 6, 1.0, -1, dx=30), cy=800, cx=760, size=56, bend=.08)
-def s_another(c, f, r): # "...Another trip?" - quietly, to her. MY AI ducks back behind the bench: the last frame is frame 0
-    duck = oe((r - 22) / 10)                                               # a facepalm at "another trip?", then it ducks back down
-    fp = 3 <= r < 22
-    two_shot(c, f, lerp(AI_UP, AI_HIDE, duck), dict(eye='blank' if fp else 'happy', arms=('down', 'chest' if fp else 'down'), tilt=-12 if fp else 0),
-             .2 + .8 * talk(f, 'h_another'))
-    if r < 50: TL.bubble(c, ['...ANOTHER TRIP?'], r - 8, TL.sit_ear(330, -1, y=1100), cy=800, cx=400, size=58, bend=.08)
-    else: TL.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], 10, TL.sit_ear(330), cy=905, cx=430, size=54, bend=-.12)   # v2: the question for the loop, up before frame 0
+def s_another(c, f, r): # "...Another trip?" - she lowers the phone; MY AI facepalms, hops over the backrest and hides; the question again
+    turn = 1 - oe(r / 10)                                                  # she lowers her phone
+    fp = 3 <= r < 22                                                       # MY AI's facepalm at "another trip?"
+    hop = cl((r - 22) / 12)                                                # over the backrest: up, back, down behind it
+    slide = ss(cl((r - 34) / 14))                                          # hidden: only its antenna slides back to its spot
+    scoot = ss(cl((r - 26) / 16))                                          # she takes back her place on the bench
+    if r < 22: ax, agy, a_s, front = 880, BS - 6, 1.0, True
+    elif r < 34:
+        ax, a_s = lerp(880, 800, hop), lerp(1.0, 1.05, hop)
+        agy = lerp(BS - 6, AI_HIDE, hop) - 340 * math.sin(math.pi * hop); front = hop < .5   # above the backrest when it changes layer
+    else: ax, agy, a_s, front = lerp(800, 540, slide), AI_HIDE, lerp(1.05, 1.1, slide), False
+    kw = (dict(eye='blank', arms=('down', 'chest'), tilt=-12) if fp else
+          dict(eye='happy', arms=('down', 'wave')) if r < 3 else dict(eye='wide', arms=('up', 'up')))
+    two_shot(c, f, agy, kw, .2 + .8 * talk(f, 'h_another'), 'charmed' if r < 52 else 'evacalm', nod=-.15 * turn,
+             eva_x=lerp(640, 760, scoot), ai_x=ax, ai_s=a_s, ai_front=front, hoody_expr='bored' if r < 8 else 'hopeful',
+             after_eva=lambda c: eva_phone(c, turn))
+    if 8 <= r < 52: TL.bubble(c, ['...ANOTHER TRIP?'], r - 8, k=(oe((52 - r) / 5) if r >= 47 else None),   # shrinks away over 5 frames
+                              tip=TL.sit_ear(330, -1, y=1100), cy=800, cx=400, size=58, bend=.08)
+    if r >= 52: TL.bubble(c, ['DO YOU WANT TO', 'GO ON A TRIP?'], r - 52, TL.sit_ear(330), cy=905, cx=430, size=54, bend=-.12)   # pops; settled by the last frame = frame 0
 
 def s_rome_act(c, f, r):  # MY AI hands Hoody the phone ("you take it") and sits down with Eva: the cameraman is made
     P.rome(c, f, s=.62, cx=540, horizon=1230)
@@ -301,18 +319,30 @@ def draw(f):
     if i in TRIP and i - 1 in TRIP and r < XF and fn not in (s_open, s_pisa):   # the shutter flash is the cut: no ghost of the giant face over the wide shot (v3)                            # crossfade from the shot before
         prev = render_shot(i - 1, a - 1); c.set_source_surface(prev, 0, 0); c.paint_with_alpha(1 - (r + 1) / (XF + 1))
     label = 'ITS TRIP' if (fn is s_rome and r >= 14) or fn is s_after or (fn is s_another and r < 52) else 'HIS TRIP'   # v3: it flips back once MY AI is hidden, so the last frame is frame 0
-    Sh.topbar(c, label)
-    if fn is s_rome and 14 <= r < 30: pulse(c, r - 14)
+    pop = (r - 14, 16) if fn is s_rome and r >= 14 else (r - 52, 7) if fn is s_another and r >= 52 else None   # ITS pops at Rome; HIS pops back at the end
+    topbar(c, label, pop)
     if fn.__name__.endswith('_photo') or fn is s_rome:                    # the stamp thumps down at the shutter (drawn over the bar's level, unscaled)
         pass
     return S
 
-def pulse(c, t):
-    k = 1 + .25 * (1 - t / 16) ** 2                                       # swells in place, down a little: never over ME + MY AI or off the edge
-    c.select_font_face('Lilita One'); c.set_font_size(58); w = max(200, c.text_extents('ITS TRIP').width + 96)
-    px, iy = 1020 - w / 2, 222 + 69
-    c.save(); c.translate(px - 6 * (k - 1), iy + 40 * (k - 1)); c.scale(k, k)
-    rr(c, -w / 2, -44, w, 88, 44); fs(c, YEL, 7); txt(c, 'ITS TRIP', 0, 0, 58, INK, lw=0); c.restore()
+_BAR = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, 420)
+BARK = (956 - 64) / (1044 - 36)                                           # v3: the bar (x 36-1044 with its stroke) into x 64-956
+def _map(x, y): return 64 + (x - 36) * BARK, 222 + (y - 222) * BARK
+def topbar(c, label, pop=None):
+    """The series bar (shared kit untouched), drawn off-screen and scaled into the safe zone; registered for safe.py."""
+    cc = cairo.Context(_BAR); cc.set_operator(cairo.OPERATOR_CLEAR); cc.paint(); cc.set_operator(cairo.OPERATOR_OVER)
+    Sh.topbar(cc, label); box = [36, 218, 1044, 364]
+    if pop is not None:
+        t, d = pop
+        if t < d:
+            cc.select_font_face('Lilita One'); cc.set_font_size(58); w = max(200, cc.text_extents(label).width + 96); iy = 222 + 69
+            cc.set_font_size(68); room = (1020 - 274 - cc.text_extents('ME + MY AI').width - 14) / w   # never over ME + MY AI (measured)
+            k = 1 + (min(1.25, room) - 1) * (1 - t / d) ** 2
+            cc.save(); cc.translate(1020, iy + 40 * (k - 1)); cc.scale(k, k)          # grows left and down from the pill's right end
+            rr(cc, -w, -44, w, 88, 44); fs(cc, YEL, 7); txt(cc, label, -w / 2, 0, 58, INK, lw=0); cc.restore()
+            box = [min(36, 1020 - w * k - 4), 218, 1044, max(364, iy + 40 * (k - 1) + 44 * k + 4)]
+    c.save(); c.translate(64, 222); c.scale(BARK, BARK); c.translate(-36, -222); c.set_source_surface(_BAR, 0, 0); c.paint(); c.restore()
+    TL.BOXES.append(('topbar ' + label, *_map(box[0], box[1]), *_map(box[2], box[3])))
 
 if __name__ == '__main__':
     if sys.argv[1:2] == ['frames']:
