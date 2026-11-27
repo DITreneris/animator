@@ -115,6 +115,10 @@ def visor_icon(k, sx, sy, r, kind):
             c.move_to(lx, y0 + h); c.line_to(lx, y0 + h + 0.24 * r); c.stroke()
         c.set_source_rgba(1.0, 0.25, 0.20, 0.35); c.arc(sx, y0 - 0.16 * r, 0.17 * r, 0, 2 * math.pi); c.fill()
         c.set_source_rgb(1.0, 0.28, 0.22); c.arc(sx, y0 - 0.16 * r, 0.09 * r, 0, 2 * math.pi); c.fill()   # the red light
+    elif kind == "ask":                                      # opt-in (ep 14 phone review, 25 Nov): 3.3, one big "?" -- the
+        c.select_font_face("Lilita One"); c.set_font_size(0.95 * r)   # bubble already says PUBLIC POST?, the visor
+        e = c.text_extents("?"); c.move_to(sx - e.x_advance / 2 - e.x_bearing, sy - e.y_bearing / 2 - e.height / 2 + 0.06 * r)
+        c.show_text("?")                                     # must not say it twice
     elif kind == "public":
         c.select_font_face("Lilita One"); c.set_font_size(0.30 * r)
         for i, t in enumerate(("PUBLIC", "POST?")):

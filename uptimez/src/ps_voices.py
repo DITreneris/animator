@@ -34,7 +34,8 @@ LINES = [
     ("2.9", "ROBOT", "Border breach. One heel.", None, 1.0),
     ("2.9b", "SOFIA", "Diplomatic heel.", None, 1.0),                    # v2: flat, not moving
     ("2.10a", "DON", "And you?", None, 1.0),
-    ("2.10b", "ROBOT", "Both.", None, 1.0),
+    ("2.10b", "ROBOT", "Both.", "Both. Sides.", 1.0),                    # v2 (26 Nov): cut after "Both" (CUT): alone,
+                                                                           # the robot's "Both." was heard "Bose" 4/4
     ("3.1a", "ROBOT", "Smile. Recording.", None, 1.0),                   # v2
     ("3.1b", "MOM", "Chin up, Donnie.", None, 1.0),                      # v2: soft, from the tape
     ("3.3", "ROBOT", "Public post? Human approval required.", None, 1.0),
@@ -81,6 +82,8 @@ def takes(only=None):
         if only and shot not in only:
             continue
         a = ob.trim(np.asarray(take(who, give or line, speed), dtype=np.float64))
+        if shot in CUT:                                   # keep the first word of a longer reading (its "th" is spoken)
+            a = a[:int(CUT[shot] * SR)].copy(); nf = int(0.025 * SR); a[-nf:] *= np.linspace(1, 0, nf)
         sf.write("%s/%s.wav" % (OUT, shot), a.astype(np.float32), SR)
         a16 = np.interp(np.linspace(0, len(a) - 1, int(len(a) * 16000 / SR)), np.arange(len(a)), a)
         pad = np.zeros(4800)
@@ -124,6 +127,9 @@ def shots():
             out.append(dict(scene=scene, shot=m.group(1), script=float(m.group(2)), picture=cells[1],
                             line=cells[3] if cells[3] not in ("—", "") else None))
     return out
+
+
+CUT = {"2.10b": 0.36}                                                    # shot: seconds kept
 
 
 TAKES_OF = {"2.10": ("2.10a", "2.10b"), "3.1": ("3.1a", "3.1b"), "4.3": ("4.3a", "4.3b")}   # one shot, two lines

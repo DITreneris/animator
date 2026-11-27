@@ -139,7 +139,13 @@ def hoody(c, x, gy, s, expr='calm', pose='stand', arms=('rest', 'rest'), gaze=0,
     else:
         for q in (-1, 1):
             hip = (x + q * 40 * s, waist - 10 * s); toe = 0
-            if pose == 'stand' and step is not None:                     # walking: the swinging foot lifts, the knee bends
+            if pose == 'stand' and legs == 'drag2':                      # towed and worn out (Perfect Trip v2): deeper knees, the trailing foot flat on its toe
+                if q < 0: knee = (x - 116 * s, waist + 98 * s); foot = (x - 46 * s, gy - 14 * s); toe = 0
+                else:     knee = (x + 84 * s, waist + 128 * s); foot = (x + 126 * s, gy - 14 * s); toe = .7
+            elif pose == 'stand' and legs == 'drag':                       # towed (Perfect Trip v2): the leading knee bent, flat foot planted; the trailing leg dragging, toe down
+                if q < 0: knee = (x - 92 * s, waist + 112 * s); foot = (x - 44 * s, gy - 14 * s); toe = 0
+                else:     knee = (x + 70 * s, waist + 138 * s); foot = (x + 128 * s, gy - 14 * s); toe = .55
+            elif pose == 'stand' and step is not None:                     # walking: the swinging foot lifts, the knee bends
                 ph = step + (q > 0) * math.pi; lift = max(0, math.cos(ph)) * 26 * s
                 foot = (x + q * 40 * s + math.sin(ph) * 46 * s, gy - 14 * s - lift); knee = (x + q * 44 * s + math.sin(ph) * 30 * s, waist + 130 * s - lift * .5)
             elif pose == 'stand':

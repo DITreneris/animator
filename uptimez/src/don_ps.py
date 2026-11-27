@@ -93,6 +93,10 @@ def _cap(c, pts, t, col, lw=2.0):
     c.set_line_cap(0); c.set_line_join(0)
 
 
+ROLL_GRIP = [0]                                              # opt-in: rig units the roll hangs under the fist (0 = round it)
+LEG = [None]
+
+
 def _legs(k, x, feet, s, u):
     """Under the belt: the screen-left leg planted; the screen-right one bent, the knee up and out, the foot in profile
     hovering, toes toward the line. u 0..1: how high."""
@@ -100,27 +104,40 @@ def _legs(k, x, feet, s, u):
     c.save(); c.translate(x, feet); c.scale(s, s)
     w = WAIST_Y
     cut(k, [(-45, w), (2, w), (-2, -10), (-47, -10)], dv.KHAKI, shadow=False, lw=2)          # the planted leg
-    cut(k, [(-50, -12), (2, -12), (4, 2), (-52, 2)], (0.24, 0.18, 0.13), shadow=False, lw=2)   # its shoe
+    e_ = 3 if LEG[0] and LEG[0].get("wide") else 0        # opt-in: the standing shoe 10 % wider (the weight is on it)
+    cut(k, [(-50 - e_, -12), (2 + e_, -12), (4 + e_, 2), (-52 - e_, 2)], (0.24, 0.18, 0.13), shadow=False, lw=2)   # its shoe
     lift = 44 * u
     kx, ky = 30 + 34 * u, w + 30 - 8 * u                                                      # the knee
     ax, ay = kx + 16 * u, -16 - lift                                                          # the ankle
-    c.set_source_rgba(0, 0, 0, 0.18); c.save(); c.translate(ax + 22, 4); c.scale(1, 0.22)
+    L_ = LEG[0]                                              # opt-in (5.4, review 26 Nov): knee and ankle moved (x u), the shoe
+    if L_:                                                   # smaller and tipped toes-down, a softer shadow
+        kx, ky = kx + L_["knee"][0] * u, ky + L_["knee"][1] * u
+        ax, ay = ax + L_["ankle"][0] * u, ay + L_["ankle"][1] * u
+    c.set_source_rgba(0, 0, 0, L_["shadow"] if L_ else 0.18); c.save(); c.translate(ax + 22, 4); c.scale(1, 0.22)
     c.new_path(); c.arc(0, 0, 34 - 10 * u, 0, 2 * math.pi); c.restore(); c.fill()           # the shadow under the foot
     _cap(c, [(24, w + 10), (kx, ky)], 44, dv.KHAKI)                                           # the thigh
     _cap(c, [(kx, ky), (ax, ay)], 38, dv.KHAKI)                                               # the shin
     c.set_source_rgb(*dv.KHAKI); c.new_path(); c.arc(kx, ky, 21, 0, 2 * math.pi); c.fill()  # the knee, one piece
     c.set_source_rgb(*INK); c.set_line_width(1.6); c.new_path(); c.arc(kx - 4, ky + 2, 14, -0.6, 0.9); c.stroke()  # the fold
+    if L_:
+        c.save(); c.translate(ax, ay); c.rotate(L_["tilt"] * u); c.scale(L_["shoe"], L_["shoe"]); c.translate(-ax, -ay)
     c.new_path()                                                                              # the shoe, side on, toes right
     c.move_to(ax - 18, ay - 6); c.line_to(ax + 14, ay - 8); c.curve_to(ax + 40, ay - 6, ax + 52, ay + 4, ax + 50, ay + 14)
     c.line_to(ax - 20, ay + 14); c.close_path()
     c.set_source_rgb(0.24, 0.18, 0.13); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
-    _cap(c, [(ax - 18, ay - 10), (ax + 16, ay - 12)], 10, dv.KHAKI)                          # the hem over it
+    if not (L_ and L_.get("nohem")):                       # (review 26 Nov: the hem's own shape read as "an extra joint")
+        _cap(c, [(ax - 18, ay - 10), (ax + 16, ay - 12)], 10, dv.KHAKI)                      # the hem over it
+    if L_:
+        c.restore()
     if u > 0.6:
         c.set_source_rgb(*INK); c.set_line_width(1.8); c.set_line_cap(1)                       # it wobbles
         for i in (-1, 1):
             c.new_path(); c.move_to(ax + 16 + i * 4, ay + 26); c.line_to(ax + 16 + i * 12, ay + 34); c.stroke()
         c.set_line_cap(0)
     c.restore()
+
+
+BLIND_GAP_FIX = [False]
 
 
 def blind_over(k, head, s, seed=4800):
@@ -132,7 +149,10 @@ def blind_over(k, head, s, seed=4800):
     c.set_source_rgba(0.25, 0.22, 0.20, 0.0)
     c.new_path(); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
     c.rectangle(hx - w / 2, top, w, bot - top)
-    c.save(); c.translate(hx, hy + 6 * s); c.scale(44 * s, 40 * s); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.save(); c.translate(hx, hy + 6 * s); c.scale(44 * s, 40 * s)
+    if BLIND_GAP_FIX[0]:                                     # opt-in (Pick a Side film, 25 Nov): without a new sub-path the
+        c.new_sub_path()                                     # arc joined the rectangle's corner: a stroke across his eye,
+    c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()              # read as "an eyepatch" by 6 cold viewers
     c.set_source_rgb(*SLAT); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2.2); c.stroke()
     c.set_fill_rule(cairo.FILL_RULE_WINDING)
     c.set_source_rgba(0.10, 0.12, 0.25, 0.13)                                         # his body, a shadow through the slats
@@ -190,15 +210,28 @@ def cape_rail(k, head, s, seed=4811):
     c.restore()
 
 
+ROLL_TAIL = [False]
+
+
 def tape_roll(k, x, y, s, ang=0.0):
     """The roll of yellow tape: a fat ring, a tongue of tape hanging off it."""
     c = k.c
+    hx_, hy_ = x, y
+    if ROLL_GRIP[0]:                                         # opt-in (audit P2, 26 Nov: "the hand a disc inside the roll"): the
+        y = y + ROLL_GRIP[0] * s                             # ring hangs under the fist, the fist drawn again over its rim
     c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
-    cut(k, [(10, 8), (30, 10), (34, 60), (22, 64), (14, 56)], TAPE, lw=1.8)
+    if ROLL_TAIL[0]:                                         # opt-in (film, 25 Nov: the roll read as "a coin, a ring"): a
+        cut(k, [(10, 8), (32, 10), (39, 78), (26, 82), (16, 68)], TAPE, lw=1.8)      # longer tongue of tape, flat, a
+        c.set_source_rgb(0.80, 0.62, 0.10); c.set_line_width(2)                      # torn end
+        c.move_to(26, 82); c.line_to(30, 74); c.line_to(34, 81); c.line_to(39, 78); c.stroke()
+    else:
+        cut(k, [(10, 8), (30, 10), (34, 60), (22, 64), (14, 56)], TAPE, lw=1.8)
     for col, lw in ((INK, 30), (TAPE, 25)):
         c.set_source_rgb(*col); c.set_line_width(lw); c.new_path(); c.arc(0, 0, 26, 0, 2 * math.pi); c.stroke()
     c.set_source_rgb(0.80, 0.62, 0.10); c.set_line_width(3); c.new_path(); c.arc(0, 0, 16, 0, 2 * math.pi); c.stroke()
     c.restore()
+    if ROLL_GRIP[0]:
+        hp.redraw_at(k, hx_, hy_)
 
 
 def tape_strip(k, a, b, s):

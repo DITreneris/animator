@@ -131,6 +131,8 @@ def _behind_then_thumb(k, hx, hy, w, skin, d, obj, thumb_from, thumb_to):
 
 
 PAM_CUFF = (0.36, 0.22, 0.50)
+TIP52 = [False]
+V20, PEN52, ZOOM52, OFF52 = [False], [None], [1.6], [70.0]                                                     # v20 (cs_os20)
 SHIFT52 = [0.0]                                                                   # v17: the 5.2 insert moved up (cs_v17)
 
 
@@ -213,12 +215,16 @@ def s5_2(k, d):
     c = k.c
     sb.bg(c, (0.30, 0.26, 0.22))
     c.save(); c.translate(0, -SHIFT52[0])                                          # v17: the tape higher, her sleeve shorter
+    if V20[0]:                                                                     # v20: closer on the tape: the plan fills the
+        c.translate(*s5.TAPE); c.scale(ZOOM52[0], ZOOM52[0]); c.translate(-s5.TAPE[0], -s5.TAPE[1] + OFF52[0])   # frame (no empty floor)
     c.set_source_surface(s4._plan_surface("number"), 0, 0); c.paint()
     if SHIFT52[0]:                                                                 # the plan's own floor on down past its edge
         c.set_source_surface(s4._plan_surface("number"), 0, SHIFT52[0]); c.rectangle(0, 960, 540, SHIFT52[0] + 4); c.fill()
     n_, bx, by, bw, bh = [b for b in s5.ac._bays() if b[0] == 7][0]
     W = (bw + 8) * 11.0
     c.save(); c.translate(*s5.TAPE); c.rotate(-0.06)
+    if V20[0]:                                                                     # v20: a soft shadow under the paper (review 05)
+        c.set_source_rgba(0, 0, 0, 0.22); c.rectangle(-W / 2 + 10, -52, W - 8, 120); c.fill()
     c.set_source_rgb(0.98, 0.96, 0.86); c.rectangle(-W / 2 + 4, -60, W - 8, 120); c.fill()
     c.select_font_face("Comic Neue", 0, 1); c.set_font_size(46.2); c.set_source_rgb(*s5.PEN)
     tip = None
@@ -231,14 +237,16 @@ def s5_2(k, d):
             c.move_to(x0, y0); c.show_text(txt[:n])
         if d0 <= d <= d1:
             tip = (x0 + c.text_extents(txt[:n]).x_advance + 4, y0 - 6 + (4 if d % 2 else 0))
+            if TIP52[0] and n:                                                     # v21: ON the last stroke, not after it
+                tip = (x0 + c.text_extents(txt[:n]).x_advance - 6, y0 - 14 + (4 if d % 2 else 0))
     if tip is None and d < s5.WRITE[0][1]:
         tip = (-W / 2 + 40, -80 - (s5.WRITE[0][1] - d) * 60)
     tx_ = c.user_to_device(*tip) if tip else None
     c.restore()
     if tip:                                                                       # v17: back through the context, not / HI:
-        s5_2_pen(k, *c.device_to_user(*tx_))                                       # a scratch surface without the device scale
+        (PEN52[0] or s5_2_pen)(k, *c.device_to_user(*tx_))                         # a scratch surface without the device scale
     c.restore()
-    if d >= 20:
+    if d >= 20 and not V20[0]:                                                     # v20: no phone poking in (tiny, ownerless)
         u = s1.ease((d - 20) / 6.0)
         x, y = 372, 640 + (1 - u) * 420
         c.save(); c.translate(x, y); c.rotate(0.10)
@@ -256,6 +264,10 @@ def s5_2(k, d):
 
 # ---- 6.1 ---------------------------------------------------------------------------------------------------------------------
 
+POSE61 = [(22, 62, -22, -62)]
+ONEHAND61 = [None]                                                                # v18: (o -> the holding hand) (cs_v18)
+
+
 def s6_1(k, d):
     """12 drawings. The door behind him, the roll under his arm; his phone in his right hand (the series' phone grip,
     thumb on its face toward his middle), his left hand at its other side, fingers round its edge; eyes down on it."""
@@ -266,6 +278,8 @@ def s6_1(k, d):
 
     def pre(k_):
         c = k_.c
+        if ONEHAND61[0]:                                                           # v18: no roll (two viewers: "a blue pole")
+            return
         c.save(); c.translate(x - 44, 688); c.rotate(-0.42)
         rect(k_, -46, -7, 92, 14, s4.BLUE, 995, lw=1.6)
         ellipse(k_, -46, 0, 3, 7, (0.30, 0.52, 0.92), 996, shadow=False, lw=1.2)
@@ -275,6 +289,12 @@ def s6_1(k, d):
     def ex(k_, o):
         (lx, ly), (rx, ry) = sorted(o["client"]["hands"])
         c = k_.c
+        if ONEHAND61[0]:                                                           # v18: one hand holds it, the other hangs
+            hx, hy = ONEHAND61[0](o)                                               # (the two round it read as a knot)
+            s1.PH_DEV.append(c.user_to_device(hx, hy))
+            SKIN_NEXT[0] = sb.SKIN_CL
+            oc.phone_grip(k_, hx, hy + lift, 0.40, screen=None, ang=-0.10, skin=sb.SKIN_CL, body_x=x, back=True)
+            return
         for hx, hy in ((lx, ly), (rx, ry)):
             s1.PH_DEV.append(c.user_to_device(hx, hy))
         mx, my = (lx + rx) / 2 + 4, max(ly, ry) + lift
@@ -285,7 +305,7 @@ def s6_1(k, d):
     with s4.Strip(None), s1.Breath(sb, "client", s1.br(d, 0.4)):
         s1.S(k, s6.CAM61, auto=False, portrait=False, pre=pre, extra=ex,
              **s1.base(rb=False, sf=False, dn=False, pm=False, mm=False,
-                       cl=s1.at("client", x=x, pose=(22, 62, -22, -62), face=face, look=look)))
+                       cl=s1.at("client", x=x, pose=POSE61[0], face=face, look=look)))
 
 
 # ---- 6.5: Sofía's fingers round the tablet's edge -----------------------------------------------------------------------

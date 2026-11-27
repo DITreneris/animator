@@ -96,6 +96,9 @@ def sofia(k, x, feet, s=1.0, pose="hold", face_kind="smile", look=(0, 0), lag=(0
         ss.SLEEK[0] = False
 
 
+TAPE_LONG = [False]
+
+
 def heel(k, x, y, s=1.0, tape=True, seed=3300):
     """v2 (the sheet review): the insert of 2.8, drawn from the foot outward. A low side view, toe to screen left: the
     lower leg leans forward over the shoe, the instep curves into a short pointed pump, the gold stiletto grows out of
@@ -103,7 +106,10 @@ def heel(k, x, y, s=1.0, tape=True, seed=3300):
     (x, y): the heel's tip on the floor."""
     c = k.c
     c.save(); c.translate(x, y); c.scale(s, s)
-    if tape:                                                 # the tape on the floor plane, running away from us, under the arch
+    if tape and TAPE_LONG[0]:                                # opt-in (audit P4: "the line short, it ends mid-frame"): the tape
+        cut(k, [(-16, 280), (62, 280), (-205, -500), (-238, -500)], TAPE, shadow=False, lw=2.2)   # edge to edge, receding
+        c.set_source_rgba(1, 1, 1, 0.40); c.set_line_width(3); c.move_to(4, 270); c.line_to(-226, -490); c.stroke()
+    elif tape:                                               # the tape on the floor plane, running away from us, under the arch
         cut(k, [(-60, 120), (0, 120), (-90, -112), (-128, -112)], TAPE, shadow=False, lw=2.2)   # receding left, away from the heel
         c.set_source_rgba(1, 1, 1, 0.40); c.set_line_width(3); c.move_to(-44, 112); c.line_to(-112, -106); c.stroke()
     for cx, rx in ((-140, 46), (5, 12)):                     # two contacts: the ball and the heel tip
@@ -140,11 +146,42 @@ CV_WORD = ["COO?"]                                          # opt-in (Tomas, 25 
                                                             # the robot's own badge: Father's side offers her its job
 
 
+CV_N = [None]                                              # opt-in (film 5.2): only the first n letters written so far, in the word's place
 CV_FONT, CV_AT = [None], ["top"]                            # opt-in (25 Nov, 5.5: HR? over her mouth): a size, "top" / "bottom"
+
+
+INVITE = [False]                                            # opt-in (Tomas 26 Nov, /grill-me: "a guard brings a CV? what logic?"): what
+INVITE_NAME = ["SOFÍA"]                                     # he brings is Father's INVITATION (the meeting Don is left out of, 1.4; "Invite
+PURPLE_INV = (0.55, 0.16, 0.46)                             # her.", 4.3; the same card as Pam's phone, 5.7), her name written in gold (5.2)
+
+
+def invite_card(k, x, y, s=1.0, ang=-0.06, n=None):
+    """Father's paper invitation, the size of the CV (so every hand that held the CV holds it): INVITATION in the
+    phone card's purple, from DAD, and "to:" with her name in gold, n letters of it written so far."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    kit.rect(k, -26, -36, 52, 72, (0.99, 0.98, 0.95), 3150, lw=2)
+    c.set_source_rgb(*PURPLE_INV); c.rectangle(-24.5, -34.5, 49, 15); c.fill()
+    c.select_font_face("Lilita One"); c.set_font_size(8.6); c.set_source_rgb(1, 1, 1)
+    e = c.text_extents("INVITATION"); c.move_to(-e.x_advance / 2, -23.6); c.show_text("INVITATION")
+    c.select_font_face("Inter"); c.set_font_size(5.4); c.set_source_rgb(0.40, 0.40, 0.44)
+    e = c.text_extents("from"); c.move_to(-e.x_advance / 2, -11); c.show_text("from")
+    c.select_font_face("Lilita One"); c.set_font_size(16); c.set_source_rgb(*INK)
+    e = c.text_extents("DAD"); c.move_to(-e.x_advance / 2, 4); c.show_text("DAD")
+    c.select_font_face("Inter"); c.set_font_size(5.4); c.set_source_rgb(0.40, 0.40, 0.44); c.move_to(-21, 18); c.show_text("to:")
+    c.set_source_rgb(*INK); c.set_line_width(0.8); c.move_to(-12, 25); c.line_to(22, 25); c.stroke()
+    nm = INVITE_NAME[0] if n is None else INVITE_NAME[0][:n]
+    if nm:
+        c.select_font_face("Lilita One"); c.set_font_size(10.5)
+        c.set_source_rgb(*INK); c.set_line_width(2.0); c.move_to(-11, 23.5); c.text_path(nm); c.stroke_preserve()
+        c.set_source_rgb(*HEEL_GOLD); c.fill()
+    c.restore()
 
 
 def cv_coo(k, x, y, s=1.0, ang=-0.06):
     """Her CV from 12 with COO? in gold across the top (5.2, 6.1); CV_WORD changes the word (a short one is drawn bigger)."""
+    if INVITE[0]:
+        return invite_card(k, x, y, s, ang, n=CV_N[0])
     sdh.cv(k, x, y, s, ang)
     c = k.c
     w_ = CV_WORD[0]
@@ -153,7 +190,7 @@ def cv_coo(k, x, y, s=1.0, ang=-0.06):
     c.select_font_face("Lilita One"); c.set_font_size(fs_)
     e = c.text_extents(w_)
     ty = (-40 if len(w_) > 3 else -37) if CV_AT[0] == "top" else 27      # "bottom": across the sheet's foot, clear of its edge (opt-in, 25 Nov)
-    c.set_source_rgb(*INK); c.set_line_width(3.2); c.move_to(-e.x_advance / 2, ty); c.text_path(w_); c.stroke_preserve()
+    c.set_source_rgb(*INK); c.set_line_width(3.2); c.move_to(-e.x_advance / 2, ty); c.text_path(w_ if CV_N[0] is None else w_[:CV_N[0]]); c.stroke_preserve()
     c.set_source_rgb(*HEEL_GOLD); c.fill()
     c.restore()
 

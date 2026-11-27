@@ -73,7 +73,11 @@ def tug_state(t):
     return 0.0, None
 
 
-def shot_A(t):
+VISOR_A = [True]                                             # opt-in: False = no sun pictogram on its visor (6.2 ending: 3/3 read it as "brightness up")
+DIM_A = [0.32]                                               # opt-in: how dark the room gets as the blind comes down (6.2 ending: lighter)
+
+
+def shot_A(t, v4=False):
     u, who = tug_state(t)
     n = u / 0.92                                              # 0 up .. 1 down
     top = pss.GY0 - 10 + 12
@@ -89,7 +93,9 @@ def shot_A(t):
         hi = (-176, 0); lo = (-150, -24)                     # its near hand: yanked up as he pulls, down as it pulls
         arm = (lerp(lo[0], hi[0], n), lerp(lo[1], hi[1], n))
         rx, rf = ps.at("rob_cord")
-        o2, heads["robot"] = ps.robot(k, (rx + 12, rf), arms=(arm, (8, 0)), visor="sun" if n > 0.5 else None,
+        if v4:                                               # the film (ps_film, board v4): the robot a step left of the door
+            rx -= 30; hi = (-180, 0); arm = (lerp(lo[0], hi[0], n), lerp(lo[1], hi[1], n))   # frame, as board v4's 1.1
+        o2, heads["robot"] = ps.robot(k, (rx + 12, rf), arms=(arm, (8, 0)), visor="sun" if (n > 0.5 and VISOR_A[0]) else None,
                                       tilt=(0.10 if who == "robot" else 0.0))
         c = k.c
         cord_to(c, pss.CORD_L, top, o["hands"][0], pss.PULL)
@@ -100,7 +106,7 @@ def shot_A(t):
             for dx in (-8, 8):
                 c.move_to(hx + dx, hy + 18); c.line_to(hx + dx, hy + 34); c.stroke()
         if u > 0:
-            c.set_source_rgba(0.05, 0.05, 0.10, 0.32 * n); c.rectangle(-400, 0, 1800, 1200); c.fill()
+            c.set_source_rgba(0.05, 0.05, 0.10, DIM_A[0] * n); c.rectangle(-400, 0, 1800, 1200); c.fill()
         return heads
     room = dict(blind="down", u=u, dim=False, cords=False) if u > 0.01 else dict(blind="up", cords=False)
     return ps.S("1.1", ps.S2, room, cast)

@@ -49,6 +49,12 @@ LINE51 = (1.0, 1.0 + 0.813)
 CL_SH_L = (-46.8, 651.72)                                   # his screen-left shoulder (x from his x)
 
 
+PHONE51 = [False]
+PHONE51_S = [1.0]                                   # v25: its size (1.0 was smaller than his fingers)
+UP51 = [(CL_X - 60, 688)]
+SOFIA51 = [None]                                    # v20: her face from d14 (her glance at Pam)
+
+
 def s5_1(k, d):
     """27 drawings (2.25 s). Sofía steps into his path, smoothing her lapel, smiling. He looks at her, flat; turns
     his back on her; the camera goes with him to Pam; his phone comes up in his hand: "Your number." Sofía's smile,
@@ -57,7 +63,7 @@ def s5_1(k, d):
     sx = 418 - (418 - 376) * ease(d / 4.0)
     turned = d >= 5
     up = ease((d - 6) / 4.0)                                                       # the phone comes up
-    hand = lerp((CL_X - 46.8, 715.7), (CL_X - 60, 688), up)
+    hand = lerp((CL_X - 46.8, 715.7), UP51[0], up)                                # v23: UP51 (688 folded the arm, 231)
     a1, a2 = ik(CL_X + CL_SH_L[0], CL_SH_L[1], hand[0], hand[1], s4.CL_LN, s4.CL_LN, 1)
     u = ease((d - PAN51[0]) / float(PAN51[1] - PAN51[0]))
     cam = lerp(CAM51[0], CAM51[1], u)
@@ -67,17 +73,18 @@ def s5_1(k, d):
         s4.pam(k_, PAM_X, "stand", "neutral", (1, -0.4), glasses="up", d=d)
 
     def ex(k_, o):
-        if up > 0.3:
+        if up > 0.3 or PHONE51[0]:                                                 # v20: in his hand from d0 (it appeared)
             hx, hy = min(o["client"]["hands"])
-            s1.phone_held(k_, hx, hy, sb.SC["client"], ang=0.15, seed=961)
+            s1.phone_held(k_, hx, hy, sb.SC["client"] * PHONE51_S[0], ang=0.15, seed=961)
             s1.fist(k_, hx, hy, sb.SC["client"], SKIN_CL, 965)
 
     with s4.Strip(None), s3.Client(mouth=code, edge=False), Breath(sb, "client", br(d, 0.4)), \
             Breath(s1.sofia_fs, "sofia", br(d, 0.6)):
         S(k, cam, auto=False, portrait=False, pre=pre, extra=ex,
           **base(door=0.0, rb=False, dn=False, pm=False, mm=False,
-                 sf=at("sofia", x=sx, pose="lapel" if d < 8 else "hold", face="knowing" if d < 8 else "caught",
-                       look=(-1, -0.2)),
+                 sf=at("sofia", x=sx, pose="lapel" if d < 8 else "hold",
+                       face=(SOFIA51[0] if SOFIA51[0] and d >= 14 else ("knowing" if d < 8 else "caught")),
+                       look=(-1, 0.1) if SOFIA51[0] and d >= 14 else (-1, -0.2)),      # v20: a glance down at Pam, one brow up
                  cl=at("client", x=CL_X, pose=(a1, a2, 8, 0), face="plain", look=(-1, 0.3) if turned else (1, 0.3))))
 
 
@@ -89,6 +96,9 @@ EYE_X, EYE_Y = (215, 307), 431                              # her lenses in this
 EYES = [(1, -0.6)] * 3 + [(-1, 0.2)] * 4 + [(1, -0.6)] * 4   # up at the Client beside her / away, across the room to Don / back
 
 
+SMILE52a = [None]
+
+
 def s5_2a(k, d):
     """11 drawings (0.9 s). Only Pam. She freezes (no breath for three drawings); her eyes slide off to Don and come
     back; a small swallow (her head dips a hair)."""
@@ -97,7 +107,8 @@ def s5_2a(k, d):
     def pre(k_):
         c = k_.c
         c.save(); c.translate(0, dip / 4.0)
-        s4.pam(k_, PAM_X, "stand", "neutral", EYES[d], glasses="up", d=0 if d < 3 else d)
+        face = "mirror" if (SMILE52a[0] and d >= SMILE52a[0]) else "neutral"        # v20: a closed smile and a blush come
+        s4.pam(k_, PAM_X, "stand", face, EYES[d], glasses="up", d=0 if d < 3 else d)   # in after her glance (review 04)
         c.restore()
 
     S(k, CAM52a, auto=False, portrait=False, pre=pre,
@@ -177,6 +188,9 @@ NOTE = "finds things"
 NOTE_COL = (0.55, 0.16, 0.46)                               # cold test: small and grey, and it is the punchline
 TYPE53 = (3, 11)                                           # drawings the note is typed over
 TAP53 = 15
+TAPAT53 = [(300, 692)]                               # v20: on the button's right, clear of SAVE
+BIG53 = [False]
+SAVE_BLUE = [False]
 
 
 def s5_3(k, d):
@@ -187,22 +201,33 @@ def s5_3(k, d):
     x0, y0, w = 58, 70, 424
     c.set_source_rgb(*cp.LIGHT); c.rectangle(x0 + 8, y0 + 468, w - 16, 46); c.fill()
     n = int(round(len(NOTE) * min(1.0, max(0.0, (d - TYPE53[0]) / float(TYPE53[1] - TYPE53[0])))))
-    scratch = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 8, 8))
-    full = cp.T(scratch, "note: " + NOTE, 0, 0, 38, col=NOTE_COL, center=False)
-    lx = 270 - (full if isinstance(full, (int, float)) else 250) / 2.0
     cur = "|" if (d < TAP53 and d % 2 == 0) else ""
-    cp.T(c, "note: " + NOTE[:n] + cur, lx, y0 + 503, 38, col=NOTE_COL, center=False)
+    if BIG53[0]:                                                                   # v20 (review 07): the punch line 35 % bigger,
+        c.set_source_rgb(*cp.LIGHT); c.rectangle(x0 + 8, y0 + 452, w - 16, 112); c.fill()   # "note:" a small label over it
+        cp.T(c, "note:", 270, y0 + 482, 28, col=cp.GREY, bold=False)
+        scratch = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 8, 8))
+        full = cp.T(scratch, NOTE, 0, 0, 51, col=NOTE_COL, center=False)
+        lx = 270 - (full if isinstance(full, (int, float)) else 300) / 2.0
+        cp.T(c, NOTE[:n] + cur, lx, y0 + 540, 51, col=NOTE_COL, center=False)
+    else:
+        scratch = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 8, 8))
+        full = cp.T(scratch, "note: " + NOTE, 0, 0, 38, col=NOTE_COL, center=False)
+        lx = 270 - (full if isinstance(full, (int, float)) else 250) / 2.0
+        cp.T(c, "note: " + NOTE[:n] + cur, lx, y0 + 503, 38, col=NOTE_COL, center=False)
     if d < TAP53:
-        rect(k, 118, 650, 304, 90, (0.72, 0.74, 0.78) if d < TAP53 - 1 else (0.55, 0.80, 0.60), 990, shadow=False, lw=2)
+        col = (0.72, 0.74, 0.78) if d < TAP53 - 1 else (0.55, 0.80, 0.60)
+        if SAVE_BLUE[0]:                                                           # v21: active blue, pressed a darker blue
+            col = (0.20, 0.47, 0.90) if d < TAP53 - 1 else (0.13, 0.33, 0.70)
+        rect(k, 118, 650, 304, 90, col, 990, shadow=False, lw=2)
         cp.T(c, "SAVE", 270, 710, 42, col=(1, 1, 1))
     if d <= 2:
         p = lerp((560, 900), (330, 842), ease(d / 2.0))
     elif d <= TYPE53[1]:
         p = ((300, 330, 280, 320)[d % 4], 842 - (8 if d % 2 else 0))               # typing
     elif d <= TAP53:
-        p = lerp((310, 842), (300, 692), ease((d - TYPE53[1]) / float(TAP53 - 1 - TYPE53[1])))
+        p = lerp((310, 842), TAPAT53[0], ease((d - TYPE53[1]) / float(TAP53 - 1 - TYPE53[1])))
     else:
-        p = lerp((300, 692), (560, 900), ease((d - TAP53) / 4.0))
+        p = lerp(TAPAT53[0], (560, 900), ease((d - TAP53) / 4.0))
     if d <= TAP53 + 4:
         sb.thumb(k, p[0], p[1], 1.15, SKIN_CL, oil=True, ang=2.3, who="client")
 

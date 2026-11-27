@@ -27,14 +27,33 @@ GEST = [("relax", "relax")]
 _N = [0]
 LATE = []                                                   # hands drawn again on top (redraw_late): over the head, round a mug
 ON_TOP = ("salute", "cup", "two", "two_s")
+DRAWN = []                                                  # every hand drawn since reset(): (matrix, draw args)
 DIRS = []                                                   # (d, arm) per hand drawn since reset(): to place a held prop
 LW = 2.0
 
 
+PINCH_CLOSE = [0.0]                                                  # 0 = v10's open V .. 1 = the tips meet over the nose (Tomas 26 Nov: 'horns' 2/2)
+PINCH_V4 = [False]                                                   # opt-in: the clamp (the nose its own, between the fingers)
+PINCH_V3 = [False]                                                   # opt-in: the C-shaped pinch (review 26 Nov)
+PINCH_V2 = [False]                                                   # opt-in: the simpler pinch (index and thumb straight)
 PALM_VAR = [False]                                                    # opt-in: palm fingers of unequal length (One Star)
 
 def reset(left="relax", right="relax"):
-    GEST[0] = (left, right); _N[0] = 0; LATE.clear(); DIRS.clear()
+    GEST[0] = (left, right); _N[0] = 0; LATE.clear(); DIRS.clear(); DRAWN.clear()
+
+
+def redraw_at(k, x, y):
+    """draw again, on top, the recorded hand nearest (x, y) (user space now): a held prop under its fingers (lesson 224)"""
+    c = k.c
+    dx, dy = c.user_to_device(x, y)
+    best = None
+    for m, args in DRAWN:
+        c.save(); c.set_matrix(m); hx, hy = c.user_to_device(args[1], args[2]); c.restore()
+        dd = (hx - dx) ** 2 + (hy - dy) ** 2
+        if best is None or dd < best[0]:
+            best = (dd, m, args)
+    if best and best[0] < 60 ** 2:
+        c.save(); c.set_matrix(best[1]); draw(k, *best[2]); c.restore()
 
 
 def redraw_late(k):
@@ -76,6 +95,7 @@ def hand(k, hx, hy, w, skin, seed, d, side):
     """kit.HAND hook. The forearm runs along d into (hx, hy); arms arrive screen-left first."""
     g = GEST[0][_N[0] % 2]; arm = -1 if _N[0] % 2 == 0 else 1; _N[0] += 1
     DIRS.append((d, arm))
+    DRAWN.append((k.c.get_matrix(), (g, hx, hy, w * 1.25, skin, d, arm)))   # record only (a held prop may redraw it on top)
     draw(k, g, hx, hy, w * 1.25, skin, d, arm)
     if g in ON_TOP:
         LATE.append((k.c.get_matrix(), (g, hx, hy, w * 1.25, skin, d, arm)))
@@ -243,6 +263,44 @@ def draw(k, g, hx, hy, w, skin, d, arm):
         c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(LW); c.stroke()
         for fy in (-0.12, 0.10):                                      # two short finger lines at the tips
             _crease(c, [(0.68 * w, -s_ * fy * w), (0.90 * w, -s_ * fy * w)], 1.3)
+        c.restore(); return
+    if g == "pinch" and PINCH_V4[0]:                                  # v10 (review 26 Nov): a clamp. The index straight up one side
+        _blob(c, 0.18 * w, 0, 0.40 * w, 0.40 * w, skin)               # of the (narrowed) nose, the thumb up the other, the nose its
+        c.new_path(); c.save(); c.translate(0.38 * w, 0); c.scale(0.20 * w, 0.17 * w)   # own, seen between them; the three
+        c.arc(0, 0, 1, -math.pi / 2, math.pi / 2); c.line_to(-0.8, 1); c.line_to(-0.8, -1); c.close_path(); c.restore()   # curled: one
+        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(LW); c.stroke()              # block,
+        _crease(c, [(0.38 * w, 0), (0.54 * w, 0)], 1.0)                                                                  # one line
+        _cap(c, [(0.36 * w, -s_ * 0.36 * w), (0.74 * w, -s_ * 0.36 * w), (0.98 * w, -s_ * (0.30 - 0.16 * PINCH_CLOSE[0]) * w)], t * 0.68, skin)   # index
+        _cap(c, [(0.10 * w, s_ * 0.38 * w), (0.66 * w, s_ * 0.38 * w), (0.92 * w, s_ * (0.32 - 0.16 * PINCH_CLOSE[0]) * w)], t * 0.82, skin)      # thumb
+        c.restore(); return
+    if g == "pinch" and PINCH_V3[0]:                                  # v9 (review 26 Nov): a C: the index round one side of the
+        pass                                                          # nose, the thumb (a pad) round the other, a gap between the
+        c.set_source_rgba(0.45, 0.22, 0.14, 0.28)                     # tips; the three curled into one block, two lines. A contact
+        c.save(); c.translate(0.80 * w, 0.02 * w); c.scale(0.52 * w, 0.50 * w); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        _blob(c, 0.20 * w, 0, 0.42 * w, 0.40 * w, skin)               # shadow on the face under them
+        c.new_path(); c.save(); c.translate(0.36 * w, s_ * 0.03 * w); c.scale(0.17 * w, 0.21 * w)   # the curled three
+        c.arc(0, 0, 1, -math.pi / 2, math.pi / 2); c.line_to(-0.7, 1); c.line_to(-0.7, -1); c.close_path(); c.restore()
+        c.set_source_rgb(*skin); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(LW); c.stroke()
+        for yy in (-0.06, 0.09):
+            _crease(c, [(0.34 * w, s_ * yy * w), (0.50 * w, s_ * yy * w)], 1.0)
+        _cap(c, [(0.40 * w, -s_ * 0.27 * w), (0.76 * w, -s_ * 0.34 * w), (0.96 * w, -s_ * 0.24 * w)], t * 0.80, skin)   # index
+        _cap(c, [(0.12 * w, s_ * 0.34 * w), (0.56 * w, s_ * 0.40 * w)], t * 0.95, skin)                                 # thumb
+        _blob(c, 0.80 * w, s_ * 0.30 * w, 0.20 * w, 0.14 * w, skin, s_ * -0.7)                                           # its pad
+        nose = (min(1.0, skin[0] + 0.03), skin[1] * 0.80, skin[2] * 0.80)                    # the nose's tip between them, squeezed
+        _blob(c, 0.98 * w, s_ * 0.04 * w, 0.21 * w, 0.17 * w, nose)                          # red, drawn over their tips
+        c.restore(); return
+    if g == "pinch" and PINCH_V2[0]:                                  # v7 (review 26 Nov: "too many fingers at the nose"): the palm
+        _blob(c, 0.22 * w, 0.06 * s_ * w, 0.46 * w, 0.44 * w, skin)    # with the three curled into it (one shape, one crease), the
+        _crease(c, [(0.30 * w, s_ * 0.08 * w), (0.58 * w, s_ * 0.12 * w)])   # index and thumb straight, their tips together
+        _cap(c, [(0.50 * w, -s_ * 0.20 * w), (1.08 * w, -s_ * 0.10 * w)], t, skin)
+        _cap(c, [(0.36 * w, s_ * 0.36 * w), (1.02 * w, s_ * 0.10 * w)], t * 1.05, skin)
+        c.restore(); return
+    if g == "pinch":                                                  # v6 (Pick a Side 4.3b, Tomas 26 Nov, a new shape): the
+        _blob(c, 0.22 * w, 0, 0.44 * w, 0.42 * w, skin)               # thumb and the index meet at the tips (a nose between),
+        for fy in (0.02, 0.24):                                       # the other three curled back into the palm
+            _blob(c, 0.56 * w, s_ * fy * w, 0.16 * w, 0.15 * w, skin)
+        _cap(c, [(0.46 * w, -s_ * 0.22 * w), (0.92 * w, -s_ * 0.24 * w), (1.10 * w, -s_ * 0.08 * w)], t, skin)   # the index,
+        _cap(c, [(0.18 * w, s_ * 0.38 * w), (0.74 * w, s_ * 0.40 * w), (1.04 * w, s_ * 0.14 * w)], t * 1.05, skin)  # the thumb
         c.restore(); return
     _blob(c, 0.22 * w, 0, 0.46 * w, 0.44 * w, skin)                   # fist, point, relax: the palm
     for fy in (-0.27, 0.0, 0.27):                                     # three curled knuckles

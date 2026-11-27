@@ -1113,3 +1113,31 @@ Tomas, on v54's new last shot (the phone on a black car's roof): rejected, hard.
 246. **The Offer v60 (26 Nov), one cold viewer on the v60 encode (scenes 1 and 3 only).** 0.4: the owner is in the frame (his shoulder, chest, shirt and tie behind the bent sleeve); the viewer still cannot say whose arm: "a cuff with no forearm", the sleeve merges into the suit mass. 2.8f: the lamp ends hanging at his side, the cord goes with it (x -2 instead of +22, elbow_low off); the viewer sees no extra hand, but still "rigid rectangle pivoting" at 41.5-41.8 and 42.0-42.15, and the cord stiff while the lamp is up. Not changed: the car's dip (kept for Tomas's ear), the rag, the pocket, the red dot. Open: the cuff needs a visible forearm; the sleeve slab at the shoulder is the rig; the cord must lag from the first frame.
 
 247. **The Offer v61 (26 Nov), the final cut for Tomas's ear.** 0.4: a skin wrist from the cuff to the palm (the cuff had no forearm); 2.8f: the cord sways twice as much from the first frame. Gates: G5 PASS (1942 frames, 1080x1920, 30 fps, -14.4 LUFS, -1.9 dBTP, 15/15 lines), validate, hand-validate. No cold test on v61; the car's tilt, the rag, the pocket and the red dot are as decided. VER {1:61, 2:59, 3:61, 4:52, 5:59}, sound v30.
+
+## 248. *One Star* v16–v26 (25–26 Nov): from "publish" to "not ready", and what the gates missed
+
+- **The gates measured geometry, not reading.** Hand, elbow and bubble gates were at 0 while Tomas found an ownerless
+  sleeve, a phone that appeared, an empty dark half, a finger over SAVE. Two gates were added and tried first on the
+  planted fault: an `insert_cuff` sleeve over 200 frame units inside the frame without its owner, and a one-colour band
+  over 40 % of the height. A fix is checked on the WHOLE frame: v17's 5.2 shift was checked on a crop and shipped an
+  empty lower half.
+- **Never say "publish" while a check fails.** The speech check failed on two lines every build; that is a "not yet".
+- **The master-vs-540 PSNR check finds real bugs.** It found 5.2's hand drawn at half its place at 1080
+  (`user_to_device / HI` on a scratch surface without the device scale): use `device_to_user` through the context.
+- **A gate in device units differs between sizes.** At 1080 half the passes draw on a 540 scratch surface; the hand
+  gate's tolerance moved with it. Log and test in frame units.
+- **A line lost in the mix: measure it alone and in its checker's context window before re-recording.** "Still one
+  star." was heard 3/3 alone and lost behind Pam's line; +3 dB fixed it once, and any later 1/12 s shift of the mix lost
+  it again. Whisper's context window is not a listener: people with sound decide.
+- **A target 37 px below the shoulder folds the arm into a lump** (231 again): the Client's "elbow" at 0:47.
+- **A prop drawn by the episode, not the rig, has no arm.** Sofía's tablet held by a hand with red nails at its edge;
+  now a phone in her own hand (`phone_grip`, the rig's arm from the shoulder, the elbow bent: the first try was a
+  straight "pole" and failed the elbow gate).
+- **Paint on a rig's part only inside that part.** The visor close-ups painted a guessed second ellipse: a double,
+  wavy contour. Capture the part as the rig draws it (its seed) and clip to it, with no outline of your own.
+- **A whip blur can erase the action it carries.** Smearing 3.5b's first drawings hid the incoming ball; the blur
+  goes on the outgoing shot only, light.
+- **Camera moves without changing shot lengths** (push-ins about the speaker's head, shakes on hits, close-ups taken
+  from inside a shot after its line) keep the mix and the locked bubbles as they were.
+- **Eyes shut read as asleep** when the beat is "approves without looking": eyes open, looking away.
+- **Shock, relief, horror:** a reaction needs its turn (the catch) before the next one (the 1/5), or it is one held face.

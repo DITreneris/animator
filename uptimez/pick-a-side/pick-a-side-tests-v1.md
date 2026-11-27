@@ -492,3 +492,544 @@ Fixed, all behind `GAGS_V5`; with the switch off the screens are md5-identical a
 - `check v5`: 0 faults. Sheet: `ps_phones_v1.png`.
 
 **Not fixed, 6.1: Pam's hand has no owner** (rule 225; this is why 2 of 3 couldn't tell whose invitation it is). I grid-searched 6.1's framing (x −150 to −60, y −240 to −180, zoom 1.28 and 1.33) to bring Pam's face in. Every framing that shows her cuts a sign (OUR FIRST CLIENT, the throne's INVESTOR card, DON on the floor, ASSISTANT TO DON). Moving Pam off her mark is not allowed (the set rule). Needs a decision from Tomas.
+
+## Phone review fixes (25 Nov, board v4, all behind GAGS_V5)
+
+| Item | Fix | Result |
+|---|---|---|
+| 4.2 grease dots read as eyes | `point_t`, no dots (rules §1 "big or turned hands") | clean index on Sofía's heel |
+| 3.5 phone too small | scale 2.3 → 2.95 (+28 %), y 500 → 430; 3.1 broke the bottom-quarter zone | `check v5` 0 faults |
+| DAD not the biggest word | `pss.phone_close` uses episode 13's own `of_ui.invite_small` (DAD 30, INVITATION 13.2); no new code | 5.7 and the counter phone in 6.1 |
+| 3.3 PUBLIC POST? said twice | new visor kind "ask": one big "?" | bubble carries the words |
+| 6.1 Don's two fists (lesson 207: "toes") | silhouette test, 3 variants (thumbs in vest / thumbs up / arm out), 2 cold viewers: both picked thumbs up, both found "arm out" hardest | `DON_61 = ("thumbs", None)` |
+
+Lessons applied: 163, 207, 263, 264, 417, rules §0 and §1. Board v3 unchanged (git clean), `check` and `check v5` 0 faults. Stills: ps_phones_v2.png.
+
+## Review 2 of the phone frames (25 Nov, 8.3/10, Tomas: B + hands → LOCK)
+
+| Item | Fix | Result |
+|---|---|---|
+| Pam's phone not tied to her (B) | `pss.CASE`: muted purple case, 3 cream flowers on the rim (case 136×240, screen untouched); the flat counter phone in the same purple | 5.7, 6.1, 1.2 |
+| 6.1 phone hangs in the air | `pss.phone_stand`: a dark desk stand, its lip over the phone's foot; the phone stays on its mark | reads as standing |
+| 5.7 "crumpled paper" hand | 3 variants (grab / episode 13's `of_cast.phone_grip` held / fist), 2 cold viewers: both picked "held", both found the fingertips "floating beads" → the back of the fingers drawn behind the phone's left edge; the phone 20 px up (case out of the bottom quarter) | `H57 = "held"` |
+| 4.2 finger too thick | w 84 → 72 (−15 %) | |
+| 6.1 Pam reaches for her phone | tried `reach_up` / `reach_pt` (target 0.92 of reach along the line to the phone, lesson 179): the phone is 3 arm lengths behind and above her, Pam is hidden by Mom, the raised arm reads as Mom's hand. Not used; the case carries the ownership | kept "reach" |
+| Bug | `hands_validate()` left gags_v5's UI kit, case and v55 switched on inside `check` v3; now restored | `check` 0, `check v5` 0 |
+
+Board v3 unchanged (git clean). Stills: ps_phones_v3.png.
+
+## Film, scene 1 v1 (25 Nov, `ps_film.py film 1`, 122 drawings, 8.06 s, −15.3 LUFS, AAC true peak −2.3 dB)
+
+Built: `ps_film.py` (of_film's shape: one map, cameras locked to the board's key frames, lips from the take's loudness, bubbles as long as the take, sound from of_sound's synth: rattle ×4 rising, the slam and the slats, the cup's cut clink, room tone). Fixes found in the frames: the falling blind drew a second face (blind_over's gap) → plain slats in the air; board v4's ROOM_V4 froze 1.1's blind half down → `ROOM_OWN` (the film's room); the open mouth sat above the drawn one → on the line.
+
+| Beat | Round 1 (2 viewers, blind frozen) | Round 2 (2 viewers, fixed; viewer D read the memory notes: half-contaminated) |
+|---|---|---|
+| Tug of war over the blind, the robot wins | 2/2 the blind; the dimming "a glitch" 2/2 | 2/2, the light explained by the blind 2/2 |
+| The blind falls on Don | 2/2 | 2/2 |
+| 1.2b the three hear the crash, Pam's cup stops | 0/2: "out of nowhere" | 0/2: "a cutaway with no setup" → **staging fault** (nothing moves in it at 4 or 8 fps) |
+| "This meeting does not exist." (Don) | 2/2 | 2/2 |
+| "My father has a meeting. Without me." (Don), the three react | 1/2 Don | 1/2 Don, 1/2 "can't tell" (Don small in the wide, the tail unreadable); reactions 2/2 |
+
+Shared: the roll in 1.4 read as "a coin / a gold object" (3 of 4).
+
+### Scene 1 v2 (`ps_film_s1_v2_540.mp4`)
+
+Built: 1.2b the three chatting, the crash: heads snap to it, a startle hop, the cup jolts and stops (faces: frozen / stern / surprised, the rigs' own); 1.4a Don close while he speaks (his own camera, the roll in his frame-right hand so it rises clear of his box), then 1.4b the three; dead-zone faults counted only when a prop rests 5 drawings (of_film's held_only: the roll passes the rail in 4).
+
+| Beat | v2 (2 fresh viewers, images only) |
+|---|---|
+| Tug of war, the robot wins | 2/2 |
+| The blind falls on Don | 2/2 |
+| 1.2b the three hear the crash | **0/2 a third time** ("a static cutaway"; the 4 fps sheet samples only after the hit) → rule: change the gesture, not its position |
+| "This meeting does not exist." | 2/2 |
+| "My father has a meeting." is Don's, the roll is tape | 2/2, roll 2/2 "a roll of tape, probably" |
+
+4 of 5 beats: G4 passes. Shared, not a beat: the cut 1.3 → 1.4a read as "another room" 2/2.
+
+### Scene 1 v3 (`ps_film_s1_v3_540.mp4`, Tomas: 1.2b cut, 1.4 opens wide)
+
+Built: 1.2b out, its 0.5 s at the head of 1.3 (the take keeps its time); 1.4 opens on the board's wide (the door, the three, one room) and pushes in to Don (0.20–0.50 s); the box comes on after the push (it hopped three times riding it; 0.35 s late on the line); signs crossing the frame's edge during a camera move count as passing (fewer than 5 drawings).
+
+| Beat | v3 (2 fresh viewers, images only) |
+|---|---|
+| Tug of war over the blind, the robot wins | 2/2 |
+| The blind falls on Don | 2/2 |
+| "This meeting does not exist." | 2/2 |
+| Same room (the asked question) | 2/2 ("the window glass at the left edge, the floor carries on") |
+| Don's line, the three react to it | 2/2 |
+
+5 of 5. Shared, not beats: the roll 0/2 named ("a megaphone? a ring?"; v2 2/2 "tape, probably"); the bent slat across his eye read as "an eyepatch" 2/2 (and in v1).
+
+## Scene 1 v4 and §3.5 (25 Nov, long session, Tomas's /grill-me picks)
+
+- 1.3 "eyepatch" (6 viewers): not a slat. `blind_over` had no new sub-path before the face gap's arc, so it joined the rectangle's corner: a stroke across his eye. `don_ps.BLIND_GAP_FIX` (opt-in). 1.4: the roll's tongue longer, flat, a torn end (`ROLL_TAIL`), kept out of the bottom quarter. `ps_film_s1_v4_540.mp4`.
+- §3.5: the rigs return hands unleaned (Don lean, robot tilt, Sofía lean: measured). `ps_scenes.HANDS_DRAWN` (opt-in) returns and logs them where drawn; `hands_drawn_validate()` plants a foreign hand on a leaned wrist: caught with the flag, missed without; wired into `check` ("handsD OK").
+- Board v3 md5 checked against a worktree of 5e8bdd9 (the board PNGs are git-ignored, so `git status` can't show them): identical.
+
+## Scene 2 (`ps_film.py film 2`, 310 drawings, 20.7 s, −15.6 LUFS)
+
+Built: 2.1 test D; 2.1b the robot rolls in, SLAP, the card stays; 2.2 a cut-out spin (`ps_set.SPIN`, opt-in), the card on until the spin; 2.3 stamp + the roll pointing in turn; 2.4 Pam's hop over the line; 2.5 salute / half salute / the cup; 2.6 Mom's two stamps; 2.7 the stop mid-step; 2.8 held (HOLDS); 2.9 the robot bobs with its words; 2.10 split (Don, the robot on the line, Don's face close); 2.11 test H. Sound map: screech, beep, SLAP, casters, stamp, landing, heel click, two-tone beep, squeaks, BONK on H's hit. New checks: a shot whose drawings never change fails unless in HOLDS (validated: 2.8 without its entry is caught); signs crossing the edge in a camera move pass (< 5 drawings).
+
+Found in the frames: inserts were redrawn as the room (the camera lock); the card vanished between 2.1b and 2.2.
+
+| Beat | v1 (3 viewers) | v2 (3 fresh viewers) |
+|---|---|---|
+| Don lays the line, his roll | 2/3; "Pam holds the roll" 2/3 (the board's 2.3 had her beside him before she crosses: continuity fault) | 3/3, roll Don's 3/3 |
+| The robot's card, Don spins the tag away | 3/3 spin; the card's author 2/3 | 3/3 |
+| Pam sides with Don | 3/3 | 3/3 |
+| Mom refuses; Sofía's heel, "border breach" | 3/3 | 3/3 |
+| "And you?" / "Both."; the bump, Don worse | asker 1/3; "a blank wall" 3/3 (2.10b's robot at the frame's edge) | asker 3/3; Don worse 3/3 |
+
+5 of 5 (G4). Shared, still open: the haul and the bump read as "the robot zaps him" 6 of 6 across both rounds (the impact strokes read as a spark; the 4 fps sheet misses the haul) — one more round and the rule changes the gesture.
+
+### Scene 2 v3: the ending at 8 fps (2 fresh viewers, the strip 19.0–20.7 s only)
+
+Both: "the robot rolls in and shoves him; the yellow burst is a comic impact flash; Don worse". At 8 fps the "zap" is gone (the 4 fps sheet caught only the burst). Test H v4 has no haul (Tomas, after three misread hauls), so "it rolls into him" is the intended reading. The squeaks and the BONK now follow H v4's timing (roll 0.40 s, hit 0.65 s): `ps_film_s2_v3_540.mp4`.
+
+## Scene 3 (`ps_film.py film 3`, 207 drawings, 13.8 s, −15.7 LUFS)
+
+Built: 3.1–3.2 test E (the arm, FLASH, the photo), 3.1 held on its two lines; 3.3 the robot bobs with "Public post?"; 3.4 his phone-side arm up, sinks onto the phone as it slides in, the pad goes green, back up; 3.5 the approved screen slides up, the post comes in; 3.6 the silhouette's phone lights at DING; 3.7 Pam's eyes to the glow, her mouth opens, the cup up to her chin. Sound: servo, shutter, chime, whoosh, DING (muffled).
+
+| Beat | v1 (3 viewers) |
+|---|---|
+| The robot takes the photo | 3/3 |
+| "Public post?" — Don approves without looking | 3/3 ("rubber-stamp") |
+| It's posted, #TeamDon | 3/3 |
+| The figure behind the glass sees it | 3/3 a watcher; its glow 2/3 |
+| Pam notices, says it into her cup | notices 3/3; the cup as her answer weak ("she doesn't act") |
+
+Shared: "Chin up, Donnie." 3/3 can't tell who says it (Mom, small, behind); 3.5 opened on two dark drawings 2/3 (the second insert painted over the first: fixed, v2).
+
+### Scene 3 v3 (Tomas 25 Nov: "trumpai priartinam prie Mamos", "matomas gurkšnis")
+
+Built: 3.1 cuts in to Mom for "Chin up, Donnie." (its own camera, nudged clear of INVESTOR and the robot's face); 3.7 after her line a sip: the cup up to her mouth, eyes shut, back down a little, a small slurp.
+
+| Question (2 fresh viewers, 4 fps sheet) | v3 |
+|---|---|
+| Who says "Chin up, Donnie." | 2/2 Mom |
+| What Pam does with the cup | 0/2: "a phone, a selfie / photographing the pose" |
+
+The blue mug at her face reads as a phone (the episode's other prop), the sip falls on one 4 fps drawing. Steam off the rim was tried and dropped: from the drawn hand point it either crossed her eyes or floated off the mug (not converging, rule 5).
+
+### Scene 3 v4 (Tomas: "1", the longer sip)
+
+3.7 +0.40 s; the sip held 0.36 s at her mouth (two 4 fps drawings), eyes up into the cup, two slurps. 2 fresh viewers: 0/2, "she raises a phone, photographs / checks the post". Third round the cup reads as a phone → the rule changes the gesture or the prop (Tomas's call: Pam's mug is part of her look).
+Tomas 25 Nov: the silence without the sip (`SIP_ON = False`, the board's cup at her chin); scene 3 v5 = v3 without the sip. 4.3: Father's take 0.4 s later (plan v2 §7).
+
+## Scene 4 (`ps_film.py film 4`, 92 drawings, 6.1 s with Father's take +0.4 s, −15.5 LUFS)
+
+Built (plan v2 §7): 4.1 the neon's flicker, the black sleeve lifts the #TeamDon phone (`BRIDGE_DROP`); 4.2 motion test J; 4.3 the board's three framings in turn: 4.3a "That one.", 4.3b the guards turn and pinch (`PINCH_43` 0→1 from the rig's GUARD_POSE to the board's pinch, in 0.20 s), the stink lines rise all through (`STINK_RISE`), 4.3c "Invite her." Sound: the club's bass, the neon's hum, the smudge, a sniff, the send.
+
+| Beat (3 fresh viewers, scene 3's sheet before it for context) | v1 |
+|---|---|
+| A casino back room; the photo came by Don's public post | 3/3 |
+| The finger picks the blonde in the white coat | 3/3 (whose finger: "the scruffy man's, probably" 3/3) |
+| The guards hold their noses: the Client stinks | 3/3 |
+| Father decides: "Invite her." | 3/3 |
+| Father doesn't react to the smell | 3/3 |
+
+5 of 5. Shared, not beats: the cut 4.3b → 4.3c "same room?" 3/3 unsure.
+
+### Scene 4 v2–v3 (outside review 26 Nov, 7.5/10; Tomas "proceed"; rules §0 this time)
+
+- **The pinch (§0):** `hands_ps` has no pinch. `dh_cast.FRONT_HAND` (opt-in) draws the series' hand on the guard's face arm, backed down its forearm (`FRONT_HAND_BACK`) so the fingertips, not the knuckles, land on the nose; a sheet of 8 shapes. Silhouettes don't work here (the hand is in front of a black suit: all black, as logged before), so the 3 variants (palm, beckon, the rig's ball) went to 2 viewers in colour at feed size: split (palm best 1, the ball best 1), "a boxing glove", "a paddle with lines", "pointing / shh". No existing shape reads as a pinch → a new shape is needed (asked Tomas). Unchanged in the film.
+- **4.1:** 5.7's grip (palm under the phone's foot, the backs of the fingers behind its left edge), the phone +20 % (`BRIDGE_V2`): "a hand round the phone" 3/3.
+- **4.2:** the photo 35 % closer (`ZOOM_42`). v2: the finger still landed on her coat 3/3 — the measured offsets (100 px, 46 px) didn't scale with the zoom; v3 scales them and moves the photo so her heels sit under the `point_t` tip: "her shoe / foot" 2/2.
+- **4.3:** stink lines off the Client's head, each its own width and phase (`STINK_V2`); Father +12 % (`FATHER_V2`, framed left to keep the phone off the rail), 0.38 s of silence before "Invite her." (his take +0.25 s): "in charge" 3/3.
+- Disagreed (logged in the reply): one guard turning instead of both (undoes Tomas's mirrored pick); filling the bottom quarter (the platforms' captions).
+- Open: "That one." speaker 2/3 unclear (the table's clutter).
+- **The pinch, v4 (Tomas: a new shape):** `hands_ps` "pinch" (opt-in, a new name: no other shape changes): the thumb and the index meet at the tips, the other three curled. 3 variants at feed size (the rig's ball, pinch backed 1.2, pinch backed 1.0), 2 viewers: both "the pinch reads, the ball is a mask / mitten"; best 1.2 and 1.0 one each, 1.0 "a clump" → 1.2. 10 fps strip of the encoded file (3.9–4.6 s): no jumps. `ps_film_s4_v4_540.mp4`.
+
+## Audit 26 Nov: all sheets, hands and palms (scene 4 v7)
+
+| # | Found | Cause | Fix | Check |
+|---|---|---|---|---|
+| E1 | Guards: a double hand on the pinching wrist | The pinch hand was drawn on top of the rig's own ball and backed down the forearm: two geometries at one wrist | `dh_cast.FRONT_HAND` hook through `limb` (kit.HAND): one hand per wrist, the cuff over the joint | 2/2 "normal hands"; hand_gate 0 |
+| E2 | The pinch read as "pressing the earpiece" (2/2) | The hand sat at the cheek/ear side (rules §1: hand at the ear = a call) | PINCH_POSE (-80, -87), FRONT_HAND_S 0.9: the fingers on the nose under the glasses, forearm upright | 2/2 "pinches the bridge of the nose, under the glasses" |
+| E2b | The in-between read as a stretched "noodle" arm (2/2) | Linear interpolation of both angles swung the straight arm out sideways | `PINCH_LEAD` 1.6 (opt-in): the forearm folds first, the hand rises up the chest | 2/2 gone; 10 fps strip of v7 clean |
+| E2c | The other hand at the belt read as "an extra fist" (2/2) | Clasped, the front hand covered it; alone it was the rig's bare ball, the cuff apart from it | `dh_cast.BACK_HAND` "quiet" (opt-in while ARM_FRONT is set) | 2/2 count two hands, hanging |
+| E3 | The Client's grey palm on his shirt read as "a floating hand" by some | Not a fault: the approved oily palm print (client_ps overlay, v2 review) | Not changed: Tomas's call | 4/6 viewers read it as a stain |
+| E4 | Pam's mug: an extra thumb | The sip-era thumb capsule left on | pm_ps.MUG_THUMB off | rebuilt s1 v5, s3 v6 |
+
+check / check v5: 38 shots, 0 faults each. Board defaults unchanged (PINCH_LEAD 1.0, BACK_HAND None).
+
+## Scene 4 v8: review 7.8/10 (26 Nov), Tomas: different gestures, longer close
+
+| Point | Fix (opt-in, film only) | Cold test |
+|---|---|---|
+| Client's hand "a brown fist, no index" | `client_ps.POINT_V2`: skin, index long, three curled as one block, thumb over; `POINT_SKIN` (0.86, 0.64, 0.50), `POINT_W` 1.3; the hand on the phone screen, index on the purple figure (`POINT_43`, `AIM43`) | 2/2 "a pointing index finger" (round 1: 2/2 "a stick/cigar"). Open: 2/2 "points vaguely up-left, no clear target"; 1/2 still "stick-like" |
+| Guards' fingers tangled | `hands_ps.PINCH_V2`: index and thumb straight, the others in the palm | 2/2 nose pinch; at feed size still "blobby" 1/2 |
+| Different gestures (Tomas) | `GUARD_B` / `dh_cast.GUARD_TURN` (new: face slid in the head, tilt): B turns his head away, palm over mouth and nose, 0.4 s after A | Variants (417): folded / palm up / palm at chest read 0/2 as smell (wave, stop, nervous); palm over mouth+nose 2/2 "different from the pinch" |
+| Longer reaction | 4.3b 0.95 s (B_43 1.90), Father's take +0.45 s; a muffled huff for B | |
+| #TeamDon photo small, cut | `SHOT43_V8`: phone 1.45, whole in the frame (x 244) | |
+| Bubble over hand and photo | "That one." in two rows (`NARROW_43` 84), it fits on his right | 2/2 the Client says it (was 2/3 unclear) |
+| 4.3a→4.3b a near-identical reframe | 4.3b in 4.3a's camera (no cut) | |
+| Not done (disagree) | table lower 25–30 %, captions at the bottom: y > 720 is the app's UI | |
+
+check / check v5: 38 / 0 each. Board v4 md5-identical (44 frames, against a315cc5).
+
+## Scene 4 v9 stills: review 6.5/10 (26 Nov), "proceed"
+
+- **The table phone shows the team photo** (`PHOTO_43`, `_phone_photo`: 3.1's `rp.team_photo`, as 4.1 and 4.2), not four bars. Phone 1.3 at x 240, whole in the frame.
+- **The Client's index ends at Sofía** (`HAND_OFF43` (60, 38), `POINT_LEN` 0.85). Five other hand places folded the arm into a lump (his shoulder is beside the phone: rule "keep the target in reach"); from above, the sleeve drew over the finger.
+- **4.3c**: the guard and the phone dimmed 35 % behind Father (`FATHER_SPOT`), Father lit.
+- Hand sheet `ps_s4_hand_sheet_v1.png`: guard A's hand at the nose in five shapes, for Tomas's pick. Film v9 after it.
+- Not done (Tomas has not answered): different guard faces, neon rim light. Disagreed: table lower, stink lines.
+- check / check v5 38 / 0; board v4 md5-identical. No cold test on these stills yet.
+
+## Scene 4 v9 film: the hand-sheet review (26 Nov), "proceed"
+
+- **Cause of "lines across the hand" (all five variants):** `dh_cast` drew the clasped hand's three finger strokes at the wrist of side 1 whatever hand was there. Off when a hands_ps hand is hooked (`not hook`). 2/2 "no stray lines".
+- **Pinch v3** (`hands_ps.PINCH_V3`): a C, the index round one side, the thumb's pad round the other, the three curled as one block with two lines, the nose's tip red between the tips, a contact shadow. Hand 0.8, PINCH_POSE (-73, -93). Not done: another skin colour for the hand (one skin for the cast).
+- Cold test of the encoded v9 at feed size (2 viewers): the photo on the phone and his point at it 2/2; Father the most important 2/2; no stray lines, no extra hand, no call 2/2. **Open: the pinch reads as "a fist to the nose or mouth" 2/2, and the two guards as "the same gesture" 2/2**: a guard's face is about 45 px wide at feed size, the fingers cannot be told apart there. The smell reads from the stink lines.
+- check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 4 v10: review FAIL "a pink lump, the nose not squeezed" (26 Nov), "proceed"
+
+- **`dh_cast.NOSE_PINCH`** (a face state, opt-in, guard A only via `ps.NOSE_43`): the nose's lower half redrawn a quarter narrower, nostrils as slits, a crease each side.
+- **Pinch v4** (`hands_ps.PINCH_V4`): a clamp, index one side, thumb the other, the three curled as one block with one line; no red tip, no shadow blob.
+- **`dh_cast.FRONT_HAND_AIM`**: the hand turns at the wrist to the nose point (rig units) and is sized so the clamp lands on it: measured, not nudged (three rounds of pose nudging never put it on the nose).
+- Cold test of the encoded v10 (2 viewers, feed-size strip + one full-size frame): **"pinches his nose with index and thumb" 2/2** at both sizes (v9: 0/2 "a fist"); no stray lines, lump, extra hand or call 2/2. Open: **2/2 "could read as a horns / rock-on sign at a glance"**; the guards "the same action" 2/2 at feed size.
+- Stopped here as planned (one sheet, one test). check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 4 v11: the pinch's tips closed (Tomas 26 Nov: "1 padarom, 2 paliekam")
+
+- `hands_ps.PINCH_CLOSE` 1.0: the index's and thumb's tips meet over the nose (a loop round it), no open V. 0 restores v10.
+- Cold test of the encoded v11 (2 viewers, feed-size strip + one full frame): "pinches his nose with index and thumb, a bad smell" 2/2; "no horns, no OK sign, no call, no stray lines, no extra hand" 2/2 (v10: horns 2/2). Note 1/2: at feed size the hand "could be a fist or a lump at the nose", read right from the stink lines.
+- Guards A / B left as they are (Tomas). check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 4 LOCKED at v11 (Tomas, 26 Nov)
+
+Tag `uptimez-pick-a-side-s4-v11` (local: the push of tags is refused by the session's proxy, 403). After scene 5's code, scene 4 v11 re-rendered from the tag's tree and from the branch: md5-identical (be72e2a2…).
+
+## Scene 5 (26 Nov): v1 → v3
+
+Shots: 5.1 the silhouette, his phone lights (3.6's) · 5.2 the gold pen writes H, R, ? a letter at a time (`sofia_ps.CV_N`, the hand moving on) · 5.3a the board, 5.3b the can comes up from his hand, then the heart (`HEART_53`) · 5.4a wide 0.85 s, then test C · 5.5 test K · 5.6 test F's staging · 5.7 the phone shakes with its buzz. Sound: buzz, a scratch per letter, three knocks, a clink and a chime, heels, buzz.
+
+| Beat | v1 (2 viewers, 4 fps sheets) | v2 / v3 |
+|---|---|---|
+| The pen writes HR? on the CV, a black sleeve | 2/2 | |
+| The oil can, the heart | 2/2 | |
+| Don's foot over the line and back, the vest | 2/2 the foot; 1/2 "content to have crossed" | |
+| Sofía holds HR? at the line (5.5) | 2/2 | |
+| Sofía crosses the tape (5.6) | **0/2** (hidden by Pam's box) | v2: **2/2** "crosses left to right" |
+| Pam's line is spoken | **0/2** ("a sign she holds": a six-row narrow box by her raised arms) | v2: 2/2 "she speaks" |
+| Pam's phone, INVITATION · DAD | 2/2 | 2/2 |
+| 5.1 who is outside | 2/2 "a figure in sunglasses", the phone's glow "a scan" 2/2 | not changed: 3.6 sets it up in the film |
+
+- v2: 5.6's own camera (lower, wider), Sofía's walk above Pam's box, Pam 70 px lower (`PAM_DY_56`), the box in two rows on her right.
+- v2 found: when the box went, the floor's "← DON" under it read as "signed - DON" 2/2. v3: the box stays to the cut (`BOX_TO_END`); her walk starts 72 left of the tape (5.5 ends on it: "a jump" 1/2 at 128). v3 not cold-tested (the scene's third version).
+- Open: Sofía has no CV in 5.6's wide (test F's cast); 5.6's first drawing still shows the floor's DON before the box.
+- check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 5 v5: review 7.5/10 (26 Nov), "what correlates", "proceed"
+
+Applies (rules-hands §0): 224 (the object, then the fingers over it), 208 (one hand per wrist), 149/224 (a real knee), 178 (three misreads: change the gesture), 163 (a face beats a gesture).
+
+- **5.6** `STOOL_56` (the stool in frame, Pam 40 px up, the camera 86 lower so Sofía's walk stays above her box), `pm_ps.BLIND_W` 26 (the blind wider than her hands, darker slats, ladder strings, pull cord, a stack of slats under the rail). The shot's switches are set only while its near layer draws.
+- **5.1** `ps_set.GLASS_PHONE_V2` (scene 5 only; 3.6 keeps its tested look): a phone's body and screen in his fist, the glow on his face.
+- Cold test of v4 (2 viewers, feed size): the phone "a phone, he looks at it" **2/2** (v1: "a scan" 2/2); "stands on a step stool" **2/2**; Sofía left of the line → right of it 2/2; Pam speaks 2/2. **Open: "holds a grey bar or shelf" 2/2, the blind not named** (the stack of slats added after this test, v5, not tested).
+- For Tomas's pick, not in the film: `ps_s5_leg_sheet_v1.png` (`don_ps.LEG`, four legs), `ps_s5_grip_sheet_v1.png` (`PEN_HAND` fist / pinch / grab; the can as it is; `CV_FINGERS`; `ps_set.ARC_K` 0.6).
+- Scene 3 v6 and scene 4 v11 re-rendered from their commits and from the branch: md5-identical. check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 5 v6 → v7: review 8.2/10, Tomas's picks (26 Nov: 5.7's grip stays, 3.6 not changed, the blind fixed)
+
+Built (opt-in): 5.4 leg 3 (`don_ps.LEG`: knee up, shin down, the shoe smaller and tipped, no hem shape, the standing shoe wider, a lean onto it, elbows 16° in) · 5.2 `PEN_HAND` pinch · 5.3b `GIVE_53` (the guard's hand lets go and folds back as the can rises) · 5.5 `CV_FINGERS` (smaller, three lengths) · 5.7 `ARC_K` 0.6 · 5.6 `LOOK_56` (Pam's eyes follow Sofía), a four-drawing step (`sofia_ss.LEGS`) · 5.3a camera 13 px right.
+
+| Asked | v6 (2 viewers, 200 px tiles) | v7 (2 viewers, 270 px, 5.5–5.7 only) |
+|---|---|---|
+| 5.1 a phone | 2/2 | |
+| 5.2 HR?; the grip | 2/2; "a writing grip" 1, "a fist" 1 | |
+| 5.3b who holds the can | the robot 1, "the man, both hands" 1 | |
+| 5.4 the foot back, no cross | **2/2** (v1: 1.5/2); the leg "a kick" 1, "a flat block" 1 | |
+| 5.6 Sofía crosses | **0/2** "on the line" (v3's shorter walk, never tested) | walk 118 left → 60 right: 1 "crosses", 1 "stops beside it" |
+| 5.6 the blind | separate slats: **"a stack of paper" 2/2** | back to the sheet (`BLIND_STYLE`): "a window blind or papers" 2/2, unsure |
+| 5.6 Pam speaks; eyes | 1/2; eyes to Sofía 2/2 | "the box has no clear speaker" 2/2; eyes 1/2 |
+| 5.7 Pam's phone | 2/2 | 2/2 |
+
+**Not converging on 5.6** (seven versions; the scene's budget was three): the stool in frame put Pam 110 px higher and the camera lower, which moved Sofía's walk to the tape's far, short end; v2 (no stool) had the cross and the speech 2/2. Stopped for Tomas's call. Not locked. check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 5 v8: 5.6 back to v2's staging (Tomas, 26 Nov: option 1)
+
+Pam 70 px down (no stool in frame), camera and walk as v2 (128 left of the tape → 46 right), kept: the blind as one sheet, Pam's eyes on Sofía, the four-drawing step, the box to the cut.
+Cold test (2 viewers, 270 px, 5.5–5.7): Pam speaks, the line hers **2/2**; her eyes track Sofía **2/2**; "a window blind" 1, "a blind or paper" 1; Sofía starts left of the line 2/2, ends "past it, crosses" 1, "on it, toes the line" 1 (v2's 2/2 not repeated: the same staging, so viewer spread). Pam's phone 2/2.
+Scene 5 by beat (v6 + v8): pen 2/2, can and heart 2/2, Don's foot back 2/2, Pam's phone 2/2, Sofía's cross 1/2: 4 of 5 by both. Not locked: Tomas's word. check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 5 LOCKED at v8 (Tomas, 26 Nov). Tag `uptimez-pick-a-side-s5-v8` (local; tag pushes are refused, 403).
+
+## Scene 6 v1 (26 Nov, /grill-me: the board's background · the thumbs up with the line · 6.1b +0.3 s · 6.2 ends on 1.1's frame 0)
+
+- **6.1** `s61`: the board's cast behind him; his hands leave the vest and come up as thumbs over 0.15–0.45 s (each joint the short way round: the long way swung his arm out), held.
+- **6.1b** `s61b` (0.9 s): test I's startle (two drawings still smug, the hair's spring with its overshoot), held.
+- **6.2** `s62`: test A's robot pull once, 0.08–0.50 s, then `shot_A(0)`; his face "shock" under the blind (he comes from the startle). **The last drawing of 6.2 and the first of 1.1 are md5-identical.**
+- Sound: the buzz, a boing, the rattle up.
+- Cold test (2 viewers, the end's 4 fps sheet + the film's first five frames): the line and the thumb 2/2; "he is wrong, nobody behind him is with him, eyes shut" 2/2; startled 2/2; the blind goes up, his hand on the cord 2/2; **the loop: "leads back in, smooth, a tug of war over the blind that repeats" 2/2**. Open: the startle's cause not seen 2/2 (the buzz is sound; the phone behind him looks the same before and after); the cut to the door "no link" 2/2 (shown without scene 1).
+- check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 6 v2 (Tomas 26 Nov: "taip", the phone hops only at 6.1b)
+
+`ps_scenes.PHONE_61` (opt-in): through 6.1 Pam's phone is lit and still, no arcs; at 6.1b it hops (9 px up, then a 3 px shake over six drawings) and its arcs come on. Cold test (2 viewers, 7.5 fps strip of the encoded v2, mute): **"the phone on the shelf buzzes, then he is startled" 2/2** (v1: the cause not seen 2/2); thumbs-up and closed eyes before 2/2. Open 2/2: his eyes go up and to the right, the phone is up and to his left (the board's `fg_61b` look). 6.2's last drawing = 1.1's first, md5 still equal. check / check v5 38 / 0; board v4 md5-identical.
+
+## Scene 6 v3, LOCKED (Tomas 26 Nov: "pasukam akis ir judam toliau")
+
+`ps_scenes.LOOK_61B` (opt-in): in 6.1b his eyes go up and to his left, to the phone (the board's look went right, 2/2 noticed). Looked at in the frames; not cold-tested again. The loop's md5 still equal; check / check v5 38 / 0; board v4 md5-identical. Tag `uptimez-pick-a-side-s6-v3` (local).
+
+## The join v1 and the whole-film cold test (26 Nov; /grill-me: a 540 copy · bubbles on, mute · hard cuts, the bass with the cut · join as it is, fix after the test)
+
+`ps_film_join_v1_540.mp4`: s1 v5 + s2 v4 (rebuilt: Pam's mug thumb off, as 1/3/4 were) + s3 v6 + s4 v11 + s5 v8 + s6 v3, concatenated, hard cuts. 67.9 s, 2037 frames, 30 fps, −15.8 LUFS, −2.3 dBTP (review copy: not the G5 master).
+
+Three viewers, six sheets at 3 fps (216 px tiles), bubbles on, no sound. Viewer 1's report mentions the series by name, so it was not fully cold: counted, with that caveat.
+
+| Beat (intended) | V1 | V2 | V3 | |
+|---|---|---|---|---|
+| 1 The blind war, the blind lands on Don | read | read | read | all three: "the robot works the blind" |
+| 2 The tape, "Pick a side.": Pam his general, Mom refuses, the diplomatic heel, BOTH | read | read | read | "the robot sits in the throne" 3/3 (meant: its OWNER: INVESTOR card on it) |
+| 3 The photo, Approved, #TeamDon reaches the red room; "That one.", "Invite her." | read | read | read | the post ties the places 3/3; Father the boss 3/3; **who says "That one.": the Client 1, "a bodyguard" 1, "his team" 1** |
+| 4 The guard's HR? CV for Sofía; she crosses; Pam's phone: INVITATION · DAD | partly | partly | partly | offered HR by the House 3/3; Pam's phone 3/3; **her crossing the tape: named by 0/3** |
+| 5 "Everyone's with me.", the buzz, the blinds up, the loop | read | read | read | "leads back in" 3/3; next: the blind war again 3/3 |
+
+Pass: each viewer 4 of 5 or better; the loop reads. Screenshot: the heel on the tape 3/3 (second: "BOTH.").
+Shared misreads to fix or accept: "That one."'s speaker (2/3 wrong); Sofía's cross (0/3); the robot "in" the throne (3/3); "Some pose. Others notice." taken for a sign (2/3).
+
+## Ending cold test, stills v7 (26 Nov): 18 frames 4.3c → 1.1 frame 0, no bubbles, 3 fresh viewers
+
+| Beat (intended) | V1 | V2 | V3 | Verdict |
+|---|---|---|---|---|
+| 1 Father orders the invitation; the guard brings it | read | read | read | 3/3 |
+| 2 The guard gives Sofía Father's invitation (5.3c variant C) | read ("giving, not a tug") | read ("fists never touch, slightly a stand-off") | read ("no tug") | 3/3 |
+| 3 Sofía crosses to Father's side | read | read (but 5.5b "doesn't say who crossed") | read | 3/3 |
+| 4 Don boasts; his team (Pam on her phone) has gone over; he realises | read | read | read | 3/3 |
+| 5 Don yanks the blind down (won't look), the robot yanks it up → the tug of war, loop | missed ("robot comforting, let the light in") | missed ("faces reality") | missed ("brightness up = bright side") | 0/3 |
+
+Pass: 4/5 each. Misreads all three share (staging faults):
+- the floor "← D" fragments in 5.3c and 5.4: 3/3 (the tape's floor sign cut by the frame);
+- 6.1b2's sprung hair against the dark throne: 3/3 read as "a crack / scribble over the INVESTOR chair";
+- 6.2's visor sun-with-arrow icon: 3/3 read as "brightness up"; Don's yank down doesn't show in a still (eyes shut read as calm).
+
+Shared by two: 5.3a robot "holding hands"; Mom never introduced; 5.5b says nothing about who crossed (1/3).
+Loop question: unfair in this test. "Frame 1" for them was the club (4.3c), not 1.1, so the answer measures nothing.
+
+## The new ending animated: scene 5 v9, scene 6 v4, join v2 (26 Nov)
+
+`src/ps_film_end.py` (opt-in): it patches ps_film's maps at run time, so scene 5 v8 and scene 6 v3 still build from ps_film unchanged.
+- **5.1:** three knocks on the shut glass (0.40/0.58/0.76 s), each with a contact spot and strokes; the blank invitation is in his other hand.
+- **5.2:** the pen writes all five letters of SOFÍA (`PEN_52_END`, ~3 px per font unit).
+- **5.3:**
+  - 0–1.25 s: the glass slides open in 0.15 s; he is behind it until it has slid, then steps in; the robot says "Welcome." with a wheel-bob;
+  - 1.25–2.45 s: the hand-over, variant C (he holds it out, her arm comes up open, she steps in, her hand closes, he lets go, it goes with her);
+  - then the old 5.3b (the can, the heart).
+  - The 5.3a camera is 28 units left so OUR FIRST CLIENT is past the edge; the robot and Sofía are moved in so her face stays off the rail.
+  - Allowed: the throne's card in the rail during 5.3c (background there).
+- **5.5b** (1.0 s, new): her far foot steps on; Don's shoe stays on his side.
+- **6.1:** behind his line, Pam's thumb comes down on ACCEPT at 1.9 s with a tap and the ring.
+- **6.1b** (1.5 s): freeze 0.3 s, shock 0.6 s (the spring's overshoot, the lean over two drawings), drop 0.6 s. The phone buzzes until the drop.
+- **6.2** (1.4 s): down 0.45 s (eyes shut, scowling, the rattle), the robot up 0.45 s (his eyes snap open), then 1.1's frame 0. The last drawing is md5-equal to 1.1's first (dc52ae94…).
+- s5 v9: 233 drawings, −16.1 LUFS, −2.7 dBTP; one passing fault. s6 v4: 88 drawings, −15.3 LUFS, −3.2 dBTP; no faults.
+- `ps_film_join_v2_540.mp4`: s1 v5 + s2 v4 + s3 v6 + s4 v11 + s5 v9 + s6 v4, 71.1 s, −15.6 LUFS, −2.1 dBFS peak (review copy).
+
+### Whole-film cold test, join v2 (3 fresh viewers, six sheets at 3 fps, 216 px tiles, bubbles on, no sound)
+
+| Beat | v1 (join v1) | v2 (join v2) |
+|---|---|---|
+| 1 The blind war | 3/3 | 3/3 |
+| 2 The tape, Pick a side, BOTH | 3/3 | 3/3 |
+| 3 The post reaches the red room; "That one." / "Invite her." | 3/3; "That one." speaker 1/3 | 3/3; "That one." = the scruffy man with bodyguards (the Client) 3/3; which one is Dad: assumed right, but unsure 3/3 |
+| 4 Father's invitation to Sofía; she crosses; Pam's phone | partly; her cross 0/3 | 3/3: the hand-over is "a giving, she reaches" 3/3; her cross named with its time 3/3 |
+| 5 "Everyone's with me", the realisation, the blind, the loop | 3/3 | 3/3: the shock 3/3; "he hides again" 2/3; loops 3/3 |
+
+Pass: 5/5 for each viewer. Screenshot: 6.1b2 (the shock in front of the invitations) 2/3; the heel 1/3.
+Shared misreads left (none breaks a beat):
+- 5.4 Don's lifted leg: 3/3 unsure ("kicking / strutting / stamping");
+- the oil can taken as a bribe: 3/3 (close to what is meant);
+- 5.5b: which side her feet are on needs the DON label (2/3);
+- 5.6 Pam "wrapped in the blinds": 2/3 unsure why;
+- the opening's glow (1.1): 2/3 unsure.
+
+## G5 master v1 (26 Nov)
+
+- `ps_scenes.HIRES` (opt-in, default 1): the same drawings at 2x on a device-scaled surface. The 540 builds ran the checks; `covered()` is skipped at 2x.
+- `ps_film_fix.py master N VER`: each scene to /tmp at 1080, then joined into `/tmp/ps_master_v1_1080.mp4` (not committed, series rule).
+- s1 v6, s2 v5, s3 v6, s4 v11, s5 v10, s6 v5.
+
+| Check | Result |
+|---|---|
+| Format | 1080×1920, 30/1, 2133 frames (71.1 s), BT.709 tags. Native 2x render, not an upscale |
+| Loudness | −15.4 LUFS, true peak −2.2 dBTP on the final AAC (pass: −14 to −16, ≤ −1) |
+| Speech | `ps_asr_check.py`, 19 lines × 3 windows inside the final mix: 19/19 at 1.00 (4.3 heard "that that one": the window's lead-in) |
+| Frame 0 / loop | 1.1 held 0.4 s (HOLD0); the last drawing md5-equal to the first; the rattle runs up into frame 0 |
+| Text | bubbles placed by speech.draw with the rail and safe rect (the 540 builds' gates passed) |
+| Board v4 | 44/44 md5-identical after the HIRES change |
+
+## Sound v2: the whole film as one timeline (Tomas 26 Nov, /grill-me on the sound)
+
+Picks:
+- the office vibes bed, The Onboarding's "A";
+- foley in every gap;
+- one timeline with one linear gain;
+- voices levelled to ±1 dB;
+- the club with no office music, its bass only;
+- 8-bar phrases over the film;
+- the bed's stops: "parink geriausiai" (I chose "BOTH." and the 6.1b shock).
+
+`src/ps_mix.py`:
+- **Voices:** every take at −20 dBFS speech RMS. The per-take gains came out −2.1…+0.8 dB, so the old 4 dB spread was the per-scene normalising.
+- **Effects:** captured from each scene's own sound map (`osd.put` recorded, takes muted), so ps_film's and ps_film_end's maps stay the one source.
+- **Foley:** in the audit's gaps, only for what is on screen:
+  - 1.4 the roll's rustle; 2.4 Pam's hops; 2.7 her coat;
+  - 3.2 the flash's whine and pop; 3.5 the post's blip;
+  - 4.1 the neon's hum; 4.3 the guards' weight; 6.1 the tap;
+  - the club's low murmur under scene 4.
+- **Bed:**
+  - `sound_ob_music.bed(total, 24, "A")`: 24 bars of 2.96 s, three 8-bar phrases, so the loop restarts on a downbeat;
+  - 15 dB under the voices, ducking 5 dB under every line;
+  - out in scene 4 and for "BOTH." (25.57–26.67 s) and the shock (68.13–69.58 s).
+- **Master:** one linear gain and a look-ahead limiter (ceiling −4 dB sample).
+- The timeline follows each scene video's own length (the concat holds the last drawing one frame more).
+
+`/tmp/ps_master_v2_1080.mp4` and `pick-a-side/ps_film_master_v2_540.mp4`:
+
+| Check | v1 | v2 |
+|---|---|---|
+| Loudness / true peak (final AAC) | −15.4 / −2.2 (dynamic loudnorm by mistake) | −15.3 LUFS / −1.8 dBTP, LRA 5.3 |
+| Stretches under −45 dBFS (0.5 s windows) | 22 (~10 s) | 1: 69.0 s, the shock's silence (on purpose) |
+| Speech, 19 lines × 3 windows | 19/19 | 19/19 (the first bed without ducking lost "my" in 2.5: 0.67, fixed by the duck) |
+| Loop seam | — | the last 0.3 s −28.5 dB (bar 24's tail), the first 0.3 s −14.3 (bar 1's chord and the tug): restarts on the downbeat |
+
+What the checks can't tell: whether the bed is too sweet or too much, and whether the laughs land. That needs people listening with sound on.
+
+## Sound v3: the opener (Tomas 26 Nov: "the blinds start in silence? a killer opener, not Chopin"; /grill-me)
+
+Picks:
+- a layered, realistic blind;
+- the bed comes in on the blind's crash;
+- sound runs through the loop's seam;
+- the robot's servo, louder rounds, a bigger fall, Don's effort.
+
+`src/ps_blind_sfx.py`: all synthesised from scratch, nothing reused.
+- zip: the cord through the pulley, friction with the ratchet speeding up.
+- slats: aluminium pings with inharmonic partials, running down or stacking up.
+- clack: the bottom or head rail.
+- servo: rising, with its motor's buzz.
+- creak: under frame 0.
+- settle: into the seam.
+- crash: a thud, 42 slats spilling, the head rail ringing.
+- grunt: Don's own voice, "Hup! / Huh! / Hah!", 1.5 semitones down. Kokoro spells "Hnngh!" as words, so only the short syllables are used.
+
+`ps_mix.py` (`OPENER`):
+- scene 1's and 6.2's captured rattles are replaced by these;
+- they go on their own bus, saturated (drive 3) and set 3 dB under the lines. In v3a the pings' crest drove the whole opening into the limiter, flat, with the crash no louder than the tug;
+- the bed starts on bar 1 at the crash (2.0 s) and is out from the shock to the end, so the seam and the tug are only the blind.
+
+The first 4 s, 0.1 s windows (dB):
+- frame 0: −27 → −18 (the creak);
+- round 1: −16; round 2: −13; round 3: −12;
+- a 0.2 s breath at −27;
+- the crash: −8.
+- The loop's end: the settle runs into the creak.
+
+Checks:
+- −15.3 LUFS, −1.8 dBTP;
+- speech 19/19;
+- one stretch under −45 dBFS: 69.0 s, the shock (on purpose).
+- Files: `/tmp/ps_master_v3_1080.mp4`, `pick-a-side/ps_film_master_v3_540.mp4`.
+
+## Sound v4: the middle opener (Tomas: "ne max versijos, kažko atsisakom")
+
+What `MID` drops:
+- Don's effort and the robot's servo in rounds 1 and 2. They stay only in the last round, the climax before the crash.
+- Slats: 8 instead of 12 a stroke, and softer (0.45).
+- The creak under frame 0: quieter (0.28).
+
+Kept on every stroke: the cord's zip and the clack (the rhythm).
+
+The first 3 s: frame 0 −28 → −19; round 1 −19/−17; round 2 −15/−14; round 3 −13; the breath −26; the crash −8.
+
+Checks: −15.3 LUFS, −2.0 dBTP, speech 19/19.
+
+Files: `pick-a-side/ps_film_master_v4_540.mp4`, `/tmp/ps_master_v4_1080.mp4`. v3 can be rebuilt with `MID = [False]`.
+
+## Sound v5: a bug found (Tomas: "pranyko nuplėšiamos juostos garsas?")
+
+My bug: from sound v2 to v4, scenes 2–4 had none of their own effects. `ps_film_end.setup()` swaps `pf.sound` for the ending's sound map, which only maps scenes 5–6, so the capture got nothing for 1–4. Lost with it:
+- the tape's screech; the clip and SLAP; the casters; the stamp; the landings; the heel click;
+- the beeps; the squeaks; the BONK; the servo; the shutter; the chime; the whoosh; the DING;
+- the club's bass; the smudge; the sniff; the huff.
+
+Nothing checked for it: the levels passed, and the gaps were filled by the bed and the foley.
+
+Fix: `effects(n)` calls ps_film's own map (`ps_film_end._old_sound`) for scenes 1–4. Captured now: 8 / 15 / 6 / 20 / 21 / 5 placements.
+
+With the effects back:
+- the effects duck 8 dB under every line, 0.12 s ahead;
+- a short effect on a line's first syllable moves ahead of it. Two moved: 2.9's second alarm beep sat on "Border" (Whisper heard "Order"), and 5.3's knock on "Welcome".
+
+Checks:
+- −15.3 LUFS, −1.6 dBTP;
+- one stretch under −45 dBFS: 69.0 s, the shock (on purpose);
+- speech 18/19. "Both." (2.10) reads "Bose" in the three windows: the same in the voice-only take and in master v1. With "And you?" before it, it reads "both". The take is weak alone; the bubble carries it on screen.
+- Files: `pick-a-side/ps_film_master_v5_540.mp4`, `/tmp/ps_master_v5_1080.mp4`.
+
+## Sound v6: the robot's "Both." re-recorded (Tomas: "perrašyk įrašą")
+
+Tried as voice B (am_echo through robotize), each in 4 windows alone:
+- "Both." / "Both!" / speed 1.0 or 0.9 / "Bothe." / "Bowth.": all "Bose" 4/4. The raw Kokoro voice also said "Bose", so it is not the robot effect. A high band of the raw voice mixed back in did not help.
+- The misaki phoneme syntax: it was read aloud as text.
+- "Both sides." / "Both. Sides.": 4/4.
+
+Take: "Both. Sides." with only its first word kept (`ps_voices.CUT`, 0.36 s, 25 ms fade). Alone it is heard "both" 4/4; `takes()` gives 3/3. The old take is gone from the tree but stays in git history (445043d). The line and its bubble are still "Both.".
+
+Master v6: −15.3 LUFS, −1.8 dBTP; speech 19/19 (2.10 "both" 1.00). Files: `pick-a-side/ps_film_master_v6_540.mp4`, `/tmp/ps_master_v6_1080.mp4`.
+
+## Master v7: "DAD →" and 0:26 (Tomas 26 Nov, /grill-me)
+
+- **2.1c (new, 0.6 s):** an insert after 2.1b. The floor from above, the tape down the middle; "← DON" as he wrote it, and "DAD →" written on while we look (0.35 s), with three marker squeaks in ps_mix.
+- **The floor mark** (`ps_set.DAD_MARK`, opt-in): "DAD →" in the same marker past the tape, at (46, 105, 0.8).
+  - Not drawn in shots whose camera cuts it at the edge (`ps_film_fix.DAD_HIDE`, measured at 10/50/90 % of each shot): 2.1b, 2.5, 2.7, 2.9b, 3.1, 3.3, 5.4.
+  - Also not drawn in 6.1 and 6.1b, where it is three-quarters behind Don.
+  - It shows in 2.6 (Mom: "I don't pick sides") and 2.10 (the robot's "Both." standing on DAD).
+  - 5.5b gets "DAD" on her side.
+- **0:26:** 2.10 is 0.9 s shorter. After "Both." there is a 0.3 s beat, then the cut; before, the robot was frozen 1.2 s with the bed silent. The bed's stop for "Both." is −0.15…+0.45 s around the word (was −0.2…+0.9).
+- `ps_asr_check.py` now takes each scene's length from the muxed videos. Its fixed table had put 3.1's window 0.3 s off after the cut: "up donnie" 0.67.
+
+Renders: s2 v6, s3 v7, s5 v11, s6 v6 at 540 and 1080 (s6 v6 with no faults).
+
+Master v7:
+- 70.78 s, 1080×1920, 2123 frames;
+- −15.3 LUFS, −2.0 dBTP;
+- speech 19/19;
+- one stretch under −45 dBFS: 68.5 s, the shock;
+- the loop: the last frame vs the first, mean |Δ| 0.47 (encoding).
+- Files: `pick-a-side/ps_film_master_v7_540.mp4`, `/tmp/ps_master_v7_1080.mp4`.
+
+## Master v8: three outside reviews of 0:55 and 1:05 (26 Nov; table and "what correlates" sent; Tomas: "tvarkom")
+
+Not taken (reasons sent to Tomas):
+- the SECURITY badge: cold tests read him as Father's bodyguard 3/3;
+- lower background contrast: the set is canon;
+- "Don should not realise": Tomas's 6.1b pick.
+
+**5.3c v2**, the hand-over in phases (1.2 s):
+- he holds it out;
+- her open hand comes up; she steps in;
+- both hold it, a card's width between their hands;
+- HE LETS GO: his hand opens, palm up, 22 units off its edge (0.85 s);
+- then his arm goes back while she brings it in by its top edge (`END_53C` (−40, 70); the "chest" pose put her forearm over her face). DAD and SOFÍA stay clear.
+
+**5.3b v2** (`cast_53b`), where 5.3c left them:
+- the guard at x 156 with one hand down and one at his belt (no clasped pair);
+- the robot where Sofía stood (278). Sofía walks out right with her card in the first 0.45 s;
+- the robot holds the can up in its FAR hand by the loop handle. The can is mirrored (spout away from him), at 0.9 size, tipped 0.55 rad, with the label redrawn unmirrored;
+- the heart beats: a pale ring every other drawing.
+- Camera (262, 752, 2.05).
+
+**6.1 v2** (`cast_61_v2`):
+- **Pam:**
+  - the phone 25 % smaller (0.255), held in the series' grip (`of_cast.phone_grip`, scale 0.48: at 0.62 its thumb read as a stick);
+  - her rig's cup hand swapped for a fist under the palm;
+  - the thumb comes onto ACCEPT, which turns to "✓ ACCEPTED" in dark green;
+  - her face goes "doubt" → "quiet" (eyes down, a private smile).
+- **Sofía:** the card 20 % smaller, in both hands at its upper corners, her eyes on it.
+
+Renders: s5 v12, s6 v7 at 540 and 1080, no faults.
+
+Master v8: 70.77 s; −15.3 LUFS, −2.0 dBTP; speech 19/19. Files: `pick-a-side/ps_film_master_v8_540.mp4`, `/tmp/ps_master_v8_1080.mp4`.

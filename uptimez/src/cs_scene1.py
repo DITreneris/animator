@@ -163,6 +163,7 @@ def fist(k, hx, hy, s, skin, seed):
 # ---- 1.1 frame 0: every phone buzzes; heads down; then every head turns to Don ---------------------------------------------
 
 N11 = 17
+ONLYDON66 = [False]                                        # v23: the last wide: only Don holds a phone, no buzz
 END66 = [False]                                            # scene 6's last shot reuses this one (opt-in)
 TURN = {"sofia": 6, "pam": 8, "mom": 9, "don_up": 11}       # the drawing each one turns (a ripple, not all at once)
 
@@ -191,20 +192,24 @@ def s1_1(k, d):
         c_ = k_.c
         feet = sb.F + 6
         c_.save(); c_.translate(575, feet); c_.scale(1.0, br(d, 0.3)); c_.translate(-575, -feet)
-        got["pam"] = pb.pam(k_, 575, feet, sb.SC["pam"], kit.ARM_POSES["phone_r"], "neutral", lk["pam"], glasses="up")
+        got["pam"] = pb.pam(k_, 575, feet, sb.SC["pam"], kit.ARM_POSES["stand" if (END66[0] and ONLYDON66[0]) else "phone_r"],
+                            "neutral", lk["pam"], glasses="up")
         c_.restore()
+        if END66[0] and ONLYDON66[0]:
+            return
         (lx, ly), (rx, ry) = got["pam"]["hands"]
         phone_held(k_, rx, ry, sb.SC["pam"], ang=-0.2, buzz=buzz, d=d, seed=931)
         fist(k_, rx, ry, sb.SC["pam"], A.SKIN_PAM, 935)
 
     def ex(k_, o):
-        for who, skin, sd, ang in (("don", kit.PEOPLE["DON"]["skin"], 941, -0.25), ("sofia", None, 951, -0.15)):
+        only = END66[0] and ONLYDON66[0]
+        for who, skin, sd, ang in (("don", kit.PEOPLE["DON"]["skin"], 941, -0.25), ("sofia", None, 951, -0.15))[:1 if only else 2]:
             (lx, ly), (rx, ry) = o[who]["hands"]
             hx, hy = (lx, ly) if who == "don" and lx > rx else (rx, ry)
             hx, hy = max((lx, ly), (rx, ry), key=lambda p: -p[1])                    # the raised hand: the higher one
             phone_held(k_, hx, hy, sb.SC[who], ang=ang, buzz=buzz, d=d + sd, seed=sd)
             fist(k_, hx, hy, sb.SC[who], skin or kit.PEOPLE.get("SOFIA", {}).get("skin", (0.98, 0.84, 0.74)), sd + 4)
-        if "mom" in got:
+        if "mom" in got and not only:
             (lx, ly), (rx, ry) = got["mom"]["hands"]
             hx, hy = max((lx, ly), (rx, ry), key=lambda p: -p[1])
             phone_held(k_, hx, hy, sb.SC["mom"], ang=-0.1, buzz=buzz, d=d + 3, seed=961)
@@ -224,8 +229,9 @@ def s1_1(k, d):
             S(k, WIDE1, auto=False, back=back, extra=ex,
               **base(cl=False, door=0.0, rb=at("robot", arm="none"),
                      dn=at("don", pose=don_pose, face=don_face, look=don_look),
-                     sf=at("sofia", pose="phone_r", face=sofia_face, look=lk["sofia"]),
-                     pm=False, mm=dict(x=650, x4=True, pose="phone_r", face="sweet", look=lk["mom"])))
+                     sf=at("sofia", pose="low" if (END66[0] and ONLYDON66[0]) else "phone_r", face=sofia_face, look=lk["sofia"]),
+                     pm=False, mm=dict(x=650, x4=True, pose="stand" if (END66[0] and ONLYDON66[0]) else "phone_r", face="sweet",
+                                       look=lk["mom"])))
     finally:
         sb.mfs.mom = om
 
