@@ -80,8 +80,8 @@ def _over_face(box, face):
     return x0 < hx + r * 0.8 and x1 > hx - r * 0.8 and y0 < hy + r * 0.8 and y1 > hy - r * 0.8
 
 
-def _hits(box, faces, avoid):
-    if box[0] < SAFE[0] or box[1] < SAFE[1] or box[2] > SAFE[2] or box[3] > SAFE[3]:
+def _hits(box, faces, avoid, safe=SAFE):
+    if box[0] < safe[0] or box[1] < safe[1] or box[2] > safe[2] or box[3] > safe[3]:
         return True
     if any(_over_face(box, f) for f in faces):
         return True
@@ -91,28 +91,28 @@ def _hits(box, faces, avoid):
     return False
 
 
-def _clamp(box):
+def _clamp(box, safe=SAFE):
     x0, y0, x1, y1 = box
     w, h = x1 - x0, y1 - y0
-    x0 = min(max(x0, SAFE[0]), SAFE[2] - w)
-    y0 = min(max(y0, SAFE[1]), SAFE[3] - h)
+    x0 = min(max(x0, safe[0]), safe[2] - w)
+    y0 = min(max(y0, safe[1]), safe[3] - h)
     return (x0, y0, x0 + w, y0 + h)
 
 
-def _clear(box, tip, faces, avoid, signs):
+def _clear(box, tip, faces, avoid, signs, safe=SAFE):
     """Slide the box along its side until it clears the face and still keeps a short tail."""
     x0, y0, x1, y1 = box
     h = y1 - y0
     for dy in range(0, int(h) + 1, 2):
         for sign in ((0,) if dy == 0 else (-1, 1)):
             ny = y0 + sign * dy
-            if ny < SAFE[1] or ny + h > SAFE[3]:
+            if ny < safe[1] or ny + h > safe[3]:
                 continue
             if not (ny + 12 <= tip[1] <= ny + h - 12):
                 continue
             nb = (x0, ny, x1, ny + h)
             blocked = signs and any(nb[0] < a[2] and nb[2] > a[0] and nb[1] < a[3] and nb[3] > a[1] for a in avoid)
-            outside = nb[0] < SAFE[0] or nb[2] > SAFE[2] or nb[1] < SAFE[1] or nb[3] > SAFE[3]
+            outside = nb[0] < safe[0] or nb[2] > safe[2] or nb[1] < safe[1] or nb[3] > safe[3]
             if blocked or outside or any(_over_face(nb, f) for f in faces) or _gap(tip, nb) < TAIL_MIN:
                 continue
             if _gap(tip, nb) > TAIL_MAX:
@@ -151,19 +151,21 @@ def _paint(k, box, tip, rows, size, font, mono=False):
         kit.text(k, row, cx, top + i * lead, size, font=font, center=True, bold=_weight(font) == cairo.FONT_WEIGHT_BOLD)
 
 
-def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None, others=(), avoid=(), pin=None):
+def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None, others=(), avoid=(), pin=None, safe=None):
     """head is (x, y, r) in 540 space, or None for a speaker who is off the frame.
     mouth is the mouth drawn in this frame. above is a bare scalp or an antenna; without it the tail stays beside the face.
     aim is a tip measured on this frame (a visor rim, a profile mouth, a voice in the dark). The box sits beside it.
+    safe replaces SAFE for a frame that is not 540x960. 9:16 callers omit it.
     Returns (box, tip). tip is None on a named card."""
     if not isinstance(k, Ctx):
         k = Ctx(k, 0)
+    rect = SAFE if safe is None else safe
     if mono:
         text = text.upper()
     if head is None:
         rows, size, font, bw, bh = _metrics(k, '%s: "%s"' % (name or "OFF", text), False)
-        box = (SAFE[0] + 6, SAFE[1] + 8, SAFE[0] + 6 + bw, SAFE[1] + 8 + bh)
-        box = _clamp(box)
+        box = (rect[0] + 6, rect[1] + 8, rect[0] + 6 + bw, rect[1] + 8 + bh)
+        box = _clamp(box, rect)
         _paint(k, box, None, rows, size, font)
         return box, None
 
@@ -174,15 +176,15 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
         side = 1 if (pin[0] + pin[2]) / 2.0 > hx else -1
         tip = aim if aim is not None else (hx + side * r * 0.82, my)
         if (TAIL_MIN + 3 <= _gap(tip, pin) <= TAIL_MAX - 1 and pin[1] + 8 <= tip[1] <= pin[3] - 8
-                and not _hits(pin, faces, avoid)):
+                and not _hits(pin, faces, avoid, rect)):
             rows, size, font, _bw, _bh = _metrics(k, text, mono, max(48, pin[2] - pin[0] - 28))
             _paint(k, pin, tip, rows, size, font)
             return pin, tip
 
     def room_for(side, tip):
         if side > 0:
-            return SAFE[2] - (tip[0] + GAP)
-        return (tip[0] - GAP) - SAFE[0]
+            return rect[2] - (tip[0] + GAP)
+        return (tip[0] - GAP) - rect[0]
 
     def beside(side, tip, y, max_w, signs=True):
         """A box in the wall on this side of the tip. None when it would slide over the tip or the face.
@@ -195,26 +197,26 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
             return None
         x0 = tip[0] + GAP if side > 0 else tip[0] - GAP - bw
         y0 = y - bh * 0.45
-        if y0 < SAFE[1] or y0 + bh > SAFE[3]:
-            y0 = min(max(y0, SAFE[1]), SAFE[3] - bh)
+        if y0 < rect[1] or y0 + bh > rect[3]:
+            y0 = min(max(y0, rect[1]), rect[3] - bh)
             if not (y0 + 8 <= tip[1] <= y0 + bh - 8):
                 return None
         box = (x0, y0, x0 + bw, y0 + bh)
-        box = _clear(box, tip, faces, avoid, signs)
+        box = _clear(box, tip, faces, avoid, signs, rect)
         if box is None:
             return None
         return box, tip, rows, size, font
 
     def overhead():
         tip = above
-        room = SAFE[2] - SAFE[0]
+        room = rect[2] - rect[0]
         rows, size, font, bw, bh = _metrics(k, text, mono, min(MAX_W[0], room - 28))
-        x0 = min(max(tip[0] - bw / 2, SAFE[0]), SAFE[2] - bw)
+        x0 = min(max(tip[0] - bw / 2, rect[0]), rect[2] - bw)
         y0 = tip[1] - GAP - bh
-        if y0 < SAFE[1]:
+        if y0 < rect[1]:
             return None
         box = (x0, y0, x0 + bw, y0 + bh)
-        if _hits(box, faces, avoid) or _gap(tip, box) < TAIL_MIN:
+        if _hits(box, faces, avoid, rect) or _gap(tip, box) < TAIL_MIN:
             return None
         return box, tip, rows, size, font
 
@@ -222,7 +224,7 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
         away = -1 if aim[0] <= hx else 1
         tries = [(away, aim, aim[1]), (-away, aim, aim[1])]
     else:
-        side0 = 1 if hx < 270 else -1
+        side0 = 1 if hx < (rect[0] + rect[2]) / 2 else -1
         tries = []
         for side in (side0, -side0):
             tip = (hx + side * r * 0.82, my)
@@ -260,10 +262,10 @@ def draw(k, text, head, mouth=None, above=None, aim=None, mono=False, name=None,
             bh = 20 + len(rows) * (size + 4)
         bw = min(bw, avail)
         x0 = tip[0] + GAP if side > 0 else tip[0] - GAP - bw
-        x0 = min(max(x0, SAFE[0]), SAFE[2] - bw)
-        y0 = min(max(y - bh * 0.45, SAFE[1]), SAFE[3] - bh)
+        x0 = min(max(x0, rect[0]), rect[2] - bw)
+        y0 = min(max(y - bh * 0.45, rect[1]), rect[3] - bh)
         y0 = min(max(y0, tip[1] - bh + 6), tip[1] - 6)
-        y0 = min(max(y0, SAFE[1]), SAFE[3] - bh)
+        y0 = min(max(y0, rect[1]), rect[3] - bh)
         picked = ((x0, y0, x0 + bw, y0 + bh), tip, rows, size, font)
     box, tip, rows, size, font = picked
     _paint(k, box, tip, rows, size, font, mono)

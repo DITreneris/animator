@@ -1,0 +1,5 @@
+flight  bend -  gap 0  the card in the air, no hand
+shred  bend 89  gap 46  slot gap 19 px, arm shortened 46 px
+card  bend 99  gap 0  card is 72 px from the pocket mark, on the hand the bones hold
+tape  bend 99  gap 0  seam on the hand, sheet moved 44 px, bone shortfall 25 px closed
+phone  bend 110  gap 0  crop (350, 254, 1.99), not written into the set

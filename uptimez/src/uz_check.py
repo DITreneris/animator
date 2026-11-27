@@ -470,15 +470,20 @@ def check_map(expect, got=None):
 
 
 # ---------------------------------------------------------------------------------------------------- the encoded film
-def check_film(mp4, frames=None, loop_max=3.0, lufs=(-16.0, -14.0), peak=-1.0):
-    """format, loudness, true peak, and the loop seam, on the file that ships."""
+def check_film(mp4, frames=None, loop_max=3.0, lufs=(-16.0, -14.0), peak=-1.0, format="9x16"):
+    """format, loudness, true peak, and the loop seam, on the file that ships.
+    format="9x16" is the default (1080x1920). format="16x9" accepts 1920x1080.
+    loop_max=None skips the loop seam. The Blueprint passes that: its last frame is not frame 0."""
     import json
     import subprocess
     out = []
     p = json.loads(subprocess.check_output(["ffprobe", "-v", "0", "-select_streams", "v", "-count_frames", "-show_entries",
                                             "stream=width,height,r_frame_rate,nb_read_frames,color_space,color_primaries,color_transfer",
                                             "-of", "json", mp4]))["streams"][0]
-    if (p["width"], p["height"], p["r_frame_rate"]) != (1080, 1920, "30/1"):
+    want = (1920, 1080, "30/1") if format == "16x9" else (1080, 1920, "30/1")
+    if format not in ("9x16", "16x9"):
+        out.append("FORMAT: unknown profile %s" % format)
+    if (p["width"], p["height"], p["r_frame_rate"]) != want:
         out.append("FORMAT: %sx%s at %s" % (p["width"], p["height"], p["r_frame_rate"]))
     if frames and int(p["nb_read_frames"]) != frames:
         out.append("FORMAT: %s frames, expected %d" % (p["nb_read_frames"], frames))
@@ -493,12 +498,18 @@ def check_film(mp4, frames=None, loop_max=3.0, lufs=(-16.0, -14.0), peak=-1.0):
     if P > peak:
         out.append("SOUND: true peak %.1f dBTP (wants <= %.0f)" % (P, peak))
     n = int(p["nb_read_frames"])
-    raw = subprocess.check_output(["ffmpeg", "-v", "0", "-i", mp4, "-vf", "select='eq(n,0)+eq(n,%d)',scale=270:480" % (n - 1),
-                                   "-vsync", "0", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"])
-    import numpy as np
-    a = np.frombuffer(raw, np.uint8).astype(float).reshape(-1, 480, 270, 3)
-    if len(a) == 2:
-        d = float(np.abs(a[0] - a[1]).mean())
-        if d > loop_max:
-            out.append("LOOP: the last frame differs from frame 0 by %.1f/255 on average (wants <= %.1f)" % (d, loop_max))
+    if loop_max is not None:
+        if format == "16x9":
+            scale, th, tw = "scale=480:270", 270, 480
+        else:
+            scale, th, tw = "scale=270:480", 480, 270
+        raw = subprocess.check_output(["ffmpeg", "-v", "0", "-i", mp4, "-vf",
+                                       "select='eq(n,0)+eq(n,%d)',%s" % (n - 1, scale),
+                                       "-vsync", "0", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"])
+        import numpy as np
+        a = np.frombuffer(raw, np.uint8).astype(float).reshape(-1, th, tw, 3)
+        if len(a) == 2:
+            d = float(np.abs(a[0] - a[1]).mean())
+            if d > loop_max:
+                out.append("LOOP: the last frame differs from frame 0 by %.1f/255 on average (wants <= %.1f)" % (d, loop_max))
     return out, dict(lufs=I, peak=P, frames=n)

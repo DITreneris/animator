@@ -18,6 +18,7 @@ VEST = (0.14, 0.20, 0.33)
 VEST_SHADE = (0.10, 0.15, 0.26)
 ZIP = (0.62, 0.64, 0.68)
 KHAKI = (0.78, 0.70, 0.52)
+KHAKI_GAP = (0.52, 0.44, 0.30)   # the split between the legs; darker, so it is not a white shirt hole
 BELT = (0.30, 0.20, 0.12)
 KETCHUP = (0.90, 0.22, 0.08)      # tomato red, warmer than blood
 KETCHUP_DARK = (0.66, 0.12, 0.04)
@@ -51,15 +52,40 @@ def ketchup(k, x, y, seed=0):
     c.set_source_rgba(1, 1, 1, 0.8); c.arc(x - 3, y - 6, 1.1, 0, 2 * math.pi); c.fill()   # wet shine
 
 
-def _costume(stain, badge, name="DON"):
+SHOE = (0.36, 0.24, 0.14)
+SOLE = (0.16, 0.10, 0.07)
+
+
+def _cuffs(k, waist):
+    """Two trouser legs and two shoes. The shirt body is white to the floor, so a darker
+    gap sits under the split and the shoes overlap the ankle corners."""
+    c = k.c
+    cut(k, [(-9, waist), (9, waist), (10, 0), (-10, 0)], KHAKI_GAP, shadow=False, outline=False)
+    cut(k, [(-50, waist), (-5, waist), (-9, -26), (-50, -18)], KHAKI, shadow=False, lw=2)
+    cut(k, [(5, waist), (50, waist), (50, -18), (9, -26)], KHAKI, shadow=False, lw=2)
+    c.set_source_rgb(*INK); c.set_line_width(1.5)
+    c.move_to(-47, -22); c.line_to(-11, -26); c.stroke()
+    c.move_to(11, -26); c.line_to(47, -22); c.stroke()
+    for sx in (-1, 1):
+        cut(k, [(sx * 52, -4), (sx * 46, -22), (sx * 7, -24), (sx * 6, -5),
+                (sx * 8, 0), (sx * 54, 0)],
+            SHOE, shadow=False, lw=1.8)
+        c.set_source_rgb(*SOLE); c.set_line_width(2.6)
+        c.move_to(sx * 10, -1); c.line_to(sx * 52, -1); c.stroke()
+
+
+def _costume(stain, badge, name="DON", legs="block"):
     def hook(k, name_, p, body_top, seed):
         c = k.c
         bt = body_top
         waist = bt + 150
-        # trousers and belt below the vest
-        cut(k, [(-45, waist), (45, waist), (47, 0), (-47, 0)], KHAKI, shadow=False, lw=2)
-        c.set_source_rgb(*INK); c.set_line_width(1.6)
-        c.move_to(0, waist + 14); c.line_to(0, -4); c.stroke()
+        # trousers and belt below the vest. "block" is the shipped trapezoid.
+        if legs == "cuffs":
+            _cuffs(k, waist)
+        else:
+            cut(k, [(-45, waist), (45, waist), (47, 0), (-47, 0)], KHAKI, shadow=False, lw=2)
+            c.set_source_rgb(*INK); c.set_line_width(1.6)
+            c.move_to(0, waist + 14); c.line_to(0, -4); c.stroke()
         rect(k, -45, waist - 6, 90, 12, BELT, seed + 61, shadow=False, lw=1.6)
         rect(k, -7, waist - 8, 14, 16, ZIP, seed + 62, shadow=False, lw=1.4)
         # shirt collar points at the neck
@@ -101,7 +127,8 @@ def _face_wrap(orig, chin):
     return face_draw
 
 
-def don(k, x, feet, s=1.0, pose="stand", face="neutral", look=(0, 0), seed=500, badge=True, stain=True, chin=0):
+def don(k, x, feet, s=1.0, pose="stand", face="neutral", look=(0, 0), seed=500, badge=True, stain=True, chin=0,
+        legs="block"):
     old_p = dict(kit.PEOPLE["DON"])
     old_hook = kit.BADGE_HOOK
     old_face = kit.face_draw
@@ -109,7 +136,7 @@ def don(k, x, feet, s=1.0, pose="stand", face="neutral", look=(0, 0), seed=500, 
         kit.face_draw = _face_wrap(old_face, chin)
     p = dict(old_p); p["body"] = SHIRT; p.pop("tie", None)
     kit.PEOPLE["DON"] = p
-    kit.BADGE_HOOK = _costume(stain, badge)
+    kit.BADGE_HOOK = _costume(stain, badge, legs=legs)
     try:
         return kit.person(k, "DON", x, feet, s, pose=pose, face=face, seed=seed, look=look, badge=True)
     finally:

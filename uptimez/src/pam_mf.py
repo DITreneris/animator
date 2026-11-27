@@ -28,6 +28,7 @@ import props_mf as pr
 from kit import INK, cut, rect, ellipse
 
 PURPLE = kit.PEOPLE["PAM"]["body"]                   # the Day One office purple
+NOSE = [False]                                       # sheet only: a small downward nose under the bridge. Off, every film draws as before.
 PURPLE_DARK = (0.27, 0.17, 0.40)
 BUTTON = pt.BUTTON
 GOLD = pt.GOLD
@@ -127,6 +128,9 @@ def glasses_draw(k, x, y, state, seed=0):
         c.set_source_rgba(*LENS, 0.55); c.fill_preserve()
         c.set_source_rgb(*INK); c.set_line_width(2.6); c.stroke()
     c.move_to(x - 5, top + 1); c.curve_to(x - 2, top - 3, x + 2, top - 3, x + 5, top + 1); c.stroke()   # bridge
+    if NOSE[0]:                                                          # under the lenses, the tip turning down
+        c.set_line_width(2.2)
+        c.move_to(x, top + 3); c.curve_to(x - 1, top + 12, x - 4, top + 18, x - 2, top + 22); c.stroke()
     if state == "flash":
         c.set_source_rgb(1, 1, 1); c.set_line_width(3.2)
         for sx in (-17, 17):

@@ -1,0 +1,844 @@
+{
+ "ob_3.1": {
+  "who": "CLIENT",
+  "text": "Ten garages. And I keep losing this.",
+  "source": "ob_voices/film_v10 3.1",
+  "how": "copied",
+  "word": "garages",
+  "ref_len": 2.523,
+  "ref_f0": 109,
+  "drift_ms": 0,
+  "len": 2.523,
+  "f0": 109,
+  "rms": 0.111,
+  "peak": 0.861,
+  "asr": [
+   "10 garages and I keep losing this.",
+   "10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10",
+   "10 garages and I keep losing this."
+  ],
+  "asr_ok": 2
+ },
+ "ob_3.2": {
+  "who": "SOFIA",
+  "text": "Does your missus love your garages?",
+  "source": "ob_voices/film_v10 3.2",
+  "how": "copied",
+  "word": "garages",
+  "ref_len": 1.85,
+  "ref_f0": 200,
+  "drift_ms": 0,
+  "len": 1.85,
+  "f0": 200,
+  "rms": 0.111,
+  "peak": 0.679,
+  "asr": [
+   "Does your missus love your garages?",
+   "Does your missus, love your garages?",
+   "Does your missus love your garages?"
+  ],
+  "asr_ok": 3
+ },
+ "ob_3.3": {
+  "who": "CLIENT",
+  "text": "I live alone.",
+  "source": "ob_voices/film_v10 3.3",
+  "how": "copied",
+  "word": "alone",
+  "ref_len": 0.934,
+  "ref_f0": 129,
+  "drift_ms": 0,
+  "len": 0.934,
+  "f0": 129,
+  "rms": 0.113,
+  "peak": 0.61,
+  "asr": [
+   "I live alone.",
+   "I live alone.",
+   "I live alone."
+  ],
+  "asr_ok": 3
+ },
+ "ob_3.7": {
+  "who": "SOFIA",
+  "text": "Oh...",
+  "source": "ob_voices/film_v10 3.7",
+  "how": "copied",
+  "word": null,
+  "ref_len": 0.492,
+  "ref_f0": 199,
+  "drift_ms": 0,
+  "len": 0.492,
+  "f0": 199,
+  "rms": 0.128,
+  "peak": 0.493
+ },
+ "ob_3.12": {
+  "who": "CLIENT",
+  "text": "Can it find this when I lose it?",
+  "source": "ob_voices/film_v10 3.12",
+  "how": "copied",
+  "word": "find",
+  "ref_len": 1.704,
+  "ref_f0": 104,
+  "drift_ms": 0,
+  "len": 1.704,
+  "f0": 104,
+  "rms": 0.112,
+  "peak": 0.921,
+  "asr": [
+   "Can it find this when I lose it?",
+   "Can it find this when I lose it?",
+   "Can it find this when I lose it?"
+  ],
+  "asr_ok": 3
+ },
+ "ob_4.1": {
+  "who": "DON",
+  "text": "Here, you will never lose anything again.",
+  "source": "ob_voices/film_v10 4.1",
+  "how": "copied",
+  "word": "never",
+  "ref_len": 2.287,
+  "ref_f0": 89,
+  "drift_ms": 0,
+  "len": 2.287,
+  "f0": 89,
+  "rms": 0.111,
+  "peak": 0.745,
+  "asr": [
+   "Here you will never lose anything again.",
+   "Here you will never lose anything again.",
+   "Here you will never lose anything again."
+  ],
+  "asr_ok": 3
+ },
+ "ob_4.3": {
+  "who": "DON",
+  "text": "We'll take care of it.",
+  "source": "ob_voices/film_v10 4.3",
+  "how": "copied",
+  "word": "care",
+  "ref_len": 1.158,
+  "ref_f0": 92,
+  "drift_ms": 0,
+  "len": 1.158,
+  "f0": 92,
+  "rms": 0.111,
+  "peak": 0.71,
+  "asr": [
+   "We'll take care of it",
+   "We'll take care of it.",
+   "We'll take care of it."
+  ],
+  "asr_ok": 3
+ },
+ "ob_5.4": {
+  "who": "CLIENT",
+  "text": "One month. I ask, you find it.",
+  "source": "ob_voices/film_v10 5.4",
+  "how": "copied",
+  "word": "month",
+  "ref_len": 1.941,
+  "ref_f0": 111,
+  "drift_ms": 0,
+  "len": 1.941,
+  "f0": 111,
+  "rms": 0.112,
+  "peak": 0.739,
+  "asr": [
+   "One month I ask you find it.",
+   "One month I ask you find it.",
+   "One month I ask you find it."
+  ],
+  "asr_ok": 3
+ },
+ "ob_5.5": {
+  "who": "DON",
+  "text": "Approved.",
+  "source": "ob_voices/film_v10 5.5",
+  "how": "copied",
+  "word": "approved",
+  "ref_len": 0.718,
+  "ref_f0": 93,
+  "drift_ms": 0,
+  "len": 0.718,
+  "f0": 93,
+  "rms": 0.112,
+  "peak": 0.584,
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "asr_ok": 3
+ },
+ "ob_8.1": {
+  "who": "ROBOT",
+  "text": "FIRST CUSTOMER. CELEBRATION REQUIRED.",
+  "source": "ob_voices/film_v10 8.1",
+  "how": "copied",
+  "word": "celebration",
+  "ref_len": 1.999,
+  "ref_f0": 141,
+  "drift_ms": 0,
+  "len": 1.999,
+  "f0": 141,
+  "rms": 0.112,
+  "peak": 1.0,
+  "asr": [
+   "First customer, celebration required.",
+   "First customer celebration required.",
+   "First customer, celebration required."
+  ],
+  "asr_ok": 3
+ },
+ "ob_8.3": {
+  "who": "DON",
+  "text": "SOFÍA! WE HAVE A CUSTOMER!",
+  "source": "ob_voices/film_v10 8.3",
+  "how": "copied",
+  "word": "customer",
+  "ref_len": 1.8,
+  "ref_f0": 91,
+  "drift_ms": 0,
+  "len": 1.8,
+  "f0": 91,
+  "rms": 0.15,
+  "peak": 0.534,
+  "asr": [
+   "Sophia, we have a customer.",
+   "Sophia, we have a customer.",
+   "Sophia we have a customer"
+  ],
+  "asr_ok": 3
+ },
+ "ob_9.1": {
+  "who": "PAM",
+  "text": "Some shit, others scoop.",
+  "source": "ob_voices/film_v10 9.1",
+  "how": "copied",
+  "word": "scoop",
+  "ref_len": 1.482,
+  "ref_f0": 184,
+  "drift_ms": 0,
+  "len": 1.482,
+  "f0": 184,
+  "rms": 0.111,
+  "peak": 0.663,
+  "asr": [
+   "some shit other scoop",
+   "Some shit other scoop",
+   "some shit other scoop"
+  ],
+  "asr_ok": 3
+ },
+ "ob_10.4": {
+  "who": "ROBOT",
+  "text": "ONBOARDING COMPLETE.",
+  "source": "ob_voices/film_v10 10.4",
+  "how": "copied",
+  "word": "complete",
+  "ref_len": 1.216,
+  "ref_f0": 151,
+  "drift_ms": 0,
+  "len": 1.216,
+  "f0": 151,
+  "rms": 0.111,
+  "peak": 0.913,
+  "asr": [
+   "onboarding complete",
+   "onboarding complete",
+   "onboarding complete."
+  ],
+  "asr_ok": 3
+ },
+ "fs_1.2": {
+  "who": "CLIENT",
+  "text": "Friday, the bank. I need my blueprint.",
+  "source": "fs_voices/film_v13 1.2",
+  "how": "copied",
+  "word": "blueprint",
+  "ref_len": 2.492,
+  "ref_f0": 114,
+  "drift_ms": 0,
+  "len": 2.492,
+  "f0": 114,
+  "rms": 0.111,
+  "peak": 0.847,
+  "asr": [
+   "Friday the bank I need my blueprint.",
+   "Friday the bank I need my blueprint.",
+   "Friday the bank I need my blueprint."
+  ],
+  "asr_ok": 3
+ },
+ "fs_2.2": {
+  "who": "DON",
+  "text": "Garage eleven. Guaranteed by Friday.",
+  "source": "fs_voices/film_v13 2.2",
+  "how": "copied",
+  "word": "eleven",
+  "ref_len": 2.544,
+  "ref_f0": 91,
+  "drift_ms": 0,
+  "len": 2.544,
+  "f0": 91,
+  "rms": 0.111,
+  "peak": 0.82,
+  "asr": [
+   "Garage 11 guaranteed by Friday.",
+   "Garaz 11 guaranteed by Friday.",
+   "Garaz 11 guaranteed by Friday."
+  ],
+  "asr_ok": 3
+ },
+ "fs_t1": {
+  "who": "CLIENT",
+  "text": "Friday. Or I sue.",
+  "source": "fs_voices/film_v13 t1",
+  "how": "copied",
+  "word": "sue",
+  "ref_len": 1.586,
+  "ref_f0": null,
+  "drift_ms": 0,
+  "len": 1.586,
+  "f0": 116,
+  "rms": 0.113,
+  "peak": 0.693,
+  "asr": [
+   "Friday or I sue.",
+   "Friday or I sue",
+   "Friday or I sue."
+  ],
+  "asr_ok": 3
+ },
+ "fs_3.3": {
+  "who": "SOFIA",
+  "text": "It found nothing.",
+  "source": "fs_voices/film_v13 3.3",
+  "how": "copied",
+  "word": "nothing",
+  "ref_len": 0.852,
+  "ref_f0": 210,
+  "drift_ms": 0,
+  "len": 0.852,
+  "f0": 210,
+  "rms": 0.102,
+  "peak": 0.589,
+  "asr": [
+   "It found nothing.",
+   "It found nothing.",
+   "It found nothing."
+  ],
+  "asr_ok": 3
+ },
+ "fs_4.1": {
+  "who": "DON",
+  "text": "Can you make the zero green?",
+  "source": "fs_voices/film_v13 4.1",
+  "how": "copied",
+  "word": "green",
+  "ref_len": 1.766,
+  "ref_f0": 93,
+  "drift_ms": 0,
+  "len": 1.766,
+  "f0": 93,
+  "rms": 0.111,
+  "peak": 0.623,
+  "asr": [
+   "Can you make the zero green?",
+   "Can you make the zero green?",
+   "Can you make the zero green?"
+  ],
+  "asr_ok": 3
+ },
+ "fs_4.2": {
+  "who": "ROBOT",
+  "text": "Interface change. Human approval required.",
+  "source": "fs_voices/film_v13 4.2",
+  "how": "copied",
+  "word": "approval",
+  "ref_len": 2.296,
+  "ref_f0": 145,
+  "drift_ms": 0,
+  "len": 2.296,
+  "f0": 145,
+  "rms": 0.111,
+  "peak": 1.0,
+  "asr": [
+   "Interface change, human approval required.",
+   "Interface change, human approval required.",
+   "Interface change, human approval required."
+  ],
+  "asr_ok": 3
+ },
+ "fs_4.3": {
+  "who": "DON",
+  "text": "Approved.",
+  "source": "fs_voices/film_v13 4.3",
+  "how": "copied",
+  "word": "approved",
+  "ref_len": 0.718,
+  "ref_f0": 93,
+  "drift_ms": 0,
+  "len": 0.718,
+  "f0": 93,
+  "rms": 0.112,
+  "peak": 0.584,
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "asr_ok": 3
+ },
+ "fs_5.2": {
+  "who": "CLIENT",
+  "text": "Where's my blueprint?",
+  "source": "fs_voices/film_v13 5.2",
+  "how": "copied",
+  "word": "blueprint",
+  "ref_len": 1.39,
+  "ref_f0": 121,
+  "drift_ms": 0,
+  "len": 1.39,
+  "f0": 121,
+  "rms": 0.113,
+  "peak": 0.91,
+  "asr": [
+   "Where's my blueprint?",
+   "Where's my blueprint?",
+   "Where's my blueprint?"
+  ],
+  "asr_ok": 3
+ },
+ "fs_x1": {
+  "who": "DON",
+  "text": "Where is his blueprint?",
+  "source": "fs_voices/film_v13 x1",
+  "how": "copied",
+  "word": "blueprint",
+  "ref_len": 1.276,
+  "ref_f0": null,
+  "drift_ms": 0,
+  "len": 1.276,
+  "f0": 99,
+  "rms": 0.112,
+  "peak": 0.588,
+  "asr": [
+   "Where is his blueprint?",
+   "Where is his blueprint?",
+   "Where is his blueprint?"
+  ],
+  "asr_ok": 3
+ },
+ "fs_x2": {
+  "who": "SOFIA",
+  "text": "Ask the machine.",
+  "source": "fs_voices/film_v13 x2",
+  "how": "copied",
+  "word": "machine",
+  "ref_len": 0.868,
+  "ref_f0": null,
+  "drift_ms": 0,
+  "len": 0.868,
+  "f0": 207,
+  "rms": 0.112,
+  "peak": 0.708,
+  "asr": [
+   "Ask the machine.",
+   "Ask the machine.",
+   "Ask the machine."
+  ],
+  "asr_ok": 3
+ },
+ "fs_x3": {
+  "who": "ROBOT",
+  "text": "Zero results.",
+  "source": "fs_voices/film_v13 x3",
+  "how": "copied",
+  "word": "results",
+  "ref_len": 1.042,
+  "ref_f0": null,
+  "drift_ms": 0,
+  "len": 1.042,
+  "f0": 152,
+  "rms": 0.111,
+  "peak": 0.794,
+  "asr": [
+   "zero results.",
+   "0 result",
+   "zero results."
+  ],
+  "asr_ok": 2
+ },
+ "fs_7.1": {
+  "who": "MOM",
+  "text": "Young man.",
+  "source": "fs_voices/film_v13 7.1",
+  "how": "copied",
+  "word": "man",
+  "ref_len": 1.295,
+  "ref_f0": 181,
+  "drift_ms": 0,
+  "len": 1.295,
+  "f0": 181,
+  "rms": 0.125,
+  "peak": 0.742,
+  "asr": [
+   "young man",
+   "A young man.",
+   "young man"
+  ],
+  "asr_ok": 3
+ },
+ "fs_t2": {
+  "who": "CLIENT",
+  "text": "See you in court.",
+  "source": "fs_voices/film_v13 t2",
+  "how": "copied",
+  "word": "court",
+  "ref_len": 1.107,
+  "ref_f0": null,
+  "drift_ms": 0,
+  "len": 1.107,
+  "f0": 129,
+  "rms": 0.115,
+  "peak": 0.773,
+  "asr": [
+   "See you in court.",
+   "See you in court.",
+   "See you in court."
+  ],
+  "asr_ok": 3
+ },
+ "cs_1.2": {
+  "who": "CLIENT",
+  "text": "Paid $999. They lost my blueprint. My lawyer will call.",
+  "source": "cs_voices/film_v10 1.2",
+  "how": "copied",
+  "word": "lawyer",
+  "ref_len": 4.816,
+  "ref_f0": 109,
+  "drift_ms": 0,
+  "len": 4.816,
+  "f0": 109,
+  "rms": 0.11,
+  "peak": 0.856,
+  "asr": [
+   "Paid 999, they lost my blueprint, my lawyer will call.",
+   "Paid 999, they lost my blueprint, my lawyer will call.",
+   "Paid 999, they lost my blueprint, my lawyer will call."
+  ],
+  "asr_ok": 3
+ },
+ "cs_1.4r": {
+  "who": "ROBOT",
+  "text": "Reply drafted. Human approval required.",
+  "source": "cs_voices/film_v10 1.4r",
+  "how": "copied",
+  "word": "approval",
+  "ref_len": 2.368,
+  "ref_f0": 141,
+  "drift_ms": 0,
+  "len": 2.368,
+  "f0": 141,
+  "rms": 0.111,
+  "peak": 1.0,
+  "asr": [
+   "Reply drafted, human approval required.",
+   "Reply drafted, human approval required.",
+   "Reply drafted, human approval required."
+  ],
+  "asr_ok": 3
+ },
+ "cs_1.4d": {
+  "who": "DON",
+  "text": "Approved.",
+  "source": "cs_voices/film_v10 1.4d",
+  "how": "copied",
+  "word": "approved",
+  "ref_len": 0.718,
+  "ref_f0": 93,
+  "drift_ms": 0,
+  "len": 0.718,
+  "f0": 93,
+  "rms": 0.112,
+  "peak": 0.584,
+  "asr": [
+   "approved",
+   "approved",
+   "approved"
+  ],
+  "asr_ok": 3
+ },
+ "cs_1.4b": {
+  "who": "DON",
+  "text": "Stupid human.",
+  "source": "cs_voices/film_v10 1.4b",
+  "how": "copied",
+  "word": "stupid",
+  "ref_len": 1.169,
+  "ref_f0": null,
+  "drift_ms": 0,
+  "len": 1.169,
+  "f0": 99,
+  "rms": 0.114,
+  "peak": 0.77,
+  "asr": [
+   "Stupid human.",
+   "Stupid human.",
+   "Stupid human."
+  ],
+  "asr_ok": 3
+ },
+ "cs_3.5": {
+  "who": "CLIENT",
+  "text": "Is this a joke?",
+  "source": "cs_voices/film_v10 3.5",
+  "how": "copied",
+  "word": "joke",
+  "ref_len": 1.074,
+  "ref_f0": 129,
+  "drift_ms": 0,
+  "len": 1.074,
+  "f0": 129,
+  "rms": 0.114,
+  "peak": 0.743,
+  "asr": [
+   "Is this a joke?",
+   "Is this a joke",
+   "Is is this is this is this is"
+  ],
+  "asr_ok": 2
+ },
+ "cs_4.2p": {
+  "who": "PAM",
+  "text": "Check your pocket.",
+  "source": "cs_voices/film_v10 4.2p",
+  "how": "copied",
+  "word": "pocket",
+  "ref_len": 1.08,
+  "ref_f0": null,
+  "drift_ms": 0,
+  "len": 1.08,
+  "f0": 185,
+  "rms": 0.116,
+  "peak": 0.734,
+  "asr": [
+   "Check your pocket.",
+   "Check your pocket",
+   "Check your pocket."
+  ],
+  "asr_ok": 3
+ },
+ "cs_4.4": {
+  "who": "ROBOT",
+  "text": "The result was obtained by a h-human.",
+  "source": "cs_voices/film_v10 4.4",
+  "how": "copied",
+  "word": "obtained",
+  "ref_len": 2.18,
+  "ref_f0": 153,
+  "drift_ms": 0,
+  "len": 2.18,
+  "f0": 153,
+  "rms": 0.11,
+  "peak": 1.0,
+  "asr": [
+   "The result was obtained by a H, human.",
+   "The result was obtained by a H human.",
+   "The result was obtained by a H, human."
+  ],
+  "asr_ok": 3
+ },
+ "cs_5.1": {
+  "who": "CLIENT",
+  "text": "Your number.",
+  "source": "cs_voices/film_v10 5.1",
+  "how": "copied",
+  "word": "number",
+  "ref_len": 0.813,
+  "ref_f0": 142,
+  "drift_ms": 0,
+  "len": 0.813,
+  "f0": 142,
+  "rms": 0.115,
+  "peak": 0.7,
+  "asr": [
+   "Your number.",
+   "Your number",
+   "Your number."
+  ],
+  "asr_ok": 3
+ },
+ "cs_5.4d": {
+  "who": "DON",
+  "text": "Customer success.",
+  "source": "cs_voices/film_v10 5.4d",
+  "how": "copied",
+  "word": "success",
+  "ref_len": 1.357,
+  "ref_f0": 101,
+  "drift_ms": 0,
+  "len": 1.357,
+  "f0": 101,
+  "rms": 0.112,
+  "peak": 0.725,
+  "asr": [
+   "Customer is excess.",
+   "Customer success",
+   "Customer success."
+  ],
+  "asr_ok": 2
+ },
+ "cs_6.3p": {
+  "who": "PAM",
+  "text": "Some post. Others find.",
+  "source": "cs_voices/film_v10 6.3p",
+  "how": "copied",
+  "word": "post",
+  "ref_len": 1.687,
+  "ref_f0": null,
+  "drift_ms": 0,
+  "len": 1.687,
+  "f0": 178,
+  "rms": 0.111,
+  "peak": 0.704,
+  "asr": [
+   "Some post others find.",
+   "Some post others find.",
+   "Some post others find."
+  ],
+  "asr_ok": 3
+ },
+ "cs_6.5": {
+  "who": "SOFIA",
+  "text": "Still one star.",
+  "source": "cs_voices/film_v10 6.5",
+  "how": "copied",
+  "word": "star",
+  "ref_len": 0.875,
+  "ref_f0": 201,
+  "drift_ms": 0,
+  "len": 0.875,
+  "f0": 198,
+  "rms": 0.144,
+  "peak": 0.723,
+  "asr": [
+   "Still one star.",
+   "Still one star.",
+   "Still one star."
+  ],
+  "asr_ok": 3
+ },
+ "n1": {
+  "who": "SOFIA",
+  "text": "Put recovered on it.",
+  "source": "new, night scene",
+  "how": "new",
+  "word": "recovered",
+  "local_only": true,
+  "len": 1.039,
+  "f0": 186,
+  "rms": 0.112,
+  "peak": 0.677,
+  "asr": [
+   "put recovered on it.",
+   "Put recovered on it.",
+   "put recovered on it."
+  ],
+  "asr_ok": 3
+ },
+ "n2": {
+  "who": "PAM",
+  "text": "Recovered from what?",
+  "source": "new, night scene",
+  "how": "new",
+  "word": "what",
+  "local_only": true,
+  "len": 1.238,
+  "f0": 185,
+  "rms": 0.116,
+  "peak": 0.673,
+  "asr": [
+   "recovered from what?",
+   "recovered from what?",
+   "recovered from what?"
+  ],
+  "asr_ok": 3
+ },
+ "n3": {
+  "who": "SOFIA",
+  "text": "He needs a page by Friday.",
+  "source": "new, night scene",
+  "how": "new",
+  "word": "page",
+  "local_only": true,
+  "len": 1.454,
+  "f0": 207,
+  "rms": 0.111,
+  "peak": 0.61,
+  "asr": [
+   "He needs a page by Friday.",
+   "He needs a page by Friday.",
+   "He needs a page by Friday."
+  ],
+  "asr_ok": 3
+ },
+ "n4": {
+  "who": "PAM",
+  "text": "He needs the bays.",
+  "source": "new, night scene",
+  "how": "new",
+  "word": "bays",
+  "local_only": true,
+  "len": 1.289,
+  "f0": 187,
+  "rms": 0.111,
+  "peak": 0.527,
+  "asr": [
+   "He needs the bays.",
+   "He needs the bays.",
+   "He needs the bays."
+  ],
+  "asr_ok": 3
+ },
+ "n5": {
+  "who": "SOFIA",
+  "text": "I won't draw one.",
+  "source": "new, night scene",
+  "how": "new",
+  "word": "draw",
+  "local_only": true,
+  "len": 0.912,
+  "f0": 202,
+  "rms": 0.112,
+  "peak": 1.048,
+  "asr": [
+   "I won't draw one",
+   "I won't draw one.",
+   "I won't draw one."
+  ],
+  "asr_ok": 3
+ },
+ "n6": {
+  "who": "PAM",
+  "text": "I'm matching them.",
+  "source": "new, night scene",
+  "how": "new",
+  "word": "matching",
+  "local_only": true,
+  "len": 1.248,
+  "f0": 188,
+  "rms": 0.111,
+  "peak": 0.574,
+  "asr": [
+   "I'm matching them.",
+   "I'm matching them.",
+   "I'm matching them."
+  ],
+  "asr_ok": 3
+ }
+}
