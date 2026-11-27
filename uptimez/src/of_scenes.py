@@ -76,7 +76,7 @@ PLAN_FRAME = (426, 520, 1.75)
 CAR_CAM = (350, 752, 1.40)                                 # 0.8 (v7): the car, its roof, the legs under it; the heavy at the left
 ROOF_CAM = (128, 736, 1.45)                                # 0.8 / 0.10 (v6): the roof, the hand on it, the legs under it
 
-TIMING = "of_timing_v28.json"                               # v9 (23 Nov): Father arrives, held
+TIMING = "of_timing_v29.json"                               # v9 (23 Nov): Father arrives, held
 
 SCENES = [
     ("1 · The Legs", "The Client's garage, bay 7. Morning.", 1, [
@@ -402,9 +402,9 @@ def _cast_draw0(k, n, scene, sh, heads):
         heads[n] = (hx0_, hy0_, 50 * FS)
         if ps.get("impact") and ps.get("palm") and ps.get("targets_xy"):     # v55: his flat palm SLAMS: the film's own lines (frame 0's)
             hx, hy = ps["targets_xy"][0]
-            c.set_source_rgb(*INK); c.set_line_width(3.2); c.set_line_cap(1)
-            for a_ in (-2.15, -1.8, -1.45, -1.1, -0.75):                     # up, clear of his face and of the glass
-                r0, r1 = 24, 24 + 22 * ps["impact"]
+            c.set_source_rgb(*INK); c.set_line_width(4.2); c.set_line_cap(1)      # v59: as big as frame 0's hit (lines 4.2 wide, longer)
+            for a_ in (-1.75, -1.45, -1.15, -0.85, -0.55, -0.3):                # up, clear of his face and of the glass
+                r0, r1 = 26, 26 + 34 * ps["impact"]
                 c.new_path(); c.move_to(hx + 12 + r0 * math.cos(a_), hy - 4 + r0 * math.sin(a_)); c.line_to(hx + 12 + r1 * math.cos(a_), hy - 4 + r1 * math.sin(a_)); c.stroke()
         if ps.get("phone_donnie") and ps.get("targets_xy"):                  # v1 (23 Nov): DONNIE calling, in his hand, he looks at it
             want = ps["targets_xy"][0]
@@ -415,14 +415,20 @@ def _cast_draw0(k, n, scene, sh, heads):
             pk_ = ps.get("pocket")                                               # v56: (x0, x1, y) the coat pocket's mouth: the phone
             if pk_:                                                              # and the hand sink INTO it (nothing drawn below it)
                 c.save(); c.new_path(); c.rectangle(pk_[0] - 400, pk_[2] - 800, 800, 800); c.clip()
-            oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, None if ps.get("phone_dark") else scr_d,   # v55: face down = its dark back
-                          ang=ps.get("phone_ang", -0.15), skin=dc.SKIN_F, body_x=x)
+            oc.PHONE_RIM[0] = bool(ps.get("phone_rim"))                          # v58: a pale edge on the face-down phone
+            try:
+                oc.phone_grip(k, hx + ps.get("buzz", 0.0), hy, 0.42, None if ps.get("phone_dark") else scr_d,   # v55: face down = its dark back
+                              ang=ps.get("phone_ang", -0.15), skin=dc.SKIN_F, body_x=x)
+            finally:
+                oc.PHONE_RIM[0] = False
             if pk_:
                 c.restore()
         if ps.get("pocket"):                                                     # the pocket's mouth, a seam on the coat, over it
             pk_ = ps["pocket"]
-            c.set_source_rgb(*INK); c.set_line_width(2.2); c.set_line_cap(1)
-            c.new_path(); c.move_to(pk_[0], pk_[2]); c.curve_to(pk_[0] + 6, pk_[2] + 3, pk_[1] - 6, pk_[2] + 3, pk_[1], pk_[2] - 1); c.stroke()
+            pa_ = ps.get("pocket_a", 1.0)                                        # v58: the seam is there only while the phone goes in; then it fades (it read as "a string")
+            if pa_ > 0.01:
+                c.set_source_rgba(INK[0], INK[1], INK[2], pa_); c.set_line_width(2.2); c.set_line_cap(1)
+                c.new_path(); c.move_to(pk_[0], pk_[2]); c.curve_to(pk_[0] + 6, pk_[2] + 3, pk_[1] - 6, pk_[2] + 3, pk_[1], pk_[2] - 1); c.stroke()
         if ps.get("palm") and ps.get("targets_xy"):                          # v6 (23 Nov, motion_on3's hand): palm and fingers in ONE
             hx, hy = ps["targets_xy"][0]                                         # shape, flat across the lid, the fingers pointing on, a thumb
             sk = dc.SKIN_F
@@ -826,10 +832,21 @@ def garage_shot(k, sh, scene, heads, cam):
         c.save(); c.translate(px, py); c.scale(1.15, 1.15); c.translate(-px, -py)      # the phone 15 % bigger
         for col, lw in ((INK, 66), (dc.SUIT, 60)):                            # v9 (24 Nov, cold test 3 of 3: "a black diagonal",
             c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(0)       # "floating"; decided: hand + SHORT THICK forearm):
-            c.move_to(px + 40, py + 26); c.line_to(px + 150, py - 230); c.stroke()   # his sleeve, as wide as the hand, straight
-        c.save(); c.translate(px + 51, py + 0.4); c.rotate(math.atan2(-256, 110))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
+            c.set_line_join(1); c.move_to(px + 40, py + 26); c.line_to(px + 66, py - 84); c.line_to(px + 118, py - 152); c.stroke()   # v59 (cold test v52: "a pole"): his sleeve BENDS at an elbow inside the frame: forearm, elbow, upper arm to the top-right edge
+        c.set_line_join(0)                                                      # v60 (cold test v59, 3 of 3: "whose arm?"): HE is in the frame: his shoulder and chest
+        c.save(); c.new_path()                                                  # (suit, white shirt, tie) behind the sleeve, cut by the frame's right edge
+        c.move_to(px + 60, py - 180); c.curve_to(px + 100, py - 230, px + 180, py - 232, px + 280, py - 200)
+        c.line_to(px + 280, py + 40); c.line_to(px + 100, py + 40); c.curve_to(px + 56, py - 20, px + 46, py - 110, px + 60, py - 180); c.close_path()
+        c.set_source_rgb(*INK); c.set_line_width(4); c.stroke_preserve(); c.set_source_rgb(*dc.SUIT); c.fill()
+        c.new_path(); c.move_to(px + 100, py - 196); c.line_to(px + 140, py - 120); c.line_to(px + 100, py - 40); c.close_path()
+        c.set_source_rgb(0.97, 0.97, 0.95); c.fill()                            # the shirt, in the jacket's opening
+        c.set_source_rgb(*INK); c.set_line_width(14); c.set_line_cap(1); c.move_to(px + 116, py - 176); c.line_to(px + 116, py - 70); c.stroke()   # the tie
+        c.restore()
+        c.save(); c.translate(px + 50, py + 2); c.rotate(math.atan2(-110, 26))    # v10 (24 Nov, cold test v31: still "a pole"; decided hand + cuff only): a short stub
         rect(k, -9, -35, 18, 70, (0.97, 0.97, 0.94), 3409, shadow=False, lw=1.8)            # his white cuff, at the phone
         c.restore()
+        for col_, lw_ in ((INK, 34), ((0.92, 0.74, 0.60), 28)):               # v61 (cold test v60: "a cuff with no forearm"): his WRIST, from the cuff to the palm
+            c.set_source_rgb(*col_); c.set_line_width(lw_); c.set_line_cap(1); c.move_to(px + 56, py - 6); c.line_to(px + 6, py + 40); c.stroke()
         S04, A04 = 90 / 44.0, 0.0                                             # v7: the same phone grip as every phone, big
         gx_, gy_ = px - 22 * S04 * math.sin(A04) * 0 - 45 * math.sin(A04), py + 45 * math.cos(A04)
         _oc.phone_grip(k, gx_, gy_, S04, ang=A04, skin=(0.92, 0.74, 0.60), body_x=gx_ + 400, part="back", ink=0.6)
@@ -1070,17 +1087,17 @@ def insert_shot(k, sh):
         # v50 (cold test v47, 2 of 3: "it dangles from above like a ceiling light"): the lamp is HELD: the bodyguard's black
         # sleeve and white cuff come in from the top right, his fist round the handle, the cage aimed down at the hands
         la_ = -0.62
-        lx_, ly_ = 372, 150
+        lx_, ly_ = 352, 172                                                   # v59 (cold test v52: "the lamp floats alone"): lower, so the owner's hand and cuff are more of the frame
         hx_, hy_ = lx_ + 26 * math.cos(la_), ly_ + 26 * math.sin(la_)
         ux_, uy_ = math.cos(la_), math.sin(la_)
         nx_, ny_ = -uy_, ux_
-        w0, w1 = 21, 30
+        w0, w1 = 26, 36
         cut(k, [(hx_ + 14 * ux_ + w0 * nx_, hy_ + 14 * uy_ + w0 * ny_), (hx_ + 240 * ux_ + w1 * nx_, hy_ + 240 * uy_ + w1 * ny_),
                 (hx_ + 240 * ux_ - w1 * nx_, hy_ + 240 * uy_ - w1 * ny_), (hx_ + 14 * ux_ - w0 * nx_, hy_ + 14 * uy_ - w0 * ny_)], (0.11, 0.11, 0.13), lw=2.4)
-        cut(k, [(hx_ + 10 * ux_ + 19 * nx_, hy_ + 10 * uy_ + 19 * ny_), (hx_ + 22 * ux_ + 20 * nx_, hy_ + 22 * uy_ + 20 * ny_),
-                (hx_ + 22 * ux_ - 20 * nx_, hy_ + 22 * uy_ - 20 * ny_), (hx_ + 10 * ux_ - 19 * nx_, hy_ + 10 * uy_ - 19 * ny_)], (0.97, 0.97, 0.95), shadow=False, lw=1.8)
+        cut(k, [(hx_ + 10 * ux_ + 24 * nx_, hy_ + 10 * uy_ + 24 * ny_), (hx_ + 26 * ux_ + 25 * nx_, hy_ + 26 * uy_ + 25 * ny_),
+                (hx_ + 26 * ux_ - 25 * nx_, hy_ + 26 * uy_ - 25 * ny_), (hx_ + 10 * ux_ - 24 * nx_, hy_ + 10 * uy_ - 24 * ny_)], (0.97, 0.97, 0.95), shadow=False, lw=1.8)
         gs.lamp(k, lx_, ly_, ang=la_, lit=True, glow=False, cable=False)
-        _oc.handle_grip(k, hx_, hy_, 24, la_ + math.pi / 2, co_skin())
+        _oc.handle_grip(k, hx_, hy_, 32, la_ + math.pi / 2, co_skin())
         c.save(); c.translate(120, 470)                                                 # his red rag, over the block's edge
         # v4 (24 Nov, audit: "a cylinder"; two rags at once): NO rag on the engine: his one rag is in his back pocket
         c.restore()

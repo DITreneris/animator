@@ -18,8 +18,8 @@ import of_cast as oc
 import of_motion as om
 
 TMP = "/tmp/of_film"
-VER = {1: 52, 2: 52, 3: 52, 4: 52, 5: 57}
-SOUND = "of_sound_v29.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
+VER = {1: 61, 2: 59, 3: 61, 4: 52, 5: 59}
+SOUND = "of_sound_v30.wav"                                   # v8: re-keyed to timing v4                                   # each scene's current version (new versions, new files)
 DPS, FPS = 15, 30
 LEAD = 0.15
 TAKES = os.path.join(sc.HERE, "of_voices", "takes")
@@ -123,7 +123,7 @@ def s14(t, L):                                             # v5 (grill 24 Nov, 5
     fk = 0.5 * ease((t - 0.15) / 0.18) + 0.5 * ease((t - 0.38) / 0.09) - ease((t - 0.84) / 0.24)   # knee and presses it on the fire
     sh_ = ease((t - 0.12) / 0.15) - ease((t - 0.8) / 0.25)                # his shoulder and trunk go with it, a beat BEFORE the hand
     fid = math.sin(min(1.0, max(0.0, (t - 1.7) / 0.3)) * math.pi) + math.sin(min(1.0, max(0.0, (t - 2.3) / 0.3)) * math.pi)
-    cl = dict(kind="sit", look=(-1, -0.2) if t > 1.1 else (0.5, 0.5), flick=max(0.0, fk), fidget=fid,
+    cl = dict(kind="sit", look=(-1, -0.2) if (t > 1.1 or t < 0.8) else (0.5, 0.5), flick=max(0.0, fk), fidget=fid,
               back=0.07 * ease((t - 1.13) / 0.14) + 0.06 * sh_, head=-0.05 * sh_ + 0.04 * ease((t - 1.2) / 0.2))
     fl = _floor("1.4", min(t, a))
     sx, sy = gs.SHEET_LAND
@@ -231,9 +231,9 @@ WALK_CAM = (170, 795, 1.8)                                 # locked: he walks th
 
 
 VETO_AT = (505, 880)                                       # v9 (22 Nov, decided): Father shuts the lighter himself
-VETO_CAM = (594, 836, 2.00)                                # v12: the two men and the lighter in the safe band
-VETO_G2 = (688, 880)                                       # v12: the guard beside Father, in front of the car
-VETO_FIST = (596, 756)                                     # his fist with the lighter, at his chest, toward Father
+VETO_CAM = (574, 836, 2.00)                                # v12: the two men and the lighter in the safe band
+VETO_G2 = (660, 880)                                       # v12: the guard beside Father, in front of the car
+VETO_FIST = (572, 756)                                     # his fist with the lighter, at his chest, toward Father
 
 
 def _veto(t16, t17):
@@ -421,17 +421,17 @@ def s28f(t, L):
     dark = t > 0.35 and (t < 0.4 or 0.47 < t < 0.52 or t > 0.6)
     dn = ease((t - 0.42) / 0.2) - ease((t - 1.45) / 0.30)    # v52: the turn back AFTER the drop; v51 (cold test v50, 3 of 3: "a jump" at the drop): slower
     up = ease((t - 0.65) / 0.28)
-    sh_ = math.sin((t - 0.95) / 0.15 * 2 * math.pi) * 14 if 0.95 < t < 1.10 else 0.0   # v7: twice as wide, it has to read
+    sh_ = math.sin((t - 0.93) / 0.22 * 2 * math.pi) * 9 if 0.93 < t < 1.15 else 0.0   # v59 (cold test v52: the arm "snaps"): a smaller, slower single shake   # v7: twice as wide, it has to read
     dr = ease((t - 1.10) / 0.45)
     rt = ease((t - 1.04) / 0.38)                              # v7: it TURNS down first, then drops, beside his leg: never behind the bonnet
-    x = 538 + 8 * up + sh_ + 22 * rt                         # v9 (cold test v47, 3 of 3: "it flips through odd shapes"): no flip.
+    x = 538 + 8 * up + sh_ - 2 * rt                         # v9 (cold test v47, 3 of 3: "it flips through odd shapes"): no flip.
     y = 668 - 16 * up + (YEND - 652) * dr                    # Dead, he LIFTS it a little and tips it toward him (the cage stays
     la = -1.05 + 0.25 * up - 1.1 * rt + (0.14 * math.sin((t - 1.52) * 2 * math.pi * 1.7) * math.exp(-(t - 1.52) * 4) if t > 1.52 else 0.0)   # v52: its weight sways on                       # down), shakes it once, and lets it hang: one shape all the way
-    sw = -sh_ * 1.6 + 16 * math.sin(max(0.0, t - 1.10) * 14) * math.exp(-max(0.0, t - 1.10) * 5) * (1 if t > 1.10 else 0)
+    sw = 5.0 * math.sin(t * 4.0 + 1.0) * (1 - dr) - sh_ * 1.6 + 16 * math.sin(max(0.0, t - 1.10) * 14) * math.exp(-max(0.0, t - 1.10) * 5) * (1 if t > 1.10 else 0)
     gx_, gf_ = sc.BLOCK[3]["g1"]
     return (dict(_cam=LAMP_GAG_CAM, dim=0.14 if dark else 0.0, moved=dict(g1=(gx_, gf_ + 8 * dr))),
             dict(g1=dict(targets_xy=[(x, y)], lamp="held", cone_side=0.03 if dark else (1.35 if t > 0.35 else 1.0), lamp_ang=la,
-                         cable_floor=sc.F + 8, cable_swing=sw, elbow_low=True, pool_late=True,
+                         cable_floor=sc.F + 8, cable_swing=sw, elbow_low=False, pool_late=True,
                          turn=0.01 - 0.6 * dn, look_down=12 * dn)))
 
 
@@ -572,7 +572,11 @@ def s42_slam(t, L):
     R0, RB, RF = (109, F_ - 66), (100, F_ - 93), (128, F_ - 60)
     T_MOUTH, T_PAUSE, T_IN, T_OUT = 0.20, 0.35, 0.55, 0.70
     SHAKE = [(0, 0), (-7, 9), (6, -7), (-3, 4), (2, -2)]
-    st = dict(_cam=SLAM_CAM, _cast=("father",), black_car=True, burn=1.0, insert=None, moved=dict(father=(140, F_ + 26)))
+    cam0 = (149, 676, 1.9)                                  # v58: the doorway's size (4.1's wide), Father where he stood; it PUSHES to the slam's camera by the fist's top (the cut no longer "zooms")
+    uc = ease(min(1.0, t / T_UP))
+    cam_ = tuple(round(a + (b - a) * uc, 2) for a, b in zip(cam0, SLAM_CAM))
+    st = dict(_cam=cam_, _cast=("father",), black_car=True, burn=1.0, insert=None, moved=dict(father=(140, F_ + 26)))
+    pa = 1.0 if t < T_POCKET else max(0.0, 1.0 - (t - T_POCKET) / 0.15)      # the pocket's seam: there while the phone goes in, gone 0.15 s after the hand is out
     if t < T_POCKET:
         if t < T_OUT:
             if t < T_MOUTH: u1, u2 = ease(t / T_MOUTH), 0.0
@@ -580,29 +584,30 @@ def s42_slam(t, L):
             else: u1, u2 = 1.0, ease((t - T_PAUSE) / (T_IN - T_PAUSE))
             hp = om.lerp(om.lerp(P0, PM, u1), PIN, u2)
             return st, dict(father=dict(face="hard", look=(0.6, 0.6 * u1), targets_xy=[hp, R0], phone_donnie=True, phone_dark=True,
-                                        phone_ang=-0.15 + 0.35 * u1, pocket=PK if u1 > 0.5 else None))
+                                        phone_ang=-0.15 + 0.35 * u1, pocket=PK if u1 > 0.5 else None, pocket_a=pa, phone_rim=True))
         u = ease((t - T_OUT) / (T_POCKET - T_OUT))
-        return st, dict(father=dict(face="hard", look=(0.6 + 0.4 * u, 0.6 - 0.6 * u), targets_xy=[om.lerp(PIN, P1, u), R0], pocket=PK))
+        return st, dict(father=dict(face="hard", look=(0.6 + 0.4 * u, 0.6 - 0.6 * u), targets_xy=[om.lerp(PIN, P1, u), R0], pocket=PK, pocket_a=pa))
     if t < T_UP:                                           # the fist comes up, out past his side (not past the shoulder)
         u = ease((t - T_POCKET) / (T_UP - T_POCKET - 0.06))
         q = (1 - u) ** 2, 2 * u * (1 - u), u ** 2
         via = (210, F_ - 118)
-        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.09 * u, pocket=PK,
+        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.09 * u, pocket=PK, pocket_a=pa,
                                     targets_xy=[(q[0] * P1[0] + q[1] * via[0] + q[2] * P2[0], q[0] * P1[1] + q[1] * via[1] + q[2] * P2[1]), om.lerp(R0, RB, u)]))
     if t < T_HIT:                                          # down: the elbow stays bent, the forearm opens last
         u = (t - T_UP) / (T_HIT - T_UP)
-        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.09 + 0.17 * u, pocket=PK, targets_xy=[om.lerp(P2, (196, F_ - 128), u), om.lerp(RB, RF, u)]))
+        return st, dict(father=dict(face="hard", look=(1, 0), lean=-0.09 + 0.17 * u, pocket=PK, pocket_a=pa, targets_xy=[om.lerp(P2, (196, F_ - 128), u), om.lerp(RB, RF, u)]))
     d = t - T_HIT
-    hold, e = 0.07, max(0.0, t - T_HIT - 0.07)
+    hold, e = 0.14, max(0.0, t - T_HIT - 0.14)          # v59: the hold is 2 drawings (0.14 s), not 1
     k_ = 1.0 if d < hold else math.exp(-e * 9)
     reb = 0.03 * math.sin(e * 2 * math.pi / 0.30) * math.exp(-e * 7)              # the car rebounds once on its stands
     sx, sy = SHAKE[min(int(d * 15), 4)] if d < 0.34 else (0, 0)
     cx, cy, z = SLAM_CAM
+    cx, cy, z = cam_
     st.update(_cam=(cx + sx, cy + sy, z), tilt=-0.10 * k_ - 0.01 + reb, legs_jolt=16 * k_)
     give = 5.0 * math.sin(math.pi * min(1.0, e / 0.20)) if e < 0.20 else 0.0      # the arm gives: the elbow bends, the palm stays
     settle = ease(min(1.0, max(0.0, (d - 0.14) / 0.25)))                           # 1.30 s -> the end: the man settles
     imp = max(0.0, 1.6 * math.exp(-e * 9) - 0.25 * min(1.0, e / 0.12)) if e < 0.12 else 0.0   # the lines are gone by 0.12 s after the hold
-    return st, dict(father=dict(face="brow" if d < 0.14 else "hard", look=(1, 0), lean=0.08 * (1 - settle) + 0.0 * settle - 0.02 * min(1.0, d / 0.2) * (1 - settle), pocket=PK,
+    return st, dict(father=dict(face="brow" if d < 0.14 else "hard", look=(1, 0), lean=0.08 * (1 - settle) + 0.0 * settle - 0.02 * min(1.0, d / 0.2) * (1 - settle), pocket=PK, pocket_a=pa,
                                 targets_xy=[(P3[0] - 0.8 * give, P3[1] - 2 * (1 - k_) + 0.6 * give), om.lerp(om.lerp(RF, R0, 1 - k_), R0, settle)],
                                 palm=True, palm_ang=-0.30, slam_hold=True, impact=imp))
 
@@ -740,6 +745,8 @@ def shot_frame(sh0, t, tm, call):
     oc.ACCENT[0] = (who, accent(sid, t))
     oc.LOOP_T[0] = sc._timing_total()
     mc_ = mouth_at(sid, t)
+    if sid == "0.5":                                       # v59 (cold test v58: "a red dot on the cheek"): from above, the head is turned a quarter, so a ROUND
+        mc_ = {"A": "E", "O": "E", "U": "M"}.get(mc_, mc_)      # open mouth reads as a red ball: only wide, flat mouths there
     oc.MOUTH[0] = mc_ if who == "client" else None
     oc.FATHER_MOUTH[0] = mc_ if who == "father" else None
     oc.DON_MOUTH[0] = mc_ if who == "don" else None
