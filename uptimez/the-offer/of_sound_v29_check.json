@@ -12,7 +12,7 @@
   "line": "CLIENT: \"Is it wrong?\"",
   "heard": [
    "Is it wrong?",
-   "Is it wrong?",
+   "Is it wrong",
    "Is it wrong?"
   ],
   "ok": 3
@@ -57,7 +57,7 @@
   "line": "CLIENT: \"Without him.\"",
   "heard": [
    "without him.",
-   "without him.",
+   "without Him.",
    "without him."
   ],
   "ok": 3
@@ -101,16 +101,16 @@
  "3.2": {
   "line": "ROBOT: \"New meeting. Agenda: without him.\"",
   "heard": [
-   "new maitang, agenda without him.",
    "New Maitang, agenda without him",
-   "New Maitang, agenda without him."
+   "New Maitang, agenda without him",
+   "new muting agenda without him"
   ],
   "ok": 3
  },
  "3.3": {
   "line": "DON: \"Without who?\"",
   "heard": [
-   "Without who?",
+   "without who",
    "Without whom?",
    "without who."
   ],

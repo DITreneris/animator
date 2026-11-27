@@ -66,3 +66,68 @@ Method:
   - **A new fault at 64.5:** v4b's thumb lands on "1/5" and its fingers on "Pam". The rule is "the thumb off the words". The sheet's grip covers more of the screen's edge than v3 did. Decision needed before the other films.
 - **Decision (Tomas, 26 Nov): films keep the old phone grip (v3).** `hands_v4.PHONE_V4B` is off by default. One Star v27 re-rendered: only 0:30 (the gem in the sheet's grab) differs from v26; 1:04 is v26's phone again. Gates pass.
 - **The canon's phone row is now v4c** (DITreneris/uptimez f94fbf1: fingertips stop on the far bezel, the thumb up the near edge; `bp_phone_words.py` passes). `hands_v4` now carries it (`PHONE_ROW = "v4c"`; `enable(phone="v4c")`). One Star v27 uses it. At 1:04, "Pam found it" and "1/5" are clear at full size and at 270 px. Gates pass. Drawings changed from v26: 0:30 (the gem, grab) and 1:04 (the phone). Everything else is identical.
+
+## F. The Offer v58 (26 Nov)
+
+`of_film_v58.py` is v57's five scenes with `hands_v4.enable(phone="v4c")`. Every scene check gives 0 faults; of_cut G5 passes. `of_roughcut_v58_540.mp4`, 64.9 s.
+- **Diff against v57, frame by frame:** scenes 1 and 2 are identical (the DELETE phone is tilted past 0.35 and keeps the old grip, as do the inserts' hands).
+- Changed:
+  - scene 3: the engine-bay tools (sheet grab), the Client's phone ×2, the ignition key (sheet pinch), the guard's calendar phone;
+  - scene 4: Pam's phone ×2, Don's phone;
+  - scene 5: Father's phone ×2.
+- **First try failed:** the sheet's v4c draws its own forearm straight down. Where the rig's arm comes in from the side (the Client at 0:32), that made a second arm, a "U" under the phone. Fix: `hands_v4.FOREARM = False`: the rig's arm runs into the palm, as in the films' grip. Re-rendered: one arm per hand everywhere. One Star v27 re-rendered with it too: 1:04's words are clear, and no extra arm shows.
+- **To look at:** the ignition key (3, f668). The sheet's pinch reads as a closed hand with the key in it, where v57 showed two fingertips on the key.
+
+## G. Every held phone (26 Nov, Tomas after The Offer v62: "the phones are not fixed, every frame carefully")
+
+v62 had left the old grip on every phone v4c did not draw upright: tilted (2.7), at the ear (3.7), the inserts drawn in two parts (0.4 DELETE, 2.8 PAM) and the pressing thumb (4.1 DONNIE).
+- **`hands_v4.ALL_V4C`** (opt-in, off by default, so v62 and One Star v27 stay as they were) draws all of those in v4c: turned about the palm, the phone's back to us, palm-behind / fingers-in-front for inserts, the thumb to `thumb_tip`.
+- **`phone_gate.py`**: a held phone painted without a v4c grip on the call stack fails the film. Its self-test plants the old grip first. On The Offer, v62 FAILS (27 drawings at 3 sites: 4.1, 2.7, 3.7) and v63 PASSES.
+- **Limit:** a phone a scene paints itself (a rectangle, not `of_cast.phone`) is invisible to the gate. Daddy's Home 11.6 was one; the frames are still the check.
+
+**The Offer v63** (PR #141): every phone v4c. 4.1's thumb lifts 0.15 s after DECLINED so the word reads.
+
+**One Star v28** (`cs_film_v28.py`): v27 with ALL_V4C. Every gate passes, the phone gate included (840 phone drawings, 0 faults). Changed at 0:00, 0:02, 0:13-0:15, 0:46-0:48, 0:56, 1:06; every one is the phone's back held in v4c.
+
+**Daddy's Home v9** (`dh_film_v9.py`, `dh_hands_v9.py`). v8's baseline was rendered fresh first. Changed against it: scene 1 drawings 27-142, scene 8 188-205; scene 7 54-69 only by a bubble's 12 px shift; the rest identical.
+- 0.4-0.7b, Don's phone, at his ear and lowered, was a rectangle with a hands2 grip: now phone_grip v4c, with The Offer v58's pale rim on its back (cold viewers read the black back at his ear as "a hand on his ear").
+- 11.6, Father's phone, was a rectangle with an oval thumb: now v4c, the thumb pressing the green button.
+- 0.3-0.7, the booth, the guard's hand on the post: now of_cast.clutch on its left edge.
+- Phone gate 0 faults.
+- **Not done:** Don's straight arms ("Brace yourselves" with arms wide) are a pose, not a broken elbow, so they were left as they are.
+- **Cold viewers (2), pre-existing points:**
+  - 11.6 "Answer it.": the bubble covers Father's phone (as in v8);
+  - the booth: the guard's grey sleeve reads as "someone else's arm", and Father's ring fist shows no fingers.
+
+## H. Daddy's Home v10, One Star v29 (26 Nov, Tomas's /grill-me after the v9/v28 cold test)
+
+**Daddy's Home v10** (`dh_film_v10.py`, `dh_hands_v10.py`; changed against v9 only in scene 1, drawings 27-134, and scene 8, 191-202):
+- **The booth:** both hands on the post are now Father's. The left sleeve is his velvet. His ring hand clutches the right edge, four fingers over the front, the ring on them; in 0.5 the tap lifts the whole hand.
+- **11.6 "Answer it.":** the box first went on Father's other side, as Tomas picked. There it covered Don's face, because Don's rig is not logged as a face. So the box is over Father's head (form T, dh_say.SAY), and the phone is logged so the box stays off it.
+
+**One Star v29** (`cs_film_v29.py`; changed only at 65.6-65.9 s): in 6.6a the phone is clamped in both hands at one size from the first drawing. Every gate passes.
+
+Phone gate 0 faults on both.
+
+**Cold viewers (2):** the fixes read.
+- The tablet is held by "his hands (red sleeves, white cuffs)".
+- "No bubble covers a face, phone or hand."
+- Neither viewer saw a size jump in 6.6a.
+
+**Points both viewers raised that were already in earlier versions:**
+- the booth's face-down post (0.7) reads as "a different object";
+- One Star 6.5, Sofía's phone hand has no sleeve ("a hand without an arm");
+- Daddy's Home, the invoice arm with no hand ("fused into the paper").
+
+## I. Daddy's Home v11; One Star 6.5 left as v29 (26 Nov)
+
+**Daddy's Home v11** (`dh_film_v11.py`, `dh_hands_v11.py`). Changed against v10 only where intended; scenes 2, 3, 4, 6 and 7 are identical.
+- 0.7 "Today.": the post face down is the same post's back (full width, a pale rim, two lenses) under Father's hands.
+- 7.6 and 11.1: the repairman's hand clutches the invoice's left edge where his sleeve meets it.
+
+**One Star 6.5** (Sofía's phone hand without a sleeve): not fixed, left as v29 (Tomas, "2"). Three tries did not converge:
+- a sleeve over her hair: the forearm still behind the phone;
+- the phone lower: the counter cuts the frame;
+- the phone in her other hand: the pose name never reached the rig. 6.5 draws through four layers (cs_os24, cs_os23, sofia_fs, sofia_ob), and two renders with different arm orders came out pixel-identical.
+
+It is rig work on Sofía, for its own /grill-me.
