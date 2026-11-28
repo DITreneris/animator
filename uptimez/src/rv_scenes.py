@@ -336,6 +336,9 @@ TEXT["1.5"].update(setup="S3 · I", picture=(
     "**Insert (Tomas 28 Nov: the reaching arm failed two layout rounds):** the folding chair's short leg, a gap under it. "
     "The Client's hand comes in from the edge, a rolled white sleeve, a washer between its fingers, and **pushes it under "
     "the leg**; the leg settles; the hand withdraws"), reaction="—")
+TEXT["3.7"]["picture"] += (". **Cut-in (Tomas 28 Nov, the hand review):** an insert of his hand alone, up from the "
+                           "frame's edge, the watch on its strap, the mug standing on his level palm, a "
+                           "waiter's catch, the coffee level, the steam drifting over it (3.7's last 0.6 s)")
 TEXT["6.10"]["picture"] = ("Father turns the tag: **REVIEW · TODAY → REVIEW · TOMORROW**. He folds his chair and "
                            "leaves with the report and the Client's card, the invoice in his pocket. **The spilled "
                            "tail of the report stays on the floor**")

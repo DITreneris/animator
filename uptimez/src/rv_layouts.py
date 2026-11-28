@@ -52,7 +52,8 @@ LINE_X = pss.LINE_X                                            # the tape, world
 MIN_SIGN = 5
 CHAIR_S = 0.9                                                  # the folding chair at Father's scale (0.62 drew a child's chair)
 ACTS = {1: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7"], 2: ["2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7"],
-        3: ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10"]}
+        3: ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10"],
+        4: ["4.1", "4.2", "4.3", "4.4", "4.5"]}
 CLIENT_NO_RAG = [True]                                         # Tomas 28 Nov ("1"): in episode 16 the Client has no rag
                                                                # (its red read as blood at night, 1/2; no action uses it).
                                                                # client_ps is not edited: its CLEAN overlay draws only
@@ -72,6 +73,31 @@ _cof.POCKET_RAG[0] = not CLIENT_NO_RAG[0]                      # (The Offer v48)
 pr.SOFIA_V5[0] = True                                          # 28 Nov: episode 15's characters refreshed (Sofía v5; the
                                                                # Client's CLEAN comes with da_set)
 KNOWN = {}                                                     # (shot, check) -> reason
+LIGHT_V3 = [True]    # on for episode 16's layouts (Tomas 28 Nov: the five test frames OK, with the corrections v3b);
+                     # was opt-in (Tomas 28 Nov, the night-lighting review, "Darom, kaip sakai"): the light tells the story,
+                     # on top of the locked night (rv_night_cast v6 stays as it is). Four layers, all from the sources
+                     # already in the room: (1) a warm pool on the floor under the throne (not a spotlight: Tomas's
+                     # "warm rim" stays); (2) Pam's monitor on her face; (3) the coffee machine's glow in its needle's
+                     # colour, on its body and the counter (rv_scenes.states); (4) contact shadows a little darker.
+                     # Inserts can ask for "intimate": the room 15 % darker round a bright centre (the robot's tear).
+NEEDLE_COL = {"green": (0.35, 0.90, 0.45), "yellow": (1.0, 0.85, 0.25), "orange": (1.0, 0.55, 0.15),
+              "red": (0.91, 0.36, 0.27)}
+
+
+def light_v3(sid, spec, heads):
+    """the extra glows and lights for a frame (LIGHT_V3)."""
+    g, li = list(spec["glows"]), list(spec["lights"])
+    if spec.get("rim", True) is not None and not spec.get("no_pool"):   # the throne in the room (not its inserts)
+        g.append((TX, TF + 4, 120, 30, bp.NIGHT_WARM, 0.425))   # v3b: -15 %     # (1) the warm pool on the floor under the throne
+    if "pam" in heads:                                          # (2) her monitor on her face
+        hx, hy, r = heads["pam"]
+        g.append((hx - r * 0.3, hy + r * 0.1, r * 1.2, r * 1.1, bp.NIGHT_MONITOR, 0.45))
+        li.append((hx, hy, 90, 0.8))
+    col = NEEDLE_COL[sc.states()[sid]["needle"]]                 # (3) the machine in its needle's colour
+    g.append((MX + 36 * MS, MB - 108 * MS, 30, 24, col, 0.42))   # v3b: the halo -30 %, tighter (the needle's contrast)
+    g.append((MX, MB + 6, 120, 26, col, 0.28))                   # v3b: the spill on the counter -20 % (Pam's eyes)
+    li.append((MX, MB - 60, 150, 0.6))
+    return g, li
 POSE = {}                                                      # shot -> "stand-in" note for the sheet
 
 
@@ -84,6 +110,16 @@ def rot(px, py, ox, oy, a):
     """a point drawn inside rotate(a) about (ox, oy), in the outer coordinates."""
     dx, dy = px - ox, py - oy
     return (ox + dx * math.cos(a) - dy * math.sin(a), oy + dx * math.sin(a) + dy * math.cos(a))
+
+
+_shadow0 = nc._shadow
+
+
+def _shadow_v3(k, x, f, w, a=0.30):
+    return _shadow0(k, x, f, w, a + 0.10 if LIGHT_V3[0] else a)   # (4) contact shadows a little darker
+
+
+nc._shadow = _shadow_v3
 
 
 def drawn(fn):
@@ -416,13 +452,15 @@ def robot_close(screen_kind=None, badge=True, drop=False, flat=False):
                 c.save(); c.translate(sx + 9, sy + 4); c.scale(1.8, 1.8)               # v2: big enough at 270
                 c.move_to(0, -6); c.curve_to(5, 0, 5, 6, 0, 7); c.curve_to(-5, 6, -5, 0, 0, -6); c.close_path()
                 c.set_source_rgb(0.12, 0.11, 0.10); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1); c.stroke()
-                c.set_source_rgba(1, 1, 1, 0.7); c.arc(-1.5, 1, 1.4, 0, 2 * math.pi); c.fill()
+                c.set_source_rgba(1, 1, 1, 0.9 if LIGHT_V3[0] else 0.7)
+                c.arc(-1.5, 1, 1.4, 0, 2 * math.pi); c.fill()     # its glint (v3: brighter)
                 c.restore()
         drawn(scr)
         return {"robot": head(o, "robot", "screen")}
     x, f = ROBOT_HOME[0] + 220, F + 40
     return dict(cam=(x, f - 114 * SC["robot"] - 10, 5.0), draw=draw, glows=[(x, f - 55, 40, 32, bp.NIGHT_MONITOR, 0.45)],
-                lights=[(x, f - 55, 150, 1.0)], search=False)
+                lights=[(x, f - 55, 150, 1.0)], search=False, no_pool=True)   # v3b: as v1 (the review: "a gold fog,
+                                                                         # the robot levitates"); only the glint
 
 
 def s24():
@@ -622,26 +660,59 @@ def s36():
     return dict(cam=(700, F - 150, 2.0), draw=draw, glows=g, lights=li)
 
 
-def client_flat(k, x, floor, mug_hand=None):
-    """3.7-4.2: the Client flat on the floor at the counter's foot, on his back, head to screen left, eyes shut.
-    REUSED: of_cast.client_under's laid-down profile (The Offer, approved); the near hand up, holding Pam's mug by its
-    handle (episode 15's cups canon: CUP_GRIP)."""
-    import client_of as cof
+def palm_mug(k, wx, wy, w, ms, skin, side=1):
+    """the hand library's SAUCER_SUPPORT (episode 15's cups canon, "on a palm"): the palm up and level at the wrist
+    (wx, wy), Pam's mug standing on it, the thumb over its near rim: a waiter's catch (Don's cup on his palm, 1.2)."""
+    import hand_lib_v4 as hl
     import da_cups as cups
     cups.install()
+    P = hl.POSES["SAUCER_SUPPORT"]["contacts"]["saucer"]
+    bx, by = hl.to_screen("SAUCER_SUPPORT", wx, wy, 0.0, w, side, P)
+    hl.draw(k, "SAUCER_SUPPORT", wx, wy, 0.0, w, skin, side,
+            obj=lambda k_: cups.mug(k_, bx, by - 1, ms, handle=-1, kind="mustard", state="held"))   # v3b: the handle
+                                                                # to screen left in every shot, as on the counter
+    return bx, by
+
+
+def client_flat(k, x, floor, mug_hand=None):
+    """3.7-4.2: the Client flat on the floor at the counter's foot, on his back, head to screen left. REUSED: the
+    canon's "lying on the creeper, face up" (client_of.profile laid down, of_cast.client_under; The Offer).
+    v2 (the hand review, 28 Nov; canon: "a mug is held by its handle"; episode 15's cups canon: CUP_GRIP): his elbow on
+    the floor, the forearm straight up; the hand library's CUP_GRIP on the mug's handle, the mug first, the thumb over
+    the handle's top (one hand, two passes); the coffee level; his other arm out of sight along
+    his side (v1's "brown fragment")."""
+    import client_of as cof
+    import client_ob as co
+    import da_cups as cups
+    import hand_lib_v4 as hl
+    cups.install()
     c = k.c
+    s_ = SC["client"]
     T = (x, floor - 6)
     L_ = lambda X, Y: (-(Y - T[1]), X - T[0])
-    near = mug_hand or (x - 70, floor - 120)
-    far = (x - 140, floor - 10)
+    sh = (T[0] + (co.BT + 30) * s_, T[1] - 4 * s_)             # his near shoulder, laid down
+    elbow = (sh[0] + co.LN1 * s_ * 0.92, floor - 4)
+    hand_pt = (elbow[0], elbow[1] - co.LN2 * s_ * 0.98)         # the forearm straight up
+    near = hand_pt                                              # v2b: the same arm in both keys (a: open, b: the mug)
+    far = (T[0] + (co.BT + 90) * s_, T[1] - 18 * s_)           # v2b: inside his chest, out of sight ("a loose hand")
+    def body_shadow():                                          # v3b (the review: "no contact under the head, shoulders,
+        c.save(); c.translate(T[0] + (co.HY * 0.5) * s_, floor + 2)   # back and heels"): one long soft shadow under him
+        c.scale(-co.HY * 0.56 * s_, 9); c.set_source_rgba(0, 0, 0, 0.30); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    drawn(body_shadow)
     c.save(); c.translate(*T); c.rotate(-math.pi / 2)
-    o = cof.profile(k, 0, 0, SC["client"], facing=1, look_up=0.0, hands=[L_(*near), L_(*far)])
+    o = cof.profile(k, 0, 0, s_, facing=1, look_up=0.0, hands=[L_(*near), L_(*far)])
     c.restore()
     hx, hy = o["head"]
-    if mug_hand:                                                # v2: the mug where the rig really put his hand
-        u, v = o["hands"][0]                                    # (cold 2/2: "a fist up", the mug apart from it)
-        px, py = T[0] + v, T[1] - u
-        drawn(lambda: cups.mug(k, px - 22 * 0.9, py - 4, cups.MUG_FLOOR * 0.9, handle=1, kind="mustard", state="held"))
+    def hold():
+        w = 20.0                                                # v2b: smaller, so the handle shows past the fist
+        wx, wy = hand_pt[0], hand_pt[1] + 0.35 * w
+        kit.ellipse(k, hand_pt[0], hand_pt[1], 13, 12, co.SKIN, 4830, shadow=False, lw=0)   # the rig's round hand, hidden
+        if not mug_hand:                                        # a: the palm open, up, under where the mug will fall
+            hl.draw_lr(k, "PALM", wx, wy, (0, -1), w, co.SKIN, 1)
+            return
+        palm_mug(k, hand_pt[0] - 4, hand_pt[1] + 2, w, cups.MUG_FLOOR * 0.95, co.SKIN)   # v3 (Tomas: "another grip
+                                                                # or the saucer hold"): the mug standing on his level palm
+    drawn(hold)
     return (T[0] + hy, T[1] - hx, R["client"] * SC["client"])
 
 
@@ -664,18 +735,60 @@ def s37():
                 drawn(tip)
             else:
                 h["client"] = client_flat(k, 900, F + 80, mug_hand=(MUG_AT[0] + 10, MB + 50))
-                def steam():
-                    c = k.c
-                    for i_, (dx, dy, r_) in enumerate(((10, -40, 16), (24, -70, 22), (46, -104, 28), (74, -140, 32))):
-                        c.set_source_rgba(0.95, 0.96, 1.0, 0.85 - i_ * 0.12)
-                        c.arc(MX + 40 * MS + dx, MB - 60 * MS + dy, r_, 0, 2 * math.pi); c.fill()
+                def steam_():
+                    steam(k, MX + 40 * MS, MB - 60 * MS)
                     dial(k, "3.7")
-                drawn(steam)
+                drawn(steam_)
             return h
         g, li = glows_room()
         return dict(cam=(760, F - 50, 1.55), draw=draw, glows=g, lights=li)
-    POSE["3.7"] = "v2: a: down BEFORE the steam, b: the catch"
-    return [key("a"), key("b")]
+    def insert():
+        """c (Tomas 28 Nov, after two attempts at the lying hand): an insert, the hand alone: his forearm up from the
+        frame's bottom edge (the owner implied: he lies below; rules: "at the frame's edge, a hand with a short wrist
+        stub passes"), the watch on its strap; v2 (Tomas: "CUP_GRIP failed: another grip or the saucer hold"): Pam's
+        mug standing on his level palm (SAUCER_SUPPORT), the coffee level; steam drifting above."""
+        import client_ob as co
+        import hand_lib_v4 as hl
+        import da_cups as cups
+        P = (MX - 40, F - 40)                                    # where the hand is, in front of the counter's foot
+        def draw(k):
+            nc._room(k, pam_behind=False)
+            def it():
+                cups.install()
+                c = k.c
+                w = 30.0
+                wx, wy = P[0], P[1]
+                L.dp._cap(c, [(wx, wy + 200), (wx, wy + 8)], 26, co.SKIN, 2.0)            # the forearm, from the edge
+                kit.cut(k, [(wx - 15, wy + 46), (wx + 15, wy + 46), (wx + 15, wy + 56), (wx - 15, wy + 56)],
+                        (0.16, 0.12, 0.10), shadow=False, lw=1.4)                           # the watch's strap
+                kit.ellipse(k, wx + 2, wy + 51, 9, 9, co.GOLD, 4840, shadow=False, lw=1.6)  # its face (the canon watch)
+                kit.ellipse(k, wx + 2, wy + 51, 5.8, 5.8, (0.10, 0.16, 0.14), 4841, shadow=False, lw=1.0)
+                bx, by = palm_mug(k, wx, wy, w * 1.2, cups.MUG_FLOOR * 1.7, co.SKIN)   # v2: the mug on his palm
+                steam(k, bx + 30, by - 70, seed=4850)
+            drawn(it)
+            return {}
+        return dict(cam=(P[0] + 20, P[1] - 20, 4.2), draw=draw, glows=[(P[0], P[1] - 40, 50, 40, bp.NIGHT_WARM, 0.25)],
+                    lights=[(P[0], P[1] - 40, 160, 0.9)], search=False, no_pool=True, insert=True)
+    POSE["3.7"] = "v2: a: down BEFORE the steam, b: the catch; c: the insert of the hand (CUP_GRIP)"
+    return [key("a"), key("b"), insert()]
+
+
+def steam(k, x, y, seed=4820):
+    """v3b (the review: "soap bubbles"): a jet of steam as ragged, overlapping wisps that widen, drift and thin out as
+    they rise; no outline."""
+    import random
+    rnd = random.Random(seed)
+    c = k.c
+    for i in range(14):
+        u = i / 13.0
+        cx_ = x + 8 + 70 * u + rnd.uniform(-6, 6) + 18 * math.sin(u * 3.2)
+        cy_ = y - 20 - 150 * u + rnd.uniform(-5, 5)
+        rx, ry = 6 + 26 * u + rnd.uniform(0, 5), 4 + 14 * u + rnd.uniform(0, 4)
+        c.save(); c.translate(cx_, cy_); c.rotate(rnd.uniform(-0.6, 0.6)); c.scale(rx, ry)
+        g_ = cairo.RadialGradient(0, 0, 0.1, 0, 0, 1)
+        a = 0.78 * (1 - u) + 0.10
+        g_.add_color_stop_rgba(0, 0.96, 0.97, 1.0, a); g_.add_color_stop_rgba(1, 0.96, 0.97, 1.0, 0.0)
+        c.set_source(g_); c.arc(0, 0, 1, 0, 2 * math.pi); c.fill(); c.restore()
 
 
 def s38():
@@ -688,16 +801,19 @@ def s38():
             x, y = MX - 110, MB + 2                              # v2: on the counter, away from the spout ("pours")
             cups.cup_saucer(k, x, y, 1.6, state="rest")
             c = k.c
-            c.set_source_rgb(0.06, 0.04, 0.03); c.save(); c.translate(x, y - 33); c.scale(1, 0.32)
+            c.set_source_rgb(0.03, 0.03, 0.03); c.save(); c.translate(x, y - 33); c.scale(1, 0.32)
             c.arc(0, 0, 25, 0, 2 * math.pi); c.restore(); c.fill()                           # the tar, a dome over the rim
             c.save(); c.translate(x, y - 35); c.scale(1, 0.5); c.arc(0, 0, 22, math.pi, 2 * math.pi); c.restore(); c.fill()
             c.set_source_rgba(1, 1, 1, 0.5); c.set_line_width(2); c.save(); c.translate(x - 6, y - 40); c.scale(1, 0.4)
             c.arc(0, 0, 9, 3.6, 4.6); c.restore(); c.stroke()                                # its oily shine
             for col, lw in ((INK, 8), ((0.80, 0.82, 0.86), 5)):                              # the spoon, upright, still
                 c.set_source_rgb(*col); c.set_line_width(lw); c.set_line_cap(1)
-                c.move_to(x + 4, y - 44); c.line_to(x + 10, y - 104); c.stroke()
+                c.move_to(x + 4, y - 44); c.line_to(x + 8, y - 82); c.stroke()            # v3b: shorter ("too long")
             c.set_line_cap(0)
-            kit.ellipse(k, x + 10, y - 108, 7, 9, (0.80, 0.82, 0.86), 4801, shadow=False, lw=1.8)
+            kit.ellipse(k, x + 8, y - 86, 7, 9, (0.80, 0.82, 0.86), 4801, shadow=False, lw=1.8)
+            c.set_source_rgba(1, 1, 1, 0.75); c.set_line_width(2.4); c.set_line_cap(1)          # v3b: tar's hard glints
+            c.move_to(x - 14, y - 40); c.line_to(x - 6, y - 43); c.stroke()                     # ("melted chocolate")
+            c.move_to(x + 12, y - 41); c.line_to(x + 16, y - 40); c.stroke(); c.set_line_cap(0)
         drawn(cup)
         return {}
     return dict(cam=(MX - 110, MB - 50, 5.0), draw=draw, glows=[(MX - 110, MB - 40, 50, 40, bp.NIGHT_WARM, 0.3)],
@@ -738,10 +854,133 @@ def s310():
     return dict(cam=(LINE_X - 30, F - 200, 2.8), draw=draw, glows=g, lights=li)
 
 
+
+# ---- Act IV: almost decided --------------------------------------------------------------------------------------------
+def card_on_seat(k):
+    pr.name_card(k, TX, SEAT_Y - 2, 0.42)                       # the Client's tent card on the throne's seat
+
+
+def s41():
+    """4.1 S1 W: Father props the Client's name card on the throne's seat; Don's face falls: he is losing the chair."""
+    def draw(k):
+        nc._room(k)
+        drawn(lambda: pss.throne(k))
+        drawn(lambda: card_on_seat(k))
+        o = rpo.father_folding(k, LINE_X, F + 30, SC["father"], "B", chair_s=CHAIR_S, look=(-1, 0.3),
+                               arms=(-60, -10, 30, -26), hands=("quiet", "quiet"))
+        h = {"father": (o["head"][0], o["head"][1], R["father"] * SC["father"])}
+        nc._shadow(k, 360, F + 80, 34)
+        h["don"] = head(dp.don(k, 360, F + 78, SC["don"], "stand", "panic", look=(1, 0.3)), "don")
+        return h
+    g, li = glows_room()
+    POSE["4.1"] = "Father's hand leaving the card: stand-in"
+    return dict(cam=(450, F - 110, 1.45), draw=draw, glows=g, lights=li)
+
+
+def father_smile(k, o, s_):
+    """a barely visible smile over dh_cast.father's flat mouth (the rig has only 'hard' and 'talk'; v2, 4.2's "contempt"
+    2/2): the line kept, its screen-right corner lifted, a small crease beside it."""
+    c = k.c
+    hx, hy = o["head"][:2]
+    my = hy + 31.5 * s_
+    c.set_source_rgb(*INK); c.set_line_width(4.2 * s_); c.set_line_cap(1)
+    c.new_path(); c.move_to(hx - 10 * s_, my + 0.5 * s_)
+    c.curve_to(hx - 2 * s_, my + 2.2 * s_, hx + 6 * s_, my + 1.0 * s_, hx + 12 * s_, my - 3.2 * s_); c.stroke()
+    c.set_line_width(1.6 * s_); c.new_path(); c.move_to(hx + 13 * s_, my - 7 * s_); c.line_to(hx + 15 * s_, my - 1 * s_)
+    c.stroke(); c.set_line_cap(0)
+
+
+def s42():
+    """4.2 S6 MC: Father leans to the Client, flat under the counter, the mug still on his palm; a barely visible
+    smile, for the Client only; v3: leaning TOWARD him, his finger at the mug, clearly apart. FATHER: "Good hands." """
+    import hands_ps as hp
+    def draw(k):
+        h = counter_people(k)
+        h["client"] = client_flat(k, 900, F + 80, mug_hand=True)
+        nc._shadow(k, 650, F + 30, 34)
+        def fa():
+            hp.reset("quiet", "point")
+            o_ = dc.father(k, 650, F + 28, SC["father"], pose=(-8, 0, 52, 18), look=(1, 1.0))
+            father_smile(k, o_, SC["father"])
+            return o_
+        o = L.tilted(k, 650, F + 28, 0.24, fa)
+        h["father"] = head(o, "father")
+        drawn(lambda: dial(k, "4.2"))
+        return h
+    g, li = glows_room()
+    POSE["4.2"] = "v3: leaning to him, the finger at the mug, a sly smile (overlay)"
+    return dict(cam=(700, F - 70, 1.9), draw=draw, glows=g, lights=li)
+
+
+def s43():
+    """4.3 S4 MC v3 (the gesture changed after two misreads): two keys at his belt: a: his palms up, apart, low in front
+    of him, eyes down on them; b: turned over, backs up, still looking."""
+    def key(hands):
+        def draw(k):
+            nc._room(k, pam_behind=False)
+            drawn(lambda: pss.throne(k))
+            nc._shadow(k, TX - 60, F + 60, 34)
+            o = dp.don(k, TX - 60, F + 58, SC["don"], (-28, 46, 28, -46), "confused", look=(0, 1.0), hands=hands)
+            return {"don": head(o, "don")}
+        g, li = glows_room()
+        return dict(cam=(TX - 60, F - 100, 2.4), draw=draw, glows=g, lights=li)
+    POSE["4.3"] = "v3: two keys, palms up then turned over, low and apart"
+    return [key(("palm", "palm")), key(("quiet", "quiet"))]
+
+
+def s44():
+    """4.4 S6 M v3: two keys: a: Pam's eyes on Father (screen left, up); b: on the robot at the frame's left edge, the
+    refused report still in its gripper. PAM: "Did anyone review the business?" """
+    def key(look, robot_in):
+        def draw(k):
+            h = counter_people(k, pam=False)
+            c = k.c                                             # behind the counter: only above its top
+            c.save(); c.rectangle(0, 0, 2000, MB - 4); c.clip()
+            o = pm.pam(k, nc.MON[0] + 20, F - 72, SC["pam"], "stand", "neutral", look=look, mug=False)
+            c.restore()
+            h["pam"] = head(o, "pam")
+            if robot_in:
+                with no_badge():
+                    nc._shadow(k, nc.MON[0] - 105, F + 32, 24)
+                    o_r = rp.robot(k, nc.MON[0] - 105, F + 30, SC["robot"], arms=((-8, 0), (40, 30)), look=(1, 0))
+                gx, gy = o_r["hands"][1]
+                drawn(lambda: pr.report(k, gx + 10, gy, 0.6))
+            drawn(lambda: dial(k, "4.4"))
+            return h
+        g, li = glows_room()
+        return dict(cam=(nc.MON[0] - 50, F - 130, 1.9), draw=draw, glows=g, lights=li)
+    POSE["4.4"] = "v3: two keys, her eyes to Father, then to the robot (in frame)"
+    return [key((-1, -0.4), False), key((-1, 0.6), True)]
+
+
+def s45():
+    """4.5 S1 W: nobody moves; in A the robot's head lifts."""
+    def draw(k):
+        h = {}
+        hp_ = nc._room(k)
+        drawn(lambda: pss.throne(k))
+        drawn(lambda: card_on_seat(k))
+        with no_badge():
+            nc._shadow(k, ROBOT_HOME[0], F + 14, 26)
+            o_r = rp.robot(k, ROBOT_HOME[0], F + 12, SC["robot"], arms=((-8, 0), (40, 30)), look=(1, -0.8))
+        gx, gy = o_r["hands"][1]
+        drawn(lambda: pr.report(k, gx + 10, gy, 0.6))
+        h["robot"] = head(o_r, "robot", "screen")
+        h["father"] = father_on_chair(k, look=(-1, 0))
+        nc._shadow(k, 380, F + 80, 34)
+        h["don"] = head(dp.don(k, 380, F + 78, SC["don"], "stand", "neutral", look=(1, 0)), "don")
+        nc._shadow(k, 300, F + 40, 28)
+        pr.sofia_ceo(k, 300, F + 38, SC["sofia"], "hold", "smile", look=(1, 0))
+        return h
+    g, li = glows_room(robot_screen=(ROBOT_HOME[0], F - 50))
+    POSE["4.5"] = "the robot's head up (look): key pose"
+    return dict(cam=(420, F - 110, 1.15), draw=draw, glows=g, lights=li)
+
+
 MAP = {"1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14, "1.5": s15, "1.6": s16, "1.7": s17,
        "2.1": s21, "2.2": s22, "2.3": s23, "2.4": s24, "2.5": s25, "2.6": s26, "2.7": s27,
        "3.1": s31, "3.2": s32, "3.3": s33, "3.4": s34, "3.5": s35, "3.6": s36, "3.7": s37, "3.8": s38, "3.9": s39,
-       "3.10": s310}
+       "3.10": s310, "4.1": s41, "4.2": s42, "4.3": s43, "4.4": s44, "4.5": s45}
 
 
 # ---- rendering and checks ----------------------------------------------------------------------------------------------
@@ -798,6 +1037,7 @@ def specs(sid):
 def render(sid, spec=None):
     """-> (surface 540x960, faults). The frame as rv_night_cast._frame draws it, with the texts recorded."""
     spec = spec or specs(sid)[0]
+    INSERT[0] = bool(spec.get("insert"))
     if "file" in spec:
         img = cairo.ImageSurface.create_from_png(spec["file"])
         s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); c = cairo.Context(s)
@@ -819,14 +1059,25 @@ def render(sid, spec=None):
         rn.FALLOFF[0], rn.GLASS_HI[0] = 0.32, 0.12
         rn.RIM_SEEN[0] = True; rn.FLOOR_END[0] = False; rn.CAST_LIGHT[0] = nc.LOCK_CAST
         try:
-            rn.grade(s, cam, floor_y, spec["glows"], rim=spec.get("rim", lambda k_: pss.throne(k_)), lights=spec["lights"],
+            gl, li = light_v3(sid, spec, heads) if LIGHT_V3[0] else (spec["glows"], spec["lights"])
+            rn.grade(s, cam, floor_y, gl, rim=spec.get("rim", lambda k_: pss.throne(k_)), lights=li,
                      after=lambda c_: rn.moon_patch(c_, cam), people=nc._people_mask(cam, draw))
+            if LIGHT_V3[0] and spec.get("intimate"):            # the room 15 % darker round a bright centre
+                cx_, cy_ = spec["intimate"]
+                X, Y = 270 + (cx_ - fx) * z, 480 + (cy_ - fy) * z
+                cc = cairo.Context(s)
+                gr = cairo.RadialGradient(X, Y, 90, X, Y, 420)
+                gr.add_color_stop_rgba(0, 0, 0, 0, 0.0); gr.add_color_stop_rgba(1, 0.02, 0.03, 0.06, 0.15 / 0.85 * 0.85)
+                cc.set_source(gr); cc.paint()
         finally:
             rn.FALLOFF[0], rn.GLASS_HI[0] = old
             rn.RIM_SEEN[0] = False; rn.FLOOR_END[0] = True; rn.CAST_LIGHT[0] = None
     finally:
         nc.NO_THRONE_CONFETTI[0] = False
     return s, checks(sid, cam, c.texts, heads)
+
+
+INSERT = [False]                                               # set while an insert key draws (a cut-in: no cast)
 
 
 def checks(sid, cam, texts, heads):
@@ -847,7 +1098,7 @@ def checks(sid, cam, texts, heads):
             x, y, r = faces[n]
             if not (r <= x <= W - r and 96 + r <= y <= H):
                 msgs.append("FRAME: %s's face out of the frame (%d, %d)" % (n, x, y))
-        elif sid not in ("1.1",):
+        elif sid not in ("1.1",) and not INSERT[0]:
             msgs.append("CAST: %s is in the scene file's cast but not drawn" % n)
     if "don" in heads and st["don"] in "LR":
         side = "L" if heads["don"][0] < LINE_X else "R"
@@ -926,5 +1177,24 @@ def main(args):
     return not fails
 
 
+
+
+def light_test(out=os.path.join(EP, "rv_light_v3_test.png")):
+    """the five frames the lighting review asked for, before (top) and after LIGHT_V3 (bottom), at 270."""
+    from PIL import Image
+    picks = [("2.1", 0), ("1.3", 0), ("2.6", 0), ("3.5", 0), ("3.7", 1)]
+    sheet_ = Image.new("RGB", (5 * 280, 2 * 490), (255, 255, 255))
+    for row, on in enumerate((False, True)):
+        LIGHT_V3[0] = on
+        for i, (sid, n) in enumerate(picks):
+            surf, _ = render(sid, specs(sid)[n])
+            surf.write_to_png("/tmp/lt.png")
+            sheet_.paste(Image.open("/tmp/lt.png").convert("RGB").resize((270, 480)), (i * 280, row * 490))
+    LIGHT_V3[0] = False
+    sheet_.save(out); print("wrote", out)
+
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ["light"]:
+        light_test(); sys.exit(0)
     sys.exit(0 if main(sys.argv[1:]) else 1)
