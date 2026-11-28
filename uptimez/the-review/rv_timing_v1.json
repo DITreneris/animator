@@ -1,0 +1,852 @@
+{
+ "total": 74.3,
+ "script_total": 65.6,
+ "shots": [
+  {
+   "scene": "Act I \u00b7 midnight and the review",
+   "shot": "1.1",
+   "script": 1.6,
+   "picture": "**Frame 0 (K1), night:** Don asleep in the throne, tilted back, his weight on it; a folded card wedges the front caster. **0:00.4 the robot's gripper pulls the card; 0:00.6 the throne rolls back** and Don slides off its front",
+   "line": null,
+   "start": 0.0,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 midnight and the review",
+   "shot": "1.2",
+   "script": 1.2,
+   "picture": "Don on his back on the floor, eyes still shut; **he raises the empty cup straight up**, like a baby bird",
+   "line": "**DON: \"Pam! Coffee.\"**",
+   "start": 1.6,
+   "len": 2.06,
+   "takes": [
+    "1.2"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.6
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.86
+  },
+  {
+   "scene": "Act I \u00b7 midnight and the review",
+   "shot": "1.3",
+   "script": 1.2,
+   "picture": "Behind the counter, in her monitor's glow, Pam holds the MY GARAGES blueprint open. She looks at the raised cup and **turns to the next page**. Her mustard mug sits by the coffee machine (needle green)",
+   "line": null,
+   "start": 3.66,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 midnight and the review",
+   "shot": "1.4",
+   "script": 1.4,
+   "picture": "Polished shoes and the burgundy hem walk in (A). **Father unfolds a cheap folding chair on the tape**, beside the throne. Don still on the floor, cup up",
+   "line": "**FATHER: \"Executive.\"**",
+   "start": 4.86,
+   "len": 2.73,
+   "takes": [
+    "1.4"
+   ],
+   "picks": [
+    "D"
+   ],
+   "take_at": [
+    0.9
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 1.33
+  },
+  {
+   "scene": "Act I \u00b7 midnight and the review",
+   "shot": "1.5",
+   "script": 1.0,
+   "picture": "The chair **wobbles** under Father's hand. The Client comes round the counter's left end and kneels at the leg without being asked: **a washer from his pocket, under the leg**",
+   "line": null,
+   "start": 7.59,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 midnight and the review",
+   "shot": "1.6",
+   "script": 1.2,
+   "picture": "Father sits and **leans hard to one side**; the chair doesn't budge. His eyes go to the gold throne, then to the Client",
+   "line": null,
+   "start": 8.59,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act I \u00b7 midnight and the review",
+   "shot": "1.7",
+   "script": 0.8,
+   "picture": "The ringed hand turns the tag on the throne's back: **REVIEW \u00b7 TOMORROW \u2192 REVIEW \u00b7 TODAY**",
+   "line": null,
+   "start": 9.79,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the rejections",
+   "shot": "2.1",
+   "script": 1.2,
+   "picture": "Don scrambles up. **Sof\u00eda is quicker:** she sits in the throne, chin up, legs crossing. **Father's eyes go past her before she is down**",
+   "line": null,
+   "start": 10.59,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the rejections",
+   "shot": "2.2",
+   "script": 0.8,
+   "picture": "Sof\u00eda gets up, smoothing her skirt; **her eyes are already on the robot**",
+   "line": null,
+   "start": 11.79,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the rejections",
+   "shot": "2.3",
+   "script": 1.4,
+   "picture": "The robot rolls up, holding out a report. **Father raises his palm** before it can present it. The robot slowly retracts the report",
+   "line": null,
+   "start": 12.59,
+   "len": 1.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the rejections",
+   "shot": "2.4",
+   "script": 0.8,
+   "picture": "The robot's screen: **POSITION VACANT** (it left HR to apply)",
+   "line": null,
+   "start": 13.99,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the rejections",
+   "shot": "2.5",
+   "script": 1.6,
+   "picture": "**Sof\u00eda's eyes snap to the screen; she pivots on the spot:** unpins the HR card from its chest, pins it on her jacket, checks it hangs straight, and points the robot to the corner",
+   "line": "**SOF\u00cdA (professional): \"We'll be in touch.\"**",
+   "start": 14.79,
+   "len": 2.22,
+   "takes": [
+    "2.5"
+   ],
+   "picks": [
+    "A"
+   ],
+   "take_at": [
+    0.9
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.62
+  },
+  {
+   "scene": "Act II \u00b7 the rejections",
+   "shot": "2.6",
+   "script": 1.0,
+   "picture": "The robot's face: **one oil drop rolls down**. Then the screen goes flat: **NOTED.**",
+   "line": null,
+   "start": 17.01,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act II \u00b7 the rejections",
+   "shot": "2.7",
+   "script": 0.8,
+   "picture": "It rolls to its station in A, the report still in its gripper",
+   "line": null,
+   "start": 18.01,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.1",
+   "script": 1.4,
+   "picture": "Don will show he doesn't need Pam. He **steps over his own tape** to the counter (Father's side), glancing down at the line as he crosses",
+   "line": null,
+   "start": 18.81,
+   "len": 1.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.2",
+   "script": 1.6,
+   "picture": "At the machine for the first time in his life: **the filter goes in upside down**. The Client, on the customer side, watches. Pam, behind, doesn't move",
+   "line": "**DON (to Father, proud): \"I usually delegate.\"**",
+   "start": 20.21,
+   "len": 2.45,
+   "takes": [
+    "3.2"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.6
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.85
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.3",
+   "script": 1.0,
+   "picture": "The panel: **HUMAN APPROVAL REQUIRED**",
+   "line": null,
+   "start": 22.66,
+   "len": 2.07,
+   "takes": [
+    "3.3"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.3
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 1.07
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.4",
+   "script": 1.2,
+   "picture": "**Don, eyes on Father, not the panel, jabs the button with a fingertip** (gesture 1)",
+   "line": "**DON: \"Approved.\"** \u00b7 **PANEL: \"Human approval required.\"** comes first, under 3.3",
+   "start": 24.73,
+   "len": 1.59,
+   "takes": [
+    "3.4"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.5
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.39
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.5",
+   "script": 1.0,
+   "picture": "The needle swings into the yellow; **the machine shudders a step toward the counter edge**",
+   "line": null,
+   "start": 26.32,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.6",
+   "script": 0.6,
+   "picture": "A small **tick** from the machine: **only the Client's head turns**",
+   "line": null,
+   "start": 27.32,
+   "len": 0.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.7",
+   "script": 1.4,
+   "picture": "**A visible jet of steam with a hiss.** The Client is already dropping flat below the counter, eyes shut; his hand, without looking, **catches Pam's mug by its handle** as it slides off the edge",
+   "line": null,
+   "start": 27.92,
+   "len": 1.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.8",
+   "script": 1.2,
+   "picture": "The cup: the coffee drops in **one tar-like glug**; the spoon stands upright in it by itself",
+   "line": null,
+   "start": 29.32,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.9",
+   "script": 1.6,
+   "picture": "Don carries the cup back over his tape and **sets it on the throne's armrest** beside Father's chair",
+   "line": null,
+   "start": 30.52,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act III \u00b7 the coffee",
+   "shot": "3.10",
+   "script": 0.8,
+   "picture": "Father's eyes: the cup, then away",
+   "line": null,
+   "start": 32.12,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act IV \u00b7 almost decided",
+   "shot": "4.1",
+   "script": 1.6,
+   "picture": "Father props the **Client's name card** (wrench pictogram, his name) on the throne's seat",
+   "line": null,
+   "start": 32.92,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act IV \u00b7 almost decided",
+   "shot": "4.2",
+   "script": 1.6,
+   "picture": "Father leans to the Client, flat under the counter, the mug still in his hand. **A barely visible smile, for the Client only**",
+   "line": "**FATHER: \"Good hands.\"**",
+   "start": 34.52,
+   "len": 2.37,
+   "takes": [
+    "4.2"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.6
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.77
+  },
+  {
+   "scene": "Act IV \u00b7 almost decided",
+   "shot": "4.3",
+   "script": 1.0,
+   "picture": "**Don has seen the smile. He looks down at his own hands**",
+   "line": null,
+   "start": 36.89,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act IV \u00b7 almost decided",
+   "shot": "4.4",
+   "script": 1.6,
+   "picture": "Pam, **her eyes going from Father to the robot in the corner**, the refused report in its gripper",
+   "line": "**PAM: \"Did anyone review the business?\"**",
+   "start": 37.89,
+   "len": 2.72,
+   "takes": [
+    "4.4"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.5
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 1.12
+  },
+  {
+   "scene": "Act IV \u00b7 almost decided",
+   "shot": "4.5",
+   "script": 0.6,
+   "picture": "Nobody moves. In A the robot's head lifts",
+   "line": null,
+   "start": 40.61,
+   "len": 0.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.1",
+   "script": 1.0,
+   "picture": "The robot at its station, head up",
+   "line": "**ROBOT: \"Yes.\"**",
+   "start": 41.21,
+   "len": 1.07,
+   "takes": [
+    "5.1"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.3
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.07
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.2",
+   "script": 1.6,
+   "picture": "It rolls to Father. **The report unfurls from its chest, accordion-folding over Don's shoes**; Don steps back; the paper follows; another step, more paper",
+   "line": null,
+   "start": 42.28,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.3",
+   "script": 1.6,
+   "picture": "**The gripper tears off one sheet and holds it out to Father across a clear gap; Father takes it in his fingertips**",
+   "line": null,
+   "start": 43.88,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.4",
+   "script": 1.0,
+   "picture": "The sheet: **COFFEE MACHINE REPAIR \u00b7 $80 \u00b7 UNPAID** (a red stamp)",
+   "line": null,
+   "start": 45.48,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.5",
+   "script": 0.8,
+   "picture": "Father folds it into his inside pocket and reads the report, the only one reading anything",
+   "line": null,
+   "start": 46.48,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.6",
+   "script": 1.0,
+   "picture": "The robot's screen: **UPTIME 100%**",
+   "line": null,
+   "start": 47.28,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.7",
+   "script": 1.4,
+   "picture": "Don: **his eyes close mid-yawn, his head nods, he jerks awake**",
+   "line": null,
+   "start": 48.28,
+   "len": 1.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.8",
+   "script": 1.0,
+   "picture": "The robot's screen: **SALARY $0**",
+   "line": null,
+   "start": 49.68,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.9",
+   "script": 1.4,
+   "picture": "Father **straightens in his cheap chair**; his eye goes up to the **$49,999 tag on the crown**",
+   "line": "**FATHER (slow, quiet): \"There it is.\"**",
+   "start": 50.68,
+   "len": 2.52,
+   "takes": [
+    "5.9"
+   ],
+   "picks": [
+    "B"
+   ],
+   "take_at": [
+    0.8
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 1.12
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.10",
+   "script": 1.6,
+   "picture": "Don, **smiling proudly** at Father: he thinks Father admires the chair. **He tilts the throne's back to show it**",
+   "line": "**DON: \"It reclines.\"**",
+   "start": 53.2,
+   "len": 2.1,
+   "takes": [
+    "5.10"
+   ],
+   "picks": [
+    "A"
+   ],
+   "take_at": [
+    0.6
+   ],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.5
+  },
+  {
+   "scene": "Act V \u00b7 the robot returns",
+   "shot": "5.11",
+   "script": 1.4,
+   "picture": "Father takes the Client's card off the throne: **the card in one hand, the report in the other.** Doubt. Behind, small on the counter: the needle in the orange",
+   "line": null,
+   "start": 55.3,
+   "len": 1.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.1",
+   "script": 1.4,
+   "picture": "**The robot sits in the throne**, formally. Its screen: **HUMAN APPROVAL REQUIRED** (the same drawing as 3.3)",
+   "line": null,
+   "start": 56.7,
+   "len": 1.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.2",
+   "script": 1.2,
+   "picture": "**Father reaches his finger toward the screen to approve; it changes: APPROVER: CEO with Don's face.** His finger stops, clearly apart",
+   "line": null,
+   "start": 58.1,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.3",
+   "script": 1.0,
+   "picture": "Father turns to Don. **Everyone turns to Don**: Sof\u00eda, Pam, the robot, the Client's eyes over the counter's edge",
+   "line": null,
+   "start": 59.3,
+   "len": 1.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.4",
+   "script": 1.6,
+   "picture": "**Push in on Don's eyes: for the first time he reads what he is approving**",
+   "line": null,
+   "start": 60.3,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.5",
+   "script": 1.2,
+   "picture": "His fingertip rises toward the screen, **the same gesture as 3.4**, and hovers",
+   "line": null,
+   "start": 61.9,
+   "len": 1.2,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.6",
+   "script": 0.8,
+   "picture": "His eyes go to the robot in his throne. **The hand freezes**",
+   "line": null,
+   "start": 63.1,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.7",
+   "script": 2.0,
+   "picture": "**The hand pulls back. Fists on his hips.** Two full seconds of silence",
+   "line": null,
+   "start": 63.9,
+   "len": 2.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.8",
+   "script": 0.8,
+   "picture": "Sof\u00eda adjusts her new HR card",
+   "line": null,
+   "start": 65.9,
+   "len": 0.8,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.9",
+   "script": 1.6,
+   "picture": "The robot sits dead still a beat, then **rises slowly and stiffly out of the throne**, formal to the last, and steps aside",
+   "line": null,
+   "start": 66.7,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VI \u00b7 human approval required",
+   "shot": "6.10",
+   "script": 1.6,
+   "picture": "Father turns the tag: **REVIEW \u00b7 TODAY \u2192 REVIEW \u00b7 TOMORROW**. He folds his chair and leaves with the report and the Client's card, the invoice in his pocket",
+   "line": null,
+   "start": 68.3,
+   "len": 1.6,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VII \u00b7 the loop",
+   "shot": "7.1",
+   "script": 2.4,
+   "picture": "The room empties. Don unhooks the tag, **folds it the same way as frame 0, and wedges it under the front caster**. He sits, leans back, his weight on the throne; **left hand on the armrest, right hanging**; eyes close",
+   "line": null,
+   "start": 69.9,
+   "len": 2.4,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  },
+  {
+   "scene": "Act VII \u00b7 the loop",
+   "shot": "7.2",
+   "script": 2.0,
+   "picture": "**The same close as 1.1 (K1)**: beside him the robot's screen glows **UPTIME 100%**; its gripper reaches for the card \u2192 **frame 0**",
+   "line": null,
+   "start": 72.3,
+   "len": 2.0,
+   "takes": [],
+   "picks": [],
+   "take_at": [],
+   "run_on": null,
+   "duck": {},
+   "longer": 0.0
+  }
+ ]
+}

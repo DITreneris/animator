@@ -1,0 +1,474 @@
+{
+ "1.2": {
+  "who": "DON",
+  "text": "Pam! Coffee.",
+  "note": "an order, eyes shut, from the floor",
+  "takes": {
+   "A": {
+    "len": 1.18,
+    "ok": 3,
+    "exact": 2,
+    "asr": [
+     "Pam coffee",
+     "Pam Coffey",
+     "Pam coffee"
+    ]
+   },
+   "B": {
+    "len": 1.11,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam coffee",
+     "Pam coffee",
+     "Pam coffee"
+    ]
+   },
+   "C": {
+    "len": 1.06,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam Coffee",
+     "Pam Coffee",
+     "Pam Coffee"
+    ]
+   },
+   "D": {
+    "len": 0.98,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Pam Coffee",
+     "Pam coffee",
+     "Pam Coffee"
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.11,
+  "ok": 3
+ },
+ "1.4": {
+  "who": "FATHER",
+  "text": "Executive.",
+  "note": "calm, looking at his folding chair",
+  "takes": {
+   "A": {
+    "len": 1.95,
+    "ok": 1,
+    "exact": 1,
+    "asr": [
+     "executive",
+     "executive executive executive",
+     "executive executive executive executive"
+    ]
+   },
+   "B": {
+    "len": 1.69,
+    "ok": 3,
+    "exact": 0,
+    "asr": [
+     "executive executive executive executive",
+     "executive executive executive executive",
+     "executive executive executive",
+     "[with the line before] Pam Coffee. Executive.",
+     "[with the line before] Pam Coffee. Executive.",
+     "[with the line before] Pam Coffee. Executive."
+    ]
+   },
+   "C": {
+    "len": 1.69,
+    "ok": 3,
+    "exact": 0,
+    "asr": [
+     "executive executive executive executive",
+     "executive executive executive executive",
+     "executive executive executive",
+     "[with the line before] Pam Coffee. Executive.",
+     "[with the line before] Pam Coffee. Executive.",
+     "[with the line before] Pam Coffee. Executive."
+    ]
+   },
+   "D": {
+    "len": 1.48,
+    "ok": 3,
+    "exact": 1,
+    "asr": [
+     "executive executive executive executive",
+     "executive",
+     "executive executive executive executive",
+     "[with the line before] Pam Coffee Executive",
+     "[with the line before] Pam Coffee. Executive.",
+     "[with the line before] Pam Coffee. Executive."
+    ]
+   }
+  },
+  "pick": "D",
+  "len": 1.48,
+  "ok": 3
+ },
+ "2.5": {
+  "who": "SOFIA",
+  "text": "We'll be in touch.",
+  "note": "professional, an interviewer's close",
+  "takes": {
+   "A": {
+    "len": 0.97,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "We'll be in touch",
+     "We'll be in touch.",
+     "We'll be in touch."
+    ]
+   },
+   "B": {
+    "len": 0.91,
+    "ok": 3,
+    "exact": 1,
+    "asr": [
+     "will be in touch.",
+     "We'll be in touch.",
+     "will be in touch."
+    ]
+   },
+   "C": {
+    "len": 0.91,
+    "ok": 3,
+    "exact": 1,
+    "asr": [
+     "will be in touch.",
+     "We'll be in touch.",
+     "will be in touch."
+    ]
+   },
+   "D": {
+    "len": 0.82,
+    "ok": 2,
+    "exact": 2,
+    "asr": [
+     "We'll be in",
+     "We'll be in touch.",
+     "We'll be in touch."
+    ]
+   }
+  },
+  "pick": "A",
+  "len": 0.97,
+  "ok": 3
+ },
+ "3.2": {
+  "who": "DON",
+  "text": "I usually delegate.",
+  "note": "proud, to Father",
+  "takes": {
+   "A": {
+    "len": 1.55,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "I usually delegate.",
+     "I usually delegate.",
+     "I usually delegate."
+    ]
+   },
+   "B": {
+    "len": 1.5,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "I usually delegate.",
+     "I usually delegate.",
+     "I usually delegate."
+    ]
+   },
+   "C": {
+    "len": 1.43,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "I usually delegate.",
+     "I usually delegate.",
+     "I usually delegate."
+    ]
+   },
+   "D": {
+    "len": 1.35,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "I usually delegate.",
+     "I usually delegate.",
+     "I usually delegate."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.5,
+  "ok": 3
+ },
+ "3.3": {
+  "who": "PANEL",
+  "text": "Human approval required.",
+  "note": "flat, polite, the robot's family",
+  "takes": {
+   "B": {
+    "len": 1.42,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Human approval required.",
+     "Human approval required.",
+     "Human approval required."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.42,
+  "ok": 3
+ },
+ "3.4": {
+  "who": "DON",
+  "text": "Approved.",
+  "note": "not looking (episode 15's take, reused)",
+  "takes": {
+   "B": {
+    "len": 0.74,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "approved",
+     "approved",
+     "Approved."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 0.74,
+  "ok": 3
+ },
+ "4.2": {
+  "who": "FATHER",
+  "text": "Good hands.",
+  "note": "quiet, a barely visible smile",
+  "takes": {
+   "A": {
+    "len": 1.48,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Good hands",
+     "Good hands",
+     "Good hands"
+    ]
+   },
+   "B": {
+    "len": 1.42,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Good hands",
+     "Good hands",
+     "Good hands"
+    ]
+   },
+   "C": {
+    "len": 1.25,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Good hands",
+     "Good hands",
+     "Good hands"
+    ]
+   },
+   "D": {
+    "len": 1.25,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Good hands.",
+     "Good hands",
+     "Good hands"
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.42,
+  "ok": 3
+ },
+ "4.4": {
+  "who": "PAM",
+  "text": "Did anyone review the business?",
+  "note": "dry, to Father",
+  "takes": {
+   "A": {
+    "len": 1.9,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Did anyone review the business?",
+     "Did anyone review the business?",
+     "Did anyone review the business?"
+    ]
+   },
+   "B": {
+    "len": 1.87,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Did anyone review the business?",
+     "Did anyone review the business?",
+     "Did anyone review the business?"
+    ]
+   },
+   "C": {
+    "len": 1.7,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Did anyone review the business?",
+     "Did anyone review the business?",
+     "Did anyone review the business?"
+    ]
+   },
+   "D": {
+    "len": 1.59,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Did anyone review the business?",
+     "Did anyone review the business?",
+     "Did anyone review the business?"
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.87,
+  "ok": 3
+ },
+ "5.1": {
+  "who": "ROBOT",
+  "text": "Yes.",
+  "note": "from its station",
+  "takes": {
+   "B": {
+    "len": 0.42,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "Yes.",
+     "Yes",
+     "Yes."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 0.42,
+  "ok": 3
+ },
+ "5.9": {
+  "who": "FATHER",
+  "text": "There it is.",
+  "note": "slow, quiet: he has found his money",
+  "takes": {
+   "A": {
+    "len": 1.56,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "There it is.",
+     "There it is.",
+     "There it is."
+    ]
+   },
+   "B": {
+    "len": 1.37,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "There it is.",
+     "There it is.",
+     "There it is."
+    ]
+   },
+   "C": {
+    "len": 1.34,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "There it is.",
+     "There it is.",
+     "There it is."
+    ]
+   },
+   "D": {
+    "len": 1.28,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "There it is.",
+     "There it is.",
+     "There it is."
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.37,
+  "ok": 3
+ },
+ "5.10": {
+  "who": "DON",
+  "text": "It reclines.",
+  "note": "sincerely proud, tilting the throne",
+  "takes": {
+   "A": {
+    "len": 1.15,
+    "ok": 3,
+    "exact": 3,
+    "asr": [
+     "It reclines.",
+     "It reclines.",
+     "It reclines."
+    ]
+   },
+   "B": {
+    "len": 1.03,
+    "ok": 2,
+    "exact": 2,
+    "asr": [
+     "It reclines.",
+     "it it it it it it it",
+     "It reclines."
+    ]
+   },
+   "C": {
+    "len": 0.98,
+    "ok": 2,
+    "exact": 2,
+    "asr": [
+     "It reclines.",
+     "It reclines.",
+     "it recl it recl it recl it"
+    ]
+   },
+   "D": {
+    "len": 0.91,
+    "ok": 3,
+    "exact": 1,
+    "asr": [
+     "it recl",
+     "It reclines.",
+     "it it",
+     "[with the line before] There it is. It reclines.",
+     "[with the line before] There it is. It reclines.",
+     "[with the line before] There it is. It reclines."
+    ]
+   }
+  },
+  "pick": "A",
+  "len": 1.15,
+  "ok": 3
+ }
+}

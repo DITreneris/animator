@@ -12,8 +12,9 @@ episode, an audio callback. It is scored like the others but never re-recorded.
   python3 rv_voices.py takes      -> rv_voices/takes/<shot>_<A-D>.wav, takes.json, picks
   python3 rv_voices.py audition   -> ../the-review/rv_voices_audition_v1.mp4 (every take, a card each)
   python3 rv_voices.py timing     -> ../the-review/rv_timing_v1.json, rv_voices_v1.mp4 (the picks at their times)
-Needs the Kokoro model (KOKORO_DIR) and the Whisper model (ASR_DIR). Run locally: this cloud session cannot fetch
-the Kokoro weights."""
+Needs the Kokoro model (KOKORO_DIR) and the Whisper model (ASR_DIR). Both come from GitHub releases (28 Nov), so a
+cloud session can fetch them: kokoro-onnx's model-files-v1.0 (kokoro-v1.0.int8.onnx, voices-v1.0.bin) into
+KOKORO_DIR, and sherpa-onnx's asr-models/sherpa-onnx-whisper-base.en into ASR_DIR."""
 import os
 import sys
 import json
@@ -50,6 +51,8 @@ SPEEDS = {"A": 0.90, "B": 0.96, "C": 1.02, "D": 1.08}
 ONE_TAKE = ("ROBOT", "PANEL")  # the robot's voice has no speed: one take, B
 REUSE = {"3.4": "B"}           # kept as copied, never re-recorded
 PICK = {}                      # Tomas's overrides: shot -> letter
+TRIM = {"5.1": 0.42}           # the robot's "Yes." was heard as "Yes, sir" 3/3 (its filter's tail); cut at 0.42 s: "Yes." 3/3,
+                               # also with 0.3 s and 1.0 s of silence after it (28 Nov)
 LEAD, TAIL = 0.15, 0.35        # a line starts 0.15 s into its shot and leaves 0.35 s after it
 TAKES_OF = {}
 GAP = {}
@@ -133,6 +136,8 @@ def takes(only=None):
                 a, _ = sf.read("%s/%s_%s.wav" % (OUT, shot, L)); a = np.asarray(a, dtype=np.float64)
             else:
                 a = ob.trim(np.asarray(take(who, give or line, k), dtype=np.float64)) * gain
+                if shot in TRIM:                             # a filter tail heard as a word: cut it, 40 ms fade
+                    a = a[:int(TRIM[shot] * SR)].copy(); f = int(0.04 * SR); a[-f:] *= np.linspace(1, 0, f)
                 sf.write("%s/%s_%s.wav" % (OUT, shot, L), a.astype(np.float32), SR)
             good, heard = score(r, a, line, prev)
             want = sfs._words(line)                    # strict: every word as written ("rules" is not "rule")
