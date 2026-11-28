@@ -22,6 +22,7 @@ import don_ps as dp
 import pm_ps as pm
 import sofia_ps as sp
 import client_ps as cps
+cps.NO_RAG[0] = True; __import__("client_of").POCKET_RAG[0] = False   # Tomas 28 Nov: no rag (he owns the garages; the red sat with Father's burgundy)
 cps.CLEAN[0] = True   # Tomas 28 Nov (/grill-me): in episode 15 the Client is the canon's garage owner, oil in the creases only
 import dh_cast as dc
 from kit import Ctx, INK, rect

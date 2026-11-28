@@ -486,7 +486,7 @@ def pam_sheet(out=EP + "uptimez-pam-da-v3-sheet.png"):
     print("wrote", out)
 
 
-def client_sheet(out=EP + "uptimez-client-da-v1-sheet.png"):
+def client_sheet(out=EP + "uptimez-client-da-v2-sheet.png"):
     """The Client in 15 (Tomas 28 Nov, /grill-me): the canon's garage owner, oil in the creases only (client_ps.CLEAN):
     washed hands with dark crease lines, a clean white T-shirt, the red rag clean on his shoulder, no grease on his face.
     Episode 14's filthy booth look stays in 14. His beats here: bored in Don's office, at the door for Pam's mug (3.3),
@@ -494,13 +494,15 @@ def client_sheet(out=EP + "uptimez-client-da-v1-sheet.png"):
     import client_ps as cp
     W, H = 1500, 1000
     s, c, k = _surf(W, H)
-    _t(c, 30, 46, "THE CLIENT · The Double Agent (15) · v1", 26, 1)
+    _t(c, 30, 46, "THE CLIENT · The Double Agent (15) · v2 (no rag)", 26, 1)
     _t(c, 30, 70, "Owner of ten garages, not a mechanic under a car: canon client_ob (\"oil in the creases of his hands\"). Episode 14's"
        " filthy booth look (black hands, palm print, cheek smear) stays in 14.", 11)
-    _t(c, 30, 88, "client_ps.CLEAN (opt-in, default off: 14 byte-identical); da_set turns it on for this episode.", 11)
+    _t(c, 30, 88, "client_ps.CLEAN + NO_RAG, client_of.POCKET_RAG off (opt-in, defaults draw as before); da_set sets them for this episode.", 11)
     F, S = 560, 0.60
     _floor(c, 30, W - 30, F)
-    keep = cp.CLEAN[0]
+    import client_of as cof
+    keep = cp.CLEAN[0]; keep_r = (cp.NO_RAG[0], cof.POCKET_RAG[0])
+    cp.NO_RAG[0] = True; cof.POCKET_RAG[0] = False                 # v2 (Tomas 28 Nov): no rag
     try:
         cp.CLEAN[0] = True
         cp.client(k, 150, F, S, pose="open", face="bored", look=(1, 0))
@@ -534,7 +536,7 @@ def client_sheet(out=EP + "uptimez-client-da-v1-sheet.png"):
             cp.client(k, x, F2, S2, pose="open", face="bored", look=(1, 0))
         _t(c, 30, F2 + 22, "feed size: no dark blobs to read as gloves or a stain", 11)
     finally:
-        cp.CLEAN[0] = keep
+        cp.CLEAN[0] = keep; cp.NO_RAG[0], cof.POCKET_RAG[0] = keep_r
     s.write_to_png(out)
     print("wrote", out)
 

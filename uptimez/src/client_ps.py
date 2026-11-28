@@ -24,6 +24,7 @@ VELVET, VELVET_D = (0.42, 0.06, 0.12), (0.26, 0.03, 0.07)
 TABLE, TABLE_D = (0.20, 0.12, 0.08), (0.12, 0.07, 0.05)
 
 
+NO_RAG = [False]  # opt-in (Tomas 28 Nov, episode 15: "nereikia skuduro"): with CLEAN, no rag on his shoulder either
 CLEAN = [False]   # opt-in (Tomas 28 Nov, episode 15 /grill-me): the base canon's garage owner, "oil in the creases" only
                   # (client_ob): skin-coloured hands with dark crease lines, no grease on the sleeves, shirt or face, the
                   # rag clean. Default False draws episode 14's filthy booth Client exactly as before.
@@ -177,6 +178,9 @@ def overlay(k, x, feet, s, turn=0.0, seed=4400):
     c = k.c
     c.save(); c.translate(x, feet); c.scale(s * (1 - 0.18 * abs(turn)), s)
     hy, bt = co.HY, co.BT
+    if CLEAN[0] and NO_RAG[0]:                                   # nothing at all (episode 15 v2: no rag)
+        c.restore()
+        return
     if CLEAN[0]:                                                 # the rag only, clean
         c.save(); c.translate(-co.SH[0] + 18, bt - 8)
         cut(k, [(-16, -6), (24, -12), (30, -2), (26, 18), (30, 46), (24, 74), (14, 66), (8, 84), (-2, 70), (-10, 78),
