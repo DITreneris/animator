@@ -8,7 +8,8 @@ It starts from concept v7.1 ([`the-review-concept-v7.1.md`](the-review-concept-v
 | Stage | State |
 |---|---|
 | 0 Before starting | Concept v7.1 closed. Branch `uptimez-the-review`. **STORYLINE v3.5 written** (only the sitting CEO can hand over the throne; row 16 *Approved.*; the Client's survival planted in 16) |
-| 1 Script | Not started |
+| 0.4 E15 as built | Done (28 Nov): the $49,999 tag hangs from the crown (not under the armrest); REVIEW is one two-sided tag on the throne's back; the Client is never on Don's floor line (h 1.03, w 1.69 of Don). In script v1 |
+| 1 Script | **v2** (`the-review-script-v2.md`, 52 shots, 64.2 s, 7 lines) with `the-review-hand-jobs-v1.md`. Stop 1 answered 28 Nov: one night (canon night grade), Sofía new outfit, panel voiced, 52 shots |
 | 2–6 | Not started. Allowed in parallel with episode 15 |
 | 7–12 | **Held until episode 15's master** (decided 28 Nov) |
 
