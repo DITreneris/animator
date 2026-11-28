@@ -172,3 +172,38 @@ Every stop sends the file, one line on what changed, the gates passed with evide
 - Open: 5.1, the paper floats beside the gripper 1/2 (the robot gripper isn't logged by the gate).
 - Open: 5.9, the hands on the knees are blobs with a red dot 1/2.
 - Gate: 0 faults. The gate checks the canon rows, not how a hand reads: elbow bend, arm taper and a held-by-edge grip at full arm's length need pose work, not a gate fix.
+
+#### Act V hands v5 (28 Nov, Tomas "darom", then "proceed")
+- **Arms:** the three reworked shots draw through `tapered()` (E15's `da_arms.tapered`, opt-in per shot), with elbows bent. Every other frame is as it was.
+- **A new sheet grip, by silhouette test.**
+  - Round 1: the top-edge clutch, a fist on the side edge and palm-behind-thumb-in-front. No 2/2 winner, and thumb-in-front read as a pen 2/2.
+  - Round 2: the clutch at the sheet's top corner nearest the body, the sheet tilted a little out, and the forearm drawn over the sheet. 2/2.
+  - Finding: the sheet drawn over the wrist was what read as "pasted". `held_sheet(..., corner=True, sleeve=...)`.
+  - Proposed for the canon's clutch row as a placement note, not yet written there.
+- **5.3:** elbow bent, invoice in the corner grip. Round 3 read it as floating beside the hand 2/2, because its corner sat 8 px left of the fingers. Fixed after the round (corner under the fingers); not re-tested.
+- **5.10:** Don beside the throne, his open palm (`palm`) on the back's gold edge, elbow bent (four trials). Round 3: "a salesman presenting it" 2/2.
+- **5.11:** restaged. The card is held up in the corner grip (round 3: held 2/2). The report lies on his knee under his open palm (round 3: "a sticker", 2/2, open). Camera set by hand (G3: plaque and floor tape out). Hand jobs: clutch, palm.
+- **K2 v5** (v4 kept): Father's other arm tucked in, camera 474, his ring off in this frame. It was "a red blob" 2/2 at 270. Round 3: the pointing finger is clear 2/2.
+- **Still open:**
+  - The report under the palm in 5.11.
+  - The rig's hanging `quiet` hands read as mittens (Don, Father; 2/2, every frame). That is a series rig question, not this episode's.
+  - The robot's arms read as poles with ball ends (2/2). Its gripper is not in the gate.
+  - The ring at 270 is a blob wherever it shows (5.9, 5.11).
+- **Rounds:** that is two rounds on these stills (rule 7, G6). Next is motion, or Tomas's call.
+
+#### Held hands on the canon's functions (28 Nov, outside review "vis dar nesilaikom ranku canon", Tomas "tvarkom")
+- **The cause.** Held hands were drawn by episode 15's `hand_lib_v4` (CLUTCH, PINCH, PALM, RELAXED), not by the functions the canon table names: `of_cast.clutch`, `hands_v4.board_two`, `hands_ps`.
+  - The gate counted them by job name, so it reported 0 faults while viewers saw "pasted", "a sticker", "no fingers round it".
+  - The corner-grip silhouette test above was run on the library hand. Void.
+- **The gate.** New rule FUNC in `rv_hands.check`: a library hand is a fault unless its job is a pending row (`pinch_pinky`, `saucer_hold`). The planted fault must fail: `python3 rv_hands.py`.
+  - First run: 14 FUNC faults. These included Pam's resting hands, which episode 15's `rig_hands` draws with the library's RELAXED; `rv_hands.setup` now hands them to `hands_ps` quiet.
+  - Now 0, every act.
+- **The shots.**
+  - `held_sheet` uses `of_cast.clutch` (the back of the hand on the top edge, four fingers down over the front, the thumb under; object first) or `hands_ps` pinch: 1.4, 5.3, 5.11 card, 6.10 (the chair), 7.1a (pinch).
+  - 5.5 uses `hands_v4.board_two`.
+  - 5.10: Don's palm through his rig's `kit.HAND`.
+  - 1.5a and 1.7a inserts: `hands_ps` pinch.
+  - 3.6a: the Client's open hand is `hands_ps` palm.
+  - 5.11: the report on his knee, held by its top edge from above (clutch). The palm-on-a-sheet is gone (no canon row).
+  - Unchanged: 1.2 and 3.7 (`saucer_hold`, a pending row, Tomas's pick).
+  - The corner/sleeve/inward hack is removed.

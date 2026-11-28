@@ -511,7 +511,7 @@ HANDS = {k_: _h(v_) for k_, v_ in {
     "5.5": "father: clutch, clutch",
     "5.7": "don: quiet, quiet",
     "5.9": "father: quiet, quiet",
-    "5.10": "don: quiet, clutch",
+    "5.10": "don: quiet, palm",
     "5.11": "father: clutch, clutch",
     "6.1": "don: quiet, quiet; father: quiet, quiet",
     "6.3": "don: quiet, quiet; father: quiet, quiet; sofia: quiet, quiet; pam: quiet, quiet",

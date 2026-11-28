@@ -39,6 +39,16 @@ def setup():
         return keep(q(left), q(right))
     hp.reset = reset
     g.install()                                                 # 5
+    import hand_lib_v4 as hl                                    # 6 (28 Nov, the FUNC rule): episode 15's rig_hands hangs
+    lib = hl.draw_lr                                            # an arm with no job as the library's RELAXED; here that
+                                                                # arm gets the canon's quiet, by hands_ps (Pam at her desk)
+    def draw_lr(k, pose, x, y, d, w, skin, arm, *a, **kw):
+        import math
+        if pose != "RELAXED":
+            return lib(k, pose, x, y, d, w, skin, arm, *a, **kw)
+        hp.draw(k, "quiet", x, y, w * 1.2, skin, d, arm)
+        return math.atan2(d[1], d[0]), arm
+    hl.draw_lr = draw_lr
     g.S[0] = 1.0                                                # the stills are drawn at 540x960: device = frame units
     _SET[0] = True
 
@@ -71,7 +81,61 @@ def check(jobs=None):
         g.jobs(*jobs)
     else:
         g.nohands()
-    return [f for f in g.check() if not _other_figure(f)]
+    return [f for f in g.check() if not _other_figure(f)] + func_faults()
+
+
+# ---- FUNC (28 Nov, outside review "vis dar nesilaikom ranku canon"): the canon table names a FUNCTION per job ---------
+# clutch -> of_cast.clutch (and hands_v4.board_two, two of them); point, grab, pinch, fist, palm, quiet -> hands_ps (via
+# kit.HAND or hands_ps.draw, with hands_v4.enable()). This episode drew its held hands with episode 15's hand library
+# (hand_lib_v4), which the gate counted by job name: 0 faults, and an outside review and two cold viewers saw
+# "pasted", "a sticker", "no fingers round it". A library hand is a fault unless its job is one of episode 15's pending
+# rows (the library's own tested shapes: pinch_pinky, saucer_hold).
+def func_faults():
+    import da_hand_gate as g
+    return ["FUNC '%s' at (%d, %d) drawn by hand_lib_v4 (%s): the canon row's function is %s" %
+            ((h["g"],) + tuple(int(v) for v in h["at"]) + (h["lib"], CANON_FUNC.get(h["g"], "?")))
+            for h in g.HANDS if h.get("lib") and h["g"] not in g.PENDING]
+
+
+CANON_FUNC = {"clutch": "of_cast.clutch", "board_two": "hands_v4.board_two", "grab": "hands_ps", "pinch": "hands_ps",
+              "palm": "hands_ps", "fist": "hands_ps", "quiet": "hands_ps", "point": "hands_ps"}
+
+
+def clutch(k, h, name=None, rect=None, lift=0.30):
+    """row clutch, by its canon function: of_cast.clutch at the wrist the rig freed (without_hands), the back of the
+    hand on the edge's top, four fingers down over its front, the thumb under. The thing held is drawn BEFORE this
+    (object, then fingers). The forearm reaches the hand from behind the thing (below it) or from above it.
+    Returns the point on the edge's top (current user units), where the caller puts the thing's top edge."""
+    x, y, d, w = _local(k, h)
+    P = (x + d[0] * lift * w, y + d[1] * lift * w)
+    return P
+
+
+def clutch_draw(k, h, P):
+    import of_cast as oc
+    x, y, d, w = _local(k, h)
+    oc.clutch(k, P[0], P[1], w, h["skin"])
+
+
+def selftest():
+    """a planted library CLUTCH must fail FUNC; the canon of_cast.clutch at the same wrist must pass it."""
+    import cairo
+    import da_hand_gate as g
+    import hand_lib_v4 as hl
+    setup()
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 540, 960)
+    k = kit.K(s) if hasattr(kit, "K") else type("K", (), {"c": cairo.Context(s)})()
+    ok = True
+    begin(); hl.draw_lr(k, "CLUTCH", 200, 300, (0, -1), 20, MALE, 1)
+    f1 = func_faults(); ok &= bool(f1)
+    print("plant (library CLUTCH):", "FAIL as it must" if f1 else "PASSED: the rule is broken", f1[:1])
+    begin()
+    import of_cast as oc
+    oc.clutch(k, 200, 300, 20, MALE)
+    f2 = func_faults(); ok &= not f2
+    print("canon (of_cast.clutch):", "PASS" if not f2 else "FAIL", f2[:1])
+    return ok
+
 
 
 def _other_figure(fault):
@@ -198,3 +262,8 @@ def _dedupe():
         if key not in seen:
             seen.add(key); keep.append(r)
     hands_lr.LOG[:] = keep
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(0 if selftest() else 1)

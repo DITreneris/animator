@@ -196,9 +196,9 @@ def k1(out=EP + "rv_K1_v7.png"):
         nc.NO_THRONE_CONFETTI[0] = False
 
 
-def k2(out=EP + "rv_K2_v4.png"):
+def k2(out=EP + "rv_K2_v5.png"):
     nc.NO_THRONE_CONFETTI[0] = True
-    cam = (470, 770, 1.84)                                   # v1c: the portrait's plaque out (G3: whole or out)
+    cam = (474, 770, 1.84)                                   # v1c: the portrait's plaque out (G3: whole or out)
     st = {}
 
     def draw(k):
@@ -213,7 +213,12 @@ def k2(out=EP + "rv_K2_v4.png"):
             pr.screen(k, sx, sy, 50 * nc.L.SC["robot"] * 1.16, "APPROVER: CEO", face_fn=_don_head)   # v3: Don's own head
             st["screen"] = (sx, sy)
         nc._shadow(k, 584, F + 40, 30)                          # v4 (Tomas 28 Nov: unlocked; script 6.2 and the hand-jobs
-        rh.father(k, 584, F + 38, nc.L.SC["father"], hands=("point", "quiet"), pose=(-112, -30, 8, 0), look=(-1, -0.4))
+        import dh_cast as _dc                                   # v5: the ring off in this frame (cold 2/2: "a red blob"
+        _dc.RING_ON[0] = False                                  # at 270 on the hanging hand; the face carries him here)
+        try:
+            rh.father(k, 584, F + 38, nc.L.SC["father"], hands=("point", "quiet"), pose=(-112, -30, -6, 0), look=(-1, -0.4))
+        finally:
+            _dc.RING_ON[0] = True
         nc._shadow(k, 372, F + 60, 34)                          # table H5): FATHER's finger reaches toward the screen and
         dp.don(k, 372, F + 58, nc.L.SC["don"], "stand", "shock", look=(1, -0.5))   # stops, clearly apart; Don only looks
     probe = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0)
