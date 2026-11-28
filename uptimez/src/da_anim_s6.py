@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 2
+VER = 4
 T0 = 43.44
 SHOTS = [("6.1", 1.4), ("6.2", 1.2), ("6.3", 1.0), ("6.4", 2.23), ("6.5", 1.0), ("6.6", 1.0), ("6.7", 0.8),
          ("6.8", 2.72), ("6.8b", 0.6)]
@@ -154,59 +154,143 @@ def s64_cast(t):
     return cast
 
 
+def pinch_at(target, rig, scale, arm, out, others=None, **kw):
+    """a PINCH job whose fingertips land on `target`: the wrist found by probing where the tip goes (2 passes)."""
+    import da_hand_gate as g_
+    T = (target[0] + 10 * arm, target[1] + 12)
+    for _ in range(3):
+        got = {}
+        jobs = dict(others or {})
+        jobs[arm] = dict(T=T, pose="PINCH", out=out, reach=True, contact="tip",
+                         obj=lambda kk, P, w: got.__setitem__("P", P))
+        with g_.paused():
+            kk = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
+            rig_hands(kk, rig, scale, jobs, **kw)
+        miss = (got["P"][0] - target[0], got["P"][1] - target[1])
+        T = (T[0] - miss[0], T[1] - miss[1])
+    got = {}
+    jobs = dict(others or {})
+    jobs[arm] = dict(T=T, pose="PINCH", out=out, reach=True, contact="tip", obj=lambda kk, P, w: got.__setitem__("P", P))
+    with g_.paused():
+        kk = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
+        rig_hands(kk, rig, scale, jobs, **kw)
+    j = dict(T=T, pose="PINCH", out=out, reach=True)
+    j["miss"] = (got["P"][0] - target[0], got["P"][1] - target[1])   # where the arm could not take it: the prop follows
+    return j
+
+
+PS = 0.55                                                          # the page's size in the two-shot (44 x 66)
+HOLE_DX, HOLE_DY, HOLE_R = 9.5, -19, 7.0                          # the eye holes, from the page's middle (her eyes' spacing)
+
+
+def page_holes(k, cx, cy, n=0, ang=0.0, s=PS):
+    """the printed page with n eye holes poked through it (what is behind shows through them); registers as a prop."""
+    import da_hand_gate as g_
+    c = k.c
+    holes = [(-HOLE_DX, HOLE_DY), (HOLE_DX, HOLE_DY)][:n]
+    ca, sa = math.cos(ang), math.sin(ang)
+    pts = [(cx + hx * ca - hy * sa, cy + hx * sa + hy * ca) for hx, hy in holes]
+    if pts:                                                            # on its own layer, the holes cut out of it
+        c.push_group()
+        L.dpr.minutes(k, cx, cy, s, ang)
+        c.set_operator(cairo.OPERATOR_CLEAR)
+        for px, py in pts:
+            c.new_path(); c.arc(px, py, HOLE_R, 0, 2 * math.pi); c.fill()
+        c.set_operator(cairo.OPERATOR_OVER)
+        c.pop_group_to_source(); c.paint()
+    else:
+        L.dpr.minutes(k, cx, cy, s, ang)
+    for i, (px, py) in enumerate(pts):                                 # the torn edge of each hole
+        c.set_source_rgb(*kit.INK); c.set_line_width(1.8); c.new_path()
+        c.arc(px, py, HOLE_R, 0, 2 * math.pi); c.stroke()             # (round: the ragged 8-gon read as "square")
+    g_.prop(k, "page", cx - 40 * s - 4, cy - 60 * s - 4, 80 * s + 8, 120 * s + 8)
+    return pts
+
+
 def s68_cast(t):
+    """v2 (Tomas 28 Nov: no gag built on sound; option 1): Don takes her page, pokes two eye holes through it with his
+    finger and hands it back, a spy's mask; she holds it up to her face. The whisper is gone; "Keep infiltrating." may
+    play over it, the picture doesn't need it.
+      0.00-0.33  she holds the page out; he beams
+      0.33-0.60  he takes it by its top corner (her hand lets go on that drawing) and brings it to his chest
+      0.67-1.20  two jabs of his other hand: a hole each
+      1.27-1.60  he holds it out to her, proud
+      1.60-2.00  she takes it (his hand lets go on that drawing) and lifts it to her face
+      2.00-2.72  held: her eyes in the holes; he points both palms at his work"""
     td = drawn(t)
 
     def cast(k_):
         import da_hand_gate as g_
         h = {}
+        c = k_.c
         x, f = MARKS["don_counter"][0] + 24, MARKS["don_counter"][1]; L.DON_FEET[0] = (x, f); s_ = SC["don"]
-        look = (1, 0.3)
-        if 0.2 <= td < 0.53:
-            look = (-1, 0.0)                                           # left
-        elif 0.53 <= td < 0.87:
-            look = (1, 0.0)                                            # right (Pam right there)
-        dface = "neutral" if td < 0.87 else "smug"                     # (his eyes open for the look left and right)
-        with g_.paused():                                              # where his head is (for the mic)
+        px, pf = 614, F + 62
+        with g_.paused():                                              # where her head is (the mask goes there)
             kk = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
-            hx, hy, r_ = _head(rig_hands(kk, don_rig(x, f, dface, look), s_, {}), "don")
-        pull = ease(seg(td, 0.87, 1.0))
-        # the boom from his headset's ear piece, pulled round to his lips; his fingers pinch it near the mic
-        ear = (hx + r_ * 0.95, hy - r_ * 0.1)
-        rest = (hx + r_ * 1.05, hy + r_ * 0.35)
-        lips = (hx + r_ * 0.28, hy + r_ * 0.55)
-        tip = (rest[0] + (lips[0] - rest[0]) * pull, rest[1] + (lips[1] - rest[1]) * pull)
-
-        def boom(kk_, P, w):
-            c = kk_.c
-            c.set_source_rgb(0.20, 0.20, 0.22); c.set_line_width(4.0 * s_ / 0.6); c.set_line_cap(1)
-            c.new_path(); c.move_to(*ear)
-            c.curve_to(ear[0] + r_ * 0.1, ear[1] + r_ * 0.5, tip[0] + r_ * 0.35, tip[1] + r_ * 0.1, tip[0], tip[1]); c.stroke()
-            c.set_line_cap(0)
-            kit.ellipse(kk_, tip[0], tip[1], r_ * 0.13, r_ * 0.10, (0.10, 0.10, 0.12), 6801, shadow=False, lw=1.2)
-        rows = [("don", "R", "pinch" if pull > 0 else "quiet", "quiet -> PINCH: the mic's boom at his lips"),
-                ("don", "L", "quiet", "quiet"), ("pam", "L", "quiet", "quiet"), ("pam", "R", "quiet", "quiet")]
-        declare(tuple(rows), k_, [("mic", (tip[0] - 16, tip[1] - 14, 40, 28))] if pull > 0 else [])
+            phx, phy, pr_ = _head(rig_hands(kk, lambda k2, a4: pam_held(k2, px, pf, SC["pam"], a4, "neutral", (-1, 0.1),
+                                                                       mug=False), SC["pam"], {}, sex="f", skin=FEMALE), "pam")
+        H = (x + 62, f - 150)                                          # where the page changes hands, between them
+        chest = (x + 14, f - 96)                                       # the page's middle at his belly, under his face
+        face_c = (phx, phy - HOLE_DY + 1)                              # the page's middle with its holes on her eyes
+        n = 0 if td < 0.8 else (1 if td < 1.07 else 2)
+        his = 0.33 <= td < 1.6
+        if td < 0.33:
+            pc = H
+        elif td < 1.27:
+            pc = (H[0] + (chest[0] - H[0]) * ease(seg(td, 0.33, 0.6)), H[1] + (chest[1] - H[1]) * ease(seg(td, 0.33, 0.6)))
+        elif td < 1.6:
+            u = ease(seg(td, 1.27, 1.53)); pc = (chest[0] + (H[0] - chest[0]) * u, chest[1] + (H[1] - chest[1]) * u)
+        else:
+            u = ease(seg(td, 1.6, 2.0)); pc = (H[0] + (face_c[0] - H[0]) * u, H[1] + (face_c[1] - H[1]) * u)
+        jab = max(math.sin(math.pi * seg(td, 0.67, 0.87)), math.sin(math.pi * seg(td, 0.93, 1.13)))   # in and out, twice
+        jab = jab if 0.67 <= td < 1.13 else 0.0
+        hole_i = 0 if td < 0.9 else 1
+        tgt = (pc[0] + (-HOLE_DX, HOLE_DX)[hole_i], pc[1] + HOLE_DY)
+        rows = [("don", "R", "pinch" if his else "quiet", "PINCH: the page by its top corner -> quiet, proud"),
+                ("don", "L", "pinch" if 0.67 <= td < 1.13 else "quiet", "PINCH: his fingertip through the paper, twice"),
+                ("pam", "L", "pinch" if not his else "quiet", "PINCH: the page -> quiet -> PINCH: the mask at her face"),
+                ("pam", "R", "quiet", "quiet")]
+        declare(tuple(rows), k_)
+        # Don
         shadow(k_, x, f + 2, 40)
-        jobs = {}
-        if pull > 0:
-            jobs[1] = dict(T=(tip[0] + r_ * 0.55, tip[1] + r_ * 0.35), pose="PINCH", out=1, reach=True, contact="tip",
-                           obj=boom, behind=True)
-        kit.MOUTH[0] = 0.35 if talking("6.8", t) else None             # a whisper: the mouth barely open
+        dj = {}
+        if his:
+            corner = (pc[0] + 40 * PS - 4, pc[1] - 60 * PS + 2)        # its top right corner, in his fingertips
+            dj[1] = pinch_at(corner, don_rig(x, f, "grin", (1, 0.3)), s_, 1, 1)
+            pc = (pc[0] + dj[1]["miss"][0], pc[1] + dj[1]["miss"][1])
+            tgt = (pc[0] + (-HOLE_DX, HOLE_DX)[hole_i], pc[1] + HOLE_DY)
+        if 0.67 <= td < 1.13:
+            dj[-1] = pinch_at((tgt[0] - 14 + 14 * jab, tgt[1] + 8 - 8 * jab), don_rig(x, f, "grin", (1, 0.3)), s_, -1, -1)
+        dface = "grin" if td < 1.2 else "happy"                        # (cold test: a frown while poking read as anger,
+                                                                       # the mask as mockery) eager all through
+        dlook = (1, 0.3) if td < 0.6 or td >= 1.27 else (0.3, 1.0)
+        kit.MOUTH[0] = 0.5 if talking("6.8", t) else None
         try:
-            o = rig_hands(k_, don_rig(x, f, dface, look), s_, jobs)
+            o = rig_hands(k_, don_rig(x, f, dface, dlook), s_, dj)
         finally:
             kit.MOUTH[0] = None
-        if pull <= 0:
-            boom(k_, None, 0)
         h["don"] = _head(o, "don")
-        px, pf = 648, F + 62                                           # (cold test: at 604 his arm to the mic crossed her:
-        lean = 0.20 * ease(seg(td, 1.07, 1.4))                         # "his arm round her") half a metre off; she leans in
+        # Pam (before the page when it is at her face: her eyes show through it)
         shadow(k_, px, pf + 2, 32)
-        op = tilted(k_, px, pf, -lean, lambda: rig_hands(
-            k_, lambda kk2, a4: pam_held(kk2, px, pf, SC["pam"], a4, "neutral", (-1, 0.1), mug=False), SC["pam"], {},
-            sex="f", skin=FEMALE))
+        pj = {}
+        if not his:
+            hold = (pc[0] - 18, pc[1] + 28) if td >= 1.6 else (pc[0] + 40 * PS - 3, pc[1] - 60 * PS + 6)
+            pj[-1] = pinch_at(hold, lambda k2, a4: pam_held(k2, px, pf, SC["pam"], a4, "neutral", (-1, 0.1), mug=False),
+                              SC["pam"], -1, -1, sex="f", skin=FEMALE)   # (her screen-left hand, on the page's near edge)
+            pc = (pc[0] + pj[-1]["miss"][0], pc[1] + pj[-1]["miss"][1])
+        plook = (-1, 0.1) if td < 0.6 else ((-1, 0.6) if td < 1.6 else (-1, 0.0))
+        pface = "neutral" if td < 0.67 else "doubt"
+        op = rig_hands(k_, lambda kk2, a4: pam_held(kk2, px, pf, SC["pam"], a4, pface, plook, mug=False), SC["pam"], pj,
+                       sex="f", skin=FEMALE)
         h["pam"] = _head(op, "pam")
+        page_holes(k_, pc[0], pc[1], n, ang=0.04 if his else 0.0)
+        if jab > 0.6:                                                  # the poke's little burst
+            c.set_source_rgb(*kit.INK); c.set_line_width(1.6); c.set_line_cap(1)
+            for a_ in (-2.4, -1.57, -0.7):
+                c.new_path(); c.move_to(tgt[0] + 9 * math.cos(a_), tgt[1] + 9 * math.sin(a_))
+                c.line_to(tgt[0] + 15 * math.cos(a_), tgt[1] + 15 * math.sin(a_)); c.stroke()
+            c.set_line_cap(0)
+        h["page"] = (pc[0], pc[1], 30)
         return h
     return cast
 
@@ -271,15 +355,27 @@ def s67_cast(t):
 
 
 def s68b_cast(t):
+    """v2: close on her: the mask at her face, her eyes in its holes going to him; then she lowers it: flat."""
     td = drawn(t)
 
     def cast(k_):
-        px, pf = 604, F + 60
-        declare((("pam", "L", "quiet", "quiet"), ("pam", "R", "quiet", "quiet")), k_)
+        import da_hand_gate as g_
+        px, pf = 614, F + 62
+        with g_.paused():
+            kk = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
+            phx, phy, pr_ = _head(rig_hands(kk, lambda k2, a4: pam_held(k2, px, pf, SC["pam"], a4, "neutral", (-1, 0.1),
+                                                                       mug=False), SC["pam"], {}, sex="f", skin=FEMALE), "pam")
+        low = ease(seg(td, 0.33, 0.53))                                # she lowers it to her chin
+        pc = (phx, phy - HOLE_DY + 1 + 34 * low)
+        declare((("pam", "L", "pinch", "PINCH: the mask"), ("pam", "R", "quiet", "quiet")), k_)
         shadow(k_, px, pf + 2, 32)
-        look = (-1, 0.15) if td < 0.33 else (-1, -0.45)                # at his mic, then at him
-        o = rig_hands(k_, lambda kk, a4: pam_held(kk, px, pf, SC["pam"], a4, "doubt", look, mug=False), SC["pam"], {},
-                      sex="f", skin=FEMALE)
+        look = (-1, 0.0)
+        hold = (pc[0] - 18, pc[1] + 28)                                # its lower near corner (the hold her arm reaches)
+        rigp = lambda kk2, a4: pam_held(kk2, px, pf, SC["pam"], a4, "neutral", look, mug=False)
+        pj = pinch_at(hold, rigp, SC["pam"], -1, -1, sex="f", skin=FEMALE)
+        pc = (pc[0] + pj["miss"][0], pc[1] + pj["miss"][1])
+        o = rig_hands(k_, rigp, SC["pam"], {-1: pj}, sex="f", skin=FEMALE)
+        page_holes(k_, pc[0], pc[1], 2)
         return {"pam": _head(o, "pam")}
     return cast
 
@@ -338,7 +434,8 @@ CUES = [
     (STARTS["6.1"] + 0.0, "quiet steps", 0.5),
     (STARTS["6.1"] + 0.6, "door", 0.3),
     (STARTS["6.2"] + 0.1, "paper", 0.5),
-    (STARTS["6.8"] + 0.9, "mic tap", 0.4),
+    (STARTS["6.8"] + 0.75, "tik", 0.7), (STARTS["6.8"] + 1.02, "tik", 0.7),   # the two pokes
+    (STARTS["6.8"] + 1.6, "paper", 0.5),
 ]
 
 
@@ -356,7 +453,7 @@ def mix(sec, path):
     for sid in TAKES:
         st, _, v, _ = env(sid)
         i = int((STARTS[sid] + st) * sr)
-        m[i:i + len(v)] += (0.4 if sid == "6.8" else 0.6) * v[:max(0, n - i)] / (np.max(np.abs(v)) + 1e-9)
+        m[i:i + len(v)] += 0.6 * v[:max(0, n - i)] / (np.max(np.abs(v)) + 1e-9)
     m /= max(1.0, np.max(np.abs(m)) / 0.89)
     m.astype(np.float32).tofile(path)
     return path

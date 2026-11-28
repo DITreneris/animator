@@ -21,3 +21,11 @@ quicker in 6.4 (both: frame 32's arm "folded at an awkward angle", the in-betwee
 glass man is (the episode's earlier shots carry both); 6.1 runs long (B).
 Pass (4 of 5 or better, partials counted half: 4/5 each). G6: one round; the fixes are staging, not new beats.
 The test can't tell the whisper's joke (it is in the sound: "Keep infiltrating." into a mic, a metre from her).
+
+## 6.8 v2: the mask (Tomas 28 Nov: "no gag built on sound"; option 1), one-beat test, 2 fresh viewers, mute
+
+The whisper into the mic is cut. Don takes her page, pokes two eye holes in it and hands it back; she holds it to her
+face, her eyes in the holes; 6.8b: she lowers it, flat. Both viewers: "punches two eye-holes in the agenda, turning it
+into a mask, and gives it to her"; "the secret memo becomes a spy mask" (read, on mute). Shared misread: his frown
+while poking read as anger, so the mask as mockery: fixed (he grins all through). Also: the holes round and a little
+bigger (they read "square"). Left: the holes cut through "AGENDA:" (clutter, 2/2); who "HIM" is (the earlier scenes).
