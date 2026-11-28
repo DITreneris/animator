@@ -440,7 +440,10 @@ def blueprint(k, x, y, s=1.0, ang=-0.06):
 def props(k):
     """L8 alone, at their places (the sheet; the frame calls the same)."""
     blueprint(k, *PLAN_AT)
-    prop_shadow(k, 384, 702, 18); ds.pam_mug(k, 378, 702, 1.15)
+    prop_shadow(k, 384, 702, 18); (MUG_FN[0] or ds.pam_mug)(k, 378, 702, 1.15)
+
+
+MUG_FN = [None]   # opt-in (Tomas 28 Nov: the rough-cut re-render, the cups canon's ceramic mug); None = as locked
 
 
 def sheet_furniture(out):
@@ -665,6 +668,16 @@ if __name__ == "__main__":
         S8R_FILE[0] = "da_s8r_frame0_v5.png"
         with ds.no_badges():
             still(os.path.join(out, "da_s8_final_v11.png"))
+    elif sys.argv[1] == "frame12":
+        import da_arms
+        import da_cups as cu
+        da_arms.setup()                                        # v12 (28 Nov, the rough-cut re-render): v11 + Sofía v5, the
+        V5[0] = True; V6[0] = True; V8[0] = True; V9[0] = True; ds.MUG_V2[0] = True   # Client without the rag (da_set),
+        CHAIR_VARIANT[0] = "L"; ds.NAME_BADGES[0] = False; GLASS_SOFT[0] = 0.62       # the ceramic mug (the cups canon)
+        S8R_FILE[0] = "da_s8r_frame0_v5.png"; S8_SOFIA_V5[0] = True
+        MUG_FN[0] = lambda k, x, y, s: cu.mug(k, x, y, s, handle=1, state="rest")
+        with ds.no_badges():
+            still(os.path.join(out, "da_s8_final_v12.png"))
     elif sys.argv[1] == "frame10":
         import da_arms
         da_arms.setup()

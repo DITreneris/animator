@@ -165,7 +165,11 @@ def near_layers(k):
     hp, hv = _hands_on()
     try:
         hp.reset("quiet", "quiet")
-        s8.seated(k, lambda: sd.with_board(k, 444, 748, 0.66, "binder", face_kind="interested", look=(-1.0, 0.9), lift=62))
+        keep5 = sd.LOOK_V5[0]; sd.LOOK_V5[0] = s8.S8_SOFIA_V5[0]      # as da_s8.meeting (v12: Sofía v5)
+        try:
+            s8.seated(k, lambda: sd.with_board(k, 444, 748, 0.66, "binder", face_kind="interested", look=(-1.0, 0.9), lift=62))
+        finally:
+            sd.LOOK_V5[0] = keep5
     finally:
         hv.disable(); kit.HAND[0] = None
     s8.seated(k, lambda: s8.pam_taking(k))
@@ -213,17 +217,22 @@ V = ["v11"]                                                    # 27 Nov (Tomas: 
                                                                # S8r v5; "v9": S8 v9 + S8r v4, as built before
 FILES = {"v9": ("da_s8_final_v9.png", "da_s8r_frame0_v4.png", "da_push91_strip_v2.png", "da_pull81_strip_v1.png"),
          "v10": ("da_s8_final_v10.png", "da_s8r_frame0_v5.png", "da_push91_strip_v3.png", "da_pull81_strip_v2.png"),
-         "v11": ("da_s8_final_v11.png", "da_s8r_frame0_v5.png", "da_push91_strip_v4.png", "da_pull81_strip_v3.png")}
+         "v11": ("da_s8_final_v11.png", "da_s8r_frame0_v5.png", "da_push91_strip_v4.png", "da_pull81_strip_v3.png"),
+         "v12": ("da_s8_final_v12.png", "da_s8r_frame0_v5.png", "da_push91_strip_v5.png", "da_pull81_strip_v4.png")}
 
 
 def setup(out_dir):
     import da_arms
     da_arms.setup()
     s8.V5[0] = s8.V6[0] = s8.V8[0] = s8.V9[0] = True; ds.MUG_V2[0] = True
-    if V[0] in ("v10", "v11"):
+    if V[0] in ("v10", "v11", "v12"):
         s8.CHAIR_VARIANT[0] = "L"; ds.NAME_BADGES[0] = False; s8.S8R_FILE[0] = FILES[V[0]][1]
-    if V[0] == "v11":
+    if V[0] in ("v11", "v12"):
         s8.GLASS_SOFT[0] = 0.62
+    if V[0] == "v12":                                          # (28 Nov, the rough-cut re-render: Sofía v5, the ceramic mug;
+        import da_cups as cu                                   # the Client without the rag comes from da_set)
+        s8.S8_SOFIA_V5[0] = True
+        s8.MUG_FN[0] = lambda k, x, y, s_: cu.mug(k, x, y, s_, handle=1, state="rest")
     f0 = os.path.join(out_dir, FILES[V[0]][1])
     return f0, cairo.ImageSurface.create_from_png(f0)           # 1.1's frame 0, as da_s8r.still wrote it
 
