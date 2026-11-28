@@ -142,7 +142,7 @@ def misreads(d):
 def reset():
     for l_ in (HANDS, ARMS, ROBOT, PROPS, SOLIDS, JOBS, LAYERS, FEET):
         del l_[:]
-    COLORS.clear(); MISREADS.clear(); NO_HANDS[0] = False; VESSELS.clear()
+    COLORS.clear(); MISREADS.clear(); NO_HANDS[0] = False; VESSELS.clear(); ARMS_OK[0] = None
     import of_cast as oc
     del oc.GRIP_LOG[:]
 
@@ -279,6 +279,13 @@ FRAME = (0, 0, 540, 960)                                         # frame units: 
 
 
 ELBOW_ON = [False]
+ARM_RULES = [False]     # FOLD and ELBOW for every drawing (the anim scenes turn it on)
+ARMS_OK = [None]        # a drawing's stated exception (arms_ok): why a fold or a raised elbow is right here
+
+
+def arms_ok(why):
+    """this drawing's arms are excused from FOLD and ELBOW, for a reason that is written down."""
+    ARMS_OK[0] = why
 
 
 def check(tol=3.0):
@@ -336,7 +343,19 @@ def check(tol=3.0):
                        % ("robot" if a["robot"] else "a", abs(a["a2"]), off_down, a["h"][0], a["h"][1]))
     # ELBOW (28 Nov, outside review of 4.1): an inverted V, the elbow lifted over the shoulder while the hand hangs
     # below it (Pam "hanging" the cup from a raised elbow; IK picked the elbow side by x on a level reach)
-    for a in (ARMS if ELBOW_ON[0] else ()):                     # opt-in per shot: a raised elbow is right for drinking or
+    # FOLD (28 Nov, Tomas's deep audit: "broken elbows" at 0:15): the elbow folded under 60 degrees, the hand
+    # nearer the shoulder than one bone: an arm reads as snapped. Hold the thing further out, or move the body.
+    for a in (ARMS if (ARM_RULES[0] and not ARMS_OK[0]) else ()):
+        if a["robot"]:
+            continue
+        v1 = (a["s"][0] - a["e"][0], a["s"][1] - a["e"][1]); v2 = (a["h"][0] - a["e"][0], a["h"][1] - a["e"][1])
+        n_ = (math.hypot(*v1) * math.hypot(*v2)) or 1
+        th = math.degrees(math.acos(max(-1.0, min(1.0, (v1[0] * v2[0] + v1[1] * v2[1]) / n_))))
+        if th < 60:
+            out.append("FOLD an elbow folded to %d deg, hand at (%d, %d)" % (th, a["h"][0], a["h"][1]))
+    for a in (ARMS if ((ELBOW_ON[0] or ARM_RULES[0]) and not ARMS_OK[0]) else ()):   # opt-in per shot: a raised elbow is right for drinking or
+        if ARM_RULES[0] and a["robot"]:                        # (the robot's arms are a mechanism: not this rule)
+            continue
         L_ = math.hypot(a["e"][0] - a["s"][0], a["e"][1] - a["s"][1]) or 1   # a mask held up (5.2, 6.8): frozen shots keep their gate
         if a["s"][1] - a["e"][1] > 0.25 * L_ and a["h"][1] - a["e"][1] > 0.25 * L_:
             out.append("ELBOW %s elbow %d px over the shoulder, hand %d px under it, hand at (%d, %d)"

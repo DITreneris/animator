@@ -1,0 +1,57 @@
+{
+ "r1a": {
+  "who": "DON",
+  "line": "I pay you!",
+  "speed": 1.02,
+  "heard": [
+   "I pay you",
+   "I pay you"
+  ],
+  "sec": 0.86,
+  "gain": 1.0
+ },
+ "r1b": {
+  "who": "ROBOT",
+  "line": "He pays you.",
+  "speed": 0.96,
+  "heard": [
+   "He pays you.",
+   "He pays you."
+  ],
+  "sec": 0.8,
+  "gain": 1.0
+ },
+ "r2a": {
+  "who": "DON",
+  "line": "I'll sue.",
+  "speed": 0.96,
+  "heard": [
+   "I'll sue.",
+   "I'll sue."
+  ],
+  "sec": 0.78,
+  "gain": 0.9
+ },
+ "r2b": {
+  "who": "ROBOT",
+  "line": "Yourself.",
+  "speed": 0.9,
+  "heard": [
+   "yourself",
+   "yourself"
+  ],
+  "sec": 0.61,
+  "gain": 1.0
+ },
+ "r3a": {
+  "who": "ROBOT",
+  "line": "One clip. Four cents.",
+  "speed": 0.9,
+  "heard": [
+   "1 clip 4 cents",
+   "1 clip 4 cents"
+  ],
+  "sec": 1.33,
+  "gain": 1.35
+ }
+}

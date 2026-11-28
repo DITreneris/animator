@@ -584,11 +584,44 @@ def _pam_pose():
     return pose
 
 
+PAM_V4 = [False]   # opt-in (Tomas's deep audit 28 Nov: "Pam's hands not by the canon"): her hands drawn with the
+                   # canon's v4 hands (hands_v4 on), as Father's and Sofía's already are in V5; default: as locked
+
+
 def pam_taking(k):
     import pm_ps as pm
     x, feet, s = PAM_AT
     kw = dict(lips="rose", brooch=False) if V6[0] else {}
+    if PAM_V4[0]:
+        return _pam_lib(k, kw)
     return pm.pam(k, x, feet, s, _pam_pose(), "neutral", (0.1, 1.0), mug=False, **kw)
+
+
+def _pam_lib(k, kw):
+    """PAM_V4: Pam at the desk on the episode's canon, as on the floor: rig_hands (arms by IK from her real shoulders,
+    the elbow down, the hand library's hands) with both palms flat on the plan's far corners, pulling it to her."""
+    import pm_ps as pm
+    import hands_ps as hp_
+    import da_layouts as L_
+    x, feet, s = PAM_AT
+    px, py, _ = PLAN_AT
+    jobs = {-1: dict(T=(px - 92, PLAN_AT[1] - 18), pose="PALM", out=-1, elbow="down", near=True),   # the plan's sides,
+            1: dict(T=(px + 70, PLAN_AT[1] - 22), pose="PALM", out=1, elbow="down", near=True)}    # where the locked pose's
+                                                                                                    # hands are (v13), with it
+
+    def draw(kk, a4):
+        cur, orig = kit.HAND[0], hp_.hand
+        hp_.hand = cur
+        try:
+            return pm.pam(kk, x, feet, s, a4, "neutral", (0.1, 1.0), mug=False, **kw)
+        finally:
+            hp_.hand = orig
+    o = L_.rig_hands(k, draw, s, jobs, sex="f", skin=L_.FEMALE)
+    PAM_LIB_HANDS[0] = [o["wrists"][-1], o["wrists"][1]]
+    return o
+
+
+PAM_LIB_HANDS = [None]
 
 
 def pam_hands_over(k):
@@ -596,11 +629,18 @@ def pam_hands_over(k):
     hand (lesson 224: the hand drawn again over the object)."""
     import pm_ps as pm
     x, feet, s = PAM_AT
-    o = pm.pam(_scratch(), x, feet, s, _pam_pose(), "neutral", (0.1, 1.0), mug=False)
+    if PAM_V4[0]:
+        _pam_lib(_scratch(), {})
+        hands = PAM_LIB_HANDS[0]
+    else:
+        hands = pm.pam(_scratch(), x, feet, s, _pam_pose(), "neutral", (0.1, 1.0), mug=False)["hands"]
     c = k.c
     c.save(); c.new_path()
-    for hx, hy in o["hands"]:
-        c.rectangle(hx - 16, DESK_TOP_Y - 6, 32, hy - DESK_TOP_Y + 20)
+    for hx, hy in hands:
+        if PAM_V4[0]:                                          # the library hand only (a strip from the desk's edge
+            c.rectangle(hx - 20, hy - 9, 40, 34)               # showed a piece of sleeve floating over the plan)
+        else:
+            c.rectangle(hx - 16, DESK_TOP_Y - 6, 32, hy - DESK_TOP_Y + 20)
     c.clip()
     pam_taking(k)
     c.restore()
@@ -688,6 +728,18 @@ if __name__ == "__main__":
         MUG_FN[0] = lambda k, x, y, s: cu.mug(k, x, y, s, handle=1, state="rest")
         with ds.no_badges():
             still(os.path.join(out, "da_s8_final_v12.png"))
+    elif sys.argv[1] == "frame14":
+        import da_arms
+        import da_cups as cu
+        import hands_v4 as hv
+        da_arms.setup(); hv.enable()                           # v14 (Tomas's deep audit 28 Nov): v13 + Pam's hands on the canon
+        V5[0] = True; V6[0] = True; V8[0] = True; V9[0] = True; ds.MUG_V2[0] = True
+        CHAIR_VARIANT[0] = "L"; ds.NAME_BADGES[0] = False; GLASS_SOFT[0] = 0.62
+        S8R_FILE[0] = "da_s8r_frame0_v5.png"; S8_SOFIA_V5[0] = True
+        MUG_FN[0] = lambda k, x, y, s: cu.mug(k, x, y, s, handle=-1, state="rest")
+        MUG_AT[0] = V13_MUG; MUG_STEAM[0] = True; PAM_V4[0] = True
+        with ds.no_badges():
+            still(os.path.join(out, "da_s8_final_v14.png"))
     elif sys.argv[1] == "frame13":
         import da_arms
         import da_cups as cu

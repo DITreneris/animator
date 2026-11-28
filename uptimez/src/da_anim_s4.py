@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, ds, kit, rig_hands, shadow, _head  # no
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 8
+VER = 9
 T0 = 27.84
 SHOTS = [("4.1", 1.6), ("5.1", 1.4), ("4.2", 3.0), ("4.2b", 0.8), ("4.3", 1.6)]   # story chain v1: 5.1 here (fix A)
 drawn = A.drawn
@@ -443,6 +443,7 @@ def build():
     import hands_v4 as hv
     import da_arms
     da_arms.setup(); hv.enable(); g.install(); cu.install(); A._SETUP.append(1)
+    g.ARM_RULES[0] = True; L.ELBOW_RULE[0] = True                     # (Tomas's deep audit 28 Nov: every arm, every drawing)
     for sid, _ in SHOTS:
         CAMS[sid] = camera_of(sid)
     tmp = "/tmp/da_anim_s4"; os.makedirs(tmp, exist_ok=True)

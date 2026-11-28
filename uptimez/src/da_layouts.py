@@ -176,6 +176,9 @@ def pam(k, mark, pose="stand", face="neutral", look=(0, 0), **kw):
 MALE, FEMALE = (0.96, 0.78, 0.66), (0.99, 0.86, 0.66)
 
 
+ELBOW_RULE = [False]   # opt-in (the anim scenes turn it on): a job's elbow hangs under the shoulder-wrist line
+
+
 def rig_hands(k, draw, scale, jobs, sex="m", skin=MALE):
     """draw(k, angles4) draws a rig with its arms at the given kit angles and returns its record. jobs: {-1: job, +1:
     job} for the screen-left / screen-right arm, job = dict(T=wrist (world), pose=library pose, out=elbow side +-1,
@@ -202,11 +205,19 @@ def rig_hands(k, draw, scale, jobs, sex="m", skin=MALE):
         else:
             T[arm] = j["T"]
             d_ = math.hypot(T[arm][0] - S_[0], T[arm][1] - S_[1])
+            if ELBOW_RULE[0] and not j.get("near") and not __import__("da_hand_gate").ARMS_OK[0] and 0 < d_ < 1.2 * l_:
+                # (Tomas's deep audit 28 Nov: the minimum distance) a hand nearer the shoulder than 60 % of the arm
+                # folds the elbow under ~74 degrees: it goes out along the same line, and what it holds goes with it
+                T[arm] = (S_[0] + (T[arm][0] - S_[0]) * 1.2 * l_ / d_, S_[1] + (T[arm][1] - S_[1]) * 1.2 * l_ / d_)
+                d_ = 1.2 * l_
             if j.get("reach") and d_ > 1.96 * l_:                                  # the audit 27 Nov (5.3): a wrist past the arm's reach drew
                 u_ = 1.96 * l_ / d_                             # the hand apart from the arm; the hand goes where it reaches
                 T[arm] = (S_[0] + (T[arm][0] - S_[0]) * u_, S_[1] + (T[arm][1] - S_[1]) * u_)
             ang[arm] = r8._ik(S_, T[arm], l_, l_, j.get("out", arm))
-            if j.get("elbow") == "down":                        # opt-in (28 Nov, 4.1 review): the elbow under the line
+            rule = (ELBOW_RULE[0] and j.get("elbow") is None and T[arm][1] > S_[1] - 0.5 * l_   # (a hand well above
+                    and not __import__("da_hand_gate").ARMS_OK[0])   # (a written exception draws as before the rule)
+            if j.get("elbow") == "down" or rule:                # the shoulder keeps the side by x: a wave, the hair)
+                # opt-in (28 Nov, 4.1 review; ELBOW_RULE: Tomas's deep audit, every job in the episode's scenes)
                 two = [r8._ik(S_, T[arm], l_, l_, o_) for o_ in (1, -1)]   # shoulder-wrist; on a level reach the side by
                 ang[arm] = max(two, key=lambda a_: math.cos(math.radians(a_[0])))   # x picks one at random (a raised V)
             if math.hypot(T[arm][0] - S_[0], T[arm][1] - S_[1]) <= 2.0 * l_:

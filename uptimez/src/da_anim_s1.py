@@ -35,9 +35,10 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, _head, 
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 24
+VER = 27
+import da_runner as RN                                             # noqa: E402
 OOF_TAKE = "A"
-SHOTS = [("1.1", 1.4), ("1.2", 0.8), ("1.3", 1.0), ("1.3c", 0.6), ("1.3b", 1.0), ("1.4", 1.2), ("1.5", 2.0)]
+SHOTS = [("1.1", 1.4), ("1.2", 0.8), ("1.3", 2.1), ("1.3c", 0.6), ("1.3b", 1.0), ("1.4", 1.2), ("1.5", 2.0)]
 
 
 def drawn(t):
@@ -361,7 +362,12 @@ def s13_cast(t):
             h["robot"] = robot_canon(k_, 590, F + 18, {-1: ("grip", (post[0] + 8, post[1]))}, tilt=0.14,
                                      look=(-1, 0.2 + 0.8 * sh))       # its eyes drop to the shadow
         else:
-            h["robot"] = robot_canon(k_, 590, F + 18, {}, tilt=-0.05, look=(-1, 0.6))
+            says = RN.on("s1", "1.3", "r1b", td)                      # "He pays you.": its head tips to him as it says it
+            L.rp.HEAD_ROT[0] = -0.12 if says else None
+            try:
+                h["robot"] = robot_canon(k_, 590, F + 18, {}, tilt=-0.05, look=(-1, 0.6) if td < 1.1 else (-1, -0.1))
+            finally:
+                L.rp.HEAD_ROT[0] = None
         shadow(k_, x, f + 2, 40 - lift * 0.6)
         lean = -0.10 * math.sin(math.pi * hop) if 0 < hop < 1 else 0.0
         if not rel:
@@ -376,7 +382,14 @@ def s13_cast(t):
             k_.c.translate(x, f); k_.c.scale(1 / st ** 0.5, st); k_.c.translate(-x, -f)
         jobs_ = {} if snap else {-1: dict(T=(x - 105 * s_, f - (255 + flap) * s_), pose="PALM", out=-1, reach=True),
                                   1: dict(T=(x + 105 * s_, f - (255 - flap) * s_), pose="PALM", out=1, reach=True)}
-        h["don"] = don_lib(k_, x, f, "shock", (1, -0.6) if td >= 0.53 else (-1, -0.2), knee=0.7, jobs=jobs_)
+        # (28 Nov, the money lines: both in this frame) "I pay you!" at the robot as it lets go; then he hears the answer
+        dface = "shock" if td < 0.33 else ("hard" if td < 1.25 else "confused")
+        dlook = ((1, -0.6) if td >= 0.53 else (-1, -0.2)) if td < 0.33 else (1, 0.3)
+        kit.MOUTH[0] = 0.9 if (RN.on("s1", "1.3", "r1a", td) and int(td * DRAW) % 2 == 0) else None
+        try:
+            h["don"] = don_lib(k_, x, f, dface, dlook, knee=0.7, jobs=jobs_)
+        finally:
+            kit.MOUTH[0] = None
         k_.c.restore()
         sole = L.sole_of(x, f, s_, 0.7)
         L.tape_strip(k_, [(sole[0] - 4, sole[1]), (sole[0] + 2, sole[1] + 8)], 9.0)
@@ -725,15 +738,15 @@ CUES = [  # (seconds, the animatic's FX word, gain): each on the drawing that ma
     (0.87, "rip", 0.25),               # 1.1: the foot comes up, the tongue peels off the floor (short)
     (1.80, "thwack", 1.0),             # 1.2: the contact drawing (0.40 into the shot)
     (2.33, "slow heels", 0.6),         # 1.3: Father off screen; the robot lets go on the next drawing
-    (3.53, "border beep", 0.8),        # 1.3c: the first twitch
-    (4.07, "tag flick", 0.8),          # 1.3b: the hand lets go of the tag
-    (5.13, "clatter", 1.0),            # 1.4: the box catches; the clips land
-    (5.80, "tik", 0.6),                # 1.4: the robot's pincer
-    (6.40, "thk", 0.8),                # 1.5 v2: the kick
-    (6.42, "long peel", 0.5),          # the tape paying out as the roll runs off
-    (7.13, "tik", 0.8),                # taut
-    (7.27, "skrrt", 0.6),              # it comes back up its tape
-    (7.60, "thk", 1.0),                # against his other shoe
+    (4.63, "border beep", 0.8),        # 1.3c: the first twitch
+    (5.17, "tag flick", 0.8),          # 1.3b: the hand lets go of the tag
+    (6.23, "clatter", 1.0),            # 1.4: the box catches; the clips land
+    (6.90, "tik", 0.6),                # 1.4: the robot's pincer
+    (7.50, "thk", 0.8),                # 1.5 v2: the kick
+    (7.52, "long peel", 0.5),          # the tape paying out as the roll runs off
+    (8.23, "tik", 0.8),                # taut
+    (8.37, "skrrt", 0.6),              # it comes back up its tape
+    (8.70, "thk", 1.0),                # against his other shoe
 ]
 
 
@@ -755,6 +768,10 @@ def mix(sec, path):
     v, _ = sf_.read(os.path.join(HERE, "da_voices", "takes", "1.2_%s.wav" % OOF_TAKE))
     v = v[int(0.3 * sr) - 240:]
     i = int(1.80 * sr); m[i:i + len(v)] += 0.55 * v[:max(0, n - i)]
+    st_ = {}; acc_ = 0.0
+    for s__, d__ in SHOTS:
+        st_[s__] = acc_; acc_ += d__
+    RN.add(m, "s1", st_)                                              # the Don x robot money lines (da_runner v2)
     m /= max(1.0, np.max(np.abs(m)) / 0.89)
     m.astype(np.float32).tofile(path)
     return path
@@ -826,6 +843,7 @@ def build():
     import hands_v4 as hv
     import da_arms
     da_arms.setup(); hv.enable(); g.install(); _SETUP.append(1)
+    g.ARM_RULES[0] = True; L.ELBOW_RULE[0] = True                     # (Tomas's deep audit 28 Nov: every arm, every drawing)
     tmp = "/tmp/da_anim_s1"; os.makedirs(tmp, exist_ok=True)
     n = 0; marks = []; faults = []
     with ds.no_badges(), L.don_legs(), L.sofia_lib_hands(), L.face_guard():

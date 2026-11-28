@@ -30,9 +30,10 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 9
+VER = 12
+import da_runner as RN                                             # noqa: E402
 T0 = 34.44
-SHOTS = [("5.2", 2.8), ("5.3", 2.0), ("5.3b", 0.6), ("5.4", 1.8)]   # 5.1 plays in scene 4 now (story chain v1, fix A)
+SHOTS = [("5.2", 2.8), ("5.3", 2.0), ("5.3b", 0.6), ("5.4", 2.6)]   # 5.1 plays in scene 4 now (story chain v1, fix A)
 drawn = A.drawn
 CAMS = {}
 CS = cu.CUP_FLOOR
@@ -116,6 +117,7 @@ def s51_surface(t):
 def s52_surface(t):
     import da_s52_anim as S52
     import da_hand_gate as g
+    g.arms_ok("5.2: drinking, the cup at his mouth: the elbow folds as it must")   # (FOLD/ELBOW, written exception)
     return S52.frame(t, 1)                                             # (unlocked 28 Nov: gated like the rest)
 
 
@@ -248,7 +250,7 @@ def s54_cast(t):
         rx, rf = 560, F + 24                                           # (rough cut test: behind Mom's legs she "rode" it;
         up = ease(seg(td, 0.2, 0.47))                                  # now between them, further back)
         T = (rx + 46, rf - (70 + 80 * up) * SC["robot"])
-        L.rp.HEAD_ROT[0] = -0.105 * ease(seg(td, 1.0, 1.27))
+        L.rp.HEAD_ROT[0] = -0.105 * ease(seg(td, 1.0, 1.27)) - (0.10 if RN.on("s5", "5.4", "r2b", td) else 0.0)   # "Yourself."
         try:
             h["robot"] = A.robot_canon(k_, rx, rf, {1: ("grip", T)}, tilt=0.1, look=(-1, -0.4))
         finally:
@@ -270,10 +272,12 @@ def s54_cast(t):
         x, f = MARKS["don_wall"]; L.DON_FEET[0] = (x, f)
         shrink = ease(seg(td, 0.47, 0.8))
         shadow(k_, x, f + 2, 36)
-        face = "shock" if td < 0.8 else "confused"
+        face = "shock" if td < 0.8 else ("hard" if td < 1.75 else "confused")   # "I'll sue." at the robot; then its answer
+        kit.MOUTH[0] = 0.9 if (RN.on("s5", "5.4", "r2a", td) and int(td * DRAW) % 2 == 0) else None
         o2 = tilted(k_, x, f, 0.10 * shrink, lambda: rig_hands(
             k_, don_rig(x, f, face, (1, -0.3), s_=SC["don"] * (1 - 0.06 * shrink)), SC["don"] * (1 - 0.06 * shrink), {})
             if not L.don_shoes(k_, x, f, SC["don"] * (1 - 0.06 * shrink)) else None)
+        kit.MOUTH[0] = None
         h["don"] = _head(o2, "don")
         declare((("robot", "L", "robot_rest", "at rest"), ("robot", "R", "robot_grip", "the gripper up, a clip in it"),
                  ("mom", "L", "fist", "FIST: on her hip"), ("mom", "R", "fist", "FIST: on her hip"),
@@ -346,6 +350,7 @@ def mix(sec, path):
         i = int(t0 * sr)
         g = 0.18 * gain / (np.max(np.abs(w)) + 1e-9)
         m[i:i + len(w)] += g * w[:max(0, n - i)]
+    RN.add(m, "s5", STARTS)                                           # the Don x robot money lines (da_runner v2)
     m /= max(1.0, np.max(np.abs(m)) / 0.89)
     m.astype(np.float32).tofile(path)
     return path
@@ -364,6 +369,7 @@ def build():
     import hands_v4 as hv
     import da_arms
     da_arms.setup(); hv.enable(); g.install(); cu.install(); A._SETUP.append(1)
+    g.ARM_RULES[0] = True; L.ELBOW_RULE[0] = True                     # (Tomas's deep audit 28 Nov: every arm, every drawing)
     for sid in ("5.3", "5.4"):
         CAMS[sid] = camera_of(sid)
     tmp = "/tmp/da_anim_s5"; os.makedirs(tmp, exist_ok=True)

@@ -28,7 +28,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 9
+VER = 10
 T0 = 6.8                                                           # the scene's start in the film
 SHOTS = [("2.1", 1.5), ("2.2", 3.28), ("2.3", 1.2), ("2.4", 2.8)]
 drawn = A.drawn
@@ -391,6 +391,7 @@ def build():
     import hands_v4 as hv
     import da_arms
     da_arms.setup(); hv.enable(); g.install(); cu.install(); A._SETUP.append(1)
+    g.ARM_RULES[0] = True; L.ELBOW_RULE[0] = True                     # (Tomas's deep audit 28 Nov: every arm, every drawing)
     for sid, _ in SHOTS:
         if sid != "2.2":
             CAMS[sid] = camera_of(sid)

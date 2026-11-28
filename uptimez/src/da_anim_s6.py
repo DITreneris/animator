@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 9
+VER = 10
 T0 = 43.44
 SHOTS = [("6.1", 1.4), ("6.2", 1.2), ("6.3", 1.0), ("6.4", 2.23), ("6.5", 1.0), ("6.6", 1.0), ("6.7", 1.1),
          ("6.8", 2.72), ("6.8b", 0.6)]
@@ -310,6 +310,8 @@ def s68_cast(t):
         # Don
         shadow(k_, x, f + 2, 40)
         dj = {}
+        if 0.67 <= td < 1.13:                                          # (before any probe: the probes must solve as the drawing)
+            __import__("da_hand_gate").arms_ok("6.8: poking holes in the page he holds at his chest: the poking arm folds")
         if his:
             corner = (pc[0] + 40 * PS - 4, pc[1] - 60 * PS + 2)        # its top right corner, in his fingertips
             dj[1] = pinch_at(corner, don_rig(x, f, "grin", (1, 0.3)), s_, 1, 1)
@@ -411,6 +413,8 @@ def s67_cast(t):
         if td < 0.27:
             return pam_close(k_, "E", "neutral", look)                 # the mouth closing
         px, pf = 626, F + 60
+        import da_hand_gate as g_
+        g_.arms_ok("6.7: her fingertips on the medal on her own chest: the elbow folds as it must")
         fix = ease(seg(td, 0.47, 0.73))
         ang = -0.34 * (1 - fix)
         on = 0.33 <= td < 0.87
@@ -551,6 +555,7 @@ def build():
     import hands_v4 as hv
     import da_arms
     da_arms.setup(); hv.enable(); g.install(); cu.install(); A._SETUP.append(1)
+    g.ARM_RULES[0] = True; L.ELBOW_RULE[0] = True                     # (Tomas's deep audit 28 Nov: every arm, every drawing)
     for sid, _ in SHOTS:
         if sid != "6.3":
             CAMS[sid] = camera_of(sid)

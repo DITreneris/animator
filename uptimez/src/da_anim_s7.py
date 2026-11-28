@@ -30,7 +30,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 6
+VER = 9
 T0 = 55.39
 SHOTS = [("7.2", 2.8), ("7.3", 4.15), ("7.4", 3.0)]
 drawn = A.drawn
@@ -272,12 +272,15 @@ def s74_cast(t):
             def loc(p):
                 dx, dy = p[0] - x, p[1] - f
                 return (x + dx * ca - dy * sa, f + dx * sa + dy * ca)
+            if td >= 1.0:
+                __import__("da_hand_gate").arms_ok("7.4: lunging into the chair, his fist on the armrest beside his ribs")
             jobs = {} if td < 1.0 else {1: dict(T=loc((arm[0] - 4, arm[1] - 2)), pose="CLUTCH", out=1, reach=True),
                                          -1: dict(T=(x - 50, f - 150), pose="PALM", out=-1, reach=True)}
             # (one hand on the armrest, the other flung back for balance: both on it put an arm across his chest)
             if td >= 1.0:
                 import da_hand_gate as g_
                 g_.prop(k_, "armrest", arm[0] - 30, arm[1] - 20, 60, 50)
+                g_.arms_ok("7.4: lunging into the chair, his fist on the armrest beside his ribs")
         kit.MOUTH[0] = 1.0 if (talking("7.4", t) or talking("7.4g", t)) else None
         try:
             o = tilted(k_, x, f, lean, lambda: rig_hands(k_, don_rig(x, f, face, look), s_, jobs))
@@ -339,6 +342,7 @@ def mix(sec, path):
         st, _, v, _ = env(name)
         i = int((STARTS[sid] + st) * sr)
         m[i:i + len(v)] += 0.6 * v[:max(0, n - i)] / (np.max(np.abs(v)) + 1e-9)
+    __import__("da_runner").add(m, "s7", STARTS)                      # "One clip. Four cents." (da_runner v2)
     m /= max(1.0, np.max(np.abs(m)) / 0.89)
     m.astype(np.float32).tofile(path)
     return path
@@ -357,6 +361,8 @@ def build():
     import hands_v4 as hv
     import da_arms
     da_arms.setup(); hv.enable(); g.install(); cu.install(); A._SETUP.append(1)
+    g.ARM_RULES[0] = True; L.ELBOW_RULE[0] = True                     # (Tomas's deep audit 28 Nov: every arm, every drawing)
+    __import__("da_s8").PAM_V4[0] = True                              # Pam's office hands on the canon (7.3)
     for sid in ("7.2", "7.4"):
         CAMS[sid] = camera_of(sid)
     tmp = "/tmp/da_anim_s7"; os.makedirs(tmp, exist_ok=True)
