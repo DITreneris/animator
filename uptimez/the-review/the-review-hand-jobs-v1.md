@@ -54,6 +54,7 @@
 | 5.5 | Father | one, then both | pockets the invoice; holds the report | `pinch` → `clutch` (the report's edge) |
 | 5.7 | Don | both | at his sides (no chin on a fist: the chin-slip is parked for E17) | `quiet` |
 | 5.9 | Father | both | straightening: on his knees | `quiet` |
+| 5.10 | Don | one | **tilts the throne's back to show it reclines** (script v3) | `clutch` (the back's top edge) |
 | 5.11 | Father | both | the card in one, the report in the other | `pinch` / `clutch` |
 | 6.1 | robot | both | seated: on the armrests | rest |
 | 6.2 | Father | one | the reaching finger (H5) | `point` |
@@ -73,4 +74,4 @@
 
 ## Count
 
-46 entries (45 with a hand; the spoon in 3.8 has none): 40 reuse a cold-tested row or a locked drawing, 4 use the new `point` pose (3.4, 6.2, 6.5–6.6, and Sofía's 2.5 point, which can fall back to the canon `point`), and 1 gesture is to be tested (4.3).
+47 entries (46 with a hand; +1 in script v3, 5.10; the spoon in 3.8 has none): 41 reuse a cold-tested row or a locked drawing, 4 use the new `point` pose (3.4, 6.2, 6.5–6.6, and Sofía's 2.5 point, which can fall back to the canon `point`), and 1 gesture is to be tested (4.3).
