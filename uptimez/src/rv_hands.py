@@ -39,6 +39,8 @@ def setup():
         return keep(q(left), q(right))
     hp.reset = reset
     g.install()                                                 # 5
+    import rv_props                                             # 7 (28 Nov): the props as episode 15 ends (the price's
+    rv_props.setup_canon()                                      # swing ticket, the REVIEW card v2), retired ones gated
     import hand_lib_v4 as hl                                    # 6 (28 Nov, the FUNC rule): episode 15's rig_hands hangs
     lib = hl.draw_lr                                            # an arm with no job as the library's RELAXED; here that
                                                                 # arm gets the canon's quiet, by hands_ps (Pam at her desk)
@@ -69,6 +71,8 @@ def begin():
     import da_hand_gate as g
     import hands_lr
     g.reset()
+    import rv_props
+    del rv_props.PROP_FAULTS[:]
     del hands_lr.LOG[:]
     hands_lr.frame(cut=True)
 
@@ -81,7 +85,8 @@ def check(jobs=None):
         g.jobs(*jobs)
     else:
         g.nohands()
-    return [f for f in g.check() if not _other_figure(f)] + func_faults()
+    import rv_props
+    return [f for f in g.check() if not _other_figure(f)] + func_faults() + rv_props.props_faults()
 
 
 # ---- FUNC (28 Nov, outside review "vis dar nesilaikom ranku canon"): the canon table names a FUNCTION per job ---------

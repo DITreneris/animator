@@ -185,7 +185,7 @@ def glows_room(robot_screen=None, throne=True):
 # ---- Act I ------------------------------------------------------------------------------------------------------------
 def s11():
     """1.1 frame 0: the locked K1 v6 (rv_keys.k1, the same code at both ends)."""
-    return dict(file=os.path.join(EP, "rv_K1_v7.png"))
+    return dict(file=os.path.join(EP, "rv_K1_v8.png"))
 
 
 def don_on_back(k, x, f, cup=True):
@@ -477,10 +477,13 @@ def s23():
     return dict(cam=(LINE_X - 30, F - 110, 1.9), draw=draw, glows=g, lights=li)
 
 
+RC_DX = 0    # 28 Nov: 32 when the price hung under the armrest ("B"); on the crown ("A") the close is as locked
+
+
 def robot_close(screen_kind=None, badge=True, drop=False, flat=False):
     def draw(k):
         nc._room(k, pam_behind=False)
-        x, f = ROBOT_HOME[0] + 220, F + 40
+        x, f = ROBOT_HOME[0] + 220 + RC_DX, F + 40
         if badge:
             o = rp.robot(k, x, f, SC["robot"], look=(0, 0))
         else:
@@ -510,7 +513,7 @@ def robot_close(screen_kind=None, badge=True, drop=False, flat=False):
                 c.restore()
         drawn(scr)
         return {"robot": head(o, "robot", "screen")}
-    x, f = ROBOT_HOME[0] + 220, F + 40
+    x, f = ROBOT_HOME[0] + 220 + RC_DX, F + 40
     return dict(cam=(x, f - 114 * SC["robot"] - 10, 5.0), draw=draw, glows=[(x, f - 55, 40, 32, bp.NIGHT_MONITOR, 0.45)],
                 lights=[(x, f - 55, 150, 1.0)], search=False, no_pool=True)   # v3b: as v1 (the review: "a gold fog,
                                                                          # the robot levitates"); only the glint
@@ -1147,7 +1150,8 @@ def s57():
         return {"don": head(o, "don")}
     g, li = glows_room()
     POSE["5.7"] = "the nod (squint, the head forward): key pose of three (the yawn, the nod, the jerk)"
-    return dict(cam=(TX - 70, F - 190, 3.2), draw=draw, glows=g, lights=li)
+    return dict(cam=(TX - 70, F - 159, 3.2), draw=draw, glows=g, lights=li,
+                search=False)   # 28 Nov: by hand; with episode 15's price tag the search kept no frame with his hands
 
 
 def s58():
@@ -1156,19 +1160,22 @@ def s58():
 
 
 def s59():
-    """5.9 S3 MC: Father straightens in his cheap chair; his eye goes up to the $49,999 tag on the crown.
+    """5.9 S3 MC: Father straightens in his cheap chair; his eye goes up to the $49,999 tag on the crown (28 Nov:
+    episode 15's swing ticket, style A, on the crown's LEFT point; v1-v2 had episode 14's card on the right).
     FATHER (slow, quiet): "There it is." """
     def draw(k):
         nc._room(k, pam_behind=False)
         drawn(lambda: pss.throne(k))
         of = rpo.father_folding(k, LINE_X + 10, F + 30, SC["father"], "A", chair_s=CHAIR_S, look=(-1, -1.0))
+        tx_, tf_, ts_ = pss.THRONE
+        tag = (tx_ - 52 * ts_, tf_ - 347 * ts_)                 # the card's middle (dh_props "A": knot -52, -404)
         def eyeline():                                          # a faint dotted line from his eye to the tag (layout only)
             c = k.c; c.set_source_rgba(0.95, 0.85, 0.4, 0.55); c.set_line_width(1.6); c.set_dash([4, 5])
-            c.move_to(of["head"][0] - 8, of["head"][1] - 6); c.line_to(TX + 70, F - 432 * TS + 34); c.stroke(); c.set_dash([])
+            c.move_to(of["head"][0] - 8, of["head"][1] - 6); c.line_to(*tag); c.stroke(); c.set_dash([])
         drawn(eyeline)
         return {"father": (of["head"][0], of["head"][1], R["father"] * SC["father"])}
     g, li = glows_room()
-    POSE["5.9"] = "v2: his eyes up to the tag, the tag and his face in one frame, the portrait out"
+    POSE["5.9"] = "v3: his eyes up to the tag on the crown's left point, the tag and his face in one frame"
     return dict(cam=(TX + 70, F - 250, 2.0), draw=draw, glows=g, lights=li)
 
 
@@ -1271,7 +1278,7 @@ def s61():
 
 def s62():
     """6.2 S3 MC: K2 v3, locked (rv_keys.k2): APPROVER: CEO with Don's face; Father's finger stops."""
-    return dict(file=os.path.join(EP, "rv_K2_v5.png"))
+    return dict(file=os.path.join(EP, "rv_K2_v6.png"))
 
 
 def s63():
@@ -1314,7 +1321,8 @@ def don_close(arm=None, hands=("relax", "relax"), look=(1, -0.2), face="neutral"
 def s64():
     """6.4 S4 C: push in on Don's eyes: for the first time he reads what he is approving."""
     sp = don_close(look=(1, -0.6), face="confused", size=4.2, dy=-40)
-    POSE["6.4"] = "his eyes on the screen (a close)"
+    sp["cam"], sp["search"] = (392, 640, 3.2), False             # 28 Nov: at 4.2 no camera kept episode 15's price tag
+    POSE["6.4"] = "his eyes on the screen: Don, the $49,999 and APPROVER: CEO with his face in one frame"   # whole or out
     return sp
 
 
@@ -1432,7 +1440,7 @@ def s71():
 def s72():
     """7.2 S4 M: the same frame as 1.1 (K1 v6): behind the throne the robot's screen glows UPTIME 100%; its gripper
     reaches for the card -> frame 0."""
-    return dict(file=os.path.join(EP, "rv_K1_v7.png"))
+    return dict(file=os.path.join(EP, "rv_K1_v8.png"))
 
 
 MAP = {"1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14, "1.5": s15, "1.6": s16, "1.7": s17,
@@ -1468,12 +1476,13 @@ def geometry(sid, cam, draw):
     c = TextRec(s); k = Ctx(c, 0)
     c.save(); sbv.view(c, *cam)
     nc.NO_THRONE_CONFETTI[0] = True
+    pr.begin_frame()
     try:
         heads = draw(k) or {}
     finally:
         nc.NO_THRONE_CONFETTI[0] = False
     c.restore()
-    return checks(sid, cam, c.texts, heads)
+    return checks(sid, cam, c.texts, heads) + pr.cover_faults(s)   # the search also keeps the canon signs whole or out
 
 
 HAND_FAULTS = {}                                               # label -> the hand gate's faults (rv_hands, da_hand_gate)
@@ -1537,6 +1546,7 @@ def render(sid, spec=None):
         c = TextRec(s); k = Ctx(c, 0)
         c.set_source_rgb(*kit.WALL); c.paint()
         c.save(); sbv.view(c, *cam); ds._floor_on(c)
+        pr.begin_frame()                                        # COVER: the signs this frame draws
         heads = draw(k) or {}
         c.restore()
         fx, fy, z = cam
@@ -1560,7 +1570,7 @@ def render(sid, spec=None):
             rn.RIM_SEEN[0] = False; rn.FLOOR_END[0] = True; rn.CAST_LIGHT[0] = None
     finally:
         nc.NO_THRONE_CONFETTI[0] = False
-    return s, checks(sid, cam, c.texts, heads)
+    return s, checks(sid, cam, c.texts, heads) + pr.cover_faults(s)
 
 
 LABEL = [None]                                                 # the key's label while the sheet renders it

@@ -7,7 +7,8 @@ rv_night_cast, it runs on a checkout with episode 15's modules (branch uptimez-d
 
   folding_chair(k, x, feet, s, state)    "open", "wobble" (a leg short, tilted), "folded" (carried flat)
   washer(k, x, y, s)                     the Client's washer, from his pocket
-  review_tag(k, x, y, s, word)           TOMORROW = episode 15's tag as drawn; TODAY = the same tag, the other side
+  review_tag(k, x, y, s, word)           v2: episode 15's swing ticket "A" (TOMORROW its own function, TODAY the same)
+  setup_canon(), props_selftest()        the throne's price as episode 15's (style B here), the retired props gated
   invoice(k, x, y, s)                    COFFEE MACHINE REPAIR · $80 · UNPAID (a red stamp)
   name_card(k, x, y, s)                  the Client's tent card: a wrench and CLIENT
   report(k, x, y, s, unfurl)             the robot's report: folded (0) to an accordion run onto the floor (1)
@@ -79,17 +80,189 @@ def washer(k, x, y, s=1.0):
 
 
 def review_tag(k, x, y, s=1.0, word="TOMORROW"):
-    """TOMORROW is episode 15's tag, called as it is. TODAY: the same card turned (its geometry, type and colours)."""
+    """v2 (Tomas 28 Nov /grill-me: episode 15's tag as it ends, not as it began): da_layouts.review_tag style "A", the
+    price's swing ticket (a gold cord looped round the point at (x, y), two strands to a knot, a card with cut corners,
+    an eyelet, a gold rule, red letters). TOMORROW is episode 15's function itself; TODAY the same drawing, the other
+    word (the same lines, checked against it in props_selftest()). v1 (dsh._tag: a stick, the card stuck on) is gone."""
+    import da_layouts as dl
     if word == "TOMORROW":
-        return dsh._tag(k, x, y, s)
+        _record(k, lambda k_: dl.review_tag(k_, x, y, s, "A"), "REVIEW " + word)
+        return dl.review_tag(k, x, y, s, "A")
+    _record(k, lambda k_: _review_tag_word(k_, x, y, s, word), "REVIEW " + word)
+    return _review_tag_word(k, x, y, s, word)
+
+
+def _review_tag_word(k, x, y, s, word):
+    """da_layouts.review_tag "A" line for line, with `word` in place of TOMORROW."""
+    import da_layouts as dl
     c = k.c
+    CORD, CORD_D = dl.TAG_CORDS["A"]
     c.save(); c.translate(x, y); c.scale(s, s)
-    c.set_source_rgb(0.93, 0.76, 0.28); c.set_line_width(3); c.move_to(0, 0); c.line_to(0, 22); c.stroke()
-    kit.cut(k, [(-48, 22), (48, 22), (48, 64), (-48, 64)], PAPER, lw=2.4)
-    c.select_font_face(kit.FONT); c.set_font_size(13); c.set_source_rgb(*RED)
-    for txt, yy in (("REVIEW", 40), (word, 57)):
+    c.set_line_cap(1)
+    for col, lw in ((INK, 6.5), (CORD, 3.5)):
+        c.set_source_rgb(*col); c.set_line_width(lw)
+        c.save(); c.translate(0, 20); c.scale(1, 0.45); c.arc(0, 0, 9, 0, 2 * math.pi); c.restore(); c.stroke()
+    ln = 26
+    for col, lw in ((INK, 5.5), (CORD, 3.0)):
+        c.set_source_rgb(*col); c.set_line_width(lw)
+        for sx in (-1, 1):
+            c.move_to(0, 24); c.curve_to(sx * 9, 24 + ln * 0.35, sx * 7, 24 + ln * 0.8, 0, 24 + ln + 9); c.stroke()
+    kit.ellipse(k, 0, 24, 5, 4.5, CORD, 4601, shadow=False, lw=1.8)
+    c.translate(0, 24 + ln)
+    W, H = 104, 58
+    kit.cut(k, [(-W / 2, 8), (-W / 2 + 10, 0), (W / 2 - 10, 0), (W / 2, 8), (W / 2, H), (-W / 2, H)], (0.99, 0.97, 0.90), lw=2.6)
+    c.set_source_rgb(*CORD_D); c.set_line_width(1.6)
+    c.move_to(-W / 2 + 6, 15); c.line_to(W / 2 - 6, 15); c.line_to(W / 2 - 6, H - 6); c.line_to(-W / 2 + 6, H - 6); c.close_path(); c.stroke()
+    kit.ellipse(k, 0, 8, 5.5, 5.5, CORD, 4602, shadow=False, lw=1.8)
+    kit.ellipse(k, 0, 8, 2.2, 2.2, (0.20, 0.16, 0.10), 4603, shadow=False, outline=False)
+    c.select_font_face(kit.FONT); c.set_font_size(14); c.set_source_rgb(0.72, 0.08, 0.12)
+    for txt, yy in (("REVIEW", 32), (word, 48)):
         e = c.text_extents(txt); c.move_to(-e.x_advance / 2, yy); c.show_text(txt)
     c.restore()
+
+
+# ---- the props by episode 15's canon (Tomas 28 Nov /grill-me, after "kodel tu nupaisei tokia nauja?") -------------------
+# The throne's price: dh_props' swing ticket v2 (episode 15's S8 and S8r), style "A" on the crown's left point, as
+# episode 15 ends (Tomas 28 Nov: "B", under the left armrest, was tried first and Don's mark or the robot covered it in
+# 9 shots), TAG_FONT 19 (S8r: 23 ran past the card's rule). Episode 14's
+# ps_set.price_tag (a white arrow card from the crown's right point), which the night set inherited, is off on the front.
+# The props gate: drawing a retired prop's function records a fault (props_faults(); rv_hands.check reports it).
+PROP_FAULTS = []
+_CANON = [False]
+
+
+def setup_canon():
+    if _CANON[0]:
+        return
+    import dh_props as dhp
+    import ps_set as pss
+    dhp.TAG[0] = True; dhp.TAG_STYLE[0] = "A"; dhp.TAG_FONT[0] = 19
+    old_price = pss.price_tag
+
+    def price_tag(k, *a, **kw):
+        if kw.get("back"):
+            return old_price(k, *a, **kw)                       # its blank back, as episode 14/15 draw a spun throne
+        if PLANT[0]:
+            PROP_FAULTS.append("PROP ps_set.price_tag (episode 14's arrow card) drawn on the throne's front: the canon "
+                               "is dh_props' swing ticket v2, style A")
+            return old_price(k, *a, **kw)
+    pss.price_tag = price_tag
+    old_tag = dsh._tag
+
+    def tag_v1(k, *a, **kw):
+        PROP_FAULTS.append("PROP da_sheets._tag (REVIEW card v1, a stick and a card) drawn: the canon is "
+                           "da_layouts.review_tag 'A' (rv_props.review_tag)")
+        return old_tag(k, *a, **kw)
+    dsh._tag = tag_v1
+    old_pt = dhp._price_tag
+
+    def dh_tag(k, style, seed):
+        if style != "A":
+            PROP_FAULTS.append("PROP the price tag in style %r: this episode's is 'A' (the crown's left point)" % style)
+        _record(k, lambda k_: old_pt(k_, style, seed), "$49,999")
+        return old_pt(k, style, seed)
+    dhp._price_tag = dh_tag
+    _CANON[0] = True
+
+
+PLANT = [False]                                                 # props_selftest() only: draw the retired front tag
+
+# COVER (Tomas 28 Nov: "yes, add it"): G3 fails a sign the frame's edge cuts; nothing failed one a person covers. Each
+# canon sign this module draws (the price, the REVIEW card) is recorded with the matrix it was drawn under; after the
+# frame is finished, the sign is drawn again alone on a blank page under that matrix, its red letters found, and the
+# finished frame must still show red at most of them. Under 70 % (and not all hidden: "whole or out") is a fault.
+RECORDED = []
+
+
+def begin_frame():
+    del RECORDED[:]
+
+
+def _record(k, fn, name):
+    c = k.c
+    m = c.get_matrix()
+    probe = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); pc = cairo.Context(probe)
+    pc.set_matrix(m); fn(kit.Ctx(pc, 0))
+    import numpy as np
+    a = np.ndarray((960, 540, 4), np.uint8, probe.get_data())
+    red = (a[..., 2].astype(int) > a[..., 1].astype(int) + 70) & (a[..., 2].astype(int) > a[..., 0].astype(int) + 70) \
+        & (a[..., 3] > 200)                                     # BGRA: letters red on the cream card
+    ink = a[..., 3] > 200                                       # the whole card (and its cord), on this page
+    if ink.sum() < 8:
+        return                                                  # off the page: out, as G3 wants
+    ys, xs = np.nonzero(red) if red.sum() else np.nonzero(ink)
+    key = (round(m.x0), round(m.y0), name)
+    if any(r[3] == key for r in RECORDED):                      # the rim pass draws the throne again
+        return
+    iy, ix = np.nonzero(ink)
+    full = (ix.min(), iy.min(), ix.max(), iy.max()) if len(ix) else None
+    RECORDED.append((name, red, (xs.min(), ys.min(), xs.max(), ys.max()), key, full))
+
+
+def cover_faults(surface, w=540, h=960):
+    import numpy as np
+    surface.flush()
+    a = np.ndarray((h, w, 4), np.uint8, surface.get_data()).astype(int)
+    seen = (a[..., 2] > a[..., 1] + 40) & (a[..., 2] > a[..., 0] + 40)
+    out = []
+    for name, red, box, _, full in RECORDED:
+        if full and (full[0] <= 0 or full[2] >= w - 1 or full[1] <= 0 or full[3] >= h - 1):
+            out.append("EDGE '%s': its card is cut by the frame (a sliver with no letters is still a cut sign)" % name)
+            continue
+        if box[0] <= 1 or box[1] <= 1 or box[2] >= w - 2 or box[3] >= h - 2:
+            continue                                            # at the edge: G3's case
+        n = int(red.sum()); v = int((red & seen).sum())
+        if n == 0:
+            continue
+        if 0 < v < 0.70 * n:
+            out.append("COVER '%s' %d %% visible (letters at (%d, %d)): whole or out" % (name, 100 * v // n, box[0], box[1]))
+    return out
+
+
+def props_faults():
+    out = list(PROP_FAULTS)
+    del PROP_FAULTS[:]
+    return out
+
+
+def props_selftest():
+    """the retired drawings must fail; the canon ones must pass; TODAY's tag must match TOMORROW's but for the word."""
+    import ps_set as pss
+    import da_layouts as dl
+    setup_canon()
+    s = cairo.ImageSurface(cairo.FORMAT_RGB24, 300, 300)
+    k = kit.Ctx(cairo.Context(s), 0)
+    ok = True
+    props_faults()
+    PLANT[0] = True; pss.price_tag(k, 100, 100, 2.4); PLANT[0] = False
+    f = props_faults(); ok &= bool(f); print("plant ps_set front tag:", "FAIL as it must" if f else "PASSED: broken")
+    dsh._tag(k, 100, 100, 1.0)
+    f = props_faults(); ok &= bool(f); print("plant REVIEW v1:", "FAIL as it must" if f else "PASSED: broken")
+    import dh_props as dhp
+    dhp._price_tag(k, "B", 1)
+    f = props_faults(); ok &= bool(f); print("plant price style B:", "FAIL as it must" if f else "PASSED: broken")
+    pss.throne(k)
+    f = props_faults(); ok &= not f; print("canon throne + tag A:", "PASS" if not f else f)
+    # COVER: the price drawn whole, then a person's block over half of it
+    S = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); kk = kit.Ctx(cairo.Context(S), 0)
+    kk.c.set_source_rgb(0.3, 0.3, 0.35); kk.c.paint(); begin_frame()
+    kk.c.save(); kk.c.translate(270 - pss.THRONE[0], 800 - pss.THRONE[1]); pss.throne(kk); kk.c.restore()
+    f = cover_faults(S); ok &= bool(RECORDED) and not f
+    print("cover, the tag whole:", "PASS" if RECORDED and not f else ("nothing recorded" if not RECORDED else f))
+    box = RECORDED[0][2]
+    RECORDED.append(RECORDED[0][:4] + ((530, 300, 539, 340),))   # plant: a card's sliver at the right edge
+    f = cover_faults(S); ok &= any("EDGE" in x for x in f); print("plant a sliver at the edge:", "FAIL as it must" if f else "PASSED: broken")
+    RECORDED.pop()
+    kk.c.set_source_rgb(0.1, 0.1, 0.4); kk.c.rectangle(box[0], box[1], (box[2] - box[0]) * 0.6, box[3] - box[1]); kk.c.fill()
+    f = cover_faults(S); ok &= bool(f); print("plant a person over 60 % of it:", "FAIL as it must" if f else "PASSED: broken")
+    def png(fn):
+        s2 = cairo.ImageSurface(cairo.FORMAT_RGB24, 300, 300); k2 = kit.Ctx(cairo.Context(s2), 0)
+        k2.c.set_source_rgb(1, 1, 1); k2.c.paint(); fn(k2)
+        return bytes(s2.get_data())
+    a = png(lambda k2: dl.review_tag(k2, 150, 60, 2.0, "A"))
+    b = png(lambda k2: _review_tag_word(k2, 150, 60, 2.0, "TOMORROW"))
+    ok &= a == b; print("TODAY's drawing = episode 15's but for the word:", "PASS" if a == b else "FAIL")
+    return ok
 
 
 def invoice(k, x, y, s=1.0, ang=-0.05):
@@ -329,4 +502,6 @@ def sheet(out=EP + "rv_props_v2.png"):
 
 
 if __name__ == "__main__":
+    if sys.argv[1] == "selftest":
+        sys.exit(0 if props_selftest() else 1)
     {"sheet": sheet}[sys.argv[1]]()

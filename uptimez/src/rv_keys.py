@@ -26,6 +26,7 @@ import robot_ps as rp
 import dh_cast as dc
 import hand_lib_v4 as hl
 import rv_night_cast as nc
+import os
 import rv_props as pr
 
 EP = "../the-review/"
@@ -146,6 +147,19 @@ def _don_head(k, x, y, rr):
         dp.don(k, x, y + 302 * s_, s_, "stand", "neutral", look=(0, 0))
 
 
+def _cover(path):
+    """COVER (rv_props): the price and the REVIEW card whole or out in the written key."""
+    import cairo
+    f = pr.cover_faults(cairo.ImageSurface.create_from_png(path), *_size(path))
+    print("cover %s: %s" % (os.path.basename(path), "PASS" if not f else f))
+    assert not f, f
+
+
+def _size(path):
+    from PIL import Image
+    return Image.open(path).size
+
+
 def hand_gate(label, cam, draw):
     """the canon hand gate on a key still (rv_hands, da_hand_gate): its job list is rv_scenes.HANDS[label]."""
     import fs_storyboard_v17 as sbv
@@ -164,7 +178,7 @@ def hand_gate(label, cam, draw):
     assert not faults, "the hand gate fails %s" % label
 
 
-def k1(out=EP + "rv_K1_v7.png"):
+def k1(out=EP + "rv_K1_v8.png"):
     """v4 (Tomas 28 Nov "Go 1"): a medium on the whole throne with Don asleep in it (the pose sandbox's don_seated,
     rv_poses v1), REVIEW · TOMORROW folded under the front-right caster. The robot is hidden behind the throne (its
     badge is on its chest at frame 0, not at the end: nothing of its chest may show); its screen's glow spills round
@@ -191,12 +205,17 @@ def k1(out=EP + "rv_K1_v7.png"):
     glows = [(TX - 70, SEAT[1] - 60, 70, 90, bp.NIGHT_MONITOR, 0.40)]   # UPTIME's glow, from behind the throne's left side
     lights = [(TX - 70, SEAT[1] - 60, 180, 1.0), (nc.DOOR[0], nc.DOOR[1], 260, 0.4)]
     try:
+        pr.begin_frame()
         nc._frame(cam, draw, glows, lights, out, cast=nc.LOCK_CAST)
+        _cover(out)
     finally:
         nc.NO_THRONE_CONFETTI[0] = False
 
 
-def k2(out=EP + "rv_K2_v5.png"):
+DON_K2 = 372   # (v6 tried 326 with the price under the armrest; the price is on the crown, episode 15's "A")
+
+
+def k2(out=EP + "rv_K2_v6.png"):
     nc.NO_THRONE_CONFETTI[0] = True
     cam = (474, 770, 1.84)                                   # v1c: the portrait's plaque out (G3: whole or out)
     st = {}
@@ -219,8 +238,8 @@ def k2(out=EP + "rv_K2_v5.png"):
             rh.father(k, 584, F + 38, nc.L.SC["father"], hands=("point", "quiet"), pose=(-112, -30, -6, 0), look=(-1, -0.4))
         finally:
             _dc.RING_ON[0] = True
-        nc._shadow(k, 372, F + 60, 34)                          # table H5): FATHER's finger reaches toward the screen and
-        dp.don(k, 372, F + 58, nc.L.SC["don"], "stand", "shock", look=(1, -0.5))   # stops, clearly apart; Don only looks
+        nc._shadow(k, DON_K2, F + 60, 34)                          # table H5): FATHER's finger reaches toward the screen and
+        dp.don(k, DON_K2, F + 58, nc.L.SC["don"], "stand", "shock", look=(1, -0.5))   # stops, clearly apart; Don only looks
     probe = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0)
     probe.c.save(); import fs_storyboard_v17 as sbv; sbv.view(probe.c, *cam); draw(probe); probe.c.restore()
     sx, sy = st["screen"]
@@ -236,7 +255,9 @@ def k2(out=EP + "rv_K2_v5.png"):
     glows = [(sx, sy, 44, 40, bp.NIGHT_MONITOR, 0.50)]
     lights = [(sx, sy, 180, 1.0), (nc.DOOR[0], nc.DOOR[1], 260, 0.5)]
     try:
+        pr.begin_frame()
         nc._frame(cam, draw, glows, lights, out, cast=nc.LOCK_CAST)
+        _cover(out)
     finally:
         nc.NO_THRONE_CONFETTI[0] = False
 
