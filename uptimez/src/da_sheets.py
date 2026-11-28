@@ -539,5 +539,110 @@ def client_sheet(out=EP + "uptimez-client-da-v1-sheet.png"):
     print("wrote", out)
 
 
+def mom_sheet(out=EP + "uptimez-mom-da-v1-sheet.png"):
+    """Mom in 15 (Tomas 28 Nov, /grill-me): the series' Mom (mom_fs: teal suit, the curler stays), her fists on her hips
+    and her folded arms in the hand library (da_layouts.MOM_LIB), a smaller rosette (mom_fs.ORDER_S 0.7). Her beats here:
+    up from her desk (3.3), the door she slides in front of (3.4, "Your rule, sweetheart."), sitting back, folded (4.1)."""
+    import da_layouts as L
+    import don_ps
+    import hands_v4 as hv
+    W, H = 1500, 980
+    s, c, k = _surf(W, H)
+    _t(c, 30, 46, "MOM · The Double Agent (15) · v1", 26, 1)
+    _t(c, 30, 70, "The series' Mom (mom_fs): teal suit, mustard lapels, the curler stays. v1: her fists on her hips and her folded"
+       " arms in the episode's hand library; the rosette smaller (0.7 of 1.15).", 11)
+    _t(c, 30, 88, "Opt-in: da_layouts.MOM_LIB, mom_fs.ORDER_S, mom_bc.TUPLE_NAME (defaults draw as before, md5-checked).", 11)
+    F = 520
+    _floor(c, 20, W - 20, F)
+    hv.enable()
+    with L.ds.no_badges():                                     # (this episode: no name badges on people)
+        don_ps.don(k, 110, F, 0.60 * 1.25)
+    sc = 1.25
+    keep = L.SC["mom"]; L.SC["mom"] = keep * sc
+    try:
+        L.mom(k, (330, F), "fists", "glare", look=(1, 0))
+        L.mom(k, (560, F), "fists", "unimpressed", look=(-1, 0.2), chin=True)
+        L.mom(k, (790, F), "fists", "unimpressed", look=(-1, 0.2), chin=True, mouth="A")
+        L.mom(k, (1020, F), "folded", "unimpressed", look=(-1, 0.2))
+        L.MOM_LIB[0] = False
+        L.mom(k, (1300, F), "fists", "glare", look=(1, 0))
+        L.MOM_LIB[0] = True
+    finally:
+        L.SC["mom"] = keep
+    for x, lab in ((110, "Don 0.60 (scale)"), (330, "fists on her hips, glare (3.3)"), (560, "the door: chin up (3.4)"),
+                   (790, "\"Your rule, sweetheart.\" (A)"), (1020, "folded (4.1)"), (1300, "before: the round fists")):
+        _t(c, x - 80, F + 24, lab, 11)
+    y2 = F + 60
+    _t(c, 30, y2, "UP CLOSE", 13, 1)
+    for i, (pose, face, kw, lab) in enumerate((("fists", "glare", {}, "glare"), ("fists", "unimpressed", dict(chin=True), "unimpressed, chin up"),
+                                               ("folded", "unimpressed", {}, "folded"))):
+        x = 180 + i * 330
+        c.save(); c.rectangle(x - 150, y2 + 14, 300, 300); c.clip()
+        keep = L.SC["mom"]; L.SC["mom"] = 1.35
+        try:
+            L.mom(k, (x, y2 + 14 + 560), pose, face, look=(-0.6, 0.2), **kw)
+        finally:
+            L.SC["mom"] = keep
+        c.restore()
+        c.set_source_rgb(0.15, 0.15, 0.18); c.set_line_width(1); c.rectangle(x - 150, y2 + 14, 300, 300); c.stroke()
+        _t(c, x - 145, y2 + 334, lab, 11)
+    _t(c, 1080, y2, "AT PHONE SIZE", 13, 1)
+    c.save(); c.translate(1100, y2 + 30); c.scale(0.5, 0.5)
+    with L.ds.no_badges():
+        don_ps.don(k, 80, 500, 0.60)
+    L.mom(k, (230, 500), "fists", "glare"); L.mom(k, (380, 500), "folded", "unimpressed")
+    c.restore()
+    hv.disable()
+    s.write_to_png(out)
+    print("wrote", out)
+
+
+def robot_sheet(out=EP + "uptimez-robot-da-v1-sheet.png"):
+    """The robot in 15 (Tomas 28 Nov, /grill-me: a record, no changes): rp.robot with the canon's two hands (at rest,
+    the gripper) solved by IK (da_anim_s1.robot_canon), the HR badge (the only badge in this episode), the red bow tie."""
+    import da_layouts as L
+    import da_anim_s1 as A
+    import don_ps
+    W, H = 1500, 900
+    s, c, k = _surf(W, H)
+    _t(c, 30, 46, "THE ROBOT · The Double Agent (15) · v1 (a record: no changes)", 26, 1)
+    _t(c, 30, 70, "Canon hands (CANON.md): at rest and the gripper, the arms by two-bone IK for the shoulders the rig draws"
+       " (da_anim_s1.robot_canon). The HR badge is the only badge in this episode; the red bow tie stays.", 11)
+    F = 520
+    _floor(c, 20, W - 20, F)
+    with L.ds.no_badges():
+        don_ps.don(k, 110, F, 0.60 * 1.25)
+    keep = L.SC["robot"]; L.SC["robot"] = keep * 1.25; rs = L.SC["robot"]
+    try:
+        A.robot_canon(k, 330, F, {})
+        A.robot_canon(k, 560, F, {1: ("grip", (560 + 46 * 1.25, F - 150 * rs))}, tilt=0.1, look=(-1, -0.4))
+        A.robot_canon(k, 800, F, {-1: ("grip", (800 - 60 * 1.25, F - 60 * 1.25))}, tilt=-0.15, look=(-1, 0.6))
+        A.robot_canon(k, 1040, F, {-1: ("grip", (1040 - 70 * 1.25, F - 150 * rs)), 1: ("grip", (1040 + 70 * 1.25, F - 150 * rs))},
+                      look=(0, -0.6))
+    finally:
+        L.SC["robot"] = keep
+    for x, lab in ((110, "Don 0.60 (scale)"), (330, "at rest"), (560, "gripper up, frozen (3.4)"), (800, "reaching out (1.4)"),
+                   (1040, "both up: the throne (7.4)")):
+        _t(c, x - 80, F + 24, lab, 11)
+    y2 = F + 60
+    _t(c, 30, y2, "UP CLOSE", 13, 1)
+    c.save(); c.rectangle(30, y2 + 14, 420, 270); c.clip()
+    keep = L.SC["robot"]; L.SC["robot"] = 1.4
+    try:
+        A.robot_canon(k, 240, y2 + 14 + 470, {1: ("grip", (240 + 46 * 2.9, y2 + 14 + 470 - 150 * 1.4))}, look=(-1, -0.2))
+    finally:
+        L.SC["robot"] = keep
+    c.restore()
+    c.set_source_rgb(0.15, 0.15, 0.18); c.set_line_width(1); c.rectangle(30, y2 + 14, 420, 270); c.stroke()
+    _t(c, 520, y2, "AT PHONE SIZE", 13, 1)
+    c.save(); c.translate(540, y2 + 30); c.scale(0.5, 0.5)
+    with L.ds.no_badges():
+        don_ps.don(k, 80, 500, 0.60)
+    A.robot_canon(k, 230, 500, {})
+    c.restore()
+    s.write_to_png(out)
+    print("wrote", out)
+
+
 if __name__ == "__main__":
-    {"father": father, "lineup": lineup, "don": don_sheet, "pam": pam_sheet, "client": client_sheet}[sys.argv[1]]()
+    {"father": father, "lineup": lineup, "don": don_sheet, "pam": pam_sheet, "client": client_sheet, "mom": mom_sheet, "robot": robot_sheet}[sys.argv[1]]()

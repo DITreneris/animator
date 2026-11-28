@@ -117,6 +117,9 @@ def _glasses_low(inner):
     return g
 
 
+ORDER_S = [1.15]   # opt-in (28 Nov, ep15 Mom sheet): the rosette's size; 1.15 draws as before
+
+
 def _suit(k, seed):
     c = k.c
     sk = [(-SH_X - 4, JACKET_HEM - 6), (SH_X + 4, JACKET_HEM - 6), (SH_X + 2, HEM), (-SH_X - 2, HEM)]
@@ -150,7 +153,7 @@ def _suit(k, seed):
     c.new_path(); c.move_to(4, WAIST - 6); c.line_to(6, JACKET_HEM); c.stroke()                      # the front edge
     for sx in (-1, 1):
         rect(k, sx * 36 - 14, WAIST + 22, 28, 8, TEAL, seed + 36 + sx, shadow=False, lw=1.8)         # pocket flaps
-    order(k, 30, BT + 26, 1.15, seed + 40)
+    order(k, 30, BT + 26, ORDER_S[0], seed + 40)
 
 
 def order(k, x, y, s=1.0, seed=0):

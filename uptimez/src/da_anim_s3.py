@@ -28,7 +28,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 7
+VER = 8
 T0 = 16.28
 SHOTS = [("3.1", 1.61), ("3.2", 1.2), ("3.2b", 0.7), ("3.3", 2.4), ("3.4", 4.05), ("3.5", 1.6)]
 drawn = A.drawn
@@ -266,7 +266,9 @@ def s34_cast(t):
         c = k_.c
         rx = MARKS["robot_pile"][0] + 40
         declare((("robot", "L", "robot_rest", "at rest"), ("robot", "R", "robot_grip", "gripper up, frozen"),
-                 ("don", "L", "quiet", "quiet"), ("don", "R", "quiet", "quiet")), k_)
+                 ("don", "L", "quiet", "quiet"), ("don", "R", "quiet", "quiet"),
+                 ("mom", "L", "fist", "FIST: on her hip (Mom v1, the hand library)"),
+                 ("mom", "R", "fist", "FIST: on her hip")), k_)
         h["robot"] = A.robot_canon(k_, rx, F + 64, {1: ("grip", (rx + 46, F + 64 - 150 * SC["robot"]))}, tilt=0.1,
                                    look=(-1, -0.4))
         # Don: the leans (left, right), then the feint (his head only)

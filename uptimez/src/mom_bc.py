@@ -57,6 +57,8 @@ def wipe_at(tx, ty):
     return (-10, 4) + _ik_low(1, tx, ty)
 
 
+TUPLE_NAME = ["wipe"]   # opt-in (28 Nov, ep15): what a pose given as angles is called; "wipe" (as before) draws the tissue
+
 POSES = {
     "stand": (-10, 4, 10, -4),
     "bag": mo.ik(-1, -11, WAIST - 2) + mo.ik(1, 11, WAIST - 2),
@@ -172,7 +174,7 @@ def mom(k, x, feet, s=1.0, pose="bag", face="sweet", look=(0, 0), seed=70, mouth
         finally:
             c.restore()
         return {"head": c.device_to_user(*dev["head"]), "hands": [c.device_to_user(*q) for q in dev["hands"]]}
-    name = pose if isinstance(pose, str) else "wipe"
+    name = pose if isinstance(pose, str) else TUPLE_NAME[0]
     if tilt is None:
         tilt = -7.0 if face == "sweet" else 0.0
     a = POSES[pose] if isinstance(pose, str) else pose

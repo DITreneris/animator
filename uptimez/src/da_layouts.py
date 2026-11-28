@@ -133,10 +133,33 @@ def sofia(k, mark, **kw):
     return _head(sd.sofia(k, x, f, SC["sofia"], **kw), "sofia")
 
 
+MOM_LIB = [True]   # Tomas 28 Nov (/grill-me): Mom's fists on her hips and her folded arms in the hand library;
+MOM_ORDER_S = 0.7  # and a smaller rosette (mom_fs.ORDER_S, 1.15 as before)
+
+
 def mom(k, mark, pose="fists", face="unimpressed", look=(0, 0), **kw):
     import mom_fs as mfs
     x, f = MARKS[mark] if isinstance(mark, str) else mark
     shadow(k, x, f + 2, 34)
+    keep_o = mfs.ORDER_S[0]; mfs.ORDER_S[0] = MOM_ORDER_S if MOM_LIB[0] else keep_o
+    try:
+        if MOM_LIB[0] and pose in ("fists", "folded"):
+            s_ = SC["mom"]
+            if pose == "fists":                                # the fists on her hips, the knuckles in
+                jobs = {a: dict(T=(x + a * 60 * s_, f + (mfs.WAIST - 6) * s_), pose="FIST", out=a) for a in (-1, 1)}
+            else:                                              # folded: each hand on the other arm, the forearms crossed
+                jobs = {-1: dict(T=(x + 30 * s_, f + (mfs.BT + 46) * s_), pose="CLUTCH", out=-1),
+                        1: dict(T=(x - 30 * s_, f + (mfs.BT + 56) * s_), pose="CLUTCH", out=1)}
+            kw.setdefault("bag", False)                              # (a pose given as angles: no handbag)
+            import mom_bc as mbc
+            keep_n = mbc.TUPLE_NAME[0]; mbc.TUPLE_NAME[0] = "angles"   # (angles alone: no tissue, no scrub marks)
+            try:
+                o = rig_hands(k, lambda kk, a4: mfs.mom(kk, x, f, s_, a4, face, look, **kw), s_, jobs, sex="f", skin=mfs.SKIN)
+            finally:
+                mbc.TUPLE_NAME[0] = keep_n
+            return _head(o, "mom")
+    finally:
+        mfs.ORDER_S[0] = keep_o
     if pose == "folded":                                       # pm_ps's folded arms (its M_POSES), the series' Mom
         return _head(pm.mom(k, x, f, SC["mom"], pose, face, look, **kw), "mom")
     return _head(mfs.mom(k, x, f, SC["mom"], pose, face, look, **kw), "mom")
