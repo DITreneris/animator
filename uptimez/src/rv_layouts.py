@@ -21,6 +21,8 @@ import textwrap
 import cairo
 
 import kit
+import rv_hands as rh
+rh.setup()
 from kit import Ctx, INK
 import bp_frame as bp
 import fs_storyboard_v17 as sbv
@@ -53,7 +55,10 @@ MIN_SIGN = 5
 CHAIR_S = 0.9                                                  # the folding chair at Father's scale (0.62 drew a child's chair)
 ACTS = {1: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7"], 2: ["2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7"],
         3: ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10"],
-        4: ["4.1", "4.2", "4.3", "4.4", "4.5"]}
+        4: ["4.1", "4.2", "4.3", "4.4", "4.5"],
+        5: ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11"],
+        6: ["6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "6.8", "6.9", "6.10"],
+        7: ["7.1", "7.2"]}
 CLIENT_NO_RAG = [True]                                         # Tomas 28 Nov ("1"): in episode 16 the Client has no rag
                                                                # (its red read as blood at night, 1/2; no action uses it).
                                                                # client_ps is not edited: its CLEAN overlay draws only
@@ -122,6 +127,20 @@ def _shadow_v3(k, x, f, w, a=0.30):
 nc._shadow = _shadow_v3
 
 
+FATHER_SKIN = (0.94, 0.80, 0.68)
+
+
+def held_sheet(k, h, draw_sheet, name, half_w=20, down=40, pose="CLUTCH"):
+    """a sheet, card or printout in a hand the rig freed: the thing first, hanging from the hand's contact, the
+    library's CLUTCH over its top edge (canon: "holding an edge"); declared to the gate."""
+    P = rh.contact(k, h, pose, "edge" if pose == "CLUTCH" else "tip")
+    if nc._PASS[0] != "mask":
+        rh.prop(k, name, P[0] - half_w, P[1] - 6, 2 * half_w, down + 6)
+    rh.lib_hand(k, h, pose, back_obj=(lambda k_: draw_sheet(k_, P)) if nc._PASS[0] != "mask" else None,
+                lws=SC["father"])
+    return P
+
+
 def drawn(fn):
     """props are drawn in the colour pass only (the mask pass keeps the people: the cast light)."""
     if nc._PASS[0] != "mask":
@@ -143,7 +162,7 @@ def glows_room(robot_screen=None, throne=True):
 # ---- Act I ------------------------------------------------------------------------------------------------------------
 def s11():
     """1.1 frame 0: the locked K1 v6 (rv_keys.k1, the same code at both ends)."""
-    return dict(file=os.path.join(EP, "rv_K1_v6.png"))
+    return dict(file=os.path.join(EP, "rv_K1_v7.png"))
 
 
 def don_on_back(k, x, f, cup=True):
@@ -199,14 +218,15 @@ def s14():
         o_r = rp.robot(k, TX - 70, F - 6, SC["robot"], look=(1, -0.6))
         drawn(lambda: pss.throne(k))
         nc._shadow(k, LINE_X + 50, F + 40, 30)
-        o_f = dc.father(k, LINE_X + 50, F + 38, SC["father"], pose=(-30, -40, 20, 0), look=(-1, 0.3))
-        hx, hy = o_f["hands"][0]
-        drawn(lambda: pr.folding_chair(k, hx - 4, hy + 150 * CHAIR_S * 0.9, CHAIR_S * 0.9, "folded"))
+        o_f, held = rh.without_hands(k, lambda: dc.father(k, LINE_X + 50, F + 38, SC["father"], pose=(-30, -40, 20, 0),
+                                                         look=(-1, 0.3)), (0,))
+        held_sheet(k, held[0], lambda k_, P: pr.folding_chair(k_, P[0], P[1] + 150 * CHAIR_S * 0.9 - 2, CHAIR_S * 0.9,
+                                                              "folded"), "the folded chair", 14, 130)
         o_d = rpo.don_on_back(k, TX - 30, F + 110, SC["don"], "B", arm=(-8, 0, 124, -48), cup_k=1.5)
         return {"father": head(o_f, "father"), "robot": head(o_r, "robot", "screen"),
                 "don": (o_d["head"][0], o_d["head"][1], R["don"] * SC["don"])}
     g, li = glows_room()
-    POSE["1.4"] = "Father's hold on the folded chair: stand-in"
+    POSE["1.4"] = "Father holds the folded chair by its top edge (clutch)"
     return dict(cam=(500, F - 90, 1.45), draw=draw, glows=g, lights=li)
 
 
@@ -243,6 +263,7 @@ def s15():
                 L.dp._cap(c, [(ex, hy - 14), (hx + 36, hy - 4)], 26, (0.96, 0.94, 0.88), 2.0)   # the rolled sleeve
                 L.dp._cap(c, [(hx + 40, hy - 4), (hx + 6, hy)], 16, cob.SKIN, 2.0)              # the wrist stub
                 if held:
+                    rh.prop(k, "the washer", wx - 10, wy - 10, 20, 20)
                     c.save(); c.translate(wx, wy); c.rotate(-0.25); pr.washer(k, 0, 0, 0.9); c.restore()
                 hl.draw_lr(k, pose, hx, hy, (-1, 0.08), W_HAND, cob.SKIN, 1)
             drawn(hand)
@@ -264,7 +285,7 @@ def father_seated(k, x, seat_y, floor_y, lean=0.0, look=(1, 0)):
     vfeet = seat_y - waist * s
     c.save(); c.translate(x, seat_y); c.rotate(lean); c.translate(-x, -seat_y)
     c.save(); c.rectangle(x - 400, seat_y - 2000, 800, 2000 + 4); c.clip()
-    o = dc.father(k, x, vfeet, s, look=look)
+    o = rh.father(k, x, vfeet, s, look=look)
     c.restore(); c.restore()
     TROU, SHOE = (0.12, 0.11, 0.12), (0.06, 0.05, 0.06)
     for side in (-1, 1):
@@ -323,12 +344,17 @@ def s17():
                 c.save(); c.translate(hx, hy - 66); c.rotate(swing); c.translate(-hx, -(hy - 66))
                 pr.review_tag(k, hx, hy - 66, 1.25, word)
                 c.restore()
-                if word == "TOMORROW":                                         # the ringed hand on its corner
-                    ex, ey = hx + 52, hy + 4
-                    kit.cut(k, [(ex + 160, ey - 40), (ex + 160, ey - 4), (ex + 14, ey + 8), (ex + 8, ey - 12)],
-                            (0.45, 0.10, 0.16), lw=2)
-                    kit.ellipse(k, ex + 4, ey - 2, 10, 8, (0.94, 0.80, 0.68), 4731, shadow=False, lw=2)
-                    kit.ellipse(k, ex + 8, ey + 3, 3, 3, (0.93, 0.74, 0.22), 4732, shadow=False, lw=1)
+                if word == "TOMORROW":                                         # the ringed hand at its corner: the
+                    import hand_lib_v4 as hl                                   # library's PINCH (canon: thumb and index
+                    tip = (hx + 56, hy + 2)                                    # meeting), the wrist stub and velvet
+                    wr = (tip[0] + 1.28 * 20, tip[1] - 2)                      # sleeve out of the frame's right edge
+                    kit.cut(k, [(wr[0] + 150, wr[1] - 30), (wr[0] + 150, wr[1] + 16), (wr[0] + 22, wr[1] + 11),
+                                (wr[0] + 22, wr[1] - 11)], (0.45, 0.10, 0.16), lw=2)          # the sleeve, tapering
+                    kit.cut(k, [(wr[0] + 24, wr[1] - 8), (wr[0] + 24, wr[1] + 8), (wr[0] - 2, wr[1] + 6),
+                                (wr[0] - 2, wr[1] - 6)], FATHER_SKIN, shadow=False, lw=2)     # the wrist, narrower
+                    rh.prop(k, "the tag", hx - 62, hy - 66, 124, 90)
+                    hl.draw_lr(k, "PINCH", wr[0], wr[1], (-1, 0.03), 20, FATHER_SKIN, 1)
+                    kit.ellipse(k, wr[0] - 10, wr[1] + 4, 3, 3, (0.93, 0.74, 0.22), 4732, shadow=False, lw=1)   # the ring
             drawn(back_and_tag)
             return {}
         return dict(cam=(TX, F - 320, 3.0), draw=draw, glows=[], lights=[(TX, F - 300, 200, 0.6)],
@@ -384,7 +410,8 @@ def s21():
         h = {"sofia": sofia_in_throne(k, "smile", (0.3, -0.5))}
         h["father"] = father_on_chair(k, look=(-1, -0.2))
         nc._shadow(k, 340, F + 70, 34)
-        h["don"] = head(dp.don(k, 340, F + 68, SC["don"], "balance", "shock", look=(1, -0.2)), "don")
+        h["don"] = head(dp.don(k, 340, F + 68, SC["don"], (-62, -36, 62, 36), "shock", look=(1, -0.2),
+                               hands=("palm", "palm")), "don")
         return h
     g, li = glows_room()
     POSE["2.1"] = "Sofía seated: REUSED dh_scenes (Don scrambling: stand-in)"
@@ -412,7 +439,7 @@ def s23():
         drawn(lambda: pss.throne(k))
         rx = LINE_X - 130                                       # v2: a clear gap between the report and his palm
         nc._shadow(k, rx, F + 50, 26)
-        o_r = rp.robot(k, rx, F + 48, SC["robot"], arms=((-8, 0), (80, 10)), look=(1, -0.3))
+        o_r = rp.robot(k, rx, F + 48, SC["robot"], arms=((-8, 0), (58, 40)), look=(1, -0.3))
         gx, gy = o_r["hands"][1]
         drawn(lambda: pr.report(k, gx + 14, gy - 4, 0.6))
         o_f = rpo.father_folding(k, LINE_X + 10, F + 30, SC["father"], "B", chair_s=CHAIR_S, look=(-1, 0),
@@ -668,9 +695,8 @@ def palm_mug(k, wx, wy, w, ms, skin, side=1):
     cups.install()
     P = hl.POSES["SAUCER_SUPPORT"]["contacts"]["saucer"]
     bx, by = hl.to_screen("SAUCER_SUPPORT", wx, wy, 0.0, w, side, P)
-    hl.draw(k, "SAUCER_SUPPORT", wx, wy, 0.0, w, skin, side,
-            obj=lambda k_: cups.mug(k_, bx, by - 1, ms, handle=-1, kind="mustard", state="held"))   # v3b: the handle
-                                                                # to screen left in every shot, as on the counter
+    hl.draw_lr(k, "SAUCER_SUPPORT", wx, wy, (0, -1), w, skin, side, reach=side,   # logged by the gate and hands_lr
+               obj=lambda k_: cups.mug(k_, bx, by - 1, ms, handle=-1, kind="mustard", state="held"))
     return bx, by
 
 
@@ -758,8 +784,9 @@ def s37():
                 c = k.c
                 w = 30.0
                 wx, wy = P[0], P[1]
-                L.dp._cap(c, [(wx, wy + 200), (wx, wy + 8)], 26, co.SKIN, 2.0)            # the forearm, from the edge
-                kit.cut(k, [(wx - 15, wy + 46), (wx + 15, wy + 46), (wx + 15, wy + 56), (wx - 15, wy + 56)],
+                kit.cut(k, [(wx - 17, wy + 210), (wx + 17, wy + 210), (wx + 11, wy + 4), (wx - 11, wy + 4)], co.SKIN,
+                        shadow=False, lw=2)                    # the forearm from the edge, narrower at the wrist
+                kit.cut(k, [(wx - 13, wy + 46), (wx + 13, wy + 46), (wx + 13, wy + 56), (wx - 13, wy + 56)],
                         (0.16, 0.12, 0.10), shadow=False, lw=1.4)                           # the watch's strap
                 kit.ellipse(k, wx + 2, wy + 51, 9, 9, co.GOLD, 4840, shadow=False, lw=1.6)  # its face (the canon watch)
                 kit.ellipse(k, wx + 2, wy + 51, 5.8, 5.8, (0.10, 0.16, 0.14), 4841, shadow=False, lw=1.0)
@@ -867,7 +894,7 @@ def s41():
         drawn(lambda: pss.throne(k))
         drawn(lambda: card_on_seat(k))
         o = rpo.father_folding(k, LINE_X, F + 30, SC["father"], "B", chair_s=CHAIR_S, look=(-1, 0.3),
-                               arms=(-60, -10, 30, -26), hands=("quiet", "quiet"))
+                               arms=(-58, -32, 30, -26), hands=("quiet", "quiet"))
         h = {"father": (o["head"][0], o["head"][1], R["father"] * SC["father"])}
         nc._shadow(k, 360, F + 80, 34)
         h["don"] = head(dp.don(k, 360, F + 78, SC["don"], "stand", "panic", look=(1, 0.3)), "don")
@@ -899,8 +926,7 @@ def s42():
         h["client"] = client_flat(k, 900, F + 80, mug_hand=True)
         nc._shadow(k, 650, F + 30, 34)
         def fa():
-            hp.reset("quiet", "point")
-            o_ = dc.father(k, 650, F + 28, SC["father"], pose=(-8, 0, 52, 18), look=(1, 1.0))
+            o_ = rh.father(k, 650, F + 28, SC["father"], hands=("quiet", "point"), pose=(-8, 0, 50, 30), look=(1, 1.0))
             father_smile(k, o_, SC["father"])
             return o_
         o = L.tilted(k, 650, F + 28, 0.24, fa)
@@ -977,10 +1003,407 @@ def s45():
     return dict(cam=(420, F - 110, 1.15), draw=draw, glows=g, lights=li)
 
 
+
+# ---- Act V: the robot returns ------------------------------------------------------------------------------------------
+def s51():
+    """5.1 S2 M: the robot at its station, head up. ROBOT: "Yes." """
+    def draw(k):
+        nc._room(k, pam_behind=False)
+        with no_badge():
+            nc._shadow(k, ROBOT_HOME[0], F + 14, 26)
+            o = rp.robot(k, ROBOT_HOME[0], F + 12, SC["robot"], arms=((-8, 0), (40, 30)), look=(1, -0.8))
+        gx, gy = o["hands"][1]
+        drawn(lambda: pr.report(k, gx + 10, gy, 0.6))
+        return {"robot": head(o, "robot", "screen")}
+    g, li = glows_room(robot_screen=(ROBOT_HOME[0], F - 50))
+    return dict(cam=(ROBOT_HOME[0] + 20, F - 70, 2.6), draw=draw, glows=g, lights=li)
+
+
+def s52():
+    """5.2 S1 W: it rolls to Father; the report unfurls from its chest, accordion-folding over Don's shoes; Don steps
+    back; the paper follows."""
+    def draw(k):
+        nc._room(k)
+        drawn(lambda: pss.throne(k))
+        h = {"father": father_on_chair(k, look=(-1, 0.4))}
+        rx = LINE_X - 110
+        with no_badge():
+            nc._shadow(k, rx, F + 30, 26)
+            o = rp.robot(k, rx, F + 28, SC["robot"], arms=((-8, 0), (44, 36)), look=(1, -0.2))
+        h["robot"] = head(o, "robot", "screen")
+        gx, gy = o["hands"][1]
+        drawn(lambda: pr.report(k, rx - 10, gy + 6, 0.9, unfurl=1.6))         # the strip down and along to Don
+        nc._shadow(k, rx - 230, F + 90, 34)
+        h["don"] = head(L.tilted(k, rx - 230, F + 88, -0.12, lambda: dp.don(k, rx - 230, F + 88, SC["don"],
+                                                                             (-62, -36, 62, 36), "shock", look=(1, 0.8),
+                                                                             hands=("palm", "palm"))), "don")
+        return h
+    g, li = glows_room(robot_screen=(LINE_X - 110, F - 40))
+    POSE["5.2"] = "Don stepping back from the paper: stand-in (balance, leaning back)"
+    return dict(cam=(400, F - 80, 1.25), draw=draw, glows=g, lights=li)
+
+
+def s53():
+    """5.3 S3 MC: the gripper tears off one sheet and holds it out to Father across a clear gap; Father takes it in his
+    fingertips (pinch)."""
+    import hands_ps as hp
+    def draw(k):
+        nc._room(k, pam_behind=False)
+        drawn(lambda: pss.throne(k))
+        rx = LINE_X - 170
+        with no_badge():
+            nc._shadow(k, rx, F + 30, 26)
+            o = rp.robot(k, rx, F + 28, SC["robot"], arms=((-8, 0), (52, 46)), look=(1, -0.2))
+        gx, gy = o["hands"][1]
+        of = rpo.father_folding(k, LINE_X + 10, F + 30, SC["father"], "B", chair_s=CHAIR_S, look=(-1, 0.3),
+                                arms=(-62, -30, 30, -26), hold=(0,))
+        held_sheet(k, of["held"][0], lambda k_, P: pr.invoice(k_, P[0] - 14, P[1] + 22, 0.45, ang=0.06),
+                   "the invoice", 24, 50)
+        return {"robot": head(o, "robot", "screen"), "father": (of["head"][0], of["head"][1], R["father"] * SC["father"])}
+    g, li = glows_room(robot_screen=(LINE_X - 170, F - 40))
+    POSE["5.3"] = "the sheet in Father's clutch (its edge), the gripper just let go, a clear gap"
+    return dict(cam=(LINE_X - 60, F - 110, 1.9), draw=draw, glows=g, lights=li)
+
+
+def s54():
+    """5.4 S3 I: the sheet: COFFEE MACHINE REPAIR · $80 · UNPAID (a red stamp)."""
+    def draw(k):
+        def it():                                               # an insert: Father's dark velvet behind the sheet
+            kit.cut(k, [(TX - 200, F - 600), (TX + 200, F - 600), (TX + 200, F), (TX - 200, F)], (0.31, 0.04, 0.10),
+                    shadow=False, lw=0)
+            pr.invoice(k, TX, F - 300, 1.0, ang=-0.04)
+        drawn(it)
+        return {}
+    return dict(cam=(TX, F - 300, 3.6), draw=draw, glows=[(TX, F - 300, 70, 70, bp.NIGHT_WARM, 0.2)],
+                lights=[(TX, F - 300, 200, 0.8)], search=False, no_pool=True, insert=True)
+
+
+def s55():
+    """5.5 S3 MC: Father folds it into his inside pocket and reads the report, the only one reading anything."""
+    def draw(k):
+        nc._room(k, pam_behind=False)
+        drawn(lambda: pss.throne(k))
+        of = rpo.father_folding(k, LINE_X + 10, F + 30, SC["father"], "B", chair_s=CHAIR_S, look=(0, 1.0),
+                                arms=(-30, 70, 30, -70), hold=(0, 1))
+        hx, hy = of["head"]
+        PL = rh.contact(k, of["held"][0], "CLUTCH", "edge"); PR = rh.contact(k, of["held"][1], "CLUTCH", "edge")
+        mx, my = (PL[0] + PR[0]) / 2, (PL[1] + PR[1]) / 2
+        sw = max(0.5, abs(PR[0] - PL[0]) / 60.0 + 0.25)         # the sheet as wide as his two hands are apart
+        if nc._PASS[0] != "mask":
+            rh.prop(k, "the report", mx - 30 * sw - 4, my - 8, 60 * sw + 8, 50 * sw)
+            pr.report(k, mx, my + 20 * sw, sw)                  # the board first...
+        for i in (0, 1):                                        # ...then a clutch at each upper corner (board_two)
+            rh.lib_hand(k, of["held"][i], "CLUTCH", lws=SC["father"])
+        return {"father": (hx, hy, R["father"] * SC["father"])}
+    g, li = glows_room()
+    POSE["5.5"] = "reading: the report in two hands (board_two: a clutch at each upper corner)"
+    return dict(cam=(LINE_X + 10, F - 120, 2.4), draw=draw, glows=g, lights=li)
+
+
+def s56():
+    """5.6 S3 I: the robot's screen: UPTIME 100%."""
+    return robot_close("UPTIME 100%", badge=False)
+
+
+def s57():
+    """5.7 S4 C: Don: his eyes close mid-yawn, his head nods, he jerks awake."""
+    def draw(k):
+        nc._room(k, pam_behind=False)
+        drawn(lambda: pss.throne(k))
+        nc._shadow(k, TX - 70, F + 60, 34)
+        o = L.tilted(k, TX - 70, F + 58, 0.06, lambda: dp.don(k, TX - 70, F + 58, SC["don"], "stand", "squint",
+                                                              look=(0, 0.6)))
+        return {"don": head(o, "don")}
+    g, li = glows_room()
+    POSE["5.7"] = "the nod (squint, the head forward): key pose of three (the yawn, the nod, the jerk)"
+    return dict(cam=(TX - 70, F - 190, 3.2), draw=draw, glows=g, lights=li)
+
+
+def s58():
+    """5.8 S3 I: the robot's screen: SALARY $0."""
+    return robot_close("SALARY $0", badge=False)
+
+
+def s59():
+    """5.9 S3 MC: Father straightens in his cheap chair; his eye goes up to the $49,999 tag on the crown.
+    FATHER (slow, quiet): "There it is." """
+    def draw(k):
+        nc._room(k, pam_behind=False)
+        drawn(lambda: pss.throne(k))
+        of = rpo.father_folding(k, LINE_X + 10, F + 30, SC["father"], "A", chair_s=CHAIR_S, look=(-1, -1.0))
+        def eyeline():                                          # a faint dotted line from his eye to the tag (layout only)
+            c = k.c; c.set_source_rgba(0.95, 0.85, 0.4, 0.55); c.set_line_width(1.6); c.set_dash([4, 5])
+            c.move_to(of["head"][0] - 8, of["head"][1] - 6); c.line_to(TX + 70, F - 432 * TS + 34); c.stroke(); c.set_dash([])
+        drawn(eyeline)
+        return {"father": (of["head"][0], of["head"][1], R["father"] * SC["father"])}
+    g, li = glows_room()
+    POSE["5.9"] = "v2: his eyes up to the tag, the tag and his face in one frame, the portrait out"
+    return dict(cam=(TX + 70, F - 250, 2.0), draw=draw, glows=g, lights=li)
+
+
+def s510():
+    """5.10 S4 MC: Don, smiling proudly at Father (he thinks Father admires the chair), tilts the throne's back to show
+    it. DON: "It reclines." """
+    def draw(k):
+        keep = pss.throne                                       # the room's own throne off: only the tilted one
+        pss.throne = lambda *a, **kw: None
+        try:
+            nc._room(k, pam_behind=False)
+        finally:
+            pss.throne = keep
+        c = k.c
+        def thr():
+            c.save(); c.translate(TX, SEAT_Y); c.rotate(0.16); c.translate(-TX, -SEAT_Y)   # the back, tilted back a little
+            pss.throne(k); c.restore()
+        drawn(thr)
+        nc._shadow(k, TX - 34, F + 60, 34)
+        o, held = rh.without_hands(k, lambda: dp.don(k, TX - 34, F + 58, SC["don"], (-8, 0, 66, 30), "grin",
+                                                     look=(1, -0.2), hands=False), (1,))
+        if nc._PASS[0] != "mask":
+            P = rh.contact(k, held[1], "CLUTCH", "edge")
+            rh.prop(k, "the throne's armrest", P[0] - 30, P[1] - 14, 70, 30)
+        rh.lib_hand(k, held[1], "CLUTCH", lws=SC["don"])        # canon job (hand-jobs table): clutch, on the throne's edge
+        def push_lines():                                       # two motion marks at the back's top: it tips back
+            c.set_source_rgb(*INK); c.set_line_width(2.4); c.set_line_cap(1)
+            for i in range(2):
+                c.move_to(TX + 60 + i * 10, SEAT_Y - 150 - i * 12); c.curve_to(TX + 76 + i * 10, SEAT_Y - 140 - i * 12,
+                                                                                  TX + 80 + i * 10, SEAT_Y - 124 - i * 12,
+                                                                                  TX + 78 + i * 10, SEAT_Y - 110 - i * 12)
+                c.stroke()
+            c.set_line_cap(0)
+        drawn(push_lines)
+        return {"don": head(o, "don")}
+    g, li = glows_room()
+    POSE["5.10"] = "his clutch on the throne's armrest, the back tipping (marks)"
+
+    def rim(k_):                                                # the warm rim on the tilted throne (one tag, not two)
+        k_.c.save(); k_.c.translate(TX, SEAT_Y); k_.c.rotate(0.16); k_.c.translate(-TX, -SEAT_Y)
+        pss.throne(k_); k_.c.restore()
+    return dict(cam=(TX + 20, F - 170, 1.75), draw=draw, glows=g, lights=li, rim=rim)
+
+
+def s511():
+    """5.11 S3 M: Father takes the Client's card off the throne: the card in one hand, the report in the other. Doubt.
+    Behind, small on the counter: the needle in the orange."""
+    def draw(k):
+        nc._room(k, pam_behind=False)
+        drawn(lambda: pss.throne(k))
+        of = rpo.father_folding(k, LINE_X + 10, F + 30, SC["father"], "B", chair_s=CHAIR_S, look=(0, 0.4),
+                                arms=(-50, 40, 50, -40), hold=(0, 1))
+        hx, hy = of["head"]
+        held_sheet(k, of["held"][0], lambda k_, P: pr.name_card(k_, P[0], P[1] + 24, 0.5), "the Client's card", 28, 30)
+        held_sheet(k, of["held"][1], lambda k_, P: pr.report(k_, P[0], P[1] + 16, 0.7), "the report", 24, 36)
+        drawn(lambda: dial(k, "5.11"))
+        return {"father": (hx, hy, R["father"] * SC["father"])}
+    g, li = glows_room()
+    POSE["5.11"] = "the card in one clutch, the report in the other, his eyes between them"
+    return dict(cam=(LINE_X + 20, F - 180, 2.6), draw=draw, glows=g, lights=li)
+
+
+
+# ---- Act VI: human approval required -----------------------------------------------------------------------------------
+def robot_in_throne(k, kind, look=(1, 0)):
+    """the robot set on the throne's cushion (K2's staging, rv_keys.k2), badge-free; its screen shows `kind`."""
+    import rv_keys as rk
+    with no_badge():
+        r = rp.robot(k, TX, SEAT_Y + 4, SC["robot"], look=look)
+    sx, sy = r["screen"][:2]
+    face = rk._don_head if kind == "APPROVER: CEO" else None
+    drawn(lambda: pr.screen(k, sx, sy, 50 * SC["robot"] * 1.16, kind, face_fn=face))
+    return head(r, "robot", "screen")
+
+
+HIPS = (-62, 80, 62, -80)   # fists on the hips, elbows out (rules: no crossed forearms; don_ps "vest" read as
+                            # "crossed arms / hugging himself", cold 6.7 v1; three trials on a sheet, this one at the waist)
+
+
+def s61():
+    """6.1 S1 W: the robot sits in the throne, formally. Its screen: HUMAN APPROVAL REQUIRED (the same drawing as 3.3)."""
+    def draw(k):
+        nc._room(k)
+        drawn(lambda: pss.throne(k))
+        h = {"robot": robot_in_throne(k, "HUMAN APPROVAL REQUIRED")}
+        h["father"] = father_on_chair(k, look=(-1, -0.2))
+        nc._shadow(k, 360, F + 80, 34)
+        h["don"] = head(dp.don(k, 360, F + 78, SC["don"], "stand", "shock", look=(1, -0.4)), "don")
+        return h
+    g, li = glows_room(robot_screen=(TX, SEAT_Y - 55))
+    return dict(cam=(450, F - 120, 1.4), draw=draw, glows=g, lights=li)
+
+
+def s62():
+    """6.2 S3 MC: K2 v3, locked (rv_keys.k2): APPROVER: CEO with Don's face; Father's finger stops."""
+    return dict(file=os.path.join(EP, "rv_K2_v4.png"))
+
+
+def s63():
+    """6.3 S1 W: Father turns to Don. Everyone turns to Don: Sofía, Pam, the robot, the Client's eyes over the
+    counter's edge."""
+    def draw(k):
+        h = {}
+        nc._room(k, pam_behind=False)
+        c = k.c
+        c.save(); c.rectangle(0, 0, 4000, MB - 4); c.clip()     # behind the counter: Pam, and the Client's eyes over it
+        h["pam"] = head(pm.pam(k, nc.MON[0] + 20, F - 72, SC["pam"], "stand", "neutral", look=(-1, 0.2), mug=False), "pam")
+        h["client"] = head(cp.client(k, 720, MB + 40 + 300 * SC["client"], SC["client"], look=(-1, 0.3)), "client")
+        c.restore()
+        drawn(lambda: pss.throne(k))
+        h["robot"] = robot_in_throne(k, "APPROVER: CEO", look=(-1, 0.2))
+        h["father"] = father_on_chair(k, look=(-1, 0.2))
+        nc._shadow(k, 300, F + 40, 28)
+        h["sofia"] = head(pr.sofia_ceo(k, 300, F + 38, SC["sofia"], "hold", "smile", look=(1, 0.3)), "sofia")
+        nc._shadow(k, 390, F + 90, 34)
+        h["don"] = head(dp.don(k, 390, F + 88, SC["don"], "stand", "panic", look=(0, 0)), "don")
+        return h
+    g, li = glows_room(robot_screen=(TX, SEAT_Y - 55))
+    POSE["6.3"] = "every head to Don: key pose"
+    return dict(cam=(500, F - 110, 1.15), draw=draw, glows=g, lights=li)
+
+
+def don_close(arm=None, hands=("relax", "relax"), look=(1, -0.2), face="neutral", size=2.6, dy=0):
+    def draw(k):
+        nc._room(k, pam_behind=False)
+        drawn(lambda: pss.throne(k))
+        h = {"robot": robot_in_throne(k, "APPROVER: CEO")}
+        nc._shadow(k, TX - 100, F + 70, 34)
+        o = dp.don(k, TX - 100, F + 68, SC["don"], arm or "stand", face, look=look, hands=hands)
+        h["don"] = head(o, "don")
+        return h
+    g, li = glows_room(robot_screen=(TX, SEAT_Y - 55))
+    return dict(cam=(TX - 70, F - 150 + dy, size), draw=draw, glows=g, lights=li)
+
+
+def s64():
+    """6.4 S4 C: push in on Don's eyes: for the first time he reads what he is approving."""
+    sp = don_close(look=(1, -0.6), face="confused", size=4.2, dy=-40)
+    POSE["6.4"] = "his eyes on the screen (a close)"
+    return sp
+
+
+def s65():
+    """6.5 S4 MC: his fingertip rises toward the screen, the same gesture as 3.4, and hovers."""
+    POSE["6.5"] = "the point toward the screen, clearly apart (rules: no finger at a sign)"
+    return don_close(arm=(-8, 0, 118, 20), hands=("relax", "point"), look=(1, -0.5), face="neutral")
+
+
+def s66():
+    """6.6 S4 MC: his eyes go to the robot in his throne (v2: up to the crown: HIS chair). The hand freezes."""
+    POSE["6.6"] = "v2: his eyes up to the crown, the finger frozen"
+    return don_close(arm=(-8, 0, 118, 20), hands=("relax", "point"), look=(0.6, -1.0), face="shock", dy=-40)
+
+
+def s67():
+    """6.7 S4 M: the hand pulls back. Fists on his hips. Two full seconds of silence."""
+    POSE["6.7"] = "fists on hips (rules: standing, fists on the hips, elbows out)"
+    return don_close(arm=HIPS, hands=("fist", "fist"), look=(1, -0.2), face="neutral", size=2.0)
+
+
+def s68():
+    """6.8 S3 M: Sofía adjusts her new HR card."""
+    import robot_tg as rt
+    def draw(k):
+        nc._room(k, pam_behind=False)
+        nc._shadow(k, 300, F + 40, 28)
+        o = pr.sofia_ceo(k, 300, F + 38, SC["sofia"], "hold", "smile", look=(0.3, 0.9))
+        hx, hy = o["head"][:2]
+        def card():
+            c = k.c
+            c.save(); c.translate(hx + 16 * SC["sofia"], hy + 120 * SC["sofia"]); c.scale(0.5, 0.5)
+            rt.tg_badge(k, -29, -20, 5010)
+            c.restore()
+        drawn(card)
+        return {"sofia": head(o, "sofia")}
+    g, li = glows_room()
+    POSE["6.8"] = "her hand at the card: stand-in (her hold pose)"
+    return dict(cam=(300, F - 120, 2.4), draw=draw, glows=g, lights=li)
+
+
+def s69():
+    """6.9 S1 W: the robot sits dead still a beat, then rises slowly and stiffly out of the throne, formal to the last,
+    and steps aside."""
+    def draw(k):
+        nc._room(k)
+        drawn(lambda: pss.throne(k))
+        with no_badge():
+            nc._shadow(k, TX - 80, F + 30, 26)
+            o = rp.robot(k, TX - 80, F + 28, SC["robot"], look=(1, 0))
+        h = {"robot": head(o, "robot", "screen")}
+        h["father"] = father_on_chair(k, look=(-1, 0))
+        nc._shadow(k, 330, F + 80, 34)
+        h["don"] = head(dp.don(k, 330, F + 78, SC["don"], HIPS, "neutral", look=(1, -0.2), hands=("fist", "fist")), "don")
+        return h
+    g, li = glows_room(robot_screen=(TX - 80, F - 40))
+    POSE["6.9"] = "beside the throne, stepped aside: key pose"
+    return dict(cam=(440, F - 110, 1.4), draw=draw, glows=g, lights=li)
+
+
+def s610():
+    """6.10 S3 MC: Father turns the tag TODAY -> TOMORROW; folds his chair and leaves with the report and the Client's
+    card, the invoice in his pocket; the spilled tail stays. Don watches him go."""
+    def draw(k):
+        nc._room(k, pam_behind=False)
+        drawn(lambda: pss.throne(k))
+        drawn(lambda: pr.report(k, TX - 40, F + 60, 0.7, unfurl=1.0))   # the tail on the floor
+        nc._shadow(k, LINE_X + 80, F + 30, 32)
+        o, held = rh.without_hands(k, lambda: dc.father(k, LINE_X + 80, F + 28, SC["father"], look=(1, 0)), (0,))
+        held_sheet(k, held[0], lambda k_, P: pr.folding_chair(k_, P[0], P[1] + 150 * CHAIR_S * 0.9 - 2, CHAIR_S * 0.9,
+                                                              "folded"), "the folded chair", 14, 130)
+        h = {"father": head(o, "father")}
+        nc._shadow(k, TX - 110, F + 80, 34)
+        h["don"] = head(dp.don(k, TX - 110, F + 78, SC["don"], HIPS, "neutral", look=(1, 0), hands=("fist", "fist")), "don")
+        return h
+    g, li = glows_room()
+    POSE["6.10"] = "Father leaving, the folded chair in his clutch"
+    return dict(cam=(500, F - 120, 1.7), draw=draw, glows=g, lights=li)
+
+
+
+# ---- Act VII: the loop -------------------------------------------------------------------------------------------------
+def s71():
+    """7.1 S4 M: two keys. a: the room empty, Don stoops to the front-left caster with the folded tag; b: across the
+    throne as at frame 0, the report's tail being pulled over his belly, his eyes closing (rv_poses.don_sprawl "B",
+    the same pose as K1)."""
+    def key_a():
+        def draw(k):
+            nc._room(k, pam_behind=False)
+            drawn(lambda: pss.throne(k))
+            drawn(lambda: pr.report(k, TX - 120, F + 70, 0.7, unfurl=1.0))   # the tail, still on the floor
+            nc._shadow(k, TX - 110, F + 40, 34)
+            o, held = rh.without_hands(k, lambda: dp.don(k, TX - 110, F + 38, SC["don"], (-8, 0, 40, 60), "neutral",
+                                                         look=(1, 1.0), hands=False), (1,))
+            held_sheet(k, held[1], lambda k_, P: pr.review_tag(k_, P[0] + 4, P[1] - 22, 0.5), "the tag", 26, 36,
+                       pose="PINCH")
+            return {"don": head(o, "don")}
+        g, li = glows_room()
+        return dict(cam=(TX - 60, F - 110, 2.0), draw=draw, glows=g, lights=li)
+
+    def key_b():
+        def draw(k):
+            nc._room(k, pam_behind=False)
+            drawn(lambda: pss.throne(k))
+            import rv_keys as rk
+            drawn(lambda: rk._card_under_caster(k, TX - 80, F + 4, 1.45))        # as K1: the card under the caster
+            o = rpo.don_sprawl(k, "B", report=True)
+            return {"don": head(o, "don")}
+        g, li = glows_room()
+        return dict(cam=(454, 756, 1.96), draw=draw, glows=g, lights=li, search=False)
+    POSE["7.1"] = "a: the tag unhooked, in his pinch, his eyes on the caster (the stoop: to the sandbox); b: K1's pose"
+    return [key_a(), key_b()]
+
+
+def s72():
+    """7.2 S4 M: the same frame as 1.1 (K1 v6): behind the throne the robot's screen glows UPTIME 100%; its gripper
+    reaches for the card -> frame 0."""
+    return dict(file=os.path.join(EP, "rv_K1_v7.png"))
+
+
 MAP = {"1.1": s11, "1.2": s12, "1.3": s13, "1.4": s14, "1.5": s15, "1.6": s16, "1.7": s17,
        "2.1": s21, "2.2": s22, "2.3": s23, "2.4": s24, "2.5": s25, "2.6": s26, "2.7": s27,
        "3.1": s31, "3.2": s32, "3.3": s33, "3.4": s34, "3.5": s35, "3.6": s36, "3.7": s37, "3.8": s38, "3.9": s39,
-       "3.10": s310, "4.1": s41, "4.2": s42, "4.3": s43, "4.4": s44, "4.5": s45}
+       "3.10": s310, "4.1": s41, "4.2": s42, "4.3": s43, "4.4": s44, "4.5": s45,
+       "5.1": s51, "5.2": s52, "5.3": s53, "5.4": s54, "5.5": s55, "5.6": s56, "5.7": s57, "5.8": s58, "5.9": s59,
+       "5.10": s510, "5.11": s511, "6.1": s61, "6.2": s62, "6.3": s63, "6.4": s64, "6.5": s65, "6.6": s66, "6.7": s67,
+       "6.8": s68, "6.9": s69, "6.10": s610, "7.1": s71, "7.2": s72}
 
 
 # ---- rendering and checks ----------------------------------------------------------------------------------------------
@@ -1015,6 +1438,29 @@ def geometry(sid, cam, draw):
     return checks(sid, cam, c.texts, heads)
 
 
+HAND_FAULTS = {}                                               # label -> the hand gate's faults (rv_hands, da_hand_gate)
+HAND_DRAWN = {}
+
+
+def hand_pass(label, sid, cam, draw):
+    """the hand gate on a frame as drawn (a dry pass at the final camera): rv_scenes.HANDS[label] is its job list."""
+    s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
+    c = cairo.Context(s); k = Ctx(c, 0)
+    rh.begin()
+    c.save(); sbv.view(c, *cam)
+    nc.NO_THRONE_CONFETTI[0] = True
+    try:
+        import hands_lr
+        with hands_lr.shot():
+            draw(k)
+    finally:
+        nc.NO_THRONE_CONFETTI[0] = False
+    c.restore()
+    HAND_DRAWN[label] = rh.drawn()
+    HAND_FAULTS[label] = rh.check(getattr(sc, "HANDS", {}).get(label))
+    return HAND_FAULTS[label]
+
+
 def search(sid, spec):
     """the first camera near the shot's own that passes the frame checks (offsets in frame px, a closer zoom last;
     da_layouts._render's search)."""
@@ -1045,6 +1491,8 @@ def render(sid, spec=None):
         return s, []
     draw = spec["draw"]
     cam = search(sid, spec) if spec.get("search", True) else spec["cam"]
+    if LABEL[0]:
+        hand_pass(LABEL[0], sid, cam, draw)
     nc.NO_THRONE_CONFETTI[0] = True
     try:
         s = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
@@ -1077,6 +1525,7 @@ def render(sid, spec=None):
     return s, checks(sid, cam, c.texts, heads)
 
 
+LABEL = [None]                                                 # the key's label while the sheet renders it
 INSERT = [False]                                               # set while an insert key draws (a cut-in: no cast)
 
 
@@ -1098,7 +1547,7 @@ def checks(sid, cam, texts, heads):
             x, y, r = faces[n]
             if not (r <= x <= W - r and 96 + r <= y <= H):
                 msgs.append("FRAME: %s's face out of the frame (%d, %d)" % (n, x, y))
-        elif sid not in ("1.1",) and not INSERT[0]:
+        elif sid not in ("1.1", "6.2", "7.2") and not INSERT[0]:
             msgs.append("CAST: %s is in the scene file's cast but not drawn" % n)
     if "don" in heads and st["don"] in "LR":
         side = "L" if heads["don"][0] < LINE_X else "R"
@@ -1134,7 +1583,10 @@ def sheet(act, out_dir=EP):
     c.show_text("generated by rv_layouts.py from rv_scenes.py · each frame at 270 · red: the apps' zones · key poses only")
     fails = []
     for i, (sid, one, lab) in enumerate(ids):
+        LABEL[0] = lab
         surf, msgs = render(sid, one)
+        LABEL[0] = None
+        msgs = msgs + ["HAND " + f for f in HAND_FAULTS.get(lab, [])]
         zones(cairo.Context(surf))
         x = 30 + (i % cols) * (tw + 30); y = 90 + (i // cols) * (th + 140)
         c.save(); c.translate(x, y); c.scale(0.5, 0.5); c.set_source_surface(surf, 0, 0); c.paint(); c.restore()
@@ -1194,7 +1646,30 @@ def light_test(out=os.path.join(EP, "rv_light_v3_test.png")):
     sheet_.save(out); print("wrote", out)
 
 
+def hands_report(acts=(1, 2, 3, 4, 5, 6, 7)):
+    """the hand gate alone, every key of every act, no grade: what is drawn and what fails."""
+    n = 0
+    for a in acts:
+        for sid in ACTS[a]:
+            sp = specs(sid)
+            for i, one in enumerate(sp):
+                lab = sid + ("abcd"[i] if len(sp) > 1 else "")
+                if "file" in one:
+                    print("%-6s (a locked file)" % lab); continue
+                INSERT[0] = bool(one.get("insert"))
+                cam = search(sid, one) if one.get("search", True) else one["cam"]   # the camera the sheet uses
+                f = hand_pass(lab, sid, cam, one["draw"])
+                n += len(f)
+                print("%-6s drawn %s" % (lab, HAND_DRAWN[lab]))
+                for x in f:
+                    print("         " + x)
+    print("hand faults:", n)
+    return n
+
+
 if __name__ == "__main__":
     if sys.argv[1:] == ["light"]:
         light_test(); sys.exit(0)
+    if sys.argv[1:2] == ["hands"]:
+        sys.exit(1 if hands_report() else 0)
     sys.exit(0 if main(sys.argv[1:]) else 1)

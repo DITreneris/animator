@@ -17,6 +17,8 @@ import math
 import sys
 import cairo
 import kit
+import rv_hands as rh
+rh.setup()
 import bp_frame as bp
 import ps_set as pss
 import don_ps as dp
@@ -140,10 +142,29 @@ def _no_hr_badge():
 def _don_head(k, x, y, rr):
     """Don's own rig, small, his head centred in a screen's circle (its head is at -302 units, about 62 round)."""
     s_ = rr / 62.0 * 1.12
-    dp.don(k, x, y + 302 * s_, s_, "stand", "neutral", look=(0, 0))
+    with rh.second_pass():                                   # a picture on a screen: its hands are not the cast's
+        dp.don(k, x, y + 302 * s_, s_, "stand", "neutral", look=(0, 0))
 
 
-def k1(out=EP + "rv_K1_v6.png"):
+def hand_gate(label, cam, draw):
+    """the canon hand gate on a key still (rv_hands, da_hand_gate): its job list is rv_scenes.HANDS[label]."""
+    import fs_storyboard_v17 as sbv
+    import hands_lr
+    import rv_scenes as sc
+    s = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); k = kit.Ctx(cairo.Context(s), 0)
+    rh.begin()
+    k.c.save(); sbv.view(k.c, *cam)
+    with hands_lr.shot():
+        draw(k)
+    k.c.restore()
+    faults = [f for f in rh.check(sc.HANDS.get(label)) if not f.startswith("    note")]
+    print("hand gate %s: drawn %s: %s" % (label, rh.drawn(), "PASS" if not faults else "FAIL"))
+    for f in faults:
+        print("    " + f)
+    assert not faults, "the hand gate fails %s" % label
+
+
+def k1(out=EP + "rv_K1_v7.png"):
     """v4 (Tomas 28 Nov "Go 1"): a medium on the whole throne with Don asleep in it (the pose sandbox's don_seated,
     rv_poses v1), REVIEW · TOMORROW folded under the front-right caster. The robot is hidden behind the throne (its
     badge is on its chest at frame 0, not at the end: nothing of its chest may show); its screen's glow spills round
@@ -166,6 +187,7 @@ def k1(out=EP + "rv_K1_v6.png"):
                                                              # the report on his belly; silhouette test B: "dozed" 2 of 2
         if nc._PASS[0] != "mask":
             _robot_arm_from_behind(k, (card[0] - 38, card[1] - 2), behind=False, side=-1)
+    hand_gate("K1", cam, draw)                              # v7: under the canon's hands (hands_lr, v4, quiet)
     glows = [(TX - 70, SEAT[1] - 60, 70, 90, bp.NIGHT_MONITOR, 0.40)]   # UPTIME's glow, from behind the throne's left side
     lights = [(TX - 70, SEAT[1] - 60, 180, 1.0), (nc.DOOR[0], nc.DOOR[1], 260, 0.4)]
     try:
@@ -174,9 +196,9 @@ def k1(out=EP + "rv_K1_v6.png"):
         nc.NO_THRONE_CONFETTI[0] = False
 
 
-def k2(out=EP + "rv_K2_v3.png"):
+def k2(out=EP + "rv_K2_v4.png"):
     nc.NO_THRONE_CONFETTI[0] = True
-    cam = (458, 770, 1.90)                                   # v1c: the portrait's plaque out (G3: whole or out)
+    cam = (470, 770, 1.84)                                   # v1c: the portrait's plaque out (G3: whole or out)
     st = {}
 
     def draw(k):
@@ -190,14 +212,22 @@ def k2(out=EP + "rv_K2_v3.png"):
             sx, sy = r["screen"][:2]
             pr.screen(k, sx, sy, 50 * nc.L.SC["robot"] * 1.16, "APPROVER: CEO", face_fn=_don_head)   # v3: Don's own head
             st["screen"] = (sx, sy)
-        nc._shadow(k, 556, F + 40, 30)
-        dc.father(k, 556, F + 38, nc.L.SC["father"], look=(-1, 0))   # v2: on the tape (Father's side)
-        nc._shadow(k, 372, F + 60, 34)
-        dp.don(k, 372, F + 58, nc.L.SC["don"], (-6, -8, 62, 84), "neutral", look=(1, -0.3), hands=("relax", "point"))   # v2: Don on HIS side
-                                                             # of the tape, by the arrow (2 of 2: "the arrow points away from Don")
+        nc._shadow(k, 584, F + 40, 30)                          # v4 (Tomas 28 Nov: unlocked; script 6.2 and the hand-jobs
+        rh.father(k, 584, F + 38, nc.L.SC["father"], hands=("point", "quiet"), pose=(-112, -30, 8, 0), look=(-1, -0.4))
+        nc._shadow(k, 372, F + 60, 34)                          # table H5): FATHER's finger reaches toward the screen and
+        dp.don(k, 372, F + 58, nc.L.SC["don"], "stand", "shock", look=(1, -0.5))   # stops, clearly apart; Don only looks
     probe = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0)
     probe.c.save(); import fs_storyboard_v17 as sbv; sbv.view(probe.c, *cam); draw(probe); probe.c.restore()
     sx, sy = st["screen"]
+    hand_gate("K2", cam, draw)
+    import da_hand_gate as g_                                  # canon §0.3: measure the gap, finger to screen, at feed size
+    for h in g_.HANDS:
+        if h["g"] == "point":
+            tip = (h["at"][0] + h["d"][0] * 1.45 * h["w"], h["at"][1] + h["d"][1] * 1.45 * h["w"])
+            X, Y = 270 + (sx - cam[0]) * cam[2], 480 + (sy - cam[1]) * cam[2]
+            gap = math.hypot(tip[0] - X, tip[1] - Y) - 50 * nc.L.SC["robot"] * 1.16 * cam[2]
+            print("K2: fingertip to the screen's edge: %.0f px at 540, %.0f px at 270" % (gap, gap / 2))
+            assert gap / 2 >= 8, "the finger is on the screen at feed size (rules: a finger near a sign reads as holding it)"
     glows = [(sx, sy, 44, 40, bp.NIGHT_MONITOR, 0.50)]
     lights = [(sx, sy, 180, 1.0), (nc.DOOR[0], nc.DOOR[1], 260, 0.5)]
     try:

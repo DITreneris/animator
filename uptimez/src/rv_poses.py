@@ -14,6 +14,8 @@ import sys
 import cairo
 from PIL import Image
 import kit
+import rv_hands as rh
+rh.setup()
 import don_ps as dp
 import don_v4 as dv
 import ps_set as pss
@@ -197,7 +199,8 @@ def don_on_back(k, x, floor, s=0.60, var="A", cup=True, arm=(-8, 0, 92, 2), cup_
     oy = floor - lift
     c.save(); c.translate(feet_x, oy); c.rotate(a); c.translate(-feet_x, -oy)
     c.save(); c.rectangle(feet_x - 400, oy - 2000, 800, 2000 + w * s + 2); c.clip()
-    o = dp.don(k, feet_x, oy, s, arm, "squint", (0, 0.4 if var == "C" else 0), hands=("quiet", "relax"))
+    o, held = rh.without_hands(k, lambda: dp.don(k, feet_x, oy, s, arm, "squint", (0, 0.4 if var == "C" else 0),
+                                                 hands=False), (1,) if cup else ())
     c.restore(); c.restore()
     def r(px, py):
         dx, dy = px - feet_x, py - oy
@@ -217,14 +220,16 @@ def don_on_back(k, x, floor, s=0.60, var="A", cup=True, arm=(-8, 0, 92, 2), cup_
         kit.cut(k, [(fx - 2 * s, fy - 24 * s), (fx + 12 * s, fy - 22 * s), (fx + 14 * s, fy + 12 * s),
                     (fx - 2 * s, fy + 12 * s)], SHOE, shadow=False, lw=2)          # the shoe, toe up
     hx, hy_ = r(*o["head"][:2])
-    if cup:
-        px, py = r(*o["hands"][1])                          # the raised hand, as the rig drew it
-        cups.cup_saucer(k, px, py - 6 * s, cups.CUP_FLOOR * s / 0.6 * cup_k, state="held")
+    if cup:                                                 # the canon (episode 15's cups: "on a palm"): the library's
+        h = held[1]                                         # SAUCER_SUPPORT at the wrist the rig freed, the cup and
+        P = rh.contact(k, h, "SAUCER_SUPPORT", "saucer", reach=-1)   # saucer standing on it
+        rh.lib_hand(k, h, "SAUCER_SUPPORT", reach=-1, lws=s,
+                    obj=lambda k_: cups.cup_saucer(k_, P[0], P[1], cups.CUP_FLOOR * s / 0.6 * cup_k, state="held"))
     return dict(head=(hx, hy_))
 
 
 def father_folding(k, x, floor, s, var="A", lean_side=0.0, chair_s=0.9, look=(0.5, 0.1), head_level=False,
-                   arms=(-30, 26, 30, -26), hands=("quiet", "quiet")):
+                   arms=(-30, 26, 30, -26), hands=("quiet", "quiet"), hold=()):
     """1.6: Father on the folding chair. REUSED: da_sheets.feet_up (episode 15, from dh_poses.don_seated): his rig
     clipped at the seat, leaning back, the legs in his black out to screen right with a knee and a shoe. Here the feet
     stay on the floor. A: knees out to screen right, the shins down (sitting, three-quarter); B: the legs crossed at the
@@ -242,19 +247,22 @@ def father_folding(k, x, floor, s, var="A", lean_side=0.0, chair_s=0.9, look=(0.
     c.save(); c.translate(x, seat_y); c.rotate(lean); c.translate(-x, -seat_y)
     c.save(); c.rectangle(x - 400, (neck if head_level else seat_y - 2000), 800,
                           (seat_y + 2 - neck) if head_level else 2000 + 2); c.clip()
-    hp.reset(*hands)
-    o = dc.father(k, x, vfeet, s, pose=arms, look=look)
+    held = {}
+    if hold:                                                # a hand that holds: the rig's own is not drawn there (rv_hands)
+        o, held = rh.without_hands(k, lambda: dc.father(k, x, vfeet, s, pose=arms, look=look), hold, hands)
+    else:
+        o = rh.father(k, x, vfeet, s, hands=hands, pose=arms, look=look)
     c.restore(); c.restore()
     if head_level:                                          # the head kept level over the leaning body (v2, 1.6: a
         dx, dy = 0.0, neck - seat_y                         # tilted head read as fainting 2/2): the neck point turned,
         nx = x + dx * math.cos(lean) - dy * math.sin(lean)  # the head drawn there unturned
         ny = seat_y + dx * math.sin(lean) + dy * math.cos(lean)
         c.save(); c.translate(nx - x, ny - neck); c.rectangle(x - 400, neck - 2000, 800, 2000); c.clip()
-        hp.reset(*hands)
-        o2 = dc.father(k, x, vfeet, s, pose=arms, look=look)
+        with rh.second_pass():
+            o2 = rh.father(k, x, vfeet, s, hands=hands, pose=arms, look=look)
         c.restore()
         hx, hy = o2["head"][:2]
-        return dict(head=(hx + nx - x, hy + ny - neck))
+        return dict(head=(hx + nx - x, hy + ny - neck), held=held)
     # the legs (feet_up's line): hip -> knee (out to screen right, a little down) -> ankle (down to the floor)
     c.save(); c.translate(x, seat_y); c.scale(s, s)
     fl = (floor - seat_y) / s
@@ -275,7 +283,7 @@ def father_folding(k, x, floor, s, var="A", lean_side=0.0, chair_s=0.9, look=(0.
     c.restore()
     hx, hy = o["head"][:2]
     dx, dy = hx - x, hy - seat_y
-    return dict(head=(x + dx * math.cos(lean) - dy * math.sin(lean), seat_y + dx * math.sin(lean) + dy * math.cos(lean)))
+    return dict(head=(x + dx * math.cos(lean) - dy * math.sin(lean), seat_y + dx * math.sin(lean) + dy * math.cos(lean)), held=held)
 
 
 def client_fix(k, x, floor, s, target, var="A"):

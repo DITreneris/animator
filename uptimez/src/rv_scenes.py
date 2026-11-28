@@ -464,6 +464,66 @@ K1_HIDES = {"badge": "the robot's chest is behind the throne in K1 (v3 failed on
             "chair": "gone with Father"}
 
 
+# ---- the hands (the canon's §0 step 0: every hand, its job and its row, declared; rv_hands + da_hand_gate check the
+# drawing against it: a hand not listed here fails the build). Per key frame as the layouts draw it (hands the camera
+# leaves out are not listed). Rows: the canon table's (DITreneris/uptimez docs/rules-hands-and-phones.md "Jobs");
+# saucer_hold is episode 15's pending row (a vessel standing on a level palm: da_cups "on a palm").
+def _h(spec):
+    rows = []
+    for part in spec.split(";"):
+        who, jobs = part.strip().split(":")
+        for side, job in zip("LR", jobs.split(",")):
+            if job.strip() != "-":
+                rows.append((who.strip(), side, job.strip(), job.strip()))
+    return rows
+
+
+HANDS = {k_: _h(v_) for k_, v_ in {
+    "K1": "don: quiet, quiet",
+    "K2": "father: point, quiet; don: quiet, quiet",
+    "1.2": "don: quiet, saucer_hold",
+    "1.3": "pam: quiet, quiet",
+    "1.4": "father: clutch, quiet; don: quiet, saucer_hold; pam: quiet, -",
+    "1.5a": "client: -, pinch", "1.5b": "client: -, quiet",
+    "1.6": "father: quiet, quiet",
+    "1.7a": "father: -, pinch",
+    "2.1": "don: palm, palm; father: quiet, quiet; sofia: quiet, quiet; pam: quiet, -",
+    "2.2": "sofia: quiet, quiet",
+    "2.3": "father: palm, quiet",
+    "2.5": "sofia: quiet, quiet",
+    "2.7": "don: quiet, quiet; father: quiet, quiet",
+    "3.1": "don: quiet, quiet; father: quiet, quiet; pam: quiet, quiet",
+    "3.2": "don: quiet, quiet; pam: quiet, quiet",
+    "3.4": "don: quiet, point",
+    "3.6": "don: quiet, quiet; pam: quiet, quiet",
+    "3.7a": "client: -, palm; pam: quiet, quiet",
+    "3.7b": "client: -, saucer_hold; pam: quiet, quiet",
+    "3.7c": "client: -, saucer_hold",
+    "3.9": "don: quiet, quiet; father: quiet, quiet; pam: quiet, -",
+    "3.10": "father: quiet, quiet",
+    "4.1": "father: quiet, quiet; don: quiet, quiet",
+    "4.2": "father: quiet, point; client: -, saucer_hold; pam: quiet, quiet",
+    "4.3a": "don: palm, palm", "4.3b": "don: quiet, quiet",
+    "4.4a": "pam: quiet, quiet", "4.4b": "pam: quiet, quiet",
+    "4.5": "don: quiet, quiet; father: quiet, quiet; sofia: quiet, quiet",
+    "5.2": "don: -, palm; father: quiet, quiet",
+    "5.3": "father: clutch, quiet",
+    "5.5": "father: clutch, clutch",
+    "5.7": "don: quiet, quiet",
+    "5.9": "father: quiet, quiet",
+    "5.10": "don: quiet, clutch",
+    "5.11": "father: clutch, clutch",
+    "6.1": "don: quiet, quiet; father: quiet, quiet",
+    "6.3": "don: quiet, quiet; father: quiet, quiet; sofia: quiet, quiet; pam: quiet, quiet",
+    "6.5": "don: quiet, point", "6.6": "don: quiet, point",
+    "6.7": "don: fist, fist",
+    "6.8": "sofia: quiet, quiet",
+    "6.9": "don: fist, fist; father: quiet, quiet",
+    "6.10": "father: clutch, quiet; don: fist, fist",
+    "7.1a": "don: quiet, pinch", "7.1b": "don: quiet, quiet",
+}.items()}
+
+
 def states():
     """the state of every prop at the END of every shot."""
     cur, out = dict(START), {}
