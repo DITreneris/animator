@@ -54,7 +54,7 @@ It starts from concept v7.1 ([`the-review-concept-v7.1.md`](the-review-concept-v
 | 0.1 | Concept v7.1 closed (five reviews triaged; G6 used) | Done |
 | 0.2 | **STORYLINE v3.5**: the throne handover rule, row 16 rewritten as *Approved.*, the Client's survival marked as planted | Done (28 Nov) |
 | 0.3 | Branch `uptimez-the-review` | Done |
-| 0.4 | Read **episode 15 as built** (its latest frames, not its script): the throne and its back, the REVIEW · TOMORROW card, the tape, Sofía's outfit, Pam's mustard mug, Father's look | To do |
+| 0.4 | Read **episode 15 as built** (its latest frames, not its script): the throne and its back, the REVIEW · TOMORROW card, the tape, Sofía's outfit, Pam's mustard mug, Father's look | **Done late, 28 Nov** (after Tomas: "kodel tu nupaisei tokia nauja?"): against rough cut v4 (`e9e9894`). The price tag and the REVIEW card differed; the tape's state after episode 15 is still open |
 | 0.5 | **Release order:** stages 1–6 run in parallel with episode 15; stage 7 waits for E15's master | Decided |
 
 ## 4. The plan, stage by stage
@@ -207,3 +207,29 @@ Every stop sends the file, one line on what changed, the gates passed with evide
   - 5.11: the report on his knee, held by its top edge from above (clutch). The palm-on-a-sheet is gone (no canon row).
   - Unchanged: 1.2 and 3.7 (`saucer_hold`, a pending row, Tomas's pick).
   - The corner/sleeve/inward hack is removed.
+
+#### Props as episode 15 ends (28 Nov, Tomas /grill-me)
+- **The audit.** Against episode 15 rough cut v4 (`e9e9894`; the worktree had been at 65ef23b; K1 and K2 rebuilt md5-identical).
+  - The throne is the same (`dh_props.ceo_chair`).
+  - The $49,999 tag was episode 14's (`ps_set.price_tag`, inherited from the night set).
+  - The REVIEW card was episode 15's v1.
+  - Cups, Sofía v5, the clean Client, the rigs and the confetti (off) already matched.
+  - Open: the tape. Episode 15 ends with Don's strip peeled and the throne over the gap.
+- **The price.** `dh_props` swing ticket v2, style **A** (the crown's left point), `TAG_FONT` 19, as episode 15's S8 and S8r.
+  - Style B (under the left armrest, Tomas's first pick) was covered by Don's mark or the robot in 9 shots: 2.5, 2.7, 4.1, 4.5, 5.10, 6.1, 6.4, 6.7, 6.9.
+  - The front of the episode 14 card is off.
+- **The REVIEW card.** `da_layouts.review_tag "A"`; TODAY is the same lines (`rv_props._review_tag_word`, pixel-checked against TOMORROW).
+- **Gates.**
+  - `rv_props.props_selftest`, every planted fault failing first:
+    - PROP: a retired function drawn (episode 14's tag, REVIEW v1, the price in style B).
+    - COVER: a sign under 70 % visible.
+    - EDGE: a card cut by the frame, even with no letters on it.
+  - They run in every layout's checks, in the camera search, and on K1 and K2.
+  - Hands and props: 0 faults, all acts.
+- **Frames.**
+  - K1 v8, K2 v6 (v7 and v5 kept). Don's antenna crosses the K1 tag; the letters read.
+  - 5.9: Father's eyeline back to the crown's left point.
+  - 5.7: camera set by hand.
+  - 6.4 is now a medium close: Don, the $49,999 and APPROVER: CEO with his face in one frame. At 4.2 no camera kept the tag whole or out. This changes the shot, for Tomas.
+- **Cold read at 270, 8 stills, 2 viewers.** The price read in every still that shows it (6/8); "large and clear" in 5.9. The robot's screen overlaps the card's corner in 6.1 (the letters stay whole).
+- **Canon.** DITreneris/uptimez `hands-function-rule` 67192ac: CANON.md "Props". Lesson 251.
