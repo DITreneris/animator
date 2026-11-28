@@ -47,7 +47,8 @@ CANON_JOBS = ("quiet", "point", "point_t", "grab", "clutch", "pinch", "fist", "p
 PENDING = ("pinch_pinky", "saucer_hold")                         # new rows tested in this film, awaiting the canon table
 LEGACY = ("relax", "relax_s", "cup", "tuck", "two", "two_s", "salute", "point_s", "beckon")
 LIB_JOB = {"RELAXED": "quiet", "GRAB": "grab", "CLUTCH": "clutch", "PINCH": "pinch", "PALM": "palm", "FIST": "fist",
-           "CUP_GRIP": "pinch_pinky", "SAUCER_SUPPORT": "saucer_hold"}   # hand_lib_v4's poses -> the canon table's jobs
+           "CUP_GRIP": "pinch_pinky", "SAUCER_SUPPORT": "saucer_hold",
+           "CUP_GRIP_TUCK": "pinch_pinky"}   # (28 Nov, 5.2) the same grip, the little finger in (da_s52_anim)   # hand_lib_v4's poses -> the canon table's jobs
 HOLDING = ("grab", "pinch", "clutch", "phone_grip", "handle_grip") + PENDING
 ROBOT_SKIN = (0.36, 0.38, 0.43)                                  # waiter_kit.STEEL_DARK: the robot's arms pass it as skin
 METAL = (0.55, 0.58, 0.62)                                       # the canon sheet's robot metal
@@ -377,7 +378,7 @@ def check(tol=3.0):
         ok = False
         for i, h in enumerate(lib):
             tol = max(5.0, h["w"] * 0.6)
-            if h["lib"] == "CUP_GRIP" and v["handle"] and math.hypot(h["contacts"]["handle"][0] - v["handle"][0],
+            if h["lib"] in ("CUP_GRIP", "CUP_GRIP_TUCK") and v["handle"] and math.hypot(h["contacts"]["handle"][0] - v["handle"][0],
                                                                       h["contacts"]["handle"][1] - v["handle"][1]) <= tol:
                 ok = True; used.add(i)
             if h["lib"] == "SAUCER_SUPPORT" and v["base"] and math.hypot(h["contacts"]["saucer"][0] - v["base"][0],
@@ -389,7 +390,7 @@ def check(tol=3.0):
             out.append("VESSEL %s held by no hand: no CUP_GRIP at its handle (%s), no palm under its base, no GRAB on "
                        "its body" % (v["name"], v["handle"]))
     for i, h in enumerate(lib):
-        if h["lib"] in ("CUP_GRIP", "SAUCER_SUPPORT") and i not in used:
+        if h["lib"] in ("CUP_GRIP", "CUP_GRIP_TUCK", "SAUCER_SUPPORT") and i not in used:
             out.append("VESSEL a %s at (%d, %d) holds no cup, mug or saucer" % ((h["lib"],) + tuple(h["at"])))
     # ROBOT
     rob_hands = [a["h"] for a in ARMS if a["robot"]]

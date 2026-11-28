@@ -30,7 +30,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 3
+VER = 5
 T0 = 34.44
 SHOTS = [("5.1", 1.4), ("5.2", 2.8), ("5.3", 2.0), ("5.3b", 0.6), ("5.4", 2.2)]
 drawn = A.drawn
@@ -82,8 +82,7 @@ def s51_surface(t):
 def s52_surface(t):
     import da_s52_anim as S52
     import da_hand_gate as g
-    with g.paused():                                                   # the locked still's own gate (stage 3; v3 library)
-        return S52.frame(t, 1)
+    return S52.frame(t, 1)                                             # (unlocked 28 Nov: gated like the rest)
 
 
 # ---- 5.3 -------------------------------------------------------------------------------------------------------------------
@@ -319,7 +318,7 @@ def mix(sec, path):
     return path
 
 
-GATED = ("5.1", "5.3", "5.3b", "5.4")                              # 5.2: the locked still's own gate (stage 3)
+GATED = ("5.1", "5.2", "5.3", "5.3b", "5.4")
 
 
 def build():

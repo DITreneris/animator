@@ -32,3 +32,11 @@ Shared, fixed after round 2: the vest's red stain "appeared" when the cup left t
 cup and saucer now start at his belt, under it; in 5.3 he ran with the cup back on its saucer (2/3): he runs as 5.2
 left him, the cup up by its handle (cups canon, kind "cup"), the saucer on his other palm.
 G6: two rounds, no third. Not fixed: the sip (the locked still), Don's shoes, the cut from lying to standing.
+
+## 5.2 unlocked (Tomas 28 Nov: "atrakinam ir sutvarkom"), one-beat test, 2 fresh viewers
+
+The cup now goes to his mouth and tips (the still had it at his cheek: "a phone"). Both: "drinks, probably: at his
+mouth, it tilts" (read; no "phone"). Shared: his arm "bent up like a broken arm" at the end (fixed: lowered to his
+chest); the cup slid behind the saucer as it lifted (B; fixed: the saucer under it till clear). Not fixed: the vest's
+red stain is hidden by the cup at his belt and shows when it lifts (2/2 "pops in"); in the film the stain is seen in
+every earlier scene. The little finger not named by either.
