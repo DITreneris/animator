@@ -223,14 +223,24 @@ def screen(k, x, y, r, kind, shape="round", face_fn=None):
     c.restore()
 
 
+SOFIA_V5 = [False]   # opt-in (28 Nov, Tomas: "refresh the characters from episode 15"): the suit over episode 15's
+                     # locked Sofía v5 (sofia_da.LOOK_V5: library hands, no badge, the fuller ponytail, the gold
+                     # necklace and drop earrings). False draws the props sheet v2 as committed.
+
+
 def sofia_ceo(k, x, feet, s=1.0, *a, **kw):
     """Sofía's CEO power suit (episode 16): episode 15's suit cut in black, a gold pin on the lapel."""
     old = list(sd.SUIT)
+    old_v5 = sd.LOOK_V5[0] if hasattr(sd, "LOOK_V5") else None
     sd.SUIT[:] = CEO_SUIT
+    if SOFIA_V5[0] and old_v5 is not None:
+        sd.LOOK_V5[0] = True
     try:
         o = sd.sofia(k, x, feet, s, *a, **kw)
     finally:
         sd.SUIT[:] = old
+        if old_v5 is not None:
+            sd.LOOK_V5[0] = old_v5
     c = k.c
     hx, hy = o["head"][:2]
     px, py = hx - 20 * s, hy + 74 * s                        # the left lapel, above the binder she holds
@@ -238,6 +248,32 @@ def sofia_ceo(k, x, feet, s=1.0, *a, **kw):
     c.set_source_rgb(*INK); c.set_line_width(1.6 * s); c.arc(px, py, 6.5 * s, 0, 2 * math.pi); c.stroke()
     c.set_source_rgba(1, 1, 1, 0.6); c.arc(px - 2 * s, py - 2 * s, 1.8 * s, 0, 2 * math.pi); c.fill()
     return o
+
+
+NEEDLE = {"green": 0.15, "yellow": 0.40, "orange": 0.66, "red": 0.90}    # the needle's place on the dial, 0..1
+
+
+def gauge(k, x, base, s, needle="green"):
+    """Episode 16's b-story dial, drawn over the machine's own gauge (dh_props.coffee_machine: centre (36, -108) x s):
+    a bigger face with four zones, green, yellow, orange, red, and the needle in one of them. A new drawing: the
+    machine itself is unchanged."""
+    c = k.c
+    cx, cy, r = x + 36 * s, base - 108 * s, 15 * s
+    c.save()
+    c.set_source_rgb(0.97, 0.96, 0.91); c.arc(cx, cy, r, 0, 2 * math.pi); c.fill()
+    zones = [((0.20, 0.70, 0.30), 0.0, 0.3), ((0.95, 0.80, 0.15), 0.3, 0.55), ((0.95, 0.50, 0.12), 0.55, 0.78),
+             ((0.86, 0.14, 0.14), 0.78, 1.0)]
+    a0, a1 = math.pi * 0.85, math.pi * 2.15                     # the dial's sweep, left-bottom round the top to right
+    for col, u0, u1 in zones:
+        c.set_source_rgb(*col); c.set_line_width(4.2 * s)
+        c.new_path(); c.arc(cx, cy, r * 0.74, a0 + (a1 - a0) * u0, a0 + (a1 - a0) * u1); c.stroke()
+    a = a0 + (a1 - a0) * NEEDLE[needle]
+    c.set_source_rgb(*INK); c.set_line_width(2.4 * s); c.set_line_cap(1)
+    c.move_to(cx, cy); c.line_to(cx + math.cos(a) * r * 0.86, cy + math.sin(a) * r * 0.86); c.stroke(); c.set_line_cap(0)
+    c.arc(cx, cy, 2.2 * s, 0, 2 * math.pi); c.fill()
+    c.set_line_width(1.8 * s); c.arc(cx, cy, r, 0, 2 * math.pi); c.stroke()
+    c.restore()
+    return (cx, cy, r)
 
 
 def _tile_night(draw, label, w=260, h=200, scale=2.0):
