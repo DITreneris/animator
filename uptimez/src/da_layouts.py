@@ -791,6 +791,9 @@ def s21(k):
     return ("floor", dict(cast=cast, tag=True, clips=28)), dict(names=["don"], size="W", cam=S7)
 
 
+S8_MUG = [None]   # 28 Nov (Tomas: 3.5's mug = the cups canon's): opt-in drawer for the S8 desk mug; None = as locked
+
+
 def s8_compose(k, pam_in=False, plan=None, mug=False, client="stand", photo=None, outside=None, mug_at=(378, 702)):
     """S8 (inside Don's office) in the state of a given shot, from da_s8's layers and da_push91's split of its meeting:
     the glass (v9: S8r small behind it; its state is the tug's, a known gap until S8r takes a cast: layout v2), Don's
@@ -837,7 +840,8 @@ def s8_compose(k, pam_in=False, plan=None, mug=False, client="stand", photo=None
     if plan == "open":
         s8.blueprint(k, *s8.PLAN_AT)
     if mug:
-        s8.prop_shadow(k, mug_at[0] + 6, mug_at[1], 18); ds.pam_mug(k, mug_at[0], mug_at[1], 1.15)
+        s8.prop_shadow(k, mug_at[0] + 6, mug_at[1], 18)
+        (S8_MUG[0] or ds.pam_mug)(k, mug_at[0], mug_at[1], 1.15)
     if pam_in and plan == "open":
         s8.pam_hands_over(k)
     if client == "over":

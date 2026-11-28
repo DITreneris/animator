@@ -28,7 +28,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 6
+VER = 7
 T0 = 16.28
 SHOTS = [("3.1", 1.61), ("3.2", 1.2), ("3.2b", 0.7), ("3.3", 2.4), ("3.4", 4.05), ("3.5", 1.6)]
 drawn = A.drawn
@@ -330,10 +330,12 @@ def s35_surface(t):
         c.set_line_cap(0)
         return h
     L.s8_compose = compose
+    L.S8_MUG[0] = lambda k, x, y, s: cu.mug(k, x, y, s, handle=1, state="rest")   # Tomas 28 Nov: the ceramic mug, as 3.2-3.3
     try:
         surf, _ = L.render("3.5")
     finally:
         L.s8_compose = keep
+        L.S8_MUG[0] = None
     return surf
 
 
