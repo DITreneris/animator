@@ -24,3 +24,20 @@ Still open:
 - The robot stands at different marks in 3.4/5.4 than in the shots around them (moved for the fix; not noticed).
 
 The test cannot tell: whether it is funny in motion, the voice timing, the mix.
+
+## Rough cut v3 (28 Nov): 2.2 v2 and 1.5 v2 (Tomas /grill-me)
+
+Tomas: Father's feet on the desk "look very bad" (2.2 unlocked by him); the roll "with physics". Picks: one finger tips
+Don's photo over; the kick replaces 1.5; the tape winds back in; the roll ends on his other shoe.
+`da_roughcut_v3.mp4`: 72.63 s (1.5 is 2.0 s, was 0.8), -15.9 LUFS, TP -3.1 dBFS; s1 v24, s2 v8.
+Mute, two fresh viewers, the two shots from the encoded files (7.5 and 5 fps).
+
+| Beat | A | B | Verdict |
+|---|---|---|---|
+| 1.5 he kicks the tape roll, it runs off laying a line, he is smug, it comes back winding in, stops at his other foot | read; "angry, smug, shocked, sour" | read, the same four | 2/2 |
+| 2.2 he turns Don's photo face down with his hand, not looking | read: "cold, dismissive, written off" | read, the same | 2/2 |
+
+Shared leftovers: **why the roll comes back is not shown** (the taut tape is 2 drawings: not read, 2/2); it passes
+"through or under" his feet (2/2); 2.2's photo "snaps" flat at 5 fps (the tip is 3 drawings) and his resting arms "hang
+stiff" (the S8 rest pose, as in every S8 shot); the photo too small to be sure it is Don (2/2).
+The roll is on his shoe at 1.5's end and gone in 2.1 (as before: it used to roll off and vanish).

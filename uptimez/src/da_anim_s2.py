@@ -28,7 +28,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 7
+VER = 8
 T0 = 6.8                                                           # the scene's start in the film
 SHOTS = [("2.1", 2.2), ("2.2", 3.28), ("2.3", 1.2), ("2.4", 2.8)]
 drawn = A.drawn
@@ -183,13 +183,20 @@ def s22_surface(t):
     import dh_cast as dc
     keep_f, keep_father = L.feet_on_desk, dc.father
     talk = father_talks(t)
-    L.feet_on_desk = feet_anim(t)
+    td = drawn(t)                                                      # v2 (Tomas 28 Nov: the feet on the desk "look very
+    reach = ease(seg(td, 0.13, 0.47)) - ease(seg(td, 0.8, 1.13))       # bad"): upright in Don's chair he leans in, one finger
+    tip = ease(seg(td, 0.53, 0.73))                                    # on the photo's top, tips it onto its face (clack at
+    z = L.PHOTO_AT[2]                                                  # 0.73), sits back; then "I paid for it."
+    top = L.PHOTO_AT[1] - 50 * z * (max(0.10, math.cos(tip * math.pi)) if tip < 0.5 else 0.0)
+    L.PHOTO22.update(reach=reach, tip=tip, feet=706 + 16 * reach, top=top)
+    L.PHOTO22_MODE[0] = "finger"
     dc.father = lambda k, x, feet, s=1.0, pose="stand", face="hard", look=(0, 0), seed=1500: keep_father(
         k, x, feet, s, pose, "talk" if talk else face, look, seed)
     try:
         surf, _ = L.render("2.2")
     finally:
         L.feet_on_desk, dc.father = keep_f, keep_father
+        L.PHOTO22_MODE[0] = "down_heel"
     return surf
 
 

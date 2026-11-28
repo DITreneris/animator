@@ -16,8 +16,8 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 EP = os.path.join(HERE, "..", "the-double-agent")
 FPS, SR = 30, 48000
-VER = 2
-SCENES = ["da_anim_s1_v23", "da_anim_s2_v7", "da_anim_s3_v11", "da_anim_s4_v7", "da_anim_s5_v8", "da_anim_s6_v8",
+VER = 3
+SCENES = ["da_anim_s1_v24", "da_anim_s2_v8", "da_anim_s3_v11", "da_anim_s4_v7", "da_anim_s5_v8", "da_anim_s6_v8",
           "da_anim_s7_v5"]
 LEN81, LEN91 = 4.24, 1.8                                       # da_timing_v4
 TAKE81 = ("B", 1.7)                                            # da_timing_v4's pick; at 1.4 + the 0.3 s hold (as the pull ends)

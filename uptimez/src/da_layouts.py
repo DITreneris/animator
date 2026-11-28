@@ -856,7 +856,20 @@ def s8_compose(k, pam_in=False, plan=None, mug=False, client="stand", photo=None
         s8.window_only(k, "tidy8")
     finally:
         s8._S8R_IMG[0] = keep
-    if photo == "down_heel":                                  # slouched for his feet on the desk: lower in the chair
+    if photo == "finger":                                     # 2.2 v2 (Tomas 28 Nov: the feet on the desk "look very bad"):
+        st = PHOTO22                                          # upright in Don's chair, one finger tips Don's photo over
+        s8.chair(k, 336, 378, 1.0)
+        hp, hv = pu._hands_on()
+        try:
+            hp.reset("point" if st["reach"] > 0.5 else "quiet", "quiet")
+            bt = -300 * 1.12 + 78
+            r0, r1 = (4, bt + 112), ((PHOTO_AT[0] + 2 - 336) / 0.78, (st["top"] - 12 - st["feet"]) / 0.78)
+            u = st["reach"]
+            s8.seated(k, lambda: s8._father_rest(k, feet=st["feet"], left=None if u <= 0 else
+                                                 (r0[0] + (r1[0] - r0[0]) * u, r0[1] + (r1[1] - r0[1]) * u)))
+        finally:
+            hv.disable(); kit.HAND[0] = None
+    elif photo == "down_heel":                                # slouched for his feet on the desk: lower in the chair
         s8.chair(k, 336, 378, 1.0)
         hp, hv = pu._hands_on()
         try:
@@ -889,6 +902,8 @@ def s8_compose(k, pam_in=False, plan=None, mug=False, client="stand", photo=None
         s8.pam_hands_over(k)
     if client == "over":
         heads.update({n: v + (50 * 0.70,) if len(v) == 2 else v for n, v in s8.client_over_desk(k).items()})
+    if photo == "finger":
+        heads["photo"] = photo22(k, PHOTO22["tip"])
     if photo == "down_heel":                                  # both feet up on the desk from his chair, toward us: the
         heads.update(feet_on_desk(k))                                       # legs over the far edge, the soles to the camera, his left
                                                               # heel on Don's gold photo (face down), the right crossed
@@ -986,9 +1001,40 @@ def crop(k, z, cx, cy, draw):
     return {n: (270 + (x - cx) * z, 480 + (y - cy) * z, r * z) for n, (x, y, r) in h.items()}
 
 
+PHOTO22_MODE = ["down_heel"]                                 # opt-in "finger" (2.2 v2); the layout as approved by default
+PHOTO22 = dict(reach=0.0, tip=0.0, feet=706, top=612)
+PHOTO_AT = (304, 674, 1.25)                                   # Don's gold photo on his desk, before Father's chest
+
+
+def photo22(k, tip):
+    """DON · CEO in its gold frame, standing on the desk; tip 0..1: pushed over from its top, forward onto its face (we
+    then see its back: the darker card, the easel's leg)."""
+    c = k.c
+    px, py, z = PHOTO_AT
+    s8 = __import__("da_s8")
+    s8.prop_shadow(k, px + 3, py + 2, 30)
+    if tip < 0.5:
+        c.save(); c.translate(px, py); c.scale(z, z * max(0.10, math.cos(tip * math.pi)))
+        kit.cut(k, [(-24, -50), (24, -50), (24, 0), (-24, 0)], (0.83, 0.66, 0.24), lw=2)
+        kit.cut(k, [(-18, -44), (18, -44), (18, -6), (-18, -6)], (0.72, 0.82, 0.90), shadow=False, lw=1.4)
+        if tip < 0.25:
+            dp.don(k, 0, -6, 0.13, "stand", "smug", (0, 0))
+            c.select_font_face(kit.FONT); c.set_font_size(6); c.set_source_rgb(*kit.INK)
+            e = c.text_extents("DON · CEO"); c.move_to(-e.x_advance / 2, -1); c.show_text("DON · CEO")
+        c.restore()
+    else:
+        d = 30 * math.sin((tip - 0.5) * math.pi)              # its back, lying toward us
+        kit.cut(k, [(px - 30, py), (px + 30, py - 3), (px + 33, py - 3 + d), (px - 34, py + 2 + d)], (0.62, 0.48, 0.18), lw=2)
+        if d > 14:
+            kit.cut(k, [(px - 4, py + 4), (px + 5, py + 3), (px + 7, py + d - 6), (px - 5, py + d - 5)], (0.48, 0.36, 0.12),
+                    shadow=False, lw=1.2)                      # the easel's leg, folded flat
+    return (px, py - 30, 34)
+
+
 def s22(k):
-    """2.2 S8 M: Father's heel on Don's face-down desk photo; the Client glancing at it; Sofía reading; no Pam yet."""
-    return None, crop(k, 1.45, 330, 560, lambda k_: s8_compose(k_, photo="down_heel", outside=out_22))
+    """2.2 S8 M: Father's heel on Don's face-down desk photo; the Client glancing at it; Sofía reading; no Pam yet.
+    (v2, opt-in: one finger tips the photo over.)"""
+    return None, crop(k, 1.45, 330, 560, lambda k_: s8_compose(k_, photo=PHOTO22_MODE[0], outside=out_22))
 
 
 def s23(k):

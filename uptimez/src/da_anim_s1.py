@@ -35,9 +35,9 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, _head, 
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 23
+VER = 24
 OOF_TAKE = "A"
-SHOTS = [("1.1", 1.4), ("1.2", 0.8), ("1.3", 1.0), ("1.3c", 0.6), ("1.3b", 1.0), ("1.4", 1.2), ("1.5", 0.8)]
+SHOTS = [("1.1", 1.4), ("1.2", 0.8), ("1.3", 1.0), ("1.3c", 0.6), ("1.3b", 1.0), ("1.4", 1.2), ("1.5", 2.0)]
 
 
 def drawn(t):
@@ -629,52 +629,91 @@ def s14_clips(t):
 
 # ---- 1.5 ----------------------------------------------------------------------------------------------------------------
 def s15_cast(t):
-    """1.5 (28 Nov, the hand gate): his arm can't reach his raised sole (measured: shoulder to sole 106-130, the arm 58),
-    so the grab the layout drew is gone (it was the layout's KNOWN REACH fault). Hands-free: he plants the roll on the
-    floor with the stuck foot, yanks the foot up, the tape stretches and snaps (rip), the roll recoils and rolls off to
-    the throne. His hands hang quiet."""
+    """1.5 v2 (Tomas 28 Nov /grill-me: "with physics: he kicks it, the tape runs out across the room, comes back and
+    sticks again", to his other shoe, rewinding as it comes): hands-free still (his arm can't reach his sole). He plants
+    the roll, kicks it away: it rolls off out of frame paying out a line of tape from his sole along the floor; he is
+    pleased; the tape goes taut; the roll comes back up its own tape, winding it in; he hops the foot over it; it passes
+    behind his legs and stops against his other shoe, the last of the tape across both ankles. He looks down."""
     td = drawn(t)
 
     def cast(k_):
         c = k_.c
         x, f = MARKS["don_hop"]; L.DON_FEET[0] = (x, f)
         s_ = SC["don"]
-        down = ease(seg(td, 0.0, 0.20))                                # 3 drawings: the stuck foot down, roll on the floor
-        yank = seg(td, 0.27, 0.40)                                     # 2 drawings: the yank, the stretch, the snap
-        roll_go = seg(td, 0.40, 0.73)
-        knee = 1.0 - 0.65 * down if td < 0.27 else 0.35 + 0.85 * ease(yank) if td < 0.47 else 1.2 - 0.6 * seg(td, 0.47, 0.8)
-        sole = L.sole_of(x, f, s_, knee)
-        floor_roll = (sole[0] + 6, f - 18 + 2)                         # on its edge on the floor, under the sole
-        rest = (L.TX + 30, F + 4)
         if td < 0.27:
-            roll = (sole[0] + 6, min(sole[1] + 14, floor_roll[1]))
-        elif td < 0.40:
-            roll = floor_roll
+            knee = 1.0 - 0.65 * ease(seg(td, 0.0, 0.20))               # the stuck foot down, the roll on the floor
+        elif td < 0.47:
+            knee = 0.35 + 0.75 * math.sin(math.pi * seg(td, 0.27, 0.47)) * (1 if td < 0.40 else 0.7)   # the kick
+        elif td < 1.33:
+            knee = 0.06 + 0.29 * (1 - ease(seg(td, 0.47, 0.67)))       # down, standing (0.06: the same legs, with shoes)
+        elif td < 1.67:
+            knee = 0.06 + 0.8 * math.sin(math.pi * seg(td, 1.33, 1.67))   # the hop over it as it comes back
         else:
-            u = ease_out(roll_go)
-            roll = (floor_roll[0] + (rest[0] - floor_roll[0]) * u, floor_roll[1] + (rest[1] - floor_roll[1]) * u
-                    - 8 * math.sin(math.pi * seg(td, 0.40, 0.53)))
+            knee = 0.06
+        sole = L.sole_of(x, f, s_, knee)
+        fl = f - 16                                                    # the roll's centre when it is on the floor
+        start = (sole[0] + 8, fl)
+        FAR = 640                                                      # out of frame, screen right
+        END = (x - 56 * s_ - 15, fl)                                   # against the outside of his other shoe
+        out_u, back_u = ease_out(seg(td, 0.40, 0.80)), ease(seg(td, 1.27, 1.6))
+        if td < 0.27:
+            roll = (sole[0] + 6, min(sole[1] + 14, fl))
+        elif td < 0.40:
+            roll = start
+        elif td < 1.27:
+            roll = (start[0] + (FAR - start[0]) * out_u, fl - 7 * abs(math.sin(math.pi * 2 * out_u)) * (1 - out_u))
+        else:
+            roll = (FAR + (END[0] - FAR) * back_u, fl)
+        back = td >= 1.27 and roll[0] < x + 60                         # behind his legs while it passes them
         declare("1.5", k_, t)
         shadow(k_, x, f + 2, 40)
-        face = "confused" if td < 0.27 else ("squint" if td < 0.47 else "smug" if td >= 0.6 else "confused")
-        if int(round(td * DRAW)) == 11:                                # a blink as he watches it go (micro-motion, audit)
-            face = "squint"
+        if td < 0.27:
+            face, look = "confused", (1, 0.9)
+        elif td < 0.47:
+            face, look = "squint", (1, 0.9)
+        elif td < 1.13:
+            face, look = "smug", (1, 0.5)                              # that's that
+        elif td < 1.6:
+            face, look = "shock", (1, 0.7)                             # the tape goes taut; it is coming back
+        else:
+            face, look = "confused", (-0.6, 1.0)                       # down at his other shoe
+        rot = (roll[0] - start[0]) / 19.0 if td >= 0.40 else 0.0
+
+        def tape():
+            if td < 0.27:
+                L.tape_strip(k_, [(sole[0] - 4, sole[1]), (sole[0], sole[1] + 6)], 9.0)
+            elif td < 1.6:                                             # from his sole along the floor to the roll
+                taut = 1.13 <= td < 1.27
+                wob = 0 if taut or td >= 1.27 else 3 * math.sin(td * 40)
+                mid = ((sole[0] + roll[0]) / 2, f + 1 + wob + (0 if knee < 0.2 else -6))
+                L.tape_strip(k_, [(sole[0] - 2, sole[1] + 1), mid, (roll[0] - 8, f + 1)], 7.0)
+            else:                                                      # the last of it: across both his ankles
+                L.tape_strip(k_, [(sole[0] + 4, f - 5), (x - 20 * s_, f - 7), (END[0] + 8, f - 6)], 7.0)
+        if back:
+            tape(); L.roll_at(k_, roll[0], roll[1] + 18, rot=rot)
         br = 1 + 0.012 * math.sin(2 * math.pi * 1.2 * t)               # breathing
         c.save(); c.translate(x, f); c.scale(1, br); c.translate(-x, -f)
-        h = {"don": don_lib(k_, x, f, face, (1 if td < 0.47 else 1, 0.9 if td < 0.6 else 0.5), knee=knee)}
+        h = {"don": don_lib(k_, x, f, face, look, knee=knee)}
         c.restore()
-        if td < 0.27:
-            L.tape_strip(k_, [(sole[0] - 4, sole[1]), (sole[0], sole[1] + 6)], 9.0)
-        elif td < 0.40:                                                # stretched from the sole down to the roll
-            L.tape_strip(k_, [(sole[0] - 4, sole[1]), ((sole[0] + roll[0]) / 2 + 2, (sole[1] + roll[1]) / 2),
-                              (roll[0] - 6, roll[1] - 16)], 9.0 - 3.0 * yank)
-        L.roll_at(k_, roll[0], roll[1] + 18, rot=(roll[0] - floor_roll[0]) / 19.0 if td >= 0.40 else 0.0)
-        if 0.40 <= td < 0.53:                                          # the snap: two marks at the sole
-            c.set_source_rgb(*kit.INK); c.set_line_width(2.2); c.set_line_cap(1)
-            for a_ in (2.3, 2.8, 0.4):
-                c.new_path(); c.move_to(sole[0] + 10 * math.cos(a_), sole[1] + 10 * math.sin(a_))
-                c.line_to(sole[0] + 22 * math.cos(a_), sole[1] + 22 * math.sin(a_)); c.stroke()
-            c.set_line_cap(0)
+        if not back or td >= 1.6:
+            tape(); L.roll_at(k_, roll[0], roll[1] + 18, rot=rot)
+        c.set_source_rgb(*kit.INK); c.set_line_width(2.2); c.set_line_cap(1)
+        if 0.40 <= td < 0.53:                                          # the kick's marks at his toe
+            for a_ in (-0.5, 0.0, 0.5):
+                c.new_path(); c.move_to(start[0] + 16 * math.cos(a_), start[1] + 16 * math.sin(a_))
+                c.line_to(start[0] + 30 * math.cos(a_), start[1] + 30 * math.sin(a_)); c.stroke()
+        if 0.47 <= td < 0.8 or 1.27 <= td < 1.6:                       # its speed lines, behind it
+            sg = -1 if td < 1 else 1
+            for yy in (-8, 4):
+                c.new_path(); c.move_to(roll[0] + sg * 26, roll[1] + yy); c.line_to(roll[0] + sg * 48, roll[1] + yy); c.stroke()
+        if 1.13 <= td < 1.27:                                          # taut: the line twangs
+            for dx_ in (40, 90):
+                c.new_path(); c.move_to(sole[0] + dx_, f - 7); c.line_to(sole[0] + dx_ + 6, f - 13); c.stroke()
+        if 1.6 <= td < 1.8:                                            # it stops against his shoe
+            for a_ in (2.4, 3.14, 3.9):
+                c.new_path(); c.move_to(END[0] + 24 * math.cos(a_), END[1] + 24 * math.sin(a_))
+                c.line_to(END[0] + 36 * math.cos(a_), END[1] + 36 * math.sin(a_)); c.stroke()
+        c.set_line_cap(0)
         return h
     return cast
 
@@ -690,8 +729,11 @@ CUES = [  # (seconds, the animatic's FX word, gain): each on the drawing that ma
     (4.07, "tag flick", 0.8),          # 1.3b: the hand lets go of the tag
     (5.13, "clatter", 1.0),            # 1.4: the box catches; the clips land
     (5.80, "tik", 0.6),                # 1.4: the robot's pincer
-    (6.27, "rip", 1.0),                # 1.5: the yank, the tape off the sole (snaps 6.40)
-    (6.55, "casters squeak", 0.25),    # 1.5: the roll rolling off to the throne (a light roll, no thud: it was never airborne)
+    (6.40, "thk", 0.8),                # 1.5 v2: the kick
+    (6.42, "long peel", 0.5),          # the tape paying out as the roll runs off
+    (7.13, "tik", 0.8),                # taut
+    (7.27, "skrrt", 0.6),              # it comes back up its tape
+    (7.60, "thk", 1.0),                # against his other shoe
 ]
 
 
@@ -772,7 +814,7 @@ def render_shot(sid, t):
     raise KeyError(sid)
 
 
-HITS = {'1.2': 0.4}   # shot -> the hit's time in it: a 3-drawing camera knock (Tomas 28 Nov)
+HITS = {'1.2': 0.4, '1.5': 1.6}   # shot -> the hit's time in it: a 3-drawing camera knock (Tomas 28 Nov)
 
 
 def build():

@@ -531,7 +531,7 @@ def meeting(k):
     return heads
 
 
-def _father_rest(k, x=336, feet=706, s=0.78):
+def _father_rest(k, x=336, feet=706, s=0.78, left=None):
     import dh_cast as dc
     """V5: leaning back in Don's chair, the ring hand (screen right) on the armrest, the other flat on his belly; his
     sleeves in the dark velvet so the arms read on the jacket (the Father sheet v4's 8.1)."""
@@ -539,7 +539,8 @@ def _father_rest(k, x=336, feet=706, s=0.78):
     from cand_bc import ik
     c = k.c
     bt = -300 * 1.12 + 78
-    rest = ik(-40, bt + 14, 4, bt + 112, 48, 48, -1) + ik(40, bt + 14, 80, bt + 146, 48, 48, 1)
+    lt = (4, bt + 112) if left is None else left               # left: opt-in (28 Nov, 2.2 v2), his screen-left hand's
+    rest = ik(-40, bt + 14, lt[0], lt[1], 48, 48, -1) + ik(40, bt + 14, 80, bt + 146, 48, 48, 1)   # target, in his own units
     seat = feet + (bt + 150) * s
     orig = kit_.arm
     kit_.arm = lambda k_, sx, sy, a1, a2, col, *a, **kw: orig(k_, sx, sy, a1, a2, dc.VELVET_D if col == dc.VELVET else col, *a, **kw)
