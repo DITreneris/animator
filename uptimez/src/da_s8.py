@@ -440,9 +440,18 @@ def blueprint(k, x, y, s=1.0, ang=-0.06):
 def props(k):
     """L8 alone, at their places (the sheet; the frame calls the same)."""
     blueprint(k, *PLAN_AT)
-    prop_shadow(k, 384, 702, 18); (MUG_FN[0] or ds.pam_mug)(k, 378, 702, 1.15)
+    mx_, my_ = MUG_AT[0] or (378, 702)
+    prop_shadow(k, mx_ + 6, my_, 18); (MUG_FN[0] or ds.pam_mug)(k, mx_, my_, 1.15)
+    if MUG_STEAM[0]:                                           # opt-in (v13): it is hers now, and hot
+        c = k.c; c.set_source_rgba(1, 1, 1, 0.75); c.set_line_width(2.2); c.set_line_cap(1)
+        for dx in (-7, 2, 10):
+            c.new_path(); c.move_to(mx_ + dx, my_ - 44)
+            c.curve_to(mx_ + dx - 5, my_ - 52, mx_ + dx + 5, my_ - 60, mx_ + dx, my_ - 68); c.stroke()
+        c.set_line_cap(0)
 
 
+V13_MUG = (336, 700)                                       # by her hand at the plan's corner (before her the plan and the Client's arm hide it)
+MUG_AT = [None]; MUG_STEAM = [False]   # opt-in (v13, story chain v1 fix E): the big mug before Pam, steaming
 MUG_FN = [None]   # opt-in (Tomas 28 Nov: the rough-cut re-render, the cups canon's ceramic mug); None = as locked
 
 
@@ -679,6 +688,17 @@ if __name__ == "__main__":
         MUG_FN[0] = lambda k, x, y, s: cu.mug(k, x, y, s, handle=1, state="rest")
         with ds.no_badges():
             still(os.path.join(out, "da_s8_final_v12.png"))
+    elif sys.argv[1] == "frame13":
+        import da_arms
+        import da_cups as cu
+        da_arms.setup()                                        # v13 (story chain v1, fix E): v12 + the big mug before Pam
+        V5[0] = True; V6[0] = True; V8[0] = True; V9[0] = True; ds.MUG_V2[0] = True
+        CHAIR_VARIANT[0] = "L"; ds.NAME_BADGES[0] = False; GLASS_SOFT[0] = 0.62
+        S8R_FILE[0] = "da_s8r_frame0_v5.png"; S8_SOFIA_V5[0] = True
+        MUG_FN[0] = lambda k, x, y, s: cu.mug(k, x, y, s, handle=-1, state="rest")
+        MUG_AT[0] = V13_MUG; MUG_STEAM[0] = True
+        with ds.no_badges():
+            still(os.path.join(out, "da_s8_final_v13.png"))
     elif sys.argv[1] == "frame10":
         import da_arms
         da_arms.setup()

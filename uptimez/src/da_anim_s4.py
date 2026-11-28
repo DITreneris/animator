@@ -32,9 +32,9 @@ from da_layouts import F, MARKS, SC, dp, ds, kit, rig_hands, shadow, _head  # no
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 7
+VER = 8
 T0 = 27.84
-SHOTS = [("4.1", 1.6), ("4.2", 3.0), ("4.2b", 0.8), ("4.3", 1.2)]
+SHOTS = [("4.1", 1.6), ("5.1", 1.4), ("4.2", 3.0), ("4.2b", 0.8), ("4.3", 1.6)]   # story chain v1: 5.1 here (fix A)
 drawn = A.drawn
 CAMS = {}
 CS = cu.CUP_FLOOR                                                  # one cup size in the floor's space (the canon)
@@ -64,6 +64,8 @@ def _mom_folded(k_, look):
     with g_.paused():
         return L.mom(k_, "mom_desk_s", "folded", "unimpressed", look=look)
 
+
+import da_anim_s5 as S5                                            # noqa: E402 (5.1 plays here)
 
 TX = [-6, 24]                                                      # (cold test v2: at chest height his arm folded into a "<")
 
@@ -153,7 +155,10 @@ def s41_parts(t):
                                                                        # elbow out by his side: "down" folded it in, a "<")
                                                                        # "down" folded it in across his belly, cold test v2)
         dface = "grin" if td < give else "pleased"
-        od = rig_hands(k_, don_rig(dx, df, dface, (1, 0.2)), sd, dj)
+        dlook = (1, 0.2)
+        if td >= 1.33:                                                 # (fix A) his eyes open and go up to the office glass:
+            dface, dlook = "confused", (1, -0.7)                       # what he sees is 5.1, the next shot
+        od = rig_hands(k_, don_rig(dx, df, dface, dlook), sd, dj)
         h["don"] = _head(od, "don")
         h["cup"] = (B0[0], B0[1] - 14, 16)
         return h
@@ -288,7 +293,9 @@ def s42_cast(t):
         lean = LEAN * (ease(seg(td, 0.53, 0.8)) - ease(seg(td, 2.2, 2.4)) + ease(seg(td, 2.53, 2.73))) \
             + LEAN2 * (ease(seg(td, 0.53, 0.8)) - ease(seg(td, 2.2, 2.4)))   # further in while he works on the glass
         chin = 1 if 0.6 <= td < 2.27 else 0
-        if td < 0.6:
+        if td < 0.13:
+            face, look = "hard", (1, -0.4)                             # (fix A) still on the office; he turns from it
+        elif td < 0.6:
             face, look = "smug", (-1, -0.2)
         elif td < 2.67:                                                # eyes open, on the glass and his fingertip
             face = "grin"
@@ -321,6 +328,8 @@ def s42b_cast(t):
 # ---- 4.3 -------------------------------------------------------------------------------------------------------------------
 def s43_parts(t):
     td = drawn(t)
+    back_look = 0.6 <= td < 1.0                                        # (fix D: Pam chooses) at the door she looks back at
+    td = td if td < 0.6 else (0.6 if td < 1.0 else td - 0.4)           # him at the glass, a beat; then she goes in
     mx, mf_ = MARKS["mom_desk_s"]
 
     def mom_back(k_):
@@ -343,7 +352,7 @@ def s43_parts(t):
                                                                        # the glass: only what is in the gap shows
         step = math.sin(math.pi * 4 * sneak) if sneak < 1 else 0
         bob = -3 * abs(step)
-        on = 0.6 <= td < 0.93
+        on = 0.6 <= td < 0.93 and not back_look
         o_door = 0.15 + 0.60 * ease(seg(td, 0.67, 0.93))                # ajar since the Client's crack (3.3); she pulls it wide
         # the office door (layouts' office_door_open, the knob at her waist: its knob_y opt-in, the motion test's
         # precedent); she pulls it open
@@ -364,7 +373,8 @@ def s43_parts(t):
             c.rectangle(0, 0, 952, 2000); c.clip()
         c.translate(0, bob)
         o = L.tilted(k_, px_, pf_, lean, lambda: rig_hands(
-            k_, lambda kk, a4: pam_held(kk, px_, pf_, SC["pam"], a4, "neutral", (1, -0.1), mug=False, lean=-10),
+            k_, lambda kk, a4: pam_held(kk, px_, pf_, SC["pam"], a4, "doubt" if back_look else "neutral",
+                                        (-1, -0.1) if back_look else (1, -0.1), mug=False, lean=-10),
             SC["pam"], jobs, sex="f", skin=L.FEMALE))
         c.restore()
         h["pam"] = _head(o, "pam")
@@ -381,6 +391,8 @@ def render_shot(sid, t):
         return frame(s42_cast(t), CAMS[sid][0], tag=True, clips=16)
     if sid == "4.2b":
         return frame(s42b_cast(t), CAMS[sid][0], tag=True, clips=16)
+    if sid == "5.1":
+        return S5.render_shot("5.1", t)
     if sid == "4.3":
         cast, back = s43_parts(t)
         return frame(cast, CAMS[sid][0], tag=True, clips=15, back=[back])
@@ -398,7 +410,7 @@ CUES = [
     (STARTS["4.2"] + 0.30, "tik", 0.3), (STARTS["4.2"] + 1.40, "tik", 0.3),   # the robot's picks, behind
     (STARTS["4.3"] + 0.0, "needles", 0.5),
     (STARTS["4.3"] + 0.05, "quiet steps", 0.45),
-    (STARTS["4.3"] + 0.80, "door", 0.35),
+    (STARTS["4.3"] + 1.20, "door", 0.35),
 ]
 
 
@@ -413,6 +425,8 @@ def mix(sec, path):
         i = int(t0 * sr)
         g = 0.18 * gain / (np.max(np.abs(w)) + 1e-9)
         m[i:i + len(w)] += g * w[:max(0, n - i)]
+    w = S5.sting(); i = int((STARTS["5.1"] + 0.05) * sr)             # the noir sting, with its shot
+    m[i:i + len(w)] += 0.30 * w[:max(0, n - i)] / (np.max(np.abs(w)) + 1e-9)
     m /= max(1.0, np.max(np.abs(m)) / 0.89)
     m.astype(np.float32).tofile(path)
     return path

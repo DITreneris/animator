@@ -30,7 +30,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 5
+VER = 6
 T0 = 55.39
 SHOTS = [("7.2", 2.8), ("7.3", 4.15), ("7.4", 3.0)]
 drawn = A.drawn
@@ -124,7 +124,7 @@ def s72_cast(t):
             if stick:
                 S6.medal(k_, hT[0] - 12, hT[1] - 8, ang=0.5 * carry, prop=True)
             else:
-                S6.medal(k_, *S6.medal_at(px, pf))
+                S6.medal(k_, *S6.medal_at(px, pf), ang=0.0)
         S6.page_holes(k_, pc[0], pc[1], 2)
         c.restore()
         if stuck:

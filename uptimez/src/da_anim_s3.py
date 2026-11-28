@@ -28,12 +28,12 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 11
+VER = 12
 T0 = 16.28
-SHOTS = [("3.1", 1.61), ("3.2", 1.2), ("3.2b", 0.7), ("3.3", 2.4), ("3.4", 4.05), ("3.5", 1.6)]
+SHOTS = [("3.1", 1.61), ("3.2", 1.2), ("3.2b", 0.7), ("3.3", 2.4), ("3.3r", 0.6), ("3.4", 4.15), ("3.5", 1.6)]
 drawn = A.drawn
 CAMS = {}
-TAKES = {"3.1": ("B", 0.15), "3.3": ("B", 0.6), "3.4": ("A", 2.0)}   # da_timing_v4's picks and take_at
+TAKES = {"3.1": ("B", 0.15), "3.3": ("B", 0.6), "3.4": ("A", 2.5)}   # da_timing_v4's picks and take_at
 ENV = {}
 
 
@@ -267,8 +267,30 @@ def s33_parts(t):
 
 
 # ---- 3.4 -------------------------------------------------------------------------------------------------------------------
+def s33r_cast(t):
+    """3.3r (story chain v1, fix B: Don's goal had no trigger): he sees the hand from HIS office take his big mug: his
+    empty cup sags on its handle, his eyes go wide at the door. 0.6 s, 3.1's camera."""
+    td = drawn(t)
+
+    def cast(k_):
+        x, f = MARKS["don_counter"][0] + 24, MARKS["don_counter"][1]
+        L.DON_FEET[0] = (x, f); s_ = SC["don"]
+        shadow(k_, x, f + 2, 40)
+        sag = ease(seg(td, 0.13, 0.4))
+        declare((("don", "L", "pinch_pinky", "CUP_GRIP: the empty cup by its handle, sagging"), ("don", "R", "quiet", "quiet")), k_)
+        T = (x - (70 + 10 * sag) * s_, f - (250 - 70 * sag) * s_)
+        face = "confused" if td < 0.13 else "shock"
+        o = rig_hands(k_, lambda kk, a4: dp.don(kk, x, f, s_, a4, face, (1, -0.2), chin=0, hands=False), s_,
+                      {-1: cu.by_handle(T, 0.9 * cu.CUP_FLOOR, kind="cup", out=-1)})
+        return {"don": _head(o, "don")}
+    return cast
+
+
 def s34_cast(t):
     td = drawn(t)
+    pre = td < 0.5                                                     # (fix B) first his shoe goes out over HIS line: the
+    tp = td                                                            # border's beep, the foot snaps back; then Mom
+    td = max(0.0, td - 0.5)
 
     def cast(k_):
         h = {}
@@ -296,10 +318,22 @@ def s34_cast(t):
         ang = 0.12 - 0.20 * lean_l + 0.22 * lean_r - 0.34 * feint
         dface = "confused" if td < 2.0 else ("shock" if td < 2.6 else "confused")
         hd = {}
+        knee = 0.0
+        if pre:
+            knee = 0.75 * math.sin(math.pi * seg(tp, 0.07, 0.47)) ** 0.7 if 0.07 < tp < 0.47 else 0.0
+            ang = 0.10 * math.sin(math.pi * seg(tp, 0.07, 0.33)) - (0.08 if 0.33 <= tp < 0.47 else 0.0)
+            dface = "hard" if tp < 0.27 else "shock"
         c.translate(x, f); c.rotate(ang); c.translate(-x, -f)
-        hd["h"] = rig_hands(k_, lambda kk, a4: dp.don(kk, x, f, SC["don"], a4, dface, (1, -0.8), chin=1, hands=False),
-                            SC["don"], {})
-        L.don_shoes(k_, x, f, SC["don"])                               # (his trousers ended in nothing: "a box")
+        hd["h"] = rig_hands(k_, lambda kk, a4: dp.don(kk, x, f, SC["don"], a4, dface, (1, -0.8) if not pre else (1, 0.2),
+                                                      chin=1, knee=knee, hands=False), SC["don"], {})
+        if knee <= 0:
+            L.don_shoes(k_, x, f, SC["don"])                           # (his trousers ended in nothing: "a box")
+        if pre and 0.27 <= tp < 0.47:                                  # the border's beep at his toe, over the line
+            sole = L.sole_of(x, f, SC["don"], knee)
+            c.set_source_rgb(0.85, 0.12, 0.12); c.set_line_width(2.4); c.set_line_cap(1)
+            for r_ in (14, 22, 30):
+                c.new_path(); c.arc(sole[0] + 6, sole[1] + 6, r_, -0.9, 0.5); c.stroke()
+            c.set_line_cap(0)
         c.restore()
         hx, hy, r_ = _head(hd["h"], "don")
         h["don"] = (hx, hy - 12, r_)
@@ -313,6 +347,8 @@ def s34_cast(t):
         sr = 54 * math.sin(math.pi * ur) if 0 < ur < 1 else 0
         mx, mf = MARKS["mom_wall"]
         mx += 24                                                       # (her curler sat at his ear: "a phone?", cold test s3)
+        if pre:                                                        # she comes in from screen right as the beep sounds
+            mx += 150 * (1 - ease_out(seg(tp, 0.2, 0.5)))
         for u_, sgn in ((ul, -1), (ur, 1)):                            # her slide's speed lines, behind her, while she moves
             if 0.1 < u_ < 0.6:
                 c.set_source_rgb(*kit.INK); c.set_line_width(2.2); c.set_line_cap(1)
@@ -370,6 +406,8 @@ def render_shot(sid, t):
         cast, back = s33_parts(t)
         return frame(cast, CAMS[sid][0], tag=True, clips=22)          # (cold test s3: Mom's head in the corner read
                                                                        # as the taker or a spy: she's out of 3.3)
+    if sid == "3.3r":
+        return frame(s33r_cast(t), CAMS["3.1"][0], tag=True, clips=22)
     if sid == "3.4":
         return frame(s34_cast(t), CAMS[sid][0], tag=True, clips=20,
                      office=dict(client="stand", sofia=True, mug=True))   # (no Pam behind the glass: her arm sat at
@@ -389,8 +427,9 @@ CUES = [
     (STARTS["3.2b"] + 0.0, "pour", 0.4),
     (STARTS["3.3"] + 0.73, "door", 0.7),
     (STARTS["3.3"] + 1.0, "chair scrape", 0.6),
-    (STARTS["3.4"] + 0.33, "swishes", 0.7),
-    (STARTS["3.4"] + 1.0, "swishes", 0.7),
+    (STARTS["3.4"] + 0.27, "border beep", 0.8),
+    (STARTS["3.4"] + 0.83, "swishes", 0.7),
+    (STARTS["3.4"] + 1.5, "swishes", 0.7),
     (STARTS["3.5"] + 0.1, "cup on saucer", 0.6),
 ]
 
@@ -426,7 +465,7 @@ def build():
     import da_arms
     da_arms.setup(); hv.enable(); g.install(); cu.install(); A._SETUP.append(1)
     for sid, _ in SHOTS:
-        if sid not in ("3.2b", "3.5"):
+        if sid not in ("3.2b", "3.5", "3.3r"):                         # (3.3r: 3.1's camera)
             CAMS[sid] = camera_of(sid)
     tmp = "/tmp/da_anim_s3"; os.makedirs(tmp, exist_ok=True)
     for f_ in os.listdir(tmp):

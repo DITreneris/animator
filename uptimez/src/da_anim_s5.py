@@ -30,9 +30,9 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 8
+VER = 9
 T0 = 34.44
-SHOTS = [("5.1", 1.4), ("5.2", 2.8), ("5.3", 2.0), ("5.3b", 0.6), ("5.4", 2.2)]
+SHOTS = [("5.2", 2.8), ("5.3", 2.0), ("5.3b", 0.6), ("5.4", 1.8)]   # 5.1 plays in scene 4 now (story chain v1, fix A)
 drawn = A.drawn
 CAMS = {}
 CS = cu.CUP_FLOOR
@@ -346,14 +346,12 @@ def mix(sec, path):
         i = int(t0 * sr)
         g = 0.18 * gain / (np.max(np.abs(w)) + 1e-9)
         m[i:i + len(w)] += g * w[:max(0, n - i)]
-    w = sting(); i = int((STARTS["5.1"] + 0.05) * sr)
-    m[i:i + len(w)] += 0.30 * w[:max(0, n - i)] / (np.max(np.abs(w)) + 1e-9)
     m /= max(1.0, np.max(np.abs(m)) / 0.89)
     m.astype(np.float32).tofile(path)
     return path
 
 
-GATED = ("5.1", "5.2", "5.3", "5.3b", "5.4")
+GATED = ("5.2", "5.3", "5.3b", "5.4")
 
 
 HITS = {'5.3': 1.0}   # shot -> the hit's time in it: a 3-drawing camera knock (Tomas 28 Nov)

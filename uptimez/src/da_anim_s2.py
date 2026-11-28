@@ -28,9 +28,9 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 8
+VER = 9
 T0 = 6.8                                                           # the scene's start in the film
-SHOTS = [("2.1", 2.2), ("2.2", 3.28), ("2.3", 1.2), ("2.4", 2.8)]
+SHOTS = [("2.1", 1.5), ("2.2", 3.28), ("2.3", 1.2), ("2.4", 2.8)]
 drawn = A.drawn
 CAMS = {}
 
@@ -56,7 +56,7 @@ def declare(sid, k_, t, props=()):
 def _pick(t):
     """the robot's two picks: (how far down 0..1, the gripper closed on a clip)."""
     td = drawn(t)
-    for t0 in (0.27, 1.20):
+    for t0 in (0.27, 0.87):                                           # (2.1 is 1.5 s now: story chain v1's budget)
         u = seg(td, t0, t0 + 0.6)
         if 0 < u < 1:
             down = math.sin(math.pi * u)
@@ -354,10 +354,10 @@ def render_shot(sid, t):
 
 CUES = [  # (seconds in the scene, the animatic's FX word, gain)
     (0.20, "creak", 0.35),             # 2.1: the chair's creak behind the glass, muffled
-    (0.55, "tik", 0.6), (1.48, "tik", 0.6),   # 2.1: the robot's two picks
-    (2.2 + 0.73, "clack", 1.0),        # 2.2: the photo face down
-    (5.48 + 0.33, "vest snap", 1.0),   # 2.3: the tug
-    (6.68 + 1.07, "shatter", 1.0),     # 2.4: the blue mug
+    (0.55, "tik", 0.6), (1.15, "tik", 0.6),   # 2.1: the robot's two picks
+    (1.5 + 0.73, "clack", 1.0),        # 2.2: the photo face down
+    (4.78 + 0.33, "vest snap", 1.0),   # 2.3: the tug
+    (5.98 + 1.07, "shatter", 1.0),     # 2.4: the blue mug
 ]
 
 

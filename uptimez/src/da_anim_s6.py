@@ -32,9 +32,9 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 8
+VER = 9
 T0 = 43.44
-SHOTS = [("6.1", 1.4), ("6.2", 1.2), ("6.3", 1.0), ("6.4", 2.23), ("6.5", 1.0), ("6.6", 1.0), ("6.7", 0.8),
+SHOTS = [("6.1", 1.4), ("6.2", 1.2), ("6.3", 1.0), ("6.4", 2.23), ("6.5", 1.0), ("6.6", 1.0), ("6.7", 1.1),
          ("6.8", 2.72), ("6.8b", 0.6)]
 drawn = A.drawn
 CAMS = {}
@@ -66,10 +66,14 @@ def page_job(T, s=0.44, ang=0.05):
     return dict(T=T, pose="PINCH", out=-1, reach=True, contact="tip", obj=obj)
 
 
-def medal(k, x, y, ang=-0.18, prop=False):
+MEDAL_ANG = [-0.34]                                                # as he slapped it on: crooked, until she straightens it
+
+
+def medal(k, x, y, ang=None, prop=False):
     """a short strip of his own yellow tape (Tomas 28 Nov /grill-me: "the tape medal"): stuck on his spy's chest."""
     import ps_set as pss
     c = k.c
+    ang = MEDAL_ANG[0] if ang is None else ang
     c.save(); c.translate(x, y); c.rotate(ang)
     kit.cut(k, [(-13, -6), (13, -6), (13, 6), (-13, 6)], pss.TAPE, shadow=False, lw=1.8)
     c.set_source_rgb(0.13, 0.11, 0.12)                                 # (cold test 28 Nov: both took a blank strip for a sticky
@@ -335,7 +339,7 @@ def s68_cast(t):
         op = rig_hands(k_, lambda kk2, a4: pam_held(kk2, px, pf, SC["pam"], a4, pface, plook, mug=False), SC["pam"], pj,
                        sex="f", skin=FEMALE)
         h["pam"] = _head(op, "pam")
-        medal(k_, *medal_at(px, pf))
+        medal(k_, *medal_at(px, pf), ang=0.0)                           # straight since 6.7
         page_holes(k_, pc[0], pc[1], n, ang=0.04 if his else 0.0)
         if jab > 0.6:                                                  # the poke's little burst
             c.set_source_rgb(*kit.INK); c.set_line_width(1.6); c.set_line_cap(1)
@@ -395,6 +399,8 @@ def s65_cast(t):
 
 
 def s67_cast(t):
+    """v2 (story chain v1, fix D: Pam chooses): her eyes come back down to him, her mouth shuts; then, saying nothing,
+    she straightens the crooked medal on her cardigan with two fingertips. She is in."""
     td = drawn(t)
 
     def cast(k_):
@@ -404,7 +410,24 @@ def s67_cast(t):
             return pam_close(k_, "A", "doubt", look)
         if td < 0.27:
             return pam_close(k_, "E", "neutral", look)                 # the mouth closing
-        return pam_close(k_, "M", "neutral", (0.0, 0.0), drop=ease(seg(td, 0.27, 0.47)))   # shut: chosen
+        px, pf = 626, F + 60
+        fix = ease(seg(td, 0.47, 0.73))
+        ang = -0.34 * (1 - fix)
+        on = 0.33 <= td < 0.87
+        M = medal_at(px, pf)
+        declare((("pam", "L", "quiet", "quiet"),
+                 ("pam", "R", "pinch" if on else "quiet", "quiet -> PINCH: the medal's corner, turned straight -> quiet")),
+                k_, [("tape strip", (M[0] - 20, M[1] - 16, 44, 36))] if on else [])
+        shadow(k_, px, pf + 2, 32)
+        rig = lambda kk, a4: pam_held(kk, px, pf, SC["pam"], a4, "neutral", (-0.2, 1.0) if on else (-0.6, 0.0), mug=False,
+                                      mouth="M")
+        jobs = {}
+        if on:
+            corner = (M[0] + 12 * math.cos(ang), M[1] + 5 + 12 * math.sin(ang))   # its near corner: her other hand (the
+            jobs[1] = pinch_at(corner, rig, SC["pam"], 1, 1, sex="f", skin=FEMALE)   # same-side arm folds into a knot)
+        o = rig_hands(k_, rig, SC["pam"], jobs, sex="f", skin=FEMALE)
+        medal(k_, M[0], M[1], ang=ang)
+        return {"pam": _head(o, "pam")}
     return cast
 
 
@@ -429,7 +452,7 @@ def s68b_cast(t):
         pj = pinch_at(hold, rigp, SC["pam"], -1, -1, sex="f", skin=FEMALE)
         pc = (pc[0] + pj["miss"][0], pc[1] + pj["miss"][1])
         o = rig_hands(k_, rigp, SC["pam"], {-1: pj}, sex="f", skin=FEMALE)
-        medal(k_, *medal_at(px, pf))
+        medal(k_, *medal_at(px, pf), ang=0.0)                           # straight since 6.7
         page_holes(k_, pc[0], pc[1], 2)
         return {"pam": _head(o, "pam")}
     return cast
