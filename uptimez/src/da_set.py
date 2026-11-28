@@ -65,8 +65,28 @@ def _self_portrait(k, x, y, s):
     c.restore()
 
 
+INSIDE_QUIET = [True]   # 28 Nov (the scene 3 hand gate): the people behind the glass rest their hands in the canon's
+                        # 'quiet', not the legacy 'relax'; they are the other space's state, not this shot's cast, so the
+                        # gate's job list doesn't count them (paused). False draws them as before.
+
+
 def office_inside(k, cast=True):
     """What the glass shows: the back wall, Don's portrait, Father in Don's chair behind Don's desk, the Client, Sofía."""
+    if not INSIDE_QUIET[0]:
+        return _office_inside(k, cast)
+    import hands_ps as hp_
+    import da_hand_gate as g_
+    keep = hp_.reset
+    hp_.reset = lambda left="relax", right="relax": keep("quiet" if left == "relax" else left,
+                                                         "quiet" if right == "relax" else right)
+    try:
+        with g_.paused():
+            return _office_inside(k, cast)
+    finally:
+        hp_.reset = keep
+
+
+def _office_inside(k, cast=True):
     c = k.c
     x, y, w, h = WIN
     heads = {}

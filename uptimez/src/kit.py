@@ -341,6 +341,9 @@ def person(k, name, x, feet, s=1.0, pose="stand", face="neutral", seed=1, look=(
     return {"head": head, "hands": [(x + hx * s, feet + hy_ * s) for hx, hy_ in hands]}
 
 
+MOUTH = [None]   # lip sync: 0..1 open (opt-in); None draws every face's own mouth, as before
+
+
 def face_draw(k, x, y, face, look, glasses=False, seed=0):
     c = k.c
     lx, ly = look
@@ -387,6 +390,10 @@ def face_draw(k, x, y, face, look, glasses=False, seed=0):
             c.stroke()
     # mouth
     my = y + 28
+    if MOUTH[0]:                                                 # opt-in (28 Nov, lip sync): an open, talking mouth
+        o = MOUTH[0]                                             # over this face's eyes and brows; None = the face's own
+        ellipse(k, 0, my + 1, 8 + 4 * o, 3 + 8 * o, (0.35, 0.08, 0.08), seed + 5, shadow=False, lw=2)
+        return
     if face == "panic":
         ellipse(k, 0, my, 14, 9, (0.35, 0.08, 0.08), seed + 5, shadow=False, lw=2)
     elif face == "shock":
