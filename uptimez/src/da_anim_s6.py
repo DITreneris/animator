@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 6
+VER = 7
 T0 = 43.44
 SHOTS = [("6.1", 1.4), ("6.2", 1.2), ("6.3", 1.0), ("6.4", 2.23), ("6.5", 1.0), ("6.6", 1.0), ("6.7", 0.8),
          ("6.8", 2.72), ("6.8b", 0.6)]
@@ -40,7 +40,8 @@ drawn = A.drawn
 CAMS = {}
 declare = C.declare
 pam_held = C.pam_held
-TAKES = {"6.2": ("B", 0.6), "6.4": ("B", 0.6), "6.8": ("B", 0.9)}   # da_timing_v4's picks and take_at
+TAKES = {"6.2": ("B", 0.6), "6.4": ("B", 0.6)}   # da_timing_v4's picks and take_at; 6.8's "Keep infiltrating." dropped
+                                                   # (Tomas 28 Nov /grill-me: the mask gag carries the beat on mute)
 ENV = {}
 
 
@@ -315,7 +316,7 @@ def s68_cast(t):
         dface = "grin" if td < 1.2 else "happy"                        # (cold test: a frown while poking read as anger,
                                                                        # the mask as mockery) eager all through
         dlook = (1, 0.3) if td < 0.6 or td >= 1.27 else (0.3, 1.0)
-        kit.MOUTH[0] = 0.5 if talking("6.8", t) else None
+        kit.MOUTH[0] = 0.5 if ("6.8" in TAKES and talking("6.8", t)) else None
         try:
             o = rig_hands(k_, don_rig(x, f, dface, dlook), s_, dj)
         finally:
