@@ -226,6 +226,9 @@ def rig_hands(k, draw, scale, jobs, sex="m", skin=MALE):
             obj = None
             if j.get("obj"):
                 side = __import__("hands_lr").side(arm, d)
+                if pose == "SAUCER_SUPPORT":                    # (28 Nov, scene 4) as hl.draw_lr draws it: level, the
+                    side = arm                                  # thumb up, whatever the forearm; a forearm rising put the
+                                                                # contact on the other side of the wrist from the palm
                 P = hl.to_screen(pose, T[arm][0], T[arm][1], math.atan2(d[1], d[0]), w, side, hl.contact(pose, j["contact"]))
                 if j.get("obj_info"):                          # opt-in (28 Nov, da_cups): the prop's drawer also gets the
                     info = dict(side=side, d=d, wrist=T[arm], arm=arm)   # hand's side and the forearm's direction
@@ -1847,7 +1850,7 @@ def face_known(rig, face):
     return _FACE_SEEN[key]
 
 
-FACES_DON = ("neutral", "confused", "pleased", "grin", "happy", "panic", "shock", "smug", "squint")   # measured 27 Nov
+FACES_DON = ("neutral", "confused", "pleased", "grin", "happy", "panic", "shock", "smug", "squint", "hard")   # measured 27 Nov
 FACES_PAM_WARM = ("neutral", "doubt", "peer", "quiet", "hopeful", "pressed", "shock", "smile", "worried", "sad")
 FACES_NOTE = "squint draws shut eyes: it reads as asleep (lesson: eyes open for 'approves without looking')"
 

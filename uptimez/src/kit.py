@@ -363,6 +363,13 @@ def face_draw(k, x, y, face, look, glasses=False, seed=0):
             c.move_to(sx - 13, y - 3)
             c.line_to(sx + 13, y - 3)
             c.stroke()
+    elif face == "hard":  # (28 Nov, ep15 4.2b: Father's face) lids half down over a level stare
+        for sx in (-17, 17):
+            ellipse(k, sx, y, 10, 10, (1, 1, 1), seed + sx, shadow=False, lw=2)
+            ellipse(k, sx + lx * 4, y + 2 + ly * 3, 4.5, 4.5, INK, seed + sx + 1, shadow=False, outline=False)
+            c.save(); c.new_path(); c.arc(sx, y, 11, 0, 2 * math.pi); c.clip()
+            c.set_source_rgb(0.96, 0.78, 0.66); c.rectangle(sx - 12, y - 12, 24, 11); c.fill(); c.restore()
+            c.set_source_rgb(*INK); c.set_line_width(3.4); c.move_to(sx - 11, y - 1); c.line_to(sx + 11, y - 1); c.stroke()
     elif face == "squint":
         for sx in (-17, 17):
             c.set_source_rgb(*INK)
@@ -383,6 +390,11 @@ def face_draw(k, x, y, face, look, glasses=False, seed=0):
     elif face == "smug" or face == "pleased":
         c.move_to(-26, y - 16); c.line_to(-9, y - 18); c.stroke()
         c.move_to(9, y - 18); c.line_to(26, y - 16); c.stroke()
+    elif face == "hard":                                         # down hard toward the nose, level, heavy
+        c.set_line_width(5)
+        c.move_to(-27, y - 20); c.line_to(-8, y - 13); c.stroke()
+        c.move_to(8, y - 13); c.line_to(27, y - 20); c.stroke()
+        c.set_line_width(4)
     if glasses:
         c.set_line_width(3)
         for sx in (-17, 17):
