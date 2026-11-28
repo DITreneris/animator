@@ -35,7 +35,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, _head, 
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 20
+VER = 21
 OOF_TAKE = "A"
 SHOTS = [("1.1", 1.4), ("1.2", 0.8), ("1.3", 1.0), ("1.3c", 0.6), ("1.3b", 1.0), ("1.4", 1.2), ("1.5", 0.8)]
 

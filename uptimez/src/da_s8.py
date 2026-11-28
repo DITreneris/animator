@@ -475,6 +475,7 @@ FATHER_FOLDED = (-20, 140, 20, -140)                          # arms folded, han
 V8 = [False]   # opt-in (27 Nov, the props audit): the props sheet v2's plan and Pam's mug v2 (da_set.MUG_V2) on V5 + V6
 V6 = [False]   # opt-in (26 Nov, Tomas: "to the canon"): V5 plus Pam in her office canon (dusty-rose lips, no brooch; pm_ps's
                # berry lips and flower are episode 8's touches)
+S8_SOFIA_V5 = [False]   # Tomas 28 Nov: Sofía v5 locked for the episode; the locked S8 keeps v4 until re-rendered
 V5 = [False]   # opt-in (26 Nov, after the cast analysis and the Father sheet's cold test): Sofía in her episode 15 outfit
                # (sofia_da, the job interview, charcoal); Father leaning back, the ring hand on the chair's armrest, the other
                # on his belly (the fold misread 3 times: "checking a watch"). False draws the locked v4 exactly.
@@ -512,8 +513,12 @@ def meeting(k):
         try:
             hp.reset("quiet", "quiet")
             heads["father"] = seated(k, lambda: _father_rest(k))
-            heads["sofia"] = seated(k, lambda: sd.with_board(k, 444, 748, 0.66, "binder", face_kind="interested",
-                                                              look=(-1.0, 0.9), lift=62)["head"])    # reading: board_two
+            keep5 = sd.LOOK_V5[0]; sd.LOOK_V5[0] = S8_SOFIA_V5[0]      # the locked S8: v4 until its rough-cut re-render
+            try:
+                heads["sofia"] = seated(k, lambda: sd.with_board(k, 444, 748, 0.66, "binder", face_kind="interested",
+                                                                  look=(-1.0, 0.9), lift=62)["head"])    # reading: board_two
+            finally:
+                sd.LOOK_V5[0] = keep5
         finally:
             hv.disable(); kit_.HAND[0] = None
     else:

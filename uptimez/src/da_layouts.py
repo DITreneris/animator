@@ -33,6 +33,7 @@ import pm_ps as pm
 import robot_ps as rp
 import dh_cast as dc
 import sofia_da as sd
+sd.LOOK_V5[0] = True   # Tomas 28 Nov: Sofía v5 locked (da_sofia_v5.png); da_s8's locked layers keep v4
 import uz_check as uz
 
 ds.EP15_SET[0] = True                                          # Tomas 27 Nov: the throne's back bare, no taped plan, no
