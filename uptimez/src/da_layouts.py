@@ -206,6 +206,9 @@ def rig_hands(k, draw, scale, jobs, sex="m", skin=MALE):
                 u_ = 1.96 * l_ / d_                             # the hand apart from the arm; the hand goes where it reaches
                 T[arm] = (S_[0] + (T[arm][0] - S_[0]) * u_, S_[1] + (T[arm][1] - S_[1]) * u_)
             ang[arm] = r8._ik(S_, T[arm], l_, l_, j.get("out", arm))
+            if j.get("elbow") == "down":                        # opt-in (28 Nov, 4.1 review): the elbow under the line
+                two = [r8._ik(S_, T[arm], l_, l_, o_) for o_ in (1, -1)]   # shoulder-wrist; on a level reach the side by
+                ang[arm] = max(two, key=lambda a_: math.cos(math.radians(a_[0])))   # x picks one at random (a raised V)
             if math.hypot(T[arm][0] - S_[0], T[arm][1] - S_[1]) <= 2.0 * l_:
                 touch(*T[arm])                                  # a hand counts only where the arm gets it (the audit
             elif GROUND["on"][0]:                               # 27 Nov, 3.2: a hand drawn apart, at the jug)

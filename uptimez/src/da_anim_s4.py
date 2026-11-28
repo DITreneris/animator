@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, ds, kit, rig_hands, shadow, _head  # no
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 4
+VER = 6
 T0 = 27.84
 SHOTS = [("4.1", 1.6), ("4.2", 3.0), ("4.2b", 0.8), ("4.3", 1.2)]
 drawn = A.drawn
@@ -52,8 +52,8 @@ def _probe(draw_rig, scale, jobs, sex="m", skin=L.MALE):
         return rig_hands(kk, draw_rig, scale, jobs, sex=sex, skin=skin)
 
 
-def don_rig(x, f, face, look, chin=0):
-    return lambda kk, a4: dp.don(kk, x, f, SC["don"], a4, face, look, chin=chin, hands=False)
+def don_rig(x, f, face, look, chin=0, lean=0.0):
+    return lambda kk, a4: dp.don(kk, x, f, SC["don"], a4, face, look, chin=chin, lean=lean, hands=False)
 
 
 def _mom_folded(k_, look):
@@ -80,32 +80,44 @@ def s41_parts(t):
         h = {}
         walk = seg(td, 0.0, 0.67)                                      # she steps in over the tape (x 574 here): two steps,
         x = (x1 - 36) + 110 * (1 - ease_out(walk))                     # mid-step over the tape (x 574): her lead foot across                     # ending just over it, on his side (the layout's mark
-        back = ease(seg(td, 1.13, 1.6))                                # stopped her short of it); then a step back to it
+        back = ease(seg(td, 1.2, 1.6))                                 # stopped her short of it); then a step back to it
         x += 30 * back
         step = math.sin(math.pi * 2 * walk) if walk < 1 else 0
         bob = -4 * abs(step)
-        T = (x - 40, f - 112)                                          # her wrist: the cup held out at chest height, between them
+        T = (x - 30, f - 92)                                           # her wrist: the cup held out at waist height, between them
+                                                                       # (review 28 Nov: lower and nearer her, so both elbows hang)
         if "off" not in _MEM:                                          # his palm's wrist -> the saucer's base, measured
             got = {}
             o_ = _probe(don_rig(dx, df, "pleased", (1, 0.2)), sd, {1: cu.on_palm((dx + 50, df - 130), CS, out=1, got=got)})
             W_ = o_["wrists"][1]                                       # where the wrist really went (the reach clamp)
             _MEM["off"] = (got["base"][0] - W_[0], got["base"][1] - W_[1])
-        give = 0.87                                                    # his palm takes it: her hand leaves on this drawing
+        give = 0.93                                                    # (review 28 Nov: his palm under it first, both on it
+        meet = 0.73                                                    # for 0.2 s, then she lets go, her hand back in an arc)
         mine = td >= give
-        rows = [("pam", "L", "saucer_hold" if not mine else "palm", "SAUCER_SUPPORT: the cup on her palm -> palm: let go"),
+        rows = [("pam", "L", "saucer_hold" if not mine else ("palm" if td < give + 0.4 else "quiet"),
+                 "SAUCER_SUPPORT: the cup on her palm -> palm: let go, back down in an arc -> quiet"),
                 ("pam", "R", "quiet", "quiet"),
                 ("don", "R", "palm" if not mine else "saucer_hold",
-                 "palm: reaching under it, short -> SAUCER_SUPPORT: the cup on his palm"),
+                 "palm: coming up under it -> SAUCER_SUPPORT: the cup on his palm"),
                 ("don", "L", "quiet", "quiet")]
         declare(tuple(rows), k_)
         # Pam
         shadow(k_, x, f + 2, 32)
         hold = {}
+        if "rest" not in _MEM:                                         # where her arm hangs (the arc ends there)
+            o_ = _probe(lambda kk, a4: pam_held(kk, x1, f, sp, a4, "neutral", (-1, 0.3), mug=False), sp, {},
+                        sex="f", skin=L.FEMALE)
+            _MEM["rest"] = (o_["wrists"][-1][0] - x1, o_["wrists"][-1][1] - f)
         if not mine:
             pj = {-1: cu.on_palm(T, CS, kind="cup", out=-1, got=hold)}
-        else:                                                          # her hand back and down; she turns to go
-            back = ease(seg(td, give, give + 0.33))
-            pj = {-1: dict(T=(T[0] + 26 * back, T[1] + 40 * back), pose="PALM", out=-1, reach=True)}
+            pj[-1]["elbow"] = "down"                                   # the elbow at her waist, the forearm level
+        elif td < give + 0.4:                                          # her hand back and down, out of the way, in an arc
+            u = ease(seg(td, give, give + 0.4))
+            R_ = (x + _MEM["rest"][0], f + _MEM["rest"][1])
+            P_ = (T[0] + (R_[0] - T[0]) * u + 10 * math.sin(math.pi * u), T[1] + (R_[1] - T[1]) * u)
+            pj = {-1: dict(T=P_, pose="PALM", out=-1, reach=True, elbow="down")}
+        else:
+            pj = {}
         face = "neutral" if td < 1.07 else "doubt"
         look = (-1, 0.3) if td < 1.13 else (1, -0.1)                   # then her eyes go to the office door
         k_.c.save(); k_.c.translate(0, bob)
@@ -116,20 +128,25 @@ def s41_parts(t):
         if "base" in hold:
             _MEM["base41"] = (hold["base"][0], hold["base"][1] + bob)
         B0 = _MEM.get("base41", (T[0] + 20, T[1]))
-        # Don: his palm comes up under it, short; then it is on his palm and he draws it in
+        # Don: his palm comes up under the saucer from below; then it is on his palm and he draws it in
         DON_FEET = (dx, df); L.DON_FEET[0] = DON_FEET
         shadow(k_, dx, df + 2, 40)
         off = _MEM["off"]
         if not mine:
-            r = ease(seg(td, 0.27, give))
-            tgt = (B0[0] - off[0] - 6, B0[1] - off[1] + 12)            # under it, a finger short
-            rest = (dx + 30, df - 100)
-            DT = (rest[0] + (tgt[0] - rest[0]) * r, rest[1] + (tgt[1] - rest[1]) * r)
-            dj = {1: dict(T=DT, pose="PALM", out=-1, reach=True)}         # (the elbow low: the forearm rises to it)
+            r = ease(seg(td, 0.27, meet))
+            tgt = (B0[0] - off[0] - 4, B0[1] - off[1] + 3)             # under it, touching (from meet on)
+            if "drest" not in _MEM:
+                _MEM["drest"] = _probe(don_rig(dx, df, "grin", (1, 0.2)), sd, {})["wrists"][1]
+            rest = _MEM["drest"]
+            low = (tgt[0] - 4, tgt[1] + 26)                            # the path: out low, then up under it
+            q = (1 - r) ** 2, 2 * r * (1 - r), r * r
+            DT = (q[0] * rest[0] + q[1] * low[0] + q[2] * tgt[0], q[0] * rest[1] + q[1] * low[1] + q[2] * tgt[1])
+            dj = {1: dict(T=DT, pose="PALM", out=1, reach=True, elbow="down")}
         else:
             home = ease(seg(td, give + 0.13, give + 0.6))              # it comes in to his chest
             base = (B0[0] + (dx + 46 - B0[0]) * home, B0[1] + (df - 150 * sd / 0.6 - B0[1]) * home)
             dj = {1: cu.on_palm((base[0] - off[0], base[1] - off[1]), CS, kind="cup", out=1)}
+            dj[1]["elbow"] = "down"
         dface = "grin" if td < give else "pleased"
         od = rig_hands(k_, don_rig(dx, df, dface, (1, 0.2)), sd, dj)
         h["don"] = _head(od, "don")
@@ -140,8 +157,10 @@ def s41_parts(t):
 
 # ---- 4.2 / 4.2b ------------------------------------------------------------------------------------------------------------
 REFLECT = [0.22]
-DXS = -14                                                          # 4.2: a step nearer the glass than the layout's mark
-CROWN = [(-18, 0), (-18, -16), (-9, -6), (0, -20), (9, -6), (18, -16), (18, 0), (-18, 0)]
+DXS = -26                                                          # 4.2: nearer the glass than the layout's mark (review
+LEAN = -0.08                                                       # 28 Nov: his fingertip short of the line by 15 px; at
+                                                                   # -26 and leaning in it lands on it, measured)
+CROWN = [(-17, 1), (-19, -15), (-10, -5), (-1, -21), (8, -7), (17, -17), (18, 2), (-17, 1)]   # by hand: a little crooked
 
 
 def _crown_pt(u, cx, by):
@@ -159,7 +178,7 @@ def _crown_pt(u, cx, by):
 
 
 def _don_street(k_, td, face, look, chin, hair, cup_up, rows_extra=(), cup_in=0, fog=0.0, crown=0.0, drawing=False,
-                mouth=None):
+                mouth=None, lean=0.0):
     """Don at the street door, his back to the room: the cup on his screen-right palm; his screen-left hand at his
     hair (hair: 0..1 along the stroke), or drawing on the glass (drawing: its fingertips follow the crown's line);
     his reflection faint in the door's glass (the same drawing, mirrored about the glass at x 92, the gate paused).
@@ -173,11 +192,14 @@ def _don_street(k_, td, face, look, chin, hair, cup_up, rows_extra=(), cup_in=0,
              "palm: smoothing his hair -> PINCH: his fingertip drawing on the glass -> quiet")]
     declare(tuple(rows) + tuple(rows_extra), k_)
     shadow(k_, x, f + 2, 40)
-    rig = don_rig(x, f, face, look, chin)
-    with g_.paused():                                                  # his head, for the reflection's
-        kk = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
-        hx0, hy0, r0 = _head(rig_hands(kk, rig, s_, {}), "don")
-    cx, by = max(2 * 92 - hx0 + 14, 66), hy0 - r0 - 4                 # the crown: on the reflection's head, a little askew
+    rig = don_rig(x, f, face, look, chin, lean)
+    if "crown_at" not in _MEM:                                         # the crown: on the reflection's head as he leans in to
+        with g_.paused():                                              # draw it; upright, it sits off to one side
+            kk = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
+            hx0, hy0, r0 = _head(rig_hands(kk, don_rig(x, f, face, look, chin, 0.0), s_, {}), "don")
+        hx0 += (f - hy0) * math.sin(LEAN)                              # (the head record is the upright one: the lean added)
+        _MEM["crown_at"] = (2 * 92 - hx0, hy0 - r0 - 4)
+    cx, by = _MEM["crown_at"]
     base = {1: cu.on_palm((x + (40 - 26 * cup_up - cup_in) * s_ / 0.6, f - (150 - 6 * cup_up) * s_ / 0.6), CS, kind="cup", out=1)}
     tip, done = _crown_pt(crown, cx, by)
     if drawing:
@@ -199,18 +221,25 @@ def _don_street(k_, td, face, look, chin, hair, cup_up, rows_extra=(), cup_in=0,
     with g_.paused():
         rig_hands(k_, rig, s_, jobs())
     c.pop_group_to_source(); c.paint_with_alpha(REFLECT[0])
-    if fog > 0:                                                        # his breath on the glass
-        c.set_source_rgba(1, 1, 1, 0.62 * fog)
-        c.save(); c.translate(cx, by - 8); c.scale(36 * (0.6 + 0.4 * fog), 27 * (0.6 + 0.4 * fog))
-        c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
-    if crown > 0 and len(done) > 1:                                    # the crown, wiped clear in it by his fingertip
-        c.set_line_cap(1); c.set_line_join(1)
-        for col, lw in (((0.30, 0.44, 0.55), 4.6), ((0.93, 0.76, 0.28), 2.6)):
-            c.set_source_rgb(*col); c.set_line_width(lw); c.new_path(); c.move_to(*done[0])
-            for q in done[1:]:
-                c.line_to(*q)
-            c.stroke()
-        c.set_line_cap(0); c.set_line_join(0)
+    if fog > 0:                                                        # his breath on the glass: a misted patch, blotchy edge
+        c.push_group()                                                 # (review 28 Nov: the crown wiped clear in it, not a
+        gr = 0.6 + 0.4 * fog                                           # gold sticker on a white oval)
+        for ox, oy, rx, ry, al in ((0, -8, 34, 25, 0.50), (-12, -2, 20, 16, 0.22), (13, -14, 19, 15, 0.22),
+                                   (6, 4, 18, 12, 0.18), (-8, -22, 16, 10, 0.16)):
+            c.set_source_rgba(0.97, 0.98, 1.0, al * fog)
+            c.save(); c.translate(cx + ox * gr, by + oy * gr); c.scale(rx * gr, ry * gr)
+            c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        if crown > 0 and len(done) > 1:
+            c.set_line_cap(1); c.set_line_join(1)
+            for op, col, lw in ((cairo.OPERATOR_OVER, (0.42, 0.55, 0.66, 0.95), 6.4),
+                                (cairo.OPERATOR_CLEAR, (0, 0, 0, 1), 3.4)):   # a wet rim, then the wiped-clear channel
+                c.set_operator(op); c.set_source_rgba(*col); c.set_line_width(lw)
+                c.new_path(); c.move_to(*done[0])
+                for q in done[1:]:
+                    c.line_to(*q)
+                c.stroke()
+            c.set_operator(cairo.OPERATOR_OVER); c.set_line_cap(0); c.set_line_join(0)
+        c.pop_group_to_source(); c.paint()
     c.restore()
     kit.MOUTH[0] = mouth
     try:
@@ -221,8 +250,9 @@ def _don_street(k_, td, face, look, chin, hair, cup_up, rows_extra=(), cup_in=0,
 
 
 def s42_cast(t):
-    """v3 (Tomas 28 Nov /grill-me: "add a gag to 4.2"): he smooths his hair once, breathes on the glass over his
-    reflection's head, and with a fingertip draws a crown on it; steps back to admire: his reflection, crowned."""
+    """v4 (outside review 28 Nov): he smooths his hair; turns to the glass, leans in, breathes on it over his
+    reflection's head and draws a crown in the mist with a fingertip, his eyes on it; steps upright to admire: the crown
+    sits off to one side; he tips back in until his reflection is under it, and is satisfied."""
     td = drawn(t)
 
     def cast(k_):
@@ -231,14 +261,21 @@ def s42_cast(t):
         h["robot"] = L.robot(k_, (480, F + 64), tilt=0.20 + 0.08 * pick, look=(0, 1))
         u = seg(td, 0.13, 0.6)
         hair = u if 0 < u < 1 else None
-        fog = ease(seg(td, 0.67, 1.0))
+        fog = ease(seg(td, 0.73, 1.0))
         crown = seg(td, 1.07, 2.07)
         drawing = 1.07 <= td < 2.13
-        breath = 0.67 <= td < 1.0
-        face = "smug" if td < 2.13 else "pleased"
-        look = (-1, -0.2) if td < 0.67 else (-1, -0.7)                 # up at the crown's place
+        breath = 0.73 <= td < 1.0
+        lean = LEAN * (ease(seg(td, 0.6, 0.87)) - ease(seg(td, 2.13, 2.33)) + ease(seg(td, 2.47, 2.67)))
+        if td < 0.6:
+            face, look = "smug", (-1, -0.2)
+        elif td < 2.6:                                                 # eyes open, on the glass and his fingertip
+            face = "grin"
+            tip, _ = _crown_pt(crown, *_MEM.get("crown_at", (70, 640)))
+            look = (-1, -0.7) if not drawing else (-1, -0.55 - 0.3 * (tip[1] < _MEM.get("crown_at", (0, 640))[1] - 10))
+        else:
+            face, look = "smug", (-1, -0.6)                            # there: satisfied
         h.update(_don_street(k_, td, face, look, 0, hair, 0.0, fog=fog, crown=crown, drawing=drawing,
-                             mouth=0.7 if breath else None))
+                             mouth=0.7 if breath else None, lean=lean))
         return h
     return cast
 
@@ -252,7 +289,8 @@ def s42b_cast(t):
         face = "hard" if hard else "smug"
         REFLECT[0] = 0.40
         try:
-            return _don_street(k_, td, face, (-1, 0.0), 1 if hard else 0, None, 0.0, cup_in=22, fog=1.0, crown=1.0)
+            return _don_street(k_, td, face, (-1, 0.0), 1 if hard else 0, None, 0.0, cup_in=22, fog=1.0, crown=1.0,
+                               lean=LEAN)
         finally:
             REFLECT[0] = 0.22
     return cast
@@ -277,7 +315,10 @@ def s43_parts(t):
         sneak = seg(td, 0.0, 0.6)                                      # small quick steps to the door
         px0, pf_ = mx + 84, F + 24                                     # (left of the knob: at the layout's mark her body hid it)
         slip = ease(seg(td, 0.93, 1.2))                                # (cold test: the end read as a knock) she slips into
-        px_ = px0 - 70 * (1 - ease_out(sneak)) + 72 * slip             # the gap, behind the open door's leaf
+        inn = seg(td, 0.93, 1.07); deep = ease(seg(td, 1.07, 1.2))     # (Tomas 28 Nov: "through the door"?) round the leaf's
+        px_ = px0 - 70 * (1 - ease_out(sneak)) + (924 - px0) * ease(inn) - 70 * deep   # free edge, in front of it, into
+        pf_ = pf_ - 10 * deep                                          # the gap; then left, deeper, toward the office behind
+                                                                       # the glass: only what is in the gap shows
         step = math.sin(math.pi * 4 * sneak) if sneak < 1 else 0
         bob = -3 * abs(step)
         on = 0.6 <= td < 0.93
@@ -294,16 +335,16 @@ def s43_parts(t):
         ca, sa = math.cos(-lean), math.sin(-lean)                      # the lean turns her after the arm is solved
         Tl = (px_ + hx_ * ca - hy_ * sa, pf_ + hx_ * sa + hy_ * ca)
         jobs = {1: dict(T=Tl, pose="GRAB", out=1, reach=True)} if on else {}
-        c.save(); c.translate(0, bob)
+        c.save()
+        if deep > 0:
+            c.rectangle(896, 0, 56, F + 4); c.clip()                   # inside: the jambs and the wall hide her
+        elif inn > 0:
+            c.rectangle(0, 0, 952, 2000); c.clip()
+        c.translate(0, bob)
         o = L.tilted(k_, px_, pf_, lean, lambda: rig_hands(
             k_, lambda kk, a4: pam_held(kk, px_, pf_, SC["pam"], a4, "neutral", (1, -0.1), mug=False, lean=-10),
             SC["pam"], jobs, sex="f", skin=L.FEMALE))
         c.restore()
-        if slip > 0:                                                   # the leaf again, over her: she is past it
-            x0, top = 896, 470
-            ex = x0 - 44 * o_door
-            kit.cut(k_, [(x0, top), (ex, top + 10 * o_door), (ex, F + 14 * o_door), (x0, F)], (0.42, 0.27, 0.16), lw=2.2)
-            kit.ellipse(k_, ex + 6, F - 72 + 4 * o_door, 3.5, 3.5, (0.85, 0.72, 0.30), 7201, shadow=False, lw=1)
         h["pam"] = _head(o, "pam")
         return h
     return cast, mom_back
@@ -356,6 +397,7 @@ def mix(sec, path):
 
 
 GATED = ("4.1", "4.2", "4.2b", "4.3")
+ELBOW_SHOTS = ("4.1", "4.2", "4.2b")
 
 
 def build():
@@ -378,7 +420,9 @@ def build():
                 g.reset()
                 surf = render_shot(sid, i / FPS)
                 if i % 2 == 0 and sid in GATED:
+                    g.ELBOW_ON[0] = sid in ELBOW_SHOTS                  # the review's elbow check, on the shots it fixed
                     faults += ["%s %.2fs  %s" % (sid, i / FPS, f) for f in g.check()]
+                    g.ELBOW_ON[0] = False
                 surf.write_to_png(os.path.join(tmp, "%04d.png" % n)); n += 1
     if faults:
         print("HAND GATE FAIL: %d" % len(faults))

@@ -278,6 +278,9 @@ def _cross(p1, p2, q1, q2):
 FRAME = (0, 0, 540, 960)                                         # frame units: hands outside it are not seen
 
 
+ELBOW_ON = [False]
+
+
 def check(tol=3.0):
     import of_cast as oc
     import hand_gate
@@ -331,6 +334,13 @@ def check(tol=3.0):
         if abs(a["a2"]) < 20 and off_down > 25:
             out.append("POLE %s elbow bent %d deg, forearm %d deg off down, hand at (%d, %d)"
                        % ("robot" if a["robot"] else "a", abs(a["a2"]), off_down, a["h"][0], a["h"][1]))
+    # ELBOW (28 Nov, outside review of 4.1): an inverted V, the elbow lifted over the shoulder while the hand hangs
+    # below it (Pam "hanging" the cup from a raised elbow; IK picked the elbow side by x on a level reach)
+    for a in (ARMS if ELBOW_ON[0] else ()):                     # opt-in per shot: a raised elbow is right for drinking or
+        L_ = math.hypot(a["e"][0] - a["s"][0], a["e"][1] - a["s"][1]) or 1   # a mask held up (5.2, 6.8): frozen shots keep their gate
+        if a["s"][1] - a["e"][1] > 0.25 * L_ and a["h"][1] - a["e"][1] > 0.25 * L_:
+            out.append("ELBOW %s elbow %d px over the shoulder, hand %d px under it, hand at (%d, %d)"
+                       % ("robot" if a["robot"] else "a", a["s"][1] - a["e"][1], a["h"][1] - a["e"][1], a["h"][0], a["h"][1]))
     # CROSS: arms in pairs (one rig draws its two arms one after the other, shoulders level)
     i = 0
     while i + 1 < len(ARMS):
