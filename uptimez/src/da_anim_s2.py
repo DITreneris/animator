@@ -21,13 +21,14 @@ import cairo
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import da_cups as cu                                              # noqa: E402
 import da_anim_s1 as A                                             # noqa: E402
 import da_layouts as L                                             # noqa: E402
 from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  # noqa: E402
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 2
+VER = 5
 T0 = 6.8                                                           # the scene's start in the film
 SHOTS = [("2.1", 2.2), ("2.2", 3.28), ("2.3", 1.2), ("2.4", 2.8)]
 drawn = A.drawn
@@ -226,24 +227,27 @@ def s23_cast(t):
 
 
 # ---- 2.4 -------------------------------------------------------------------------------------------------------------------
+# the cups canon (28 Nov, da_cup_sheet_v2): her blue mug by its handle; it slips (her hand opens, PALM) and falls free;
+# his gift stands on his palm (SAUCER_SUPPORT); on the drawing he lets go she has it by its handle and his open hand is
+# back at his side: never two people's hands on it in one drawing
 def _jobs24(t):
     td = drawn(t)
-    don_r = "grab" if td < 1.20 else "quiet"
-    pam_l = "quiet" if td < 1.20 else "grab"
-    pam_r = "grab" if td < 0.80 else ("palm" if td < 1.20 else "grab")
-    return (("don", "R", don_r, "grab: the gift held out -> quiet: let go, turning away"),
+    don_r = "saucer_hold" if td < 1.20 else "palm"
+    pam_r = "pinch_pinky" if td < 0.80 else ("palm" if td < 1.20 else "quiet")
+    pam_l = "quiet" if td < 0.93 else ("palm" if td < 1.20 else "pinch_pinky")
+    return (("don", "R", don_r, "SAUCER_SUPPORT: the gift on his palm -> palm: let go, his hand back at his side"),
             ("don", "L", "quiet", "quiet"),
-            ("pam", "R", pam_r, "grab: the blue mug -> palm: it falls -> grab: the gift"),
-            ("pam", "L", pam_l, "quiet -> grab: the gift, both hands"))
+            ("pam", "R", pam_r, "CUP_GRIP: the blue mug by its handle -> palm: it slips -> quiet"),
+            ("pam", "L", pam_l, "quiet -> palm: reaching for its handle (no touch) -> CUP_GRIP: the gift by its handle"))
 
 
-def blue_mug(k, x, y, s=1.0, ang=0.0):
-    c = k.c
-    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
-    c.set_source_rgb(*kit.INK); c.set_line_width(5); c.new_path(); c.arc(11, -1, 6, -1.4, 1.4); c.stroke()
-    c.set_source_rgb(*L.dpr.BLUE_MUG); c.set_line_width(2.6); c.new_path(); c.arc(11, -1, 6, -1.4, 1.4); c.stroke()
-    kit.cut(k, [(-10, -12), (10, -12), (9, 10), (-9, 10)], L.dpr.BLUE_MUG, lw=2)
-    c.restore()
+def pam_held(*a, **kw):
+    import da_anim_s3
+    return da_anim_s3.pam_held(*a, **kw)
+
+
+_GAVE = {}
+_FELL = {"base": (690.0, 760.0)}                                # 2.4's drawings render in order
 
 
 def s24_cast(t):
@@ -254,51 +258,76 @@ def s24_cast(t):
         px, pf = MARKS["pam_counter"]
         x, f = MARKS["don_gift"]; L.DON_FEET[0] = (x, f)
         s_ = SC["don"]; sp = SC["pam"]
+        ms = cu.MUG_FLOOR * sp / 0.54                                  # one size per space (the sheet)
         raise_ = ease(seg(td, 0.0, 0.40))                              # Don raises the gift to her chest height
-        T = (px - 30, pf - 108)                                        # nearer her (cold test s2: her arm stretched)
-        give = (x + 24 * s_ + (T[0] - x - 24 * s_) * raise_ ** 1.6, f - 160 * s_ + (T[1] - f + 160 * s_) * raise_)   # up first, then out
+        T = (px - 66, pf - 70)                                         # his palm's end point: in his reach, at her chest, clear of his face
+        start = (x + 30 * s_, f - 150 * s_)
+        give = (start[0] + (T[0] - start[0]) * raise_ ** 1.6, start[1] + (T[1] - start[1]) * raise_)   # up first, then out
         home = ease(seg(td, 1.33, 1.80))                               # she draws it to her chest
-        chest = (px - 8, pf - 104)
-        gift = give if td < 1.20 else (T[0] + (chest[0] - T[0]) * home, T[1] + (chest[1] - T[1]) * home)
-        # the hand-off (cold test s2: "almost a handshake"): he holds it from under its foot; she takes it by its
-        # sides, from above, on the drawing he lets go: never two people's hands on it in one drawing
-        fall = seg(td, 0.80, 1.07)                                     # the blue mug: drops, shatters at 1.07
-        mug_hand = (px + 24, pf - 92)
-        props = [("gift", (gift[0] - 10, gift[1] - 20, 48, 56))]
-        if td < 0.80:
-            props.append(("blue mug", (mug_hand[0] - 14, mug_hand[1] - 14, 32, 32)))
-        declare("2.4", k_, t, props)
-        # Pam
-        shadow(k_, px, pf + 2, 32)
-        face = "doubt" if td < 0.80 else ("shock" if td < 1.20 else ("hopeful" if td < 2.2 else "doubt"))
-        pj = {}
-        if td < 0.80:
-            pj[1] = dict(T=mug_hand, pose="GRAB", out=1)
-        elif td < 1.20:
-            pj[1] = dict(T=(mug_hand[0] + 4, mug_hand[1] - 4), pose="PALM", out=1)
-        else:
-            pj[1] = dict(T=(gift[0] + 30, gift[1] + 4), pose="GRAB", out=1)
-            pj[-1] = dict(T=(gift[0] - 2, gift[1] + 4), pose="GRAB", out=-1)
-        op = rig_hands(k_, lambda kk, a4: pm.pam(kk, px, pf, sp, a4, face, (-1, 0.6) if td < 1.6 else (-1, 0.9),
-                                                 mug=False), sp, pj, sex="f", skin=L.FEMALE)
-        h["pam"] = _head(op, "pam")
-        if td < 0.80:
-            blue_mug(k_, mug_hand[0] + 8, mug_hand[1] + 2, 0.8)
-        elif fall < 1:
-            blue_mug(k_, mug_hand[0] + 8, mug_hand[1] + 2 + (pf - mug_hand[1]) * fall * fall, 0.8, ang=2.2 * fall)
-        if td >= 1.07:
-            L.dpr.shards_v2(k_, px - 6, pf + 8, 0.6)
-        # Don
-        turn = ease(seg(td, 1.27, 1.67))
-        shadow(k_, x + 22 * raise_ - 22 * turn, f + 2, 40)
-        dface = "grin" if td < 1.20 else "pleased"
-        dj = {1: dict(T=(give[0] + 14, give[1] + 30), pose="GRAB", out=1)} if td < 1.20 else {}   # under its foot
-        xd = x + 22 * raise_ - 22 * turn                               # a half step in to her with it (no straight arm)
-        od = rig_hands(k_, lambda kk, a4: dp.don(kk, xd - 14 * turn, f, s_, a4, dface, (1 - 2 * turn, 0), hands=False),
-                       s_, dj)
-        h["don"] = _head(od, "don")
-        L.dpr.gift_mug_v2(k_, gift[0] + 14, gift[1] + 12, 0.55)
-        h["gift"] = (gift[0] + 14, gift[1], 14)
+        if "off" not in _FELL:                                         # her hold's wrist -> the mug's base, measured once
+            import da_hand_gate as g_
+            from kit import Ctx
+            pr = {}
+            with g_.paused():
+                kk = Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
+                rig_hands(kk, lambda k2, a4: pam_held(k2, px, pf, sp, a4, "hopeful", (-1, 0.6), mug=False), sp,
+                          {-1: cu.by_handle(T, ms, kind="gift", out=1, got=pr)}, sex="f", skin=L.FEMALE)
+            _FELL["off"] = (pr["base"][0] - T[0], pr["base"][1] - T[1])
+        gb = _FELL.get("gave", T)                                      # the gift's base on his palm, his last drawing
+        take = (gb[0] - _FELL["off"][0], gb[1] - _FELL["off"][1])     # she takes it where it stands: it doesn't jump
+        chest = (px - 26, pf - 100)
+        hold = (take[0] + (chest[0] - take[0]) * home, take[1] + (chest[1] - take[1]) * home)
+        fall = seg(td, 0.80, 1.07)                                     # the blue mug: slips, shatters at 1.07
+        mug_hand = (px + 30, pf - 88)
+        declare("2.4", k_, t, [])
+        def pam_part():
+            # Pam
+            shadow(k_, px, pf + 2, 32)
+            face = "doubt" if td < 0.80 else ("shock" if td < 1.20 else ("hopeful" if td < 2.2 else "doubt"))
+            pj = {}
+            if td < 0.80:
+                pj[1] = cu.by_handle(mug_hand, ms, kind="blue", out=-1, name="blue mug", got=_FELL)
+            elif td < 1.20:
+                pj[1] = dict(T=mug_hand, pose="PALM", out=-1, reach=True)   # opens where it held (cold test: not at her hip)
+            if 0.93 <= td < 1.20:                                      # her hand comes to its handle (retest: it "popped"
+                r = ease(seg(td, 0.93, 1.20))                          # over); short of it: one owner a drawing
+                hx_ = _FELL.get("gave", T)                             # the handle: the gift's base + the canon's offset
+                hx_ = (hx_[0] + cu.HC * ms, hx_[1] - 15 * ms)
+                pj[-1] = dict(T=(hx_[0] + 16 + 22 * (1 - r), hx_[1] + 4 + 26 * (1 - r)), pose="PALM", out=-1, reach=True)
+            if td >= 1.20:
+                pj[-1] = cu.by_handle(hold, ms, kind="gift", out=1, name="gift")
+            op = rig_hands(k_, lambda kk, a4: pam_held(kk, px, pf, sp, a4, face, (-1, 0.6) if td < 1.6 else (-1, 0.9),
+                                                     mug=False), sp, pj, sex="f", skin=L.FEMALE)
+            h["pam"] = _head(op, "pam")
+            if 0.80 <= td and fall < 1:                                    # free: it falls past her open hand, turning
+                bx, by = _FELL["base"]; bx -= 12                          # where her last hold had it, at her open hand
+                fy = by + 6 + (pf - by - 6) * fall * fall                  # already slipping on its first drawing
+                c = k_.c; c.save(); c.translate(bx, fy - 15 * ms); c.rotate(2.2 * fall); c.translate(-bx, -(fy - 15 * ms))
+                cu.mug(k_, bx, fy, ms, handle=1, kind="blue", state="free", name="blue mug")
+                c.restore()
+            if td >= 1.07:
+                L.dpr.shards_v2(k_, px - 6, pf + 8, 0.6)
+
+        def don_part():
+            # Don
+            turn = ease(seg(td, 1.27, 1.67))
+            xd = x + 26 * raise_ - 26 * turn                               # a half step in to her with it (no straight arm)
+            shadow(k_, xd, f + 2, 40)
+            dface = "grin" if td < 1.20 else "pleased"
+            if td < 1.20:
+                dj = {1: cu.on_palm(give, ms, kind="gift", out=-1, handle=1, got=_GAVE)}
+            else:                                                          # his open hand back at his own side
+                dj = {1: dict(T=(xd + 44 * s_, f - 118 * s_), pose="PALM", out=-1, reach=True)}
+            od = rig_hands(k_, lambda kk, a4: dp.don(kk, xd - 14 * turn, f, s_, a4, dface, (1 - 2 * turn, 0), hands=False),
+                           s_, dj)
+            h["don"] = _head(od, "don")
+
+        for part in ((don_part, pam_part) if td >= 1.20 else (pam_part, don_part)):   # the gift in her hand: in front of him
+            part()
+        if "base" in _GAVE:
+            _FELL["gave"] = _GAVE["base"]
+        gp = give if td < 1.20 else hold
+        h["gift"] = (gp[0], gp[1] - 20, 14)
         return h
     return cast
 
@@ -351,7 +380,7 @@ def build():
     import da_hand_gate as g
     import hands_v4 as hv
     import da_arms
-    da_arms.setup(); hv.enable(); g.install(); A._SETUP.append(1)
+    da_arms.setup(); hv.enable(); g.install(); cu.install(); A._SETUP.append(1)
     for sid, _ in SHOTS:
         if sid != "2.2":
             CAMS[sid] = camera_of(sid)

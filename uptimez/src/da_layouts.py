@@ -202,11 +202,18 @@ def rig_hands(k, draw, scale, jobs, sex="m", skin=MALE):
             if j.get("obj"):
                 side = __import__("hands_lr").side(arm, d)
                 P = hl.to_screen(pose, T[arm][0], T[arm][1], math.atan2(d[1], d[0]), w, side, hl.contact(pose, j["contact"]))
-                obj = (lambda P_: (lambda k_: j["obj"](k_, P_, w)))(P)
+                if j.get("obj_info"):                          # opt-in (28 Nov, da_cups): the prop's drawer also gets the
+                    info = dict(side=side, d=d, wrist=T[arm], arm=arm)   # hand's side and the forearm's direction
+                    obj = (lambda P_, i_: (lambda k_: j["obj"](k_, P_, w, i_)))(P, info)
+                else:
+                    obj = (lambda P_: (lambda k_: j["obj"](k_, P_, w)))(P)
                 if math.hypot(T[arm][0] - lg[0 if arm < 0 else 1][0][0], T[arm][1] - lg[0 if arm < 0 else 1][0][1]) <= 2.0 * lg[0 if arm < 0 else 1][1]:
                     touch(*P)
             if obj and j.get("behind"):
-                hl.draw_lr(k, pose, T[arm][0], T[arm][1], d, w, skin, arm, back_obj=obj)
+                front = None
+                if j.get("front"):                              # opt-in (28 Nov, da_cups): a pass over the hand too
+                    front = (lambda P_, i_: (lambda k_: j["front"](k_, P_, w, i_)))(P, dict(side=side, d=d, wrist=T[arm], arm=arm, skin=skin))
+                hl.draw_lr(k, pose, T[arm][0], T[arm][1], d, w, skin, arm, back_obj=obj, obj=front)
             else:
                 hl.draw_lr(k, pose, T[arm][0], T[arm][1], d, w, skin, arm, obj=obj)
     finally:

@@ -20,6 +20,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import da_cups as cu                                               # noqa: E402
 import da_anim_s1 as A                                             # noqa: E402
 import da_anim_s2 as B                                             # noqa: E402
 import da_layouts as L                                             # noqa: E402
@@ -27,7 +28,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 3
+VER = 6
 T0 = 16.28
 SHOTS = [("3.1", 1.61), ("3.2", 1.2), ("3.2b", 0.7), ("3.3", 2.4), ("3.4", 4.05), ("3.5", 1.6)]
 drawn = A.drawn
@@ -90,6 +91,9 @@ def s31_cast(t):
             c.new_path(); c.arc(cx_ + 12 * u, top + 12 * u, 6 * u, -1.4, 1.4); c.stroke()
             c.set_source_rgb(0.98, 0.98, 0.96); c.set_line_width(2.0)
             c.new_path(); c.arc(cx_ + 12 * u, top + 12 * u, 6 * u, -1.4, 1.4); c.stroke()
+            import da_hand_gate as g_                                  # the cups canon: the cup itself says it's held
+            g_.vessel(kk, "cup", "held", handle=P, base=(cx_, top),     # (upside down: its foot is up)
+                      rect=(cx_ - 14 * u, top - 2 * u, 34 * u, 30 * u))
         declare((("don", "L", "pinch_pinky", "CUP_GRIP: the empty cup by its handle, up over his shoulder"),
                  ("don", "R", "quiet", "quiet")), k_)
         kit.MOUTH[0] = 0.8 if talking("3.1", t) else None
@@ -98,9 +102,7 @@ def s31_cast(t):
                           {-1: dict(T=T, pose="CUP_GRIP", out=-1, reach=True, obj=cup_up, contact="handle")})
         finally:
             kit.MOUTH[0] = None
-        import da_hand_gate as g_
         W_ = o["wrists"][-1]
-        g_.prop(k_, "cup", W_[0] - 60, W_[1] - 30, 80, 90)
         if 0.47 <= td < 0.93:                                          # the shake marks, only while it shakes
             c = k_.c; c.set_source_rgb(*kit.INK); c.set_line_width(2.2); c.set_line_cap(1)
             for r_ in (26, 34):
@@ -113,36 +115,28 @@ def s31_cast(t):
 # ---- 3.2 -------------------------------------------------------------------------------------------------------------------
 def s32_parts(t):
     td = drawn(t)
-    px, pf = 692, F - 128
+    px, pf = 662, F - 128                                              # (a step back from the jug: the arm out, not folded)
     mug = (748, F - 156)
     tilt = 0.25 + 0.80 * ease(seg(td, 0.0, 0.27))
     pouring = td >= 0.27
 
-    def pam_back(k_):
-        T = (mug[0] - 34 - 6 * (1 - tilt), mug[1] - 58)
-        declare((("pam", "R", "grab", "grab: the jug's handle"), ("pam", "L", "quiet", "quiet")), k_,
-                [("jug", (T[0] - 10, T[1] - 30, 60, 60))])
+    ms = cu.MUG_FLOOR * SC["pam"] / 0.54
+
+    def pam_back(k_):                                                  # the cups canon: the jug by its handle
+        T = (mug[0] - 50 - 4 * (1 - tilt), mug[1] - 84)
+        declare((("pam", "R", "pinch_pinky", "CUP_GRIP: the jug by its handle"), ("pam", "L", "quiet", "quiet")), k_)
+        got = {}
         o = rig_hands(k_, lambda kk, a4: pam_held(kk, px, pf, SC["pam"], a4, "neutral", (1, 0.9), mug=False), SC["pam"],
-                      {1: dict(T=T, pose="GRAB", out=1)}, sex="f", skin=L.FEMALE)
-        W_ = o["wrists"][1]
-        L.coffee_pot(k_, W_[0] + 12, W_[1] + 10, 0.75, tilt)
-        sx = W_[0] + 12 + (16 * math.cos(tilt) - (-34) * math.sin(tilt)) * 0.75
-        sy = W_[1] + 10 + (16 * math.sin(tilt) + (-34) * math.cos(tilt)) * 0.75
-        L.STREAM[0] = (sx, sy)
+                      {1: cu.by_handle(T, 0.75, kind="jug", tilt_jug=tilt, got=got, out=1)}, sex="f", skin=L.FEMALE)
+        L.STREAM[0] = got.get("lip")
         return {"pam": _head(o, "pam")}
 
     def cast(k_):
         h = {}
-        ds.MUG_V2[0] = True
-        ds.pam_mug(k_, mug[0], mug[1], 0.9)
-        L.dpr.cup_and_saucer_v2(k_, mug[0] - 70, mug[1] - 2, 0.7)
-        if pouring:
-            sx, sy = L.STREAM[0]
-            c = k_.c
-            c.set_source_rgb(0.30, 0.18, 0.10); c.set_line_width(3.2); c.set_line_cap(1)
-            wob = 2 * math.sin(td * 40)
-            c.new_path(); c.move_to(sx, sy); c.curve_to(sx + 4 + wob, sy + 10, mug[0] - 2, mug[1] - 40, mug[0], mug[1] - 24)
-            c.stroke(); c.set_line_cap(0)
+        cu.mug(k_, mug[0], mug[1], ms, handle=1, state="rest", name="mug")
+        cu.cup_saucer(k_, mug[0] - 70, mug[1] - 2, cu.CUP_FLOOR, state="rest")
+        if pouring and L.STREAM[0]:
+            cu.stream(k_, L.STREAM[0], mug, ms, wob=1.5 * math.sin(td * 40))
         h["mug"] = (mug[0], mug[1] - 14, 16)
         return h
     return cast, pam_back
@@ -158,8 +152,7 @@ def s32b_surface(t):
     c.set_source_rgb(*kit.WALL); c.paint()
     kit.cut(k, [(-20, 560), (560, 560), (560, 980), (-20, 980)], (0.93, 0.89, 0.80), lw=3)
     kit.cut(k, [(-20, 560), (560, 560), (560, 600), (-20, 600)], (0.86, 0.82, 0.72), shadow=False, lw=2)
-    ds.MUG_V2[0] = True
-    ds.pam_mug(k, 190, 720, 6.0)
+    cu.mug(k, 190, 720, 6.0, handle=1, state="rest", name="mug")       # the cups canon's ceramic mug
     c.set_source_rgba(1, 1, 1, 0.75); c.set_line_width(7); c.set_line_cap(1)        # the steam, rising and curling
     for i, dx in enumerate((-40, 0, 40)):
         ph = td * 5 + i * 1.3
@@ -167,13 +160,16 @@ def s32b_surface(t):
         c.curve_to(170 + dx + 8 * math.sin(ph), 440, 215 + dx - 8 * math.sin(ph), 400, 190 + dx + 6 * math.sin(ph * 1.3), 340)
         c.stroke()
     c.set_line_cap(0)
-    L.dpr.cup_and_saucer_v2(k, 420, 720, 2.2)
+    cu.cup_saucer(k, 430, 720, 6.0 * cu.CUP_FLOOR / cu.MUG_FLOOR, state="rest")   # one size per space
     import da_hand_gate as g
     g.nohands()
     return surf
 
 
 # ---- 3.3 -------------------------------------------------------------------------------------------------------------------
+_S33 = {}                                                          # 3.3's drawings render in order
+
+
 def s33_parts(t):
     td = drawn(t)
     x1, f = MARKS["pam_door"]
@@ -200,59 +196,62 @@ def s33_parts(t):
         crack = ease(seg(td, 0.73, 1.0))                               # a forearm's width, held open
         reach = ease(seg(td, 1.0, 1.27))                               # his hand out of the crack to her mug
         back = ease(seg(td, 1.33, 1.73))                               # and back in with it
-        got = td >= 1.27
+        take = 1.26 <= td < 1.32                                       # one drawing: her fist on its handle, his on its body
+        got = td >= 1.32                                               # then it's his: her hand opens after it
         cx_ = 898                                                      # the crack, at the door's hinge side
-        mug = (mx0 + 6, my0) if not got else (mx0 + 6 + (cx_ + 16 - mx0 - 6) * back, my0 - 6 * back)
-        if back >= 1:
-            mug = None
+        ms = cu.MUG_FLOOR * SC["pam"] / 0.54
+        cw = cu.hand_w(1.3 * SC["client"])                             # his hand (bigger: the cold test missed it)
         hand_out = reach > 0 and back < 1
-        HT = None
+        pT = (x + 36, f - 72) if not got else (x + 44 + 18 * follow, f - 80)   # her hand out to her right, toward the door
+        cupT = (x - 16, f - 88)                                        # (cold test 28 Nov: further out, the camera cut it)
+        rows = [("pam", "R", "pinch_pinky" if not got else "palm", "CUP_GRIP: her mug by its handle -> palm: after it"),
+                ("pam", "L", "saucer_hold", "SAUCER_SUPPORT: his cup and saucer on her palm")]
         if hand_out:
-            HT = (cx_ + 6 - (cx_ + 6 - (mx0 + 18)) * reach, my0 - 10) if not got else (mug[0] + 12, mug[1] - 10)
-        # Pam's hands: her mug (R) until it's taken, then open after it; his cup and saucer (L) all through
-        pT = (mx0 - 14 + (x - x1), my0 - 12) if not got else (mx0 - 4 + (x - x1) + 18 * follow, my0 - 14)
-        cupT = (x - 30, f - 92)
-        rows = [("pam", "R", "grab" if not got else "palm", "grab: her mug -> palm: after it as it goes"),
-                ("pam", "L", "grab", "grab: his cup and saucer")]
-        props = []
-        if mug and got:
-            props.append(("mug", (mug[0] - 24, mug[1] - 26, 48, 44)))
-        if hand_out:
-            rows.append(("client", "R", "grab" if got else "palm", "palm: reaching out of the crack -> grab: her mug"))
-        declare(tuple(rows), k_, props)
+            rows.append(("client", "R", "grab" if (take or got) else "palm",
+                         "palm: reaching out of the crack -> GRAB: her mug's body, his thumb across its front"))
+        declare(tuple(rows), k_)
         # the door: a dark sliver at its hinge side
         if crack > 0:
             kit.cut(k_, [(cx_ - 2, 470), (cx_ + 30 * crack, 470), (cx_ + 30 * crack, F), (cx_ - 2, F)], (0.12, 0.09, 0.08),
                     shadow=False, lw=1.4)
         shadow(k_, x, f + 2, 32)
         lean = 0.16 * follow
+        hold = {}
+        pj = {-1: cu.on_palm(cupT, cu.CUP_FLOOR, kind="cup", out=-1)}
+        pj[1] = cu.by_handle(pT, ms, out=-1, name="mug", got=hold) if not got else \
+            dict(T=pT, pose="PALM", out=1, reach=True)
         c.save(); c.translate(0, bob); c.translate(x, f); c.rotate(lean); c.translate(-x, -f)
         o = rig_hands(k_, lambda kk, a4: pam_held(kk, x, f, SC["pam"], a4, "doubt" if td < 1.27 else "shock",
-                                                 (1, -0.2), mug=False),
-                      SC["pam"], {1: dict(T=pT, pose="GRAB" if not got else "PALM", out=1, reach=got),
-                                  -1: dict(T=cupT, pose="GRAB", out=-1)}, sex="f", skin=L.FEMALE)
+                                                 (1, -0.2), mug=False), SC["pam"], pj, sex="f", skin=L.FEMALE)
         c.restore()
-        import da_hand_gate as g_
-        CW = o["wrists"][-1]                                           # his cup and saucer where her hand really is
-        g_.prop(k_, "cup", CW[0] - 34, CW[1] - 20, 60, 50)
-        if not got:                                                    # her mug in her hand, walking with her
-            RW = o["wrists"][1]
-            mug = (RW[0] + 20, RW[1] + 12)
-            g_.prop(k_, "mug", mug[0] - 24, mug[1] - 26, 48, 44)
-        L.dpr.cup_and_saucer_v2(k_, CW[0] - 4, CW[1] + 12, 0.6)
         h["pam"] = _head(o, "pam")
-        if mug:
-            ds.MUG_V2[0] = True
-            ds.pam_mug(k_, mug[0], mug[1], 0.9)
+        if "base" in hold:
+            _S33["base"] = hold["base"]
+        B0 = _S33.get("base", (mx0 + 26, my0 + 14))                    # the mug's base where her hold had it
+        B = None
+        if got and back < 1:                                           # in his hand, back into the crack
+            B = (B0[0] + (cx_ + 16 - B0[0]) * back, B0[1] - 6 * back)
         if hand_out:                                                   # his forearm out of the crack (the clean Client's
-            import hand_lib_v4 as hl                                   # skin, his white T-shirt cuff), the library's GRAB
+            import hand_lib_v4 as hl                                   # skin, his white T-shirt cuff)
+            skin = (0.80, 0.66, 0.54)
+            grip = B or B0
+            if take or got:                                            # GRAB: fingers behind its wall, thumb in front
+                HT = (grip[0] + 6 * ms + 0.86 * cw, grip[1] - 15 * ms)
+            else:
+                end = (B0[0] + 6 * ms + 0.86 * cw, B0[1] - 15 * ms)
+                HT = (cx_ + 6 - (cx_ + 6 - end[0]) * reach, end[1])
             k_.c.save(); k_.c.rectangle(cx_ - 300, 0, 300 + 30 * max(crack, 0.3), 2000); k_.c.clip()
-            kit.cut(k_, [(cx_ + 40, HT[1] - 12), (HT[0] + 10, HT[1] - 10), (HT[0] + 10, HT[1] + 10), (cx_ + 40, HT[1] + 12)],
-                    (0.80, 0.66, 0.54), lw=2.2)                       # his forearm (bigger: the cold test missed it)
+            kit.cut(k_, [(cx_ + 40, HT[1] - 12), (HT[0] - 4, HT[1] - 10), (HT[0] - 4, HT[1] + 10), (cx_ + 40, HT[1] + 12)],
+                    skin, lw=2.2)                                     # the wrist into the hand: no gap to the cuff
             kit.cut(k_, [(cx_ + 40, HT[1] - 15), (cx_ + 6, HT[1] - 14), (cx_ + 6, HT[1] + 14), (cx_ + 40, HT[1] + 15)],
                     (0.97, 0.97, 0.95), lw=2.2)                       # his white T-shirt's sleeve, in the crack
             k_.c.restore()
-            hl.draw_lr(k_, "GRAB" if got else "PALM", HT[0], HT[1], (-1, 0.15), 1.3 * 17 * 1.15 * 1.25 * SC["client"], (0.80, 0.66, 0.54), 1)
+            hl.draw_lr(k_, "GRAB" if (take or got) else "PALM", HT[0], HT[1], (-1, 0.0 if (take or got) else -0.4), cw,   # (retest: fingers up, clear of the crack)
+                       skin, 1)
+            if B:                                                      # the mug after his fingers: they're behind it
+                cu.mug(k_, B[0], B[1], ms, handle=-1, state="held", name="mug")
+            if take or B:
+                cu.thumb_on_body(k_, grip[0], grip[1], ms, 1, cw, skin)
         h["mug"] = (mx0, my0 - 14, 16)
         return h
     return cast, mom_back
@@ -405,7 +404,7 @@ def build():
     import da_hand_gate as g
     import hands_v4 as hv
     import da_arms
-    da_arms.setup(); hv.enable(); g.install(); A._SETUP.append(1)
+    da_arms.setup(); hv.enable(); g.install(); cu.install(); A._SETUP.append(1)
     for sid, _ in SHOTS:
         if sid not in ("3.2b", "3.5"):
             CAMS[sid] = camera_of(sid)

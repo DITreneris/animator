@@ -73,6 +73,23 @@ def _real(c):
 
 # ---- declarations (written before the drawing) ---------------------------------------------------------------------
 
+VESSELS = []   # 28 Nov (Tomas: "visi puodeliai laikomi bet kaip"): every cup, mug, saucer and jug as its drawer drew it
+
+
+def vessel(k, name, state, handle=None, base=None, rect=None):
+    """registered by the vessel's own drawer (da_cups), never by the caller at a wrist. state: 'rest' (on a surface),
+    'free' (falling), 'held', 'unknown' (drawn past da_cups: fails). handle, base: user points; rect: user (x, y, w, h)."""
+    c = k.c
+    if not _real(c) or _IN_REDRAW[0]:
+        return
+    x, y, w, h = rect
+    pts = [_f(c, x + a * w, y + b * h) for a in (0, 1) for b in (0, 1)]
+    R = (name, min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts))
+    VESSELS.append(dict(name=name, state=state, handle=_f(c, *handle) if handle else None,
+                        base=_f(c, *base) if base else None, rect=R))
+    PROPS.append(R)
+
+
 NO_HANDS = [False]
 
 
@@ -124,7 +141,7 @@ def misreads(d):
 def reset():
     for l_ in (HANDS, ARMS, ROBOT, PROPS, SOLIDS, JOBS, LAYERS, FEET):
         del l_[:]
-    COLORS.clear(); MISREADS.clear(); NO_HANDS[0] = False
+    COLORS.clear(); MISREADS.clear(); NO_HANDS[0] = False; VESSELS.clear()
     import of_cast as oc
     del oc.GRIP_LOG[:]
 
@@ -212,12 +229,16 @@ def install():
 
     def draw_lr(k, pose, x, y, d, w, skin, arm, *a, **kw):
         c = k.c
+        r = inner_lr(k, pose, x, y, d, w, skin, arm, *a, **kw)
         if not _IN_REDRAW[0] and _real(c):
             ux, uy = c.user_to_device_distance(*d)
             n = math.hypot(ux, uy) or 1.0
+            ang, side = r
+            cons = {nm: _f(c, *hl.to_screen(pose, x, y, ang, w, side, pt))        # its contacts, where it drew them
+                    for nm, pt in hl.POSES[pose].get("contacts", {}).items()}
             HANDS.append(dict(g=LIB_JOB.get(pose, pose), at=_f(c, x, y), d=(ux / n, uy / n), d_user=tuple(d), arm=arm,
-                              w=w * c.get_matrix()[0] / S[0], lib=pose))
-        return inner_lr(k, pose, x, y, d, w, skin, arm, *a, **kw)
+                              w=w * c.get_matrix()[0] / S[0], lib=pose, contacts=cons))
+        return r
     hl.draw_lr = draw_lr
     for name in ("redraw_at", "redraw_late"):
         orig = getattr(hp, name)
@@ -336,11 +357,38 @@ def check(tol=3.0):
                     out.append("THUMB two left hands: the hanging hand at (%d, %d) not mirrored (neither hands_lr nor "
                                "da_arms set up)" % h["at"])
     # AIR
-    holders = [(h["g"], h["at"], h["w"]) for h in HANDS if h["g"] in HOLDING] + \
+    holders = [(h["g"], (list(h["contacts"].values()) or [h["at"]])[0] if h.get("contacts") else h["at"], h["w"])
+               for h in HANDS if h["g"] in HOLDING] + \
               [(g["kind"], g["at"], 8.0) for g in grips if g["kind"] in HOLDING]
     for g, p, w in holders:
         if not any(_inside(p, r, max(4.0, w * 0.35)) for r in PROPS):
             out.append("AIR a '%s' at (%d, %d) holds nothing declared" % ((g,) + tuple(p)))
+    # VESSEL: a held cup is held by its handle (CUP_GRIP), on a palm (SAUCER_SUPPORT), or taken by its body (GRAB)
+    lib = [h for h in HANDS if h.get("lib")]
+    used = set()
+    for v in VESSELS:
+        if v["state"] == "unknown":
+            out.append("VESSEL %s drawn past da_cups (its size and its hold unchecked)" % v["name"])
+            continue
+        if v["state"] != "held":
+            continue
+        ok = False
+        for i, h in enumerate(lib):
+            tol = max(5.0, h["w"] * 0.6)
+            if h["lib"] == "CUP_GRIP" and v["handle"] and math.hypot(h["contacts"]["handle"][0] - v["handle"][0],
+                                                                      h["contacts"]["handle"][1] - v["handle"][1]) <= tol:
+                ok = True; used.add(i)
+            if h["lib"] == "SAUCER_SUPPORT" and v["base"] and math.hypot(h["contacts"]["saucer"][0] - v["base"][0],
+                                                                          h["contacts"]["saucer"][1] - v["base"][1]) <= tol:
+                ok = True; used.add(i)
+            if h["lib"] == "GRAB" and _inside(h["contacts"]["object"], v["rect"], 2.0):
+                ok = True; used.add(i)
+        if not ok:
+            out.append("VESSEL %s held by no hand: no CUP_GRIP at its handle (%s), no palm under its base, no GRAB on "
+                       "its body" % (v["name"], v["handle"]))
+    for i, h in enumerate(lib):
+        if h["lib"] in ("CUP_GRIP", "SAUCER_SUPPORT") and i not in used:
+            out.append("VESSEL a %s at (%d, %d) holds no cup, mug or saucer" % ((h["lib"],) + tuple(h["at"])))
     # ROBOT
     rob_hands = [a["h"] for a in ARMS if a["robot"]]
     for p in rob_hands:
