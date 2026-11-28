@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, ds, kit, rig_hands, shadow, _head  # no
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 6
+VER = 7
 T0 = 27.84
 SHOTS = [("4.1", 1.6), ("4.2", 3.0), ("4.2b", 0.8), ("4.3", 1.2)]
 drawn = A.drawn
@@ -65,6 +65,9 @@ def _mom_folded(k_, look):
         return L.mom(k_, "mom_desk_s", "folded", "unimpressed", look=look)
 
 
+TX = [-6, 24]                                                      # (cold test v2: at chest height his arm folded into a "<")
+
+
 # ---- 4.1 -------------------------------------------------------------------------------------------------------------------
 def s41_parts(t):
     td = drawn(t)
@@ -84,7 +87,7 @@ def s41_parts(t):
         x += 30 * back
         step = math.sin(math.pi * 2 * walk) if walk < 1 else 0
         bob = -4 * abs(step)
-        T = (x - 30, f - 92)                                           # her wrist: the cup held out at waist height, between them
+        T = (x - 30 + TX[0], f - 92 + TX[1])                                         # her wrist: the cup held out at waist height, between them
                                                                        # (review 28 Nov: lower and nearer her, so both elbows hang)
         if "off" not in _MEM:                                          # his palm's wrist -> the saucer's base, measured
             got = {}
@@ -144,9 +147,11 @@ def s41_parts(t):
             dj = {1: dict(T=DT, pose="PALM", out=1, reach=True, elbow="down")}
         else:
             home = ease(seg(td, give + 0.13, give + 0.6))              # it comes in to his chest
-            base = (B0[0] + (dx + 46 - B0[0]) * home, B0[1] + (df - 150 * sd / 0.6 - B0[1]) * home)
-            dj = {1: cu.on_palm((base[0] - off[0], base[1] - off[1]), CS, kind="cup", out=1)}
-            dj[1]["elbow"] = "down"
+            base = (B0[0] + (dx + 40 - B0[0]) * home, B0[1] + (df - 116 * sd / 0.6 - B0[1]) * home)   # (to his belly: chest
+                                                                       # height lifted the elbow over the shoulder)
+            dj = {1: cu.on_palm((base[0] - off[0], base[1] - off[1]), CS, kind="cup", out=1)}   # (kept at his waist, the
+                                                                       # elbow out by his side: "down" folded it in, a "<")
+                                                                       # "down" folded it in across his belly, cold test v2)
         dface = "grin" if td < give else "pleased"
         od = rig_hands(k_, don_rig(dx, df, dface, (1, 0.2)), sd, dj)
         h["don"] = _head(od, "don")
@@ -160,6 +165,7 @@ REFLECT = [0.22]
 DXS = -26                                                          # 4.2: nearer the glass than the layout's mark (review
 LEAN = -0.08                                                       # 28 Nov: his fingertip short of the line by 15 px; at
                                                                    # -26 and leaning in it lands on it, measured)
+LEAN2 = -0.02
 CROWN = [(-17, 1), (-19, -15), (-10, -5), (-1, -21), (8, -7), (17, -17), (18, 2), (-17, 1)]   # by hand: a little crooked
 
 
@@ -178,7 +184,7 @@ def _crown_pt(u, cx, by):
 
 
 def _don_street(k_, td, face, look, chin, hair, cup_up, rows_extra=(), cup_in=0, fog=0.0, crown=0.0, drawing=False,
-                mouth=None, lean=0.0):
+                mouth=None, lean=0.0, puff=0.0):
     """Don at the street door, his back to the room: the cup on his screen-right palm; his screen-left hand at his
     hair (hair: 0..1 along the stroke), or drawing on the glass (drawing: its fingertips follow the crown's line);
     his reflection faint in the door's glass (the same drawing, mirrored about the glass at x 92, the gate paused).
@@ -246,7 +252,20 @@ def _don_street(k_, td, face, look, chin, hair, cup_up, rows_extra=(), cup_in=0,
         o = rig_hands(k_, rig, s_, jobs())                             # Don, over the glass
     finally:
         kit.MOUTH[0] = None
-    return {"don": _head(o, "don")}
+    hd = _head(o, "don")
+    if puff > 0:                                                       # (cold test v2: the fog "just appears", 2/2) his breath:
+        mx_, my_ = hd[0] - 0.5 * hd[2], hd[1] + 0.62 * hd[2]           # three puffs from his mouth, out to the side of his
+        qx, qy = mx_ - 1.6 * hd[2], my_                                # face first, then up to the glass's misted patch
+        for i in range(3):
+            u = (puff * 1.6 - 0.3 * i)
+            if 0 < u < 1:
+                a_, b_, c_ = (1 - u) ** 2, 2 * u * (1 - u), u * u
+                px_ = a_ * mx_ + b_ * qx + c_ * cx; py_ = a_ * my_ + b_ * qy + c_ * (by - 8)
+                rr = 5 + 7 * u
+                c.set_source_rgba(1, 1, 1, 0.85 * (1 - 0.5 * u)); c.new_path(); c.arc(px_, py_, rr, 0, 2 * math.pi); c.fill()
+                c.set_source_rgba(0.45, 0.58, 0.68, 0.7 * (1 - 0.5 * u)); c.set_line_width(1.4)
+                c.new_path(); c.arc(px_, py_, rr, math.pi * 0.9, math.pi * 1.9); c.stroke()
+    return {"don": hd}
 
 
 def s42_cast(t):
@@ -261,21 +280,24 @@ def s42_cast(t):
         h["robot"] = L.robot(k_, (480, F + 64), tilt=0.20 + 0.08 * pick, look=(0, 1))
         u = seg(td, 0.13, 0.6)
         hair = u if 0 < u < 1 else None
-        fog = ease(seg(td, 0.73, 1.0))
-        crown = seg(td, 1.07, 2.07)
-        drawing = 1.07 <= td < 2.13
-        breath = 0.73 <= td < 1.0
-        lean = LEAN * (ease(seg(td, 0.6, 0.87)) - ease(seg(td, 2.13, 2.33)) + ease(seg(td, 2.47, 2.67)))
+        fog = ease(seg(td, 0.8, 1.13))
+        crown = seg(td, 1.2, 2.13)                                     # (cold test v2: breath and gaze not seen: the breath
+        drawing = 1.2 <= td < 2.2                                      # longer, a wide mouth, puffs; he leans far in, chin up)
+        breath = 0.67 <= td < 1.13
+        puff = seg(td, 0.67, 1.13)
+        lean = LEAN * (ease(seg(td, 0.53, 0.8)) - ease(seg(td, 2.2, 2.4)) + ease(seg(td, 2.53, 2.73))) \
+            + LEAN2 * (ease(seg(td, 0.53, 0.8)) - ease(seg(td, 2.2, 2.4)))   # further in while he works on the glass
+        chin = 1 if 0.6 <= td < 2.27 else 0
         if td < 0.6:
             face, look = "smug", (-1, -0.2)
-        elif td < 2.6:                                                 # eyes open, on the glass and his fingertip
+        elif td < 2.67:                                                # eyes open, on the glass and his fingertip
             face = "grin"
             tip, _ = _crown_pt(crown, *_MEM.get("crown_at", (70, 640)))
             look = (-1, -0.7) if not drawing else (-1, -0.55 - 0.3 * (tip[1] < _MEM.get("crown_at", (0, 640))[1] - 10))
         else:
             face, look = "smug", (-1, -0.6)                            # there: satisfied
-        h.update(_don_street(k_, td, face, look, 0, hair, 0.0, fog=fog, crown=crown, drawing=drawing,
-                             mouth=0.7 if breath else None, lean=lean))
+        h.update(_don_street(k_, td, face, look, chin, hair, 0.0, fog=fog, crown=crown, drawing=drawing,
+                             mouth=1.0 if breath else None, lean=lean, puff=puff))
         return h
     return cast
 

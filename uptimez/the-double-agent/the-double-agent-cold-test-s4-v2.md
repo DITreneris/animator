@@ -18,3 +18,21 @@ looking up-left does not read as "looking at the glass" (needs a head turn / thr
 his head read as patting or saluting, not preening (2/2 unsure). The Pam reach arm in 4.3 is "long and stiff" (2/2).
 
 The test cannot tell whether it is funny in motion or the voice timing.
+
+## Round 2 (s4 v7, after "tvarkom")
+
+Fixes: the handover at waist height (his arm hangs, the elbow out by his side as he brings it in); the breath 0.47 s, a wide
+mouth, three puffs from the mouth to the glass; a little more lean and the chin up while he draws. Same prompt, two new
+viewers, plus a 15 fps detail sheet of the breath.
+
+| Beat | Viewer A | Viewer B | Verdict |
+|---|---|---|---|
+| 4.1 his arm | "nothing clearly bent the wrong way", a little twisted 10-12 | "no arm clearly broken", awkward one frame (11) | OK 2/2 (was FAIL 2/2) |
+| 4.2 breath | puffs and the fog read on the detail sheet; missed at full speed / phone size | puffs D4-6, fog D7-9: read | OK 2/2 on detail, weak at feed size |
+| 4.2 gaze | "draws without looking at it" | "draws blind" | FAIL 2/2 again |
+| 4.3 door | a slight pop 49-50 | a pop 48-49, glides with no steps | OK, pop remains |
+
+Stop rule (G6, two rounds): the gaze is a premise fault, not a position fault. Don's rig is front-facing only; eyes up-left
+and a lean do not read as looking at the glass behind him. Options for Tomas: turn him (a back or three-quarter view at the
+glass, a new drawing), or change the staging (camera behind him, the glass in front of us), or keep "draws blind" as is
+(both viewers still read the crown gag and picked 4.2b as the screenshot).
