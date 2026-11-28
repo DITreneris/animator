@@ -7,7 +7,8 @@ windows; a short line also with the line before as context (lesson 121). The pic
 word for word, then the most heard at all, then B (deadpan, a touch slow), then the nearest speed to B. Tomas can overrule any pick in PICK.
   python3 da_voices.py takes      -> da_voices/takes/<shot>_<A-D>.wav, takes.json, picks
   python3 da_voices.py audition   -> ../the-double-agent/da_voices_audition_v1.mp4 (every take, a card each)
-  python3 da_voices.py timing     -> ../the-double-agent/da_timing_v2.json, da_voices_v2.mp4 (script v4; v1 was script v3) (the picks at their times)
+  python3 da_voices.py timing     -> ../the-double-agent/da_timing_v3.json, da_voices_v3.mp4 (script v4 + 27 Nov: Pam's 6.2,
+                                     8.1 at 1.4 s; v2 = script v4, v1 = script v3) (the picks at their times)
 Needs the Kokoro model (KOKORO_DIR) and the Whisper model (ASR_DIR)."""
 import os
 import sys
@@ -33,6 +34,7 @@ LINES = [
     ("3.1", "DON", "Pam! Coffee.", None, 1.0, "an order, not turning"),
     ("3.3", "CLIENT", "Pam. We need you.", None, 1.0, "flat, from the door"),
     ("3.4", "MOM", "Your rule, sweetheart.", "Your rule. Sweetheart.", 1.0, "sweet, final; a stop after rule: run together it is heard as rules"),
+    ("6.2", "PAM", "I took notes.", None, 0.85, "quiet, a fact (27 Nov: her one line outside)"),
     ("6.4", "DON", "You're spying for me?", None, 1.0, "suspicion into delight"),
     ("6.8", "DON", "Keep infiltrating.", "Keep. Infiltrating.", 0.75, "a whisper into the mic: quieter"),
     ("7.2", "DON", "Approved.", None, 1.0, "grand"),
@@ -46,16 +48,19 @@ PICK = {}                      # Tomas's overrides: shot -> letter
 LEAD, TAIL = 0.15, 0.35        # a line starts 0.15 s into its shot and leaves 0.35 s after it
 TAKES_OF = {"7.3": ("7.3a", "7.3b")}
 GAP = {"7.3": 0.6}
+RUN_ON = {"6.2": "6.3"}        # 27 Nov (lesson 42): the line runs on into the next shot; the shot keeps its script length
+DUCK = {"7.3b": "casters"}     # 27 Nov (lesson 83): the mix ducks this bed under this take (held envelope, about -90 %)
 # where in its shot a line starts, from the script's action (the line lands after the action it follows, never on it)
 AT = {"2.2": 1.0,        # after the heel lands on the photo
       "3.3": 0.6,        # the door opens, the hand takes the mug
       "3.4": 2.0,        # left, right, the feint, the 0.5 s hold
+      "6.2": 0.6,        # he narrows his eyes, she holds out the page
       "6.4": 0.6,        # suspicion, then delight
       "6.8": 0.9,        # looks left, looks right, the mic
       "7.2": 1.0,        # as Pam passes under the strip
       "7.3": 0.8,        # the blueprint slides across
       "7.4": 1.4,        # the bubble after the first grab
-      "8.1": 1.0}        # the frame settles first             # Father waits for the casters (the J-cut) before "Let him play."
+      "8.1": 1.4}        # 27 Nov: as the pull-back ends (was 1.0, the frame settling)             # Father waits for the casters (the J-cut) before "Let him play."
 
 
 def take(who, txt, k):
@@ -144,16 +149,20 @@ def takes(only=None):
 
 
 def shots():
-    """Script v3's shot tables: | shot | time | len | setup | picture | reaction | line | sound |."""
-    out, act = [], ""
+    """The shots from the scene file (da_scenes, stage 4 on: the one source): act, shot, script length, picture, line.
+    (v1-v3 read the script's tables.)"""
+    import da_scenes as ds_
+    acts, out, act = {}, [], ""
     for ln in open(SCRIPT):
         if ln.startswith("### Act"):
             act = ln[4:].split("(")[0].strip()
-        m = re.match(r"\| (\d\.\d+) \| \d:\d\d\.\d \| ([\d.]+) \|(.*)", ln)
+        m = re.match(r"\| (\d\.\d+) \|", ln)
         if m and act:
-            cells = [x.strip() for x in m.group(3).split("|")]
-            out.append(dict(scene=act, shot=m.group(1), script=float(m.group(2)), picture=cells[1],
-                            line=cells[3] if cells[3] not in ("—", "") else None))
+            acts[m.group(1)] = act
+    for sid in ds_.ORDER:
+        t = ds_.TEXT[sid]
+        out.append(dict(scene=acts.get(sid) or acts.get(sid.rstrip("abcdefgh")), shot=sid, script=t["script"],
+                        picture=t["picture"], line=t["line"] if t["line"] not in ("—", "") else None))
     return out
 
 
@@ -203,7 +212,7 @@ def audition(out_mp4=EP + "da_voices_audition_v1.mp4"):
     _render(cards, np.concatenate(parts), t, out_mp4, "da_aud")
 
 
-def timing(out_json=EP + "da_timing_v2.json", out_mp4=EP + "da_voices_v2.mp4"):
+def timing(out_json=EP + "da_timing_v3.json", out_mp4=EP + "da_voices_v3.mp4"):
     meta = json.load(open(OUT + "/takes.json"))
     rows, t = [], 0.0
     for r in shots():
@@ -211,11 +220,16 @@ def timing(out_json=EP + "da_timing_v2.json", out_mp4=EP + "da_voices_v2.mp4"):
         gap = GAP.get(r["shot"], 0.25)
         at0 = AT.get(r["shot"], LEAD)
         need = at0 + sum(meta[k]["len"] for k in ks) + gap * max(0, len(ks) - 1) + TAIL if ks else 0.0
+        if r["shot"] in RUN_ON:                                # the rest of the line is carried by the next shot
+            nxt = [x for x in shots() if x["shot"] == RUN_ON[r["shot"]]][0]
+            assert need <= r["script"] + nxt["script"], "%s: the run-on line is longer than the next shot" % r["shot"]
+            need = 0.0
         ln = round(max(r["script"], need), 2)
         at, offs = at0, []
         for k in ks:
             offs.append(round(at, 2)); at += meta[k]["len"] + gap
         rows.append(dict(r, start=round(t, 2), len=ln, takes=ks, picks=[meta[k]["pick"] for k in ks], take_at=offs,
+                         run_on=RUN_ON.get(r["shot"]), duck={k: DUCK[k] for k in ks if k in DUCK},
                          longer=round(ln - r["script"], 2)))
         t += ln
     json.dump(dict(total=round(t, 2), script_total=round(sum(r["script"] for r in rows), 2), shots=rows), open(out_json, "w"), indent=1)
@@ -237,7 +251,7 @@ def timing(out_json=EP + "da_timing_v2.json", out_mp4=EP + "da_voices_v2.mp4"):
             rest += [(p, (1.0, 0.86, 0.35), 30) for p in _wrap(re.sub(r"\*\*|\(.*?\)", "", r["line"]).replace(" · ", " / "), 26)]
             rest.append(("", (0, 0, 0), 10))
         rest += [(p, (0.95, 0.93, 0.88), 19) for p in _wrap(r["picture"].replace("**", ""), 44)[:14]]
-        _card(png, "THE DOUBLE AGENT · voices v2 · %s" % r["scene"], r["shot"], rest,
+        _card(png, "THE DOUBLE AGENT · voices v3 · %s" % r["scene"], r["shot"], rest,
               "%d:%04.1f  ·  %.2f s%s" % (r["start"] // 60, r["start"] % 60, r["len"],
                                           ("  (+%.2f)" % r["longer"]) if r["longer"] > 0 else ""))
         cards.append((png, r["len"]))

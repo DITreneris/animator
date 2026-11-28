@@ -119,9 +119,44 @@ def sofia(k, x, feet, s=1.0, pose="hold", face_kind="smile", look=(0, 0), lag=(0
          ss.PULLED[0], ss.PENCIL[0], ss.SLEEK[0]) = old
 
 
+BINDER_V2 = [False]   # opt-in (27 Nov, the props audit): the binder's spine and its three rings through the page
+CLIPS_V2 = [False]    # opt-in (27 Nov, the props audit): real paperclips (two nested loops), states full / few / empty
+CLIP_COL = (0.46, 0.48, 0.53)
+
+
+def paperclip(k, x, y, s=1.0, ang=0.0, col=CLIP_COL, lw=1.3):
+    """One paperclip, its middle at (x, y), 14 s long along ang: the outer loop, the inner loop inside it."""
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang); c.scale(s, s)
+    c.set_source_rgb(*col); c.set_line_width(lw / max(s, 0.01) ** 0.5); c.set_line_cap(1); c.new_path()
+    c.move_to(2, 3.2); c.line_to(-5, 3.2); c.arc(-5, 0, 3.2, math.pi / 2, 3 * math.pi / 2)
+    c.line_to(5.5, -3.2); c.arc(5.5, -0.6, 2.6, -math.pi / 2, math.pi / 2); c.line_to(-3.5, 2.0)
+    c.arc(-3.5, 0.2, 1.8, math.pi / 2, 3 * math.pi / 2); c.line_to(4, -1.6)
+    c.stroke(); c.set_line_cap(0)
+    c.restore()
+
+
+def _binder_v2(k, cx, cy, s, seed):
+    c = k.c
+    c.save(); c.translate(cx, cy); c.scale(s, s)
+    rect(k, -36, -26, 72, 52, (0.22, 0.23, 0.26), seed, lw=2.0)
+    rect(k, -36, -26, 12, 52, (0.16, 0.17, 0.19), seed + 2, shadow=False, lw=2.0)          # the spine
+    rect(k, -27, -22, 58, 44, (0.98, 0.98, 0.95), seed + 1, shadow=False, lw=1.4)
+    c.set_source_rgb(0.62, 0.64, 0.68); c.set_line_width(1.6)
+    for yy in (-12, -4, 4, 12):
+        c.move_to(-16, yy); c.line_to(24, yy); c.stroke()
+    for yy in (-14, 0, 14):                                                                   # three rings through the page
+        c.set_source_rgb(0.80, 0.80, 0.84); c.new_path(); c.arc(-22, yy, 1.8, 0, 2 * math.pi); c.fill()
+        c.set_source_rgb(*INK); c.set_line_width(3.6); c.new_path(); c.arc(-26, yy, 4.2, -1.6, 1.6); c.stroke()
+        c.set_source_rgb(0.78, 0.79, 0.83); c.set_line_width(1.8); c.new_path(); c.arc(-26, yy, 4.2, -1.6, 1.6); c.stroke()
+    c.restore()
+
+
 def binder(k, cx, cy, s=1.0, seed=4450):
     """Her binder, open to us at her chest (reading): a charcoal cover, a white page with lines. Not blue: blue is the
     Client's blueprint, the only blue paper in the show."""
+    if BINDER_V2[0]:
+        return _binder_v2(k, cx, cy, s, seed)
     c = k.c
     c.save(); c.translate(cx, cy); c.scale(s, s)
     rect(k, -36, -26, 72, 52, (0.22, 0.23, 0.26), seed, lw=2.0)
@@ -162,6 +197,24 @@ def with_board(k, x, feet, s, board, face_kind="smile", look=(0, 0), lag=(0, 0),
     return o
 
 
+def _clips_v2(k, w, h, full, seed):
+    """The clips inside the box: a heap whose top slopes, single clips at every angle on it, a few loose ones on the
+    bottom when it is nearly empty (full 0: none)."""
+    import random
+    r = random.Random(seed)
+    if full <= 0:
+        return
+    top = -3 - (h - 6) * full * 0.85
+    if full > 0.25:
+        cut(k, [(-w / 2 + 3, top + 3), (0, top - 1), (w / 2 - 3, top + 4), (w / 2 - 3, -3), (-w / 2 + 3, -3)],
+            (0.80, 0.82, 0.86), shadow=False, lw=0)
+    n = int(6 + 22 * full)
+    for _ in range(n):
+        px = r.uniform(-w / 2 + 8, w / 2 - 8)
+        py = r.uniform(top + 2, -5) if full > 0.25 else r.uniform(-7, -4)
+        paperclip(k, px, py, 0.85, r.uniform(-math.pi, math.pi), CLIP_COL if r.random() < 0.7 else (0.62, 0.64, 0.69))
+
+
 def clip_box(k, x, y, s=1.0, full=1.0, seed=4400):
     """The clear box of paperclips she carries (1.4), its bottom edge centred at (x, y): a lidless clear plastic box,
     silver clips inside up to `full` (0..1)."""
@@ -169,7 +222,9 @@ def clip_box(k, x, y, s=1.0, full=1.0, seed=4400):
     c.save(); c.translate(x, y); c.scale(s, s)
     w, h = 60, 34
     cut(k, [(-w / 2, -h), (w / 2, -h), (w / 2, 0), (-w / 2, 0)], (0.86, 0.92, 0.95), shadow=False, lw=2.0)
-    if full > 0:
+    if CLIPS_V2[0]:
+        _clips_v2(k, w, h, full, seed)
+    elif full > 0:
         top = -h * full * 0.85
         cut(k, [(-w / 2 + 3, top), (w / 2 - 3, top), (w / 2 - 3, -3), (-w / 2 + 3, -3)], (0.74, 0.76, 0.80), shadow=False, lw=0)
         c.set_source_rgb(0.40, 0.42, 0.47); c.set_line_width(1.3)

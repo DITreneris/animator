@@ -133,6 +133,7 @@ Cold viewers see the episode three times: the **board** (stage 5), each **motion
 - **The freeze rule (decided 26 Nov, Tomas):** an approved film is not reopened for a rule written later (hands, bubbles, gates); the rule applies from the next episode. The only exception is a fault Tomas sees himself.
 - **Pinning (decided 24 Nov):** for new episodes, pin each approved stage or cut with an immutable `git tag` (for example, `uptimez-<ep>-vN`) rather than copying whole `_vN.py` files in `src/`. Existing `_vN.py` files stay as built.
 - **Disk:** the build keeps only the current version's frame folder. Old folders and test renders are deleted at each version (lesson 122).
+- **Two spaces (from episode 15, Tomas 27 Nov; lessons 249–253):** when a film plays in two places joined by a glass or a door, every cut between them shows the other place on one side of it (through the glass, small, a still state; a close shot carries it by sound), the J- and L-cuts join them by sound, and the lines pair across the glass. A camera move through the glass only at the turns (the loop pair), built as planes by depth with the destination itself behind the glass (`src/da_push91.py`, `da_s8.V9`); the other changes cut on a motive.
 - **Language and commits:** reply in Lithuanian when Tomas writes Lithuanian. Commit and push only when he asks, on the episode branch, never to main.
 
 ## Episode 13 from here

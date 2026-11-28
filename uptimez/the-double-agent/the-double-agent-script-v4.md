@@ -63,9 +63,9 @@ Size: W wide, M medium, MC medium close, C close, I insert. Lines in speech bubb
 | 3.1 | 0:14.6 | 1.2 | S3 · MC | Don, without turning, one hand up | — | **DON: "Pam! Coffee."** | — |
 | 3.2 | 0:15.8 | 1.2 | S6 · M | Pam at the counter's end pours from her thermos: **her mustard mug** and Don's cup and saucer | inside: Father and the Client waiting | — | pour |
 | 3.3 | 0:17.0 | 2.4 | S7 · W | Pam carries both past Mom's desk toward Don; the office door opens a hand's width; **the Client's oily hand takes her mustard mug** and turns back inside with it. **Pam follows her mug on reflex**, Don's cup still in her other hand (nobody pulls her: the first crossing is an accident). **Mom stands up**, her knitting still in one hand | — | **CLIENT (from the door): "Pam. We need you."** | door; chair scrape |
-| 3.4 | 0:19.4 | 3.6 | S7 · M | **The shoulder-pad wall:** Don leans left, the pads go left; right, right; **then he feints** and stays put. **Mom doesn't move.** She never looks at him: **one hand keeps knitting** the whole time, the body blocks on its own (low behind her, the robot frozen, pincer up) | hold on Mom 0.5 s after the feint; then the line; Don's face | **MOM: "Your rule, sweetheart."** (after the hold, never on the feint) | two swishes; silence on the feint; needles click |
+| 3.4 | 0:19.4 | 3.6 | S7 · M | **The shoulder-pad wall:** Don leans left, the pads go left; right, right; **then he feints** and stays put. **Mom doesn't move.** She never looks at him: **one hand keeps knitting** the whole time, the body blocks on its own (low behind her, the robot frozen, pincer up). **Through the glass behind them, small and still: her mug already on Father's table, Pam's hand on it** (the two spaces, 27 Nov; a state, not an action: lesson 22) | hold on Mom 0.5 s after the feint; then the line; Don's face | **MOM: "Your rule, sweetheart."** (after the hold, never on the feint) | two swishes; silence on the feint; needles click |
 | 3.5 | 0:23.0 | 1.6 | S8 · MC | Pam sets **her mug** on Father's table; wipes the Client's oily print off Don's white office mug. Through the glass: Mom's back, Don's head bobbing | — | — | wipe squeak |
-| 4.1 | 0:24.6 | 1.6 | S6 · M | Pam comes out, **crosses the tape** to Don, hands him the cup and saucer. Mom sits | — | — | cup on saucer |
+| 4.1 | 0:24.6 | 1.6 | S6 · M | Pam comes out, **crosses the tape** to Don, hands him the cup and saucer. Mom sits. **Through the glass, small and still: the Client and Father seated, her mustard mug between them** (the two spaces, 27 Nov; a state: lesson 22) | — | — | cup on saucer |
 | 4.2 | 0:26.2 | 3.0 | S1 · W | **Don turns his back on his office** to preen in the street door's glass, sipping; **behind him Pam crosses back to the door with her notepad** (her choice) | — | — | her quiet steps |
 | 4.3 | 0:29.2 | 1.2 | S5 · M | Pam passes Mom's desk; Mom knits on, doesn't look up; Pam slips in | — | — | — |
 | 5.1 | 0:30.4 | 1.4 | S9 · C | Don's view: **her mug on Father's table** | — | — | music stops |
@@ -78,7 +78,7 @@ Size: W wide, M medium, MC medium close, C close, I insert. Lines in speech bubb
 | Shot | Time | Len | Setup · size | Picture and action | Reaction · hold | Line | Sound |
 |---|---|---|---|---|---|---|---|
 | 6.1 | 0:38.4 | 1.4 | S6 · M | Pam comes out of the door behind Mom with the robot's printed minutes, crosses to Don | — | — | door |
-| 6.2 | 0:39.8 | 1.2 | S3 · M two-shot | Don narrows his eyes at her; she holds out the page | — | — | — |
+| 6.2 | 0:39.8 | 1.2 | S3 · M two-shot | Don narrows his eyes at her; she holds out the page | — | **PAM (quiet, a fact, holding out the page): "I took notes."** (Tomas 27 Nov: her one line outside; true, she did; it makes him read "spying for me" and sets up 8.1's "Others take notes.") **Runs on into 6.3** (the page): 6.2 stays 1.2 s (lesson 42, Tomas 27 Nov) | — |
 | 6.3 | 0:41.0 | 1.0 | I | **AGENDA: WITHOUT HIM** (the robot's printout) | — | — | paper |
 | 6.4 | 0:42.0 | 1.8 | S3 · MC | Suspicion → **delight** | — | **DON: "You're spying for me?"** | — |
 | 6.5 | 0:43.8 | 1.0 | C | Pam opens her mouth to correct him | — | — | — |
@@ -86,10 +86,10 @@ Size: W wide, M medium, MC medium close, C close, I insert. Lines in speech bubb
 | 6.7 | 0:45.8 | 0.8 | C | **Pam closes her mouth** | held 0.6 s | — | — |
 | 6.8 | 0:46.6 | 2.4 | S3 · MC | **Don looks left, looks right** (Pam half a metre away), **pulls his headset mic to his mouth** and whispers into it; **Pam leans in** to hear him | — | **DON: "Keep infiltrating."** | mic tap |
 | 7.1 | 0:49.0 | 1.2 | S4 · C | He crouches and **peels a long strip of his tape up** | — | — | a long peel |
-| 7.2 | 0:50.2 | 2.8 | S7 · W | **The barrier:** the strip held high, chin up; **Pam ducks under it** and walks past Mom to the door; the robot, frozen, has one clip left: under the throne | — | **DON (grandly, as she passes under): "Approved."** | — |
-| 7.3 | 0:53.0 | 3.4 | S8 · MC two-shot | **The Client slides his blueprint (MY GARAGES) across the desk to Pam; she takes it with both hands; Father nods once** (the hand-over: cold test S8 v3 left it to this shot) | Pam looks down at it; then the casters start outside (7.4's sound, a J-cut): **Father doesn't turn round** | **CLIENT: "Don't lose it."** · then **FATHER (calm, not turning): "Let him play."** | paper slide; casters under, from outside |
-| 7.4 | 0:56.4 | 3.0 | S1 · W | Don, proud, lowers the strip and turns. **The last paperclip lies under the throne's caster:** the robot rolls the throne off it, **through the gap in his line toward Father's side**, and reaches for the clip. Don sees only his throne going: he dives, grabs an armrest and **hauls it back onto the clip**, his back foot ending just in front of the dropped roll. The robot pulls it off again to reach it: **the tug begins, each for something else** (Don the chair, the robot the clip) | the robot's pincer hovering over the clip, then the caster back on it | **DON (on the dive, bubble after the first grab): "NOT THE CHAIR!"** | *tik*; casters; Don's grunt |
-| 8.1 | 0:59.4 | 4.0 | S8 · W | **The final image (locked, `da_s8_final_v7.png`):** inside, the Client's finger on MY GARAGES, Pam's hands on it, Father in Don's chair, Sofía reading; behind the glass Don and the robot pulling the throne across the line. Nobody inside looks up | long hold | **PAM (under her breath): "Some take sides. Others take notes."** (kept as written, Tomas 26 Nov) | pen; muffled squeaks of the tug |
+| 7.2 | 0:50.2 | 2.8 | S7 · W | **The barrier:** the strip held high, chin up; **Pam ducks under it** and walks past Mom to the door; the robot, frozen, has one clip left: under the throne. **Through the glass, small and still: the Client seated, the rolled blueprint in his hands** (the two spaces, 27 Nov; a state: lesson 22) | — | **DON (grandly, as she passes under): "Approved."** | — |
+| 7.3 | 0:53.0 | 3.4 | S8 · MC two-shot | **The Client slides his blueprint (MY GARAGES) across the desk to Pam; she takes it with both hands; Father nods once** (the hand-over: cold test S8 v3 left it to this shot) | Pam looks down at it; then the casters start outside (7.4's sound, a J-cut): **Father doesn't turn round** | **CLIENT: "Don't lose it."** · then **FATHER (calm, not turning): "Let him play."** (Tomas 27 Nov: the order is the Client → the casters start outside, low, about −12 dB under speech → Father answers the sound without turning: inside answers outside) | paper slide; casters under, from outside; **the casters ducked under Father's line** (held envelope, lesson 83; the speech check rerun after the mix) |
+| 7.4 | 0:56.4 | 3.0 | S1 · W | Don, proud, lowers the strip and turns. **The last paperclip lies under the throne's caster:** the robot rolls the throne off it, **through the gap in his line toward Father's side**, and reaches for the clip. Don sees only his throne going: he dives, grabs an armrest and **hauls it back onto the clip**, his back foot ending just in front of the dropped roll. The robot pulls it off again to reach it: **the tug begins, each for something else** (Don the chair, the robot the clip). **Through the office glass behind them, small and still: Pam holding MY GARAGES, Father's back to the glass** (the two spaces, 27 Nov; a state: lesson 22) | the robot's pincer hovering over the clip, then the caster back on it | **DON (on the dive, bubble after the first grab): "NOT THE CHAIR!"** | *tik*; casters; Don's grunt |
+| 8.1 | 0:59.4 | 4.0 | S8r → S8 · pull 1.5 s, then S8 · W held 2.5 s | **The pull-back (Tomas 27 Nov, /grill-me):** 7.4 cuts to S8r (frame 0's framing), the camera pulls back through the glass into the office (9.1's three-plane dolly played backwards, `da_push91.py pull`), revealing the deal, and holds. **The final image (now `da_s8_final_v9.png`: v8 with S8r itself in the glass, A1):** inside, the Client's finger on MY GARAGES, Pam's hands on it, Father in Don's chair, Sofía reading; behind the glass Don and the robot pulling the throne across the line. Nobody inside looks up | long hold | **PAM (under her breath): "Some take sides. Others take notes."** (kept as written, Tomas 26 Nov) **from 1.4 s, as the pull ends** (Tomas 27 Nov: never over the outside picture) | pen; muffled squeaks of the tug |
 | 9.1 | 1:03.4 | 1.8 | S8 → S8r · push | **The push:** the camera moves through the glass (the blinds' rail passes the top, the glass's sheen slides off) into the tug on the floor; **the new S8r background** (the floor from the office side) takes over from the far room as the glass passes, ending on **1.1's framing: frame 0** | — | — | the tug's squeak grows; the room tone carries through the seam |
 
 **Total 65.2 s (script); with the voices about 68.2 s.** The last drawing of 9.1 is frame 0, drawn by 1.1's own code (lessons 57, 183).
@@ -165,3 +165,35 @@ Frame 0 (1.1's opening) and 9.1's last drawing must show **the same state**, not
 
 1. **Length:** 61.4 s; trims, if wanted, from 4.3 into 4.2 and 6.2 into 6.1 (about 2.4 s).
 2. **Robot's clips in the S7 wides:** a check at layouts (stage 4) that the pile and the crouched robot read at 270 px without pulling the eye off Don or Mom.
+
+## The two spaces at every cut (Tomas 27 Nov, /grill-me)
+
+The double agent's episode runs on two threads at once: **inside, the deal** (the chair → the photo → her mug → the blueprint → the finger on the plan); **outside, the tug and the robot's clips** (the pile shrinking). Rule: **at every floor ↔ office cut, the shot on one side of it shows the other space** through the glass, small, as a background action; a close shot (MC) carries the other space **by sound** instead. **Pam carries the cut where she is in the action.** Shot sizes don't change. The background thread obeys the robot's rule: **still on every foreground peak and every line** (one thing moves at a time).
+
+| # | Cut | Other space shown in | Inside (the deal) | Outside (tug, clips) | Carried by |
+|---|---|---|---|---|---|
+| 1 | 2.1 → 2.2 | both (already) | 2.1: Father sits in Don's chair | 2.2: Don at his line, the robot crouched (a full pile) | Don's stare |
+| 2 | 2.2 → 2.3 | 2.2 (already); 2.3 MC: the clack and "I paid for it." run over it | the heel on the photo | — | reaction |
+| 3 | 3.4 → 3.5 | **3.4 (new)** and 3.5 (already) | 3.4: her mug already on Father's table, Pam's hand on it | 3.5: Mom's back, Don bobbing | **Pam** (followed her mug in 3.3) |
+| 4 | 3.5 → 4.1 | 3.5 (already) and **4.1 (new)** | 4.1: the Client and Father seated, her mug between them | 3.5: Don bobbing behind Mom | **Pam** at the door, mid-step |
+| 5 | 7.2 → 7.3 | **7.2 (new)**; 7.3 MC: the casters start outside (J-cut, already) | 7.2: the Client seated, the blueprint rolled in his hands | 7.3: the casters' sound | **Pam** ducks under the strip to the door |
+| 6 | 7.3 → 7.4 | 7.3 by sound (already) and **7.4 (new)** | 7.4: Pam holding MY GARAGES, Father's back to the glass | 7.3: the casters | the casters' sound |
+| 7 | 7.4 → 8.1 | both | 8.1: the finger on MY GARAGES | the tug (S8r → behind the glass) | the pull-back |
+| 8 | 8.1 → 9.1 | both | the deal, held | the tug | the push |
+
+In the 4.2 / 4.3 pair Pam crosses back in without an office cut (S1, S5): no change.
+
+## The lines, inside and outside (Tomas 27 Nov, /grill-me)
+
+No two lines overlap (each in its own shot, `da_voices.AT`); the only shot with two, 7.3, has the casters between them. The pairs across the glass, kept as written:
+
+| Outside | Inside | What pairs them |
+|---|---|---|
+| DON 3.1 "Pam! Coffee." | CLIENT 3.3 "Pam. We need you." | both sides call Pam |
+| MOM 3.4 "Your rule, sweetheart." | FATHER 7.3 "Let him play." | both parents treat Don as a child |
+| DON 7.2 "Approved." | FATHER 7.3 "Let him play." | both sides authorize the double agent |
+| FATHER 2.2 "I paid for it." | DON 7.4 "NOT THE CHAIR!" | the chair |
+| PAM 6.2 "I took notes." (outside) | PAM 8.1 "Some take sides. Others take notes." (inside) | her one line on each side: the same truth, told to each |
+
+Pam's silence stays at 6.5–6.7: "I took notes." makes Don misread it; she means to correct him, sees the Client, and doesn't: her choice.
+

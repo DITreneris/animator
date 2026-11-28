@@ -143,10 +143,62 @@ def counter_back(k):
     rect(k, x - 6, y + h - 22, w + 12, 28, (0.78, 0.70, 0.56), 5621, shadow=False, lw=2)           # the back panel
 
 
-def far_room(k, don=True):
-    """L2 + L3: the far wall, its skirting, the floor, the tape with the gap, the throne's back, Don, the counter."""
+GLASS_SOFT = [1.0]   # opt-in (27 Nov, the Father audit: "the glass too grey, the action behind it lost"): v11 0.62 (38 % off)
+V9 = [False]   # opt-in (27 Nov, the 9.1 push audit, Tomas "A1"): the glass shows S8r itself, small, so the push into it
+               # is one world (no handover, no second drawing of the tug); the counter outside is not drawn
+S8R_IN_GLASS = (190, 158, 298 * 9 / 16.0, 298)                # S8r's 540x960 frame inside the glass: 9:16, under the
+                                                              # blinds' bottom bar (155) to the sill, the throne at x 262
+_S8R_IMG = [None]
+
+
+S8R_FILE = ["da_s8r_frame0_v4.png"]                            # v10: v5 (no name badges)
+
+
+def s8r_img():
+    """1.1's frame 0 as da_s8r.still writes it (2x): the tug, drawn by its own code."""
+    if _S8R_IMG[0] is None:
+        _S8R_IMG[0] = cairo.ImageSurface.create_from_png(os.path.join(OUT, S8R_FILE[0]))
+    return _S8R_IMG[0]
+
+
+def s8r_world(k, img=None):
+    """S8r on S8R_IN_GLASS: its room carried past its frame (the wall, the skirting and its edges, the floor, the tape
+    running on toward the camera: da_s8r.room's own geometry, wider), then 1.1's frame 0 itself over it."""
+    import da_s8r as r8
+    img = img or s8r_img()
+    c = k.c
+    V = S8R_IN_GLASS
+    sg = V[2] / float(W)
+    c.save(); c.translate(V[0], V[1]); c.scale(sg, sg)
+    c.set_source_rgb(*kit.WALL); c.rectangle(-W, -H, 3 * W, H + r8.HZ); c.fill()
+    c.set_source_rgb(*r8.SKIRT); c.rectangle(-W, r8.HZ - 14, 3 * W, 16); c.fill()
+    c.set_source_rgb(*kit.FLOOR); c.rectangle(-W, r8.HZ + 2, 3 * W, 2 * H); c.fill()
+    c.set_source_rgb(*INK); c.set_line_width(1.8)
+    for yy in (r8.HZ - 14, r8.HZ + 2):
+        c.move_to(-W, yy); c.line_to(2 * W, yy); c.stroke()
+    (xa, ya, wa), (xb, yb, wb) = r8.tape_at(-1.0), r8.tape_at(1.0)
+    c.new_path(); c.move_to(xa - wa, ya); c.line_to(xa + wa, ya); c.line_to(xb + wb, yb); c.line_to(xb - wb, yb); c.close_path()
+    c.set_source_rgb(*r8.pss.TAPE); c.fill()
+    c.set_source_rgb(0.30, 0.22, 0.02); c.set_line_width(2.2)                  # its edges, as da_s8r.tape's stroke
+    for sx in (-1, 1):
+        c.move_to(xa + sx * wa, ya); c.line_to(xb + sx * wb, yb); c.stroke()
+    c.rectangle(-W, -H, 3 * W, H + H - 3); c.clip()                           # frame 0 less its bottom 3 units: the
+    c.scale(W / float(img.get_width()), H / float(img.get_height()))          # tape's closing stroke sits on that edge
+    c.set_source_surface(img, 0, 0); c.paint()
+    c.restore()
+
+
+def far_room(k, don=True, cool=1.0):
+    """L2 + L3: the far wall, its skirting, the floor, the tape with the gap, the throne's back, Don, the counter.
+    V9: S8r itself (s8r_world); cool 0..1: the far plane's grade, faded by the push 9.1."""
     c = k.c
     x, y, w, h = G
+    if V9[0]:
+        s8r_world(k)
+        g_ = GLASS_SOFT[0]
+        c.set_source_rgba(0.66, 0.71, 0.75, 0.30 * cool * g_); c.paint()  # the same grade as v4, on the clip it is drawn in
+        c.set_source_rgba(1, 1, 1, 0.08 * cool * g_); c.paint()
+        return {"head": None}
     c.set_source_rgb(*kit.WALL); c.rectangle(x, y, w, HZ - y); c.fill()
     rect(k, x - 4, HZ - 10, w + 8, 12, SKIRT, 5601, shadow=False, lw=1.6)
     c.set_source_rgb(*kit.FLOOR); c.rectangle(x, HZ + 2, w, y + h - HZ); c.fill()
@@ -196,6 +248,8 @@ def glass(k, blinds="tidy8"):
     """The tint, two reflections (a soft diagonal and the frame's own), the jambs and the sill with thickness, blinds."""
     c = k.c
     x, y, w, h = G
+    if GLASS_SOFT[0] != 1.0:                                                       # v11: the tint and sheen softer
+        return _glass_soft(k, blinds)
     c.set_source_rgba(*ds.GLASS, 0.12); c.rectangle(x, y, w, h); c.fill()
     c.save(); c.rectangle(x, y, w, h); c.clip()
     g = cairo.LinearGradient(x, y, x + w, y + h)                                   # a soft sheen across the glass
@@ -212,6 +266,33 @@ def glass(k, blinds="tidy8"):
     cut(k, [(x + w, y), (x + w + JAMB, y - JAMB), (x + w + JAMB, y + h + JAMB * 0.6), (x + w, y + h)], (0.62, 0.58, 0.52), shadow=False, lw=2)
     cut(k, [(x - JAMB, y - JAMB), (x + w + JAMB, y - JAMB), (x + w, y), (x, y)], (0.70, 0.66, 0.58), shadow=False, lw=2)
     rect(k, x - JAMB - 6, y + h, w + 2 * JAMB + 12, 14, (0.88, 0.85, 0.78), 5660, lw=2)        # the sill, with its shadow
+    c.set_source_rgba(0, 0, 0, 0.14); c.rectangle(x - JAMB - 6, y + h + 14, w + 2 * JAMB + 12, 7); c.fill()
+    if blinds == "canon":
+        blinds_canon(k)
+    elif blinds.startswith("tidy"):
+        blinds_tidy(k, int(blinds[4:]))
+
+
+def _glass_soft(k, blinds):
+    """glass() with its tint, sheen and reflected frame times GLASS_SOFT (v11); the jambs, sill and blinds as before."""
+    c = k.c
+    x, y, w, h = G
+    g_ = GLASS_SOFT[0]
+    c.set_source_rgba(*ds.GLASS, 0.12 * g_); c.rectangle(x, y, w, h); c.fill()
+    c.save(); c.rectangle(x, y, w, h); c.clip()
+    g = cairo.LinearGradient(x, y, x + w, y + h)
+    g.add_color_stop_rgba(0.00, 1, 1, 1, 0.0); g.add_color_stop_rgba(0.30, 1, 1, 1, 0.10 * g_)
+    g.add_color_stop_rgba(0.38, 1, 1, 1, 0.0); g.add_color_stop_rgba(0.80, 1, 1, 1, 0.0); g.add_color_stop_rgba(0.86, 1, 1, 1, 0.07 * g_)
+    g.add_color_stop_rgba(0.90, 1, 1, 1, 0.0)
+    c.set_source(g); c.paint()
+    c.set_source_rgba(1, 1, 1, 0.10 * g_); c.set_line_width(5)
+    c.rectangle(x + 14, y + 22, w - 28, h - 40); c.stroke()
+    c.restore()
+    cut = kit.cut
+    cut(k, [(x - JAMB, y - JAMB), (x, y), (x, y + h), (x - JAMB, y + h + JAMB * 0.6)], (0.80, 0.76, 0.68), shadow=False, lw=2)
+    cut(k, [(x + w, y), (x + w + JAMB, y - JAMB), (x + w + JAMB, y + h + JAMB * 0.6), (x + w, y + h)], (0.62, 0.58, 0.52), shadow=False, lw=2)
+    cut(k, [(x - JAMB, y - JAMB), (x + w + JAMB, y - JAMB), (x + w, y), (x, y)], (0.70, 0.66, 0.58), shadow=False, lw=2)
+    rect(k, x - JAMB - 6, y + h, w + 2 * JAMB + 12, 14, (0.88, 0.85, 0.78), 5660, lw=2)
     c.set_source_rgba(0, 0, 0, 0.14); c.rectangle(x - JAMB - 6, y + h + 14, w + 2 * JAMB + 12, 7); c.fill()
     if blinds == "canon":
         blinds_canon(k)
@@ -286,6 +367,12 @@ def chair(k, x, top, s=1.0, variant=None):
         kit.cut(k, [(-74, 260), (-78, 120), (-60, 70), (60, 70), (78, 120), (74, 260)], LEATHER, lw=2.6)
         c.set_source_rgb(*LEATHER_L); c.set_line_width(2.2)
         c.move_to(-58, 84); c.curve_to(-20, 74, 20, 74, 58, 84); c.stroke()
+    elif v == "L":                                            # L (27 Nov, Tomas: one throne only): a plain low black office
+        kit.cut(k, [(-58, 250), (-60, 150), (-52, 126), (52, 126), (60, 150), (58, 250)], (0.14, 0.14, 0.16), lw=2.4)
+        c.set_source_rgb(0.26, 0.26, 0.29); c.set_line_width(2.4)            # chair: the back's top below his shoulders
+        c.move_to(-46, 136); c.line_to(46, 136); c.stroke()
+        for sx in (-1, 1):                                                # thin armrests
+            kit.cut(k, [(sx * 58, 200), (sx * 92, 200), (sx * 94, 212), (sx * 60, 214)], (0.14, 0.14, 0.16), lw=2)
     else:                                                     # D: brown leather, wide rounded back, channels, armrests
         BR, BR_L, BR_D = (0.22, 0.16, 0.13), (0.40, 0.29, 0.22), (0.13, 0.09, 0.07)   # v4: #382820, darker than his coat
         c.new_path(); r = 34
@@ -340,7 +427,11 @@ def blueprint(k, x, y, s=1.0, ang=-0.06):
         prop_shadow(k, x + 4, y + 26 * s * 0.42, 66 * s)
         c = k.c
         c.save(); c.translate(x, y); c.rotate(ang); c.scale(1.0, 0.42)
-        ac.plan_open(k, 0, 0, s)
+        if V8[0]:
+            import da_props
+            da_props.plan_open_v2(k, 0, 0, s)                     # v8: the props sheet v2's plan (numbers off the lines)
+        else:
+            ac.plan_open(k, 0, 0, s)
         c.restore()
     finally:
         ac.GARAGES[0], ac.TITLE[0] = old
@@ -381,6 +472,7 @@ def sheet_furniture(out):
 
 # --- L6, the meeting, and the whole frame ---------------------------------------------------------------------------------
 FATHER_FOLDED = (-20, 140, 20, -140)                          # arms folded, hands together at the chest (sheet D/E)
+V8 = [False]   # opt-in (27 Nov, the props audit): the props sheet v2's plan and Pam's mug v2 (da_set.MUG_V2) on V5 + V6
 V6 = [False]   # opt-in (26 Nov, Tomas: "to the canon"): V5 plus Pam in her office canon (dusty-rose lips, no brooch; pm_ps's
                # berry lips and flower are episode 8's touches)
 V5 = [False]   # opt-in (26 Nov, after the cast analysis and the Father sheet's cold test): Sofía in her episode 15 outfit
@@ -406,7 +498,7 @@ def meeting(k):
     import pm_ps as pm
     heads = {}
     px, py, _ = PLAN_AT
-    chair(k, 336, 378, 1.0, "D")
+    chair(k, 336, 378, 1.0)                                    # CHAIR_VARIANT (default "D")
     c = k.c                                                    # v4: a soft side light on the chair behind Father (separation)
     g = cairo.RadialGradient(300, 470, 10, 300, 470, 120)
     g.add_color_stop_rgba(0, 0.95, 0.85, 0.70, 0.22); g.add_color_stop_rgba(1, 0.95, 0.85, 0.70, 0.0)
@@ -550,6 +642,32 @@ if __name__ == "__main__":
         da_arms.setup()                                        # v7: the thumbs mirrored per arm (no two left hands)
         V5[0] = True; V6[0] = True
         still(os.path.join(out, "da_s8_final_v7.png"))
+    elif sys.argv[1] == "frame8":
+        import da_arms
+        da_arms.setup()
+        V5[0] = True; V6[0] = True; V8[0] = True; ds.MUG_V2[0] = True
+        still(os.path.join(out, "da_s8_final_v8.png"))
+    elif sys.argv[1] == "frame9":
+        import da_arms
+        da_arms.setup()
+        V5[0] = True; V6[0] = True; V8[0] = True; V9[0] = True; ds.MUG_V2[0] = True
+        still(os.path.join(out, "da_s8_final_v9.png"))
+    elif sys.argv[1] == "frame11":
+        import da_arms
+        da_arms.setup()
+        V5[0] = True; V6[0] = True; V8[0] = True; V9[0] = True; ds.MUG_V2[0] = True
+        CHAIR_VARIANT[0] = "L"; ds.NAME_BADGES[0] = False; GLASS_SOFT[0] = 0.62   # v11: v10, the glass 38 % softer
+        S8R_FILE[0] = "da_s8r_frame0_v5.png"
+        with ds.no_badges():
+            still(os.path.join(out, "da_s8_final_v11.png"))
+    elif sys.argv[1] == "frame10":
+        import da_arms
+        da_arms.setup()
+        V5[0] = True; V6[0] = True; V8[0] = True; V9[0] = True; ds.MUG_V2[0] = True
+        CHAIR_VARIANT[0] = "L"; ds.NAME_BADGES[0] = False                 # v10 (27 Nov): one throne, only the robot's HR
+        S8R_FILE[0] = "da_s8r_frame0_v5.png"
+        with ds.no_badges():
+            still(os.path.join(out, "da_s8_final_v10.png"))
     elif sys.argv[1] == "frame6":
         V5[0] = True; V6[0] = True
         still(os.path.join(out, "da_s8_final_v6.png"))

@@ -560,5 +560,55 @@
   "pick": "B",
   "len": 2.49,
   "ok": 3
+ },
+ "6.2": {
+  "who": "PAM",
+  "text": "I took notes.",
+  "note": "quiet, a fact (27 Nov: her one line outside)",
+  "takes": {
+   "A": {
+    "len": 1.23,
+    "ok": 3,
+    "exact": 2,
+    "asr": [
+     "I took notes",
+     "I took notes, eh?",
+     "I took notes"
+    ]
+   },
+   "B": {
+    "len": 1.21,
+    "ok": 3,
+    "exact": 2,
+    "asr": [
+     "I took notes",
+     "I took notes, eh?",
+     "I took notes"
+    ]
+   },
+   "C": {
+    "len": 1.1,
+    "ok": 2,
+    "exact": 2,
+    "asr": [
+     "I took notes",
+     "I took notes, sir.",
+     "I took notes"
+    ]
+   },
+   "D": {
+    "len": 1.1,
+    "ok": 2,
+    "exact": 2,
+    "asr": [
+     "I took notes",
+     "I took notes, sir.",
+     "I took notes"
+    ]
+   }
+  },
+  "pick": "B",
+  "len": 1.21,
+  "ok": 3
  }
 }

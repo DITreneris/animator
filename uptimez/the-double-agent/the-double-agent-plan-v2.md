@@ -12,7 +12,7 @@ UptimeZ Inc. · episode 15 · *Civil War* 3 of 5 · 26 Nov · for Tomas's decisi
 | S8 (8.1) | **Locked v7** (`da_s8.py frame7`, `da_s8_final_v7.png`, md5 53a1ac37…; local tags s8-v5, s8-v7) |
 | S8r (1.1, 9.1 end) | **Locked v4, 27 Nov** (`da_s8r.py`, `da_s8r_frame0_v4.png`, md5 851120fe…, loop seam PASS) |
 | Hands | **The gate** `src/da_hand_gate.py` (13 rules incl. SEEN on the frame and THUMB by `hands_lr`; 10 planted faults fail, S8r v4 passes). **The job list** `the-double-agent-hand-jobs-v1.md` (every hand of script v4, its canon row). **Hand library v3 locked** (sandbox, `src/hand_lib_v3.py`; 3 poses; to the canon after 15). **`hands_lr`** copied from the canon (PR #11) for all new drawing. **5.2 still** (`da_s52.py`, gate and hands_lr clean) |
-| 3 Look and set | 3.1 S8r ✔, 3.3 the loop state ✔, 3.6 job list ✔ + library v4 ✔ + **the hand sheet ✔** (`da_hand_sheet_v1.png`, 28 jobs), **3.4 props ✔** (`da_props_v1.png`, `src/da_props.py`); **left: 3.2 the 9.1 push strip** |
+| 3 Look and set | 3.1 S8r ✔, 3.3 the loop state ✔, 3.6 job list ✔ + library v4 ✔ + **the hand sheet ✔** (`da_hand_sheet_v1.png`, 28 jobs), **3.4 props ✔ v2** (`da_props_v2.png` after the props audit 7.1/10: mug v2, shards, clip states + single clip + the robot's pick, plan/roll/strip/knitting episode copies, binder v2, bow, slop; S8 v8 = v7 + mug v2 + plan v2; every shared drawer untouched, flags opt-in, S8 v7 / S8r v4 / Sofía v4 / hand sheet md5 unchanged); **3.2 the push 9.1 ✔ v2** (after the push audit 8/10, Tomas "A1": **S8 v9** = v8 with S8r itself in the glass (`da_s8.V9`, `s8r_world`), so the push is one world with no handover; three planes on one camera (the far room ends on frame 0, the window plane at its ** 1.6 leaves by ~0.9 s, the meeting at ** 2.6 first); the grade, tint and office light fade evenly; a faint sheen (≤ 0.16); one speed across the glass, a 0.3 s settle into frame 0's hold (G5); the last frame is 1.1's frame 0 file, frame 52 vs it 1.5 levels mean; `da_push91_strip_v2.png`. Not changed (disagreed): the space over the crown is the locked S8r v4); **8.1 pull-back ✔** (Tomas 27 Nov /grill-me: 7.4 cuts to S8r, 1.5 s back through the glass, 2.5 s held on S8 v9; the same code backwards: `python3 da_push91.py pull`, `da_pull81_strip_v1.png`; first drawing = frame 0's file, last = S8 v9's file); **both moves polished after the pull audit 8.8 (Tomas "tvarkom")**: four planes (far room 1, window ** 1.6, Father in Don's chair ** 2.3, Sofía/Pam/desk/Client ** 2.6), the glass's grade, tint, sheen and the office light tied to how much of the frame the opening fills (gone as its edges leave), 9.1's first drawing = S8 v9's file |
 | 4–12 | Not started. Per plan v1 §6.2: **in parallel up to the board; animation only after 14's master** |
 
 ## 1. The cast against the character canon (re-analysed 26 Nov, canon main 47fd6d3)
@@ -132,3 +132,19 @@ Asked in v2:
 3. **Sofía's look in 15:** 14's war costume (same war day) or the canon office look?
 4. **Canon repo:** propose the new sheets for `characters/` at stage 12, or as soon as they pass in stage 3?
 5. **Voices:** approve the picks (stop 2), or name takes to swap.
+
+**Floor ↔ office changes (Tomas 27 Nov, after the pull audit): 8 in the film, 2 moves, 6 cuts.** A move through the glass only at the loop pair; the rest cut, each motivated:
+
+| # | Cut | Way | Method |
+|---|---|---|---|
+| 1 | 2.1 → 2.2 | in | on Don's stare at the glass (2.1 already shows the office from outside) |
+| 2 | 2.2 → 2.3 | out | action → reaction (the heel on the photo → Don offended) |
+| 3 | 3.4 → 3.5 | in | on the mug (Pam follows it through the door in 3.3, sets it down in 3.5) |
+| 4 | 3.5 → 4.1 | out | on the door: Pam comes out, caught mid-step |
+| 5 | 7.2 → 7.3 | in | on the action: Pam passes under the strip toward the door → inside, she takes the blueprint |
+| 6 | 7.3 → 7.4 | out | on the casters' sound |
+| 7 | 7.4 → 8.1 | in | **the pull-back through the glass** (done) |
+| 8 | 8.1 → 9.1 | out | **the push through the glass** (done) |
+
+**The two spaces (27 Nov, /grill-me):** every cut has the other space on one side of it (script v4, "The two spaces at every cut"): four background actions added (3.4, 4.1, 7.2, 7.4), MCs carry it by sound, Pam carries the cut where she acts. Screen direction across all six cuts: in S8, Don's side is screen right behind the glass (the mirror rule); checked per cut in stage 4's layouts (`da_scenes.py`).
+

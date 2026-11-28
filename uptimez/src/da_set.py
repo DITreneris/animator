@@ -72,7 +72,13 @@ def office_inside(k, cast=True):
     c.set_source_rgb(*IN_FLOOR); c.rectangle(x, y + h - 26, w, 26); c.fill()
     cx = x + w * 0.50
     _self_portrait(k, cx, y + 54, 0.66)                      # over his own chair, the CEO's wall
-    rect(k, cx - 36, y + 120, 72, 110, (0.12, 0.12, 0.14), 5310, shadow=False, lw=2)   # Don's chair: a tall black back
+    if EP15_SET[0]:                                            # 27 Nov: a plain low office chair (one throne only)
+        rect(k, cx - 34, y + 176, 68, 54, (0.12, 0.12, 0.14), 5310, shadow=False, lw=2)
+    else:
+        rect(k, cx - 36, y + 120, 72, 110, (0.12, 0.12, 0.14), 5310, shadow=False, lw=2)   # Don's chair: a tall black back
+    st = INSIDE[0]
+    if cast and st is not None:                                # 27 Nov (the two spaces): the office in a given shot's state
+        return _inside_state(k, st, x, y, w, h, cx, heads)
     if cast:
         o = cps.client(k, x + 36, 560, S_IN * 0.92, pose="open", face="bored", look=(1, 0))   # standing, left
         heads["client"] = o["head"]
@@ -98,7 +104,89 @@ def office_inside(k, cast=True):
     return heads
 
 
-def room(k, blind="up", u=0.0, inside=True, behind=()):
+INSIDE = [None]      # opt-in (27 Nov, the two spaces): a dict giving the office's state behind the glass for a shot:
+                     # client "stand" | "seated" | None, roll "none" | "held" (rolled in his hands), sofia True/False,
+                     # mug True (Pam's mustard mug on Father's side of the desk), pam "hand_on_mug" | "with_plan" | None.
+                     # None: establish v3's inside, as before.
+
+
+def _inside_state(k, st, x, y, w, h, cx, heads):
+    """office_inside's cast and props in one shot's state; the desk, the tint, the reflections and the sill as before."""
+    c = k.c
+    if st.get("client") == "stand":
+        o = cps.client(k, x + 36, 560, S_IN * 0.92, pose="open", face="bored", look=st.get("client_look", (1, 0)))
+        heads["client"] = o["head"]                            # client_look: opt-in (27 Nov, 6.6: at Pam, outside)
+    elif st.get("client") == "seated":
+        o = cps.client(k, x + 50, 600, S_IN * 0.92, pose="open", face="bored", look=(1, 0.3)); heads["client"] = o["head"]
+    o = dc.father(k, cx, 590, S_IN * 0.92 * 1.19, face="hard", look=(0, 0.3)); heads["father"] = o["head"]
+    if st.get("sofia", True):
+        o = sp.sofia(k, x + w - 34, 556, S_IN * 0.95, "hold", "smile", look=(-1, 0)); heads["sofia"] = o["head"]
+    if st.get("pam"):
+        o = pm.pam(k, cx + 70, 572, S_IN, "stand", "neutral", look=(-1, 0.4), mug=False); heads["pam"] = o["head"]
+    rect(k, x - 4, y + h - 112, w + 8, 14, DESK, 5320, shadow=False, lw=2)
+    rect(k, x + 6, y + h - 100, w - 12, 100, DESK_D, 5321, shadow=False, lw=2)
+    if st.get("mug"):                                          # her mustard mug on Father's side of the desk
+        pam_mug(k, cx + 34, y + h - 110, 0.62)
+        heads["mug"] = (cx + 34, y + h - 122, 10)
+        if st.get("pam") == "hand_on_mug":
+            kit.ellipse(k, cx + 46, y + h - 122, 6, 5, (0.99, 0.86, 0.66), 5330, shadow=False, lw=1.4)
+    if st.get("roll") == "held":                                # the blueprint rolled, across the Client's hands
+        hx, hy = heads.get("client", (x + 50, 480))[:2]
+        kit.rect(k, hx - 26, hy + 46, 52, 9, (0.22, 0.42, 0.72), 5331, shadow=False, lw=1.6)
+        heads["roll"] = (hx, hy + 50, 14)
+    c.set_source_rgba(*IN_WALL, 0.14); c.rectangle(x, y, w, h); c.fill()
+    c.restore()
+    c.set_source_rgba(*GLASS, 0.14); c.rectangle(x, y, w, h); c.fill()
+    c.save(); c.rectangle(x, y + h - 112, w, 112); c.clip()
+    c.set_source_rgba(1, 1, 1, 0.13); c.set_line_width(7)
+    for dx in (40, 58):
+        c.move_to(x + dx, y + h); c.line_to(x + dx + 70, y); c.stroke()
+    c.restore()
+    c.set_source_rgb(*INK); c.set_line_width(3.5); c.rectangle(x, y, w, h); c.stroke()
+    rect(k, x - 8, y + h, w + 16, 10, (0.80, 0.80, 0.77), 5340, shadow=False, lw=2)
+    return heads
+
+
+EP15_SET = [False]   # opt-in (Tomas 27 Nov, /grill-me "too many badges and chairs"): in this episode the throne's back
+                     # is bare (no OWNER: INVESTOR card, no price tag's blank back), no taped MY GARAGES plan on the
+                     # counter, no shredder. Off: every earlier frame byte-identical.
+NAME_BADGES = [True]  # opt-out (same day): the people's name badges off (the robot's HR stays: its role here)
+
+
+class no_badges(object):
+    """the people's name badges off while drawing (Don's staff badge, Pam's, Sofía's), the robot's HR kept. Patches
+    the drawers for the duration only; NAME_BADGES on: nothing changes."""
+    def __enter__(self):
+        import don_v4 as dv
+        import pm_ps
+        import sofia_da as sd_
+        self.keep = (dv.staff_badge, pm_ps.pb.pam, sd_.sofia)
+        if NAME_BADGES[0]:
+            return self
+        sb_, pp, so_ = self.keep
+        dv.staff_badge = lambda k_, name, *a, **kw: sb_(k_, name, *a, **kw) if name == "HR" else None
+
+        def pam_(*a, **kw):
+            try:
+                return pp(*a, **dict(kw, badge=False))
+            except TypeError:                                   # pam_fs passes its badge positionally, last
+                a = list(a); a[-1] = False
+                return pp(*a, **kw)
+
+        def sofia_(*a, **kw):
+            kw["badge"] = False
+            return so_(*a, **kw)
+        pm_ps.pb.pam, sd_.sofia = pam_, sofia_
+        return self
+
+    def __exit__(self, *e):
+        import don_v4 as dv
+        import pm_ps
+        import sofia_da as sd_
+        dv.staff_badge, pm_ps.pb.pam, sd_.sofia = self.keep
+
+
+def room(k, blind="up", u=0.0, inside=True, behind=(), spun=False):
     """The front desk with the tape (ps_set, as episode 14 ends) plus the office glass. The glass is in the wall, so it
     is drawn in fs_set4's pam_back hook: after the wall, before Pam and Mom and the counter. behind: callables drawn
     after the glass, behind the counter (Pam, Mom)."""
@@ -111,10 +199,18 @@ def room(k, blind="up", u=0.0, inside=True, behind=()):
         for fn in behind:
             heads.update(fn(k_) or {})
     pss.s4.draw_set = lambda k_, cast="home", **kw: orig(k_, {"pam_back": back}, **kw)
+    keep = (pss.throne_back, pss.price_tag, pss.s4.shredder, pss.s4.fs.plan_taped)
+    if EP15_SET[0]:
+        tb, pt = pss.throne_back, pss.price_tag
+        pss.throne_back = lambda k_, x, feet, s_, card=True: tb(k_, x, feet, s_, card=False)
+        pss.price_tag = lambda *a, **kw: None if kw.get("back") else pt(*a, **kw)
+        pss.s4.shredder = lambda *a, **kw: None
+        pss.s4.fs.plan_taped = lambda *a, **kw: None
     try:
-        pss.room(k, blind="rehung", tape=True, phone=None)
-    finally:
-        pss.s4.draw_set = orig
+        pss.room(k, blind="rehung", tape=True, phone=None, **({"spun": True} if spun else {}))   # spun: opt-in (27 Nov,
+    finally:                                                                                     # the layouts: the throne's
+        pss.s4.draw_set = orig                                                                   # back to the street side)
+        pss.throne_back, pss.price_tag, pss.s4.shredder, pss.s4.fs.plan_taped = keep
     return heads
 
 
@@ -196,8 +292,34 @@ MUG = (0.86, 0.66, 0.16)                                    # Pam's mug: mustard
 G8 = (34, 120, 472, 400)                                    # the glass in frame units: x 34-506, y 120-520
 
 
+MUG_V2 = [False]   # opt-in (27 Nov, the props audit): a rim with a wall, the handle a closed loop joined to the body, a
+                   # rounded foot. Same size, colour and side (one prop, one shape); off = S8 v7 and S8r v4 byte-identical.
+
+
+def _mug_v2(k, x, y, s):
+    """Pam's mug v2: 26 x 30 like v1, the handle on the right. The handle first (the body covers its joints), then the
+    body with rounded bottom corners, then the open top: a rim ellipse, the wall's thickness, the dark inside."""
+    c = k.c
+    hx, hy = x + 12 * s, y - 15 * s
+    c.new_path(); c.arc(hx, hy, 10.5 * s, -1.25, 1.25); c.arc_negative(hx, hy, 6.2 * s, 1.1, -1.1); c.close_path()
+    c.set_source_rgb(*MUG); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2 * s ** 0.5); c.stroke()
+    c.set_source_rgba(0, 0, 0, 0.18); c.new_path(); c.arc(hx, hy, 9.0 * s, -0.2, 1.2); c.arc_negative(hx, hy, 6.6 * s, 1.1, -0.1)
+    c.close_path(); c.fill()
+    w, h, r = 13 * s, 30 * s, 4 * s
+    c.new_path(); c.move_to(x - w, y - h); c.line_to(x - w, y - r); c.curve_to(x - w, y, x - w + r, y, x - w + 2 * r, y)
+    c.line_to(x + w - 2 * r, y); c.curve_to(x + w - r, y, x + w, y, x + w, y - r); c.line_to(x + w, y - h); c.close_path()
+    c.set_source_rgb(*MUG); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
+    c.set_source_rgba(0, 0, 0, 0.18); c.rectangle(x + 4 * s, y - 27 * s, 8 * s, 25 * s); c.fill()      # its shaded side
+    c.set_source_rgba(1, 1, 1, 0.35); c.rectangle(x - 9 * s, y - 26 * s, 3 * s, 22 * s); c.fill()     # a highlight
+    for rx, ry, col in ((w, 3.4 * s, MUG), (w - 2.4 * s, 2.3 * s, (0.42, 0.30, 0.08))):          # the rim, then the inside
+        c.save(); c.translate(x, y - h); c.scale(rx, ry); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgb(*col); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(1.6); c.stroke()
+
+
 def pam_mug(k, x, y, s=1.0):
     """Pam's mug: a tall mustard mug with a big round handle on the right (the same silhouette in every shot)."""
+    if MUG_V2[0]:
+        return _mug_v2(k, x, y, s)
     c = k.c
     rect(k, x - 13 * s, y - 30 * s, 26 * s, 30 * s, MUG, 5501, shadow=False, lw=2)
     c.set_source_rgba(0, 0, 0, 0.18); c.rectangle(x + 4 * s, y - 28 * s, 8 * s, 27 * s); c.fill()      # its shaded side

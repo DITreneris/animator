@@ -555,7 +555,7 @@ def render(state, scale=2):
     return s, heads
 
 
-def still(out_dir="../the-double-agent", v2=True):
+def still(out_dir="../the-double-agent", v2=True, badges=True):
     """v2 (default from 26 Nov): the canon hands, and the hand gate fails the build before anything is written."""
     import hands_v4 as hv
     import da_hand_gate as g
@@ -571,9 +571,12 @@ def still(out_dir="../the-double-agent", v2=True):
     if v2 and not ok:
         print("S8r: not written (the hand gate failed)")
         return False
-    a, heads = render("start")
-    b, _ = render("end")
-    tag = "v4" if v2 else "v1"
+    import da_set as ds_
+    ds_.NAME_BADGES[0] = badges
+    with ds_.no_badges():                                      # v5 (27 Nov, Tomas): only the robot's HR badge
+        a, heads = render("start")
+        b, _ = render("end")
+    tag = ("v4" if badges else "v5") if v2 else "v1"
     ma, mb = (hashlib.md5(bytes(x.get_data())).hexdigest() for x in (a, b))
     a.write_to_png(os.path.join(out_dir, "da_s8r_frame0_%s.png" % tag))
     b.write_to_png(os.path.join(out_dir, "da_s8r_end_%s.png" % tag))
@@ -587,4 +590,6 @@ def still(out_dir="../the-double-agent", v2=True):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "v5":
+        sys.exit(0 if still(*sys.argv[2:], badges=False) else 1)
     sys.exit(0 if still(*sys.argv[2:]) else 1)
