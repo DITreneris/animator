@@ -1,7 +1,6 @@
 # Rules: hands, arms and phones (synced copy)
 
-**The canon is [DITreneris/uptimez `docs/rules-hands-and-phones.md`](https://github.com/DITreneris/uptimez/blob/main/docs/rules-hands-and-phones.md)** (Tomas, 26 Nov). This is a copy of it from 26 Nov (with the `board_two` and `tap_insert` rows of branch `hands-v4-rows`). If the two differ, the uptimez page wins: update this copy, never the other way round. Lessons 147–264 and §0 below stay true where they do not contradict it.
-
+**The canon is [DITreneris/uptimez `docs/rules-hands-and-phones.md`](https://github.com/DITreneris/uptimez/blob/main/docs/rules-hands-and-phones.md)** (Tomas, 26 Nov). This is a copy of it from 28 Nov (uptimez `bbf4cbb` plus branch `rules-hands-e15-lessons`: the episode 15 hand lessons). If the two differ, the uptimez page wins: update this copy, never the other way round. Lessons 147–264 and §0 below stay true where they do not contradict it.
 
 Copied from [DITreneris/animator](https://github.com/DITreneris/animator) `docs/` on 26 Nov 2026, where it covers UptimeZ and Hoodyz. `docs/lessons.md` and the episode folders it names are in that repo. This page wins when `docs/lessons.md` disagrees. A new job is a new row here, written before any episode draws it. An episode does not get its own hands file.
 
@@ -12,6 +11,7 @@ Copied from [DITreneris/animator](https://github.com/DITreneris/animator) `docs/
 - **The arm is two bones of fixed length** (`of_scenes.ik2`). Move the shoulder or shorten the travel. A stroke of one width is not an arm.
 - **A phone is `of_cast.phone_grip`**, upright, thumb off the words. A rectangle with words on it is a slide.
 - **A still comes before motion.** Full size, and again at 270 px wide. The same misread three times changes the gesture.
+- **Two hands, two sides.** A screen-left and a screen-right hand are mirror images; check every still for two left hands (below, "The hand itself").
 
 A film that cannot import these modules still uses these shapes. It does not invent another hand.
 
@@ -35,15 +35,17 @@ Name the job, then draw that row. If the job is not here, stop and add the row b
 | A board, tablet, card or printout in two hands | `board_two` | `hands_v4.board_two`: the board first, then one `clutch` at each upper corner (silhouette test 26 Nov: 2/2 over grab-at-the-sides and palms-under) |
 | A tap on a screen in an insert | `tap_insert` | `hands_v4.tap_insert`: `point_t`, the forearm and a cuffed wrist stub from the bottom edge (test 26 Nov: 2/2; no stub reads as a floating hand, from the side reads as pointing, not tapping) |
 
-**The sheet in films (26 Nov):** `hands_v4.py` (animator `uptimez/src`) draws the sheet's `grab`, `pinch` and `fist` (v2) after a film calls `hands_v4.enable()`. The phone: the sheet's row is v4c (the thumb off the words); `hands_v4.enable(phone="v4c")` draws it, checked in One Star v27 at 1:04. Without that argument a film keeps the old `of_cast.phone_grip` (v3). A film that does not call it draws as before. The two new rows came from the series hands and phones audit v1 (animator `uptimez/series/hands-phones-audit-v1.md`), where each film had improvised its own.
+**The sheet in films (26 Nov):** `hands_v4.py` (animator `uptimez/src`) draws the sheet's `grab`, `pinch` and `fist` (v2) after a film calls `hands_v4.enable()`. The phone stays the old `of_cast.phone_grip` (v3) in films: v4b covers the screen's edge words (Tomas, 26 Nov). The sheet's phone is now v4c, which passes `bp_phone_words.py`; `hands_v4.enable(phone="v4c")` draws it in a film (checked in One Star v27 at 1:04). A film that does not call it draws as before. The two new rows came from the series hands and phones audit v1 (animator `uptimez/series/hands-phones-audit-v1.md`), where each film had improvised its own.
 
-The picture of this table is the class sheet, `the-blueprint/rough_work/pic_hands/bp_hand_classes_v4.png`: male width 17, female 15, the same shapes, no nail. It is the target. Its `grab`, `pinch`, `fist` and `phone_grip` are drawn by the sheet scripts, so a film that calls the function in this table still gets the older drawing until a separate opt-in module exists. How a row changes: [`CANON.md`](../CANON.md).
+The picture of this table is the class sheet, `the-blueprint/rough_work/pic_hands/bp_hand_classes_v4.png`: male width 17, female 15, the same shapes, no nail. It is the target. Its `grab`, `pinch`, `fist` and `phone_grip` are drawn by the sheet scripts, so a film that calls the function in this table gets the older drawing unless it calls `hands_v4.enable()`. How a row changes: [`CANON.md`](../CANON.md).
 
 `hands_ps` also contains `point_s`, `two`, `two_s`, `salute`, `tuck`, `beckon`, `relax`, `relax_s`. Those stay for shots that already shipped them. A new shot uses the table.
 
 ## 0. Before drawing
 
 A review or a cold test that names a hand is not a request to patch that hand. In this order, before code:
+
+0. **List every hand of the script first** (episode 15, 27 Nov). Before any hand is drawn, the episode writes one table: shot, who, which hand, the job, the row from the table above. A job with no row is marked as new and goes through step 2. Each shot then declares its rows to the episode's hand gate, which fails a hand that is not on its shot's list and counts misreads (3 changes the gesture, step 7). Example: animator `uptimez/the-double-agent/the-double-agent-hand-jobs-v1.md` with `src/da_hand_gate.py` (branch `uptimez-double-agent`). The table names rows; it is not a copy of this page.
 
 1. **Name the job.** Reply with the row from the table. Do not grep `docs/lessons.md` for a shape, and do not copy this page into an episode file.
 2. **A job that is not in the table is a new gesture.** Three solid black silhouettes, side by side, 270 px wide, two cold viewers. Keep the one both read as meant. Then add the row.
@@ -61,11 +63,20 @@ A review or a cold test that names a hand is not a request to patch that hand. I
 - **A pointing finger that stops near a sign reads as holding it.** When the arm drops, the sign floats. Point from a measured gap, or do not point at a wall sign.
 - **Two hands near each other read as a handshake,** whatever the props. Keep a clear gap, or use another gesture.
 - **`point` aimed down, or large in an insert, grows a second finger** from the thumb across the knuckles. Use `point_t` there (index out, no thumb). Pointing level reads. Pointing down reads as pointing at the floor.
+- **No crossed forearms.** Folded arms draw two forearms across the chest, the fault episode 15 found in its script (5.4). Standing: fists on the hips, elbows out (`fist` ×2). Seated: a hand on the armrest (`clutch`) or hanging (`quiet`).
 
 ### The hand itself
 
 - **One shape per state.** Rest is `quiet`. A fingertip is `point` or `point_t`. A hold is `grab`, `clutch`, `pinch`, or `handle_grip`. One closed fist for every job reads as toes.
 - **A face beats a gesture.** No hand or prop over an eye in a reaction shot.
+- **Left and right are mirrored: on a hanging arm the thumb is toward the body.** `hands_ps` and the `hands_v4` rows put the thumb on side `arm × sign(cos a)` of the forearm (`a`, its angle on screen). A mirror image needs the opposite side, and that rule never gives it: two forearms hanging down get both thumbs on one screen side, two left hands (Pam, The Double Agent, 26 Nov); two forearms out level get one thumb up and one down.
+  - **The rule (27 Nov):** the thumb on side `arm × sign(sin a)` at every angle. Hanging, it is toward the body. Raised, toward the head. Out level, both thumbs on the same side, up or down. The side changes only when a forearm crosses level.
+  - **Inside a shot a hand keeps its side.** The side of its first drawing in the shot holds until the cut, so a move through level, or through 45°, never jumps the thumb across the hand.
+  - **The code is the canon's [`src/hands_lr.py`](../src/hands_lr.py).** A new drawing script calls `hands_lr.setup()` once, before `hands_v4.enable()`, then `with hands_lr.shot():` and `hands_lr.frame()` before each frame (`frame(cut=True)` for a new pose). `hands_ps.py` and `of_cast.py` are not edited, and films that shipped keep their drawing (the freeze rule). Every Blueprint frame has it (`bp_frame` calls `setup()`); the locked stills did not change, since none of their hands go through `hands_ps`.
+  - **The gate:** `python3 bp_hands_lr.py` (from `src/`) draws [`thumbs_left_right_v2.png`](../the-blueprint/rough_work/pic_hands/thumbs_left_right_v2.png) and runs `hands_lr.check()`: a mirror pose that is not mirrored, a hanging thumb turned away from the body, a thumb that changed sides between two frames. It exits 1 if a canon row has a fault, or if the old rows stop being caught. A new drawing script can call `hands_lr.check()` on its own frames.
+  - **Animator's `da_arms.setup()`** (episode 15, branch `uptimez-double-agent`) used the new side only for forearms nearer vertical. Its level and raised pairs stay unmirrored, and at 45° one arm switches rules inside a move. Episode 15's locked frames keep it. Anything drawn after it uses `hands_lr`.
+  - `arm` must be the screen side (−1 screen-left). `hands_ps.hand` (the `kit.HAND` hook) counts arms screen-left first. `of_cast.quiet_hand` passes `kit`'s elbow-bend sign instead, so check its frames with the gate.
+  - Pictures: [`thumbs_left_right_v1.png`](../the-blueprint/rough_work/pic_hands/thumbs_left_right_v1.png) (Pam and Don, 26 Nov), [`thumbs_left_right_v2.png`](../the-blueprint/rough_work/pic_hands/thumbs_left_right_v2.png) (the gate's rows).
 
 ### The arm
 
@@ -98,6 +109,8 @@ What fails, in the order viewers say it: one stroke from the edge is a pole; an 
 - **Draw the object, then the fingers over it.** A handle comes out past the fist.
 - **A prop in a rig's hand is drawn in that hand's coordinates.** Record the matrix at the hand call, draw the prop under it, call the same hand again on top. One hand, two passes. Drawn in scene coordinates, the prop sits off the hand and at the wrong size.
 - **Hold the object where its shape shows.**
+- **A mug is held by its handle** (`handle_grip`). A `grab` round a mug's wide body read as a hammer or a dumbbell, 0 of 2 cold viewers: the body as wide as the fist makes one black block. A `grab` round a body reads only when the object is narrower than the fist and the knuckles pass its edge (a thermos, 2 of 2). Episode 15 hand library, 27 Nov.
+- **A drink seen front on hides in the face.** A sip from a saucer read 0 of 2 (a wave, "hmm", a phone call). A cup in `pinch` at the cheek, held out past the head's outline, the little finger out, read as a sip 2 of 2. The saucer on a flat palm under it is not yet a row (proposed: animator `the-double-agent-hand-jobs-v1.md`). Episode 15, 27 Nov.
 - **A hand that changes job moves in order:** reach (about 0.3 s), grip, then lift, the object locked to the hand. Rest the hand near the next action, so the reach is short.
 - **A tool leaves by the wrist.** The arm stays.
 - **Contact all the way.** A lid keeps the hand on it through the slam and after. A hand beside it reads as a wave.
@@ -140,7 +153,7 @@ Bubble measure, tail length and the safe rect live in `speech.py` and `speech_ga
 
 ## Where this was learned
 
-Lessons 147, 149, 163, 178, 179, 200, 201, 206–208, 221–226, 231, 263, 264, 417, from *The Offer*, One Star, Daddy's Home and Pick a Side. The numbers are the history. The rows above are the rule. When a new film teaches a hand or a screen something this page does not say, add the row here.
+Lessons 147, 149, 163, 178, 179, 200, 201, 206–208, 221–226, 231, 263, 264, 417, from *The Offer*, One Star, Daddy's Home and Pick a Side; the hand-jobs table, crossed forearms, the mug by its handle and the front-on sip from *The Double Agent* (episode 15, 27 Nov). The numbers are the history. The rows above are the rule. When a new film teaches a hand or a screen something this page does not say, add the row here.
 
 ## Superseded
 
@@ -148,8 +161,6 @@ Lessons 147, 149, 163, 178, 179, 200, 201, 206–208, 221–226, 231, 263, 264, 
 - **201.** "A short forearm as wide as the hand, cropped tighter." True only at the frame's edge, and there it is a wrist stub.
 - **221.** "An insert arm with a shoulder and a torso disc." The disc read as a dome. The owner's body is in the shot.
 - **222.** "Hand and wrist stub only." True at the frame's edge only.
-
----
 
 ## Earlier version (animator, before 26 Nov), kept for its §0 and lessons
 
