@@ -121,3 +121,16 @@ PIECES, WRIST, CONTACT, MIRROR; hands_lr clean). Cold viewers, two fresh each, s
 from `da_props.py`, the cast's hand sizes, male 17 / female 15) and `_feed.png`; hands_lr clean. Looked at full size:
 fixed there, the knitting drawn under Mom's fingers (it was over them) and clear of her hand (half covered, DON read
 "ON"); the minutes held by their corner (the hand covered AGENDA).
+
+## 28 Nov: scene 1 animated, the gate on every drawing
+
+`da_anim_s1.py` declares each drawing's jobs (`JOBS_S1`) and props, and the build fails on any hand fault (102 drawings, PASS at v16). The gate was checked on planted faults first: legacy rig hands, a grab holding nothing, and a pole robot arm all fail.
+
+The gate now also logs the library's hands (`hand_lib_v4.draw_lr`, by their canon job). The wall portrait's hands are paused, and so is the face guard's measuring pass. That pass had run in the middle of a drawing and corrupted that drawing's hands.
+
+Changes against the table above:
+- **1.3:** Don hops with his arms out, `palm` ×2. Robot: the gripper on the throne's arm post, then `robot_rest` (canon heads, elbows bent).
+- **1.3c and 1.4:** Don's hands are `quiet` (they were the rig's legacy `relax`).
+- **1.4:** Sofía's carry is the library's `clutch` ×2 on the box's edges (`board_two`). The robot kneels and grips a clip.
+- **1.3b:** Father's ringed hand is the library's `PINCH` at the tag's knot, then `palm` as it leaves.
+- **1.5: the gesture changed.** His arm can't reach his raised sole (shoulder to sole 106–130, the arm 58). The layout's grab was its KNOWN REACH fault. Now it is hands-free: he plants the roll, yanks the foot up, the tape snaps, and the roll rolls off to the throne. His hands are `quiet`.

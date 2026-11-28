@@ -24,6 +24,12 @@ VELVET, VELVET_D = (0.42, 0.06, 0.12), (0.26, 0.03, 0.07)
 TABLE, TABLE_D = (0.20, 0.12, 0.08), (0.12, 0.07, 0.05)
 
 
+CLEAN = [False]   # opt-in (Tomas 28 Nov, episode 15 /grill-me): the base canon's garage owner, "oil in the creases" only
+                  # (client_ob): skin-coloured hands with dark crease lines, no grease on the sleeves, shirt or face, the
+                  # rag clean. Default False draws episode 14's filthy booth Client exactly as before.
+CREASE = (0.30, 0.22, 0.17)
+
+
 _STYLE = {}                                                                # side (-1 screen-left, 1 screen-right) -> hand
 
 
@@ -40,11 +46,14 @@ def oily(hands=None, aim=None, k=None):
     def limb(k, sx, sy, a1, a2, ln1, ln2, w1, w2, col1, col2, skin, hand_r, seed, *a, **kw):
         side = -1 if sx < 0 else 1
         _STYLE["now"] = (hands or {}).get(side, "fist")
-        if col2 == co.SKIN:
-            col2 = OIL
-        if skin == co.SKIN:
-            skin = OIL
+        if not CLEAN[0]:
+            if col2 == co.SKIN:
+                col2 = OIL
+            if skin == co.SKIN:
+                skin = OIL
         r = old(k, sx, sy, a1, a2, ln1, ln2, w1, w2, col1, col2, skin, hand_r, seed, *a, **kw)
+        if CLEAN[0]:
+            return r
         dx, dy = math.sin(math.radians(a1)), math.cos(math.radians(a1))      # grease along the sleeve's hem
         mx, my = sx + dx * 40, sy + dy * 40
         c = k.c
@@ -72,7 +81,10 @@ def hand(k, hx, hy, w, skin, seed, d, side):
     if skin == OIL:
         skin = HAND_OIL
     if style == "fist":
-        return oc.cartoon_hand(k, hx, hy, w, skin, seed, d, side)
+        r = oc.cartoon_hand(k, hx, hy, w, skin, seed, d, side)
+        if CLEAN[0]:
+            _creases(k.c, hx, hy, w, d)
+        return r
     c = k.c
     w = w * 1.25
     a = math.atan2(d[1], d[0])
@@ -106,16 +118,32 @@ def hand(k, hx, hy, w, skin, seed, d, side):
         blob(0.18 * w, 0.0, 0.48 * w, 0.42 * w)                                              # the palm
         finger(0.40 * w, -0.24 * w, 1.05 * w, 0.30 * w, -0.06)                               # the index, straight out
         blob(0.16 * w, side * 0.44 * w, 0.30 * w, 0.16 * w, side * 0.7)                     # the thumb, tucked
-        c.set_source_rgba(1, 1, 1, 0.35); c.set_line_width(2)                                # oil shine on the finger
-        c.move_to(0.6 * w, -0.32 * w); c.line_to(1.25 * w, -0.32 * w); c.stroke()
+        if CLEAN[0]:                                                                         # oil in the creases only
+            c.set_source_rgba(*CREASE, 0.8); c.set_line_width(1.4)
+            for fx in (0.75, 1.0):
+                c.move_to(fx * w, -0.36 * w); c.line_to(fx * w, -0.14 * w); c.stroke()
+        else:
+            c.set_source_rgba(1, 1, 1, 0.35); c.set_line_width(2)                            # oil shine on the finger
+            c.move_to(0.6 * w, -0.32 * w); c.line_to(1.25 * w, -0.32 * w); c.stroke()
     else:                                                                                    # "palm": open, spread, flat
-        c.set_source_rgba(*OIL, 0.55)                                                        # the oil squeezed out round it
-        c.save(); c.translate(0.45 * w, 0); c.scale(1.25 * w, 0.95 * w); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+        if not CLEAN[0]:
+            c.set_source_rgba(*OIL, 0.55)                                                    # the oil squeezed out round it
+            c.save(); c.translate(0.45 * w, 0); c.scale(1.25 * w, 0.95 * w); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
         blob(0.25 * w, 0.0, 0.52 * w, 0.48 * w)
         for fy, ln, an in ((-0.36, 0.78, -0.30), (-0.12, 0.92, -0.08), (0.12, 0.90, 0.08), (0.34, 0.72, 0.28)):
             finger(0.55 * w, fy * w, ln * w, 0.24 * w, an)
         finger(0.05 * w, side * 0.40 * w, 0.62 * w, 0.26 * w, side * 1.05)                  # the thumb, out
     c.restore()
+
+
+def _creases(c, hx, hy, w, d):
+    """CLEAN: two thin dark lines across the knuckles: a working man's hands, washed."""
+    a = math.atan2(d[1], d[0])
+    c.save(); c.translate(hx, hy); c.rotate(a)
+    c.set_source_rgba(*CREASE, 0.8); c.set_line_width(1.3); c.set_line_cap(1)
+    for fx in (0.15, 0.35):
+        c.move_to(fx * w, -0.28 * w); c.line_to(fx * w + 0.04 * w, 0.24 * w); c.stroke()
+    c.set_line_cap(0); c.restore()
 
 
 def _smear(k, x, y, rx, ry, seed, alpha=0.85, drag=None):
@@ -149,6 +177,16 @@ def overlay(k, x, feet, s, turn=0.0, seed=4400):
     c = k.c
     c.save(); c.translate(x, feet); c.scale(s * (1 - 0.18 * abs(turn)), s)
     hy, bt = co.HY, co.BT
+    if CLEAN[0]:                                                 # the rag only, clean
+        c.save(); c.translate(-co.SH[0] + 18, bt - 8)
+        cut(k, [(-16, -6), (24, -12), (30, -2), (26, 18), (30, 46), (24, 74), (14, 66), (8, 84), (-2, 70), (-10, 78),
+                (-12, 50), (-16, 22)], co.RAG, lw=2.2)
+        cut(k, [(-16, -6), (24, -12), (30, -2), (26, 10), (-14, 14)], (0.66, 0.16, 0.15), shadow=False, lw=1.8)
+        c.set_source_rgba(0.40, 0.08, 0.08, 0.65); c.set_line_width(1.8); c.set_line_cap(1)
+        for a_, b_ in (((-6, 24), (-2, 66)), ((10, 22), (14, 60))):
+            c.move_to(*a_); c.line_to(*b_); c.stroke()
+        c.restore(); c.restore()
+        return
     c.save(); c.translate(20 * turn, 0)
     c.set_source_rgba(*OIL, 0.80); c.set_line_cap(1)
     c.set_line_width(8); c.move_to(-50, hy - 2); c.curve_to(-46, hy + 8, -40, hy + 14, -32, hy + 20); c.stroke()

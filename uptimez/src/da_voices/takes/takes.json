@@ -610,5 +610,63 @@
   "pick": "B",
   "len": 1.21,
   "ok": 3
+ },
+ "1.2": {
+  "who": "DON",
+  "text": "Oof!",
+  "note": "effort sound, not a line (28 Nov); Whisper can't score it: picked by ear in the cut",
+  "takes": {
+   "A": {
+    "len": 0.55,
+    "speed": 0.9,
+    "text": "Oof!"
+   },
+   "B": {
+    "len": 0.52,
+    "speed": 0.96,
+    "text": "Oof!"
+   },
+   "C": {
+    "len": 0.47,
+    "speed": 1.02,
+    "text": "Oof!"
+   },
+   "D": {
+    "len": 0.47,
+    "speed": 1.08,
+    "text": "Oof!"
+   }
+  },
+  "pick": "A",
+  "why": "28 Nov, Tomas 'tu parink': shortest voiced part (290 ms, the spec's 0.25-0.35 s), pitch falls into air; B rises, C/D rise at the end"
+ },
+ "7.4g": {
+  "who": "DON",
+  "text": "Ungh! / Urgh!",
+  "note": "effort sound, not a line (28 Nov); Whisper can't score it: picked by ear in the cut",
+  "takes": {
+   "A": {
+    "len": 0.52,
+    "speed": 0.96,
+    "text": "Ungh!"
+   },
+   "B": {
+    "len": 0.45,
+    "speed": 1.08,
+    "text": "Ungh!"
+   },
+   "C": {
+    "len": 0.52,
+    "speed": 0.96,
+    "text": "Urgh!"
+   },
+   "D": {
+    "len": 0.47,
+    "speed": 1.08,
+    "text": "Urgh!"
+   }
+  },
+  "pick": "C",
+  "why": "28 Nov: 'Urgh!', the sharpest onset (50 ms), pitch falls 85->70 Hz (strain then release), voiced 450 ms"
  }
 }

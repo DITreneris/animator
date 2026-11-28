@@ -486,5 +486,58 @@ def pam_sheet(out=EP + "uptimez-pam-da-v3-sheet.png"):
     print("wrote", out)
 
 
+def client_sheet(out=EP + "uptimez-client-da-v1-sheet.png"):
+    """The Client in 15 (Tomas 28 Nov, /grill-me): the canon's garage owner, oil in the creases only (client_ps.CLEAN):
+    washed hands with dark crease lines, a clean white T-shirt, the red rag clean on his shoulder, no grease on his face.
+    Episode 14's filthy booth look stays in 14. His beats here: bored in Don's office, at the door for Pam's mug (3.3),
+    pointing (the plan, 7.3), and the hands up close against 14's."""
+    import client_ps as cp
+    W, H = 1500, 1000
+    s, c, k = _surf(W, H)
+    _t(c, 30, 46, "THE CLIENT · The Double Agent (15) · v1", 26, 1)
+    _t(c, 30, 70, "Owner of ten garages, not a mechanic under a car: canon client_ob (\"oil in the creases of his hands\"). Episode 14's"
+       " filthy booth look (black hands, palm print, cheek smear) stays in 14.", 11)
+    _t(c, 30, 88, "client_ps.CLEAN (opt-in, default off: 14 byte-identical); da_set turns it on for this episode.", 11)
+    F, S = 560, 0.60
+    _floor(c, 30, W - 30, F)
+    keep = cp.CLEAN[0]
+    try:
+        cp.CLEAN[0] = True
+        cp.client(k, 150, F, S, pose="open", face="bored", look=(1, 0))
+        _t(c, 70, F + 22, "office: bored, arms open", 11)
+        x = 420                                                                          # IK arms (of_cast), as the shots draw him
+        cp.cast_client(k, x, F, S, look=(-1, 0), face="bored", targets=[(x - 130, F - 230), (x + 40, F - 150)],
+                       hands={-1: "fist", 1: "fist"})
+        kit.ellipse(k, x - 146, F - 226, 14, 16, (0.83, 0.62, 0.16), 4890, lw=2)        # her mug in his hand
+        _t(c, x - 80, F + 22, "3.3 at the door: takes her mug", 11)
+        x = 720
+        cp.cast_client(k, x, F, S, look=(1, 0.6), face="bored", targets=[(x - 70, F - 120), (x + 150, F - 210)],
+                       hands={-1: "fist", 1: "point"}, aim=(x + 260, F - 180))
+        _t(c, x - 60, F + 22, "7.3 \"Don't lose it.\": points at the plan", 11)
+        x = 1000
+        cp.cast_client(k, x, F, S, look=(1, 0.4), face="confident", targets=[(x - 100, F - 190), (x + 100, F - 190)],
+                       hands={-1: "palm", 1: "palm"})
+        _t(c, x - 90, F + 22, "open palms: the plan's hand-over (the plan is the shot's)", 11)
+        for i, (clean, cap) in enumerate(((True, "15: washed, oil in the creases"), (False, "14: the booth (not used here)"))):
+            cp.CLEAN[0] = clean
+            x = 1230 + i * 150
+            c.save(); c.translate(x, 200); c.scale(2.2, 2.2)
+            cp._STYLE["now"] = "fist"
+            cp.hand(k, 0, 0, 22, cp.co.SKIN if clean else cp.OIL, 4801, (1, 0.2), 1)
+            c.restore()
+            _t(c, x - 70, 260, cap, 10)
+        cp.CLEAN[0] = True
+        _t(c, 1160, 140, "the hand, close", 13, 1)
+        F2, S2 = 900, 0.30                                                               # the phone check: feed size
+        _floor(c, 30, 700, F2)
+        for x in (90, 260, 430):
+            cp.client(k, x, F2, S2, pose="open", face="bored", look=(1, 0))
+        _t(c, 30, F2 + 22, "feed size: no dark blobs to read as gloves or a stain", 11)
+    finally:
+        cp.CLEAN[0] = keep
+    s.write_to_png(out)
+    print("wrote", out)
+
+
 if __name__ == "__main__":
-    {"father": father, "lineup": lineup, "don": don_sheet, "pam": pam_sheet}[sys.argv[1]]()
+    {"father": father, "lineup": lineup, "don": don_sheet, "pam": pam_sheet, "client": client_sheet}[sys.argv[1]]()

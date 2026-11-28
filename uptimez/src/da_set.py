@@ -22,6 +22,7 @@ import don_ps as dp
 import pm_ps as pm
 import sofia_ps as sp
 import client_ps as cps
+cps.CLEAN[0] = True   # Tomas 28 Nov (/grill-me): in episode 15 the Client is the canon's garage owner, oil in the creases only
 import dh_cast as dc
 from kit import Ctx, INK, rect
 
@@ -58,7 +59,9 @@ def _self_portrait(k, x, y, s):
     rect(k, x - w / 2 - 7 * s, y - 7 * s, w + 14 * s, h + 14 * s, (0.83, 0.66, 0.24), 5301, shadow=False, lw=2)
     rect(k, x - w / 2, y, w, h, (0.72, 0.82, 0.90), 5302, shadow=False, lw=1.5)
     c.save(); c.rectangle(x - w / 2, y, w, h); c.clip()
-    dp.don(k, x, y + h + 96 * s * 0.9, 0.34 * s, "stand", "smug" if "smug" in getattr(dp, "FACES", ()) else "neutral")
+    import da_hand_gate as g_                                  # a picture on the wall: its hands are not the cast's
+    with g_.paused():                                          # (28 Nov, the scene 1 gate: logged as LEGACY 'relax')
+        dp.don(k, x, y + h + 96 * s * 0.9, 0.34 * s, "stand", "smug" if "smug" in getattr(dp, "FACES", ()) else "neutral")
     c.restore()
 
 

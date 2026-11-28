@@ -62,7 +62,7 @@ def camera_of(sid):
     return got["cam"], got["fr"]
 
 
-def frame(cast, cam, office=None, tag=True, clips=12, dutch=0.0, back=()):
+def frame(cast, cam, office=None, tag=True, clips=12, dutch=0.0, back=(), haze=0.0, throne_dx=0, near=None):
     surf = cairo.ImageSurface(cairo.FORMAT_RGB24, L.W, L.H)
     c = cairo.Context(surf); k = Ctx(c, 0)
     c.set_source_rgb(*kit.WALL); c.paint()
@@ -70,8 +70,10 @@ def frame(cast, cam, office=None, tag=True, clips=12, dutch=0.0, back=()):
     if dutch:
         c.translate(270, 480); c.rotate(dutch); c.scale(1.12, 1.12); c.translate(-270, -480)
     L.sbv.view(c, *cam); ds._floor_on(c)
-    L.floor_world(k, cast=cast, tag=tag, clips=clips, office=office, back=back)
+    L.floor_world(k, cast=cast, tag=tag, clips=clips, office=office, back=back, haze=haze, throne_dx=throne_dx)
     c.restore()
+    if near:
+        near(k, cam)
     return surf
 
 
@@ -225,6 +227,104 @@ def test_d(t):
     return cast
 
 
+# ---- E: 1.2 the shin whack (Tomas 28 Nov, "aštrinam") -----------------------------------------------------------------------
+def test_e(t):
+    """1.2 as a hit, not a pose: anticipation (the stuck foot comes up, he looks down at the roll dangling off his sole),
+    the shake (the foot kicks out, the roll swings out and round on its tongue, a smear on the drawing before), the
+    contact on one drawing (the roll at his shin, the hit marks, his body jolts down, eyes screwed shut), then the hold
+    on the layout's key pose (s12: panic, the roll stuck at his shin) for "Oof"."""
+    s_ = SC["don"]
+    x, f = MARKS["don_hop"]
+    arm = (L.TX - 66 * L.TS, F - 150 * L.TS)
+    shin = (x - 18 * s_, f - 70 * s_)
+
+    def bez(p0, p1, p2, u):
+        return ((1 - u) ** 2 * p0[0] + 2 * u * (1 - u) * p1[0] + u * u * p2[0],
+                (1 - u) ** 2 * p0[1] + 2 * u * (1 - u) * p1[1] + u * u * p2[1])
+
+    def cast(k_):
+        c = k_.c
+        L.DON_FEET[0] = (x, f)
+        td = math.floor(t * DRAW) / DRAW
+        up = ease(seg(td, 0.0, 0.20))                                  # 3 drawings: the foot comes up, the roll hangs
+        kick = seg(td, 0.20, 0.40)                                     # 3 drawings: the shake, the swing
+        hit = td >= 0.40
+        knee = 0.45 + 0.55 * up if not hit else 1.0
+        if 0.20 <= td < 0.40:
+            knee = 1.0 - 0.35 * math.sin(math.pi * kick)               # the kick out and back
+        sole = L.sole_of(x, f, s_, knee)
+        hang = (sole[0] + 6, sole[1] + 34)
+        if td < 0.20:
+            roll = (hang[0] + 6 * math.sin(td * 40), hang[1])          # dangling
+        elif not hit:
+            roll = bez(hang, (sole[0] + 120, sole[1] - 110), (shin[0] + 6, shin[1]), ease(kick))
+        else:
+            roll = (shin[0] + 6, shin[1])
+        jolt = 0
+        if hit and td < 0.54:                                          # 2 drawings of the jolt
+            jolt = 7 if td < 0.47 else 3
+        face = "shock" if td < 0.20 else "panic" if td < 0.40 else ("squint" if td < 0.54 else "panic")
+        look = (0.4, 1.0) if td < 0.40 else (0.6, 0.6)
+        c.save(); c.translate(0, jolt)
+        shadow(k_, x, f + 2 - jolt, 40)
+        o = rig_hands(k_, lambda kk, a4: dp.don(kk, x, f, s_, a4, face, look, knee=knee, hands=False), s_,
+                      {1: dict(T=(arm[0] - 10, arm[1] + 4), pose="CLUTCH", out=1),
+                       -1: dict(T=(x - 70 * s_, f - (250 if hit else 200) * s_), pose="PALM", out=-1)})
+        c.restore()
+        if 0.33 <= td < 0.40:                                          # the smear on the drawing before the hit
+            c.set_source_rgba(*L.INK, 0.55); c.set_line_width(2.0); c.set_line_cap(1)
+            for i in range(3):
+                pa = bez(hang, (sole[0] + 120, sole[1] - 110), (shin[0] + 6, shin[1]), 0.35 + 0.12 * i)
+                c.new_path(); c.move_to(*pa); c.line_to(roll[0] + 10, roll[1] - 4 + 6 * i); c.stroke()
+            c.set_line_cap(0)
+        L.roll_at(k_, roll[0], roll[1] + 18)
+        dp._cap(c, [(sole[0] - 2, sole[1] - 2), ((sole[0] + roll[0]) / 2 + 6, (sole[1] + roll[1]) / 2 + 14),
+                    (roll[0] + 12, roll[1] - 6)], 6, L.pss.TAPE, lw=1.4)               # the sticky tongue
+        if hit and td < 0.60:                                          # the hit marks: 3 drawings
+            c.set_source_rgb(*L.INK); c.set_line_width(2.6); c.set_line_cap(1)
+            for a_ in (-2.6, -2.1, -1.6, 2.4, 2.0):
+                r0, r1 = 22, 40 if td < 0.47 else 32
+                c.new_path(); c.move_to(shin[0] + r0 * math.cos(a_), shin[1] + 18 + r0 * math.sin(a_))
+                c.line_to(shin[0] + r1 * math.cos(a_), shin[1] + 18 + r1 * math.sin(a_)); c.stroke()
+            c.set_line_cap(0)
+        return {"don": _head(o, "don")}
+    return cast
+
+
+# ---- F: 1.3 the release (Tomas 28 Nov, "aštrinam") ------------------------------------------------------------------------
+def test_f(t):
+    """1.3, one thing at a time: Father's heels heard off screen; the robot lets go at once (hands up); the throne,
+    pulled only by Don now, lurches to his side and Don goes back with it in two hops on one leg; he lands frozen on one
+    leg (the layout's key pose); only then do the polished shoes step over the tape in front of him."""
+    s_ = SC["don"]
+    x0, f = MARKS["don_hop"]
+
+    def cast(k_):
+        h = {}
+        td = math.floor(t * DRAW) / DRAW
+        rel = td >= 0.13                                               # the robot lets go (2 drawings of pull first)
+        hop = seg(td, 0.20, 0.53)                                      # two hops back over 5 drawings
+        x = x0 + 64 - 64 * ease(hop)                                   # he starts 64 forward (pulling), ends on his mark
+        lift = 34 * abs(math.sin(math.pi * 2 * hop)) if 0 < hop < 1 else 0
+        if rel:
+            h["robot"] = L.robot(k_, (590, F + 18), look=(1, 0), tilt=-0.05,
+                                 arms=((-150, 25), (150, -25)) if td < 0.60 else None)
+        else:
+            h["robot"] = L.robot(k_, (590, F + 18), look=(-1, 0), tilt=0.14, arms=((-82, -8), (8, 0)))
+        shadow(k_, x, f + 2, 40 - lift * 0.6)
+        k_.c.save(); k_.c.translate(0, -lift)
+        lean = -0.10 * math.sin(math.pi * hop) if 0 < hop < 1 else 0.0
+        face = "shock" if td < 0.53 else "shock"
+        pose = "balance"
+        o = L.tilted(k_, x, f, lean - (0.12 if not rel else 0.0),
+                     lambda: dp.don(k_, x, f, s_, pose, face, (1, -0.6) if td >= 0.53 else (-1, -0.2), knee=0.7))
+        k_.c.restore()
+        L.DON_FEET[0] = (x, f)
+        h["don"] = _head(o, "don")
+        return h
+    return cast
+
+
 TESTS = {
     "A": dict(sid="5.3", fn=test_a, dur=1.3, kw=dict(office=dict(client="seated", sofia=True, mug=True), clips=8),
               dutch=0.12, title="5.3 the slip"),
@@ -233,6 +333,9 @@ TESTS = {
     "C": dict(sid="7.2", fn=test_c, dur=1.4, kw=dict(office=dict(client="seated", sofia=True, roll="held"), clips=1),
               title="7.2 the doorman"),
     "D": dict(sid="6.5", fn=test_d, dur=1.5, kw=dict(clips=6), title="6.5-6.7 Pam's choice"),
+    "E": dict(sid="1.2", fn=test_e, dur=0.8, kw=dict(tag=False, clips=0), title="1.2 the shin whack", v=2),
+    "F": dict(sid="1.3", fn=test_f, dur=1.2, kw=dict(tag=False, clips=0, haze=0.18), title="1.3 the release", v=2,
+              near=(0.60, 0.80)),
 }
 
 
@@ -246,13 +349,21 @@ def build(name):
         cam = (MARKS["mom_wall"][0] - 60, F - 120, cam[2] * 0.85)
     elif name == "C":                                                 # his bow whole and the door
         pass                                                          # the layout's own MC framing (camera_of)
-    out = os.path.join(EP, "da_motion_%s_v5.mp4" % name)
+    out = os.path.join(EP, "da_motion_%s_v%d.mp4" % (name, spec.get("v", 5)))
     tmp = "/tmp/da_motion_%s" % name; os.makedirs(tmp, exist_ok=True)
     n = int(spec["dur"] * FPS)
     with ds.no_badges(), L.don_legs(), L.sofia_lib_hands(), L.face_guard():
         for i in range(n):
             t = i / FPS
-            surf = frame(spec["fn"](t), cam, dutch=spec.get("dutch", 0.0), **spec["kw"])
+            kw = dict(spec["kw"])
+            if name == "F":                                           # the throne goes with Don; then the shoes step in
+                kw["throne_dx"] = int(round(50 * (1 - ease(seg(t, 0.13, 0.40))))) if t >= 0.13 else 50
+                u = ease(seg(math.floor(t * DRAW) / DRAW, *spec["near"]))
+                if u > 0:
+                    def near(k_, cam_, u=u):
+                        k_.c.save(); k_.c.translate(300 * (1 - u), -10 * math.sin(math.pi * u)); L.father_step(k_, cam_); k_.c.restore()
+                    kw["near"] = near
+            surf = frame(spec["fn"](t), cam, dutch=spec.get("dutch", 0.0), **kw)
             surf.write_to_png(os.path.join(tmp, "%03d.png" % i))
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-framerate", str(FPS), "-i", os.path.join(tmp, "%03d.png"),
                     "-vf", "format=yuv420p", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", out], check=True)
@@ -263,7 +374,7 @@ def build(name):
     for j, i in enumerate(picks):
         im = Image.open(os.path.join(tmp, "%03d.png" % i)).convert("RGB").resize((tw, th), Image.LANCZOS)
         S.paste(im, (6 + j * (tw + 6), 28)); d.text((8 + j * (tw + 6), 6), "%d" % (j + 1), fill=(20, 20, 20))
-    png = os.path.join(EP, "da_motion_%s_v5_8fps.png" % name)
+    png = os.path.join(EP, "da_motion_%s_v%d_8fps.png" % (name, spec.get("v", 5)))
     S.save(png)
     print("wrote", out, png, n, "frames")
     return out, png

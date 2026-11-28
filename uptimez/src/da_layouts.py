@@ -293,10 +293,75 @@ class sofia_lib_hands(object):
 
 
 # ---- the state of the floor (what the film has changed so far) ---------------------------------------------------------
+NO_CONFETTI = [True]   # Tomas 28 Nov: the floor shots without episode 9's blue strips (5.2 "as built" and S8r untouched)
+TAG_V2 = [True]   # Tomas 28 Nov (/grill-me, da_tag_options_v2.png, "A"): the tag is a swing ticket like the price;
+                  # False draws v1 (a stick over the crown's ball, the card stuck on), as the approved layouts had it
+
+
+TAG_CORDS = {"A": ((0.93, 0.76, 0.28), (0.55, 0.40, 0.10)), "B": ((0.80, 0.12, 0.16), (0.55, 0.06, 0.08))}
+
+def review_tag(k, x, y, s, style="A", ang=0.0):
+    """REVIEW · TOMORROW as a swing ticket, hung like the price (dh_props._price_tag v2): a loop of cord round the crown
+    point, two strands to a knot, a card with cut corners, an eyelet, a rule; style A gold cord, B red cord, C one thread."""
+    c = k.c
+    c.save(); c.translate(x, y); c.scale(s, s)
+    if style in ("A", "B"):
+        CORD, CORD_D = TAG_CORDS[style]
+        c.set_line_cap(1)
+        for col, lw in ((INK, 6.5), (CORD, 3.5)):                 # the loop round the ball
+            c.set_source_rgb(*col); c.set_line_width(lw)
+            c.save(); c.translate(0, 20); c.scale(1, 0.45); c.arc(0, 0, 9, 0, 2 * math.pi); c.restore(); c.stroke()
+        c.rotate(ang); ln = 26
+        for col, lw in ((INK, 5.5), (CORD, 3.0)):
+            c.set_source_rgb(*col); c.set_line_width(lw)
+            for sx in (-1, 1):
+                c.move_to(0, 24); c.curve_to(sx * 9, 24 + ln * 0.35, sx * 7, 24 + ln * 0.8, 0, 24 + ln + 9); c.stroke()
+        kit.ellipse(k, 0, 24, 5, 4.5, CORD, 4601, shadow=False, lw=1.8)
+        c.translate(0, 24 + ln)
+    else:
+        CORD, CORD_D = (0.25, 0.22, 0.20), (0.55, 0.40, 0.10)
+        c.set_source_rgb(*INK); c.set_line_width(2.2); c.set_line_cap(1)
+        c.save(); c.translate(0, 20); c.scale(1, 0.45); c.new_path(); c.arc(0, 0, 8, 0, 2 * math.pi); c.restore(); c.stroke()
+        c.rotate(ang + 0.12); ln = 30
+        c.move_to(0, 24); c.line_to(0, 24 + ln + 8); c.stroke()
+        c.translate(0, 24 + ln)
+    W, H = 104, 58
+    kit.cut(k, [(-W / 2, 8), (-W / 2 + 10, 0), (W / 2 - 10, 0), (W / 2, 8), (W / 2, H), (-W / 2, H)], (0.99, 0.97, 0.90), lw=2.6)
+    c.set_source_rgb(*CORD_D); c.set_line_width(1.6)
+    c.move_to(-W / 2 + 6, 15); c.line_to(W / 2 - 6, 15); c.line_to(W / 2 - 6, H - 6); c.line_to(-W / 2 + 6, H - 6); c.close_path(); c.stroke()
+    kit.ellipse(k, 0, 8, 5.5, 5.5, CORD if style != "C" else (0.75, 0.62, 0.30), 4602, shadow=False, lw=1.8)
+    kit.ellipse(k, 0, 8, 2.2, 2.2, (0.20, 0.16, 0.10), 4603, shadow=False, outline=False)
+    c.select_font_face(kit.FONT); c.set_font_size(14); c.set_source_rgb(0.72, 0.08, 0.12)
+    for txt, yy in (("REVIEW", 32), ("TOMORROW", 48)):
+        e = c.text_extents(txt); c.move_to(-e.x_advance / 2, yy); c.show_text(txt)
+    c.restore()
+
+
 def tag_on_back(k):
     """REVIEW · TOMORROW on the throne's back, from 1.3b on (seen from the street side: its back), hung from the crown's
-    left point, clear of the robot's card (episode 14's) and of the price tag's blank back on the right."""
+    left point, clear of the robot's card (episode 14's) and of the price tag's blank back on the right. v2 (TAG_V2):
+    the price's swing ticket, a gold cord looped round the point."""
+    if TAG_V2[0]:
+        return review_tag(k, TX - 56 * TS, F - 432 * TS - 8, 0.55 * TS / 0.6 * 0.95, "A")
     dsh._tag(k, TX - 56 * TS, F - 432 * TS, 0.55 * TS / 0.6)
+
+
+CLIPS_V3 = [True]   # Tomas 28 Nov ("darom", cold test s1 v1: "grey specks" to both viewers): each clip drawn twice,
+                    # an ink outline under a bright silver wire, and CLIP_S 0.55 -> 0.70 (the 27 Nov audit's 0.9 read
+                    # as confetti, 3.5x a real clip next to Don; 0.70 stays under it)
+CLIP_SILVER = (0.88, 0.90, 0.94)
+_paperclip0 = sd.paperclip
+
+
+def _paperclip3(k, x, y, s=1.0, ang=0.0, col=None, lw=1.3):
+    if not CLIPS_V3[0]:
+        return _paperclip0(k, x, y, s, ang, **({} if col is None else {"col": col}), lw=lw)
+    s = s * 0.70 / 0.55
+    _paperclip0(k, x, y, s, ang, col=kit.INK, lw=lw * 2.4)
+    _paperclip0(k, x, y, s, ang, col=CLIP_SILVER if col is None else col, lw=lw * 1.1)
+
+
+sd.paperclip = _paperclip3
 
 
 def clips_on_floor(k, n, seed=4710):
@@ -316,11 +381,51 @@ def clips_on_floor(k, n, seed=4710):
         sd.CLIPS_V2[0] = old
 
 
-def roll_at(k, x, floor, up=0.0):
-    """Don's tape roll (episode 14's): on its edge at (x, floor); up > 0 lifts it on his sole."""
+ROLL_V2 = [True]   # Tomas 28 Nov ("darom", cold test s1 v1: both viewers took the roll for the throne's caster wheel):
+                   # the roll reads as tape: wound layers, a cardboard core; False draws v1
+CORE = (0.80, 0.64, 0.44)
+
+
+def roll_at(k, x, floor, up=0.0, rot=0.0):
+    """Don's tape roll (episode 14's): on its edge at (x, floor); up > 0 lifts it on his sole. v2: the wound layers
+    (two darker rings), a fat cardboard core, the hole."""
     c = k.c
-    kit.ellipse(k, x, floor - 18 - up, 18, 18, pss.TAPE, 4720, shadow=False, lw=2)
-    kit.ellipse(k, x, floor - 18 - up, 8, 8, kit.WALL, 4721, shadow=False, lw=1.6)
+    cy = floor - 18 - up
+    if not ROLL_V2[0]:
+        kit.ellipse(k, x, cy, 18, 18, pss.TAPE, 4720, shadow=False, lw=2)
+        kit.ellipse(k, x, cy, 8, 8, kit.WALL, 4721, shadow=False, lw=1.6)
+        return
+    kit.ellipse(k, x, cy, 19, 19, pss.TAPE, 4720, shadow=False, lw=2.2)
+    c.set_source_rgb(0.78, 0.58, 0.06); c.set_line_width(1.0)
+    for r_ in (16.0, 13.5):
+        c.new_path(); c.arc(x, cy, r_, 0, 2 * math.pi); c.stroke()
+    c.set_source_rgba(1, 1, 1, 0.75); c.set_line_width(2.0); c.set_line_cap(1)
+    c.new_path(); c.arc(x, cy, 17.2, -2.6, -1.7); c.stroke(); c.set_line_cap(0)     # the shine stays: the light's
+    kit.ellipse(k, x, cy, 11, 11, CORE, 4722, shadow=False, lw=1.6)
+    kit.ellipse(k, x, cy, 6.5, 6.5, kit.WALL, 4721, shadow=False, lw=1.4)
+    if rot:                                                    # rolling (28 Nov audit): the core's seam and the tape's
+        c.set_source_rgb(*kit.INK); c.set_line_width(1.6); c.set_line_cap(1)   # end turn with it
+        c.new_path(); c.move_to(x + 6.5 * math.cos(rot), cy + 6.5 * math.sin(rot))
+        c.line_to(x + 11 * math.cos(rot), cy + 11 * math.sin(rot)); c.stroke()
+        a2 = rot + 2.2
+        c.new_path(); c.move_to(x + 14 * math.cos(a2), cy + 14 * math.sin(a2))
+        c.line_to(x + 19.5 * math.cos(a2), cy + 19.5 * math.sin(a2)); c.stroke(); c.set_line_cap(0)
+
+
+def tape_strip(k, pts, w=9.0):
+    """the roll's free end as flat tape (28 Nov): a band w wide along pts (a polyline), the line's yellow, an ink edge,
+    a shine down its middle: tape, not a string."""
+    c = k.c
+    c.set_line_join(1); c.set_line_cap(0)
+    for col, lw in ((kit.INK, w + 3.0), (pss.TAPE, w)):
+        c.set_source_rgb(*col); c.set_line_width(lw); c.new_path(); c.move_to(*pts[0])
+        for p in pts[1:]:
+            c.line_to(*p)
+        c.stroke()
+    c.set_source_rgba(1, 1, 1, 0.7); c.set_line_width(1.6); c.new_path(); c.move_to(*pts[0])
+    for p in pts[1:]:
+        c.line_to(*p)
+    c.stroke(); c.set_line_join(0)
 
 
 # ---- the ground gate (Tomas 27 Nov: "Blogai, kabo ore zmones ir daiktai") -------------------------------------------------
@@ -455,6 +560,9 @@ def floor_world(k, cast, spun=True, tag=False, clips=0, inside=True, haze=0.0, o
         return run
     keep = ds.INSIDE[0]; ds.INSIDE[0] = office                 # the office behind the glass in this shot's state
     keep_t = pss.THRONE
+    keep_conf = pss.s4.s3.confetti
+    if NO_CONFETTI[0]:                                         # Tomas 28 Nov: episode 9's blue strips under the throne go
+        pss.s4.s3.confetti = lambda *a, **kw: None             # (no story use here; ep 14's viewers asked "blue squiggles?")
     if throne_dx:                                              # 7.4: rolled toward the gap (SET_MOVES: the episode's one)
         pss.THRONE = (TX + throne_dx, keep_t[1], keep_t[2])
     try:
@@ -463,6 +571,7 @@ def floor_world(k, cast, spun=True, tag=False, clips=0, inside=True, haze=0.0, o
     finally:
         ds.INSIDE[0] = keep
         pss.THRONE = keep_t
+        pss.s4.s3.confetti = keep_conf
     ds._tape_seam(k.c)
     c = k.c                                                    # the throne's casters on the floor: a contact shadow
     c.set_source_rgba(0, 0, 0, 0.16); c.save(); c.translate(TX, F + 12); c.scale(96 * TS, 6); c.new_path()
@@ -959,7 +1068,7 @@ STREAM = [(0.0, 0.0)]
 
 def s33(k):
     """3.3 S7 M: at the office door the Client, half in the gap (the door's frame over his near side), takes her mug
-    with his oily hand; Pam's hand still on it; Mom behind her desk rising (in the scene, not required in frame).
+    with his hand; Pam's hand still on it; Mom behind her desk rising (in the scene, not required in frame).
     27 Nov (Tomas: "kabo ore"): everyone on the floor or behind the counter; the mug in both their hands."""
     def mom_back(k_):
         return {"mom": mom(k_, "mom_desk_s", "fists", "glare", look=(1, 0))}
@@ -981,7 +1090,7 @@ def s33(k):
         ds.MUG_V2[0] = True
         ds.pam_mug(k_, mx, my, 0.9)
         fx_, fy_ = mx + 16, my - 18
-        kit.ellipse(k_, fx_, fy_, 8, 7, (0.80, 0.68, 0.56), 4840, shadow=False, lw=1.4)       # his oily fingers on it
+        kit.ellipse(k_, fx_, fy_, 8, 7, (0.80, 0.68, 0.56), 4840, shadow=False, lw=1.4)       # his fingers on it
         kit.ellipse(k_, fx_ + 2, fy_ + 9, 7, 6, (0.80, 0.68, 0.56), 4842, shadow=False, lw=1.4)
         touch(fx_, fy_)
         h["mug"] = (mx, my - 14, 16)
@@ -1678,12 +1787,17 @@ _DON0, _PAM0 = dp.don, pm.pam                                  # the rigs themse
 
 
 def _face_px(rig, face):
+    """(28 Nov: a scratch drawing: the hand gate paused. It used to run the first time a face was asked, in the middle of
+    a shot's draw, inside rig_hands' hand swap: that drawing's hands came out wrong (the scene 1 gate, 1.2). The
+    guard now measures every face before drawing: face_guard.__enter__.)"""
+    import da_hand_gate as g_
     surf = cairo.ImageSurface(cairo.FORMAT_RGB24, 200, 260); c = cairo.Context(surf); c.set_source_rgb(1, 1, 1); c.paint()
     k = Ctx(c, 0)
-    if rig == "don":
-        _DON0(k, 100, 250, 0.6, "stand", face)
-    else:
-        _PAM0(k, 100, 250, 0.54, "stand", face, mug=False)
+    with g_.paused():
+        if rig == "don":
+            _DON0(k, 100, 250, 0.6, "stand", face)
+        else:
+            _PAM0(k, 100, 250, 0.54, "stand", face, mug=False)
     surf.flush()
     return bytes(surf.get_data())
 
@@ -1698,6 +1812,7 @@ def face_known(rig, face):
 
 
 FACES_DON = ("neutral", "confused", "pleased", "grin", "happy", "panic", "shock", "smug", "squint")   # measured 27 Nov
+FACES_PAM_WARM = ("neutral", "doubt", "peer", "quiet", "hopeful", "pressed", "shock", "smile", "worried", "sad")
 FACES_NOTE = "squint draws shut eyes: it reads as asleep (lesson: eyes open for 'approves without looking')"
 
 
@@ -1705,6 +1820,10 @@ class face_guard(object):
     """while drawing: every face asked of Don's and Pam's rigs is logged; render() fails on one they don't have."""
     def __enter__(self):
         self.bad = []
+        for f_ in FACES_DON:                                   # measured now, never in the middle of a shot's draw
+            face_known("don", f_)
+        for f_ in FACES_PAM_WARM:
+            face_known("pam", f_)
         self.d, self.p = dp.don, pm.pam
         guard = self
 

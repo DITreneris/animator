@@ -46,6 +46,8 @@ CANON_JOBS = ("quiet", "point", "point_t", "grab", "clutch", "pinch", "fist", "p
               "handle_grip", "board_two", "tap_insert", "robot_rest", "robot_grip")
 PENDING = ("pinch_pinky", "saucer_hold")                         # new rows tested in this film, awaiting the canon table
 LEGACY = ("relax", "relax_s", "cup", "tuck", "two", "two_s", "salute", "point_s", "beckon")
+LIB_JOB = {"RELAXED": "quiet", "GRAB": "grab", "CLUTCH": "clutch", "PINCH": "pinch", "PALM": "palm", "FIST": "fist",
+           "CUP_GRIP": "pinch_pinky", "SAUCER_SUPPORT": "saucer_hold"}   # hand_lib_v4's poses -> the canon table's jobs
 HOLDING = ("grab", "pinch", "clutch", "phone_grip", "handle_grip") + PENDING
 ROBOT_SKIN = (0.36, 0.38, 0.43)                                  # waiter_kit.STEEL_DARK: the robot's arms pass it as skin
 METAL = (0.55, 0.58, 0.62)                                       # the canon sheet's robot metal
@@ -70,6 +72,14 @@ def _real(c):
 
 
 # ---- declarations (written before the drawing) ---------------------------------------------------------------------
+
+NO_HANDS = [False]
+
+
+def nohands():
+    """a drawing declared with no hand in it (28 Nov, animation: a hand leaves the frame): any hand drawn fails JOB."""
+    NO_HANDS[0] = True
+
 
 def jobs(*rows):
     """rows: (who, side, job, canon row). side "L"/"R" = screen left/right."""
@@ -114,7 +124,7 @@ def misreads(d):
 def reset():
     for l_ in (HANDS, ARMS, ROBOT, PROPS, SOLIDS, JOBS, LAYERS, FEET):
         del l_[:]
-    COLORS.clear(); MISREADS.clear()
+    COLORS.clear(); MISREADS.clear(); NO_HANDS[0] = False
     import of_cast as oc
     del oc.GRIP_LOG[:]
 
@@ -197,6 +207,18 @@ def install():
             HANDS.append(dict(g=g, at=_f(c, hx, hy), d=(ux / n, uy / n), d_user=tuple(d), arm=arm, w=w * c.get_matrix()[0] / S[0]))
         return inner(k, g, hx, hy, w, skin, d, arm)
     hp.draw = draw
+    import hand_lib_v4 as hl                                     # 28 Nov: the episode's library hands (rig_hands) were
+    inner_lr = hl.draw_lr                                        # drawn past the gate: logged now, by their canon job
+
+    def draw_lr(k, pose, x, y, d, w, skin, arm, *a, **kw):
+        c = k.c
+        if not _IN_REDRAW[0] and _real(c):
+            ux, uy = c.user_to_device_distance(*d)
+            n = math.hypot(ux, uy) or 1.0
+            HANDS.append(dict(g=LIB_JOB.get(pose, pose), at=_f(c, x, y), d=(ux / n, uy / n), d_user=tuple(d), arm=arm,
+                              w=w * c.get_matrix()[0] / S[0], lib=pose))
+        return inner_lr(k, pose, x, y, d, w, skin, arm, *a, **kw)
+    hl.draw_lr = draw_lr
     for name in ("redraw_at", "redraw_late"):
         orig = getattr(hp, name)
 
@@ -245,11 +267,11 @@ def check(tol=3.0):
         HANDS[:] = [h for h in HANDS if h not in off]
     grips = [dict(g, at=(g["at"][0] / S[0], g["at"][1] / S[0])) for g in oc.GRIP_LOG]
     # JOB: the hands drawn are the hands listed
-    if not JOBS:
+    if not JOBS and not NO_HANDS[0]:
         out.append("JOB no job list: every hand needs its job and its canon row written before the drawing")
     drawn = sorted([h["g"] for h in HANDS] + [g["kind"] for g in grips if g["kind"] in CANON_JOBS + PENDING] + [r["job"] for r in ROBOT])
     listed = sorted(j[2] for j in JOBS)
-    if JOBS and drawn != listed:
+    if (JOBS or NO_HANDS[0]) and drawn != listed:
         out.append("JOB drawn %s, listed %s" % (drawn, listed))
     for j in JOBS:
         if j[2] not in CANON_JOBS + PENDING:

@@ -117,7 +117,7 @@ TEXT = {'1.1': {'script': 1.4,
  '3.3': {'script': 2.4,
          'setup': 'S7 · W',
          'picture': "Pam carries both past Mom's desk toward Don; the office door opens a hand's width; **the "
-                    "Client's oily hand takes her mustard mug** and turns back inside with it. **Pam follows her mug "
+                    "Client's hand takes her mustard mug** and turns back inside with it. **Pam follows her mug "
                     "on reflex**, Don's cup still in her other hand (nobody pulls her: the first crossing is an "
                     'accident). **Mom stands up**, her knitting still in one hand',
          'reaction': '—',
