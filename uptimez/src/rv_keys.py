@@ -38,9 +38,9 @@ def _card_under_caster(k, x, y, s=1.0):
     """REVIEW · TOMORROW folded twice into a wedge, its red letters on the visible fold."""
     c = k.c
     c.save(); c.translate(x, y); c.scale(s, s)
-    kit.cut(k, [(-22, 0), (24, 0), (20, -9), (-18, -11)], pr.PAPER, lw=1.8, shadow=False)
+    kit.cut(k, [(-27, 0), (30, 0), (26, -9), (-23, -11)], pr.PAPER, lw=1.8, shadow=False)   # v5: wider ("the word sticks out")
     c.select_font_face(kit.FONT); c.set_font_size(6.5); c.set_source_rgb(*pr.RED)
-    c.move_to(-14, -3); c.show_text("TOMORROW")
+    e = c.text_extents("TOMORROW"); c.move_to(1.5 - e.x_advance / 2, -3); c.show_text("TOMORROW")
     c.restore()
 
 
@@ -101,27 +101,82 @@ def _gripper(k, tx, ty, reach=1.0):
                 shadow=False)
 
 
-def k1(out=EP + "rv_K1_v2.png"):
-    cam = (478, 756, 4.0)                                    # v1c: the caster low in frame, his lap at the top edge
+def _robot_arm_from_behind(k, tip, behind=True, side=1):
+    """the robot's own arm style (thin grey segments, a round joint, its small jaws), coming out from BEHIND the throne's
+    base: behind=True draws the hidden first segment (before the throne), False the visible rest (after it).
+    side=1 from the right (jaws pointing left), -1 from the left (v4b: away from the throne's red lever)."""
+    c = k.c
+    tx, ty = tip
+    p0, p1 = (tx - 40 * side, ty - 34), (tx - 6 * side, ty - 22)
+    if behind:
+        segs = [((tx - 80 * side, ty - 46), p0)]
+    else:
+        segs = [(p0, p1), (p1, (tx + 6 * side, ty - 3))]
+    for (ax, ay), (bx, by) in segs:
+        for col, wdt in ((kit.INK, 10), (STEEL, 6.5)):
+            c.set_source_rgb(*col); c.set_line_width(wdt); c.set_line_cap(1); c.move_to(ax, ay); c.line_to(bx, by); c.stroke()
+    if not behind:
+        kit.ellipse(k, p1[0], p1[1], 6, 6, STEEL_D, 3, shadow=False, lw=1.6)
+        for dy in (-6, 1):
+            x0, x1 = sorted((tx + 2 * side, tx + 12 * side))
+            kit.cut(k, [(x0, ty + dy), (x1, ty + dy), (x1, ty + dy + 3), (x0, ty + dy + 3)], STEEL, lw=1.2, shadow=False)
+
+
+def _no_hr_badge():
+    """the robot without its HR badge (Sofía has it from 2.5): robot_mf.robot (which robot_ps calls) with badge=False
+    while it draws."""
+    rm = rp.dq.rm
+    old = rm.robot
+
+    class _C:
+        def __enter__(self):
+            rm.robot = lambda *a, **kw: old(*a, **dict(kw, badge=False))
+
+        def __exit__(self, *a):
+            rm.robot = old
+    return _C()
+
+
+def _don_head(k, x, y, rr):
+    """Don's own rig, small, his head centred in a screen's circle (its head is at -302 units, about 62 round)."""
+    s_ = rr / 62.0 * 1.12
+    dp.don(k, x, y + 302 * s_, s_, "stand", "neutral", look=(0, 0))
+
+
+def k1(out=EP + "rv_K1_v6.png"):
+    """v4 (Tomas 28 Nov "Go 1"): a medium on the whole throne with Don asleep in it (the pose sandbox's don_seated,
+    rv_poses v1), REVIEW · TOMORROW folded under the front-right caster. The robot is hidden behind the throne (its
+    badge is on its chest at frame 0, not at the end: nothing of its chest may show); its screen's glow spills round
+    the throne's back, and its own thin arm reaches out from behind the base to the card."""
+    import rv_poses as rpo
+    nc.NO_THRONE_CONFETTI[0] = True
+    cam = (454, 756, 1.96)                                    # G3: the plaque above the frame, the DON mark and arrow whole
+    card = (TX - 80, F + 4)                                 # v4b: the front-LEFT caster (2 of 2: the red lever read
+                                                             # as part of the arm), the card larger ("tiny")
 
     def draw(k):
         nc._room(k, pam_behind=False)
-        if nc._PASS[0] == "mask":                            # the people (the cast-light mask): his legs, hand
-            _lap(k); _legs(k); _hanging_hand(k); return
-        nc._shadow(k, TX, TF, 70)
-        pss.throne(k)                                        # G3 (v2): the frame sits between the $49,999 tag above and
-        _lap(k)                                              # the floor's DON mark below, both out
-        _legs(k)
-        _hanging_hand(k)
-        _card_under_caster(k, TX - 12, F + 4)
-        _gripper(k, TX + 20, F + 2)                          # v2: the jaws past the card's last letter
-    glows = [(600, F - 40, 70, 60, bp.NIGHT_MONITOR, 0.45)]  # UPTIME 100%, the robot's face out of frame right
-    lights = [(600, F - 40, 160, 1.0), (nc.DOOR[0], nc.DOOR[1], 260, 0.4)]
-    nc._frame(cam, draw, glows, lights, out, cast=nc.LOCK_CAST)
+        if nc._PASS[0] != "mask":
+            _robot_arm_from_behind(k, (card[0] - 38, card[1] - 2), behind=True, side=-1)
+            nc._shadow(k, TX, TF, 70)
+            pss.throne(k)
+            _card_under_caster(k, card[0], card[1], 1.45)
+        rpo.don_sprawl(k, "B", report=True)                 # v6 (Tomas 28 Nov, after four rounds of the front-on seat
+                                                             # read as "standing"): asleep across the throne, chin down,
+                                                             # the report on his belly; silhouette test B: "dozed" 2 of 2
+        if nc._PASS[0] != "mask":
+            _robot_arm_from_behind(k, (card[0] - 38, card[1] - 2), behind=False, side=-1)
+    glows = [(TX - 70, SEAT[1] - 60, 70, 90, bp.NIGHT_MONITOR, 0.40)]   # UPTIME's glow, from behind the throne's left side
+    lights = [(TX - 70, SEAT[1] - 60, 180, 1.0), (nc.DOOR[0], nc.DOOR[1], 260, 0.4)]
+    try:
+        nc._frame(cam, draw, glows, lights, out, cast=nc.LOCK_CAST)
+    finally:
+        nc.NO_THRONE_CONFETTI[0] = False
 
 
-def k2(out=EP + "rv_K2_v2.png"):
-    cam = (470, 800, 1.62)                                   # v1c: the portrait's plaque out (G3: whole or out)
+def k2(out=EP + "rv_K2_v3.png"):
+    nc.NO_THRONE_CONFETTI[0] = True
+    cam = (458, 770, 1.90)                                   # v1c: the portrait's plaque out (G3: whole or out)
     st = {}
 
     def draw(k):
@@ -129,22 +184,26 @@ def k2(out=EP + "rv_K2_v2.png"):
         if nc._PASS[0] != "mask":
             nc._shadow(k, TX, TF, 70)
             pss.throne(k)
-        r = rp.robot(k, SEAT[0], SEAT[1] + 4, nc.L.SC["robot"], look=(1, 0))      # set on the cushion, wheel at its edge
+        with _no_hr_badge():                                 # v3: Sofía has had its HR badge since 2.5 (the review)
+            r = rp.robot(k, SEAT[0], SEAT[1] + 4, nc.L.SC["robot"], look=(1, 0))  # set on the cushion, wheel at its edge
         if nc._PASS[0] != "mask":
             sx, sy = r["screen"][:2]
-            pr.screen(k, sx, sy, 50 * nc.L.SC["robot"] * 1.16, "APPROVER: CEO")   # v2: larger (2 of 2 "small")
+            pr.screen(k, sx, sy, 50 * nc.L.SC["robot"] * 1.16, "APPROVER: CEO", face_fn=_don_head)   # v3: Don's own head
             st["screen"] = (sx, sy)
-        nc._shadow(k, 590, F + 40, 30)
-        dc.father(k, 590, F + 38, nc.L.SC["father"], look=(-1, 0))   # v2: on the tape (Father's side)
-        nc._shadow(k, 352, F + 60, 34)
-        dp.don(k, 352, F + 58, nc.L.SC["don"], (-6, -8, 62, 84), "neutral", look=(1, -0.3), hands=("relax", "point"))   # v2: Don on HIS side
+        nc._shadow(k, 556, F + 40, 30)
+        dc.father(k, 556, F + 38, nc.L.SC["father"], look=(-1, 0))   # v2: on the tape (Father's side)
+        nc._shadow(k, 372, F + 60, 34)
+        dp.don(k, 372, F + 58, nc.L.SC["don"], (-6, -8, 62, 84), "neutral", look=(1, -0.3), hands=("relax", "point"))   # v2: Don on HIS side
                                                              # of the tape, by the arrow (2 of 2: "the arrow points away from Don")
     probe = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4)), 0)
     probe.c.save(); import fs_storyboard_v17 as sbv; sbv.view(probe.c, *cam); draw(probe); probe.c.restore()
     sx, sy = st["screen"]
     glows = [(sx, sy, 44, 40, bp.NIGHT_MONITOR, 0.50)]
     lights = [(sx, sy, 180, 1.0), (nc.DOOR[0], nc.DOOR[1], 260, 0.5)]
-    nc._frame(cam, draw, glows, lights, out, cast=nc.LOCK_CAST)
+    try:
+        nc._frame(cam, draw, glows, lights, out, cast=nc.LOCK_CAST)
+    finally:
+        nc.NO_THRONE_CONFETTI[0] = False
 
 
 if __name__ == "__main__":

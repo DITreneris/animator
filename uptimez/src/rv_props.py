@@ -55,12 +55,14 @@ def folding_chair(k, x, feet, s=1.0, state="open"):
         kit.cut(k, [(-9, -86), (9, -86), (9, -52), (-9, -52)], SEAT, lw=2.2)                         # the seat, folded up
         _line(c, [(-12, -4), (12, -70)], 3.5, STEEL); _line(c, [(12, -4), (-12, -70)], 3.5, STEEL)
         c.restore(); return
-    if state == "wobble":
-        c.rotate(math.radians(-4))
+    short = 9 if state == "wobble" else 0                   # v2 (review: "the tilt reads as a deformed drawing"): one
+                                                             # leg plainly short of the floor, the chair upright
     for lx, top in ((-30, -112), (30, -112)):                # the back legs rise into the back frame
         _line(c, [(lx, 0), (lx * 0.9, top - 40)], 6, STEEL_DARK)
     kit.cut(k, [(-30, -152), (30, -152), (28, -120), (-28, -120)], SEAT, lw=2.2)     # the back panel
-    _line(c, [(-38, 0), (34, -70)], 5, STEEL); _line(c, [(38, 0 if state == "open" else -9), (-34, -70)], 5, STEEL)
+    _line(c, [(-38, 0), (34, -70)], 5, STEEL); _line(c, [(38, -short), (-34, -70)], 5, STEEL)
+    if short:
+        c.set_source_rgba(0, 0, 0, 0.35); c.set_line_width(1.6); c.move_to(30, 0); c.line_to(46, 0); c.stroke()   # the floor under the gap
     kit.cut(k, [(-40, -74), (40, -74), (36, -62), (-36, -62)], SEAT, lw=2.2)       # the seat
     c.set_source_rgba(1, 1, 1, 0.25); c.set_line_width(2); c.move_to(-30, -71); c.line_to(10, -71); c.stroke()
     c.restore()
@@ -139,18 +141,23 @@ def report(k, x, y, s=1.0, unfurl=0.0, seed=0):
         for yy in (-10, -3, 4, 11):
             c.move_to(-20, yy); c.line_to(20, yy); c.stroke()
         c.restore(); return
-    n = max(2, int(14 * unfurl))
-    px, py = 0, 0
-    for i in range(n):
-        dy = 26 if py < 120 else 6
-        dx = 4 if py < 120 else 34
-        nx, ny = px + dx * (1 if i % 2 else 0.6), py + dy
-        sk = 1 if i % 2 else -1
-        kit.cut(k, [(px - 24, py), (px + 24, py), (nx + 24 + 6 * sk, ny), (nx - 24 + 6 * sk, ny)],
-                PAPER if i % 2 else (0.93, 0.91, 0.84), lw=1.8, shadow=False)
-        c.set_source_rgba(*INK, 0.35); c.set_line_width(1)
-        c.move_to(px - 14, (py + ny) / 2); c.line_to(px + 14, (py + ny) / 2); c.stroke()
-        px, py = nx, ny
+    # v2 (review: "steps, a little bridge"): ONE continuous strip, its folds marked, falling then running along the
+    # floor; unfurl > 1 adds the second spill at its end (the extra portion that reaches Don's shoes, 5.2)
+    fall, run = 150 * min(unfurl, 1.0), 260 * min(unfurl, 1.0) + 70 * max(0.0, unfurl - 1.0)
+    pts = [(0, 0), (6, fall * 0.5), (0, fall), (20, fall + 6)]
+    n = 6
+    for i in range(1, n + 1):
+        pts.append((20 + run * i / n, fall + 6 + (3 if i % 2 else -3)))
+    c.set_source_rgb(*kit.INK); c.set_line_width(30); c.set_line_join(1); c.set_line_cap(0)
+    c.move_to(*pts[0]); [c.line_to(*q) for q in pts[1:]]; c.stroke()
+    c.set_source_rgb(*PAPER); c.set_line_width(26)
+    c.move_to(*pts[0]); [c.line_to(*q) for q in pts[1:]]; c.stroke()
+    c.set_source_rgba(*INK, 0.45); c.set_line_width(1.4)                 # the folds
+    for i in range(1, n):
+        x = 20 + run * i / n
+        c.move_to(x, fall - 7); c.line_to(x + 2, fall + 19); c.stroke()
+    for y in (fall * 0.33, fall * 0.66):
+        c.move_to(-10, y); c.line_to(12, y); c.stroke()
     c.restore()
 
 
@@ -171,7 +178,7 @@ SCREENS = {"POSITION VACANT": ["POSITION", "VACANT"], "NOTED.": ["NOTED."], "UPT
            "APPROVER: CEO": ["APPROVER:", "CEO"]}
 
 
-def screen(k, x, y, r, kind, shape="round"):
+def screen(k, x, y, r, kind, shape="round", face_fn=None):
     """Every screen of the episode in one drawing: the robot's face (round) and the machine's panel (rect). The type
     fills the screen so it reads at 270 px (cold round 4: "unreadable", "covers its face")."""
     c = k.c
@@ -190,6 +197,11 @@ def screen(k, x, y, r, kind, shape="round"):
         c.rectangle(x - r * 1.18, y - r * 0.73, r * 2.36, r * 1.46)
     c.stroke()
     face = kind == "APPROVER: CEO"
+    if kind == "SALARY $0":                                  # v2 (review): a small SALARY over a big $0
+        c.select_font_face("Inter", 0, 1); c.set_source_rgb(*SCREEN_INK)
+        for t, fs, yy in (("SALARY", r * 0.26, y - r * 0.38), ("$0", r * 0.95, y + r * 0.40)):
+            c.set_font_size(fs); e = c.text_extents(t); c.move_to(x - e.width / 2 - e.x_bearing, yy); c.show_text(t)
+        c.restore(); return
     ty = y - (r * 0.30 if face else 0)
     c.select_font_face("Inter", 0, 1); c.set_source_rgb(*SCREEN_INK)
     width = (1.55 if shape == "round" else 2.2) * r
@@ -203,7 +215,11 @@ def screen(k, x, y, r, kind, shape="round"):
         c.move_to(x - e.width / 2 - e.x_bearing, ty + (i - (len(lines) - 1) / 2.0) * size * 1.12 + size * 0.36)
         c.show_text(t)
     if face:
-        _don_face(c, x, y + r * 0.45, r * 0.30)
+        if face_fn:                                          # v2 (both reviews: the pictogram "a baby's head"): Don's
+            c.save(); c.arc(x, y + r * 0.45, r * 0.36, 0, 2 * math.pi); c.clip()        # rig head, clipped
+            face_fn(k, x, y + r * 0.45, r * 0.36); c.restore()
+        else:
+            _don_face(c, x, y + r * 0.45, r * 0.30)
     c.restore()
 
 
@@ -247,7 +263,8 @@ PROPS = [
     ("the $80 invoice (5.4)", lambda k: invoice(k, 0, 0, 1.25)),
     ("the Client's name card (4.1)", lambda k: name_card(k, 0, 30, 1.5)),
     ("the report, held out (2.3)", lambda k: report(k, 0, 0, 1.6, 0)),
-    ("the report, unfurled (5.2)", lambda k: report(k, -60, -80, 0.8, 1.0)),
+    ("the report, unfurled (5.2)", lambda k: report(k, -90, -80, 0.5, 1.0)),
+    ("... its second spill (5.2)", lambda k: report(k, -90, -80, 0.5, 1.6)),
     ("screen: POSITION VACANT", lambda k: screen(k, 0, 0, 56, "POSITION VACANT")),
     ("screen: NOTED.", lambda k: screen(k, 0, 0, 56, "NOTED.")),
     ("screen: UPTIME 100%", lambda k: screen(k, 0, 0, 56, "UPTIME 100%")),
@@ -259,7 +276,7 @@ PROPS = [
 ]
 
 
-def sheet(out=EP + "rv_props_v1.png"):
+def sheet(out=EP + "rv_props_v2.png"):
     big = [_tile_night(fn, lab) for lab, fn in PROPS]
     cols = 6
     rows = (len(big) + cols - 1) // cols

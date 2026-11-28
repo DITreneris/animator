@@ -140,8 +140,24 @@ def _machine_glow():
     return [(x, base - 20 * sc, 46, 26, bp.NIGHT_WARM, 0.32), (x - 38 * sc, base - 108 * sc, 14, 14, (1.0, 0.30, 0.25), 0.55)]
 
 
+NO_THRONE_CONFETTI = [False]   # E16 set exception (28 Nov, the key-still review + 5 cold mentions of "a blue pile"):
+                               # episode 10's confetti under the throne (fs_set4, x 462) is swept up at night; opt-in,
+                               # so the locked night stills v6 rebuild as they are
+
+
 def _room(k, pam_behind=True, machine="rattle"):
     heads = {}
+    if NO_THRONE_CONFETTI[0]:
+        old_conf = s4.s3.confetti
+        s4.s3.confetti = lambda k_, x, *a, **kw: None if 400 < x < 520 else old_conf(k_, x, *a, **kw)
+        try:
+            return _room_inner(k, pam_behind, machine, heads)
+        finally:
+            s4.s3.confetti = old_conf
+    return _room_inner(k, pam_behind, machine, heads)
+
+
+def _room_inner(k, pam_behind, machine, heads):
     if _PASS[0] == "mask":                                    # the mask pass: no room, only the people
         return heads
 
