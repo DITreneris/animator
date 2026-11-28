@@ -126,6 +126,18 @@ def cup_saucer(k, x, y, s, state="rest", slop=False):
              rect=(x - 32 * s, y - 34 * s, 64 * s, 38 * s))
 
 
+def saucer(k, x, y, s, state="rest", slop=False):
+    """the saucer alone (5.3: the cup flew off it), the canon cup-and-saucer's own saucer; (x, y): its underside."""
+    sc = 0.95 * 20 * s / 30.0 * 1.6
+    dpr.hs.saucer_at(k, x, y, sc)
+    if slop:
+        c = k.c
+        wy = y - 12 * sc
+        c.save(); c.translate(x - 4 * sc, wy + 0.8 * sc); c.scale(10 * sc, 3.2 * sc); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi)
+        c.restore(); c.set_source_rgb(*dpr.dh.COFFEE); c.fill()
+    g.vessel(k, "saucer", state, handle=None, base=(x, y), rect=(x - 32 * s, y - 14 * s, 64 * s, 16 * s))
+
+
 def jug(k, hx, hy, s, tilt, handle=-1, state="held"):
     """the coffee pot with its handle's middle at (hx, hy), its handle on side `handle`, tipped by tilt toward the
     other side (its lip)."""
@@ -160,13 +172,20 @@ def by_handle(T, s, kind="mustard", out=None, name=None, tilt_jug=None, got=None
             if got is not None:
                 got["lip"] = lip
             return
+        if kind == "cup":                                       # (28 Nov, 5.3) Don's white cup off its saucer, by its handle
+            bx, by = P[0] + side * 21.5 * s, P[1] + 12 * s
+            dpr.dh.cup(k, bx, by, s, -side)
+            g.vessel(k, name or "cup", "held", handle=P, base=(bx, by), rect=(bx - 16 * s, by - 26 * s, 32 * s, 28 * s))
+            if got is not None:
+                got["base"] = (bx, by); got["handle"] = -side
+            return
         x, y = P[0] + side * HC * s, P[1] + 15 * s
         mug(k, x, y, s, handle=-side, kind=kind, state="held", name=name)
         if got is not None:
             got["base"] = (x, y); got["handle"] = -side
 
     def front(k, P, w, info):
-        if kind != "jug":
+        if kind not in ("jug", "cup"):
             side = _away(info)
             thumb_on_handle(k, P[0] + side * HC * s, P[1] + 15 * s, s, -side, w, info["skin"])
     j = dict(T=T, pose="CUP_GRIP", obj=obj, front=front, contact="handle", behind=True, reach=True, obj_info=True)
@@ -180,6 +199,8 @@ def on_palm(T, s, kind="cup", out=None, got=None, slop=False, handle=1):
     def obj(k, P, w, info):
         if kind == "cup":
             cup_saucer(k, P[0], P[1], s, state="held", slop=slop)
+        elif kind == "saucer":
+            saucer(k, P[0], P[1], s, state="held", slop=slop)
         else:
             mug(k, P[0], P[1] - 1, s, handle=handle, kind=kind, state="held")
         if got is not None:

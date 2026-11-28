@@ -338,7 +338,9 @@ def check(tol=3.0):
             if _cross(A["e"], A["h"], B["e"], B["h"]) or _cross(A["s"], A["e"], B["e"], B["h"]) or _cross(B["s"], B["e"], A["e"], A["h"]):
                 out.append("CROSS forearms crossed at shoulders (%d, %d) and (%d, %d)" % (A["s"] + B["s"]))
             L, R = (A, B) if A["s"][0] < B["s"][0] else (B, A)
-            if L["h"][0] > R["s"][0] + 4 or R["h"][0] < L["s"][0] - 4:
+            if abs(R["s"][0] - L["s"][0]) >= 12 and (L["h"][0] > R["s"][0] + 4 or R["h"][0] < L["s"][0] - 4):
+                # (28 Nov, 5.3) shoulders under 12 apart on screen: a body seen end on (lying, flipping in the air),
+                # its left and right not readable from x: the forearms' crossing above still applies
                 out.append("CROSS an arm across the chest: hand past the far shoulder (shoulders x %d, %d)" % (L["s"][0], R["s"][0]))
             i += 2
         else:
