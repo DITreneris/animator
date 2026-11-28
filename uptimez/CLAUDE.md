@@ -19,11 +19,13 @@ Prequel shorts (*Prompt Telephone*, *Saved to Cloud*, *Downloads Expedition*) us
 2. **Reuse what was approved.** Search `src/` and `git log origin/main` for a film where the same problem was solved and reviewed (bubbles: `bc_sb.bubble` / `measure`, checks: `qa_bc.py`). Name the file being reused. Write new code only if nothing exists, and say so to Tomas first.
 3. **Look before sending.** Open at least six frames at full size, with crops of the details the change touches (where a tail meets its box, the tip on the cheek). A checker that passes is not a reason to send; the frames are.
 4. **Hands, arms, gestures, poses:** before any change, follow section 0 of `../docs/rules-hands-and-phones.md` (list the applicable lessons with numbers in the reply, silhouettes for a meaningful gesture, measured gaps at feed size, hand sheet, 10 fps strip, change the gesture after three misreads). This holds for every fix from a review or a cold test, not only for new shots (Daddy's Home v8 round 7 skipped it and made a new misread).
+4b. **Arms are checked by angle, everywhere** (28 Nov): `da_layouts.ELBOW_RULE` and `da_hand_gate.ARM_RULES` on in every scene build (FOLD, ELBOW); exceptions only through `arms_ok("why")`, on the drawings where they are true. A hands sheet and two cold viewers on arms before each rough cut goes to Tomas.
 5. **Stop when it isn't converging.** After one hour or two full check runs without the faults going down, stop and report to Tomas instead of patching on.
 
 ## Working with Tomas
 
-- **"/grill-me"** means ask the decisions as multiple choice before building (AskUserQuestion, recommended option first), then build exactly what was picked.
+- **"/grill-me"** means ask the decisions as multiple choice before building (AskUserQuestion, recommended option first), then build exactly what was picked. **An unanswered question is not a licence:** ask again, or stop at a draft page; never write, record and cut wording he hasn't picked (lesson 259).
+- **Lines go where both speakers are in the frame** (lesson 260): map who is on screen before placing a line.
 - **An outside review** (pasted text or an attachment) gets an OK / partial / fail / disagree table with evidence from frames, levels or files, then "what correlates": the two or three causes behind several points. Say which points undo a choice Tomas made. Build only after "improve" or "proceed".
 - **Reply in Lithuanian when he writes Lithuanian**, otherwise English.
 - **Commit and push only when asked**, on a branch, never straight to `main`.

@@ -11,6 +11,8 @@ A review or a cold test that names a hand is not a request to patch that hand. I
 3. **Measure, don't eyeball** (263): a gap (finger to screen, finger to hair) is measured in pixels on the frame, and checked again on the 270 px tile. A 15 px gap at 540 is about 7 px in the feed: it doesn't exist there.
 4. **Hand sheet in the film's poses** (`of_hands.py`) for any new or changed shape, and `of_scenes.py hand-validate` and `hand_gate.py` passing.
 5. **A 10 fps strip of the encoded file** for every shot whose hand code changed, looked at before the cold test.
+5b. **The gates measure angles, not just positions** (28 Nov). FOLD (elbow under 60°) and ELBOW (elbow over the shoulder with the hand below it) run on every drawing of the episode (`da_hand_gate.ARM_RULES`), office layers included: a layer drawn with the gate paused is not exempt from arms. "The gate passes" meant nothing about elbows until these existed.
+5c. **A hands sheet before every rough cut**, from the encoded file: one tile per shot where an arm moves, looked at full size, then two cold viewers asked only "which arm looks broken, a pole, or from the wrong place?" (`da_hands_sheet_v1.png`).
 6. **The same misread three times: change the gesture, not its position** (178, extended from grips to every gesture). "The hand holds the sign" and "a handshake" came back 3 and 4 tests running while the hand was moved a few pixels each time.
 
 ## 1. Hands and arms
@@ -33,7 +35,11 @@ A review or a cold test that names a hand is not a request to patch that hand. I
 
 - **Two bones of fixed length** (`of_scenes.ik2`). The arm's reach is set by the bones: move the shoulder or shorten the travel, never stretch the arm. A fixed elbow offset stretched an arm 33 % between two frames (224).
 - **Keep the target in reach.** Out of reach, the arm goes straight and reads as "a pole from the neck" (179).
+- **Every rig in a frame on the same hands.** In S8 Father and Sofía were drawn with the canon hands on and Pam right after they were switched off: her old palms sat in the episode's final image for three days (`da_s8.PAM_V4`). Check which function drew each hand in a composite, not only the new ones.
 - **Never route a moving hand past the shoulder.** With fixed bones a target near the shoulder folds the arm into a V or lays it across the head; a raise or a drop that starts or ends there jumps between drawings. Catch the arm already up, and drop it straight down out of the frame (Daddy's Home v8, 3A, 10 fps strip).
+- **The elbow hangs below the shoulder-wrist line** (The Double Agent, Tomas's deep audit 28 Nov: "broken elbows" at 0:15 and 1:05). Two-bone IK has two solutions; picking the side by x is a coin toss on a level reach and gives the raised V or an elbow folded into the chest. Pick the lower solution, unless the hand is above the head (a wave, the hair). `da_layouts.ELBOW_RULE` does this for every job.
+- **A held thing stays at least 60 % of the arm from the shoulder.** Nearer, two fixed bones fold under ~74° and read as a snapped twig. Move the thing out along the same line, or move the body, never bend the arm further. Same rule.
+- **An exception is written, scoped to its drawings, and set before any probe.** Drinking, a fingertip on one's own chest, a poke at a page held at the chest: `da_hand_gate.arms_ok("why")`, on exactly the drawings where it is true. A whole-shot exception hid the two worst arms of the film (5.2, 6.7: 2/2 cold viewers). Set it before `pinch_at` or any other probe, or the probes solve a different arm than the drawing.
 - **A wrist narrower than the forearm, the upper arm wider, a real elbow.** Equal widths read as "a rubber tube" (149, 224).
 - **A sleeve is no wider than the arm in it.** A wide light sleeve becomes the biggest shape in the frame (225).
 
