@@ -30,7 +30,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 5
+VER = 6
 T0 = 34.44
 SHOTS = [("5.1", 1.4), ("5.2", 2.8), ("5.3", 2.0), ("5.3b", 0.6), ("5.4", 2.2)]
 drawn = A.drawn
@@ -45,37 +45,71 @@ def don_rig(x, f, face, look, knee=0.0, s_=None):
 
 # ---- 5.1 -------------------------------------------------------------------------------------------------------------------
 def s51_surface(t):
-    td = drawn(t)
+    """v2 (the outside review 28 Nov, Tomas "tvarkom"): the mug stays the one thing to see (27 Nov, A), but the light
+    has a source now: a warm cone from a lamp above, out of frame, on the mug and catching the near half of Father's
+    face; the dark is a cool noir blue, not the day's colours under black; the mug is the canon's ceramic one (the old
+    cut-out mug at 4.4x read as "a folded paper bag"), with its contact shadow; thin steam that thins out; Father blinks
+    once, slowly."""
     import da_hand_gate as g
-    office = dict(client=None, sofia=False, mug=True)
+    import dh_cast as dhc
+    td = drawn(t)
     mx, my = ds.WIN[0] + ds.WIN[2] * 0.5 + 34, ds.WIN[1] + ds.WIN[3] - 122
+
+    def mug_drawer(k_, x, y, s_):
+        c_ = k_.c
+        c_.set_source_rgba(0, 0, 0, 0.30); c_.save(); c_.translate(x + 2, y + 1); c_.scale(17 * s_ / 0.62, 3.2 * s_ / 0.62)
+        c_.new_path(); c_.arc(0, 0, 1, 0, 2 * math.pi); c_.restore(); c_.fill()                 # its contact shadow
+        cu.mug(k_, x, y, s_ * 0.92 / 0.9, handle=1, state="rest", name="mug")
+    office = dict(client=None, sofia=False, mug=True, mug_drawer=mug_drawer)
     push = ease(seg(td, 0.0, 1.4))
     cam = (mx - 18, my - 10 - 4 * push, 4.4 + 0.5 * push)            # a slow push in on the mug
 
     def light(k_, cam_):
         fx, fy, z = cam_
-        sx, sy = (mx - fx) * z + 270, (my + 4 - fy) * z + 480
+        sx, sy = (mx - fx) * z + 270, (my + 4 - fy) * z + 480           # the mug on screen
         c = k_.c
-        gr = cairo.RadialGradient(sx, sy - 20, 20, sx, sy - 20, 190)
-        gr.add_color_stop_rgba(0, 0, 0, 0, 0.0); gr.add_color_stop_rgba(0.3, 0, 0, 0, 0.0)
-        gr.add_color_stop_rgba(1, 0.05, 0.04, 0.06, 0.68 + 0.08 * push)
+        c.set_operator(cairo.OPERATOR_MULTIPLY)                         # the whole room cool (noir), before the dark
+        c.set_source_rgb(0.62, 0.66, 0.80); c.paint()
+        c.set_operator(cairo.OPERATOR_OVER)
+        lx, ly = sx - 22, sy - 60                                        # the light's centre: on the mug, his face at its edge
+        gr = cairo.RadialGradient(lx, ly, 30, lx, ly, 230)               # the dark round it: #191C25
+        gr.add_color_stop_rgba(0, 0.098, 0.110, 0.145, 0.0); gr.add_color_stop_rgba(0.28, 0.098, 0.110, 0.145, 0.0)
+        gr.add_color_stop_rgba(1, 0.098, 0.110, 0.145, 0.80 + 0.06 * push)
         c.set_source(gr); c.paint()
-        gr = cairo.RadialGradient(sx, sy - 20, 0, sx, sy - 20, 90)
-        gr.add_color_stop_rgba(0, 1, 0.95, 0.75, 0.30); gr.add_color_stop_rgba(1, 1, 0.95, 0.75, 0.0)
+        lamp = (sx - 40, -40)                                            # the lamp, above and out of frame: its cone
+        cone = cairo.LinearGradient(lamp[0], lamp[1], lamp[0], sy + 40)
+        cone.add_color_stop_rgba(0, 0.906, 0.753, 0.541, 0.0); cone.add_color_stop_rgba(0.6, 0.906, 0.753, 0.541, 0.10)
+        cone.add_color_stop_rgba(1, 0.906, 0.753, 0.541, 0.0)
+        c.new_path(); c.move_to(lamp[0] - 30, lamp[1]); c.line_to(lamp[0] + 30, lamp[1])
+        c.line_to(sx + 120, sy + 30); c.line_to(sx - 230, sy + 30); c.close_path(); c.set_source(cone); c.fill()
+        c.set_operator(cairo.OPERATOR_ADD)                               # the warm pool where it lands (#E7C08A), smaller
+        gr = cairo.RadialGradient(sx - 6, sy - 34, 0, sx - 6, sy - 34, 120)
+        gr.add_color_stop_rgba(0, 0.906, 0.753, 0.541, 0.26); gr.add_color_stop_rgba(1, 0.906, 0.753, 0.541, 0.0)
         c.set_source(gr); c.paint()
-        c.set_source_rgba(1, 1, 1, 0.55); c.set_line_width(3.0); c.set_line_cap(1)      # its steam, rising
-        for i, dx in enumerate((-10, 8)):
-            ph = td * 4 + i * 1.7
-            x0, y0 = sx + dx, sy - 60
+        c.set_operator(cairo.OPERATOR_OVER)
+        fade = 1 - 0.75 * push                                           # its steam: thin, broken, thinning out
+        c.set_line_width(1.8); c.set_line_cap(1)
+        for i, dx in enumerate((-8, 7)):
+            ph = td * 3.2 + i * 1.7
+            x0, y0 = sx + dx, sy - 64
+            c.set_dash([10, 7], (ph * 9) % 17)
+            gr = cairo.LinearGradient(0, y0, 0, y0 - 100)
+            gr.add_color_stop_rgba(0, 1, 1, 1, 0.50 * fade); gr.add_color_stop_rgba(1, 1, 1, 1, 0.0)
+            c.set_source(gr)
             c.new_path(); c.move_to(x0, y0)
-            c.curve_to(x0 - 10 * math.sin(ph), y0 - 30, x0 + 10 * math.sin(ph), y0 - 60, x0, y0 - 90 - 8 * (ph % 1))
+            c.curve_to(x0 - 9 * math.sin(ph), y0 - 30, x0 + 9 * math.sin(ph), y0 - 60, x0 + 3 * math.sin(ph * 1.3), y0 - 100)
             c.stroke()
-        c.set_line_cap(0)
+        c.set_dash([]); c.set_line_cap(0)
 
     def cast(k_):
         g.nohands()
         return {}
-    return frame(cast, cam, office=office, tag=True, clips=14, near=light)
+    keep = dhc.BLINK[0]
+    dhc.BLINK[0] = 0.47 <= td < 0.73                                   # one slow blink (4 drawings)
+    try:
+        return frame(cast, cam, office=office, tag=True, clips=14, near=light)
+    finally:
+        dhc.BLINK[0] = keep
 
 
 # ---- 5.2 -------------------------------------------------------------------------------------------------------------------

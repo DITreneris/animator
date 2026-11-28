@@ -150,7 +150,7 @@ def _inside_state(k, st, x, y, w, h, cx, heads):
     rect(k, x - 4, y + h - 112, w + 8, 14, DESK, 5320, shadow=False, lw=2)
     rect(k, x + 6, y + h - 100, w - 12, 100, DESK_D, 5321, shadow=False, lw=2)
     if st.get("mug"):                                          # her mustard mug on Father's side of the desk
-        pam_mug(k, cx + 34, y + h - 110, 0.62)
+        (st.get("mug_drawer") or pam_mug)(k, cx + 34, y + h - 110, 0.62)   # mug_drawer: opt-in (28 Nov, 5.1)
         heads["mug"] = (cx + 34, y + h - 122, 10)
         if st.get("pam") == "hand_on_mug":
             kit.ellipse(k, cx + 46, y + h - 122, 6, 5, (0.99, 0.86, 0.66), 5330, shadow=False, lw=1.4)
