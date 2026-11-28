@@ -28,7 +28,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 8
+VER = 9
 T0 = 16.28
 SHOTS = [("3.1", 1.61), ("3.2", 1.2), ("3.2b", 0.7), ("3.3", 2.4), ("3.4", 4.05), ("3.5", 1.6)]
 drawn = A.drawn
@@ -269,8 +269,12 @@ def s34_cast(t):
                  ("don", "L", "quiet", "quiet"), ("don", "R", "quiet", "quiet"),
                  ("mom", "L", "fist", "FIST: on her hip (Mom v1, the hand library)"),
                  ("mom", "R", "fist", "FIST: on her hip")), k_)
-        h["robot"] = A.robot_canon(k_, rx, F + 64, {1: ("grip", (rx + 46, F + 64 - 150 * SC["robot"]))}, tilt=0.1,
-                                   look=(-1, -0.4))
+        L.rp.HEAD_ROT[0] = -0.105 * ease(seg(td, 0.6, 0.87))          # (review 28 Nov) frozen, gripper up: its head tips
+        try:                                                           # 6 degrees, the smile identical
+            h["robot"] = A.robot_canon(k_, rx, F + 64, {1: ("grip", (rx + 46, F + 64 - 150 * SC["robot"]))}, tilt=0.1,
+                                       look=(-1, -0.4))
+        finally:
+            L.rp.HEAD_ROT[0] = None
         # Don: the leans (left, right), then the feint (his head only)
         lean_l = math.sin(math.pi * seg(td, 0.20, 0.67)) if 0.20 <= td < 0.67 else 0
         lean_r = math.sin(math.pi * seg(td, 0.87, 1.33)) if 0.87 <= td < 1.33 else 0
@@ -307,8 +311,10 @@ def s34_cast(t):
                     c.new_path(); c.move_to(bx - sgn * 62, mf + yy * SC["mom"] / 0.6)
                     c.line_to(bx - sgn * 92, mf + yy * SC["mom"] / 0.6); c.stroke()
                 c.set_line_cap(0)
-        mouth = "A" if talking("3.4", t) else None
-        h["mom"] = L.mom(k_, (mx + sl + sr, mf), "fists", "unimpressed", look=(-1, 0.2), chin=True, mouth=mouth)
+        mouth = "E" if talking("3.4", t) else None                    # (review 28 Nov: a smaller mouth, ~-20 %)
+        st34 = env("3.4")[0]                                           # "Your rule, sweetheart.": the fake sweetness, from
+        mface = "sweetheart" if drawn(t) >= st34 - 0.07 else "unimpressed"   # the line on: the smile, her eyes unchanged
+        h["mom"] = L.mom(k_, (mx + sl + sr, mf), "fists", mface, look=(-1, 0.2), chin=True, mouth=mouth)
         return h
     return cast
 

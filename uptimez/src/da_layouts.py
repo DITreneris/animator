@@ -142,6 +142,7 @@ def mom(k, mark, pose="fists", face="unimpressed", look=(0, 0), **kw):
     x, f = MARKS[mark] if isinstance(mark, str) else mark
     shadow(k, x, f + 2, 34)
     keep_o = mfs.ORDER_S[0]; mfs.ORDER_S[0] = MOM_ORDER_S if MOM_LIB[0] else keep_o
+    keep_c = mfs.CURLER_D[0]; mfs.CURLER_D[0] = (8, 9) if MOM_LIB[0] else keep_c    # (review 28 Nov: it "floated")
     try:
         if MOM_LIB[0] and pose in ("fists", "folded"):
             s_ = SC["mom"]
@@ -159,7 +160,7 @@ def mom(k, mark, pose="fists", face="unimpressed", look=(0, 0), **kw):
                 mbc.TUPLE_NAME[0] = keep_n
             return _head(o, "mom")
     finally:
-        mfs.ORDER_S[0] = keep_o
+        mfs.ORDER_S[0] = keep_o; mfs.CURLER_D[0] = keep_c
     if pose == "folded":                                       # pm_ps's folded arms (its M_POSES), the series' Mom
         return _head(pm.mom(k, x, f, SC["mom"], pose, face, look, **kw), "mom")
     return _head(mfs.mom(k, x, f, SC["mom"], pose, face, look, **kw), "mom")

@@ -35,6 +35,9 @@ JACKET_HEM = WAIST + 46
 POSES = mb.POSES
 
 
+CURLER_D = [(0, 0)]   # opt-in (28 Nov, ep15): the curler pressed into the curls by (dx, dy); (0, 0) as before
+
+
 def _hair_nohat(curler):
     """mom_bc's hair without the pillbox hat: the set curls, the one curler."""
     def draw(k, seed, back=False):
@@ -57,7 +60,7 @@ def _hair_nohat(curler):
             c.set_source_rgb(*HAIR_DARK); c.set_line_width(1.4)
             c.new_path(); c.arc(cx, cy, 5, 0.2 * math.pi, 1.5 * math.pi); c.stroke()
         if curler:                                                      # the one she missed, in plain view
-            mo._curler(c, -54, top - 2, 44, -0.9, big=True)
+            mo._curler(c, -54 + CURLER_D[0][0], top - 2 + CURLER_D[0][1], 44, -0.9, big=True)
     return draw
 
 
@@ -66,6 +69,8 @@ def _faces(inner_eyes, inner_brows, inner_mouth):
     sweet_eyes, sweet_brows, sweet_mouth = mb._sweet(inner_eyes, inner_brows, inner_mouth)
 
     def eyes(c, face, look, turn=0.0):
+        if face == "sweetheart":                                       # (28 Nov, ep15) the fake sweetness: her eyes
+            return sweet_eyes(c, "unimpressed", look, turn)            # don't change, only the mouth smiles
         if face != "glare":
             return sweet_eyes(c, face, look, turn)
         ey = HY - 9                                                     # over the top of the frames: open, piercing
@@ -82,6 +87,8 @@ def _faces(inner_eyes, inner_brows, inner_mouth):
             c.new_path(); c.move_to(x - 12, ey + lid); c.line_to(x + 12, ey + lid); c.stroke(); c.set_line_cap(0)
 
     def brows(c, face, turn=0.0):
+        if face == "sweetheart":
+            return sweet_brows(c, "unimpressed", turn)
         if face != "glare":
             return sweet_brows(c, face, turn)
         by = HY - 26
@@ -92,6 +99,8 @@ def _faces(inner_eyes, inner_brows, inner_mouth):
         c.set_line_cap(0)
 
     def mouth(c, face, m, turn=0.0):
+        if face == "sweetheart":
+            return sweet_mouth(c, "sweet", m, turn)
         if face != "glare":
             return sweet_mouth(c, face, m, turn)
         inner_mouth(c, "stern", "M", turn)

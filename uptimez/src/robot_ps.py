@@ -229,6 +229,9 @@ def telescope(k, bx, by, s, u, angle=0.30, seed=4720):
     return bx + math.sin(angle) * L * s, by - math.cos(angle) * L * s
 
 
+HEAD_ROT = [None]   # opt-in (28 Nov, ep15): the head's own tilt in radians; None draws as before
+
+
 def robot(k, x, feet, s=S_OFFICE, arms=None, tilt=0.0, visor=None, selfie=0.0, phone=None, turn=0.0, look=(0, 0), tele=None, phone_s=0.34):
     """arms: ((upper, fore) screen-left, (upper, fore) screen-right) in kit angles (0 down, +90 right); tilt: radians it
     leans about its wheel (balancing); visor: None (its smile) or an icon; selfie: 0..1 the telescope out of its
@@ -236,7 +239,7 @@ def robot(k, x, feet, s=S_OFFICE, arms=None, tilt=0.0, visor=None, selfie=0.0, p
     c = k.c
     a = arms or ((-8, 0), (8, 0))
     pose = (tilt, 0, 0, a[0], a[1])
-    o = dq.rm.robot(k, x, feet, s, pose, "eager", look, 1)
+    o = dq.rm.robot(k, x, feet, s, pose, "eager", look, 1, head_rot=HEAD_ROT[0])
     r = 50 * s
     if visor:
         visor_icon(k, *o["screen"], r, visor)

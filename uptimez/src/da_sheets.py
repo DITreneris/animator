@@ -539,7 +539,7 @@ def client_sheet(out=EP + "uptimez-client-da-v1-sheet.png"):
     print("wrote", out)
 
 
-def mom_sheet(out=EP + "uptimez-mom-da-v1-sheet.png"):
+def mom_sheet(out=EP + "uptimez-mom-da-v2-sheet.png"):
     """Mom in 15 (Tomas 28 Nov, /grill-me): the series' Mom (mom_fs: teal suit, the curler stays), her fists on her hips
     and her folded arms in the hand library (da_layouts.MOM_LIB), a smaller rosette (mom_fs.ORDER_S 0.7). Her beats here:
     up from her desk (3.3), the door she slides in front of (3.4, "Your rule, sweetheart."), sitting back, folded (4.1)."""
@@ -548,9 +548,9 @@ def mom_sheet(out=EP + "uptimez-mom-da-v1-sheet.png"):
     import hands_v4 as hv
     W, H = 1500, 980
     s, c, k = _surf(W, H)
-    _t(c, 30, 46, "MOM · The Double Agent (15) · v1", 26, 1)
+    _t(c, 30, 46, "MOM · The Double Agent (15) · v2", 26, 1)
     _t(c, 30, 70, "The series' Mom (mom_fs): teal suit, mustard lapels, the curler stays. v1: her fists on her hips and her folded"
-       " arms in the episode's hand library; the rosette smaller (0.7 of 1.15).", 11)
+       " arms in the episode's hand library; the rosette smaller (0.7 of 1.15). v2: the face \"sweetheart\", the curler pressed in.", 11)
     _t(c, 30, 88, "Opt-in: da_layouts.MOM_LIB, mom_fs.ORDER_S, mom_bc.TUPLE_NAME (defaults draw as before, md5-checked).", 11)
     F = 520
     _floor(c, 20, W - 20, F)
@@ -562,7 +562,7 @@ def mom_sheet(out=EP + "uptimez-mom-da-v1-sheet.png"):
     try:
         L.mom(k, (330, F), "fists", "glare", look=(1, 0))
         L.mom(k, (560, F), "fists", "unimpressed", look=(-1, 0.2), chin=True)
-        L.mom(k, (790, F), "fists", "unimpressed", look=(-1, 0.2), chin=True, mouth="A")
+        L.mom(k, (790, F), "fists", "sweetheart", look=(-1, 0.2), chin=True, mouth="E")
         L.mom(k, (1020, F), "folded", "unimpressed", look=(-1, 0.2))
         L.MOM_LIB[0] = False
         L.mom(k, (1300, F), "fists", "glare", look=(1, 0))
@@ -570,11 +570,11 @@ def mom_sheet(out=EP + "uptimez-mom-da-v1-sheet.png"):
     finally:
         L.SC["mom"] = keep
     for x, lab in ((110, "Don 0.60 (scale)"), (330, "fists on her hips, glare (3.3)"), (560, "the door: chin up (3.4)"),
-                   (790, "\"Your rule, sweetheart.\" (A)"), (1020, "folded (4.1)"), (1300, "before: the round fists")):
+                   (790, "\"Your rule, sweetheart.\" (v2)"), (1020, "folded (4.1)"), (1300, "before: the round fists")):
         _t(c, x - 80, F + 24, lab, 11)
     y2 = F + 60
     _t(c, 30, y2, "UP CLOSE", 13, 1)
-    for i, (pose, face, kw, lab) in enumerate((("fists", "glare", {}, "glare"), ("fists", "unimpressed", dict(chin=True), "unimpressed, chin up"),
+    for i, (pose, face, kw, lab) in enumerate((("fists", "glare", {}, "glare"), ("fists", "sweetheart", dict(chin=True), "v2: the fake sweetness (her eyes unchanged)"),
                                                ("folded", "unimpressed", {}, "folded"))):
         x = 180 + i * 330
         c.save(); c.rectangle(x - 150, y2 + 14, 300, 300); c.clip()
