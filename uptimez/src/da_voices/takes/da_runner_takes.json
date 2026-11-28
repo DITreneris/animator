@@ -1,0 +1,106 @@
+{
+ "r1a": {
+  "who": "DON",
+  "line": "I pay you!",
+  "speed": 1.02,
+  "heard": [
+   "I pay you",
+   "I pay you",
+   "I pay you"
+  ],
+  "good": 3,
+  "sec": 0.86,
+  "gain": 1.0
+ },
+ "r1b": {
+  "who": "ROBOT",
+  "line": "He pays you.",
+  "speed": 0.96,
+  "heard": [
+   "He pays you.",
+   "He pays you.",
+   "He pays you."
+  ],
+  "good": 3,
+  "sec": 0.8,
+  "gain": 0.9
+ },
+ "r2a": {
+  "who": "DON",
+  "line": "I'm worth millions.",
+  "speed": 0.96,
+  "heard": [
+   "I'm worth millions.",
+   "I'm worth millions.",
+   "I'm worth millions."
+  ],
+  "good": 3,
+  "sec": 1.44,
+  "gain": 0.9
+ },
+ "r2b": {
+  "who": "ROBOT",
+  "line": "Forty-nine thousand. The chair.",
+  "speed": 0.96,
+  "heard": [
+   "49,000 of the chair.",
+   "49,000 the chair.",
+   "49,000 of the chair."
+  ],
+  "good": 0,
+  "sec": 1.58,
+  "gain": 0.9
+ },
+ "r3a": {
+  "who": "ROBOT",
+  "line": "Incident logged.",
+  "speed": 0.96,
+  "heard": [
+   "incident logged",
+   "incident logged",
+   "incident logged."
+  ],
+  "good": 3,
+  "sec": 0.9,
+  "gain": 0.9
+ },
+ "r3b": {
+  "who": "DON",
+  "line": "Compensation?",
+  "speed": 0.96,
+  "heard": [
+   "compensation",
+   "compensation",
+   "compensation"
+  ],
+  "good": 3,
+  "sec": 1.19,
+  "gain": 0.85
+ },
+ "r3c": {
+  "who": "ROBOT",
+  "line": "Already deducted.",
+  "speed": 0.9,
+  "heard": [
+   "already deducted.",
+   "Already deducted.",
+   "already deducted."
+  ],
+  "good": 3,
+  "sec": 1.1,
+  "gain": 0.9
+ },
+ "r4a": {
+  "who": "ROBOT",
+  "line": "One clip. Four cents.",
+  "speed": 0.9,
+  "heard": [
+   "1 clip 4 cents",
+   "1 clip 4 cents",
+   "1 clip 4 cents"
+  ],
+  "good": 0,
+  "sec": 1.33,
+  "gain": 1.35
+ }
+}

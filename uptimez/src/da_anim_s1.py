@@ -35,7 +35,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, _head, 
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 24
+VER = 25
 OOF_TAKE = "A"
 SHOTS = [("1.1", 1.4), ("1.2", 0.8), ("1.3", 1.0), ("1.3c", 0.6), ("1.3b", 1.0), ("1.4", 1.2), ("1.5", 2.0)]
 
@@ -376,7 +376,12 @@ def s13_cast(t):
             k_.c.translate(x, f); k_.c.scale(1 / st ** 0.5, st); k_.c.translate(-x, -f)
         jobs_ = {} if snap else {-1: dict(T=(x - 105 * s_, f - (255 + flap) * s_), pose="PALM", out=-1, reach=True),
                                   1: dict(T=(x + 105 * s_, f - (255 - flap) * s_), pose="PALM", out=1, reach=True)}
-        h["don"] = don_lib(k_, x, f, "shock", (1, -0.6) if td >= 0.53 else (-1, -0.2), knee=0.7, jobs=jobs_)
+        w_ = __import__("da_runner").window("s1", "1.3", "r1a")       # "I pay you!" (the money runner)
+        kit.MOUTH[0] = 0.9 if (w_ and w_[0] <= td < w_[1] and int(td * DRAW) % 2 == 0) else None
+        try:
+            h["don"] = don_lib(k_, x, f, "shock", (1, -0.6) if td >= 0.53 else (-1, -0.2), knee=0.7, jobs=jobs_)
+        finally:
+            kit.MOUTH[0] = None
         k_.c.restore()
         sole = L.sole_of(x, f, s_, 0.7)
         L.tape_strip(k_, [(sole[0] - 4, sole[1]), (sole[0] + 2, sole[1] + 8)], 9.0)
@@ -755,6 +760,10 @@ def mix(sec, path):
     v, _ = sf_.read(os.path.join(HERE, "da_voices", "takes", "1.2_%s.wav" % OOF_TAKE))
     v = v[int(0.3 * sr) - 240:]
     i = int(1.80 * sr); m[i:i + len(v)] += 0.55 * v[:max(0, n - i)]
+    st_ = {}; acc_ = 0.0
+    for s__, d__ in SHOTS:
+        st_[s__] = acc_; acc_ += d__
+    __import__("da_runner").add(m, "s1", st_)                         # the Don x robot money runner (28 Nov)
     m /= max(1.0, np.max(np.abs(m)) / 0.89)
     m.astype(np.float32).tofile(path)
     return path

@@ -30,7 +30,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 6
+VER = 7
 T0 = 55.39
 SHOTS = [("7.2", 2.8), ("7.3", 4.15), ("7.4", 3.0)]
 drawn = A.drawn
@@ -339,6 +339,7 @@ def mix(sec, path):
         st, _, v, _ = env(name)
         i = int((STARTS[sid] + st) * sr)
         m[i:i + len(v)] += 0.6 * v[:max(0, n - i)] / (np.max(np.abs(v)) + 1e-9)
+    __import__("da_runner").add(m, "s7", STARTS)                      # the Don x robot money runner (28 Nov)
     m /= max(1.0, np.max(np.abs(m)) / 0.89)
     m.astype(np.float32).tofile(path)
     return path
