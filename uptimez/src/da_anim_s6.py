@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 7
+VER = 8
 T0 = 43.44
 SHOTS = [("6.1", 1.4), ("6.2", 1.2), ("6.3", 1.0), ("6.4", 2.23), ("6.5", 1.0), ("6.6", 1.0), ("6.7", 0.8),
          ("6.8", 2.72), ("6.8b", 0.6)]
@@ -453,7 +453,11 @@ def s66_surface(t):
     def cast(k_):
         g.nohands()
         return {}
-    return frame(cast, cam, office=office, tag=True, clips=6, near=light)
+    ds.ROLL_V2[0] = True                                               # the plan readable in his fists (this shot only)
+    try:
+        return frame(cast, cam, office=office, tag=True, clips=6, near=light)
+    finally:
+        ds.ROLL_V2[0] = False
 
 
 # ---- render, gate, sound ---------------------------------------------------------------------------------------------------

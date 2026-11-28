@@ -30,7 +30,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 4
+VER = 5
 T0 = 55.39
 SHOTS = [("7.2", 2.8), ("7.3", 4.15), ("7.4", 3.0)]
 drawn = A.drawn
@@ -72,8 +72,10 @@ def s72_cast(t):
         roll = ease(seg(td, 0.2, 0.67))                                # his arms roll out toward the office
         t_stick = 0.5 + 2.2 * (60 / 190.0)                             # when she is beside his bowed head
         carry = S6.ease(S6.seg(td, t_stick - 0.4, t_stick))             # she lifts it off her cardigan, in plain view
-        stick = t_stick - 0.4 <= td < t_stick + 0.2                    # (the tape medal, 6.4) and presses it onto his head
-        stuck = td >= t_stick + 0.07
+        HOLD = 0.4                                                     # (rough cut test 28 Nov, 3/3 "he took her star"): she
+        stick = t_stick - 0.4 <= td < t_stick + HOLD + 0.07            # stops, her palm stays on his head 0.4 s, his eyes
+        stuck = td >= t_stick + 0.07                                   # roll up at it; then she walks on
+        seen = t_stick + 0.07 <= td < t_stick + HOLD + 0.27
         declare((("don", "L", "palm", "palm: rolled out toward the office"), ("don", "R", "palm", "palm"),
                  ("pam", "L", "pinch", "PINCH: the mask at her face"),
                  ("pam", "R", "palm" if stick else "quiet", "quiet -> palm: his tape medal pressed onto his bowed head")), k_)
@@ -81,7 +83,7 @@ def s72_cast(t):
         jobs = {1: dict(T=(x + (60 + 130 * roll) * s_, f - (150 + 50 * roll) * s_), pose="PALM", out=1, reach=True),
                 -1: dict(T=(x + (20 + 120 * roll) * s_, f - (130 + 30 * roll) * s_), pose="PALM", out=-1, reach=True)}
         kit.MOUTH[0] = 0.8 if talking("7.2", t) else None
-        draw = lambda: rig_hands(k_, don_rig(x, f, "happy", (1, 0.3)), s_, jobs)
+        draw = lambda: rig_hands(k_, don_rig(x, f, "grin" if seen else "happy", (0.2, -1.0) if seen else (1, 0.3)), s_, jobs)
         hy = f - 150 * s_
         try:
             c.save(); c.rectangle(-5000, hy, 10000, 5000); c.clip()    # his legs, upright (L.bow, the gate paused for
@@ -96,11 +98,13 @@ def s72_cast(t):
         dx, dy = hx - x, hy0 - hy
         h["don"] = (x + dx * math.cos(ang) - dy * math.sin(ang), hy + dx * math.sin(ang) + dy * math.cos(ang), r_)
         # Pam: across his line in front of him, the mask up, toward the office (screen right)
-        walk = seg(td, 0.5, 2.7)
+        tw = td if td < t_stick else (t_stick if td < t_stick + HOLD else
+                                      t_stick + (td - t_stick - HOLD) * (2.7 - t_stick) / (2.7 - t_stick - HOLD))
+        walk = seg(tw, 0.5, 2.7)
         px = L.tape_x(f + 30) - 92 + 190 * walk                       # from his side, over the tape, on toward the office
         pf = f + 30
-        step = math.sin(math.pi * 2 * walk * 3)
-        rigp = lambda k2, a4: pam_held(k2, px, pf, SC["pam"], a4, "neutral", (1, 0.0), mug=False)
+        step = math.sin(math.pi * 2 * walk * 3) if not (t_stick <= td < t_stick + HOLD) else 0
+        rigp = lambda k2, a4: pam_held(k2, px, pf, SC["pam"], a4, "neutral", (-1, -0.3) if stick else (1, 0.0), mug=False)
         with g_.paused():
             kk = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
             phx, phy, _ = _head(rig_hands(kk, rigp, SC["pam"], {}, sex="f", skin=FEMALE), "pam")
@@ -202,6 +206,9 @@ def s73_surface(t):
 
 
 # ---- 7.4 -------------------------------------------------------------------------------------------------------------------
+STAR74 = [330, 600]
+
+
 def _dx74(td):
     """the throne's roll: out toward the gap with the robot's pull, then hauled back and forth (cold test: 46 was
     "easy to miss": a chair's width now)."""
@@ -277,6 +284,15 @@ def s74_cast(t):
         finally:
             kit.MOUTH[0] = None
         h["don"] = _head(o, "don")
+        hd = h["don"]                                                  # (rough cut test: the star on his head in 7.2 was gone
+        if td < 0.8:                                                   # here) it rides on his head; the lunge throws it off
+            STAR74[:] = [hd[0] + 4, hd[1] - hd[2] * 0.92]
+            S6.medal(k_, STAR74[0], STAR74[1], ang=0.3)
+        else:
+            u = min(1.0, (td - 0.8) / 0.47)
+            sx_ = STAR74[0] - 46 * u
+            sy_ = min(f + 6, STAR74[1] - 60 * u + 330 * u * u)
+            S6.medal(k_, sx_, sy_, ang=0.3 - 5.0 * u if u < 1 else 0.1)
         return h
     return cast, DX
 

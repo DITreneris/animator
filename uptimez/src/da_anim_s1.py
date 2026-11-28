@@ -35,7 +35,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, _head, 
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 22
+VER = 23
 OOF_TAKE = "A"
 SHOTS = [("1.1", 1.4), ("1.2", 0.8), ("1.3", 1.0), ("1.3c", 0.6), ("1.3b", 1.0), ("1.4", 1.2), ("1.5", 0.8)]
 
@@ -54,7 +54,7 @@ def s11_surface(t):
     step = ease(seg(td, 0.40, 0.60))                                 # 3 drawings: the back foot steps back onto the tongue
     up = ease(seg(td, 0.80, 1.07))                                   # 4 drawings: he lifts it, the roll comes with it
     jig = 3 * math.sin(td * 30) if td >= 1.07 else 0                 # the roll swinging under the shoe
-    st = dict(dx=13 * step, lift=10 * math.sin(math.pi * step) + 46 * up, up=up, jig=jig,
+    st = dict(dx=13 * step, lift=10 * math.sin(math.pi * step) + 46 * up, up=up, jig=jig, td=td, tailg=seg(td, 1.07, 1.33),
               face="shock" if td >= 0.67 else "confused", look=(0.4, 1.0) if td >= 0.67 else (-1, 0))
     return _s8r(R, st)
 
@@ -112,6 +112,14 @@ def _tug_legs(R, k, x, feet, s, st):
     return x + 56 * s
 
 
+def _tail(k, rx, cy, td, grow=1.0):
+    """the roll's loose end, trailing and flapping (rough cut test 28 Nov, 3/3: the roll on his shoe read as "a wheel he
+    kicks"): a ribbon of the line's own tape unwinding from it says tape."""
+    w_ = math.sin(td * 14.0)
+    L.tape_strip(k, [(rx - 13, cy + 10), (rx - 30 * grow, cy + (40 + 6 * w_) * grow + 10),
+                     (rx - (52 + 9 * w_) * grow, cy + 56 * grow + 10), (rx - (74 - 7 * w_) * grow, cy + (50 - 5 * w_) * grow + 10)], 8.0)
+
+
 def _don_tug(R, k, arms, st):
     """R.don_tug with the face and look of this drawing; then (once lifted) the roll hanging under the back sole."""
     c = k.c
@@ -132,6 +140,8 @@ def _don_tug(R, k, arms, st):
         cy = (rf - r) + (hang[1] - (rf - r)) * st["up"]
         kit.cut(k, [(st["heel"][0] + 2, st["heel"][1] - 1), (st["heel"][0] + 10, st["heel"][1] + 1),
                     (cx + 4, cy - r + 6), (cx - 4, cy - r + 4)], L.pss.TAPE, shadow=False, lw=1.6)   # the tongue
+        if st["up"] >= 1:                                              # (1.1's frame 0 and the loop seam untouched)
+            _tail(k, cx, cy, st.get("td", 0.0), grow=min(1.0, st.get("tailg", 1.0)))
         c.save(); c.translate(cx, cy); c.scale(rs, rs)
         for col, lw in ((kit.INK, 30), (L.pss.TAPE, 25)):
             c.set_source_rgb(*col); c.set_line_width(lw); c.new_path(); c.arc(0, 0, 26, 0, 2 * math.pi); c.stroke()
@@ -310,6 +320,7 @@ def s12_cast(t):
         sy = -lift + (jolt if hit else 0)
         L.tape_strip(k_, [(sole[0] - 4, sole[1] - 1 + sy), ((sole[0] + roll[0]) / 2 + 8, (sole[1] + roll[1]) / 2 + 12 + sy),
                           (roll[0] + 14, roll[1] - 8 + sy)], 9.0)
+        _tail(k_, roll[0], roll[1] + sy, td)
         L.roll_at(k_, roll[0], roll[1] + 18 + sy)
         if hit and td < 0.67:                                          # the hit marks: 4 drawings, bigger
             c.set_source_rgb(*L.INK); c.set_line_width(3.4); c.set_line_cap(1)
@@ -369,6 +380,7 @@ def s13_cast(t):
         k_.c.restore()
         sole = L.sole_of(x, f, s_, 0.7)
         L.tape_strip(k_, [(sole[0] - 4, sole[1]), (sole[0] + 2, sole[1] + 8)], 9.0)
+        _tail(k_, sole[0] + 4, sole[1] + 12, td)
         L.roll_at(k_, sole[0] + 4, sole[1] + 30)
         k_.c.restore()
         L.DON_FEET[0] = (x, f)
@@ -470,6 +482,7 @@ def s13c_cast(t):
         declare("1.3c", k_, t)
         hx, hy, r_ = don_lib(k_, x, f, "shock", (lx, 0.9 - 0.3 * seg(td, 0.0, 0.27)), knee=1.0)
         sole = L.sole_of(x, f, s_)                                     # the roll still on his sole (1.2 -> 1.5)
+        _tail(k_, sole[0] + 4, sole[1] + 12, td)
         L.roll_at(k_, sole[0] + 4, sole[1] + 30)
         d_ = int(round(td * DRAW))
         if d_ in (5, 7):                                               # the twitch: two drawings, a beat apart (28 Nov:

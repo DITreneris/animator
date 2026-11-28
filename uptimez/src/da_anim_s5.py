@@ -30,7 +30,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 7
+VER = 8
 T0 = 34.44
 SHOTS = [("5.1", 1.4), ("5.2", 2.8), ("5.3", 2.0), ("5.3b", 0.6), ("5.4", 2.2)]
 drawn = A.drawn
@@ -245,12 +245,12 @@ def s54_cast(t):
         h = {}
         c = k_.c
         # the robot freezes: its gripper up with a clip, then its head tips (6 degrees), the smile unchanged
-        rx = MARKS["robot_pile"][0] + 40
-        up = ease(seg(td, 0.2, 0.47))
-        T = (rx + 46, F + 64 - (70 + 80 * up) * SC["robot"])
+        rx, rf = 560, F + 24                                           # (rough cut test: behind Mom's legs she "rode" it;
+        up = ease(seg(td, 0.2, 0.47))                                  # now between them, further back)
+        T = (rx + 46, rf - (70 + 80 * up) * SC["robot"])
         L.rp.HEAD_ROT[0] = -0.105 * ease(seg(td, 1.0, 1.27))
         try:
-            h["robot"] = A.robot_canon(k_, rx, F + 64, {1: ("grip", T)}, tilt=0.1, look=(-1, -0.4))
+            h["robot"] = A.robot_canon(k_, rx, rf, {1: ("grip", T)}, tilt=0.1, look=(-1, -0.4))
         finally:
             L.rp.HEAD_ROT[0] = None
         old = sd.CLIPS_V2[0]; sd.CLIPS_V2[0] = True
@@ -272,7 +272,8 @@ def s54_cast(t):
         shadow(k_, x, f + 2, 36)
         face = "shock" if td < 0.8 else "confused"
         o2 = tilted(k_, x, f, 0.10 * shrink, lambda: rig_hands(
-            k_, don_rig(x, f, face, (1, -0.3), s_=SC["don"] * (1 - 0.06 * shrink)), SC["don"] * (1 - 0.06 * shrink), {}))
+            k_, don_rig(x, f, face, (1, -0.3), s_=SC["don"] * (1 - 0.06 * shrink)), SC["don"] * (1 - 0.06 * shrink), {})
+            if not L.don_shoes(k_, x, f, SC["don"] * (1 - 0.06 * shrink)) else None)
         h["don"] = _head(o2, "don")
         declare((("robot", "L", "robot_rest", "at rest"), ("robot", "R", "robot_grip", "the gripper up, a clip in it"),
                  ("mom", "L", "fist", "FIST: on her hip"), ("mom", "R", "fist", "FIST: on her hip"),

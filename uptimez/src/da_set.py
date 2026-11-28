@@ -156,7 +156,20 @@ def _inside_state(k, st, x, y, w, h, cx, heads):
             kit.ellipse(k, cx + 46, y + h - 122, 6, 5, (0.99, 0.86, 0.66), 5330, shadow=False, lw=1.4)
     if st.get("roll") == "held":                                # the blueprint rolled, across the Client's hands
         hx, hy = heads.get("client", (x + 50, 480))[:2]
-        kit.rect(k, hx - 26, hy + 46, 52, 9, (0.22, 0.42, 0.72), 5331, shadow=False, lw=1.6)
+        if ROLL_V2[0]:                                          # opt-in (rough cut test 28 Nov, 6.6: "who is he?" 3/3; the
+            BL = (0.22, 0.42, 0.72)                             # bare blue bar read as a stripe on his shirt): the plan as a
+            kit.rect(k, hx - 44, hy + 42, 86, 14, BL, 5331, shadow=False, lw=1.6)   # roll, its title on it, in his two fists
+            kit.ellipse(k, hx + 42, hy + 49, 4.5, 7, (0.93, 0.95, 1.0), 5332, shadow=False, lw=1.4)   # the rolled end: paper
+            c.set_source_rgb(*BL); c.set_line_width(1.2); c.new_path(); c.arc(hx + 42, hy + 49, 2.2, 0, 5.0); c.stroke()
+            c.select_font_face("DejaVu Sans", 0, 1); c.set_font_size(6.6); c.set_source_rgb(1, 1, 1)
+            ext = c.text_extents("MY GARAGES"); c.move_to(hx - 3 - ext.width / 2, hy + 51.4); c.show_text("MY GARAGES")
+            for fx in (hx - 38, hx + 31):                       # (the title clear between them)
+                kit.ellipse(k, fx, hy + 50, 5.5, 8.5, (0.80, 0.58, 0.45), 5333 + int(fx), shadow=False, lw=1.4)
+                c.set_source_rgba(*INK, 0.7); c.set_line_width(0.9)
+                for dy in (-3.5, 0, 3.5):                       # the knuckles: a fist round it
+                    c.new_path(); c.move_to(fx - 3.5, hy + 50 + dy); c.line_to(fx + 3.5, hy + 50 + dy); c.stroke()
+        else:
+            kit.rect(k, hx - 26, hy + 46, 52, 9, (0.22, 0.42, 0.72), 5331, shadow=False, lw=1.6)
         heads["roll"] = (hx, hy + 50, 14)
     c.set_source_rgba(*IN_WALL, 0.14); c.rectangle(x, y, w, h); c.fill()
     c.restore()
@@ -171,6 +184,7 @@ def _inside_state(k, st, x, y, w, h, cx, heads):
     return heads
 
 
+ROLL_V2 = [False]
 EP15_SET = [False]   # opt-in (Tomas 27 Nov, /grill-me "too many badges and chairs"): in this episode the throne's back
                      # is bare (no OWNER: INVESTOR card, no price tag's blank back), no taped MY GARAGES plan on the
                      # counter, no shredder. Off: every earlier frame byte-identical.

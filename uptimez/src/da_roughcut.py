@@ -16,24 +16,51 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 EP = os.path.join(HERE, "..", "the-double-agent")
 FPS, SR = 30, 48000
-VER = 1
-SCENES = ["da_anim_s1_v22", "da_anim_s2_v7", "da_anim_s3_v10", "da_anim_s4_v7", "da_anim_s5_v7", "da_anim_s6_v7",
-          "da_anim_s7_v4"]
+VER = 2
+SCENES = ["da_anim_s1_v23", "da_anim_s2_v7", "da_anim_s3_v11", "da_anim_s4_v7", "da_anim_s5_v8", "da_anim_s6_v8",
+          "da_anim_s7_v5"]
 LEN81, LEN91 = 4.24, 1.8                                       # da_timing_v4
-TAKE81 = ("B", 1.4)                                            # da_timing_v4's pick and take_at
+TAKE81 = ("B", 1.7)                                            # da_timing_v4's pick; at 1.4 + the 0.3 s hold (as the pull ends)
+
+
+HOLD0 = 0.3                                                    # (rough cut test: the cut from 7.4 straight into the pull-back
+                                                               # read as "a jerky zoom", 2/3) frame 0 held before the pull
+BLINKS = ((2.33, 2.6), (3.47, 3.67))                           # Father's lids, in 8.1's time (the held still was dead, 2.7 s)
+
+
+def _still(blink):
+    """S8 v12 drawn here with da_s8's own layers (pu.setup has set v12's flags); blink: Father's lids shut."""
+    import da_s8 as s8
+    import da_set as ds
+    import dh_cast as dhc
+    import da_push91 as pu
+    keep = dhc.BLINK[0]; dhc.BLINK[0] = blink
+    try:
+        with ds.no_badges():
+            return pu.to_pil(s8._frame(s8.frame, scale=2))
+    finally:
+        dhc.BLINK[0] = keep
 
 
 def frames_89(tmp):
     """8.1 + 9.1 drawings at 540x960, written as PNGs; returns the count."""
     sys.path.insert(0, HERE)
     import da_push91 as pu
-    from PIL import Image
+    from PIL import Image, ImageChops
     pu.V[0] = "v12"
     pull = pu.pull81(EP)
     push = pu.main(EP)
     hold = Image.open(os.path.join(EP, pu.FILES["v12"][0])).convert("RGB")
+    again = _still(False).convert("RGB")
+    assert ImageChops.difference(hold, again).getbbox() is None, "S8 v12 redrawn here is not the file"
+    shut = _still(True).convert("RGB")
     n81 = int(round(LEN81 * FPS))
-    seq = pull + [hold] * (n81 - len(pull)) + push
+    n0 = int(round(HOLD0 * FPS))
+    seq81 = [pull[0]] * n0 + pull
+    while len(seq81) < n81:
+        t = len(seq81) / FPS
+        seq81.append(shut if any(a_ <= t < b_ for a_, b_ in BLINKS) else hold)
+    seq = seq81 + push
     for i, im in enumerate(seq):
         im.resize((540, 960), Image.LANCZOS).save(os.path.join(tmp, "%04d.png" % i))
     return len(seq), n81

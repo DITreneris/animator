@@ -28,7 +28,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 10
+VER = 11
 T0 = 16.28
 SHOTS = [("3.1", 1.61), ("3.2", 1.2), ("3.2b", 0.7), ("3.3", 2.4), ("3.4", 4.05), ("3.5", 1.6)]
 drawn = A.drawn
@@ -82,18 +82,27 @@ def s31_cast(t):
         T = (x - 130 * s_ + shake + (1 - up) * 70 * s_, f - (400 - (1 - up) * 190) * s_)
 
         def cup_up(kk, P, w):
+            """(rough cut test 28 Nov, 2/3 "a lampshade"): not upside down but tipped over by its handle, its mouth
+            down and to the side, the inside stained, one last drop out of it as he shakes it."""
             c = kk.c; u = 1.35
-            cx_, top = P[0] - 16 * u, P[1] - 4 * u
-            kit.cut(kk, [(cx_ - 9 * u, top), (cx_ + 9 * u, top), (cx_ + 13 * u, top + 26 * u), (cx_ - 13 * u, top + 26 * u)],
-                    (0.98, 0.98, 0.96), shadow=False, lw=1.8)
-            kit.ellipse(kk, cx_, top + 26 * u, 13 * u, 3.6 * u, (0.86, 0.86, 0.84), 3101, shadow=False, lw=1.6)
+            A_ = -2.75                                                  # (at -1.9 it pointed away from his open mouth: a megaphone)
+            c.save(); c.translate(P[0], P[1]); c.rotate(A_); c.translate(-18 * u, -12 * u)
+            kit.cut(kk, [(-13 * u, 0), (13 * u, 0), (9 * u, 26 * u), (-9 * u, 26 * u)], (0.98, 0.98, 0.96), shadow=False, lw=1.8)
             c.set_source_rgb(*kit.INK); c.set_line_width(4.2)
-            c.new_path(); c.arc(cx_ + 12 * u, top + 12 * u, 6 * u, -1.4, 1.4); c.stroke()
+            c.new_path(); c.arc(12 * u, 12 * u, 6 * u, -1.4, 1.4); c.stroke()
             c.set_source_rgb(0.98, 0.98, 0.96); c.set_line_width(2.0)
-            c.new_path(); c.arc(cx_ + 12 * u, top + 12 * u, 6 * u, -1.4, 1.4); c.stroke()
+            c.new_path(); c.arc(12 * u, 12 * u, 6 * u, -1.4, 1.4); c.stroke()
+            kit.ellipse(kk, 0, 0, 13 * u, 4.2 * u, (0.52, 0.36, 0.22), 3101, shadow=False, lw=1.6)   # its mouth: a stain, empty
+            c.restore()
+            dx_, dy_ = -18 * u, -12 * u
+            rim = (P[0] + dx_ * math.cos(A_) - dy_ * math.sin(A_), P[1] + dx_ * math.sin(A_) + dy_ * math.cos(A_))
+            if 0.47 <= td < 1.0:                                       # the last drop
+                fall = (td - 0.47) / 0.53
+                c.set_source_rgb(0.42, 0.27, 0.15); c.new_path()
+                c.arc(rim[0] - 6, rim[1] + 8 + 70 * fall * fall, 3.4, 0, 2 * math.pi); c.fill()
             import da_hand_gate as g_                                  # the cups canon: the cup itself says it's held
-            g_.vessel(kk, "cup", "held", handle=P, base=(cx_, top),     # (upside down: its foot is up)
-                      rect=(cx_ - 14 * u, top - 2 * u, 34 * u, 30 * u))
+            g_.vessel(kk, "cup", "held", handle=P, base=rim,
+                      rect=(min(rim[0], P[0]) - 22 * u, min(rim[1], P[1]) - 16 * u, 50 * u, 44 * u))
         declare((("don", "L", "pinch_pinky", "CUP_GRIP: the empty cup by its handle, up over his shoulder"),
                  ("don", "R", "quiet", "quiet")), k_)
         kit.MOUTH[0] = 0.8 if talking("3.1", t) else None
@@ -264,14 +273,14 @@ def s34_cast(t):
     def cast(k_):
         h = {}
         c = k_.c
-        rx = MARKS["robot_pile"][0] + 40
+        rx, rf = 738, F + 24                                           # (rough cut test: behind Mom's legs she "rode" it)
         declare((("robot", "L", "robot_rest", "at rest"), ("robot", "R", "robot_grip", "gripper up, frozen"),
                  ("don", "L", "quiet", "quiet"), ("don", "R", "quiet", "quiet"),
                  ("mom", "L", "fist", "FIST: on her hip (Mom v1, the hand library)"),
                  ("mom", "R", "fist", "FIST: on her hip")), k_)
         L.rp.HEAD_ROT[0] = -0.105 * ease(seg(td, 0.6, 0.87))          # (review 28 Nov) frozen, gripper up: its head tips
         try:                                                           # 6 degrees, the smile identical
-            h["robot"] = A.robot_canon(k_, rx, F + 64, {1: ("grip", (rx + 46, F + 64 - 150 * SC["robot"]))}, tilt=0.1,
+            h["robot"] = A.robot_canon(k_, rx, rf, {1: ("grip", (rx + 46, rf - 150 * SC["robot"]))}, tilt=0.1,
                                        look=(-1, -0.4))
         finally:
             L.rp.HEAD_ROT[0] = None
@@ -290,6 +299,7 @@ def s34_cast(t):
         c.translate(x, f); c.rotate(ang); c.translate(-x, -f)
         hd["h"] = rig_hands(k_, lambda kk, a4: dp.don(kk, x, f, SC["don"], a4, dface, (1, -0.8), chin=1, hands=False),
                             SC["don"], {})
+        L.don_shoes(k_, x, f, SC["don"])                               # (his trousers ended in nothing: "a box")
         c.restore()
         hx, hy, r_ = _head(hd["h"], "don")
         h["don"] = (hx, hy - 12, r_)

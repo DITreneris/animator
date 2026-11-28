@@ -255,6 +255,18 @@ def rig_hands(k, draw, scale, jobs, sex="m", skin=MALE):
 
 
 # ---- Don's raised leg (the Father audit 27 Nov: "the thigh a balloon, the knee and shin unclear, the shoe apart") ------
+def don_shoes(k, x, feet, s):
+    """opt-in (rough cut test 28 Nov, 3.4/5.4: his standing trousers end in nothing, "a box"): two shoes under the hems,
+    toes out, in don_legs_ep's shoe colour. Call it after the rig, in the rig's own transform."""
+    c = k.c
+    c.save(); c.translate(x, feet); c.scale(s, s)
+    for sg in (-1, 1):
+        c.new_path(); c.move_to(sg * 6, -11); c.line_to(sg * 44, -11); c.curve_to(sg * 58, -9, sg * 62, -1, sg * 58, 3)
+        c.line_to(sg * 6, 3); c.close_path()
+        c.set_source_rgb(0.24, 0.18, 0.13); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(2); c.stroke()
+    c.restore()
+
+
 def don_legs_ep(k, x, feet, s, u):
     """don_ps._legs for this episode (don_ps unchanged; swapped in while the layouts draw): the screen-left leg
     planted; the screen-right one a clear chain hip -> thigh -> knee -> shin -> shoe: a thigh narrower than it is long,
