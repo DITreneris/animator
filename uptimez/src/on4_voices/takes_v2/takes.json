@@ -94,5 +94,17 @@
   ],
   "ok": 3,
   "len": 0.87
+ },
+ "d3": {
+  "shot": "7.2",
+  "who": "DON",
+  "text": "Only for you.",
+  "asr": [
+   "only for you.",
+   "Only for you.",
+   "only for you."
+  ],
+  "ok": 3,
+  "len": 1.09
  }
 }

@@ -573,6 +573,9 @@ def draw_cast(k, cast):
                 o = oc.don_cop2(k, *a, **kw)
             if clip_y is not None:
                 k.c.restore()
+        elif who == "don_office":                            # (28 Nov) the office's own Don (vest, stain, headset), the new ending
+            import don_ps as _dps
+            o = _dps.don(k, *a, **kw)
         elif who == "sofia":                                  # board v2: her phone, not the clipboard (read as one)
             kw.setdefault("tablet_kind", None)
             o = sd.sofia(k, *a, **kw)
@@ -1125,6 +1128,9 @@ def _to_screen(cam, p):
     return (270 + (p[0] - fx) * z, 480 + (p[1] - fy) * z)
 
 
+MUG_END = [False]                                          # (28 Nov) the mug ending: Sofia's "Only for you." is out (Don says it, on4_rough.NEW)
+DESK_EXTRA = [None]                                        # (28 Nov) a prop drawn on the counter before the front cast (Don's mug in her hand: his fingers over it)
+NO_CUPS = [False]                                          # (28 Nov, Tomas: "seven cups of coffee, a bad idea") the new ending: no cups, no rota on the counter
 OFFICE_MUTE = [False]                                      # (24 Nov, review of the heart) the machine grey and the screen quieter: the heart leads
 
 
@@ -1157,12 +1163,15 @@ def _desk(k, sh, eighth):
         pam_over(k_)
         dp.coffee_machine(k_, 770 + (8 if OFFICE_MUTE[0] else 0), pr.F - 166, 0.62 * (0.87 if OFFICE_MUTE[0] else 1.0), "ok")   # (review) 13 % smaller: a prop, not an actor
         pr.counter_lamp(k_, *pr.LAMP)
-        pr.cups(k_, x0=668, eighth=eighth)
-        if sh["id"] == "8.1":
+        if not NO_CUPS[0]:
+            pr.cups(k_, x0=668, eighth=eighth)
+        if sh["id"] == "8.1" and not NO_CUPS[0]:
             c_ = k_.c                                        # board v9: laid flat over the cups (foreshortened), its shadow
             c_.save(); c_.translate(736, pr.F - 172); c_.scale(1, 0.5)
             c_.set_source_rgba(0, 0, 0, 0.3); c_.rectangle(-36, -40, 76, 96); c_.fill()
             pr.rota(k_, 0, 0, 0.34, 0.10); c_.restore()
+        if DESK_EXTRA[0]:
+            DESK_EXTRA[0](k_)
         heads.update(draw_cast(k_, front))
         if sh["after"]:
             sh["after"](k_)
@@ -1278,6 +1287,8 @@ def _timing():
         tm[i_] = e
         t += dur
     d = dict(d); d["length"] = round(t, 2)
+    if MUG_END[0]:
+        d["lines"] = {k_: v for k_, v in d["lines"].items() if k_ != "s1"}
     return tm, d
 
 

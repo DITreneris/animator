@@ -271,8 +271,8 @@ def sleep_mask(k, hx, hy, s, up=False):
     ears(k, hx, hy + dy + 40, s, SLEEP, SLEEP_DARK, 0.55)
 
 
-def pam_awake(k, x, feet, s=0.54, mask="down", face="neutral", look=(0, 0), pose="stand"):
-    o = pm_ps.pam(k, x, feet, s, pose, face, look, mug=False, glasses="off" if mask == "down" else "low")
+def pam_awake(k, x, feet, s=0.54, mask="down", face="neutral", look=(0, 0), pose="stand", mug=False):
+    o = pm_ps.pam(k, x, feet, s, pose, face, look, mug=mug, glasses="off" if mask == "down" else "low")   # mug (28 Nov): pm_ps's held mug, in her hand's own coordinates
     hx, hy = o["head"]
     if mask:
         sleep_mask(k, hx, hy, s, up=(mask == "up"))

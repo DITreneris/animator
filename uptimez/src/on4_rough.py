@@ -133,6 +133,37 @@ def load(p):
     return a.astype(np.float64)
 
 
+SPEED = {}                                                 # (28 Nov, the trim) shot -> its new length / its old: sounds tied to a shot's drawings move with them
+MUG = [False]                                              # (28 Nov) the mug ending's sounds (on4_film sets it)
+
+
+def _smack(sr):
+    """one loud kiss on a mug: a wet click, a lip pop under it"""
+    n = int(0.12 * sr); tt = np.arange(n) / sr
+    rng = np.random.default_rng(11)
+    click = rng.standard_normal(n) * np.exp(-tt / 0.006)
+    pop = np.sin(2 * np.pi * (520 - 2600 * tt) * tt) * np.exp(-tt / 0.035)
+    return np.tanh((0.8 * np.convolve(click, np.ones(4) / 4, "same") + 0.9 * pop) * 2.2) * 0.9
+
+
+def _mug_fx(put, rs, st_, fx, so, dd, sx):
+    """Don's steps in and out, the mug set on her palm, the SMACK, the drawer out, the mug into its gap, the handle,
+    the drawer shut, her hand back up"""
+    t2 = st_("7.2")
+    for j, dt in enumerate((0.05, 0.38, 0.71, 1.55, 1.88, 2.21)):                                # his shoes
+        put(fx, rs(sx.slipper(0.12), sx.SR), t2 + dt, 0.75 + 0.1 * (j % 2))
+    put(fx, rs(dd.tick(1900), dd.SR), t2 + 1.12, 0.55)                                            # ceramic on her palm
+    put(fx, _smack(SR), st_("7.5") + 0.86, 0.70)                                                  # SMACK (too loud, on purpose)
+    t6 = st_("7.6")
+    put(fx, rs(sx.scrape(0.30), sx.SR), t6 + 0.0, 0.35)                                           # the drawer out
+    for dt, f_ in ((0.68, 1700), (0.71, 2600)):                                                   # the mug down among the others
+        put(fx, rs(dd.tick(f_), dd.SR), t6 + dt, 0.45)
+    put(fx, rs(dd.tick(3200), dd.SR), t6 + 1.15, 0.30); put(fx, rs(dd.tick(3000), dd.SR), t6 + 1.28, 0.30)   # the handle turned, click, click
+    t8 = st_("8.1")
+    put(fx, rs(sx.scrape(0.18), sx.SR), t8 + 0.0, 0.30); put(fx, rs(sx.thunk(0.22, 90), sx.SR), t8 + 0.16, 0.6)   # the drawer shut
+    put(fx, rs(sx.rustle(0.16), sx.SR), t8 + 0.78, 0.25); put(fx, rs(sx.rustle(0.12), sx.SR), t8 + 0.92, 0.22)   # her sleeve: the hand up, two steps
+
+
 def sound(tm, d, total):
     del HITS[:]
     import sound_on as so
@@ -178,11 +209,13 @@ def sound(tm, d, total):
     put(fx, tone, o0, 0.14)                                                                         # about 28 dB under her line (measured)
     put(fx, rs(so.hiss(1.1), so.SR), o0 + 0.1, 0.30)                                                # the machine lets off steam
     put(fx, rs(dd.pour(0.9), dd.SR), st_("7.5") + 0.3, 0.10)                                        # and drips on
-    for j in range(3):                                                                              # Sofia comes up to the counter
+    if MUG[0]:
+        _mug_fx(put, rs, st_, fx, so, dd, sx)
+    for j in range(0 if MUG[0] else 3):                                                             # Sofia comes up to the counter
         put(fx, rs(sx.slipper(0.11), getattr(sx, "SR", SR)), st_("7.2") + (0.08 + j * 0.24 if END2[0] else 0.15 + j * 0.36), 0.5 + 0.1 * (j % 2))
-    for t0 in (st_("7.3") + 0.2, st_("7.5") + (0.15 if END2[0] else 1.2)):                                                 # paper: the rota, then in her hands
+    for t0 in (() if MUG[0] else (st_("7.3") + 0.2, st_("7.5") + (0.15 if END2[0] else 1.2))):                                                 # paper: the rota, then in her hands
         put(fx, rs(so.swish(0.22), so.SR), t0, 0.22); put(fx, rs(so.swish(0.16), so.SR), t0 + 0.2, 0.16)
-    put(fx, rs(so.thump(), so.SR), st_("8.1") + 0.5, 0.45)                                          # her head back on the counter
+    put(fx, rs(so.thump(), so.SR), st_("8.1") + (0.55 if MUG[0] else 0.5), 0.45)                    # her head back on the counter
     span31 = tm["3.1"]["dur"] + tm["3.2"]["dur"]
     bump = st_("3.1") + span31 * 21.0 / 32.0                 # T3's hit drawing
     toot = st_("3.1") + span31 * 12.0 / 32.0
@@ -218,7 +251,7 @@ def sound(tm, d, total):
         if SCENE3[0] == "cross":                             # (24 Nov) the crossing in four shots (on4_cross): the sounds on its drawings
             import on4_cross as xc
             T3N = float(len(m_.TESTS["T3"]())) if False else 48.0
-            W, R, B, G = (lambda i: st_("3.3") + i / 12.0), (lambda i: st_("3.3b") + i / 12.0), (lambda i: st_("3.4") + i / 12.0), (lambda i: st_("3.5") + i / 12.0)
+            W, R, B, G = (lambda i: st_("3.3") + i / 12.0 * SPEED.get("3.3", 1.0)), (lambda i: st_("3.3b") + i / 12.0 * SPEED.get("3.3b", 1.0)), (lambda i: st_("3.4") + i / 12.0 * SPEED.get("3.4", 1.0)), (lambda i: st_("3.5") + i / 12.0 * SPEED.get("3.5", 1.0))
             e0, e1 = st_("3.1") + span31 * 15.0 / T3N, B(8)                                          # the engine: in with the car, idling, away with it
             te = np.arange(int((e1 - e0) * SR)) / SR
             f0 = 44 + 3 * np.sin(2 * np.pi * 0.7 * te) + 22 * np.clip((te - (R(33) - e0)) / 1.2, 0, 1); ph = 2 * np.pi * np.cumsum(f0) / SR
@@ -296,7 +329,7 @@ def sound(tm, d, total):
         put(fx, rs(so.thump(), so.SR), crash + 0.17, 0.9)                                           # (the review) and she lands inside it: a duller one after the clang
     put(fx, rs(so.metal_click(900, 0.12), so.SR), crash + 0.55, 0.5)                                # the lid lifts
     put(fx, rs(so.swish(0.2), so.SR), crash + 1.3, 0.4); put(fx, rs(so.pop(), so.SR), crash + 1.62, 0.5)   # the peel flicked, landed
-    put(fx, rs(so.thump(), so.SR), st_("3.6") + 16 / 12.0, 1.3)                                     # v9: dropped at the club's door
+    put(fx, rs(so.thump(), so.SR), st_("3.6") + 16 / 12.0 * SPEED.get("3.6", 1.0), 1.3)                                     # v9: dropped at the club's door
     a0 = st_("6.0")                                                                                 # v13: her act: the band is silent; a snare and a cymbal
     import scipy.signal as sg_
     def roll(d, lvl0=0.5, lvl1=1.0):
@@ -327,8 +360,8 @@ def sound(tm, d, total):
         put(fx, rs(so.swish(0.14), so.SR), f0 + j / 12.0, 0.3)                                      # the coat brushed off
     if "4.4" in tm:                                                                                 # the final film: her way in, the knife at the envelope
         for j in range(4):
-            put(fx, rs(sx.slipper(0.11), getattr(sx, "SR", SR)), st_("4.4") + 0.15 + j * 0.3, 0.45)
-        put(fx, rs(so.swish(0.5), so.SR), st_("4.4") + 1.35, 0.5)                                    # the curtain
+            put(fx, rs(sx.slipper(0.11), getattr(sx, "SR", SR)), st_("4.4") + (0.15 + j * 0.3) * SPEED.get("4.4", 1.0), 0.45)
+        put(fx, rs(so.swish(0.5), so.SR), st_("4.4") + 1.35 * SPEED.get("4.4", 1.0), 0.5)                                    # the curtain
         put(fx, rs(so.metal_click(900, 0.12), so.SR), st_("6.1") + 0.6, 0.6)                         # the knife out of the boards
         put(fx, rs(so.swish(0.25), so.SR), st_("6.1") + 0.98, 0.6)                                   # the slit
     r0 = st_("8.2") - 0.8

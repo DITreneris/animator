@@ -1177,6 +1177,10 @@ EYES2 = (230, 270, 688, 10)                                  # the eyes in the d
 END_HOLD = [14]                                              # the drawings she lies for before the room goes dark (film v16: 6)
 
 
+MUG_HEART = [None]                                           # (28 Nov, Tomas) f(cairo ctx, x, y): the mug ending's object under the loop's heart, in place of the envelope
+END81 = [None]                                               # (28 Nov, the mug ending) a function (cam) -> 8.1's drawing: the dark comes on it; no held 8.1 keys here
+
+
 def t5():
     import on4_props as pr
     import random
@@ -1193,7 +1197,7 @@ def t5():
             finally:
                 sc.BREATH[0] = 1.0
         held81 = lazy(held81)
-        for i in range(END_HOLD[0]):
+        for i in range(0 if END81[0] else END_HOLD[0]):
             fr.append(held81(1.0 + 0.011 * math.sin(2 * math.pi * i / 16.0)))   # the rota over the cups, her head down; asleep, she breathes
     else:
       for _ in range(6):
@@ -1205,7 +1209,7 @@ def t5():
         for m, _f in held:                                   # v5: no shredder in the last shot (seen in the dark by both cold viewers)
             m.shredder = lambda *a, **kw: None
         try:
-            s = draw(shot("8.1", cam=b, protect=()))
+            s = END81[0](b) if END81[0] else draw(shot("8.1", cam=b, protect=()))
         finally:
             for m, f_ in held:
                 m.shredder = f_
@@ -1216,9 +1220,12 @@ def t5():
             gw.add_color_stop_rgba(0, r_ / 255.0, g_ / 255.0, b_ / 255.0, 1); gw.add_color_stop_rgba(1, r_ / 255.0, g_ / 255.0, b_ / 255.0, 0)
             cw.set_source(gw); cw.rectangle(0, 0, 258, 92); cw.fill()
         c0 = cairo.Context(s)                                # the internal-mail envelope, leaning on the monitor's foot (its heart where frame 0's neon heart is)
-        c0.save(); c0.translate(HX, HY + 16); c0.rotate(-0.08)
-        c0.rectangle(-24, -30, 48, 40); c0.set_source_rgb(*pr.ENV); c0.fill_preserve(); c0.set_source_rgb(*INK); c0.set_line_width(1.6); c0.stroke()
-        c0.restore()
+        if MUG_HEART[0]:
+            MUG_HEART[0](c0, HX, HY)
+        else:
+            c0.save(); c0.translate(HX, HY + 16); c0.rotate(-0.08)
+            c0.rectangle(-24, -30, 48, 40); c0.set_source_rgb(*pr.ENV); c0.fill_preserve(); c0.set_source_rgb(*INK); c0.set_line_width(1.6); c0.stroke()
+            c0.restore()
         s = dark(s, 0.88 * d, ax, ay + 20)
         c0 = cairo.Context(s)                                # its heart, after the dark: it stays lit, the one red, and turns into frame 0's
         g = cairo.RadialGradient(HX, HY, 4, HX, HY, 80)

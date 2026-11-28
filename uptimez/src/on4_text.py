@@ -32,6 +32,7 @@ _done = [False]
 _FR = {}                                                     # a motion test's drawings, made once
 LINGER = 0.20
 SHOW_TO = {}                                                 # key -> film time its bubble goes (before the voice ends: "Excuse me?" comes off as she tips)
+AVOID = {}                      # key -> screen rects its bubble keeps off (v25: her raised hand and his mug in 7.2, the shot's whole action)
 NO_FOLLOW = set()                                            # bubbles that stay where they were put while the speaker falls away
 CARD_HALO = [True]                                                # a bubble stays this long after its last word (never over a cut)
 
@@ -115,6 +116,9 @@ def install():
     if _done[0]:
         return
     _done[0] = True
+    if an.MUG_END[0]:                                        # (28 Nov) the mug ending: the office's Don says "Only for you."
+        import don_ps
+        _wrap(don_ps, "don", "don")
     _wrap(oc, "pam_cat", "pam"); _wrap(oc, "don_cop2", "don"); _wrap(co, "client", "client"); _wrap(sd, "sofia", "sofia"); _wrap(oc, "pam_awake", "pam_awake")
     g0 = m.Lazy.get
     def get(self):
@@ -233,7 +237,7 @@ def put(s, line, heads, pin=None):
         return o, ["NO HEAD measured for %s" % who], None
     before = gate.snapshot(o)
     others = [v for k_, v in heads.items() if k_ != me]
-    box, tip = speech.draw(c, txt, heads[me], others=others, pin=pin)
+    box, tip = speech.draw(c, txt, heads[me], others=others, pin=pin, avoid=([] if key == "e1" else [gate.RAIL]) + AVOID.get(key, []) if an.MUG_END[0] else ())   # v25: never put in the button rail ("Excuse me?" was, for 2 drawings)
     return o, gate.check(o, box, tip, [heads[me]] + others, before=before), box
 
 
@@ -374,12 +378,17 @@ def film_frames(tmp):
     WX.HITS[:] = list(r.HITS)
     if getattr(F, "V23", False) and "e1" in r.NEW:
         SHOW_TO["e1"] = tm["3.2"]["start"] + 1.42; NO_FOLLOW.add("e1")      # off as she tips; it stays where it was said
+    if an.MUG_END[0] and "d3" in r.NEW:                     # v24: Don's "Only for you." stays where he said it and is gone before he walks out of frame
+        SHOW_TO["d3"] = tm["7.2"]["start"] + 1.58          # he stands still from 0.5 s to 1.6 s: said and gone inside that
+        NO_FOLLOW.discard("e1")                             # v25: "Excuse me?" goes with her cheek as she sways (pinned, it was re-placed on 9 drawings: a jump)
     d = sc._timing()[1]
     total = sum(v["dur"] for v in tm.values())
     ids = [x["id"] for _, ss in sc.SCENES for x in ss]
     n = 0; cuts = []; i = 0; faults = {}; state = {}
     def one(make, shot_id):
         T = n / float(F.DPS)
+        if SEG[0] and not (SEG[0][0] <= T < SEG[0][1]):      # a stretch only: the drawings outside it are not made
+            return
         clock(T, total, ls); HEADS.clear()
         WX.T[0] = T; WX.RAMP[0] = min(1.0, T / 0.6); WX.TOTAL[0] = total; cl_.CLOCK_T[0] = T
         m.LOOP_RAIN[0] = 0.0; m.LOOP_MIX[0] = 0.0
@@ -425,8 +434,7 @@ def film_frames(tmp):
         if grp:
             t_, a, b = F.MOT[grp]
             fr = seq2(t_)[a:b]
-            pick = fr[:count] if len(fr) >= count else [fr[min(len(fr) - 1, int(j * len(fr) / count))] for j in range(count)]
-            for x in pick:
+            for x in F.pick(fr, span, tm, count):
                 one(lambda: fresh(x), ids[i]); n += 1
         else:
             f, _dur = an.SHOTS[ids[i]]
@@ -436,6 +444,32 @@ def film_frames(tmp):
         i += len(span)
     CLOCK["live"] = False
     return tm, d, n, cuts, faults
+
+
+SEG = [None]                                                 # (a, b) seconds: film_seg's stretch
+
+
+def film_seg(a, b, out):
+    """one stretch of the film with its sound, for a look before a full render (a full one takes 13 minutes)"""
+    import shutil, subprocess, os
+    tmp = "/tmp/on4_seg"; shutil.rmtree(tmp, ignore_errors=True); os.makedirs(tmp)
+    SEG[0] = (a, b)
+    try:
+        tm, d, n, cuts, faults = film_frames(tmp)
+    finally:
+        SEG[0] = None
+    total = n / float(F.DPS)
+    mix, marks, ev = r.sound(tm, d, total)
+    F.master(mix, tmp)
+    n0 = min(int(x[:5]) for x in os.listdir(tmp) if x.endswith(".png"))
+    t_ = out[:-4] + "_tmp.mp4"
+    q = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(F.DPS), "-start_number", str(n0), "-i", tmp + "/%05d.png",
+                        "-ss", "%.3f" % (n0 / float(F.DPS)), "-i", tmp + "/a.wav", "-vf", "format=yuv420p", "-c:v", "libx264", "-crf", "18",
+                        "-preset", "veryfast", "-c:a", "aac", "-b:a", "192k", "-shortest", t_])
+    if q.returncode == 0:
+        os.replace(t_, out)
+    print("SEG", out, round(total, 2), "s whole;", {k_: (len(v), v[0], v[-1]) for k_, v in faults.items()})
+    print("MARKS", [(k_, t0) for k_, t0 in marks if a - 1 <= t0 <= b])
 
 
 def film():
@@ -457,4 +491,8 @@ def film():
 
 
 if __name__ == "__main__":
-    film()
+    import sys
+    if len(sys.argv) >= 4 and sys.argv[1] == "seg":
+        film_seg(float(sys.argv[2]), float(sys.argv[3]), sys.argv[4] if len(sys.argv) > 4 else "/tmp/on4_seg.mp4")
+    else:
+        film()

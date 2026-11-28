@@ -46,11 +46,23 @@ def _fs(c, col, lw=2.0):
     c.set_source_rgb(*col); c.fill_preserve(); c.set_source_rgb(*INK); c.set_line_width(lw); c.stroke()
 
 
+LAMP_FOOT = [False]                                          # (28 Nov, review of the mug ending's close shots: the flat black foot read as "a plate in the air")
+
+
 def counter_lamp(k, x, base, s=1.0, on=True):
     """(x, base): the middle of its foot on the counter top. The head hangs at (x - 40s, base - 90s)."""
     c = k.c
     c.save(); c.translate(x, base); c.scale(s, s)
-    c.save(); c.scale(1, 0.32); c.new_path(); c.arc(0, 0, 18, 0, 2 * math.pi); c.restore(); _fs(c, INK, 1.6)   # the foot
+    if LAMP_FOOT[0]:                                         # a metal foot that sits on the counter: its shadow, a dome, a shine
+        c.save(); c.translate(3, 2); c.scale(1, 0.30); c.new_path(); c.arc(0, 0, 22, 0, 2 * math.pi); c.restore()
+        c.set_source_rgba(0, 0, 0, 0.18); c.fill()
+        c.save(); c.scale(1, 0.32); c.new_path(); c.arc(0, 0, 18, 0, 2 * math.pi); c.restore(); _fs(c, (0.34, 0.34, 0.37), 1.6)
+        c.save(); c.translate(0, -2.5); c.scale(1, 0.26); c.new_path(); c.arc(0, 0, 11, math.pi, 2 * math.pi); c.restore()
+        c.set_source_rgb(0.24, 0.24, 0.26); c.fill()
+        c.save(); c.scale(1, 0.32); c.new_path(); c.arc(0, 0, 14, math.pi * 1.15, math.pi * 1.55); c.restore()
+        c.set_source_rgba(1, 1, 1, 0.55); c.set_line_width(1.4); c.stroke()
+    else:
+        c.save(); c.scale(1, 0.32); c.new_path(); c.arc(0, 0, 18, 0, 2 * math.pi); c.restore(); _fs(c, INK, 1.6)   # the foot
     c.set_source_rgb(*INK); c.set_line_width(4); c.move_to(0, 0); c.line_to(0, -96); c.stroke()             # the post
     c.set_line_width(3); c.move_to(0, -96); c.curve_to(-14, -110, -32, -108, -40, -92); c.stroke()             # the bracket,
     c.restore()                                                                         # in from the right, as frame 0's
@@ -271,3 +283,24 @@ def sheet(out="../office-noir-4/on4_props_sheet_v2.png", phone="../office-noir-4
 
 if __name__ == "__main__":
     print(sheet())
+
+
+def don_mug(k, x, base, s=1.0, tilt=0.0, handle=1):
+    """(28 Nov, the new ending, Tomas's pick: Don's empty mug into her raised hand) Don's own mug: white, CEO in big navy
+    letters (he gives himself titles), a dried coffee drip from the rim and his ketchup thumbprint on the side (the stain he
+    always wears). (x, base): the middle of its bottom. Empty: no steam."""
+    c = k.c
+    c.save(); c.translate(x, base); c.rotate(tilt); c.scale(s, s)
+    a0, a1 = (-math.pi / 2, math.pi / 2) if handle > 0 else (math.pi / 2, 3 * math.pi / 2)    # handle: +1 on the right, -1 on the left
+    for col, lw in ((INK, 8), ((0.97, 0.97, 0.95), 4.5)):                                   # the handle
+        c.new_path(); c.arc(17 * handle, -24, 11, a0, a1); c.set_source_rgb(*col); c.set_line_width(lw); c.stroke()
+    _rr(c, -17, -48, 34, 48, 4); _fs(c, (0.97, 0.97, 0.95), 2.2)
+    c.save(); c.translate(0, -48); c.scale(17, 3.8); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    _fs(c, (0.36, 0.24, 0.16), 1.6)                                        # the dregs: empty
+    c.set_source_rgb(0.45, 0.30, 0.18)                                     # a dried drip from the rim
+    c.new_path(); c.move_to(9, -46); c.curve_to(10, -40, 8, -36, 10, -31); c.curve_to(12, -36, 12, -42, 13, -46); c.close_path(); c.fill()
+    c.select_font_face("Lilita One", 0, 0); c.set_font_size(17)
+    e = c.text_extents("CEO"); c.move_to(-e.width / 2 - e.x_bearing - 1, -17); c.set_source_rgb(0.12, 0.20, 0.42); c.show_text("CEO")
+    c.set_source_rgb(*RED)                                                 # his ketchup thumbprint, low on the side
+    c.save(); c.translate(-9, -7); c.rotate(0.5); c.scale(5.5, 4.0); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    c.restore()

@@ -656,6 +656,276 @@ def a75(t):
 SHOTS = {"1.3": (a13, 2.91), "1.4": (a14, 2.8), "2.1": (a21, 2.2), "4.1": (a41, 2.6), "4.3": (a43, 2.9), "5.1": (a51, 1.2), "5.3": (a53, 2.3), "5.3b": (a53b, 2.3), "6.1": (a61, 2.0), "6.2": (a62, 1.6), "7.1": (a71, 1.4), "7.2": (a72, 3.2), "7.3": (a73, 1.4), "7.4": (a74, 2.0), "7.5": (a75, 2.8)}
 
 
+# ---- MUG_END (28 Nov, Tomas's /grill-me after cold viewers missed the coffee rota's joke) -----------------------------
+# Don's empty CEO mug into her raised hand without a look; she wakes, it is HIS: to her cheek, a pause, one SMACK of a
+# kiss that leaves a coffee mark on the tip of her nose (a cat's nose; she never notices); the drawer: fifteen of his
+# mugs and one gap, she puts it in and turns its handle to line up with the others; the drawer shuts, the mask comes
+# down and her open hand goes up again by itself, ready for tomorrow's. No rota, no cups. Stills v1/v2 and two reviews
+# (round 2: the drawer heavier, the handle turned, cheek+kiss as one beat, the mark clear of her mouth, the hand back
+# up mechanically). Cameras pushed in (Tomas: "is she big enough, does the counter dominate?").
+MUG_END = [False]
+import on4_props as _pr
+import hands_ps as _hp
+import pm_ps as _pm
+CAM71 = (704, 606, 4.0)                                        # 7.1 / 8.1: her head in the upper third, the counter low
+CAM72 = (752, 640, 3.4)                                        # 7.2: Don from the waist up beside her
+CAM73 = (704, 612, 4.4)                                        # 7.3 / 7.5: her face big
+SKIN = (0.99, 0.86, 0.70)
+COFFEE = (0.36, 0.22, 0.12)
+NOSE = (0.0, 19.0)                                             # her nose tip from her head point, at s=1 (measured on the rig)
+_k0 = [None]
+
+
+def _probe(*args):
+    """the rig's own points (head, hands) for these arguments, from a scratch drawing"""
+    if _k0[0] is None:
+        s0 = cairo.ImageSurface(cairo.FORMAT_ARGB32, 10, 10); _k0[0] = kit.Ctx(cairo.Context(s0), 0)
+    return oc.pam_awake(_k0[0], *args)
+
+
+def _ik(dx, dy):
+    return oc.pm.ik(1, dx, oc.BT + dy)
+
+
+_POSE = {"up": None, "cheek": (-8, 0) + _ik(50, -20), "kiss": (-8, 0) + _ik(48, -30), "low": (-8, 0) + _ik(40, 40),
+         "rest": (-8, 0) + _ik(30, 70)}
+
+
+def _arm(a, b, u):
+    """an arm pose between two of _POSE (or arm_up_open), registered under a passing key; her right hand on the mug"""
+    A = kit.ARM_POSES["arm_up_open"] if a == "up" else _POSE[a]
+    B = kit.ARM_POSES["arm_up_open"] if b == "up" else _POSE[b]
+    if u <= 0:
+        return "_mug_" + a
+    key = "_mug_%s_%s_%.3f" % (a, b, u)
+    if key not in kit.ARM_POSES:
+        kit.ARM_POSES[key] = tuple(x + (y - x) * u for x, y in zip(A, B))
+        _pm.P_HANDS[key] = ("relax", "cup")
+    return key
+
+
+_UP = kit.ARM_POSES.get("arm_up_open", (-8, 0, 150, 30))
+for _n, _v in list(_POSE.items()) + [("up", None), ("up_dip", None)]:
+    if _n == "up":
+        _v = _UP
+    elif _n == "up_dip":                                       # the mug's weight: her forearm sags a little (review 3)
+        _v = tuple(_UP[:3]) + (_UP[3] + 10,)
+    kit.ARM_POSES["_mug_" + _n] = _v
+    _pm.P_HANDS["_mug_" + _n] = ("relax", "relax" if _n == "rest" else "cup")
+
+
+def _don_mug_art(k, x, y, s, tilt):
+    """pm_ps.mug_at's rules for his mug: its body behind her fingers at (x, y), the handle on the far side"""
+    _pr.don_mug(k, x, y + 24 * s * 0.92, s * 0.92, tilt, handle=-1)
+
+
+_AT = []
+
+
+def _mug_centre(*args):
+    """where pm_ps puts the mug in her hand for these arguments (the hook records it on a scratch drawing)"""
+    if _k0[0] is None:
+        s0 = cairo.ImageSurface(cairo.FORMAT_ARGB32, 10, 10); _k0[0] = kit.Ctx(cairo.Context(s0), 0)
+    _AT[:] = []
+    old = _pm.MUG_ART[0]
+    _pm.MUG_ART[0] = lambda k, x, y, s, tilt: _AT.append((x, y))
+    try:
+        oc.pam_awake(_k0[0], *args, mug=True)
+    finally:
+        _pm.MUG_ART[0] = old
+    return _AT[-1] if _AT else None
+
+
+def _mark(k, o, s=0.50, a=1.0):
+    """the coffee mark on the tip of her nose (Tomas's pick a, review 3): small, uneven, no outline, a little to the side
+    the rim touched"""
+    if a <= 0:
+        return
+    import random as _r
+    hx, hy = o["head"]; x, y = hx + (NOSE[0] + 3) * s, hy + NOSE[1] * s
+    rr = _r.Random(29); c = k.c
+    c.new_path()
+    for i in range(11):
+        ang = 2 * math.pi * i / 11; rad = (1.0 + rr.uniform(-0.28, 0.22))
+        c.line_to(x + math.cos(ang) * 8.5 * s * rad, y + math.sin(ang) * 6.0 * s * rad)
+    c.close_path(); c.set_source_rgba(*COFFEE, 0.82 * a); c.fill()
+    c.save(); c.translate(x + 6 * s, y + 5 * s); c.scale(2.2 * s, 1.6 * s); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.set_source_rgba(*COFFEE, 0.7 * a); c.fill()                                               # a drop beside it
+
+
+def _pam_mug(sid, cam, args, mark=0.0, mug=True):
+    """Pam awake, his mug in her right hand the canon way (pm_ps.pam(mug=True): drawn in her hand's coordinates, under
+    her fingers, the fingers again on top), the mark on her nose"""
+    p = P("pam_awake", *args, mug=mug)
+    o = _probe(*args)
+    return draw(shot(sid, cam=cam, cast=[p], after=(lambda k: _mark(k, o, args[2], mark)) if mark else (lambda k: None), protect=()))
+
+
+def m71(t):
+    """asleep, her open hand up, waiting (no cups)"""
+    return draw(shot("7.1", cam=CAM71, cast=[_pam_asleep(t)], after=lambda k: None, protect=()))
+
+
+_DON_ARM = {}
+
+
+def _don_reach(x, feet, target):
+    """his screen-left arm's angles that put his fist on target: searched once per position"""
+    import don_ps
+    key = (round(x), round(feet), round(target[0]), round(target[1]))
+    if key not in _DON_ARM:
+        if _k0[0] is None:
+            _probe(692, 742, 0.5, "down", "neutral", (0, 0), "arm_up_open")
+        best = None
+        for a in range(-180, 1, 3):
+            for b in range(-120, 31, 3):
+                o = don_ps.don(_k0[0], x, feet, 0.60, (a, b, 8, 0), "neutral", (0, 0), hands=("grab", "relax"))
+                d = math.hypot(o["hands"][0][0] - target[0], o["hands"][0][1] - target[1])
+                if best is None or d < best[0]:
+                    best = (d, a, b)
+        _DON_ARM[key] = best
+    return _DON_ARM[key]
+
+
+def m72(t):
+    """Don walks in from the right mid-stride, his fist round his mug's body; without a look or a stop he lowers it into
+    her open hand ("Only for you."); her fingers close on it, her wrist sags with its weight, she sleeps on; he walks
+    out. 2.4 s"""
+    import don_ps
+    feet_p = 760 - 1.5 * math.sin(2 * math.pi * 0.22 * t)
+    T_IN = 1.12                                                # the mug is hers from here
+    got = t >= T_IN
+    pose = "arm_up_open" if not got else ("_mug_up_dip" if t < T_IN + 0.25 else "_mug_up")
+    pam_args = (692, feet_p, 0.50, "down", "neutral", (0, 0), pose)
+    hold = P("pam_awake", *pam_args, mug=got)
+    mc = _mug_centre(692, 760, 0.50, "down", "neutral", (0, 0), "_mug_up")
+    tgt = (mc[0] + 18 * 0.46, mc[1])                           # his fist round the mug's body, on its right side
+    X0, XH, X1 = 850, 790, 975
+    if t < 0.5:                                                # in and stopped by 0.5 s: his head is still while he speaks (the bubble slid after him for 9 drawings)
+        x = X0 + (XH - X0) * ease(seg(t, 0.0, 0.5))
+    elif t < 1.6:
+        x = XH
+    else:
+        x = XH + (X1 - XH) * ease(seg(t, 1.6, 2.35))
+    step = int(t * 6) % 2
+    walking = t < 0.48 or t > 1.62
+    feet = 790 - (3 if walking and step else 0)
+    _, a, b = _don_reach(XH, 790, tgt)
+    up = ease(seg(t, 0.55, 1.0)) * (1 - seg(t, 1.2, 1.35))   # down by the wrist, fast: a slow drop swung his arm out flat like a pole
+    arm = (-8 + (a + 8) * up, b * up, 8, 0)
+    don = P("don_office", x, feet, 0.60, arm, "neutral", (-1.0, 0.0), hands=("grab", "relax"), knee=0.35 if walking and step else 0.0)
+    def extra(k):
+        if not got:                                            # in his fist until her fingers close on it
+            dh = don_ps.don(_k0[0], x, feet, 0.60, arm, "neutral", (0, 0), hands=("grab", "relax"))["hands"][0]
+            _don_mug_art(k, dh[0] - 18 * 0.46, dh[1], 0.46, 0.0)
+    sc.DESK_EXTRA[0] = extra
+    try:
+        return draw(shot("7.2", cam=CAM72, cast=[hold, don], after=lambda k: None, protect=()))
+    finally:
+        sc.DESK_EXTRA[0] = None
+
+
+def m73(t):
+    """its weight wakes her: the mask up, her eyes up to the mug in her hand. 1.0 s"""
+    up = t > 0.25
+    args = (692, 724 if up else 742, 0.50, "up" if up else "down", "neutral" if t < 0.5 else "doubt", (0.4, -0.8) if t > 0.45 else (0, 0), "_mug_up")
+    return _pam_mug("7.3", CAM73, args)
+
+
+def m74(t):
+    """the insert: her palm out of the bottom edge, his mug on it: CEO, the dried drip, his ketchup thumbprint. 0.7 s"""
+    s = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c = cairo.Context(s); k = kit.Ctx(c, 0)
+    c.set_source_rgb(*kit.WALL); c.paint()
+    g = cairo.RadialGradient(270, 420, 40, 270, 420, 420); g.add_color_stop_rgba(0, 1, 0.97, 0.86, 0.7); g.add_color_stop_rgba(1, 1, 0.97, 0.86, 0)
+    c.set_source(g); c.paint()
+    dy = -10 * ease(seg(t, 0.0, 0.3))
+    c.new_path(); c.move_to(206, 980); c.line_to(214, 800 + dy); c.line_to(318, 800 + dy); c.line_to(330, 980); c.close_path()
+    c.set_source_rgb(*SKIN); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.set_line_width(4); c.stroke()
+    c.new_path(); c.move_to(190, 980); c.line_to(198, 900); c.line_to(340, 900); c.line_to(348, 980); c.close_path()
+    c.set_source_rgb(0.42, 0.24, 0.52); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.stroke()
+    c.save(); c.translate(266, 790 + dy); c.scale(150, 46); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+    c.set_source_rgb(*SKIN); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.stroke()
+    _pr.don_mug(k, 258, 800 + dy, 4.6)
+    for i, fx in enumerate((150, 184, 340, 372)):
+        c.save(); c.translate(fx, 786 + dy - (8 if i in (1, 2) else 0)); c.scale(22, 30); c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore()
+        c.set_source_rgb(*SKIN); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.set_line_width(3.5); c.stroke()
+    return s
+
+
+def m75(t):
+    """it's his: to her cheek (0.35 s), a solemn pause, one SMACK of a kiss on the rim beside her cheek (her eyes and
+    lips stay in sight), away: the coffee mark on her nose; happy, she never notices. 1.9 s"""
+    if t < 0.35:
+        pose = _arm("up", "cheek", ease(seg(t, 0.0, 0.35))); face = "approve"
+    elif t < 0.85:
+        pose = "_mug_cheek"; face = "happy"
+    elif t < 1.08:
+        pose = "_mug_kiss"; face = "happy"
+    else:
+        pose = "_mug_low"; face = "happy"
+    args = (692, 722, 0.50, "up", face, (0, 0.2) if t > 0.3 else (0.4, -0.8), pose)
+    return _pam_mug("7.5", CAM73, args, mark=1.0 if t >= 1.08 else 0.0)
+
+
+def m76(t):
+    """the drawer under the counter, from above: fifteen of his CEO mugs in rows, one gap. Hers goes in; it sits a hair
+    crooked; a beat; her fingertip nudges it straight, a museum piece; a beat. 1.8 s"""
+    s = cairo.ImageSurface(cairo.FORMAT_ARGB32, 540, 960); c = cairo.Context(s); k = kit.Ctx(c, 0)
+    c.set_source_rgb(0.10, 0.09, 0.09); c.paint()
+    op = ease(seg(t, 0.0, 0.3))
+    sh = 90 * (1 - op)
+    def poly(pts, rgb):
+        c.new_path(); c.move_to(*pts[0]); [c.line_to(*q) for q in pts[1:]]; c.close_path()
+        c.set_source_rgb(*rgb); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.set_line_width(4); c.stroke()
+    c.save(); c.translate(0, sh)
+    poly([(20, 170), (520, 170), (540, 960), (0, 960)], (0.62, 0.50, 0.36))
+    poly([(50, 200), (490, 200), (505, 900), (35, 900)], (0.48, 0.38, 0.27))
+    for r, y in enumerate((330, 500, 670, 840)):
+        for i in range(4):
+            if r == 3 and i == 2:
+                continue
+            _pr.don_mug(k, 108 + i * 112, y, 2.0)
+    gx, gy = 108 + 2 * 112, 840
+    a = ease(seg(t, 0.25, 0.7))
+    my = gy - 160 * (1 - a)
+    fix = ease(seg(t, 1.12, 1.3))                              # crooked, then straight: a hair of a turn and a few pixels
+    _pr.don_mug(k, gx + 7 * (1 - fix), my, 2.0, 0.10 * (1 - fix))
+    c.restore()
+    if t < 0.82:                                               # her hand lowers it in and lets go
+        hx, hy = gx + 36, my - 50 + sh
+        c.new_path(); c.move_to(600, 1010); c.line_to(470, 1010); c.line_to(hx + 4, hy + 4); c.line_to(hx + 52, hy - 10); c.close_path()
+        c.set_source_rgb(0.42, 0.24, 0.52); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.set_line_width(4); c.stroke()
+        _hp.draw(k, "grab", hx, hy, 50, SKIN, (-0.55, -0.83), 1)
+    elif 1.0 < t < 1.45:                                       # back: one fingertip on the handle's side, a nudge
+        px, py = gx + 44 + 7 * (1 - fix), gy - 46 + sh
+        c.new_path(); c.move_to(600, 1010); c.line_to(500, 1010); c.line_to(px + 8, py + 20); c.line_to(px + 40, py + 6); c.close_path()
+        c.set_source_rgb(0.42, 0.24, 0.52); c.fill_preserve(); c.set_source_rgb(*kit.INK); c.set_line_width(4); c.stroke()
+        _hp.draw(k, "point", px, py, 46, SKIN, (-0.9, -0.4), 1)
+    return s
+
+
+def m81(t):
+    """the drawer shuts below; the mask comes down, the smile stays, the mark on her nose; her open hand goes up by
+    itself, in two quick steps, ready for the next one. 1.4 s"""
+    if t < 0.3:
+        args = (692, 724, 0.50, "up", "happy", (0, 0.2), "_mug_rest")
+    elif t < 0.55:
+        args = (692, 724 + 18 * ease(seg(t, 0.3, 0.55)), 0.50, "down" if t > 0.42 else "up", "happy", (0, 0.2), "_mug_rest")
+    else:
+        u = seg(t, 0.75, 1.0)
+        pose = "_mug_rest" if t < 0.75 else (_arm("rest", "up", 0.5) if u < 0.5 else "arm_up_open")
+        args = (692, 742, 0.50, "down", "happy", (0, 0.2), pose)
+    o = _probe(*args)
+    return draw(shot("8.1", cam=CAM71, cast=[P("pam_awake", *args)], after=lambda k: _mark(k, o, 0.5), protect=()))
+
+
+def mug_end():
+    """switch the film's ending to the mug (on4_film sets MUG_END)"""
+    sc.NO_CUPS[0] = True; _pm.MUG_ART[0] = _don_mug_art; _pr.LAMP_FOOT[0] = True
+    SHOTS.update({"7.1": (m71, 1.0), "7.2": (m72, 2.4), "7.3": (m73, 1.0), "7.4": (m74, 0.7), "7.5": (m75, 1.9),
+                  "7.6": (m76, 1.8), "8.1": (m81, 1.4)})
+
+
 def frames(sid):
     f, dur = SHOTS[sid]
     n = int(round(dur * DPS))

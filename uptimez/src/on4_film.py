@@ -59,6 +59,67 @@ if V23:                                                      # v23 (cold test of
     r.NARR["n8"] = ("3.2", 2.15, "Nobody stops for me.")     # on the fall itself, not after it (after her "Excuse me?")
     m.CARRY2[0] = True; m.PEEL2[0] = True; xc.MONEY2[0] = True; xc.DEPTH_R[0] = True; an.SOF2[0] = True
     sc.DUR.update({"3.4": 24 / 12.0, "6.05": 0.0})           # the bills in 1 s; the cut to the Client in her act is out (0.9 s)
+MUG_END = os.environ.get("MUG_END", "0") == "1"
+if MUG_END:                                                  # v24 (28 Nov, Tomas's /grill-me and two reviews): Don's empty mug, the kiss, the drawer
+    VER = "v24"
+    an.MUG_END[0] = True; an.mug_end(); sc.MUG_END[0] = True; r.MUG[0] = True
+    import copy as _cp
+    for _t, _ss in sc.SCENES:
+        _ids = [x["id"] for x in _ss]
+        if "7.5" in _ids and "7.6" not in _ids:
+            _n = _cp.copy(_ss[_ids.index("7.5")]); _n["id"] = "7.6"; _n["size"] = "insert, the drawer from above"
+            _n["picture"] = "The drawer: fifteen of his CEO mugs and one gap. Hers goes in; she turns its handle to line up."
+            _n["cast"] = (); _n["after"] = None; _n["protect"] = ()
+            _ss.insert(_ids.index("7.5") + 1, _n)
+    sc.DUR.update({"7.1": 1.0, "7.2": 2.4, "7.3": 1.0, "7.4": 0.7, "7.5": 1.9, "7.6": 1.8, "8.1": 1.4, "8.2": 3.0})   # 8.2: T5 whole (the dark 1 s, the eyes, the lane up to frame 0): 1.5 s cut the loop off (found by the frame-0 check on v25)
+    r.NEW["d3"] = ("7.2", 0.55, "DON", "Only for you.")     # he says it as the mug goes up into her hand; not a look; done before he walks out
+    def _end81(cam):
+        o = an._probe(692, 742, 0.50, "down", "happy", (0, 0.2), "arm_up_open")
+        return m.draw(m.shot("8.1", cam=cam, cast=[an.P("pam_awake", 692, 742, 0.50, "down", "happy", (0, 0.2), "arm_up_open")],
+                             after=lambda k: an._mark(k, o, 0.5), protect=()))
+    m.END81[0] = _end81
+    def _mug_heart(c, x, y):                                 # (Tomas) his CEO mug where the envelope stood; the loop's heart glows on its side
+        import on4_props as _p
+        _p.don_mug(sc.Ctx(c, 0), x, y + 66, 1.65)          # big and low: CEO under the heart, the heart where frame 0's neon heart is
+    m.MUG_HEART[0] = _mug_heart
+TRIM = MUG_END and os.environ.get("TRIM", "0") == "1"
+HEAD = set()                                                 # trimmed shots that keep their speed and lose their end
+ORIG = {}                                                    # shot -> its length before the trim (the source drawings a trimmed shot is resampled from)
+if TRIM:                                                     # v25 (28 Nov, Tomas's /grill-me on the pace: "the tempo drops in the middle"): 20-52 s tightened, nothing redrawn
+    VER = "v25"
+    _tm0 = sc._timing()[0]
+    K = 1.25                                                 # (Tomas, after the first segment at 1.5: "a touch slower, say 1.25")
+    NEWDUR = {"3.3": _tm0["3.3"]["dur"] / K, "3.3b": _tm0["3.3b"]["dur"] / K, "3.4": _tm0["3.4"]["dur"] / K, "3.5": _tm0["3.5"]["dur"] / K, "3.6": 3.7, "4.3": 2.0, "4.4": _tm0["4.4"]["dur"] / K, "6.6": 1.5}
+    for _k, _v in NEWDUR.items():
+        ORIG[_k] = _tm0[_k]["dur"]; r.SPEED[_k] = _v / _tm0[_k]["dur"]
+    sc.DUR.update({"3.3": NEWDUR["3.3"] * 2, "3.4": NEWDUR["3.4"], "3.5": NEWDUR["3.5"], "3.6": 3.7, "4.3": 2.0, "4.4": NEWDUR["4.4"], "6.6": 1.5})   # 3.3 is halved between 3.3 and 3.3b
+    HEAD.add("3.6"); r.SPEED["3.6"] = 1.0                    # (Tomas, the segment at 0:17: "a cut shows") 3.6 at its own speed, its standing hold cut off the end:
+                                                             # squeezed evenly, her plank rise took 0.3 s and jumped, and the band's entry (2.5 s in) fell on a still drawing
+    r.NEW["d2"] = ("3.3", 2.1, "DON", "Not a scratch."); r.NEW["f1"] = ("3.3b", 0.8, "FATHER", "For the boys.")
+    r.MOVE7["n3"] = ("3.5", 1.2)                             # "I am like a cat. I have seven lives." starts as they carry her: no 8 s without a word
+    _a43 = an.SHOTS["4.3"][0]; _k43 = ORIG["4.3"] / 2.0
+    an.SHOTS["4.3"] = ((lambda t: _a43(t * _k43)), 2.0)      # the same acting, faster: one point at the sign, one at herself
+
+
+def pick(fr, span, tm, count):
+    """the drawings of a motion group for the film. Untrimmed: the first count of them, as ever. Trimmed: each shot's
+    own stretch of the source (its old length), spread evenly over its new length"""
+    if not any(s in ORIG for s in span):
+        return fr[:count] if len(fr) >= count else [fr[min(len(fr) - 1, int(j * len(fr) / count))] for j in range(count)]
+    out = []; a = 0
+    for q, s in enumerate(span):
+        n0 = int(round(ORIG.get(s, tm[s]["dur"]) * DPS))
+        src = fr[a:a + n0] if q < len(span) - 1 else fr[a:a + n0] or fr[-1:]
+        a += n0
+        n1 = count - len(out) if q == len(span) - 1 else int(round(tm[s]["dur"] * DPS))
+        src = src or fr[-1:]
+        if s in HEAD:
+            out += [src[min(len(src) - 1, j)] for j in range(n1)]
+        else:
+            out += [src[min(len(src) - 1, int(j * len(src) / float(n1)))] for j in range(n1)]
+    return out
+
+
 OUT = os.path.join(sc.OUT, "on4_film_%s.mp4" % VER)
 MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",): ("T7", 0, None),
        ("3.1", "3.2"): ("T3", 0, None), ("3.3", "3.3b", "3.4", "3.5"): ("T6", 0, None), ("3.6",): ("T8", 0, None),
@@ -67,6 +128,8 @@ MOT = {("1.1", "1.2"): ("T1", 0, 78), ("2.2", "2.3"): ("T2", 0, None), ("2.4",):
 del MOT[("3.3", "3.3b", "3.4", "3.5")]                       # v5
 MOT[("6.3", "6.6")] = ("T4", 0, None); MOT[("8.1", "8.2")] = ("T5", 0, None)   # v7: DENSE's own counts (56 and 58 keys)
 MOT.update({("3.3",): ("W", 0, None), ("3.3b",): ("R", 0, None), ("3.4",): ("B", 0, None), ("3.5",): ("G", 0, None)})
+if MUG_END:                                                  # v24: 8.1 is the mug ending's own (on4_anim.m81); T5's dark is 8.2 alone
+    del MOT[("8.1", "8.2")]; MOT[("8.2",)] = ("T5", 0, None)
 if V23:
     MOT.pop(("6.05",), None)                                 # v23: the cut to the Client in her act is out
 
@@ -85,9 +148,8 @@ def frames(tmp):
         if grp:
             t, a, b = MOT[grp]
             fr = m.TESTS[t](sub=2)[a:b]
-            pick = fr[:count] if len(fr) >= count else [fr[min(len(fr) - 1, int(j * len(fr) / count))] for j in range(count)]
             last = None
-            for s in pick:
+            for s in pick(fr, span, tm, count):
                 p = "%s/%05d.png" % (tmp, n)
                 if s is last:
                     os.symlink("%05d.png" % (n - 1), p)

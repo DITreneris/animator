@@ -25,6 +25,7 @@ from kit import Ctx, INK, cut, rect, ellipse
 MUG = (0.36, 0.62, 0.80)
 MUG_RING = [False]
 MUG_THUMB = [False]
+MUG_ART = [None]                                          # (28 Nov, Office Noir 4's mug ending) f(k, x, y, s, tilt): another mug in her hand, drawn by mug_at's rules
 TAPE = dp.TAPE
 STOOL = (0.55, 0.58, 0.62)
 PHY, PBT = pm.HY, pm.BT
@@ -76,6 +77,8 @@ def mom(k, x, feet, s=0.54, pose="folded", face="unimpressed", look=(0, 0), **kw
 
 def mug_at(k, x, y, s, tilt=0.0):
     """Her blue mug, held: the body behind her fingers, the handle on the far side."""
+    if MUG_ART[0]:
+        return MUG_ART[0](k, x, y, s, tilt)
     c = k.c
     c.save(); c.translate(x, y); c.rotate(tilt); c.scale(s, s)
     if MUG_RING[0]:                                          # opt-in (Pick a Side film, review 25 Nov: "the handle must
