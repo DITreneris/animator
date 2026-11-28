@@ -35,7 +35,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, _head, 
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 21
+VER = 22
 OOF_TAKE = "A"
 SHOTS = [("1.1", 1.4), ("1.2", 0.8), ("1.3", 1.0), ("1.3c", 0.6), ("1.3b", 1.0), ("1.4", 1.2), ("1.5", 0.8)]
 
@@ -759,6 +759,9 @@ def render_shot(sid, t):
     raise KeyError(sid)
 
 
+HITS = {'1.2': 0.4}   # shot -> the hit's time in it: a 3-drawing camera knock (Tomas 28 Nov)
+
+
 def build():
     from PIL import Image, ImageDraw
     for sid, _ in SHOTS:
@@ -776,6 +779,8 @@ def build():
             for i in range(int(round(dur * FPS))):
                 g.reset()
                 surf = render_shot(sid, i / FPS)
+                if sid in HITS:                                        # the hit's accent (da_motion.shaken)
+                    surf = __import__("da_motion").shaken(surf, i / FPS - HITS[sid])
                 if i % 2 == 0:                                         # a drawing (15/s): its hands checked
                     faults += ["%s %.2fs  %s" % (sid, i / FPS, f) for f in g.check()]
                 surf.write_to_png(os.path.join(tmp, "%04d.png" % n)); n += 1

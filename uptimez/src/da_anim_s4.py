@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, ds, kit, rig_hands, shadow, _head  # no
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 3
+VER = 4
 T0 = 27.84
 SHOTS = [("4.1", 1.6), ("4.2", 3.0), ("4.2b", 0.8), ("4.3", 1.2)]
 drawn = A.drawn
@@ -140,56 +140,105 @@ def s41_parts(t):
 
 # ---- 4.2 / 4.2b ------------------------------------------------------------------------------------------------------------
 REFLECT = [0.22]
+DXS = -14                                                          # 4.2: a step nearer the glass than the layout's mark
+CROWN = [(-18, 0), (-18, -16), (-9, -6), (0, -20), (9, -6), (18, -16), (18, 0), (-18, 0)]
 
 
-def _don_street(k_, td, face, look, chin, hair, cup_up, rows_extra=(), cup_in=0):
-    """Don at the street door, his back to the room: the cup on his screen-right palm, his screen-left hand at his
-    hair (hair: 0..1 along the stroke, None: down); his reflection faint in the door's glass (the same drawing,
-    mirrored about the glass at x 92, the gate paused for it)."""
+def _crown_pt(u, cx, by):
+    """the point u (0..1) along the crown's outline, and the outline up to it."""
+    pts = [(cx + px, by + py) for px, py in CROWN]
+    lens = [math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]) for i in range(len(pts) - 1)]
+    d = u * sum(lens); done = [pts[0]]
+    for i, ln in enumerate(lens):
+        if d <= ln:
+            w = d / ln if ln else 0
+            done.append((pts[i][0] + (pts[i + 1][0] - pts[i][0]) * w, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * w))
+            return done[-1], done
+        d -= ln; done.append(pts[i + 1])
+    return pts[-1], done
+
+
+def _don_street(k_, td, face, look, chin, hair, cup_up, rows_extra=(), cup_in=0, fog=0.0, crown=0.0, drawing=False,
+                mouth=None):
+    """Don at the street door, his back to the room: the cup on his screen-right palm; his screen-left hand at his
+    hair (hair: 0..1 along the stroke), or drawing on the glass (drawing: its fingertips follow the crown's line);
+    his reflection faint in the door's glass (the same drawing, mirrored about the glass at x 92, the gate paused).
+    fog: his breath on the glass over the reflection's head; crown: 0..1 of a crown drawn in it with his finger
+    (Tomas 28 Nov /grill-me: a gag for 4.2)."""
     import da_hand_gate as g_
-    x, f = MARKS["don_street"]; L.DON_FEET[0] = (x, f); s_ = SC["don"]
+    import da_anim_s6 as S6
+    x, f = MARKS["don_street"]; x += DXS; L.DON_FEET[0] = (x, f); s_ = SC["don"]
     rows = [("don", "R", "saucer_hold", "SAUCER_SUPPORT: the cup on his palm"),
-            ("don", "L", "palm" if hair is not None else "quiet", "palm: smoothing his hair -> quiet")]
+            ("don", "L", "pinch" if drawing else ("palm" if hair is not None else "quiet"),
+             "palm: smoothing his hair -> PINCH: his fingertip drawing on the glass -> quiet")]
     declare(tuple(rows) + tuple(rows_extra), k_)
     shadow(k_, x, f + 2, 40)
+    rig = don_rig(x, f, face, look, chin)
+    with g_.paused():                                                  # his head, for the reflection's
+        kk = kit.Ctx(cairo.Context(cairo.ImageSurface(cairo.FORMAT_RGB24, 8, 8)), 0)
+        hx0, hy0, r0 = _head(rig_hands(kk, rig, s_, {}), "don")
+    cx, by = max(2 * 92 - hx0 + 14, 66), hy0 - r0 - 4                 # the crown: on the reflection's head, a little askew
+    base = {1: cu.on_palm((x + (40 - 26 * cup_up - cup_in) * s_ / 0.6, f - (150 - 6 * cup_up) * s_ / 0.6), CS, kind="cup", out=1)}
+    tip, done = _crown_pt(crown, cx, by)
+    if drawing:
+        base[-1] = S6.pinch_at(tip, rig, s_, -1, -1)
+        m_ = base[-1]["miss"]                                          # (where his arm can't quite take it)
+        g_.prop(k_, "glass", tip[0] + m_[0] - 14, tip[1] + m_[1] - 14, 28, 28)
+    elif hair is not None:                                             # the stroke: from his brow back over his crown
+        hx = x - 20 * s_ / 0.6 + 34 * s_ / 0.6 * hair
+        base[-1] = dict(T=(hx, f - (330 - 14 * math.sin(math.pi * hair)) * s_ / 0.6), pose="PALM", out=-1, reach=True)
 
     def jobs():
-        j = {1: cu.on_palm((x + (40 - 26 * cup_up - cup_in) * s_ / 0.6, f - (150 - 6 * cup_up) * s_ / 0.6), CS, kind="cup", out=1)}   # the sip: in to his mouth
-        if hair is not None:                                            # the stroke: from his brow back over his crown
-            hx = x - 20 * s_ / 0.6 + 34 * s_ / 0.6 * hair
-            j[-1] = dict(T=(hx, f - (330 - 14 * math.sin(math.pi * hair)) * s_ / 0.6), pose="PALM", out=-1, reach=True)
+        j = dict(base)
+        j[1] = cu.on_palm(base[1]["T"], CS, kind="cup", out=1)
         return j
-    o = rig_hands(k_, don_rig(x, f, face, look, chin), s_, jobs())
-    c = k_.c                                                            # his reflection in the door's glass, faint
-    c.save(); c.rectangle(40, F - 360, 100, 360); c.clip()
+    c = k_.c
+    c.save(); c.rectangle(40, F - 360, 100, 360); c.clip()             # his reflection in the door's glass, faint
     c.push_group()
     c.translate(2 * 92, 0); c.scale(-1, 1)
     with g_.paused():
-        rig_hands(k_, don_rig(x, f, face, look, chin), s_, jobs())
+        rig_hands(k_, rig, s_, jobs())
     c.pop_group_to_source(); c.paint_with_alpha(REFLECT[0])
+    if fog > 0:                                                        # his breath on the glass
+        c.set_source_rgba(1, 1, 1, 0.62 * fog)
+        c.save(); c.translate(cx, by - 8); c.scale(36 * (0.6 + 0.4 * fog), 27 * (0.6 + 0.4 * fog))
+        c.new_path(); c.arc(0, 0, 1, 0, 2 * math.pi); c.restore(); c.fill()
+    if crown > 0 and len(done) > 1:                                    # the crown, wiped clear in it by his fingertip
+        c.set_line_cap(1); c.set_line_join(1)
+        for col, lw in (((0.30, 0.44, 0.55), 4.6), ((0.93, 0.76, 0.28), 2.6)):
+            c.set_source_rgb(*col); c.set_line_width(lw); c.new_path(); c.move_to(*done[0])
+            for q in done[1:]:
+                c.line_to(*q)
+            c.stroke()
+        c.set_line_cap(0); c.set_line_join(0)
     c.restore()
+    kit.MOUTH[0] = mouth
+    try:
+        o = rig_hands(k_, rig, s_, jobs())                             # Don, over the glass
+    finally:
+        kit.MOUTH[0] = None
     return {"don": _head(o, "don")}
 
 
 def s42_cast(t):
+    """v3 (Tomas 28 Nov /grill-me: "add a gag to 4.2"): he smooths his hair once, breathes on the glass over his
+    reflection's head, and with a fingertip draws a crown on it; steps back to admire: his reflection, crowned."""
     td = drawn(t)
 
     def cast(k_):
         h = {}
-        # the robot working behind him: bent to the floor, two picks
-        pick = 0.5 + 0.5 * math.sin(2 * math.pi * 0.9 * td)
+        pick = 0.5 + 0.5 * math.sin(2 * math.pi * 0.9 * td)            # the robot working behind him
         h["robot"] = L.robot(k_, (480, F + 64), tilt=0.20 + 0.08 * pick, look=(0, 1))
-        strokes = (seg(td, 0.27, 0.93), seg(td, 1.07, 1.73))           # his hand over his hair, twice
-        hair = None
-        for u in strokes:
-            if 0 < u < 1:
-                hair = u
-        if hair is None and 0.20 <= td < 1.80:
-            hair = 0.0 if td < 1.07 else 1.0                           # between the strokes: his hand stays up
-        sip = math.sin(math.pi * seg(td, 1.93, 2.8))                   # (cold test: the shot "stalled") the saucer up to
-        look = (-1, -0.2 - 0.4 * sip)                                  # his chin, a sip with his eyes shut, down again
-        face = "pleased" if sip > 0.6 else "smug"
-        h.update(_don_street(k_, td, face, look, 0, hair, sip))
+        u = seg(td, 0.13, 0.6)
+        hair = u if 0 < u < 1 else None
+        fog = ease(seg(td, 0.67, 1.0))
+        crown = seg(td, 1.07, 2.07)
+        drawing = 1.07 <= td < 2.13
+        breath = 0.67 <= td < 1.0
+        face = "smug" if td < 2.13 else "pleased"
+        look = (-1, -0.2) if td < 0.67 else (-1, -0.7)                 # up at the crown's place
+        h.update(_don_street(k_, td, face, look, 0, hair, 0.0, fog=fog, crown=crown, drawing=drawing,
+                             mouth=0.7 if breath else None))
         return h
     return cast
 
@@ -198,13 +247,12 @@ def s42b_cast(t):
     td = drawn(t)
 
     def cast(k_):
-        # (cold test: one drop read as "a realisation") a rehearsal: Father's hard face, back to his grin, the hard
-        # face again, held; his eyes on the glass, his reflection plain in it
+        # a rehearsal under his crown: Father's hard face, back to his grin, the hard face again, held
         hard = 0.2 <= td < 0.47 or td >= 0.6
         face = "hard" if hard else "smug"
         REFLECT[0] = 0.40
         try:
-            return _don_street(k_, td, face, (-1, 0.0), 1 if hard else 0, None, 0.0, cup_in=22)
+            return _don_street(k_, td, face, (-1, 0.0), 1 if hard else 0, None, 0.0, cup_in=22, fog=1.0, crown=1.0)
         finally:
             REFLECT[0] = 0.22
     return cast

@@ -28,7 +28,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, _head  
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 6
+VER = 7
 T0 = 6.8                                                           # the scene's start in the film
 SHOTS = [("2.1", 2.2), ("2.2", 3.28), ("2.3", 1.2), ("2.4", 2.8)]
 drawn = A.drawn
@@ -374,6 +374,9 @@ def mix(sec, path):
     return path
 
 
+HITS = {'2.4': 1.07}   # shot -> the hit's time in it: a 3-drawing camera knock (Tomas 28 Nov)
+
+
 def build():
     import subprocess
     from PIL import Image, ImageDraw
@@ -394,6 +397,8 @@ def build():
             for i in range(int(round(dur * FPS))):
                 g.reset()
                 surf = render_shot(sid, i / FPS)
+                if sid in HITS:                                        # the hit's accent (da_motion.shaken)
+                    surf = __import__("da_motion").shaken(surf, i / FPS - HITS[sid])
                 if i % 2 == 0 and sid != "2.2":                        # 2.2: S8's locked layers, their own gate
                     faults += ["%s %.2fs  %s" % (sid, i / FPS, f) for f in g.check()]
                 surf.write_to_png(os.path.join(tmp, "%04d.png" % n)); n += 1

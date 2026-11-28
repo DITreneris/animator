@@ -77,6 +77,19 @@ def frame(cast, cam, office=None, tag=True, clips=12, dutch=0.0, back=(), haze=0
     return surf
 
 
+def shaken(surf, since):
+    """an impact's accent (Tomas 28 Nov /grill-me: four hits): the frame knocked off its place for 3 drawings after the
+    hit, less each time; since: seconds after the hit (outside 0..0.2 the surface comes back untouched)."""
+    if not (0 <= since < 0.2):
+        return surf
+    dx, dy = ((7, -5), (-5, 4), (2, -2))[min(2, int(since * DRAW))]
+    out = cairo.ImageSurface(cairo.FORMAT_RGB24, surf.get_width(), surf.get_height())
+    c = cairo.Context(out)
+    c.scale(1.03, 1.03); c.translate(-surf.get_width() * 0.015 + dx, -surf.get_height() * 0.015 + dy)   # (a little in: no bare edge)
+    c.set_source_surface(surf, 0, 0); c.paint()
+    return out
+
+
 # ---- A: 5.3 the slip -----------------------------------------------------------------------------------------------------
 def test_a(t):
     """v2 (the motion test's viewers: no cause, the take-off one drawing, the hang a stiff hover, the legs a box):

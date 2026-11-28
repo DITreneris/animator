@@ -30,7 +30,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 2
+VER = 4
 T0 = 55.39
 SHOTS = [("7.2", 2.8), ("7.3", 4.15), ("7.4", 3.0)]
 drawn = A.drawn
@@ -70,8 +70,13 @@ def s72_cast(t):
         f = F + 70; x = L.tape_x(f) - 46; s_ = SC["don"]; L.DON_FEET[0] = (x, f)
         ang = 0.40 * ease(seg(td, 0.13, 0.53))                         # the bow, at the waist
         roll = ease(seg(td, 0.2, 0.67))                                # his arms roll out toward the office
+        t_stick = 0.5 + 2.2 * (60 / 190.0)                             # when she is beside his bowed head
+        carry = S6.ease(S6.seg(td, t_stick - 0.4, t_stick))             # she lifts it off her cardigan, in plain view
+        stick = t_stick - 0.4 <= td < t_stick + 0.2                    # (the tape medal, 6.4) and presses it onto his head
+        stuck = td >= t_stick + 0.07
         declare((("don", "L", "palm", "palm: rolled out toward the office"), ("don", "R", "palm", "palm"),
-                 ("pam", "L", "pinch", "PINCH: the mask at her face"), ("pam", "R", "quiet", "quiet")), k_)
+                 ("pam", "L", "pinch", "PINCH: the mask at her face"),
+                 ("pam", "R", "palm" if stick else "quiet", "quiet -> palm: his tape medal pressed onto his bowed head")), k_)
         shadow(k_, x, f + 2, 40)
         jobs = {1: dict(T=(x + (60 + 130 * roll) * s_, f - (150 + 50 * roll) * s_), pose="PALM", out=1, reach=True),
                 -1: dict(T=(x + (20 + 120 * roll) * s_, f - (130 + 30 * roll) * s_), pose="PALM", out=-1, reach=True)}
@@ -103,9 +108,23 @@ def s72_cast(t):
         pj = S6.pinch_at((pc[0] - 18, pc[1] + 28), rigp, SC["pam"], -1, -1, sex="f", skin=FEMALE)
         shadow(k_, px, pf + 2, 32)
         c.save(); c.translate(0, -3 * abs(step))
-        op = rig_hands(k_, rigp, SC["pam"], {-1: pj}, sex="f", skin=FEMALE)
+        dh = h["don"]
+        top = (dh[0] + 6, dh[1] - dh[2] * 0.9)                         # the top of his bowed head
+        pjobs = {-1: pj}
+        if stick:
+            a_ = (px + 34, pf - 96)
+            hT = (a_[0] + (top[0] + 14 - a_[0]) * carry, a_[1] + (top[1] + 10 - a_[1]) * carry)
+            pjobs[1] = dict(T=hT, pose="PALM", out=1, reach=True)
+        op = rig_hands(k_, rigp, SC["pam"], pjobs, sex="f", skin=FEMALE)
+        if not stuck:
+            if stick:
+                S6.medal(k_, hT[0] - 12, hT[1] - 8, ang=0.5 * carry, prop=True)
+            else:
+                S6.medal(k_, *S6.medal_at(px, pf))
         S6.page_holes(k_, pc[0], pc[1], 2)
         c.restore()
+        if stuck:
+            S6.medal(k_, top[0], top[1], ang=0.5)                      # his own line, on his own head
         h["pam"] = _head(op, "pam")
         return h
     return cast
@@ -312,6 +331,9 @@ def mix(sec, path):
 GATED = ("7.2", "7.4")                                             # 7.3: S8's layers, their own gate
 
 
+HITS = {'7.4': 1.07}   # shot -> the hit's time in it: a 3-drawing camera knock (Tomas 28 Nov)
+
+
 def build():
     import subprocess
     from PIL import Image, ImageDraw
@@ -331,6 +353,8 @@ def build():
             for i in range(int(round(dur * FPS))):
                 g.reset()
                 surf = render_shot(sid, i / FPS)
+                if sid in HITS:                                        # the hit's accent (da_motion.shaken)
+                    surf = __import__("da_motion").shaken(surf, i / FPS - HITS[sid])
                 if i % 2 == 0 and sid in GATED:
                     faults += ["%s %.2fs  %s" % (sid, i / FPS, f) for f in g.check()]
                 surf.write_to_png(os.path.join(tmp, "%04d.png" % n)); n += 1

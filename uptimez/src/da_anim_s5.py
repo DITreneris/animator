@@ -30,7 +30,7 @@ from da_layouts import F, MARKS, SC, dp, sd, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 6
+VER = 7
 T0 = 34.44
 SHOTS = [("5.1", 1.4), ("5.2", 2.8), ("5.3", 2.0), ("5.3b", 0.6), ("5.4", 2.2)]
 drawn = A.drawn
@@ -355,6 +355,9 @@ def mix(sec, path):
 GATED = ("5.1", "5.2", "5.3", "5.3b", "5.4")
 
 
+HITS = {'5.3': 1.0}   # shot -> the hit's time in it: a 3-drawing camera knock (Tomas 28 Nov)
+
+
 def build():
     import subprocess
     from PIL import Image, ImageDraw
@@ -374,6 +377,8 @@ def build():
             for i in range(int(round(dur * FPS))):
                 g.reset()
                 surf = render_shot(sid, i / FPS)
+                if sid in HITS:                                        # the hit's accent (da_motion.shaken)
+                    surf = __import__("da_motion").shaken(surf, i / FPS - HITS[sid])
                 if i % 2 == 0 and sid in GATED:
                     faults += ["%s %.2fs  %s" % (sid, i / FPS, f) for f in g.check()]
                 surf.write_to_png(os.path.join(tmp, "%04d.png" % n)); n += 1

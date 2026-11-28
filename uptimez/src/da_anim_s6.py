@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, pm, ds, kit, rig_hands, shadow, tilted,
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 4
+VER = 6
 T0 = 43.44
 SHOTS = [("6.1", 1.4), ("6.2", 1.2), ("6.3", 1.0), ("6.4", 2.23), ("6.5", 1.0), ("6.6", 1.0), ("6.7", 0.8),
          ("6.8", 2.72), ("6.8b", 0.6)]
@@ -63,6 +63,28 @@ def page_job(T, s=0.44, ang=0.05):
         L._page(kk, P, w, s, ang)
         g_.prop(kk, "page", P[0] - 60 * s, P[1] - 8, 120 * s, 150 * s)   # the page hangs from her fingertips
     return dict(T=T, pose="PINCH", out=-1, reach=True, contact="tip", obj=obj)
+
+
+def medal(k, x, y, ang=-0.18, prop=False):
+    """a short strip of his own yellow tape (Tomas 28 Nov /grill-me: "the tape medal"): stuck on his spy's chest."""
+    import ps_set as pss
+    c = k.c
+    c.save(); c.translate(x, y); c.rotate(ang)
+    kit.cut(k, [(-13, -6), (13, -6), (13, 6), (-13, 6)], pss.TAPE, shadow=False, lw=1.8)
+    c.set_source_rgb(0.13, 0.11, 0.12)                                 # (cold test 28 Nov: both took a blank strip for a sticky
+    for i in range(10):                                                # note) his pen star on it: a decoration
+        r_ = 4.6 if i % 2 == 0 else 1.9
+        a_ = -math.pi / 2 + i * math.pi / 5
+        (c.move_to if i == 0 else c.line_to)(r_ * math.cos(a_), r_ * math.sin(a_))
+    c.close_path(); c.fill()
+    c.restore()
+    if prop:
+        import da_hand_gate as g_
+        g_.prop(k, "tape strip", x - 14, y - 10, 28, 20)
+
+
+def medal_at(px, pf):
+    return (px - 9, pf - 104)                                          # on her cardigan, over her heart
 
 
 def don_rig(x, f, face, look, chin=0):
@@ -125,33 +147,62 @@ def s62_cast(t):
 
 
 def s64_cast(t):
+    """v2 (Tomas 28 Nov /grill-me: a gag for 6.1-6.7, "the tape medal"): suspicion -> delight, and he decorates her: a
+    strip of his own yellow tape out of his vest pocket, pressed onto her cardigan like a medal, one pat. She looks down
+    at it. A two-shot now (6.2's camera). "You're spying for me?" """
     td = drawn(t)
 
     def cast(k_):
-        x, f = MARKS["don_counter"][0] + 24, MARKS["don_counter"][1]; L.DON_FEET[0] = (x, f)
+        h = {}
+        x0, f = MARKS["don_counter"][0] + 24, MARKS["don_counter"][1]
         s_ = SC["don"]
-        shadow(k_, x, f + 2, 40)
-        joy = ease(seg(td, 0.47, 0.6))                                 # suspicion -> delight: both palms out to her: "you!"
-        face = "hard" if td < 0.47 else "grin"
-        kit.MOUTH[0] = 0.8 if talking("6.4", t) else None
-        rows = [("don", "L", "quiet" if joy < 0.05 else "palm", "quiet -> palm: both palms out to her, \"you!\""),
-                ("don", "R", "quiet" if joy < 0.05 else "palm", "quiet -> palm")]
+        px, pf = 626, F + 60
+        M = medal_at(px, pf)
+        joy = td >= 0.47
+        step = ease(seg(td, 0.8, 1.13))                                # a half step in to her with it
+        x = x0 + 16 * step - 16 * ease(seg(td, 1.47, 1.8)); L.DON_FEET[0] = (x, f)
+        has = 0.6 <= td < 1.2                                          # the strip in his fingers
+        pat = 1.2 <= td < 1.4
+        on_her = td >= 1.2
+        rows = [("don", "R", "pinch" if has else ("palm" if pat else "quiet"),
+                 "quiet -> PINCH: a strip of his tape -> palm: one pat on it -> quiet"),
+                ("don", "L", "quiet", "quiet"),
+                ("pam", "L", "pinch", "PINCH: the page"), ("pam", "R", "quiet", "quiet")]
         declare(tuple(rows), k_)
-        jobs = {}
-        if joy >= 0.05:
-            jobs[1] = dict(T=(x + (40 + 70 * joy) * s_ / 0.6, f - (150 + 40 * joy) * s_ / 0.6), pose="PALM", out=1,
-                           reach=True)                                 # both palms out toward her (screen right): the far
-            jobs[-1] = dict(T=(x - (40 + 40 * joy) * s_ / 0.6, f - (140 + 30 * joy) * s_ / 0.6), pose="PALM", out=-1,
-                            reach=True)                                # the near one open on his own side (an arm across
-                                                                       # his chest fails the gate's CROSS): arms open, "you!"
-        c = k_.c
-        c.save(); c.translate(x, f); c.rotate(0.06 * joy); c.translate(-x, -f)   # leaning in to her
+        rig = don_rig(x, f, "hard" if not joy else ("grin" if td < 1.4 else "happy"), (1, 0.1 if td < 0.87 else 0.5))
+        pocket = (x + 16, f - 108)
+        u = ease(seg(td, 0.87, 1.2))
+        tgt = (pocket[0] + (M[0] - pocket[0]) * u, pocket[1] - 26 * math.sin(math.pi * min(1, seg(td, 0.6, 0.87))) * (1 - u)
+               + (M[1] - pocket[1]) * u)
+        dj = {}
+        if has:
+            dj[1] = S_pinch(tgt, rig, s_)
+            tgt = (tgt[0] + dj[1]["miss"][0], tgt[1] + dj[1]["miss"][1])
+        elif pat:
+            dj[1] = dict(T=(M[0] - 16, M[1] + 2), pose="PALM", out=1, reach=True)
+        shadow(k_, x, f + 2, 40)
+        kit.MOUTH[0] = 0.8 if talking("6.4", t) else None
         try:
-            o = rig_hands(k_, don_rig(x, f, face, (1, 0.0), chin=0), s_, jobs)
+            o = rig_hands(k_, rig, s_, dj)
         finally:
-            c.restore(); kit.MOUTH[0] = None
-        return {"don": _head(o, "don")}
+            kit.MOUTH[0] = None
+        h["don"] = _head(o, "don")
+        shadow(k_, px, pf + 2, 32)
+        plook = (-1, 0.3) if td < 1.27 else (-0.3, 1.0)                # then down at her medal
+        op = rig_hands(k_, lambda kk, a4: pam_held(kk, px, pf, SC["pam"], a4, "neutral" if td < 1.27 else "doubt", plook,
+                                                   mug=False), SC["pam"], {-1: page_job((px - 70, pf - 166))},
+                       sex="f", skin=FEMALE)
+        h["pam"] = _head(op, "pam")
+        if on_her:
+            medal(k_, *M)
+        if has:
+            medal(k_, tgt[0], tgt[1], prop=True)                       # in his fingertips, over everything
+        return h
     return cast
+
+
+def S_pinch(target, rig, scale):
+    return pinch_at(target, rig, scale, 1, 1)
 
 
 def pinch_at(target, rig, scale, arm, out, others=None, **kw):
@@ -283,6 +334,7 @@ def s68_cast(t):
         op = rig_hands(k_, lambda kk2, a4: pam_held(kk2, px, pf, SC["pam"], a4, pface, plook, mug=False), SC["pam"], pj,
                        sex="f", skin=FEMALE)
         h["pam"] = _head(op, "pam")
+        medal(k_, *medal_at(px, pf))
         page_holes(k_, pc[0], pc[1], n, ang=0.04 if his else 0.0)
         if jab > 0.6:                                                  # the poke's little burst
             c.set_source_rgb(*kit.INK); c.set_line_width(1.6); c.set_line_cap(1)
@@ -323,6 +375,7 @@ def pam_close(k_, mouth, face, look, drop=0.0):
     k_.c.save(); k_.c.translate(0, 4 * drop)                           # her shoulders drop
     o = rig_hands(k_, lambda kk, a4: pam_held(kk, px, pf, SC["pam"], a4, face, look, mug=False, mouth=mouth),
                   SC["pam"], {}, sex="f", skin=FEMALE)
+    medal(k_, medal_at(px, pf)[0], medal_at(px, pf)[1] + 4 * drop)
     k_.c.restore()
     return {"pam": _head(o, "pam")}
 
@@ -375,6 +428,7 @@ def s68b_cast(t):
         pj = pinch_at(hold, rigp, SC["pam"], -1, -1, sex="f", skin=FEMALE)
         pc = (pc[0] + pj["miss"][0], pc[1] + pj["miss"][1])
         o = rig_hands(k_, rigp, SC["pam"], {-1: pj}, sex="f", skin=FEMALE)
+        medal(k_, *medal_at(px, pf))
         page_holes(k_, pc[0], pc[1], 2)
         return {"pam": _head(o, "pam")}
     return cast
@@ -411,7 +465,7 @@ def render_shot(sid, t):
     if sid == "6.3":
         return s63_surface(t)
     if sid == "6.4":
-        return frame(s64_cast(t), CAMS[sid][0], tag=True, clips=6)
+        return frame(s64_cast(t), (CAMS.get("6.2") or CAMS.setdefault("6.2", camera_of("6.2")))[0], tag=True, clips=6)      # (the medal: a two-shot)
     if sid == "6.5":
         return frame(s65_cast(t), CAMS[sid][0], tag=True, clips=6)
     if sid == "6.6":
