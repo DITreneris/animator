@@ -131,3 +131,16 @@ Phone gate 0 faults on both.
 - the phone in her other hand: the pose name never reached the rig. 6.5 draws through four layers (cs_os24, cs_os23, sofia_fs, sofia_ob), and two renders with different arm orders came out pixel-identical.
 
 It is rig work on Sofía, for its own /grill-me.
+
+## J. One Star 6.5 closed: v31 (28 Nov, Tomas's /grill-me)
+
+The phone hand at 6.5 was misread the same way ("a hand without an arm, out of her hair", 2 of 2 cold viewers) after every try:
+- v29;
+- the sleeve redrawn over her hair (a `sofia_ob` flag, reverted);
+- the phone lower;
+- the phone in her other hand;
+- v30, both hands at her chest: the right arm was traced, the left still was not.
+
+By the rule, a shot misread the same way after three fixes is cut and its thread carried by another shot.
+
+**v31** (`cs_film_v31.py`): 6.5 keeps Sofía's face and "Still one star.", with no phone and no hand holding one. Her arms hang at her sides, and the clipboard stays under her arm. The 1/5 is carried by 6.4's close-up of the phone just before. All gates pass; phone gate 0. Cold viewers were not run on v31: Tomas asked to finalize.
