@@ -32,7 +32,7 @@ from da_layouts import F, MARKS, SC, dp, ds, kit, rig_hands, shadow, _head  # no
 from da_motion import ease, ease_out, seg, frame, camera_of, FPS, DRAW  # noqa: E402
 
 EP = os.path.join(HERE, "..", "the-double-agent")
-VER = 9
+VER = 8
 T0 = 27.84
 SHOTS = [("4.1", 1.6), ("5.1", 1.4), ("4.2", 3.0), ("4.2b", 0.8), ("4.3", 1.6)]   # story chain v1: 5.1 here (fix A)
 drawn = A.drawn
@@ -303,10 +303,8 @@ def s42_cast(t):
             look = (-1, -0.7) if not drawing else (-1, -0.55 - 0.3 * (tip[1] < _MEM.get("crown_at", (0, 640))[1] - 10))
         else:
             face, look = "smug", (-1, -0.6)                            # there: satisfied
-        w_ = __import__("da_runner").window("s4", "4.2", "r2a")       # "I'm worth millions.", as he draws it
-        say = w_ and w_[0] <= td < w_[1] and int(td * DRAW) % 2 == 0
         h.update(_don_street(k_, td, face, look, chin, hair, 0.0, fog=fog, crown=crown, drawing=drawing,
-                             mouth=1.0 if breath else (0.7 if say else None), lean=lean, puff=puff))
+                             mouth=1.0 if breath else None, lean=lean, puff=puff))
         return h
     return cast
 
@@ -427,7 +425,6 @@ def mix(sec, path):
         i = int(t0 * sr)
         g = 0.18 * gain / (np.max(np.abs(w)) + 1e-9)
         m[i:i + len(w)] += g * w[:max(0, n - i)]
-    __import__("da_runner").add(m, "s4", STARTS)                      # the Don x robot money runner (28 Nov)
     w = S5.sting(); i = int((STARTS["5.1"] + 0.05) * sr)             # the noir sting, with its shot
     m[i:i + len(w)] += 0.30 * w[:max(0, n - i)] / (np.max(np.abs(w)) + 1e-9)
     m /= max(1.0, np.max(np.abs(m)) / 0.89)
